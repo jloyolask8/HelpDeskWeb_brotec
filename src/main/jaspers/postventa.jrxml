@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="postventa" pageWidth="600" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="560" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d99b0d33-270b-4727-8e02-395561f70e20">
+	<property name="ireport.zoom" value="1.6105100000000365"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="438"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="casoOrigen" class="com.itcs.helpdesk.persistence.entities.Caso" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="logoProyecto" class="java.io.InputStream"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<background>
+		<band height="752">
+			<staticText>
+				<reportElement uuid="e18e8d9a-9f44-4731-b0e0-83fdbde6b562" x="332" y="718" width="210" height="34"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Nombre, RUT y firma de quien recibe conforme los trabajos
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f39df5b5-de71-4084-98b1-ce01baed8ca7" x="5" y="718" width="210" height="34"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Nombre, RUT y firma de quien recibe la visita inspectiva
+]]></text>
+			</staticText>
+		</band>
+	</background>
+	<pageHeader>
+		<band height="406">
+			<subreport>
+				<reportElement uuid="f5ac20ed-aa89-45cf-821d-9ae5c717b851" x="1" y="274" width="558" height="15"/>
+				<subreportParameter name="SUBREPORT_DIR"/>
+				<dataSourceExpression><![CDATA[]]></dataSourceExpression>
+				<subreportExpression><![CDATA["./postventa_sello.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement uuid="7753d0ac-8113-43f4-9229-c953127bd01d" x="5" y="292" width="550" height="15"/>
+				<textElement>
+					<font size="9" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Fecha de Reparación:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="2ce9f05a-6b15-4dc5-8d66-2f325fe1528a" x="175" y="39" width="261" height="20"/>
+				<textElement>
+					<font size="14" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Visita Informativa Preventiva]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ba495257-d5f8-4aaa-9f05-3ecaef5f91ec" x="376" y="61" width="100" height="15"/>
+				<textElement>
+					<font size="9" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Santiago,]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="0db7c016-d078-4074-ade0-e24606539f6d" x="4" y="107" width="111" height="15"/>
+				<textElement>
+					<font size="9" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Dirección]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="00286cfb-c2c7-4b68-b9ed-8b9d50519dfe" x="132" y="152" width="20" height="15"/>
+				<textElement/>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="83d5332e-2ba7-47b2-aa6b-4f8e7ae2646b" x="4" y="122" width="111" height="15"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Teléfono]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5545954d-e097-4f37-86ef-cc3134b6a117" x="132" y="182" width="20" height="15"/>
+				<textElement/>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="63a4c5d7-87df-4052-b3de-bf11b22071ae" x="4" y="152" width="111" height="15"/>
+				<textElement>
+					<font size="9" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Fecha de entrega]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="169c94c7-727f-45d4-8b2d-2cc57e0cc602" x="4" y="167" width="111" height="15"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Fecha de Visita]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="10e4c30d-5b3b-45dc-8ccb-176b1363c788" x="132" y="92" width="20" height="15"/>
+				<textElement/>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="9db269e0-d5ed-494c-ab39-0a9cfac42574" x="132" y="167" width="20" height="15"/>
+				<textElement/>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d4cfef9b-df7e-4433-908e-e56ba3741c72" x="4" y="92" width="111" height="15"/>
+				<textElement>
+					<font size="9" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Propietario]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b8568ca0-5fad-47d8-8339-e36228af57b3" x="4" y="137" width="111" height="15"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Email]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="9c63e891-a4bc-4bd6-a5be-3e142a9d16da" x="132" y="107" width="20" height="15"/>
+				<textElement/>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="183a9a21-ae41-4229-b993-f831995affb2" x="132" y="137" width="20" height="15"/>
+				<textElement/>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="2601f98d-c756-4950-bec8-84e0487eefd0" x="132" y="122" width="20" height="15"/>
+				<textElement/>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="35fbeb60-705b-4ae2-97fd-7717a7a01574" x="4" y="182" width="160" height="15"/>
+				<textElement>
+					<font size="9" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Profesional que atendió]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="e2eaf32d-6e1d-4ba6-91e9-9f0a2cdf30f8" x="139" y="137" width="437" height="15"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{casoOrigen}.getEmailCliente().getEmailCliente()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="fe9f4078-ad0c-47a2-b3fb-e3fb0bca238f" x="139" y="92" width="437" height="15"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{casoOrigen}.getEmailCliente().getCliente().getNombres()+" "+$P{casoOrigen}.getEmailCliente().getCliente().getApellidos()]]></textFieldExpression>
+			</textField>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement uuid="c0c770b3-1f53-4cee-adb6-aab74cfa1074" x="423" y="61" width="155" height="15"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="f49ece10-2233-4733-ba4a-8bc04d5d7f4d" x="139" y="107" width="437" height="15"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{casoOrigen}.getIdSubComponente().getDireccionMunicipal()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="425b144f-6101-4b49-b80a-f3d55c81696d" x="139" y="122" width="437" height="15"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{casoOrigen}.getEmailCliente().getCliente().getFono1()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="c6fcec5c-9d92-46b4-8424-0ee5ca8fce03" x="139" y="152" width="437" height="15"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{casoOrigen}.getNextResponseDue()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="598fdbef-92b3-4d03-816d-e79853e002e0" x="139" y="182" width="437" height="15"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{casoOrigen}.getOwner().getCapitalName()]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement uuid="436d1ac4-4cd9-44c0-bde1-5fc0d225e804" x="5" y="11" width="141" height="65"/>
+				<imageExpression><![CDATA["./brotec.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement uuid="fc1392c0-b2e8-499b-b188-af78521311e3" x="4" y="207" width="572" height="15"/>
+				<textElement>
+					<font size="9" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Información entregada:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="905cea83-6fb6-40e2-bda9-08d722643e7b" x="4" y="223" width="572" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Programa de mantención de la vivienda establecido en el Manual de Uso y Mantención de la Vivienda CCHC]]></text>
+			</staticText>
+			<subreport>
+				<reportElement uuid="5afb7620-b66f-48a2-a8e5-eb1c1a4bd5ca" x="1" y="240" width="558" height="15"/>
+				<subreportParameter name="SUBREPORT_DIR"/>
+				<dataSourceExpression><![CDATA[]]></dataSourceExpression>
+				<subreportExpression><![CDATA["./postventa_informacion.jasper"]]></subreportExpression>
+			</subreport>
+			<line>
+				<reportElement uuid="94836db5-6871-4868-b317-6a98cc46a4d7" x="1" y="205" width="557" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="bfcc7c3c-3234-421a-80b8-ef75eb468fca" x="2" y="222" width="557" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="405e0770-e4d4-4828-9e5a-9ee542df9755" x="2" y="238" width="557" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement uuid="d78093a8-0d96-4d2b-b2cd-ceb5119903bf" x="4" y="258" width="550" height="15"/>
+				<textElement>
+					<font size="9" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Sellos a Reparar:]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="ff5710e0-d7fb-4e2c-91a9-3d73c50e151a" x="2" y="306" width="557" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="2d400654-7d99-401d-88fb-87724d434d3b" x="2" y="256" width="557" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="d7fc2992-5772-4916-8b9f-ce33b1f42963" x="2" y="339" width="557" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="edf0cfe1-8415-415d-89b8-83bc087dbd7c" x="1" y="205" width="1" height="135"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="95c93936-276c-4eaf-b9f4-0aadc9aaf8c6" x="2" y="322" width="557" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="91581e7c-a521-4c6c-9882-30a77fa67a32" x="2" y="272" width="557" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="c97ec02f-cf82-4f55-9757-03f013bd113e" x="558" y="205" width="1" height="135"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="39bbe8ef-2c30-4a56-aa2e-2b324626dbd8" x="2" y="290" width="557" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+		</band>
+	</pageHeader>
+</jasperReport>

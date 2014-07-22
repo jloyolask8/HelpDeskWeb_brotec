@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="postventa_informacion" pageWidth="557" pageHeight="752" columnWidth="557" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" whenResourceMissingType="Empty" uuid="45d3ca4f-f2b1-4c11-af5a-1afcb779c777">
+	<property name="ireport.zoom" value="14.4209936106501"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="10"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<queryString language="xPath">
+		<![CDATA[]]>
+	</queryString>
+	<field name="descripcion" class="java.lang.String">
+		<fieldDescription><![CDATA[descripcion]]></fieldDescription>
+	</field>
+	<field name="limitesIndemnizacion" class="java.lang.String">
+		<fieldDescription><![CDATA[limitesIndemnizacion]]></fieldDescription>
+	</field>
+	<field name="deducibles" class="java.lang.String">
+		<fieldDescription><![CDATA[deducibles]]></fieldDescription>
+	</field>
+	<field name="condicionesGenerales" class="java.lang.String">
+		<fieldDescription><![CDATA[condicionesGenerales]]></fieldDescription>
+	</field>
+	<detail>
+		<band height="15">
+			<line>
+				<reportElement uuid="460d4534-d45a-45f8-a73e-aea6be050a23" stretchType="RelativeToTallestObject" x="0" y="-3" width="1" height="18"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="43fe8702-7eba-481d-b364-0a2958bc77ab" stretchType="RelativeToTallestObject" x="556" y="-3" width="1" height="18"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="921c2496-f759-4f33-82fc-bf6805137e8c" x="0" y="14" width="557" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+		</band>
+	</detail>
+</jasperReport>
