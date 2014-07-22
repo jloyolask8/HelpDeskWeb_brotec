@@ -14,7 +14,7 @@ import com.itcs.helpdesk.util.ManagerCasos;
 public abstract class Action {
 
     private JPAServiceFacade jpaController = null;
-    private ManagerCasos managerCasos;
+    private final ManagerCasos managerCasos;
     
      /**
      * config represents the parametros column in DB, it can be any String representation of data that Action needs to execute its purpose.
