@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:itcs="http://java.sun.com/jsf/composite/components/filterView">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="Usuarios"></h:outputText>
+        </ui:define>
+        <ui:define name="west">
+            <p:accordionPanel multiple="true" cache="true" id="accionesaccordion1">
+                <p:tab title="Usuarios" id="accionestab1">
+                    <h:outputLabel escape="false" value="#{bundle.ayudaUsuarios}"/>
+                </p:tab>
+            </p:accordionPanel>
+        </ui:define>
+        <ui:define name="body">
+            <h:form id="form">
+                
+                <h:panelGroup>
+                    
+                     <p:messages/>
+                    
+                      <itcs:filterView controllerMBean="#{usuarioController}" filterHelper="#{usuarioController.filterHelper}" update=":mainform:messages :form"/>
+                    
+                      
+
+                    <p:dataTable id="tablausuarios" widgetVar="UsuarioTable" var="item" value="#{usuarioController.items}"
+                                 emptyMessage="#{bundle.ListUsuarioEmpty}">
+                        
+                        <f:facet name="header">
+                            <h:outputText value="Usuarios (#{usuarioController.pagination.pageFirstItem + 1} - #{usuarioController.pagination.pageLastItem + 1} de #{usuarioController.pagination.itemsCount}) "></h:outputText>
+
+                        </f:facet>
+                        
+                      
+
+                        <p:column headerText="#{bundle.ListUsuarioTitle_idUsuario}" sortBy="idUsuario">
+                            <h:outputText value="#{item.idUsuario}"/>
+                        </p:column>
+                        <p:column headerText="#{bundle.ListUsuarioTitle_nombres}" sortBy="nombres">
+                            <h:outputText value="#{item.nombres}"/>
+                        </p:column>
+                        <p:column headerText="#{bundle.ListUsuarioTitle_apellidos}" sortBy="apellidos">
+
+                            <h:outputText value="#{item.apellidos}"/>
+                        </p:column>
+                        <p:column headerText="#{bundle.ListUsuarioTitle_email}" sortBy="email">
+
+                            <h:outputText value="#{item.email}"/>
+                        </p:column>
+
+                        <p:column headerText="#{bundle.ListUsuarioTitle_supervisor}">
+
+                            <h:outputText value="#{item.supervisor}"/>
+                        </p:column>
+                      
+                         <p:column headerText="Roles">
+                            <p:dataList value="#{item.rolList}" var="r" style="border: none" rendered="#{not empty item.rolList}">
+                                #{r.nombre}
+                            </p:dataList>
+                        </p:column>
+                        
+                          <p:column headerText="Grupos">
+                            <p:dataList value="#{item.grupoList}" var="g" style="border: none" rendered="#{not empty item.grupoList}">
+                                #{g.nombre}
+                            </p:dataList>
+                        </p:column>
+
+                          <p:column headerText="Acción">
+                            <p:commandButton id="viewBtn" ajax="false" action="#{usuarioController.prepareView(item)}" disabled="#{not usuarioController.puedeEditar(item)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" title="Ver" icon="ui-icon ui-icon-document"/>
+                            <p:commandButton id="editBtn" ajax="false" action="#{usuarioController.prepareEdit(item)}" disabled="#{not usuarioController.puedeEditar(item)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" title="Editar" icon="ui-icon ui-icon-pencil"/>
+                            <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" action="#{usuarioController.setSelected(item)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" oncomplete="confirmation.show()" disabled="#{not usuarioController.puedeEditar(item)}" icon="ui-icon ui-icon-trash"/>
+                        </p:column>
+
+                        <f:facet name="footer">
+                            <p:toolbar style="border: none;">
+                                <p:toolbarGroup id="menuAcciones" align="center">
+                                    
+                                       <p:outputLabel value="Páginas de "/>
+                                    <p:selectOneMenu id="cant" value="#{usuarioController.paginationPageSize}" style="top: 7px">
+                                        <p:ajax event="change" listener="#{usuarioController.resetPageSize()}" update=":form"/>
+                                        <f:selectItems value="#{usuarioController.pagination.pageSizesAvailable}"/>
+                                    </p:selectOneMenu>
+                                       
+                                    <p:commandButton ajax="false" action="#{usuarioController.first}" disabled="#{not usuarioController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{usuarioController.pagination.itemsCount > 0}"/>
+
+                                    <p:commandButton ajax="false" action="#{usuarioController.previous}" disabled="#{not usuarioController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{usuarioController.pagination.itemsCount > 0}"/>
+
+                                    <p:commandButton ajax="false" action="#{usuarioController.next}" disabled="#{not usuarioController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{usuarioController.pagination.itemsCount > 0}"/>
+
+                                    <p:commandButton ajax="false" action="#{usuarioController.last}" disabled="#{not usuarioController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{usuarioController.pagination.itemsCount > 0}"/>
+                                    <p:separator/>
+                                    <p:commandButton ajax="false" action="#{usuarioController.prepareCreate}" value="#{bundle.ListUsuarioCreateLink}"
+                                rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" icon="ui-icon ui-icon-plus"/>
+
+                                </p:toolbarGroup>
+                            </p:toolbar>
+
+
+                        </f:facet>
+
+
+                    </p:dataTable>
+                </h:panelGroup>
+
+               
+
+                <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
+                          header="Iniciando proceso de eliminación" widgetVar="confirmation" width="300">
+
+                    <h:outputText value="Está seguro de eliminar el usuario #{usuarioController.selected.capitalName}?"/>
+
+                    <f:facet name="footer">
+                        <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{usuarioController.destroy()}" 
+                                         ajax="false"/>
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
+                    </f:facet>
+
+                </p:dialog>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

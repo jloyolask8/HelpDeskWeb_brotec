@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.CreateAuditLogTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+          
+            <h:form>
+                <p:panel header="#{bundle.CreateAuditLogTitle}">
+
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{bundle.CreateAuditLogLabel_idLog}" for="idLog" />
+                    <p:inputText id="idLog" value="#{auditLogController.selected.idLog}" title="#{bundle.CreateAuditLogTitle_idLog}" required="true" requiredMessage="#{bundle.CreateAuditLogRequiredMessage_idLog}"/>
+                    <h:outputLabel value="#{bundle.CreateAuditLogLabel_tabla}" for="tabla" />
+                    <p:inputText id="tabla" value="#{auditLogController.selected.tabla}" title="#{bundle.CreateAuditLogTitle_tabla}" required="true" requiredMessage="#{bundle.CreateAuditLogRequiredMessage_tabla}"/>
+                    <h:outputLabel value="#{bundle.CreateAuditLogLabel_campo}" for="campo" />
+                    <p:inputText id="campo" value="#{auditLogController.selected.campo}" title="#{bundle.CreateAuditLogTitle_campo}" required="true" requiredMessage="#{bundle.CreateAuditLogRequiredMessage_campo}"/>
+                    <h:outputLabel value="#{bundle.CreateAuditLogLabel_oldValue}" for="oldValue" />
+                    <p:inputText id="oldValue" value="#{auditLogController.selected.oldValue}" title="#{bundle.CreateAuditLogTitle_oldValue}" required="true" requiredMessage="#{bundle.CreateAuditLogRequiredMessage_oldValue}"/>
+                    <h:outputLabel value="#{bundle.CreateAuditLogLabel_newValue}" for="newValue" />
+                    <p:inputText id="newValue" value="#{auditLogController.selected.newValue}" title="#{bundle.CreateAuditLogTitle_newValue}" required="true" requiredMessage="#{bundle.CreateAuditLogRequiredMessage_newValue}"/>
+                    <h:outputLabel value="#{bundle.CreateAuditLogLabel_fecha}" for="fecha" />
+                    <p:calendar locale="es" navigator="true" pattern="dd/MM/yyyy" id="fecha" value="#{auditLogController.selected.fecha}" title="#{bundle.CreateAuditLogTitle_fecha}" required="true" requiredMessage="#{bundle.CreateAuditLogRequiredMessage_fecha}"/>                        
+                    <h:outputLabel value="#{bundle.CreateAuditLogLabel_idUser}" for="idUser" />
+                    <h:selectOneMenu id="idUser" value="#{auditLogController.selected.idUser}" title="#{bundle.CreateAuditLogTitle_idUser}" >
+                        <f:selectItems value="#{usuarioController.itemsAvailableSelectOneNoSystem}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{bundle.CreateAuditLogLabel_idCaso}" for="idCaso" />
+                    <h:selectOneMenu id="idCaso" value="#{auditLogController.selected.idCaso}" title="#{bundle.CreateAuditLogTitle_idCaso}" >
+                        <f:selectItems value="#{casoController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+
+                    <f:facet name="footer">
+                        <p:commandButton action="#{auditLogController.create}" value="#{bundle.CreateAuditLogSaveLink}" ajax="false"/>                     
+                        <p:commandButton action="#{auditLogController.prepareList}" value="#{bundle.CreateAuditLogShowAllLink}" immediate="true" ajax="false" icon="ui-icon-folder-open"/>
+                    </f:facet> 
+
+              
+
+</p:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ViewRolTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="west">
+            <p:accordionPanel multiple="true" cache="true" id="accionesaccordion1">
+                <p:tab title="Roles" id="accionestab1">
+                    <h:outputLabel escape="false" value="#{bundle.ayudaRoles}"/>
+                </p:tab>
+            </p:accordionPanel>
+        </ui:define>
+        <ui:define name="body">
+
+            <h:form id="form">
+                <p:panel header="Datos del Rol"> 
+                    <h:panelGrid columns="2">
+                        <h:outputText value="#{bundle.ViewRolLabel_idRol}" style="font-weight:bold"/>
+                        <h:outputText value="#{rolController.selected.idRol}" title="#{bundle.ViewRolTitle_idRol}"/>
+                        <h:outputText value="#{bundle.ViewRolLabel_nombre}" style="font-weight:bold"/>
+                        <h:outputText value="#{rolController.selected.nombre}" title="#{bundle.ViewRolTitle_nombre}"/>
+                        <h:outputText value="#{bundle.ViewRolLabel_descripcion}" style="font-weight:bold"/>
+                        <h:outputText value="#{rolController.selected.descripcion}" title="#{bundle.ViewRolTitle_descripcion}"/>
+
+
+                    </h:panelGrid>
+                    <p:separator style="margin-bottom:10px"/> 
+                    <p:outputPanel id="funcList">
+                        <p:dataTable value="#{rolController.selected.funcionList}" var="func" emptyMessage="Sin Funciones asociadas" style="width:500px"> 
+                            <f:facet name="header">  
+                                <h:outputText value="Funciones Asociadas al Rol"></h:outputText>                           
+                            </f:facet> 
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Nombre" />
+                                </f:facet>
+                                <h:outputText value="#{func.nombre}" />
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Descripción" />
+                                </f:facet>
+                                <h:outputText value="#{func.descripcion}" />
+                            </p:column>
+                        </p:dataTable>
+                    </p:outputPanel>
+
+
+                    <f:facet name="footer">        
+
+                        <p:toolbar>  
+                            <p:toolbarGroup align="left">   
+                                <p:commandButton ajax="false" action="Edit" disabled="#{not rolController.puedeEditar(rolController.selected)}" value="#{bundle.ViewRolEditLink}" icon="ui-icon ui-icon-pencil"/>
+                                <p:separator/>
+                                <p:commandButton ajax="false" action="#{rolController.prepareList}" value="#{bundle.ViewRolShowAllLink}" icon="ui-icon-folder-open"/>
+                            </p:toolbarGroup>  
+
+                            <p:toolbarGroup align="right">   
+                                <p:separator/>
+                                <p:commandButton id="showDialogButton" value="#{bundle.ViewRolDestroyLink}" onclick="confirmation.show()" disabled="#{not rolController.puedeEditar(rolController.selected)}"  icon="ui-icon ui-icon-trash" />         
+                            </p:toolbarGroup>  
+
+                        </p:toolbar>
+
+
+
+                        <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
+                                  header="Iniciando proceso de eliminación" widgetVar="confirmation">
+
+                            <h:outputText value="Está seguro de eliminar el rol #{rolController.selected.nombre}?"/>
+
+                            <f:facet name="footer">
+                                <p:commandButton id="confirm" value="Yes Sure" action="#{rolController.destroy}" 
+                                                 update="form" oncomplete="confirmation.hide()"/>
+                                <p:commandButton id="decline" value="Not Yet" onclick="confirmation.hide()" type="button" /> 
+                            </f:facet>
+
+                        </p:dialog>
+
+
+
+
+                    </f:facet>
+
+                </p:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

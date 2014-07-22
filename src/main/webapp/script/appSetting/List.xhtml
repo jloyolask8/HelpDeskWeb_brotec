@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ListAppSettingTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h1>Configuration Properties</h1>
+            <h:outputText value="Esta configuracion es de uso unico de los desarrolladores encargados de deployar esta aplicacion, 
+                          si usted no tiene ese rol no modifique esta configuración ya que cualquier cambio afecta el funcionamiento del sistema."/>
+           
+            <h3>Configuración Actual (en Memoria)</h3>
+            <h:outputText value="#{appSettingController.currentConfiguration}"/>
+            
+            <h:form styleClass="jsfcrud_list_form">
+                <h:panelGroup id="messagePanel" layout="block">
+                    <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+                </h:panelGroup>
+                <h:outputText escape="false" value="#{bundle.ListAppSettingEmpty}" rendered="#{appSettingController.items.rowCount == 0}"/>
+                <h:panelGroup rendered="#{appSettingController.items.rowCount > 0}">
+                    <h:outputText value="#{appSettingController.pagination.pageFirstItem + 1}..#{appSettingController.pagination.pageLastItem + 1}/#{appSettingController.pagination.itemsCount}"/>&nbsp;
+                    <h:commandLink action="#{appSettingController.previous}" value="#{bundle.Previous} #{appSettingController.pagination.pageSize}" rendered="#{appSettingController.pagination.hasPreviousPage}"/>&nbsp;
+                    <h:commandLink action="#{appSettingController.next}" value="#{bundle.Next} #{appSettingController.pagination.pageSize}" rendered="#{appSettingController.pagination.hasNextPage}"/>&nbsp;
+                    <p:dataTable value="#{appSettingController.items}" var="item" >
+                        <f:facet name="header">
+                            <h:outputText value="Configuración en Base de datos"/>
+                        </f:facet>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListAppSettingTitle_settingKey}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.settingKey}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListAppSettingTitle_settingValue}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.settingValue}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListAppSettingTitle_grupo}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.grupo}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListAppSettingTitle_descripcion}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.descripcion}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListAppSettingTitle_type}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.type}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListAppSettingTitle_orderView}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.orderView}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="&nbsp;"/>
+                            </f:facet>
+                            <h:commandLink action="#{appSettingController.prepareView}" value="#{bundle.ListAppSettingViewLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{appSettingController.prepareEdit}" value="#{bundle.ListAppSettingEditLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{appSettingController.destroy}" value="#{bundle.ListAppSettingDestroyLink}"/>
+                        </p:column>
+                    </p:dataTable>
+                </h:panelGroup>
+                <br />
+                <h:commandLink action="#{appSettingController.prepareCreate}" value="#{bundle.ListAppSettingCreateLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.ListAppSettingIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

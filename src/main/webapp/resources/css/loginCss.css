@@ -1,0 +1,109 @@
+/* 
+    Document   : loginCss
+    Created on : Aug 20, 2013, 4:20:11 PM
+    Author     : jimmy
+    Description:
+        Purpose of the stylesheet follows.
+*/
+body{
+    background-repeat: repeat-x;
+    background-image: url("../../images/headerHD.png");
+    background-color: #e7e6e6;
+    
+}
+
+.box{
+	margin-top:50px;
+	margin-left:120px;
+	background:url(../../images/shape.png) no-repeat center;
+	/*margin:30px auto 0 auto;*/
+	width:360px;
+	height:264px;
+	position:absolute;
+}
+
+.checkbox-remember{
+    display: block;
+    width: 40px;
+    height: 15px;
+    overflow: hidden;
+    border-radius: 5px;
+	float:left;
+	margin:5px 0 0 0;
+}
+
+.remember{
+	font-size:12px;
+	color:#999999;
+	margin:5px;
+	float:left;
+}
+
+.logo-img {
+  display: block;
+  height: 70px;
+  width: 176px;
+  
+  overflow: hidden;
+  background: url("../../images/ITCS-Logos-03.png") no-repeat;
+}
+
+.header{
+    
+    
+   
+    
+    
+    
+   
+}
+
+#footer{
+    background-color: #333;
+    height: 500px;
+    margin-bottom: auto 0px 0px 0px;
+}
+
+#parent {
+    padding: 0px;
+    margin:150px auto;
+    text-align: center;
+  }
+  .positionable {
+    position: absolute;
+    display: block;
+    right: 0;
+    bottom: 0;
+    background-color: #bcd5e6;
+    text-align: center;
+  }
+  #positionable1 {
+    width: 75px;
+    height: 75px;
+  }
+  #positionable2 {
+    width: 120px;
+    height: 40px;
+  }
+  select, input {
+    margin-left: 15px;
+  }
+  
+.logInGrid tr, .logInGrid td {
+    
+    border-color: #fff;
+    
+}
+
+#divHD{
+    padding: 20px 0px 0px 0%;
+    margin:0px auto auto;
+}
+
+#divItcs{
+    padding: 10px 0px 0px 0%;
+}
+
+
+
+

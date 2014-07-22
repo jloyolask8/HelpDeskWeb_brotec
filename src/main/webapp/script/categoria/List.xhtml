@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ListCategoriaTitle}"></h:outputText>
+        </ui:define>
+        <ui:define  name="body">
+        <h:form>
+
+            <h:outputText escape="false" value="#{bundle.ListCategoriaEmpty}" rendered="#{categoriaController.items.rowCount == 0}"/>
+            <h:panelGroup rendered="#{categoriaController.items.rowCount > 0}">
+
+                 <p:dataTable widgetVar="CategoriaTable" var="item" value="#{categoriaController.items}"
+                                 selection="#{categoriaController.selectedItems}" selectionMode="multiple"
+                                 emptyMessage="#{bundle.ListCategoriaEmpty}"
+                                 rowKey="#{item.idCategoria}">
+
+                        <f:facet name="header">
+                            <h:outputText value="Lista de Categorias (#{categoriaController.pagination.pageFirstItem + 1} - #{categoriaController.pagination.pageLastItem + 1} de #{categoriaController.pagination.itemsCount}) "></h:outputText>
+                            <h:commandLink action="#{categoriaController.previous}" value="Anteriores #{categoriaController.pagination.pageSize}" rendered="#{categoriaController.pagination.hasPreviousPage}"/>&nbsp;
+                            <h:commandLink action="#{categoriaController.next}" value="Siguientes #{categoriaController.pagination.pageSize}" rendered="#{categoriaController.pagination.hasNextPage}"/>&nbsp;
+
+                        </f:facet>
+
+                    <p:column headerText="#{bundle.ListCategoriaTitle_idCategoria}">
+
+                        <h:outputText value="#{item.idCategoria}"/>
+                    </p:column>
+                    <p:column headerText="#{bundle.ListCategoriaTitle_nombre}">
+
+                        <h:outputText value="#{item.nombre}"/>
+                    </p:column>
+                    <p:column headerText="#{bundle.ListCategoriaTitle_idCategoriaPadre}">
+
+                        <h:outputText value="#{item.idCategoriaPadre.nombre}"/>
+                    </p:column>
+
+                    
+
+                       <f:facet name="footer">
+
+                               <p:commandButton ajax="false" action="#{categoriaController.first}" disabled="#{not categoriaController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{categoriaController.pagination.itemsCount > 0}"/>
+                            &nbsp;
+                            <p:commandButton ajax="false" action="#{categoriaController.previous}" disabled="#{not categoriaController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{categoriaController.pagination.itemsCount > 0}"/>
+                            &nbsp;
+                            <p:commandButton ajax="false" action="#{categoriaController.next}" disabled="#{not categoriaController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{categoriaController.pagination.itemsCount > 0}"/>
+                            &nbsp;
+                            <p:commandButton ajax="false" action="#{categoriaController.last}" disabled="#{not categoriaController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{categoriaController.pagination.itemsCount > 0}"/>
+                            &nbsp;
+                            <p:menuButton value="Acciones">
+                                <p:menuitem ajax="false" action="#{categoriaController.prepareCreate}" value="#{bundle.ListCategoriaCreateLink}" icon="ui-icon ui-icon-plus" />
+                                <p:menuitem ajax="false" action="#{categoriaController.prepareView}" value="#{bundle.ListCategoriaViewLink}" icon="ui-icon ui-icon-search"/>
+                                <p:menuitem ajax="false" action="#{categoriaController.prepareEdit}" value="#{bundle.ListCategoriaEditLink}" icon="ui-icon ui-icon-pencil"/>
+                                <p:menuitem ajax="false" action="#{categoriaController.destroySelected()}" value="#{bundle.ListCategoriaDestroyLink}" icon="ui-icon ui-icon-close"/>
+                                
+                            </p:menuButton>
+
+                        </f:facet>
+
+
+
+                </p:dataTable>
+            </h:panelGroup>
+
+            <br />
+            <p:commandButton ajax="false" action="#{categoriaController.prepareCreate}" value="#{bundle.ListCategoriaCreateLink}"
+                             rendered="#{categoriaController.items.rowCount == 0}" icon="ui-icon ui-icon-plus"/>
+
+                <p:confirmDialog message="Esta Seguro de eliminar estos registros ?" appendTo="@(body)"
+                                 header="Iniciando proceso de eliminacion" severity="alert" widgetVar="delete_Categoria_confirmation">
+
+                    <p:commandButton value="Si" update=":mainform:messages" oncomplete="delete_Categoria_confirmation.hide()"
+                                     action="Expression usuarioController is undefined on line 95, column 48 in unknown." ajax="false" />
+                    <p:commandButton value="Eliminar" onclick="delete_Categoria_confirmation.hide()" type="button" />
+
+                </p:confirmDialog>
+
+        </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

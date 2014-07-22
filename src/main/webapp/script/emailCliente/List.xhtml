@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="Clientes"></h:outputText>
+        </ui:define>
+        <ui:define name="west">
+            <p:accordionPanel multiple="true" cache="true" id="accionesaccordion1">
+                <p:tab title="Clientes" id="accionestab1">
+                    <h:outputLabel escape="false" value="#{bundle.ayudaClientes}"/>
+                </p:tab>
+            </p:accordionPanel>
+        </ui:define>
+        <ui:define name="body">
+            <h:form id="form">
+                <p:messages globalOnly="true"/>
+                <h:panelGroup>
+
+                    <p:panel header="Buscar" toggleable="true" >
+                        <h:panelGrid columns="3">
+
+                            <p:inputText id="searchRut" value="#{emailClienteController.searchPattern}" size="50"  />
+                            
+                            <p:message for="searchRut"/>
+                            <p:commandButton actionListener="#{emailClienteController.prepareList()}" icon="ui-icon-search" update=":form"/>
+
+                            <p:watermark for="searchRut" value="Nombre, Apellido, email, rut o dirección municipal..."/>
+                        </h:panelGrid>
+
+                    </p:panel>
+
+                    <br/>
+
+                    <p:dataTable widgetVar="dataTable" var="item" value="#{emailClienteController.items}" selectionMode="single"
+                                 emptyMessage="#{bundle.emptyList}">
+
+                        <f:facet name="header">  
+                            <h:outputText value="Emails de Clientes (#{emailClienteController.pagination.pageFirstItem + 1} - #{emailClienteController.pagination.pageLastItem + 1} de #{emailClienteController.pagination.itemsCount})"></h:outputText>                           
+                        </f:facet>
+
+
+                        <p:column headerText="Email">
+                            <h:outputText value="#{item.emailCliente}"/>
+                        </p:column>
+
+                        <p:column headerText="Rut Cliente">
+                            <h:outputText value="#{item.cliente.rut}"/>
+                        </p:column>
+                        <p:column headerText="Nombre Cliente">
+                            <h:outputText value="#{item.cliente.nombres} #{item.cliente.apellidos}"/>
+                        </p:column>
+
+                        <p:column headerText="Acción">
+                            <p:commandButton id="viewBtn" ajax="false" action="#{emailClienteController.prepareView(item)}" title="Ver" icon="ui-icon ui-icon-document"/>
+                            <p:commandButton id="editBtn" ajax="false" action="#{emailClienteController.prepareEdit(item)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" title="Editar" icon="ui-icon ui-icon-pencil"/>
+                            <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" action="#{emailClienteController.setSelected(item)}" oncomplete="confirmation.show()" disabled="#{not emailClienteController.puedeEliminar(item)}" icon="ui-icon ui-icon-trash"/>
+                        </p:column>
+
+
+
+                        <f:facet name="footer">
+
+
+
+                            <p:toolbar style="border: none;">
+                                <p:toolbarGroup align="center">
+
+                                    <p:outputLabel value="Páginas de "/>
+
+                                    <p:selectOneMenu id="cant" value="#{emailClienteController.paginationPageSize}" style="top: 7px">
+                                        <p:ajax event="change" listener="#{emailClienteController.resetPageSize()}" update=":form"/>
+                                        <f:selectItems value="#{emailClienteController.pagination.pageSizesAvailable}"/>
+                                    </p:selectOneMenu>
+
+                                    <p:separator/>
+
+                                    <p:commandButton action="#{emailClienteController.first}" update=":form" disabled="#{not emailClienteController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{emailClienteController.pagination.itemsCount > 0}"/>
+
+                                    <p:commandButton action="#{emailClienteController.previous}" update=":form" disabled="#{not emailClienteController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{emailClienteController.pagination.itemsCount > 0}"/>
+
+                                    <p:commandButton action="#{emailClienteController.next}" update=":form" disabled="#{not emailClienteController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{emailClienteController.pagination.itemsCount > 0}"/>
+
+                                    <p:commandButton action="#{emailClienteController.last}" update=":form" disabled="#{not emailClienteController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{emailClienteController.pagination.itemsCount > 0}"/>
+
+
+                                    <p:separator/>
+                                    <p:commandButton ajax="false" action="#{emailClienteController.prepareCreate}" value="Crear cliente" icon="ui-icon ui-icon-plus" />
+
+                                    <p:separator/>
+                                    <p:commandButton ajax="false" action="#{emailClienteController.prepareCreateMasivo()}" value="Importación masiva de clientes" icon="ui-icon ui-icon-arrowstop-1-n" />
+                                    <p:commandButton ajax="false" action="cargarClienteProducto" value="Importar Relación Cliente/#{applicationBean.productSubComponentDescription}" icon="ui-icon ui-icon-arrowstop-1-n" />
+
+                                </p:toolbarGroup>
+                            </p:toolbar>
+
+                        </f:facet> 
+                    </p:dataTable>
+
+                </h:panelGroup>
+
+
+
+                <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
+                          header="Iniciando proceso de eliminación" widgetVar="confirmation">
+
+                    <h:outputText value="Está seguro de eliminar al cliente #{emailClienteController.selected.cliente.nombres} #{emailClienteController.selected.cliente.apellidos}?"/>
+
+                    <f:facet name="footer">
+                        <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{emailClienteController.destroy()}" 
+                                         ajax="false"/>
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
+                    </f:facet>
+
+                </p:dialog>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

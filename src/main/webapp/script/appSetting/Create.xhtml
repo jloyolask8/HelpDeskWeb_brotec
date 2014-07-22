@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.CreateAppSettingTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{bundle.CreateAppSettingLabel_settingKey}" for="settingKey" />
+
+                    <h:selectOneMenu id="settingKey" value="#{appSettingController.selected.settingKey}" title="#{bundle.CreateCategoriaTitle_idArea}" 
+                                     required="true" requiredMessage="#{bundle.CreateAppSettingRequiredMessage_settingKey}">
+                        <f:selectItems value="#{appSettingController.settingsItemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+
+                    <h:outputLabel value="#{bundle.CreateAppSettingLabel_settingValue}" for="settingValue" />
+                    <h:inputText id="settingValue" value="#{appSettingController.selected.settingValue}" title="#{bundle.CreateAppSettingTitle_settingValue}" />
+                    <h:outputLabel value="#{bundle.CreateAppSettingLabel_grupo}" for="grupo" />
+                    <h:inputText id="grupo" value="#{appSettingController.selected.grupo}" title="#{bundle.CreateAppSettingTitle_grupo}" required="true" requiredMessage="#{bundle.CreateAppSettingRequiredMessage_grupo}"/>
+                    <h:outputLabel value="#{bundle.CreateAppSettingLabel_descripcion}" for="descripcion" />
+                    <h:inputText id="descripcion" value="#{appSettingController.selected.descripcion}" title="#{bundle.CreateAppSettingTitle_descripcion}" />
+                    <h:outputLabel value="#{bundle.CreateAppSettingLabel_type}" for="type" />
+
+                    <h:selectOneMenu id="type" value="#{appSettingController.selected.type}" title="#{bundle.CreateAppSettingTitle_type}" required="true" requiredMessage="#{bundle.CreateAppSettingRequiredMessage_type}">
+                        <f:selectItems value="#{appSettingController.fieldTypeItemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+
+                    <h:outputLabel value="#{bundle.CreateAppSettingLabel_orderView}" for="orderView" />
+                    <h:inputText id="orderView" value="#{appSettingController.selected.orderView}" title="#{bundle.CreateAppSettingTitle_orderView}" required="true" requiredMessage="#{bundle.CreateAppSettingRequiredMessage_orderView}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{appSettingController.create}" value="#{bundle.CreateAppSettingSaveLink}" />
+                <br />
+                <br />
+                <h:commandLink action="#{appSettingController.prepareList}" value="#{bundle.CreateAppSettingShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.CreateAppSettingIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

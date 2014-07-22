@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ViewAppSettingTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{bundle.ViewAppSettingLabel_settingKey}"/>
+                    <h:outputText value="#{appSettingController.selected.settingKey}" title="#{bundle.ViewAppSettingTitle_settingKey}"/>
+                    <h:outputText value="#{bundle.ViewAppSettingLabel_settingValue}"/>
+                    <h:outputText value="#{appSettingController.selected.settingValue}" title="#{bundle.ViewAppSettingTitle_settingValue}"/>
+                    <h:outputText value="#{bundle.ViewAppSettingLabel_grupo}"/>
+                    <h:outputText value="#{appSettingController.selected.grupo}" title="#{bundle.ViewAppSettingTitle_grupo}"/>
+                    <h:outputText value="#{bundle.ViewAppSettingLabel_descripcion}"/>
+                    <h:outputText value="#{appSettingController.selected.descripcion}" title="#{bundle.ViewAppSettingTitle_descripcion}"/>
+                    <h:outputText value="#{bundle.ViewAppSettingLabel_type}"/>
+                    <h:outputText value="#{appSettingController.selected.type}" title="#{bundle.ViewAppSettingTitle_type}"/>
+                    <h:outputText value="#{bundle.ViewAppSettingLabel_orderView}"/>
+                    <h:outputText value="#{appSettingController.selected.orderView}" title="#{bundle.ViewAppSettingTitle_orderView}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{appSettingController.destroyAndView}" value="#{bundle.ViewAppSettingDestroyLink}"/>
+                <br />
+                <br />
+                <h:link outcome="Edit" value="#{bundle.ViewAppSettingEditLink}"/>
+                <br />
+                <h:commandLink action="#{appSettingController.prepareCreate}" value="#{bundle.ViewAppSettingCreateLink}" />
+                <br />
+                <h:commandLink action="#{appSettingController.prepareList}" value="#{bundle.ViewAppSettingShowAllLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.ViewAppSettingIndexLink}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

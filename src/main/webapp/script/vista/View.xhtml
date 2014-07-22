@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ViewVistaTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{bundle.ViewVistaLabel_idVista}"/>
+                    <h:outputText value="#{vistaController.selected.idVista}" title="#{bundle.ViewVistaTitle_idVista}"/>
+                    <h:outputText value="#{bundle.ViewVistaLabel_nombre}"/>
+                    <h:outputText value="#{vistaController.selected.nombre}" title="#{bundle.ViewVistaTitle_nombre}"/>
+                    <h:outputText value="#{bundle.ViewVistaLabel_descripcion}"/>
+                    <h:outputText value="#{vistaController.selected.descripcion}" title="#{bundle.ViewVistaTitle_descripcion}"/>
+                    <h:outputText value="#{bundle.ViewVistaLabel_visibleToAll}"/>
+                    <h:outputText value="#{vistaController.selected.visibleToAll}" title="#{bundle.ViewVistaTitle_visibleToAll}"/>
+                    <h:outputText value="#{bundle.ViewVistaLabel_idUsuarioCreadaPor}"/>
+                    <h:outputText value="#{vistaController.selected.idUsuarioCreadaPor}" title="#{bundle.ViewVistaTitle_idUsuarioCreadaPor}"/>
+                    <h:outputText value="#{bundle.ViewVistaLabel_idGrupo}"/>
+                    <h:outputText value="#{vistaController.selected.idGrupo}" title="#{bundle.ViewVistaTitle_idGrupo}"/>
+                    <h:outputText value="#{bundle.ViewVistaLabel_idArea}"/>
+                    <h:outputText value="#{vistaController.selected.idArea}" title="#{bundle.ViewVistaTitle_idArea}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{vistaController.destroyAndView}" value="#{bundle.ViewVistaDestroyLink}"/>
+                <br />
+                <br />
+                <h:link outcome="Edit" value="#{bundle.ViewVistaEditLink}"/>
+                <br />
+                <h:commandLink action="#{vistaController.prepareCreate}" value="#{bundle.ViewVistaCreateLink}" />
+                <br />
+                <h:commandLink action="#{vistaController.prepareList}" value="#{bundle.ViewVistaShowAllLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.ViewVistaIndexLink}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

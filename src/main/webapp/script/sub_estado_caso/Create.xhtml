@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.CreateSubEstadoCasoTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="west">
+            <p:accordionPanel multiple="true" cache="true" id="accionesaccordion1">
+                <p:tab title="Sub Estados" id="accionestab1">
+                    <h:outputLabel escape="false" value="#{bundle.ayudaSubestados}"/>
+                </p:tab>
+            </p:accordionPanel>
+        </ui:define>
+        <ui:define name="body">
+
+            <h:form>
+                <p:panel header="#{bundle.CreateSubEstadoCasoTitle}">
+
+                    <h:panelGrid columns="3">
+                        <p:outputLabel style="font-weight:bold" value="Id Sub Estado:" for="idSubEstado" />
+                        <p:inputText id="idSubEstado" value="#{subEstadoCasoController.selected.idSubEstado}" 
+                                     title="#{bundle.EditSubEstadoCasoTitle_idSubEstado}" 
+                                     required="true" requiredMessage="#{bundle.EditSubEstadoCasoRequiredMessage_idSubEstado}"/>
+                        <p:message for="idSubEstado"/>
+                        <p:outputLabel style="font-weight:bold" value="#{bundle.EditSubEstadoCasoLabel_nombre}" for="nombre" />
+                        <p:inputText id="nombre" value="#{subEstadoCasoController.selected.nombre}" title="#{bundle.EditSubEstadoCasoTitle_nombre}" required="true" requiredMessage="#{bundle.EditSubEstadoCasoRequiredMessage_nombre}"/>
+                        <p:message for="nombre"/>
+
+                        <h:outputLabel value="#{bundle.CreateTipoCasoLabel_idTipoCaso}" for="idTipoCaso"  style="font-weight: bold"/>
+                        <p:selectOneMenu id="idTipoCaso" 
+                                         filter="true" filterMatchMode="contains"
+                                         value="#{subEstadoCasoController.selected.tipoCaso}">
+                            <f:selectItem itemLabel="" itemValue=""/>
+                            <f:selectItems value="#{applicationBean.tipoCasoAvailableList}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
+                        </p:selectOneMenu>
+                        <p:message for="idTipoCaso"/>
+
+                        <p:outputLabel style="font-weight:bold" value="#{bundle.EditSubEstadoCasoLabel_descripcion}" for="descripcion" />
+                        <p:inputTextarea id="descripcion" value="#{subEstadoCasoController.selected.descripcion}" title="#{bundle.EditSubEstadoCasoTitle_descripcion}" />
+                        <p:message for="descripcion"/>
+
+                        <p:outputLabel style="font-weight:bold" value="#{bundle.EditSubEstadoCasoLabel_idEstado}" for="idEstado" />
+                        <p:selectOneMenu id="idEstado" value="#{subEstadoCasoController.selected.idEstado}" required="true" requiredMessage="Se requiere que seleccione el estado al cual pertenece este sub-estado.">
+                            <f:selectItems value="#{estadoCasoController.itemsAvailableSelectOne}"/>
+                        </p:selectOneMenu>
+                        <p:message for="idEstado"/>
+                        
+                        <p:outputLabel style="font-weight:bold" value="" for="idEstado" />
+                        <p:selectBooleanCheckbox id="first" value="#{subEstadoCasoController.selected.first}" label="Es el primer sub-estado de un caso de este tipo." >                        
+                        </p:selectBooleanCheckbox>
+                         <p:message for="first"/>
+
+
+
+                    </h:panelGrid>
+                    <br/>
+
+                    <p:fieldset legend="Visualización">
+                        <h:panelGrid columns="3">
+                            <p:outputLabel style="font-weight:bold" value="Color de fondo:" for="backgroundColor" />
+                            <p:colorPicker id="backgroundColor" value="#{subEstadoCasoController.selected.backgroundColor}" />
+                            <p:message for="backgroundColor"/>
+
+                            <p:outputLabel style="font-weight:bold" value="Color del texto:" for="fontColor" />
+                            <p:colorPicker id="fontColor" value="#{subEstadoCasoController.selected.fontColor}" />
+                            <p:message for="fontColor"/>
+                        </h:panelGrid>
+
+                    </p:fieldset>
+
+
+                    <f:facet name="footer">
+                        <p:commandButton action="#{subEstadoCasoController.create}" value="#{bundle.CreateSubEstadoCasoSaveLink}" ajax="false" icon="ui-icon-disk"/>                     
+                        <p:commandButton action="#{subEstadoCasoController.prepareList}" value="#{bundle.CreateSubEstadoCasoShowAllLink}" immediate="true" ajax="false" icon="ui-icon-folder-open"/>
+                    </f:facet> 
+
+
+
+                </p:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

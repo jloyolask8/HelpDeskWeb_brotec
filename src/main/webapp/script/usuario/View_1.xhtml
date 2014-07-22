@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <f:view contentType="text/html" encoding="UTF-8">
+        <h:head>
+            <h:outputStylesheet library="css" name="jsfcrud.css"/>
+        </h:head>
+        <h:body>
+            <h:form>
+                <p:panelGrid styleClass="filtersGrid" style="width: 100%;">
+                    <p:row>
+                        <p:column>
+                            <h:panelGrid columns="1">
+                                <h2>Datos del Agente</h2>
+                                <p:separator/>                            
+                                <h:panelGrid columns="2" cellpadding="6">
+
+                                    <h:outputLabel value="#{bundle.EditUsuarioLabel_idUsuario}" for="idUsuario" style="font-weight:bold"/>
+                                    <h:outputText id="idUsuario" value="#{usuarioController.selected.idUsuario}" />                             
+
+
+                                    <h:outputLabel value="#{bundle.EditUsuarioLabel_activo}" for="activo" style="font-weight:bold"/>
+                                    <h:outputText id="activo" value="#{usuarioController.selected.activo?'yes':'no'}"/>
+
+                                    <h:outputLabel value="#{bundle.EditUsuarioLabel_supervisor}" for="supervisor" style="font-weight:bold"/>
+                                    <h:outputText id="supervisor" value="#{usuarioController.selected.supervisor}"/>
+
+                                    <h:outputLabel value="Grupos" style="font-weight:bold"/>
+                                    <p:dataTable var="g" value="#{usuarioController.selected.grupoList}"                               
+                                                 emptyMessage="El agente no esta en ningún grupo." >       
+
+                                        <f:facet name="header">
+                                            <h:outputText value="Grupos a los que pertenece"/>
+                                        </f:facet>
+
+                                        <p:column>
+                                            <p:outputLabel value="#{g.nombre}" />
+                                        </p:column>
+
+                                    </p:dataTable>
+
+                                    <h:outputLabel value="Roles" style="font-weight:bold"/>
+
+                                    <p:dataTable id="idRol" var="rol" value="#{usuarioController.selected.rolList}"                               
+                                                 emptyMessage="El agente no tiene roles asignados." >                             
+
+                                        <f:facet name="header">
+                                            <h:outputText value="Roles Asignados"/>
+                                        </f:facet>
+                                        <p:column>
+                                            <p:outputLabel value="#{rol.nombre}" />
+                                        </p:column>
+
+                                    </p:dataTable>
+
+
+
+                                    <h:outputLabel value="Rut" for="rut" style="font-weight:bold"/>
+                                    <h:outputText id="rut" value="#{usuarioController.selected.rut}" />                          
+
+                                    <h:outputLabel value="#{bundle.EditUsuarioLabel_nombres}" for="nombres" style="font-weight:bold"/>
+                                    <h:outputText id="nombres" value="#{usuarioController.selected.nombres}"/>
+
+                                    <h:outputLabel value="#{bundle.EditUsuarioLabel_apellidos}" for="apellidos" style="font-weight:bold"/>
+                                    <h:outputText id="apellidos" value="#{usuarioController.selected.apellidos}"/>
+
+                                    <h:outputLabel value="#{bundle.EditUsuarioLabel_email}" for="email" style="font-weight:bold"/>
+                                    <h:outputText id="email" value="#{usuarioController.selected.email}"/>
+
+                                    <h:outputLabel value="#{bundle.EditUsuarioLabel_telFijo}" for="telFijo" style="font-weight:bold"/>
+                                    <h:outputText id="telFijo" value="#{usuarioController.selected.telFijo}"/>
+
+                                    <h:outputLabel value="#{bundle.EditUsuarioLabel_telMovil}" for="telMovil" style="font-weight:bold" />
+                                    <h:outputText id="telMovil" value="#{usuarioController.selected.telMovil}"/>
+
+                                </h:panelGrid>
+                            </h:panelGrid>
+                        </p:column>
+                        <p:column>
+                            <h:panelGrid columns="1">                       
+                                <h2>Métricas</h2>
+                                <p:separator/>
+
+                                <h:panelGrid >
+
+                                    <p:meterGaugeChart id="meterGaugeModel" value="#{usuarioController.meterGaugeModel}" showTickLabels="true" 
+                                                       seriesColors="cc6666, E7E658, 93b75f, 66cc66" style="width:400px;height:250px" title="Casos del Agente" label="Casos"/>  
+
+
+                                </h:panelGrid>
+                            </h:panelGrid>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+
+
+
+                <h2>Casos abiertos del Agente</h2>
+                <p:separator/>
+                <p:dataTable widgetVar="CasoTable" var="item" value="#{usuarioController.casoAbiertoList}"                               
+                             emptyMessage="(No se han encontrado elementos)" 
+                             rowKey="#{item.idCaso}" rowStyleClass="#{casoController.evaluarStyle(item)}"
+                             sortBy="fechaCreacion"
+                             sortOrder="descending"
+                             draggableColumns="true">                                   
+
+                    <p:column headerText="Abrir">
+                        <p:commandButton id="editBtn" ajax="false" action="#{casoController.prepareEdit(item)}" title="Abrir caso" icon="ui-icon ui-icon-pencil" 
+                                         onclick="this.form.target='_top'"/>
+                    </p:column>
+
+                    <p:column headerText="A" style="max-width: 20px;">
+
+                        <h:graphicImage value="/images/user-available.png" title="Caso pendiente (entre 0 y 50% del tiempo asignado)" rendered="#{item.estadoAlerta.idalerta eq 1 and item.idEstado.idEstado eq 'abierto'}"/>
+                        <h:graphicImage value="/images/dialog-warning-3.png" title="Caso por vencer (mas del 50% del tiempo asignado)" rendered="#{item.estadoAlerta.idalerta eq 2 and item.idEstado.idEstado eq 'abierto'}"/>
+                        <h:graphicImage value="/images/software-update-urgent-2.png" title="Caso vencido (mas del 100% del tiempo asignado)" rendered="#{item.estadoAlerta.idalerta eq 3 and item.idEstado.idEstado eq 'abierto'}"/>
+                        <h:graphicImage value="/images/locked.png" title="Caso cerrado" rendered="#{item.idEstado.idEstado eq 'cerrado'}"/>
+                    </p:column>
+
+                    <p:column headerText="P">
+                        <h:outputText value="" rendered="#{item.esPrioritario eq false}"/>
+                        <h:graphicImage value="/images/bookmarks.png" rendered="#{item.esPrioritario eq true}"/>
+                    </p:column>
+
+                    <p:column headerText="ID Caso" sortBy="#{item.idCaso}">
+                        <p:commandLink action="#{casoController.prepareEdit(item)}" ajax="false" value="#{item.idCaso}" />
+                    </p:column>
+
+                    <p:column sortBy="#{item.fechaCreacion}" headerText="Fecha creación">
+                        <h:outputText value="#{item.fechaCreacion}">
+                            <f:convertDateTime pattern="dd/MMM/yyyy HH:mm"/>
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column sortBy="#{item.nextResponseDue}" headerText="SLA">
+                        <h:outputText value="#{item.nextResponseDue}">
+                            <f:convertDateTime pattern="dd/MMM/yyyy HH:mm"/>
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="Tema" sortBy="#{item.tema}">
+                        <p:commandLink action="#{casoController.prepareEdit(item)}" ajax="false" value="#{item.tema}" />
+                    </p:column>                                                                         
+
+                    <p:column headerText="Cliente" sortBy="#{item.emailCliente.cliente.nombres} #{item.emailCliente.cliente.apellidos}">
+                        <p:commandLink rendered="#{not (item.emailCliente.cliente eq null)}" action="#{emailClienteController.prepareView(item.emailCliente)}" ajax="false" value="#{item.emailCliente.cliente.nombres} #{item.emailCliente.cliente.apellidos} &lt;#{item.emailCliente.emailCliente}&gt;" />
+
+                    </p:column>
+
+                    <p:column headerText="Estado" sortBy="#{item.idSubEstado.nombre}">
+                        <h:outputText value="#{item.idSubEstado.nombre}"/>
+                    </p:column>
+
+
+
+                </p:dataTable>
+
+                <br/>
+
+
+
+
+            </h:form>
+        </h:body>
+
+
+    </f:view>
+
+
+
+</html>

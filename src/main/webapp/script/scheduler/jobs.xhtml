@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="Scheduled Jobs"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            
+
+            <h:form id="form">
+                
+                <p:poll autoStart="true" interval="15" update=":form"/>
+                
+                <p:dataTable value="#{scheduler.quartzJobList}" var="quartz" >
+
+                    <f:facet  name="header">
+                        <h:outputText value="Scheduled Jobs"/>
+                    </f:facet>
+
+                    <p:column>
+                        <!-- column header -->
+                        <f:facet name="header">Job Name</f:facet>
+                        <!-- row record -->
+                        #{quartz.jobName}
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">Job Group</f:facet>
+                        #{quartz.jobGroup}
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">Next Fire Time</f:facet>
+                        <h:outputText value="#{quartz.nextFireTime}">
+                          <f:convertDateTime pattern="EEE, dd MMM yyyy HH:mm:ss" />
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column>
+                        <f:facet name="header">Action</f:facet>
+                        <h:commandLink value="Fire Now"
+                                       action="#{scheduler.fireNow(quartz.jobName, quartz.jobGroup)}" />
+                          <h:commandLink value="Delete"
+                                       action="#{scheduler.deleteJob(quartz.jobName, quartz.jobGroup)}" />
+                    </p:column>
+
+                </p:dataTable>
+            </h:form>
+
+        </ui:define>
+    </ui:composition>
+
+</html>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ListTipoNotaTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:form id="form">
+
+                <p:messages id="messages"/>
+                <h:outputText escape="false" value="#{bundle.ListTipoNotaEmpty}" rendered="#{tipoNotaController.items.rowCount == 0}"/>
+                <h:panelGroup rendered="#{tipoNotaController.items.rowCount > 0}">
+                    <h:outputText value="#{tipoNotaController.pagination.pageFirstItem + 1}..#{tipoNotaController.pagination.pageLastItem + 1}/#{tipoNotaController.pagination.itemsCount}"/>&nbsp;
+                    <h:commandLink action="#{tipoNotaController.previous}" value="#{bundle.Previous} #{tipoNotaController.pagination.pageSize}" rendered="#{tipoNotaController.pagination.hasPreviousPage}"/>&nbsp;
+                    <h:commandLink action="#{tipoNotaController.next}" value="#{bundle.Next} #{tipoNotaController.pagination.pageSize}" rendered="#{tipoNotaController.pagination.hasNextPage}"/>&nbsp;
+                    <p:dataTable value="#{tipoNotaController.items}" var="item">
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListTipoNotaTitle_idTipoNota}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idTipoNota}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListTipoNotaTitle_nombre}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.nombre}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListTipoNotaTitle_descripcion}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.descripcion}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="&nbsp;"/>
+                            </f:facet>
+                            <h:commandLink action="#{tipoNotaController.prepareView}" value="#{bundle.ListTipoNotaViewLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{tipoNotaController.prepareEdit}" value="#{bundle.ListTipoNotaEditLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{tipoNotaController.destroy}" value="#{bundle.ListTipoNotaDestroyLink}"/>
+                        </p:column>
+                    </p:dataTable>
+                </h:panelGroup>
+                <br />
+                <p:commandButton action="#{tipoNotaController.prepareCreate}" value="#{bundle.ListTipoNotaCreateLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="Reglas de negocio"></h:outputText>
+        </ui:define>
+        <ui:define name="west">
+            <p:accordionPanel multiple="true" cache="true" >
+                <p:tab title="Reglas de negocio" id="accionestab1">
+                    <h:outputLabel escape="false" value="#{bundle.ayudaReglas}"/>
+                    <br/>
+                    <h:outputLabel value="Ordering triggers" style="font-weight: bold"/>
+                    <h:outputLabel value="When a ticket is created or updated, Itcs helpdesk runs through all the triggers in order. 
+                                   So it's important to make sure your triggers are in the right order.                                   
+                                   New triggers are added to the bottom of the triggers list. "/>
+                </p:tab>
+            </p:accordionPanel>
+        </ui:define>
+        <ui:define name="body">
+
+            <h1>Reglas de Negocio</h1>
+            <p:separator/>
+            <br/>
+            <h:form id="form">
+
+
+                <p:dataTable  id="tablareglas" widgetVar="ReglasTable" var="item" value="#{reglaTriggerController.items}" 
+                              emptyMessage="#{bundle.ListUsuarioEmpty}" 
+                              paginator="true" rows="#{reglaTriggerController.rows}"  paginatorAlwaysVisible="false"
+                              paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                              rowsPerPageTemplate="15,50,100">
+
+
+                    <f:facet name="header">
+                        <h:outputText value="Listado de Reglas"></h:outputText>
+                    </f:facet>
+
+
+
+                    <p:column headerText="Estado" exportable="false">
+                        <p:selectBooleanButton id="EstadoRegla" value="#{item.reglaActiva}" onLabel="ON" offLabel="OFF" onIcon="ui-icon-check" offIcon="ui-icon-close">  
+                            <p:ajax update=":form" listener="#{reglaTriggerController.update(item)}"/>  
+                        </p:selectBooleanButton>  
+                          <p:tooltip for="EstadoRegla" value="#{item.desccripcion}"/>
+
+                    </p:column>
+
+                     <p:column >
+                        <f:facet name="header">
+                            <h:outputText value="Nombre"/>
+                        </f:facet>
+                        <h:outputText id="Nombre" value="#{item.idTrigger}"/>
+                        <p:tooltip for="Nombre" value="#{item.desccripcion}"/>
+                    </p:column>
+                    
+                    <p:column >
+                        <f:facet name="header">
+                            <h:outputText value="Descripción"/>
+                        </f:facet>
+                        <h:outputText id="evento" title=""
+                                      value="#{item.toString()}" escape="false"/>
+                      
+                    </p:column>
+
+                   
+
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Orden"/>
+                        </f:facet>
+                        <p:spinner value="#{item.orden}" size="3" label="Orden"/>
+
+                    </p:column>
+
+                    <p:column headerText="Acción">
+                        <p:commandButton id="editBtn" ajax="false" action="#{reglaTriggerController.prepareEdit(item)}" title="Editar" icon="ui-icon ui-icon-pencil"/>
+                        <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" action="#{reglaTriggerController.setSelected(item)}" oncomplete="confirmation.show()" icon="ui-icon ui-icon-trash"/>
+                    </p:column>
+
+
+                    <f:facet name="footer">
+                        <p:toolbar style="border: none;">
+                            <p:toolbarGroup align="center">
+
+                                <p:commandButton action="#{reglaTriggerController.onReglaOrderEdit}" value="Reordenar" icon="ui-icon-arrowthick-2-n-s" update=":form:tablareglas"
+                                                 rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" />
+                                <p:separator/>
+                                <p:commandButton ajax="false" action="#{reglaTriggerController.prepareCreate}" value="Crear regla" icon="ui-icon ui-icon-plus" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" />
+
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </f:facet>
+
+                </p:dataTable>
+
+                <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
+                          header="Iniciando proceso de eliminación" widgetVar="confirmation">
+
+                    <h:outputText value="Está seguro de eliminar la regla #{reglaTriggerController.selected.idTrigger}?"/>
+
+                    <f:facet name="footer">
+                        <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{reglaTriggerController.destroySelected()}" 
+                                         ajax="false"/>
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
+                    </f:facet>
+
+                </p:dialog>
+
+                <br />
+
+
+
+
+
+                <h:inputHidden id="hiddenmyonoffswitch" valueChangeListener="#{reglaTriggerController.valueChangeListener(e)}"/>
+                <p:remoteCommand name="updateMessage" update=":form:tablareglas"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+
+</html>

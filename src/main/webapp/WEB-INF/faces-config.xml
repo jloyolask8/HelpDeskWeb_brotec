@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!-- =========== FULL CONFIGURATION FILE ================================== -->
+
+<faces-config version="2.0"
+              xmlns="http://java.sun.com/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd">
+    
+    <factory>
+        <exception-handler-factory>com.itcs.helpdesk.webapputils.ViewExpiredExceptionHandlerFactory</exception-handler-factory>
+    </factory>
+  
+    <application>
+        <locale-config>
+            <default-locale>es</default-locale>
+        </locale-config>
+        <resource-bundle>
+            <base-name>/Bundle</base-name>
+            <var>bundle</var>
+        </resource-bundle>        
+        <action-listener>org.primefaces.application.DialogActionListener</action-listener>
+        <navigation-handler>org.primefaces.application.DialogNavigationHandler</navigation-handler>
+        <view-handler>org.primefaces.application.DialogViewHandler</view-handler>
+    </application>
+
+    <managed-bean>
+        <managed-bean-name>UserSessionBean</managed-bean-name>
+        <managed-bean-class>com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean</managed-bean-class>
+    
+
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <converter>
+        <converter-id>FuncionConverter</converter-id>
+        <!--converter-class>cl.cnsv.unimail.jsfconverters.FuncionConverter</converter-class-->
+        <converter-class>com.itcs.helpdesk.jsfcontrollers.FuncionController$FuncionControllerConverter</converter-class>
+        
+    </converter>
+    
+    <converter>
+        <converter-id>RecintoConverter</converter-id>
+        <converter-class>com.itcs.helpdesk.jsfcontrollers.RecintoController$RecintoControllerConverter</converter-class>
+    </converter>
+
+    <converter>
+        <converter-id>RolConverter</converter-id>
+        <converter-class>com.itcs.helpdesk.jsfconverters.RolConverter</converter-class>
+    </converter>
+    
+     <converter>
+        <converter-id>ProductoConverter</converter-id>
+        <converter-class>com.itcs.helpdesk.jsfcontrollers.ProductoController$ProductoControllerConverter</converter-class>
+    </converter>
+    
+    <converter>
+        <converter-id>UsuarioConverter</converter-id>
+        <converter-class>com.itcs.helpdesk.jsfcontrollers.UsuarioController$UsuarioControllerConverter</converter-class>
+    </converter>
+    
+    <converter>
+        <converter-id>CategoriaConverter</converter-id>
+        <converter-class>com.itcs.helpdesk.jsfcontrollers.CategoriaController$CategoriaControllerConverter</converter-class>
+    </converter>
+    
+    <converter>
+        <converter-id>GrupoConverter</converter-id>
+        <converter-class>com.itcs.helpdesk.jsfcontrollers.GrupoController$GrupoControllerConverter</converter-class>
+    </converter>
+    
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>viewExpired</from-outcome>
+            <to-view-id>/script/login.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>myAccount</from-outcome>
+            <to-view-id>/script/usuario/myAccount.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+		
+        <navigation-case>
+            <from-outcome>reports</from-outcome>
+            <to-view-id>/script/report_graphs/reports.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+    </navigation-rule>
+    
+     <navigation-rule>
+		
+        <navigation-case>
+            <from-outcome>selectProductoModelo</from-outcome>
+            <to-view-id>/script/caso/selectProductoModelo.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+    </navigation-rule>
+    
+    <navigation-rule>
+		
+        <navigation-case>
+            <from-outcome>inbox</from-outcome>
+            <to-view-id>/script/index.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+    </navigation-rule>
+    
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>inboxMobile</from-outcome>
+            <to-view-id>/mobile/index.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+    </navigation-rule>
+  
+</faces-config>

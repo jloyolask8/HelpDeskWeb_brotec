@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ListFuncionTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:form>
+
+                <h:outputText escape="false" value="#{bundle.ListFuncionEmpty}" rendered="#{funcionController.items.rowCount == 0}"/>
+                <h:panelGroup rendered="#{funcionController.items.rowCount > 0}">
+                    <h:outputText value="#{funcionController.pagination.pageFirstItem + 1}..#{funcionController.pagination.pageLastItem + 1}/#{funcionController.pagination.itemsCount}"/>&nbsp;
+                    <h:commandLink action="#{funcionController.previous}" value="#{bundle.Previous} #{funcionController.pagination.pageSize}" rendered="#{funcionController.pagination.hasPreviousPage}"/>&nbsp;
+                    <h:commandLink action="#{funcionController.next}" value="#{bundle.Next} #{funcionController.pagination.pageSize}" rendered="#{funcionController.pagination.hasNextPage}"/>&nbsp;
+
+                    <p:dataTable widgetVar="FuncionTable" var="item" value="#{funcionController.items}" selectionMode="single"
+                                 emptyMessage="#{bundle.ListFuncionEmpty}" 
+                                 resizableColumns="true" >
+
+                        <f:facet name="header">  
+                            <h:outputText value="#{bundle.ListFuncionTitle}"></h:outputText>                           
+                        </f:facet>   
+
+                        <p:column style="width:125px" sortBy="#{item.idFuncion}" filterBy="#{item.idFuncion}" filterMatchMode="contains" headerText="#{bundle.ListFuncionTitle_idFuncion}">
+
+                            <h:outputText value="#{item.idFuncion}"/>
+                        </p:column>
+                        <p:column style="width:125px" sortBy="#{item.nombre}" filterBy="#{item.nombre}" filterMatchMode="contains" headerText="#{bundle.ListFuncionTitle_nombre}">
+
+                            <h:outputText value="#{item.nombre}"/>
+                        </p:column>
+                        <p:column style="width:125px" sortBy="#{item.descripcion}" filterBy="#{item.descripcion}" filterMatchMode="contains" headerText="#{bundle.ListFuncionTitle_descripcion}">
+
+                            <h:outputText value="#{item.descripcion}"/>
+                        </p:column>
+                        <p:column style="width:125px" sortBy="#{item.outcome}" filterBy="#{item.outcome}" filterMatchMode="contains" headerText="#{bundle.ListFuncionTitle_outcome}">
+
+                            <h:outputText value="#{item.outcome}"/>
+                        </p:column>
+
+                        <f:facet name="footer">
+                            <h:outputText value="Funciones del Sistema. No son editables."/>
+
+                        </f:facet> 
+                    </p:dataTable>
+                </h:panelGroup>
+
+                <br />
+                <p:commandButton ajax="false" action="#{funcionController.prepareCreate}" value="#{bundle.ListFuncionCreateLink}" 
+                                 rendered="#{funcionController.items.rowCount == 0}" icon="ui-icon ui-icon-plus"/>
+
+                <p:confirmDialog message="Esta Seguro de eliminar estos registros ?" appendTo="@(body)"
+                                 header="Iniciando proceso de eliminacion" severity="alert" widgetVar="delete_Funcion_confirmation">
+
+                    <p:commandButton value="Si" update=":mainform:messages" oncomplete="delete_Funcion_confirmation.hide()"
+                                     action="Expression usuarioController is undefined on line 95, column 48 in unknown." ajax="false" />
+                    <p:commandButton value="Eliminar" onclick="delete_Funcion_confirmation.hide()" type="button" /> 
+
+                </p:confirmDialog>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

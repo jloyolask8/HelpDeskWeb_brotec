@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="Administrar Items"></h:outputText>
+        </ui:define>
+        <ui:define name="west">
+            <p:accordionPanel multiple="true" cache="true" id="accionesaccordion1">
+                <p:tab title="Items" id="accionestab1">
+                    <h:outputText value="Los items representan partes de un edificio. Estos se agrupan pueden ser agrupados y visualizados en forma de arbol"/>
+
+                    <h:outputLabel escape="false" value="#{bundle.ayudaCategorias}"/>
+                </p:tab>
+            </p:accordionPanel>
+        </ui:define>
+        <ui:define  name="body">
+            <h:form id="formadmincat">
+                <p:panel >
+                    <f:facet name="header">
+                        <h:outputText value="Administrar Items"></h:outputText>
+                    </f:facet>
+                    <div align="left">
+                        <p:layout style="width:600px;height:580px;" id="layout">
+                            <p:layoutUnit position="east" resizable="false" size="200" >
+                                <p:menu id="menucat" style="border:none !important; width: 185px;">
+                                    <p:submenu label="Opciones">
+                                        <p:menuitem value="Nuevo Item desde archivo" onclick="crearItemsDialog.show();"
+                                                    icon="ui-icon-plusthick" update=":crearItemForm"/>
+                                        <p:menuitem value="Cortar" actionListener="#{itemController.cortarItem(actionEvent)}"
+                                                    icon="ui-icon-scissors" disabled="#{not itemController.puedeCortar()}"
+                                                    update=":mainform:messages"/>
+                                        <p:menuitem value="Pegar" actionListener="#{itemController.pegarItem(actionEvent)}"
+                                                    icon="ui-icon-clipboard" disabled="#{not itemController.puedePegar()}"
+                                                    update=":formadmincat:arbol :formadmincat:menucat"/>
+                                        <p:menuitem value="Subir" actionListener="#{itemController.subirItem(actionEvent)}"
+                                                    icon="ui-icon-arrowthick-1-n" disabled="#{not itemController.puedeSubirItem()}"
+                                                    update=":formadmincat:arbol :formadmincat:menucat"/>
+                                        <p:menuitem value="Bajar" actionListener="#{itemController.bajarItem(actionEvent)}"
+                                                    icon="ui-icon-arrowthick-1-s" disabled="#{not itemController.puedeBajarItem()}"
+                                                    update=":formadmincat:arbol :formadmincat:menucat"/>
+                                        <p:menuitem value="Nuevo Item" actionListener="#{itemController.prepareCreateAjax(actionEvent)}" onclick="crearDialog.show();"
+                                                    icon="ui-icon-plusthick" update=":crearItemForm"/>
+                                        <p:menuitem value="Borrar" onclick="borrarDialog.show();"
+                                                    icon="ui-icon-minusthick" disabled="#{not itemController.puedeBorrarItem()}"/>
+                                        <p:menuitem value="Renombrar" actionListener="#{itemController.prepareRenombrarAjax(actionEvent)}"
+                                                    oncomplete="renombrarDialog.show();" update=":formrename"
+                                                    icon="ui-icon-pencil" disabled="#{not itemController.puedeRenombrar()}"/>
+                                    </p:submenu>
+                                </p:menu>
+                            </p:layoutUnit>
+
+                            <p:layoutUnit position="center" >
+                                <div align="left">
+                                    <p:tree id="arbol" value="#{itemController.tree}" var="node" dynamic="true" cache="false"
+                                            selectionMode="single" selection="#{itemController.item}"
+                                            style="border: none; width: 388px !important;">
+                                        <p:ajax event="select" listener="#{itemController.onNodeSelect}" update=":formadmincat:menucat"/>
+                                        <p:treeNode expandedIcon="myfolderopenicon"
+                                                    collapsedIcon="myfoldericon">
+                                            <h:outputText value="#{node.nombre}" />
+                                        </p:treeNode>
+                                    </p:tree>
+                                </div>
+                            </p:layoutUnit>
+                        </p:layout>
+                    </div>
+                </p:panel>
+            </h:form>
+
+            <p:dialog widgetVar="crearItemsDialog" header="Nuevo Item desde archivo" appendTo="@(body)" modal="true">
+                <h:form id="crearItemsForm">
+                    <p:panel id="crearItemPanel">
+
+                        <h:panelGrid columns="2">
+                            <h:outputLabel value="Archivo" for="nombre" style="font-weight:bold"/>
+                            <p:fileUpload id="filename" fileUploadListener="#{itemController.handleFileUpload}" mode="advanced" auto="true"
+                                          update=":formadmincat"/>
+                            <h:outputLabel value="Area" for="idArea" style="font-weight:bold"/>
+                            <p:selectOneMenu id="idArea" value="#{itemController.selectedArea}" 
+                                             required="true" requiredMessage="Por favor elija el area a la que pertenece el item">
+                                <f:selectItems value="#{areaController.itemsAvailableSelectOne}"/>
+                                <f:ajax />
+                            </p:selectOneMenu>
+                        </h:panelGrid>
+
+                        <f:facet name="footer">
+                            <p:commandButton onclick="crearItemsDialog.hide()" value="Cancelar"/>
+                        </f:facet>
+                    </p:panel>
+                </h:form>
+            </p:dialog>
+            <p:dialog widgetVar="crearDialog" header="Nuevo Item" appendTo="@(body)" modal="true">
+                <h:form id="crearItemForm">
+                    <p:panel id="crearItemPanel">
+
+                        <h:panelGrid columns="2">
+                            <h:outputLabel value="Nombre item" for="nombre" style="font-weight:bold"/>
+                            <p:inputText id="nombre" value="#{itemController.selected.nombre}" title="Nombre" />
+                            <h:outputLabel value="Area" for="idArea" style="font-weight:bold" rendered="#{itemController.selected.idItemPadre eq null}"/>
+                            <p:selectOneMenu id="idArea" value="#{itemController.selected.idArea}" 
+                                             rendered="#{itemController.selected.idItemPadre eq null}"
+                                             required="true" requiredMessage="Por favor elija el area a la que pertenece el item">
+                                <f:selectItems value="#{areaController.itemsAvailableSelectOne}"/>
+                            </p:selectOneMenu>
+                        </h:panelGrid>
+
+                        <f:facet name="footer">
+                            <p:commandButton actionListener="#{itemController.crearItem}" value="Guardar"
+                                             update=":formadmincat:arbol :formadmincat:menucat :mainform:messages" oncomplete="crearDialog.hide()"/>
+                            <p:commandButton onclick="crearDialog.hide()" value="Cancelar"/>
+                        </f:facet>
+                    </p:panel>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog widgetVar="borrarDialog" header="Borrar item" appendTo="@(body)" modal="true">
+                <h:form>
+                    <h:outputLabel>¿Desea borrar el item #{itemController.nombreItemSeleccionada}?</h:outputLabel>
+                    <br/><br/>
+                    <h:panelGrid columns="2">
+                        <p:commandButton actionListener="#{itemController.eliminaItem}" value="Borrar"
+                                         update=":formadmincat:arbol :formadmincat:menucat :mainform:messages" oncomplete="borrarDialog.hide()"/>
+                        <p:commandButton onclick="borrarDialog.hide()" value="Cancelar"/>
+                    </h:panelGrid>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog widgetVar="renombrarDialog" header="Renombrar item" appendTo="@(body)" modal="true">
+                <h:form id="formrename">
+                    <p:panel>
+                        <h:panelGrid columns="2">
+                            <h:outputLabel value="Nombre" for="nombre" style="font-weight:bold"/>
+                            <p:inputText id="nombre" value="#{itemController.selected.nombre}" />
+                        </h:panelGrid>
+
+                        <f:facet name="footer">
+                            <p:commandButton actionListener="#{itemController.renombrar(actionEvent)}" value="Aceptar"
+                                             update=":formadmincat:arbol :formadmincat:menucat :mainform:messages" oncomplete="renombrarDialog.hide()"/>
+                            <p:commandButton onclick="renombrarDialog.hide()" value="Cancelar"/>
+                        </f:facet>
+                    </p:panel>
+                </h:form>
+            </p:dialog>
+        </ui:define>
+    </ui:composition>
+
+</html>

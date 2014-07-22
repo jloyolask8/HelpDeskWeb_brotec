@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ListCanalTitle}"></h:outputText>
+        </ui:define>
+
+        <ui:define name="west">
+            <p:accordionPanel multiple="true" cache="true" >
+                <p:tab title="Canales" >
+                    <h:outputLabel escape="false" value="#{bundle.ayudaCanales}"/>
+                </p:tab>
+            </p:accordionPanel>
+        </ui:define>
+
+        <ui:define name="body">
+            <h:form id="form">
+                <h:panelGroup >                  
+
+                    <p:dataTable widgetVar="CanalTable" var="item" value="#{canalController.items}"
+                                 selection="#{canalController.selectedItems}" selectionMode="multiple" 
+                                 emptyMessage="#{bundle.ListCanalEmpty}" 
+                                 resizableColumns="true" >
+
+                        <f:facet name="header">  
+                            <h:outputText value="#{bundle.ListCanalTitle} (#{canalController.pagination.pageFirstItem + 1} - #{canalController.pagination.pageLastItem + 1} de #{canalController.pagination.itemsCount})"></h:outputText>                           
+                        </f:facet>
+
+                        <p:column headerText="Estado" width="120">
+                            <div align="center">
+                                <p:selectBooleanButton id="EstadoCanal" style="width: 115px !important;" value="#{item.enabled}" onLabel="Habilitado" offLabel="Deshabilitado" onIcon="ui-icon-check" offIcon="ui-icon-close">  
+                                    <p:ajax update=":form" listener="#{canalController.update(item)}"/>  
+                                </p:selectBooleanButton>
+                                <p:tooltip for="EstadoCanal" value="Habilita la revisi&oacute; del canal"/>
+                            </div>
+                        </p:column>
+
+                        <p:column headerText="#{bundle.ListCanalTitle_nombre}" width="240">
+                            <i class="#{(item.idTipoCanal.idTipo eq 'EMAIL') ? 'fa fa-envelope-o fa-lg':((item.idTipoCanal.idTipo eq 'CHAT') ? 'fa fa-comment-o fa-lg':((item.idTipoCanal.idTipo eq 'MANUAL') ? 'fa fa-pencil-square-o fa-lg':((item.idTipoCanal.idTipo eq 'FORMULARIO') ? 'fa fa-list-alt fa-lg':'')))}"></i>
+                            &nbsp;
+                            <h:outputText value="#{item.nombre}"/>
+                        </p:column>
+
+                        <p:column headerText="#{bundle.ListCanalTitle_descripcion}">
+                            <h:outputText value="#{item.descripcion}"/>
+                        </p:column>  
+
+                        <p:column headerText="Acción" width="100">
+                            <div align="center">
+                                <p:commandButton id="editBtn" action="#{canalController.prepareEdit(item)}" 
+                                                 update=":formAddEdit"
+                                                 oncomplete="addEditDialog.show()"
+                                                 title="Editar" icon="ui-icon ui-icon-pencil" 
+                                                 rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes() and not(item.idTipoCanal.idTipo eq 'EMAIL')}"/>
+
+                                <p:commandButton id="editBtnEmail" action="#{canalController.prepareEditEmail(item)}" 
+                                                 update=":formAddEditEmail"
+                                                 oncomplete="addEditEmailDialogWidget.show()"
+                                                 title="Editar" icon="ui-icon ui-icon-pencil" 
+                                                 rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes() and (item.idTipoCanal.idTipo eq 'EMAIL') }"/>
+
+
+                                <p:commandButton id="showDialogButton" title="Eliminar" update=":formDelete" 
+                                                 action="#{canalController.prepareEdit(item)}" oncomplete="confirmation.show()" icon="ui-icon ui-icon-trash" 
+                                                 rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
+                            </div>
+                        </p:column>
+
+                        <f:facet name="footer">
+                            <p:toolbar style="border: none;">
+                                <p:toolbarGroup align="center">
+
+                                    <p:outputLabel value="Páginas de "/>
+
+                                    <p:selectOneMenu id="cant" value="#{canalController.paginationPageSize}" style="top: 7px">
+                                        <p:ajax event="change" listener="#{canalController.resetPageSize()}" update=":form"/>
+                                        <f:selectItems value="#{canalController.pagination.pageSizesAvailable}"/>
+                                    </p:selectOneMenu>
+
+                                    <p:separator/>
+
+                                    <p:commandButton ajax="false" action="#{canalController.first}" disabled="#{not canalController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{canalController.pagination.itemsCount > 0}"/>
+
+                                    <p:commandButton ajax="false" action="#{canalController.previous}" disabled="#{not canalController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{canalController.pagination.itemsCount > 0}"/>
+
+                                    <p:commandButton ajax="false" action="#{canalController.next}" disabled="#{not canalController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{canalController.pagination.itemsCount > 0}"/>
+
+                                    <p:commandButton ajax="false" action="#{canalController.last}" disabled="#{not canalController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{canalController.pagination.itemsCount > 0}"/>
+
+                                    <p:separator/>
+
+                                    <p:menuButton value="Agregar canal">
+                                        <p:menuitem value="Correo electr&oacute;nico" icon="fa fa-envelope-o"
+                                                    action="#{canalController.prepareCreateEmail()}" oncomplete="addEditEmailDialogWidget.show();" 
+                                                    update=":formAddEditEmail"/>
+                                        <p:menuitem value="Chat" icon="fa fa-comment-o"
+                                                    action="#{canalController.prepareCreateChat()}" oncomplete="addEditDialog.show();" 
+                                                    update=":formAddEdit"/>
+                                        <p:menuitem value="Manual" icon="fa fa-pencil-square-o"
+                                                    action="#{canalController.prepareCreateManual()}" oncomplete="addEditDialog.show();" 
+                                                    update=":formAddEdit"/>
+                                        <p:menuitem value="Formulario" icon="fa fa-list-alt"
+                                                    action="#{canalController.prepareCreateFormulario()}" oncomplete="addEditDialog.show();" 
+                                                    update=":formAddEdit"/>
+
+                                    </p:menuButton>
+                                </p:toolbarGroup>
+                            </p:toolbar>
+
+                        </f:facet> 
+                    </p:dataTable>
+                </h:panelGroup>
+            </h:form>
+        </ui:define>
+
+        <ui:define name="dialogs">
+            <h:form id="formDelete">
+                <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
+                          header="Iniciando proceso de eliminación" widgetVar="confirmation">
+
+                    <h:outputText value="Está seguro de eliminar el canal #{canalController.selected.nombre}?"/>
+
+                    <f:facet name="footer">
+                        <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{canalController.destroySelected()}" 
+                                         update=":form" oncomplete="confirmation.hide()"/>
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
+                    </f:facet>
+
+                </p:dialog>
+            </h:form>
+
+            <p:dialog id="addEditEmailDialog" showEffect="fade" hideEffect="fade" appendTo="@(body)" modal="true"
+                      header="Detalles de correo electr&oacute;nico" widgetVar="addEditEmailDialogWidget" resizable="false" closable="false"
+                      style="width: 706px; height: 360px;" width="706px" height="360px">
+                <h:form id="formAddEditEmail">
+                    <!-- panel de configuracion basico-->
+                    <p:panelGrid columns="2" style="margin-bottom:10px;" styleClass="filtersGrid">
+                        <i class="fa fa-envelope-o fa-5x"/>
+                        <h:panelGrid columns="3">
+
+                            <h:outputLabel value="Su nombre:" for="idSuNombre" />
+                            <p:inputText id="idSuNombre" value="#{canalController.tmpEmailSuNombre}" title="Su nombre, como se le mostrar&aacute; al resto"
+                                         required="true" requiredMessage="Debe ingresar su nombre" style="width: 200px;">
+
+                            </p:inputText>
+                            <p:message for="idSuNombre"/>
+
+                            <h:outputLabel value="Correo electr&oacute;nico:" for="idSuCorreo" />
+                            <p:inputText id="idSuCorreo" value="#{canalController.tmpEmailCorreoElectronico}"
+                                         required="true" requiredMessage="Debe ingresar correo electr&oacute;nico" style="width: 200px;">
+
+                            </p:inputText>
+                            <p:message for="idSuCorreo"/>
+
+                            <h:outputLabel value="Contrase&ntilde;a" for="idSuPass" />
+                            <p:password id="idSuPass" value="#{canalController.tmpEmailContrasena}" redisplay="true"
+                                        required="true" requiredMessage="Debe ingresar la contrase&ntilde;a" style="width: 200px;">
+                            </p:password>
+                            <p:message for="idSuPass"/>
+
+                        </h:panelGrid>
+                    </p:panelGrid>
+
+                    <div align="center">
+                        <h:outputLabel id="feedbackInfo" value="#{canalController.tmpEmailInfo}"/>
+                    </div>
+
+                    <!-- panel de configuracion avanzado-->
+                    <h:panelGroup rendered="#{canalController.tmpEmailFirstStepReady}">
+                        <p:separator/>
+                        <p:panelGrid  style="margin-bottom:10px;" styleClass="filtersGrid">
+                            <p:row>
+                                <p:column>
+                                    &nbsp;
+                                </p:column>
+                                <p:column width="80">
+                                    &nbsp;
+                                </p:column>
+                                <p:column width="200">
+                                    <h:outputLabel value="Nombre de servidor" style="color: #8C8989;"/>
+                                </p:column>
+                                <p:column width="70">
+                                    <h:outputLabel value="Puerto" style="color: #8C8989;"/>
+                                </p:column>
+                                <p:column width="70">
+                                    <h:outputLabel value="SSL" style="color: #8C8989;"/>
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column>
+                                    <h:outputLabel value="Entrante:" style="font-size: smaller; color: #8C8989;"/>
+                                </p:column>
+                                <p:column width="80">
+                                    <p:selectOneMenu style="width: 80px;"
+                                                     required="true"
+                                                     value="#{canalController.tmpEmailIncommingType}" >
+                                        <f:selectItem itemLabel="IMAP" itemValue="imap"/>
+                                        <f:selectItem itemLabel="POP3" itemValue="pop3"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+                                <p:column width="200">
+                                    <p:inputText value="#{canalController.tmpEmailIncommingHost}"
+                                                 required="true" requiredMessage="Ingrese nombre de servidor" style="width: 200px;"/>
+                                </p:column>
+                                <p:column width="70">
+                                    <p:selectOneMenu style="width: 70px;"
+                                                     required="true"
+                                                     value="#{canalController.tmpEmailIncommingPort}" >
+                                        <f:selectItem itemLabel="143" itemValue="143"/>
+                                        <f:selectItem itemLabel="993" itemValue="993"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+                                <p:column width="120">
+                                    <p:selectOneMenu style="width: 120px;"
+                                                     required="true"
+                                                     value="#{canalController.tmpEmailIncommingSsl}" >
+                                        <f:selectItem itemLabel="Ninguno" itemValue="NINGUNO"/>
+                                        <f:selectItem itemLabel="STARTTLS" itemValue="STARTTLS"/>
+                                        <f:selectItem itemLabel="SSL/TLS" itemValue="SSL/TLS"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column>
+                                    <h:outputLabel value="Saliente" style="font-size: smaller; color: #8C8989;"/>
+                                </p:column>
+                                <p:column width="80">
+                                    <h:outputLabel value="SMTP" style="padding-left: 4px;"/>
+                                </p:column>
+                                <p:column width="200">
+                                    <p:inputText value="#{canalController.tmpEmailOutgoingHost}"
+                                                 required="true" requiredMessage="Ingrese nombre de servidor" style="width: 200px;"/>
+                                </p:column>
+                                <p:column width="70">
+                                    <p:selectOneMenu style="width: 70px;"
+                                                     required="true"
+                                                     value="#{canalController.tmpEmailOutgoingPort}" >
+                                        <f:selectItem itemLabel="587" itemValue="587"/>
+                                        <f:selectItem itemLabel="25" itemValue="25"/>
+                                        <f:selectItem itemLabel="465" itemValue="465"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+                                <p:column width="120">
+                                    <p:selectOneMenu style="width: 120px;"
+                                                     required="true"
+                                                     value="#{canalController.tmpEmailOutgoingSsl}" >
+                                        <f:selectItem itemLabel="NINGUNO" itemValue="Ninguno"/>
+                                        <f:selectItem itemLabel="STARTTLS" itemValue="STARTTLS"/>
+                                        <f:selectItem itemLabel="SSL/TLS" itemValue="SSL/TLS"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column>
+                                    <h:outputLabel value="Nombre de usuario" style="font-size: smaller; color: #8C8989;"/>
+                                </p:column>
+                                <p:column width="80">
+                                    &nbsp;
+                                </p:column>
+                                <p:column width="200">
+                                    <p:inputText value="#{canalController.tmpEmailUsuario}"
+                                                 required="true" requiredMessage="Ingrese nombre de usuario" style="width: 200px;"/>
+                                </p:column>
+                                <p:column colspan="2">
+                                    &nbsp;
+                                </p:column>
+                            </p:row>
+                        </p:panelGrid>
+                    </h:panelGroup>
+
+                    <!-- panel de botones de panel basico-->
+                    <h:panelGroup rendered="#{not canalController.tmpEmailFirstStepReady}" style="width: 97%; position: absolute; bottom: 15px;">
+                        <p:separator/>
+                        <div align="right" style="width: 100%;">
+                            <p:commandButton value="Cancelar" oncomplete="addEditEmailDialogWidget.hide()" process="@this">
+                                <p:resetInput target="@form" />
+                            </p:commandButton>
+                            &nbsp;
+                            <p:commandButton value="Continuar" process="@form" update=":formAddEditEmail"
+                                             actionListener="#{canalController.detectAutoConfig()}"/>
+                        </div>
+                    </h:panelGroup>
+
+                    <!-- panel de botones de panel avanzado-->
+                    <h:panelGroup rendered="#{canalController.tmpEmailFirstStepReady}" style="width: 97%; position: absolute; bottom: 15px;">
+                        <p:separator/>
+                        <div align="right">
+                            <p:commandButton value="Cancelar" oncomplete="addEditEmailDialogWidget.hide()" process="@this">
+                                <p:resetInput target="@form" />
+                            </p:commandButton>
+                            &nbsp;
+                            <p:commandButton value="Verificar" actionListener="#{canalController.verifyEmailAccount()}" process="@form" update=":formAddEditEmail"/>
+                            &nbsp;
+                            <p:commandButton action="#{canalController.createCanalEmail()}" value="Finalizado" update=":form"
+                                             oncomplete="addEditEmailDialogWidget.hide()" disabled="#{not canalController.tmpEmailFinalizeReady}"/>
+                        </div>
+                    </h:panelGroup>
+
+                </h:form>
+            </p:dialog>
+
+
+            <p:dialog id="addEditDialog" showEffect="fade" hideEffect="fade" appendTo="@(body)" modal="true"
+                      header="Detalles del canal" widgetVar="addEditDialog" width="420px" height="240px" resizable="false" closable="false" draggable="false">
+                <h:form id="formAddEdit"> 
+                    <h:panelGrid columns="3">
+
+                        <h:outputLabel value="#{bundle.CreateCanalLabel_idCanal}" for="idCanal" style="font-weight: bold"/>
+                        <p:inputText id="idCanal" value="#{canalController.selected.idCanal}" title="#{bundle.CreateCanalTitle_idCanal}" 
+                                     required="true" requiredMessage="#{bundle.CreateCanalRequiredMessage_idCanal}" style="width: 220px;"/>
+                        <p:message for="idCanal"/>
+                        <h:outputLabel value="#{bundle.CreateCanalLabel_nombre}" for="nombre" style="font-weight: bold"/>
+                        <p:inputText id="nombre" value="#{canalController.selected.nombre}" title="#{bundle.CreateCanalTitle_nombre}" style="width: 220px;"/>
+                        <p:message for="nombre"/>
+                        <h:outputLabel value="#{bundle.CreateCanalLabel_descripcion}" for="descripcion" style="font-weight: bold"/>
+                        <p:inputTextarea id="descripcion" value="#{canalController.selected.descripcion}" title="#{bundle.CreateCanalTitle_descripcion}" style="width: 220px; height: 100px;"/>
+                        <p:message for="descripcion"/>
+
+                    </h:panelGrid>
+
+                    <h:panelGroup style="width: 97%; position: absolute; bottom: 12px;">
+                        <p:separator/>
+                        <div align="right">
+                            <p:commandButton id="canncel" value="Cancelar" onclick="addEditDialog.hide()" process="@this">
+                                <p:resetInput target="@form" />
+                            </p:commandButton>
+                            
+                            <p:commandButton action="#{canalController.create()}" value="#{bundle.CreateCanalSaveLink}" update=":formAddEdit :form"
+                                             rendered="#{canalController.mode eq 'Create'}"/>
+
+                            <p:commandButton action="#{canalController.update()}" value="#{bundle.EditCanalSaveLink}" update=":formAddEdit :form"
+                                             rendered="#{canalController.mode eq 'Edit'}"/>
+                        </div>
+                    </h:panelGroup>
+                </h:form>
+            </p:dialog>
+
+
+        </ui:define>
+    </ui:composition>
+
+</html>

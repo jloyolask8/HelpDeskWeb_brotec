@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions">
+
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{applicationBean.helpdeskTitle} - #{bundle.ListAppSettingTitle}"></h:outputText>
+        </ui:define>
+
+        <ui:define name="westHeader">
+            <h:outputText value="..." style="font-weight: bold"></h:outputText>
+        </ui:define>
+
+        <ui:define name="body">
+            <h1>Configuración</h1>
+            <p:separator/>
+
+
+            <h:form id="form" enctype="multipart/form-data">
+
+
+
+                <p:messages id="messages" showSummary="true"/>  
+
+                <h:dataTable value="#{appSettingController.settings}" var="data" >
+
+
+
+                    <h:column>
+                        <p:outputLabel value="#{data.label}" style="font-weight: bold;"/>
+                    </h:column>
+
+
+
+                    <h:column>
+                        <p:inputText id="txt" value="#{data.settingValue}" size="60" required="#{data.required}" 
+                                     rendered="#{data.type eq 'input'}"/> 
+
+
+                        <h:panelGrid columns="2" rendered="#{data.type eq 'inputhtml'}">
+                            <pe:ckEditor  value="#{data.settingValue}" required="#{data.required}" width="560" height="210" language="es"
+                                    toolbar="[
+                                 { name: 'document', items : [ 'Source','Preview','Print' ] },
+                                 { name: 'clipboard', items : [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ] },
+                                 { name: 'editing', items : [ 'SpellChecker', 'Scayt' ] },
+                                 { name: 'insert', items : [ 'Table','HorizontalRule','SpecialChar','PageBreak'] },
+                                 '/',
+                                 { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
+                                 { name: 'paragraph', items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'] },
+                                 '/',
+                                 { name: 'links', items: [ 'Link', 'Unlink', 'Anchor' ] },
+	                         { name: 'insert', items: [ 'Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe' ] },
+                                 '/',
+                                 { name: 'styles', items : [ 'Styles','Format','Font','FontSize' ] },
+                                 { name: 'colors', items : [ 'TextColor','BGColor' ] },
+                                 { name: 'tools', items : [ 'Maximize', 'ShowBlocks'] }
+
+                                 ]"/>
+                            
+                            
+                            <p:commandLink id="overlayBtn" value="Marcadores" />
+
+                            <p:overlayPanel id="MarcadoresPanel" for="overlayBtn" hideEffect="fade" dynamic="true"> 
+                                <p:dataTable value="#{clippingController.availablePlaceHolders}" var="holder" emptyMessage="No hay placeholders disponibles.">
+                                    <p:column headerText="Marcadores de posición">
+                                        <h:outputText value="\${#{holder}}"/>
+                                    </p:column>
+                                    <f:facet name="footer">
+                                        <h:outputText value="Utilice marcadores de posición para insertar información (del caso) usada con frecuencia fácilmente en el texto."/>
+                                    </f:facet>
+                                </p:dataTable>
+                            </p:overlayPanel>
+                        </h:panelGrid>
+
+
+
+                        <h:panelGrid columns="3"  rendered="#{data.type eq 'inputfile'}">
+
+                            <h:panelGrid columns="2">
+                                <p:row>
+                                    <p:graphicImage id="imageLogoPreview0" value="#{applicationBean.logo}" cache="false"/>
+
+                                </p:row>
+
+                                <p:row>
+                                    <p:fileUpload id="logo" value="#{appSettingController.logoUploadFile}" uploadLabel="envia" 
+                                                  mode="simple" update=":form"/>  
+
+                                </p:row>
+
+
+
+
+                            </h:panelGrid>
+                        </h:panelGrid>  
+
+                        <p:selectOneButton value="#{data.settingValue}" required="#{data.required}"   rendered="#{data.type eq 'booleanchoice'}"
+                                           style="vertical-align:middle;">
+                            <f:selectItem itemLabel="Habilitado" itemValue="true"/>
+                            <f:selectItem itemLabel="Desabilitado" itemValue="false"/>
+                        </p:selectOneButton>
+
+                        <br/>
+                        <h:outputText value="#{data.descripcion}" style="color: #666666;line-height: 17px;margin: 5px 0 0;padding-bottom: 3px;"/>  
+
+
+
+                    </h:column>
+
+
+
+
+
+                </h:dataTable>
+
+                <p:commandButton value="Guardar" action="#{appSettingController.submitForm}"  
+                                 ajax="false"  />  
+
+
+
+
+
+            </h:form>
+        </ui:define>
+
+        <ui:define name="dialogs">
+
+        </ui:define>
+    </ui:composition>
+
+</html>

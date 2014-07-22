@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.EditTipoCasoTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="west">
+            <p:accordionPanel multiple="true" cache="true" id="accionesaccordion1">
+                <p:tab title="Tipos de Casos" id="accionestab1">
+                     <h:outputLabel escape="false" value="#{bundle.ayudaTiposDeCasos}"/>
+                </p:tab>
+            </p:accordionPanel>
+        </ui:define>
+        <ui:define name="body">
+
+            <h:form>
+                <p:panel header="#{bundle.EditTipoCasoTitle}">
+
+                    <h:panelGrid columns="3">
+
+                        <p:outputLabel value="#{bundle.CreateTipoCasoLabel_idTipoCaso}" for="idTipoCaso" style="font-weight:bold"/>
+                        <p:inputText id="idTipoCaso" value="#{tipoCasoController.selected.idTipoCaso}" title="#{bundle.CreateTipoCasoTitle_idTipoCaso}" required="true" requiredMessage="#{bundle.CreateTipoCasoRequiredMessage_idTipoCaso}"/>
+                        <p:message for="idTipoCaso"/>
+
+
+                        <p:outputLabel value="#{bundle.CreateTipoCasoLabel_nombre}" for="nombre" style="font-weight:bold"/>
+                        <p:inputText id="nombre" value="#{tipoCasoController.selected.nombre}" title="#{bundle.CreateTipoCasoTitle_nombre}" required="true" requiredMessage="#{bundle.CreateTipoCasoRequiredMessage_nombre}"/>
+                        <p:message for="nombre"/>
+
+                        <h:outputLabel value="#{bundle.CreateTipoCasoLabel_descripcion}" for="descripcion" style="font-weight:bold"/>
+                        <p:inputTextarea id="descripcion" value="#{tipoCasoController.selected.descripcion}" title="#{bundle.CreateTipoCasoTitle_descripcion}" />
+                        <p:message for="descripcion"/>
+
+
+                    </h:panelGrid>
+
+                    <f:facet name="footer">
+                        <p:commandButton action="#{tipoCasoController.update}" value="#{bundle.EditTipoCasoSaveLink}" ajax="false" icon="ui-icon-disk"/>                     
+                        <p:commandButton action="#{tipoCasoController.prepareList}" value="#{bundle.EditTipoCasoShowAllLink}" immediate="true" ajax="false" icon="ui-icon-folder-open"/>
+                    </f:facet> 
+
+
+
+                </p:panel>
+            </h:form>
+
+
+        </ui:define>
+    </ui:composition>
+
+</html>
+

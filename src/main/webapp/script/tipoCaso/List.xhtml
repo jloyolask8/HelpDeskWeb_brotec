@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:itcs="http://java.sun.com/jsf/composite/components/filterView">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ListTipoCasoTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="west">
+            <p:accordionPanel multiple="true" cache="true" id="accionesaccordion1">
+                <p:tab title="Tipos de Casos" id="accionestab1">
+                    <h:outputLabel escape="false" value="#{bundle.ayudaTiposDeCasos}"/>
+                </p:tab>
+            </p:accordionPanel>
+        </ui:define>
+        <ui:define name="body">
+            <h:form id="form">
+               
+                <h:panelGroup>                  
+
+                    <p:dataTable id="tablatipoCasos" widgetVar="UsuarioTable" var="item" value="#{tipoCasoController.items}"
+                                 emptyMessage="#{bundle.ListTipoCasoEmpty}">
+
+                        <f:facet name="header">
+                            <h:outputText value="Tipos de Casos (#{tipoCasoController.pagination.pageFirstItem + 1} - #{tipoCasoController.pagination.pageLastItem + 1} de #{tipoCasoController.pagination.itemsCount}) "></h:outputText>
+                        </f:facet>
+                        <p:column sortBy="#{item.idTipoCaso}">
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListTipoCasoTitle_idTipoCaso}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idTipoCaso}"/>
+                        </p:column>
+                        <p:column sortBy="#{item.nombre}">
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListTipoCasoTitle_nombre}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.nombre}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListTipoCasoTitle_descripcion}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.descripcion}"/>
+                        </p:column>
+                        
+                        <p:column headerText="casos">                            
+                            <h:outputText value="#{item.casoList.size()}"/>
+                        </p:column>
+                        
+                         <p:column headerText="Acción">
+                            <p:commandButton id="editBtn" ajax="false" action="#{tipoCasoController.prepareEdit(item)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" title="Editar" icon="ui-icon ui-icon-pencil"/>
+                            <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" action="#{tipoCasoController.setSelected(item)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" oncomplete="confirmation.show()" icon="ui-icon ui-icon-trash"/>
+                        </p:column>
+
+
+                        <f:facet name="footer">
+                            <p:toolbar style="border: none;">
+                                <p:toolbarGroup id="menuAcciones" align="center">
+                                    
+                                       <p:outputLabel value="Páginas de "/>
+                                    <p:selectOneMenu id="cant" value="#{tipoCasoController.paginationPageSize}" style="top: 7px">
+                                        <p:ajax event="change" listener="#{tipoCasoController.resetPageSize()}" update=":form"/>
+                                        <f:selectItems value="#{tipoCasoController.pagination.pageSizesAvailable}"/>
+                                    </p:selectOneMenu>
+                                       
+                                    <p:commandButton ajax="false" action="#{tipoCasoController.first}" disabled="#{not tipoCasoController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{tipoCasoController.pagination.itemsCount > 0}"/>
+
+                                    <p:commandButton ajax="false" action="#{tipoCasoController.previous}" disabled="#{not tipoCasoController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{tipoCasoController.pagination.itemsCount > 0}"/>
+
+                                    <p:commandButton ajax="false" action="#{tipoCasoController.next}" disabled="#{not tipoCasoController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{tipoCasoController.pagination.itemsCount > 0}"/>
+
+                                    <p:commandButton ajax="false" action="#{tipoCasoController.last}" disabled="#{not tipoCasoController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{tipoCasoController.pagination.itemsCount > 0}"/>
+                                    <p:separator/>
+                                    <p:commandButton ajax="false" action="#{tipoCasoController.prepareCreate}" value="#{bundle.ListTipoCasoCreateLink}"
+                                                     rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" icon="ui-icon ui-icon-plus"/>
+
+                                </p:toolbarGroup>
+                            </p:toolbar>
+
+
+                        </f:facet>
+
+
+                    </p:dataTable>
+                </h:panelGroup>
+
+
+
+                <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
+                          header="Iniciando proceso de eliminación" widgetVar="confirmation" width="300">
+
+                    <h:outputText value="Está seguro de eliminar el tipo de Caso #{tipoCasoController.selected.nombre}?"
+                                  rendered="#{tipoCasoController.selected.casoList.size() eq 0}"/>
+                    
+                    <h:outputText value="No se puede eliminar este tipo debido a que tiene casos que dependen de él."
+                                  rendered="#{tipoCasoController.selected.casoList.size() ne 0}"/>
+
+                    <f:facet name="footer">
+                        <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{tipoCasoController.destroy() }" 
+                                         ajax="false" rendered="#{tipoCasoController.selected.casoList.size() eq 0}"/>
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
+                    </f:facet>
+
+                </p:dialog>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

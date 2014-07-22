@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.EditGrupoTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="west">
+            <p:accordionPanel multiple="true" cache="true" id="accionesaccordion1">
+                <p:tab title="Grupos" id="accionestab1">
+                    <h:outputLabel escape="false" value="#{bundle.ayudaGrupos}"/>
+                </p:tab>
+            </p:accordionPanel>
+        </ui:define>
+        <ui:define name="body">
+
+            <h:form id="form">
+                <p:messages globalOnly="true"/>
+                <p:panel header="#{bundle.EditGrupoTitle}">
+                    <p:fieldset legend="Datos generales">
+                        <h:panelGrid columns="3" cellpadding="5">
+                            <h:outputLabel value="#{bundle.EditGrupoLabel_idGrupo}" for="idGrupo" style="font-weight:bold"/>
+                            <h:outputLabel id="idGrupo" value="#{grupoController.selected.idGrupo}" title="#{bundle.EditGrupoTitle_idGrupo}"/>
+                            <p:message for="idGrupo"/>
+                            <h:outputLabel value="#{bundle.EditGrupoLabel_nombre}" for="nombre" style="font-weight:bold"/>
+                            <p:inputText id="nombre" value="#{grupoController.selected.nombre}" title="#{bundle.EditGrupoTitle_nombre}" />
+                            <p:message for="nombre"/>
+
+                            <p:outputLabel value="Área:" for="idArea" style="font-weight: bold;"/>
+                            <p:selectOneMenu id="idArea"  value="#{grupoController.selected.idArea}" 
+                                             required="true" requiredMessage="Seleccione el Area a la cual esta asociada este grupo.">
+                                <f:selectItems value="#{areaController.itemsAvailableSelectMany}" />
+                            </p:selectOneMenu>
+                            <p:message for="idArea"/>
+
+                            <h:outputLabel value="#{bundle.EditGrupoLabel_descripcion}" for="descripcion" style="font-weight:bold"/>
+                            <p:inputTextarea rows="4" cols="50" id="descripcion" value="#{grupoController.selected.descripcion}" title="#{bundle.EditGrupoTitle_descripcion}" />
+                            <p:message for="descripcion"/>
+                        </h:panelGrid>
+                    </p:fieldset>
+                    <br/>
+                    <p:fieldset legend="Categorías asociadas">
+                        <h:outputLabel value="Que Categorías puede ver" for="checkboxTree" style="font-weight: bold"/>
+                        <p:tree value="#{grupoController.treeNodeCategorias}" var="node" id="checkboxTree"  
+                                selectionMode="checkbox"  
+                                selection="#{grupoController.selectedCategoriasNodes}"
+                                style="border: none; width: 388px !important;">  
+
+                            <p:treeNode expandedIcon="myfolderopenicon"
+                                        collapsedIcon="myfoldericon">  
+                                <h:outputText value="#{node}" />  
+                            </p:treeNode>  
+                        </p:tree>
+                    </p:fieldset>
+                    <br/>
+                    <p:fieldset legend="Usuarios del Grupo">
+                        <p:pickList id="pojoPickList"  value="#{grupoController.usuariosDualListModel}" var="u" effect="slide" 
+                                    itemValue="#{u}" itemLabel="#{u.capitalName} (#{u.idUsuario})" converter="UsuarioConverter"
+                                    showSourceControls="true" showTargetControls="true"  
+                                    showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains" > 
+
+                            <f:facet name="sourceCaption">Usuarios</f:facet> 
+                            <f:facet name="targetCaption">Seleccionados</f:facet> 
+
+                            <p:column> 
+                                #{u.capitalName} 
+                            </p:column> 
+
+                        </p:pickList>  
+                    </p:fieldset>
+                    
+                    <p:fieldset legend="Productos asociados al Grupo">
+                        <p:pickList id="productsPickList"  value="#{grupoController.productoDualListModel}" var="p" effect="slide" 
+                                    itemValue="#{p}" itemLabel="#{p.nombre} (#{p.idProducto})" converter="ProductoConverter"
+                                    showSourceControls="true" showTargetControls="true"  
+                                    showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains" > 
+
+                            <f:facet name="sourceCaption">Productos</f:facet> 
+                            <f:facet name="targetCaption">Productos Seleccionados</f:facet> 
+
+                            <p:column> 
+                                <h:outputText value="#{p.nombre} (#{p.idProducto})"/>
+                            </p:column> 
+
+                        </p:pickList>  
+                    </p:fieldset>
+
+                    <f:facet name="footer">
+
+                        <p:toolbar>  
+                            <p:toolbarGroup align="left">   
+                                <p:commandButton ajax="false" action="#{grupoController.update}" value="#{bundle.EditGrupoSaveLink}" icon="ui-icon-disk" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
+                                <p:separator/>
+                                <p:commandButton ajax="false" action="#{grupoController.prepareView()}" value="Ver" icon="ui-icon-document"/>
+                                <p:commandButton ajax="false" action="#{grupoController.prepareList}" value="#{bundle.EditGrupoShowAllLink}" immediate="true" icon="ui-icon-folder-open"/>
+                                <p:separator/>
+                                <p:commandButton id="showDialogButton" value="#{bundle.destroy}" onclick="confirmation.show()" icon="ui-icon ui-icon-trash" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>         
+                            </p:toolbarGroup>  
+
+                        </p:toolbar>
+
+                    </f:facet>
+
+                </p:panel>     
+
+                <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
+                          header="Iniciando proceso de eliminación" widgetVar="confirmation">
+
+                    <h:outputText value="Está seguro de eliminar el grupo #{grupoController.selected.nombre}?"/>
+
+                    <f:facet name="footer">
+                        <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{grupoController.destroy()}" 
+                                         ajax="false" oncomplete="confirmation.hide()"/>
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
+                    </f:facet>
+
+                </p:dialog>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

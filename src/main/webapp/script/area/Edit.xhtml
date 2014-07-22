@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.EditAreaTitle}"></h:outputText>
+        </ui:define>
+
+        <ui:define name="west">
+            <p:accordionPanel multiple="true" cache="true" >
+                <p:tab title="Áreas" >
+                    <h:outputLabel escape="false" value="Un Área es una division o departamento de su organización, ejemplo: Ventas, PostVenta, Soporte."/>
+                    <br/>
+                    <h:outputLabel escape="false" value="Cada Área Puede tener su propia cuenta de correo con la cual interactuar con sus clientes."/>
+                    <br/>
+                    <h:outputLabel escape="false" value="Configuración correo de Salida:" style="font-weight: bold"/>
+                    <br/>
+                    <h:outputLabel escape="false" value="Cuenta de correo con la cual el sistema envía Correos a sus clientes."/>
+                    <br/>
+                    <h:outputLabel escape="false" value="Configuración Correo de Entrada:" style="font-weight: bold"/>
+                    <br/>
+                    <h:outputLabel escape="false" value="Cuenta de correo con la cual el sistema recibe Correos desde sus clientes, con los cuales se crean y/o actualizan los casos automáticamente."/>
+                    <br/>
+                    <h:outputLabel escape="false" value="Para un buen funcionamiento, es recomendable usar la misma cuenta de correo tanto para enviar como recibir." style="font-weight: bold"/>
+                </p:tab>
+            </p:accordionPanel>
+        </ui:define>
+
+        <ui:define name="body">
+
+            <h:form id="form">
+                <p:messages/>
+                <p:tabView id="tabs" activeIndex="#{areaController.editActiveIndex}" dynamic="true">
+
+
+                    <p:tab id="DatosArea" title="Datos del Area" >
+
+                        <p:fieldset legend="Información Base del área"> 
+                            <h:panelGrid columns="2">
+                                <p:outputLabel style="font-weight: bold;" value="Identificador único:" for="idArea" />
+                                <p:inputText id="idArea" disabled="true" value="#{areaController.selected.idArea}" title="#{bundle.EditAreaTitle_idArea}" required="true" requiredMessage="#{bundle.EditAreaRequiredMessage_idArea}"/>
+                                <p:outputLabel style="font-weight: bold;" value="#{bundle.EditAreaLabel_nombre}" for="nombre" />
+                                <p:inputText id="nombre" value="#{areaController.selected.nombre}" title="#{bundle.EditAreaTitle_nombre}" required="true" requiredMessage="El nombre es un dato Requerido."/>
+
+                             
+
+                                <p:outputLabel style="font-weight: bold;" value="#{bundle.EditAreaLabel_descripcion}" for="descripcion"/>
+                                <p:inputTextarea rows="4" cols="50" id="descripcion" value="#{areaController.selected.descripcion}" title="#{bundle.EditAreaTitle_descripcion}" />
+                                <p:outputLabel style="font-weight: bold;" value="Canal de salida por defecto" for="idCanalSalida"/>
+                                <p:selectOneMenu id="idCanalSalida" style="width: 220px;"
+                                                 filter="true" filterMatchMode="contains"
+                                                 value="#{areaController.selected.idCanal}" >
+                                    <f:selectItem itemLabel="" itemValue=""/>
+                                    <f:selectItems value="#{canalController.emailsAvailableSelectOne}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
+
+                                </p:selectOneMenu>
+                            </h:panelGrid>
+                        </p:fieldset>
+                        <br/>
+                    </p:tab>
+                </p:tabView>
+
+                <p:toolbar>  
+                    <p:toolbarGroup align="left">   
+                        <p:commandButton ajax="false" action="#{areaController.update}" value="#{bundle.SaveLink}" icon="ui-icon-disk"/>
+
+                        <p:separator/>
+                        <p:commandButton ajax="false" action="View" value="#{bundle.EditAreaViewLink}" immediate="true" icon="ui-icon-document"/>
+                        <p:commandButton ajax="false" action="#{areaController.prepareList}" value="#{bundle.EditAreaShowAllLink}" immediate="true" icon="ui-icon-folder-open"/>
+
+                        <p:separator/>
+                        <p:commandButton id="showDialogButton" value="#{bundle.DestroyLink} Area" onclick="confirmation.show()" icon="ui-icon ui-icon-trash" />                                
+                    </p:toolbarGroup>
+                </p:toolbar>
+
+                <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
+                          header="Iniciando proceso de eliminación" widgetVar="confirmation">
+
+                    <h:outputText value="Está seguro de eliminar el Area  #{areaController.selected.nombre}?"/>
+
+                    <f:facet name="footer">
+                        <p:commandButton id="confirm" value="#{bundle.yesDelete}" actionListener="#{areaController.destroy()}" 
+                                         update="form" oncomplete="confirmation.hide()"/>
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
+                    </f:facet>
+
+                </p:dialog>
+
+
+            </h:form>
+        </ui:define>
+
+        
+    </ui:composition>
+
+</html>

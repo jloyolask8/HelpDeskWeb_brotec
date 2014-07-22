@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+  <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ViewClippingTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="west">
+            <p:accordionPanel multiple="true" cache="true" >
+             <p:tab title="#{bundle.clippingDesc}" >
+                   <p:outputLabel escape="false" value="#{bundle.clippingHelp}"/>
+
+                </p:tab>
+            </p:accordionPanel>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{bundle.ViewClippingLabel_idClipping}"/>
+                    <h:outputText value="#{clippingController.selected.idClipping}" title="#{bundle.ViewClippingTitle_idClipping}"/>
+                    <h:outputText value="#{bundle.ViewClippingLabel_nombre}"/>
+                    <h:outputText value="#{clippingController.selected.nombre}" title="#{bundle.ViewClippingTitle_nombre}"/>
+                    <h:outputText value="#{bundle.ViewClippingLabel_texto}"/>
+                    <h:outputText value="#{clippingController.selected.texto}" title="#{bundle.ViewClippingTitle_texto}"/>
+                    <h:outputText value="#{bundle.ViewClippingLabel_visibleToAll}"/>
+                    <h:outputText value="#{clippingController.selected.visibleToAll}" title="#{bundle.ViewClippingTitle_visibleToAll}"/>
+                    <h:outputText value="#{bundle.ViewClippingLabel_idGrupo}"/>
+                    <h:outputText value="#{clippingController.selected.idGrupo}" title="#{bundle.ViewClippingTitle_idGrupo}"/>
+                    <h:outputText value="#{bundle.ViewClippingLabel_idClippingPadre}"/>
+                    <h:outputText value="#{clippingController.selected.idClippingPadre}" title="#{bundle.ViewClippingTitle_idClippingPadre}"/>
+                    <h:outputText value="#{bundle.ViewClippingLabel_idArea}"/>
+                    <h:outputText value="#{clippingController.selected.idArea}" title="#{bundle.ViewClippingTitle_idArea}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{clippingController.destroyAndView}" value="#{bundle.ViewClippingDestroyLink}"/>
+                <br />
+                <br />
+                <h:link outcome="Edit" value="#{bundle.ViewClippingEditLink}"/>
+                <br />
+                <h:commandLink action="#{clippingController.prepareCreate}" value="#{bundle.ViewClippingCreateLink}" />
+                <br />
+                <h:commandLink action="#{clippingController.prepareList}" value="#{bundle.ViewClippingShowAllLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.ViewClippingIndexLink}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

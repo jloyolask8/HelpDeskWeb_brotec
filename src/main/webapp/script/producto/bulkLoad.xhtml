@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="Carga Masiva de #{applicationBean.productDescription}/#{applicationBean.productComponentDescription}/#{applicationBean.productSubComponentDescription}"></h:outputText>
+        </ui:define>
+
+
+        <ui:define name="west">
+
+        </ui:define>
+
+        <ui:define name="body">
+
+            <pe:layoutPane id="layout1_1" position="center" >
+
+                <f:facet name="header">
+                    <h:outputText value="Carga Masiva de #{applicationBean.productDescription}/#{applicationBean.productComponentDescription}/#{applicationBean.productSubComponentDescription}"/>
+                </f:facet>
+
+                <h:form id="form" enctype="multipart/form-data">
+
+                    <p:messages id="messages" globalOnly="true" showDetail="true" showSummary="true"/>
+
+                    <h:panelGroup layout="block">  
+
+                        <h:outputText value="Especifique las posiciones de las Columnas de cada dato dentro del Achivo Excel:"/>
+                        <br/>
+                        <h:panelGrid columns="5">
+                            <p:outputLabel value="#{applicationBean.productDescription}" style="font-weight: bold;"/>
+                            <p:outputLabel value="#{applicationBean.productComponentDescription}" style="font-weight: bold;"/>
+                            <p:outputLabel value="Código #{applicationBean.productSubComponentDescription}" style="font-weight: bold;"/>
+                            <p:outputLabel value="Nombre #{applicationBean.productSubComponentDescription}" style="font-weight: bold;"/>
+                            <p:outputLabel value="Descripción #{applicationBean.productSubComponentDescription}" style="font-weight: bold;"/>
+
+                            <p:inputText value="#{productoController.cellPositionProduct}" required="true" >
+                                <pe:keyFilter mask="alpha"/>
+                            </p:inputText>
+                            <p:inputText value="#{productoController.cellPositionComponent}" required="true" >
+                                <pe:keyFilter mask="alpha"/>
+                            </p:inputText>
+                            <p:inputText value="#{productoController.cellPositionSubComponentId}" required="true" >
+                                <pe:keyFilter mask="alpha"/>
+                            </p:inputText>
+                            <p:inputText value="#{productoController.cellPositionSubComponentName}" required="true" >
+                                <pe:keyFilter mask="alpha"/>
+                            </p:inputText>
+                            <p:inputText value="#{productoController.cellPositionSubComponentDesc}" required="true" >
+                                <pe:keyFilter mask="alpha"/>
+                            </p:inputText>
+                        </h:panelGrid>
+                        <p:fileUpload value="#{productoController.uploadFile}" mode="simple" allowTypes="/(\.|\/)(xls|xlsx)$/" update=":form"/>  
+                        <p:commandButton value="Subir Achivo Excel" ajax="false"  
+                                         actionListener="#{productoController.handleFileUpload}"/>  
+                    </h:panelGroup>  
+                </h:form>
+                <br/>
+                <h:panelGrid>
+                    <p:panel rendered="#{not empty productoController.bulkLoadedProductos}" collapsed="true" header="Modificación de Código/Nombre de #{applicationBean.productDescription}(s)"
+                             toggleable="true" >
+
+                        <h:form id="formP">
+
+                            <p:dataTable widgetVar="productsTable" var="p" value="#{productoController.bulkLoadedProductos}" 
+                                         emptyMessage="No hay #{applicationBean.productDescription}(s) en el archivo cargado." 
+                                         paginator="true" rows="10"  paginatorAlwaysVisible="false"
+                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                                         rowsPerPageTemplate="10,20,50,100">
+
+
+                                <p:column headerText="Código #{applicationBean.productDescription}" sortBy="#{p.idProducto}">
+                                    <p:inputText value="#{p.idProducto}" required="true" disabled="#{not productoController.canEditProductId(p)}">
+                                        <p:ajax event="blur" update=":mainform:messages :formP :form3" listener="#{productoController.handleChangeProductsId(p)}"/> 
+                                    </p:inputText>
+                                </p:column>
+
+                                <p:column headerText="Nombre #{applicationBean.productDescription}" sortBy="#{p.nombre}">
+                                    <p:inputText value="#{p.nombre}" required="true" disabled="#{not productoController.canEditProductId(p)}">
+                                        <p:ajax event="blur" update=":mainform:messages :formP :form3" listener="#{productoController.handleChangeProductsName(p)}" /> 
+                                    </p:inputText>
+                                </p:column>
+
+                          
+
+                            </p:dataTable>
+
+                        </h:form>
+
+                    </p:panel>
+                </h:panelGrid>
+                <br/>
+                <h:panelGrid columns="2" rendered="#{not empty productoController.bulkLoadedSubComponentes}">
+
+                    <h:form id="form3">
+                        <p:dataTable widgetVar="bulkLoadedSubComponent" var="SubComponent" value="#{productoController.bulkLoadedSubComponentes}"
+                                     emptyMessage="No hay #{applicationBean.productSubComponentDescription}(s) en el archivo cargado." 
+                                     paginator="true" rows="10"  
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                                     rowsPerPageTemplate="10,20,50,100">
+
+                            <f:facet name="header">  
+                                <h:outputText value="(#{productoController.bulkLoadedProductos.size()} #{applicationBean.productDescription}(s)/#{productoController.bulkLoadedComponentes.size()} #{applicationBean.productComponentDescription}(s)/#{productoController.bulkLoadedSubComponentes.size()} #{applicationBean.productSubComponentDescription}(s))"></h:outputText>                           
+                                <p:commandButton action="#{productoController.saveBulkImport()}" value="Guardar!" title="Solo se guardará los registros sin errores." 
+                                                 rendered="#{not empty productoController.bulkLoadedProductos}" icon="ui-icon ui-icon-arrowstop-1-s" style="float: right"
+                                                 update=":form"/>
+                            </f:facet>
+
+
+                            <p:column headerText="#{applicationBean.productDescription}" sortBy="#{SubComponent.idComponente.idProducto.nombre}">
+                                <h:outputText value="(#{SubComponent.idComponente.idProducto.idProducto})#{SubComponent.idComponente.idProducto.nombre}"/>
+                            </p:column>
+
+                            <p:column headerText="#{applicationBean.productComponentDescription}" sortBy="#{SubComponent.idComponente.nombre}">
+                                <h:outputText value="#{SubComponent.idComponente.nombre}"/>
+                            </p:column>
+
+                            <p:column headerText="Código #{applicationBean.productSubComponentDescription}" sortBy="#{SubComponent.idSubComponente}">
+                                <h:outputText value="#{SubComponent.idSubComponente}"/>
+                            </p:column>
+
+                            <p:column headerText="Nombre #{applicationBean.productSubComponentDescription}" sortBy="#{SubComponent.nombre}">
+                                <h:outputText value="#{SubComponent.nombre}"/>
+                            </p:column>
+
+                            <p:column headerText="descripcion #{applicationBean.productSubComponentDescription}" sortBy="#{SubComponent.descripcion}">
+                                <h:outputText value="#{SubComponent.descripcion}"/>
+                            </p:column>
+
+                            <f:facet name="footer">  
+                                <p:commandButton action="#{productoController.saveBulkImport()}" value="Guardar!" title="Solo se guardará los registros sin errores." 
+                                                 rendered="#{not empty productoController.bulkLoadedProductos}" icon="ui-icon ui-icon-arrowstop-1-s"
+                                                 update=":form"/>
+                            </f:facet> 
+
+                        </p:dataTable>
+                    </h:form>
+                </h:panelGrid>
+            </pe:layoutPane>
+        </ui:define>
+    </ui:composition>
+</html>

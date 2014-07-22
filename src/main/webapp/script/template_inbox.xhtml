@@ -1,0 +1,247 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:pe="http://primefaces.org/ui/extensions">
+    <f:view contentType="text/html" encoding="UTF-8">
+        <h:head>
+            <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+            <meta http-equiv="Pragma" content="no-cache" />
+            <meta http-equiv="Expires" content="0" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <title><ui:insert name="title">#{applicationBean.helpdeskTitle}</ui:insert></title>           
+
+
+            <h:outputStylesheet library="css" name="jsfcrud.css"/>
+            <h:outputStylesheet library="awesome" name="css/font-awesome.css"/>
+
+            <ui:insert name="head"></ui:insert>
+            <style type="text/css">
+
+                .ui-layout-north {
+                    z-index:20 !important;
+                    border: none !important;
+                    overflow:visible !important;
+                }
+
+                .ui-layout-north .ui-layout-unit-content {
+                    overflow:visible !important;
+                }
+
+                .ui-widget {
+                    font-size: 12px !important;
+                }
+
+                .ui-layout-pane-west{
+                    border: none !important;
+                    padding-left: 1px !important;
+                }
+
+                .ui-layout-pane-center{
+                    border: none !important;
+                    padding-left: 1px !important;
+                }
+            </style>
+            <script type="text/javascript">
+                PrimeFaces.locales['es'] = {
+                    closeText: 'Cerrar',
+                    prevText: 'Anterior',
+                    nextText: 'Siguiente',
+                    monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                    monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                    dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+                    dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+                    dayNamesMin: ['D', 'L', 'M', 'X', 'J', 'V', 'S'],
+                    weekHeader: 'Semana',
+                    firstDay: 1,
+                    isRTL: false,
+                    showMonthAfterYear: false,
+                    yearSuffix: '',
+                    timeOnlyTitle: 'Sólo hora',
+                    timeText: 'Tiempo',
+                    hourText: 'Hora',
+                    minuteText: 'Minuto',
+                    secondText: 'Segundo',
+                    currentText: 'Fecha actual',
+                    ampm: false,
+                    month: 'Mes',
+                    week: 'Semana',
+                    day: 'Día',
+                    allDayText: 'Todo el día'
+                };
+            </script>
+            <h:outputScript name="jsf.js" library="javax.faces"/>
+
+            <ui:insert name="scripts"></ui:insert>
+        </h:head>
+
+        <h:body id="mainbody">
+            <h:form id="mainform" style="height: 100%">
+                <p:growl id="messages" life="30000" autoUpdate="true"  globalOnly="true" widgetVar="messages"/>
+            </h:form>
+
+            <pe:layout id="fullPage" widgetVar="pagelayout" fullPage="true" stateCookie="true" >  
+
+                <pe:layoutPane position="north" closable="false" resizable="false">  
+                    <ui:insert name="header">
+                        <h:form id="formTopMenu">
+
+                            <p:menubar id="menubar" autoDisplay="false">
+                                <p:menuitem action="#{casoController.inbox}" 
+                                            ajax="false" value="Inbox de #{UserSessionBean.current.capitalName}" icon="ui-icon ui-icon-home"></p:menuitem>
+                                <p:submenu label="Casos" icon="ui-icon ui-icon-document">
+                                    <p:menuitem value="Crear Nuevo Caso" action="#{casoController.prepareCreate}" ajax="false" icon="ui-icon ui-icon-plus"/>  
+                                    <p:menuitem value="Crear Nuevo Caso Pre-Entrega" action="#{casoController.prepareCreateCasoPreentrega}" ajax="false" icon="paintbrushicon"
+                                                rendered="#{filtroAcceso.verificarAccesoACrearCasoPreentrega()}"/>  
+                                    <p:menuitem ajax="false" action="#{vistaController.prepareList()}" value="Administrar Vistas" icon="ui-icon-bookmark"
+                                                disabled="#{not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"/>
+                                </p:submenu>
+
+                                <p:menuitem value="Clientes" action="#{emailClienteController.prepareList}" ajax="false" icon="ui-icon ui-icon-person"/>
+                                <p:menuitem value="#{applicationBean.productDescription}(s)" action="#{productoController.prepareList}"
+                                            ajax="false" icon="ui-icon ui-icon-star"/>
+
+                                <p:menuitem value="Agenda" action="#{globalScheduleController.prepareList}" ajax="false" icon="ui-icon ui-icon-schedule"/>
+
+                                <p:submenu label="Supervision" icon="ui-icon ui-icon-clipboard" rendered="#{filtroAcceso.verificarAccesoAFuncionSupervision()}">
+                                    <p:menuitem value="Alertas" action="#{auditLogController.alertList()}" ajax="false" icon="ui-icon ui-icon-alert"></p:menuitem>
+                                    <p:menuitem value="Logs de Casos" ajax="false" action="#{auditLogController.prepareList}" icon="ui-icon ui-icon-info"></p:menuitem>
+                                    <p:menuitem value="Reportes" ajax="false" action="/script/report_graphs/reports" icon="chartbaricon"></p:menuitem>
+                                </p:submenu>
+
+                                <p:submenu label="Ajustes" icon="ui-icon ui-icon-wrench" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">                                
+
+                                    <p:menuitem value="Áreas" action="#{areaController.prepareList}" ajax="false" icon="ui-icon ui-icon-folder-open"/>
+                                    <p:menuitem value="Canales" action="#{canalController.prepareList}" ajax="false" icon="ui-icon-transferthick-e-w"/>
+                                    <p:menuitem value="Roles de Usuario" action="#{rolController.prepareList}" ajax="false" icon="ui-icon ui-icon-note"/>
+                                    <p:menuitem value="Usuarios/Agentes" action="#{usuarioController.prepareList}" ajax="false" icon="ui-icon ui-icon-person"/>
+                                    <p:menuitem value="Grupos de Agentes" action="#{grupoController.prepareList}" ajax="false" icon="groupicon"/>
+
+
+                                    <p:menuitem value="Items de pre-entrega" action="#{itemController.prepareList}" ajax="false" icon="itemlisticon"
+                                                rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarItemsPreentrega()}"/>
+                                    <p:menuitem value="Categorías" action="#{categoriaController.prepareList}" ajax="false" icon="ui-icon ui-icon-folder-open"/>
+                                    <p:menuitem value="Sub Estados de Casos" action="#{subEstadoCasoController.prepareList}" ajax="false" icon="ui-icon ui-icon-tag"/>
+                                    <p:menuitem value="Tipos de Casos" action="#{tipoCasoController.prepareList}" ajax="false" icon="ui-icon ui-icon-carat-2-e-w"/>
+                                    <p:menuitem value="SLA y Prioridad de Casos" action="#{prioridadController.prepareList}" ajax="false" icon="ui-icon ui-icon-clock"/>
+                                    <p:menuitem value="Reglas de Negocio" action="#{reglaTriggerController.prepareList()}" ajax="false" icon="ui-icon ui-icon-gear"/>
+                                    <p:menuitem value="Lista negra (Correos)" action="#{blackListController.prepareList}" ajax="false" icon="ui-icon-circle-minus"  />
+                                    <p:menuitem value="Configuración" action="#{appSettingController.goToConfigPage}" ajax="false" icon="ui-icon ui-icon-wrench" />
+
+                                </p:submenu>
+
+
+                                <p:submenu label="Ajustes de Sistema" icon="ui-icon ui-icon-wrench" rendered="#{filtroAcceso.esUsuarioSistema()}">
+                                    <p:menuitem value="Funciones del Sistema" action="#{funcionController.prepareList()}" ajax="false" icon="ui-icon-wrench" />
+                                    <p:menuitem value="Estados de Casos" action="#{estadoCasoController.prepareList()}" ajax="false" icon="ui-icon-wrench" />
+                                    <p:menuitem value="Jobs Agendados" action="/script/scheduler/jobs" ajax="false" icon="ui-icon-wrench" />
+                                </p:submenu>    
+
+                                <p:submenu label="Cuenta de usuario" icon="ui-icon ui-icon-person">                                
+                                    <p:menuitem value="Mis Datos" action="myAccount" ajax="false" icon="ui-icon ui-icon-person"></p:menuitem>
+                                    <p:menuitem value="Respuestas Predefinidas" action="#{clippingController.prepareList()}" ajax="false" icon="ui-icon ui-icon-comment"></p:menuitem>
+                                    <p:menuitem value="Cambiar Contraseña" onclick="panelChangePass.show()" icon="ui-icon ui-icon-key"></p:menuitem>
+                                    <p:menuitem action="#{loginController.logout_action}" ajax="false" value="Cerrar Sesión" icon="ui-icon ui-icon-power"></p:menuitem>
+                                </p:submenu>
+
+
+
+                                <p:menuitem id="casosPendientes" value="#{casoController.casosPendientes}"
+                                            disabled="#{casoController.casosPendientes eq 0}" ajax="false"
+                                            action="#{casoController.filtraPorAlertaPendiente}" update="formfilter:filtros  formfilter:panelG1"
+                                            icon="pendienteicon"/>
+                                <p:menuitem id="casosPorVencer" value="#{casoController.casosPorVencer}"
+                                            disabled="#{casoController.casosPorVencer eq 0}" ajax="false"
+                                            action="#{casoController.filtraPorAlertaPorVencer}" update="formfilter:filtros  formfilter:panelG1"
+                                            icon="porvencericon"/>
+                                <p:menuitem id="casosVencidos" value="#{casoController.casosVencido}"
+                                            disabled="#{casoController.casosVencido eq 0}" ajax="false"
+                                            action="#{casoController.filtraPorAlertaVencido}" update="formfilter:filtros  formfilter:panelG1"
+                                            icon="vencidoicon"/>
+                                <p:menuitem id="casosActualizados" value="#{casoController.countCasosRevisarActualizacion}"
+                                            disabled="#{casoController.countCasosRevisarActualizacion eq 0}" ajax="false"
+                                            action="#{casoController.filtraRevisarActualizaciones}" update="formfilter:filtros  formfilter:panelG1"
+                                            icon="actualizadoicon">
+                                </p:menuitem>
+
+                            </p:menubar>
+                            <p:tooltip for=":formTopMenu:casosActualizados" value="Casos con actualizaciones no revisadas" showEffect="fade" hideEffect="fade" />
+                            <p:tooltip for=":formTopMenu:casosPendientes" value="Casos pendientes de resolver" showEffect="fade" hideEffect="fade" />
+                            <p:tooltip for=":formTopMenu:casosPorVencer" value="Casos por vencer" showEffect="fade" hideEffect="fade" />
+                            <p:tooltip for=":formTopMenu:casosVencidos" value="Casos vencidos" showEffect="fade" hideEffect="fade" />
+                        </h:form>
+                        <h:form>
+
+
+                            <h:outputLabel value="ID CASO:" for="idCaso" style="height: 19px; position: absolute; right: 240px; top: 15px;"/>
+                            <p:inputText id="idCaso" value="#{casoController.idCaso}" title="#{bundle.EditCasoTitle_idCaso}" required="true" requiredMessage="#{bundle.EditCasoRequiredMessage_idCaso}" style="position: absolute; right: 60px; top: 10px;"/>
+                            <p:commandButton ajax="false" action="#{casoController.prepareEditCaso}" value="Ir" icon="ui-icon ui-icon-search" style="position: absolute; right: 10px; top: 10px;"/>
+                        </h:form>
+                    </ui:insert>  
+                </pe:layoutPane>  
+
+                <pe:layoutPane position="west" size="280" resizable="true" >               
+
+                    <ui:insert name="west"/>               
+
+                </pe:layoutPane> 
+
+                <pe:layoutPane position="center">  
+                    <ui:insert name="body"></ui:insert>
+                </pe:layoutPane> 
+
+
+
+
+
+
+            </pe:layout>  
+
+
+
+            <p:dialog modal="false" widgetVar="statusDialog" header="Cargando..."   
+                      draggable="false" closable="false" resizable="false">  
+                <p:graphicImage value="/images/ajax-loader1.gif" />  
+            </p:dialog>
+
+            <p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();"/>
+
+
+
+            <p:dialog id="panelChangePassId" appendTo="@(body)" closeOnEscape="true" widgetVar="panelChangePass" header="Cambiar Contraseña" modal="true">
+                <h:form id="changePassForm">
+                    <p:messages id="messages" showDetail="false" autoUpdate="true"/>  
+                    <h:panelGrid columns="2" id="matchGrid">                     
+                        <p:outputLabel for="pwd" value="Contraseña Actual: " style="font-weight: bold;"/>  
+                        <p:password id="pwd" value="#{loginController.passwordCurrent}" label="Contraseña Actual" required="true" />  
+
+                        <p:outputLabel for="pwd1" value="Nueva Contraseña: " style="font-weight: bold;"/>  
+                        <p:password id="pwd1" value="#{loginController.passwordNew1}" match="pwd2" label="Nueva Contraseña" required="true" feedback="true" 
+                                    promptLabel="Favor ingrese contraseña" weakLabel="Débil"  
+                                    goodLabel="Buena" strongLabel="Fuerte" />  
+
+                        <p:outputLabel for="pwd2" value="Repita Nueva Contraseña: " style="font-weight: bold;"/>  
+                        <p:password id="pwd2" value="#{loginController.passwordNew2}" label="Repita Nueva Contraseña" required="true" feedback="true"   
+                                    promptLabel="Favor repita contraseña" weakLabel="Débil"  
+                                    goodLabel="Buena" strongLabel="Fuerte"/>  
+                    </h:panelGrid> 
+                    <br/>
+                    <p:separator/>
+                    <p:commandButton id="saveButton" update=":changePassForm" value="Cambiar" action="#{loginController.changePass()}"/>  
+
+
+                </h:form>
+            </p:dialog>
+
+
+            <ui:insert name="dialogs"/>
+
+
+        </h:body>
+    </f:view>
+</html>
+
+

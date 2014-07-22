@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ListDocumentoTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:form styleClass="jsfcrud_list_form">
+                <h:panelGroup id="messagePanel" layout="block">
+                    <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+                </h:panelGroup>
+                <h:outputText escape="false" value="#{bundle.ListDocumentoEmpty}" rendered="#{documentoController.items.rowCount == 0}"/>
+                <h:panelGroup rendered="#{documentoController.items.rowCount > 0}">
+                    <h:outputText value="#{documentoController.pagination.pageFirstItem + 1}..#{documentoController.pagination.pageLastItem + 1}/#{documentoController.pagination.itemsCount}"/>&nbsp;
+                    <h:commandLink action="#{documentoController.previous}" value="#{bundle.Previous} #{documentoController.pagination.pageSize}" rendered="#{documentoController.pagination.hasPreviousPage}"/>&nbsp;
+                    <h:commandLink action="#{documentoController.next}" value="#{bundle.Next} #{documentoController.pagination.pageSize}" rendered="#{documentoController.pagination.hasNextPage}"/>&nbsp;
+                    <h:dataTable value="#{documentoController.items}" var="item" border="0" cellpadding="2" cellspacing="0" rowClasses="jsfcrud_odd_row,jsfcrud_even_row" rules="all" style="border:solid 1px">
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListDocumentoTitle_idDocumento}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idDocumento}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListDocumentoTitle_problema}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.problema}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListDocumentoTitle_causa}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.causa}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListDocumentoTitle_solucion}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.solucion}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListDocumentoTitle_createdDate}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.createdDate}">
+                               <f:convertDateTime pattern="#{bundle.dateFormat2}" />
+                            </h:outputText>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListDocumentoTitle_updatedDate}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.updatedDate}">
+                              <f:convertDateTime pattern="#{bundle.dateFormat2}" />
+                            </h:outputText>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListDocumentoTitle_visible}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.visible}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListDocumentoTitle_createdBy}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.createdBy}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="&nbsp;"/>
+                            </f:facet>
+                            <h:commandLink action="#{documentoController.prepareView}" value="#{bundle.ListDocumentoViewLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{documentoController.prepareEdit}" value="#{bundle.ListDocumentoEditLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{documentoController.destroy}" value="#{bundle.ListDocumentoDestroyLink}"/>
+                        </h:column>
+                    </h:dataTable>
+                </h:panelGroup>
+                <br />
+                <h:commandLink action="#{documentoController.prepareCreate}" value="#{bundle.ListDocumentoCreateLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.ListDocumentoIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

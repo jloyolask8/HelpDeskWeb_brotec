@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{applicationBean.helpdeskTitle} - Listado de #{applicationBean.productDescription}(s)"></h:outputText>
+        </ui:define>
+        <ui:define name="west">
+            <p:accordionPanel multiple="true" cache="true" id="accionesaccordion1">
+                <p:tab title="Listado de #{applicationBean.productDescription}(s)" id="accionestab1">
+                    <h:outputLabel escape="false" value="#{bundle.ayudaProductos}"/>
+                </p:tab>
+            </p:accordionPanel>
+        </ui:define>
+        <ui:define  name="body">
+            <h:form id="form">
+
+                <h:outputFormat value="Hay un total de {0} #{applicationBean.productSubComponentDescription}(s), en {1} #{applicationBean.productComponentDescription}(s) y {2} #{applicationBean.productDescription}(s).">
+                    <f:param value="#{productoController.totalSubComponentsItemsCount}" />
+                    <f:param value="#{productoController.totalComponentsItemsCount}" />
+                    <f:param value="#{productoController.totalItemsCount}" />
+                </h:outputFormat>
+
+
+                <h:panelGroup >
+
+                    <p:dataTable widgetVar="CategoriaTable" var="item" value="#{productoController.items}"
+                                 selectionMode="single"
+                                 emptyMessage="#{bundle.ListCategoriaEmpty}">
+
+                        <f:facet name="header">
+                            <h:outputText value="Listado de #{applicationBean.productDescription}(s) (#{productoController.pagination.pageFirstItem + 1} - #{productoController.pagination.pageLastItem + 1} de #{productoController.pagination.itemsCount}) " rendered="#{productoController.items.rowCount > 0}"></h:outputText>
+                            <h:outputText value="Listado de #{applicationBean.productDescription}(s)  #{bundle.ListCategoriaEmpty} " rendered="#{productoController.items.rowCount == 0}"></h:outputText>
+                            <h:commandLink action="#{productoController.previous}" value="Anteriores #{productoController.pagination.pageSize}" rendered="#{productoController.pagination.hasPreviousPage}"/>&nbsp;
+                            <h:commandLink action="#{productoController.next}" value="Siguientes #{productoController.pagination.pageSize}" rendered="#{productoController.pagination.hasNextPage}"/>&nbsp;
+
+                        </f:facet>
+
+
+
+                        <p:column headerText="#{bundle.ProductoTitle_idProducto}">
+                            <h:outputText value="#{item.idProducto}"/>
+                        </p:column>
+                        <p:column headerText="#{bundle.ProductoTitle_nombre}" filterBy="nombre" filterMatchMode="contains">
+
+                            <h:outputText value="#{item.nombre}"/>
+                        </p:column>
+                     
+
+                        <p:column headerText="Total de Modelos">
+                            <h:outputText value="#{item.modeloProductoList ne null ? item.modeloProductoList.size():'0'}"/>
+                        </p:column>
+
+                        <p:column headerText="Total de #{applicationBean.productComponentDescription}(s)">
+                            <h:outputText value="#{item.componenteList ne null ? item.componenteList.size():'0'}"/>
+                        </p:column>
+
+                        <p:column headerText="Grupos Encargados">
+                            <h:outputText value="#{empty item.grupoList ? 'ninguno':item.grupoList }"/>
+                        </p:column>
+
+                        <p:column headerText="Acción">
+                            <p:commandButton id="editBtn" ajax="false" action="#{productoController.prepareEdit(item)}" title="Editar #{applicationBean.productDescription}" icon="ui-icon ui-icon-pencil"/>
+                            <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" action="#{productoController.setSelected(item)}" oncomplete="confirmation.show()" icon="ui-icon ui-icon-trash"/>
+                        </p:column>
+
+                        <f:facet name="footer">
+                            <p:toolbar style="border: none;">
+                                <p:toolbarGroup align="center">
+
+                                    <p:outputLabel value="Páginas de "/>
+                                    <p:selectOneMenu id="cant" value="#{productoController.paginationPageSize}" style="top: 7px">
+                                        <p:ajax event="change" listener="#{productoController.resetPageSize()}" update=":form"/>
+                                        <f:selectItems value="#{productoController.pagination.pageSizesAvailable}"/>
+                                    </p:selectOneMenu>
+
+                                    <p:separator/>
+
+                                    <p:commandButton ajax="false" action="#{productoController.first}" disabled="#{not productoController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{productoController.pagination.itemsCount > 0}"/>
+
+                                    <p:commandButton ajax="false" action="#{productoController.previous}" disabled="#{not productoController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{productoController.pagination.itemsCount > 0}"/>
+
+                                    <p:commandButton ajax="false" action="#{productoController.next}" disabled="#{not productoController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{productoController.pagination.itemsCount > 0}"/>
+
+                                    <p:commandButton ajax="false" action="#{productoController.last}" disabled="#{not productoController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{productoController.pagination.itemsCount > 0}"/>
+
+                                    <p:separator/>
+                                    <p:commandButton ajax="false" action="#{productoController.prepareCreate}" value="Crear #{applicationBean.productDescription}" icon="ui-icon ui-icon-plus" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
+                                    <p:separator/>
+                                    <p:commandButton ajax="false" action="#{productoController.prepareCreateMasivo()}" value="Carga masiva" icon="ui-icon ui-icon-arrowstop-1-n" style="float: right" />
+
+
+                                </p:toolbarGroup>
+                            </p:toolbar>
+
+                        </f:facet>
+
+
+
+                    </p:dataTable>
+                </h:panelGroup>
+
+                <br />
+
+
+                <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
+                          header="Iniciando proceso de eliminación" widgetVar="confirmation">
+
+                    <h:outputText value="Está seguro de eliminar el producto #{productoController.selected.nombre}?"/>
+
+                    <f:facet name="footer">
+                        <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{productoController.destroy()}" 
+                                         ajax="false"/>
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
+                    </f:facet>
+
+                </p:dialog>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>
+
+
+
+

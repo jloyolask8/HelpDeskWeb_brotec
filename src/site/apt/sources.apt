@@ -1,0 +1,32 @@
+            ------
+            Project Source Code
+            ------
+            Jonathan
+            ------
+             05 Sept, 2013
+
+Overview
+
+ This project uses Subversion to manage its source code. Instructions on Subversion use can be found at {{http://svnbook.red-bean.com/}}.
+
+Command-line access
+
+ Use this commands to check out the latest projects source code:
+
++------------------------------------------+
+svn checkout http://dev.itcs.cl:9880/helpdesk/trunk/HelpDeskWeb
+svn checkout http://dev.itcs.cl:9880/helpdesk/trunk/HelpDesk_Persistence
+svn checkout http://dev.itcs.cl:9880/commons/maven/Email
+svn checkout http://dev.itcs.cl:9880/commons/maven/JPAUtils
++------------------------------------------+
+
+  # Non-members may check out a read-only working copy anonymously over HTTP.
+
+GUI and IDE access 
+
+  This project's Subversion repository may be accessed using many different client programs and plug-ins. 
+  See your client's documentation for more information.
+   
+
+
+

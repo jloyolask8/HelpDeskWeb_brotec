@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.EditPrioridadTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="west">
+            <p>Use esta configuracion para definir Niveles de Prioridad del caso, como por Ejemplo:</p>
+            <h3>Nivel de gravedad 1 (Prioridad Máxima)</h3>
+
+            <ul>
+                <li>El cliente Experimenta una pérdida completa del servicio/producto. </li>
+                <li>El trabajo no puede continuar debido a daños serios al producto/Servicio.</li>
+                <li>La continuidad de operación del Producto/Servicio es una misión crítica para el cliente y la situación es una emergencia.</li>
+            </ul>
+
+            <h3>Nivel de gravedad 2 (Prioridad Alta)</h3>
+
+            <ul>
+                <li>Experimenta una pérdida grave del Producto/Servicio.</li>
+                <li>La operación del Producto/Servicio puede continuar pero de manera restringida.</li>            
+            </ul>
+
+            <p> </p>
+
+            <h3>Nivel de gravedad 3 (Prioridad Media)</h3>
+            <ul>
+                <li>Experimenta una pérdida menor del Producto/Servicio.</li>
+                <li>El impacto es un inconveniente menor.</li>            
+            </ul>
+
+            <h3>Nivel de gravedad 4 (No hay impacto, Prioridad Baja)</h3>
+            <ul>
+                <li>El cliente solicita información sin experimentar pérdida o problemas del Producto/Servicio.</li>
+                <li>La situación no impide el funcionamiento del Producto/Servicio entregado.</li>            
+            </ul>
+        </ui:define>
+        <ui:define name="body">
+
+            <h:form>
+                <p:panel header="#{bundle.EditPrioridadTitle}"> 
+                    <h:panelGrid columns="2">
+                        <h:outputLabel value="#{bundle.CreatePrioridadLabel_idPrioridad}" for="idPrioridad" style="font-weight: bold"/>
+                        <p:inputText id="idPrioridad" value="#{prioridadController.selected.idPrioridad}" title="#{bundle.CreatePrioridadTitle_idPrioridad}" 
+                                     required="true" requiredMessage="#{bundle.CreatePrioridadRequiredMessage_idPrioridad}" readonly="true" disabled="true"/>
+                        <h:outputLabel value="#{bundle.CreatePrioridadLabel_nombre}" for="nombre"  style="font-weight: bold"/>
+                        <p:inputText id="nombre" value="#{prioridadController.selected.nombre}" title="#{bundle.CreatePrioridadTitle_nombre}" />
+
+                     
+
+                        <h:outputLabel value="#{bundle.CreatePrioridadLabel_descripcion}" for="descripcion"  style="font-weight: bold"/>
+                        <p:inputTextarea rows="4" cols="50" id="descripcion" value="#{prioridadController.selected.descripcion}" title="#{bundle.CreatePrioridadTitle_descripcion}" />
+
+                        <h:outputLabel value="Horas Para Responder (SLA):" for="horas"  style="font-weight: bold"/>
+                        <p:inputText id="horas" value="#{prioridadController.selected.slaHoras}" required="true" requiredMessage="Ingrese la cantidad de Horas Limite Para Responder.">
+                            <pe:keyFilter mask="num"/>
+                        </p:inputText>
+
+                    </h:panelGrid>
+
+                    <f:facet name="footer">
+                        <p:commandButton ajax="false" action="#{prioridadController.update}" value="#{bundle.EditPrioridadSaveLink}"/>
+                        <p:commandButton ajax="false" action="View" value="#{bundle.EditPrioridadViewLink}" immediate="true"/>
+                        <p:commandButton ajax="false" action="#{prioridadController.prepareList}" value="#{bundle.EditPrioridadShowAllLink}" immediate="true" icon="ui-icon-folder-open"/>
+                    </f:facet>
+
+                </p:panel>            
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

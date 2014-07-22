@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ListEstadoCasoTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:form id="form">
+
+                <h:outputText escape="false" value="#{bundle.ListEstadoCasoEmpty}" rendered="#{estadoCasoController.items.rowCount == 0}"/>
+                <h:panelGroup rendered="#{estadoCasoController.items.rowCount > 0}">
+                    <h:outputText value="#{estadoCasoController.pagination.pageFirstItem + 1}..#{estadoCasoController.pagination.pageLastItem + 1}/#{estadoCasoController.pagination.itemsCount}"/>&nbsp;
+                    <h:commandLink action="#{estadoCasoController.previous}" value="#{bundle.Previous} #{estadoCasoController.pagination.pageSize}" rendered="#{estadoCasoController.pagination.hasPreviousPage}"/>&nbsp;
+                    <h:commandLink action="#{estadoCasoController.next}" value="#{bundle.Next} #{estadoCasoController.pagination.pageSize}" rendered="#{estadoCasoController.pagination.hasNextPage}"/>&nbsp;
+
+                    <p:dataTable widgetVar="EstadoCasoTable" var="item" value="#{estadoCasoController.items}"
+                                 selection="#{estadoCasoController.selectedItems}" selectionMode="multiple" 
+                                 emptyMessage="#{bundle.ListEstadoCasoEmpty}" 
+                                 resizableColumns="true" >
+
+                        <f:facet name="header">  
+                            <h:outputText value="#{bundle.ListEstadoCasoTitle}"></h:outputText>                           
+                        </f:facet>   
+
+                        <p:column style="width:125px" sortBy="#{item.idEstado}" filterBy="#{item.idEstado}" filterMatchMode="contains" headerText="#{bundle.ListEstadoCasoTitle_idEstado}">
+
+                            <h:outputText value="#{item.idEstado}"/>
+                        </p:column>
+                        <p:column style="width:125px" sortBy="#{item.nombre}" filterBy="#{item.nombre}" filterMatchMode="contains" headerText="#{bundle.ListEstadoCasoTitle_nombre}">
+
+                            <h:outputText value="#{item.nombre}"/>
+                        </p:column>
+                        <p:column style="width:125px" sortBy="#{item.descripcion}" filterBy="#{item.descripcion}" filterMatchMode="contains" headerText="#{bundle.ListEstadoCasoTitle_descripcion}">
+
+                            <h:outputText value="#{item.descripcion}"/>
+                        </p:column>
+
+                        <f:facet name="footer">
+
+                            <p:outputLabel value="Páginas de "/>
+                            <p:selectOneMenu id="cant" value="#{estadoCasoController.paginationPageSize}" style="top: 7px">
+                                <p:ajax event="change" listener="#{estadoCasoController.resetPageSize()}" update=":form"/>
+                                <f:selectItems value="#{estadoCasoController.pagination.pageSizesAvailable}"/>
+                            </p:selectOneMenu>
+
+                            <p:separator/>
+
+
+                            <p:commandButton ajax="false" action="#{estadoCasoController.prepareCreate}" value="#{bundle.ListEstadoCasoCreateLink}" icon="ui-icon ui-icon-plus" />
+                            <h:outputText value=" "/>
+                            <p:commandButton ajax="false" action="#{estadoCasoController.prepareView}" value="#{bundle.ListEstadoCasoViewLink}" icon="ui-icon ui-icon-search"/>
+                            <h:outputText value=" "/>
+                            <p:commandButton ajax="false" action="#{estadoCasoController.prepareEdit}" value="#{bundle.ListEstadoCasoEditLink}" icon="ui-icon ui-icon-pencil"/>
+                            <h:outputText value=" "/>
+                            <p:commandButton ajax="false" action="#{estadoCasoController.destroySelected()}" value="#{bundle.ListEstadoCasoDestroyLink}" icon="ui-icon ui-icon-close" />
+                            <h:outputText value=" "/>
+                            <p:commandButton value="Eliminar (not working yet)" icon="ui-icon ui-icon-close" onclick="delete_EstadoCaso_confirmation.show()" type="button"/>                        
+                        </f:facet> 
+                    </p:dataTable>
+                </h:panelGroup>
+
+                <br />
+                <p:commandButton ajax="false" action="#{estadoCasoController.prepareCreate}" value="#{bundle.ListEstadoCasoCreateLink}" 
+                                 rendered="#{estadoCasoController.items.rowCount == 0}" icon="ui-icon ui-icon-plus"/>
+
+                <p:confirmDialog message="Esta Seguro de eliminar estos registros ?" appendTo="@(body)"
+                                 header="Iniciando proceso de eliminacion" severity="alert" widgetVar="delete_EstadoCaso_confirmation">
+
+                    <p:commandButton value="Si" update=":mainform:messages" oncomplete="delete_EstadoCaso_confirmation.hide()"
+                                     action="Expression usuarioController is undefined on line 95, column 48 in unknown." ajax="false" />
+                    <p:commandButton value="Eliminar" onclick="delete_EstadoCaso_confirmation.hide()" type="button" /> 
+
+                </p:confirmDialog>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

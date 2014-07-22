@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="ITCS HelpDesk">
+
+<skin>
+    <groupId>org.apache.maven.skins</groupId>
+    <artifactId>maven-stylus-skin</artifactId>
+    <version>1.5</version>
+  </skin>
+
+  <bannerLeft>
+    <name>ITCS, Integrated Solutions.</name>
+    <src>http://www.itcs.cl/wp-content/uploads/2013/02/ITCS-Logos-03.png</src>
+    <href>http://www.itcs.cl/</href>
+  </bannerLeft>
+  <bannerRight>
+    <src>http://maven.apache.org/images/maven-logo-2.gif</src>
+  </bannerRight>
+
+ <body>
+    <links>    
+      <item name="Maven 1.x" href="http://maven.apache.org/maven-1.x/"/>
+      <item name="Maven 2" href="http://maven.apache.org/"/>
+    </links>
+
+  <menu ref="modules"/>
+
+    <menu name="Documentation">
+      <item name="Introduction" href="index.html"/>
+<item name="Dependencies" href="dependencies.html" />      
+<item name="Install" href="install.html"/>
+      <item name="Source code Repository" href="sources.html"/>
+      
+      <item name="Dependency Information" href="dependency-info.html" />
+      <item name="Project summary" href="project-summary.html" />
+      <item name="Distribution management" href="distribution-management.html" />
+      <item name="Release Notes" href="release-notes.html" />
+      <item name="Team" href="team-list.html" />
+    </menu>
+
+  <footer>ITCS, All rights reserved.</footer>
+
+  </body>
+
+
+
+ <publishDate position="right"/>
+ <version position="left"/>
+ 
+</project>
+
+

@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:itcs="http://java.sun.com/jsf/composite/components/filterView"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+
+        <ui:define name="head">
+
+            <script type="text/javascript">
+                //<![CDATA[
+                function exportChart() {
+                    //export image
+                    $('#output').empty().append(chart.exportAsImage());
+
+                    //show the dialog
+                    dlg.show();
+                }
+                //]]>
+            </script>
+
+
+        </ui:define>
+
+        <ui:define name="title">
+            <h:outputText value="Reportes y Gráficos"></h:outputText>
+        </ui:define>
+        <ui:define name="west">
+            <h:form id="advancedReportForm">
+                <p:accordionPanel id="accordion1" multiple="false" cache="true" activeIndex="#{reporteController.activeLeftTab}">
+
+                    <p:ajax event="tabChange" listener="#{reporteController.onTabChange}" />  
+
+                    <p:tab title="Reportes Predefinidos">
+                        <p:commandLink action="#{reporteController.preparePieModelEstadoCasos()}" value="Estado de Casos" immediate="true"/>
+                        <br/>
+                        <p:commandLink action="#{reporteController.preparePieModelCasosPorAgente()}" value="Resumen de Casos por Ejecutivo" immediate="true"/>
+                        <br/>
+                        <p:commandLink action="#{reporteController.prepareCategoryModelCasosPorAgente()}" value="Estado de Casos por Ejecutivo" immediate="true"/>
+                        <br/>
+                        <p:commandLink action="#{reporteController.preparePieModelCasosPorArea()}" value="Resumen de Casos por Area" immediate="true"/>
+                        <br/>
+                        <p:commandLink action="#{reporteController.prepareCategoryModelCasosPorArea()}" value="Estado de Casos por Area" immediate="true"/>
+                        <br/>
+                        <p:commandLink action="#{reporteController.preparePieModelAntiguedadCasosAbiertosAsignados()}" value="Antiguedad de Casos Abiertos (Asignados)" immediate="true"/>
+                        <br/>
+                        <p:commandLink action="#{reporteController.preparePieModelAntiguedadCasosAbiertosNoAsignados()}" value="Antiguedad de Casos Abiertos (Sin Asignar)" immediate="true"/>
+
+                    </p:tab>
+                    <p:tab id="reporteAvanzado" title="Reportes Personalizados" >
+
+
+                        <h:panelGrid columns="1" cellpadding="5"> 
+
+                            <h:outputText value="Dimensiones del Reporte" style="font-weight: bold;"/>
+                            <p:selectOneMenu id="variables"  value="#{reporteController.variables}"
+                                             required="true" requiredMessage="Favor Seleccione Si desea un reporte de una o dos variables.">
+                                <f:selectItem itemLabel="Una Dimensión" itemValue="1"/>
+                                <f:selectItem itemLabel="Dos Dimensiones" itemValue="2"/>
+                                <p:ajax update=":advancedReportForm:accordion1" listener="#{vistaController.handleAnyChangeEvent()}"/>
+                            </p:selectOneMenu>
+
+
+
+                            <h:outputText value="Eje X" style="font-weight: bold;"/>
+
+                            <p:selectOneMenu id="idCampoX" value="#{reporteController.campoCompCasoEjeXSeriesEntity.idCampo}"
+                                             filter="true" filterMatchMode="contains"
+                                             required="true" requiredMessage="Favor Seleccione La Serie del Eje X.">
+                                <p:ajax update=":mainform:messages :advancedReportForm:accordion1" listener="#{reporteController.handleIdCampoChangeEvent()}"/>
+                                <f:selectItem itemLabel="seleccione un atributo" itemValue="" noSelectionOption="true"/>
+                                <f:selectItems value="#{reporteController.filterHelper.entityComparableFields}" var="comparableField" itemValue="#{comparableField.idCampo}" itemLabel="#{comparableField.label}"/>
+                            </p:selectOneMenu>
+
+
+                            <p:selectOneMenu value="#{reporteController.campoCompCasoEjeXSeriesEntity.idComparador}" 
+                                             rendered="#{reporteController.campoCompCasoEjeXSeriesEntity ne null and reporteController.campoCompCasoEjeXSeriesEntity.idCampo ne null and (reporteController.filterHelper.getComparableField(reporteController.campoCompCasoEjeXSeriesEntity.idCampo).fieldTypeId.fieldTypeId eq 'SELECTONE_ENTITY')}"
+                                             required="true" requiredMessage="Favor Seleccione Operador.">
+                                <f:selectItems value="#{reporteController.filterHelper.findTipoComparacionesAvailable(reporteController.campoCompCasoEjeXSeriesEntity.idCampo)}"/>
+                                <p:ajax update=":mainform:messages :advancedReportForm:accordion1" listener="#{vistaController.handleAnyChangeEvent()}"/>
+                            </p:selectOneMenu>
+
+
+                            <h:panelGrid rendered="#{reporteController.campoCompCasoEjeXSeriesEntity.idCampo ne null}" >
+                                <p:selectOneMenu  value="#{reporteController.campoCompCasoEjeXSeriesEntity.valor}" required="true" requiredMessage="Es necesario que seleccione el item del eje x."
+                                                  rendered="#{reporteController.filterHelper.getComparableField(reporteController.campoCompCasoEjeXSeriesEntity.idCampo).fieldTypeId.fieldTypeId eq 'SELECTONE_ENTITY' and reporteController.campoCompCasoEjeXSeriesEntity.idComparador.idComparador ne 'SC' and reporteController.campoCompCasoEjeXSeriesEntity.idCampo ne 'emailCliente'}">
+                                    <f:selectItems value="#{reporteController.filterHelper.findPosibleOptionsSelectManyIncludeNullFor(reporteController.campoCompCasoEjeXSeriesEntity.idCampo, UserSessionBean.current)}" />
+                                </p:selectOneMenu>
+
+                                <p:autoComplete value="#{reporteController.campoCompCasoEjeXSeriesEntity.valor}"
+                                                id="valorentity11" completeMethod="#{emailClienteController.completeEmailCliente}"  
+                                                var="email"  itemValue="#{email.emailCliente}" itemLabel="#{email}"
+                                                required="true" requiredMessage="Es necesario que seleccione el item del eje x."
+                                                rendered="#{reporteController.filterHelper.getComparableField(reporteController.campoCompCasoEjeXSeriesEntity.idCampo).fieldTypeId.fieldTypeId eq 'SELECTONE_ENTITY' and reporteController.campoCompCasoEjeXSeriesEntity.idComparador.idComparador ne 'SC' and reporteController.campoCompCasoEjeXSeriesEntity.idCampo eq 'emailCliente'}">  
+
+                                    <f:facet name="itemtip">  
+                                        <h:panelGrid  columns="2" cellpadding="5">  
+                                            <f:facet name="header">  
+                                                <h:outputText value="#{email.emailCliente}" />  
+                                            </f:facet>  
+
+                                            <h:outputText value="Nombre: " />  
+                                            <h:outputText value="#{email.cliente.nombres}" />  
+
+                                            <h:outputText value="Apellidos: " />  
+                                            <h:outputText value="#{email.cliente.apellidos}" /> 
+
+                                            <h:outputText value="Rut: " />  
+                                            <h:outputText value="#{email.cliente.rut}" /> 
+                                        </h:panelGrid>  
+                                    </f:facet>  
+
+                                </p:autoComplete> 
+
+
+
+                                <p:selectCheckboxMenu label="Selección multiple..." value="#{reporteController.campoCompCasoEjeXSeriesEntity.valoresList}"  
+                                                      required="true" filter="true" filterMatchMode="startsWith" 
+                                                      requiredMessage="Es necesario que seleccione el conjunto de items del eje x."
+                                                      rendered="#{reporteController.filterHelper.getComparableField(reporteController.campoCompCasoEjeXSeriesEntity.idCampo).fieldTypeId.fieldTypeId eq 'SELECTONE_ENTITY' and reporteController.campoCompCasoEjeXSeriesEntity.idComparador.idComparador eq 'SC'}">
+                                    <f:selectItems value="#{reporteController.filterHelper.findPosibleOptionsSelectManyIncludeNullFor(reporteController.campoCompCasoEjeXSeriesEntity.idCampo, UserSessionBean.current)}" />
+
+                                </p:selectCheckboxMenu>
+
+
+
+                                <script>
+                                    $(function() {
+                                        $( ".datepicker" ).datepicker({
+                                            dateFormat: "dd/mm/yy"
+                                        });
+                                    });
+                                </script>
+
+                                <p:outputLabel value="Desde:" style="font-weight: bold;" rendered="#{reporteController.filterHelper.getComparableField(reporteController.campoCompCasoEjeXSeriesEntity.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR'}"/>
+                                <p:inputText label="Desde" styleClass="datepicker" value="#{reporteController.campoCompCasoEjeXSeriesEntity.valor}"  title="Desde:"
+                                             rendered="#{reporteController.filterHelper.getComparableField(reporteController.campoCompCasoEjeXSeriesEntity.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR'}" >
+                                </p:inputText>
+
+                                <p:outputLabel value="Hasta:" style="font-weight: bold;" rendered="#{reporteController.filterHelper.getComparableField(reporteController.campoCompCasoEjeXSeriesEntity.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR'}"/>
+                                <p:inputText label="Hasta" styleClass="datepicker" value="#{reporteController.campoCompCasoEjeXSeriesEntity.valor2}"  title="Hasta:"
+                                             rendered="#{reporteController.filterHelper.getComparableField(reporteController.campoCompCasoEjeXSeriesEntity.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR'}" >
+                                </p:inputText>
+                            </h:panelGrid>
+
+
+
+                            <h:outputText value="Eje Y" rendered="#{reporteController.variables eq 2}" style="font-weight: bold;"/>
+
+                            <p:selectOneMenu id="idCampoY"  value="#{reporteController.campoCompCasoEjeYItemsEntity.idCampo}" rendered="#{reporteController.variables eq 2}"
+                                             required="true" requiredMessage="Favor Seleccione Los Items del Eje Y.">
+                                <p:ajax update=":advancedReportForm:accordion1" listener="#{vistaController.handleAnyChangeEvent()}" process="@form"/>
+                                <f:selectItems value="#{reporteController.filterHelper.entityComparableFields}" var="comparableFieldY" itemValue="#{comparableFieldY.idCampo}" itemLabel="#{comparableFieldY.label}"/>
+                            </p:selectOneMenu>
+
+
+
+
+
+
+                            <h:outputText value="Tipo de Gráfico" style="font-weight: bold;"/>
+                            <p:selectOneMenu id="chartType"  value="#{reporteController.tipoGraficoSelected}" 
+                                             required="true" requiredMessage="Favor Seleccione el tipo de Chart que desea desplegar en el reporte.">
+                                <f:selectItem itemLabel="Torta" itemValue="pieChart" rendered="#{reporteController.variables eq 1}"/>
+                                <f:selectItem itemLabel="Barras" itemValue="barChart" rendered="#{reporteController.variables eq 2}"/>
+                                <f:selectItem itemLabel="Lineas" itemValue="lineChart" rendered="#{reporteController.variables eq 2}"/>
+                                <p:ajax update=":advancedReportForm:accordion1" listener="#{vistaController.handleAnyChangeEvent()}" process="@form"/>
+                            </p:selectOneMenu>
+
+
+
+                        </h:panelGrid>
+                        <br/>
+                        <p:commandButton action="#{reporteController.generateModel}" value="Generar Reporte" update=":reportForm" style="float: right;" process="@form"/>
+
+
+                    </p:tab>
+
+
+                </p:accordionPanel>
+            </h:form>
+
+        </ui:define>
+        <ui:define  name="body">
+
+
+            <h:form id="reportForm">
+
+                <h1><p:outputLabel value="#{reporteController.chartModelTitle}"/></h1>
+                <p:messages id="messages" showDetail="true" showSummary="true"/>  
+
+                <itcs:filterView controllerMBean="#{reporteController}" filterHelper="#{reporteController.filterHelper2}" update=":mainform:messages :reportForm"/>
+
+                <br />
+
+                <h:panelGrid>
+                    <h:panelGrid columns="2">
+                        <h:outputText value="Apilar:" rendered="#{reporteController.categoryModel ne null and reporteController.tipoGraficoSelected eq 'barChart'}" style="font-weight: bold;"/>
+                        <p:selectBooleanCheckbox value="#{reporteController.stacked}" 
+                                                 rendered="#{reporteController.categoryModel ne null and reporteController.tipoGraficoSelected eq 'barChart'}">
+                            <p:ajax update=":reportForm:barChart :advancedReportForm:accordion1" listener="#{vistaController.handleAnyChangeEvent()}"/>
+                        </p:selectBooleanCheckbox>
+                    </h:panelGrid>
+
+                    <h:panelGrid columns="2">
+                        <h:outputText value="Fill:" rendered="#{reporteController.categoryModel ne null and reporteController.tipoGraficoSelected eq 'lineChart'}" style="font-weight: bold;"/>
+                        <p:selectBooleanCheckbox value="#{reporteController.fill}" 
+                                                 rendered="#{reporteController.categoryModel ne null and reporteController.tipoGraficoSelected eq 'lineChart'}">
+                            <p:ajax update=":reportForm:lineChart :advancedReportForm:accordion1" listener="#{vistaController.handleAnyChangeEvent()}"/>
+                        </p:selectBooleanCheckbox>
+                    </h:panelGrid>
+
+                    <h:panelGrid columns="2">
+                        <p:outputLabel value="Formato de los datos" rendered="#{reporteController.tipoGraficoSelected eq 'pieChart'}" style="font-weight: bold;"/>
+                        <p:selectOneButton value="#{reporteController.dataFormat}" rendered="#{reporteController.tipoGraficoSelected eq 'pieChart'}">  
+                            <f:selectItem itemLabel="Total" itemValue="value" />  
+                            <f:selectItem itemLabel="%" itemValue="percent" />  
+                            <p:ajax update=":reportForm:pieChart"/>
+                        </p:selectOneButton>  
+                    </h:panelGrid>
+
+
+
+                    <p:commandButton type="button" value="Exportar Gráfico" icon="ui-icon-extlink" onclick="exportChart()" style="float: right;"
+                                     rendered="#{reporteController.pieModel ne null or reporteController.categoryModel ne null}"/>
+
+                </h:panelGrid>
+
+                <h:panelGroup layout="block">                   
+
+
+                    <p:barChart id="barChart" value="#{reporteController.categoryModel}" zoom="true" xaxisAngle="-50" legendCols="3" 
+                                style="height: 500px;" 
+                                rendered="#{reporteController.categoryModel ne null and reporteController.tipoGraficoSelected eq 'barChart'}" legendPosition="ne"  widgetVar="chart" 
+                                stacked="#{reporteController.stacked}" barMargin="30" shadow="true" animate="false" 
+                                yaxisLabel="#{reporteController.yaxisLabel}"
+                                xaxisLabel="#{reporteController.xaxisLabel}">
+                        <p:ajax event="itemSelect" listener="#{reporteController.itemSelect}" update=":reportForm:messages" />  
+                    </p:barChart>
+
+                    <p:lineChart id="lineChart" value="#{reporteController.categoryModel}" fill="#{reporteController.fill}" zoom="true" xaxisAngle="-50" legendCols="3" style="height: 500px;" 
+                                 rendered="#{reporteController.categoryModel ne null and reporteController.tipoGraficoSelected eq 'lineChart'}" legendPosition="ne" widgetVar="chart"
+                                 stacked="#{reporteController.stacked}" shadow="true" animate="true" 
+                                 yaxisLabel="#{reporteController.yaxisLabel}"
+                                 xaxisLabel="#{reporteController.xaxisLabel}">
+                        <p:ajax event="itemSelect" listener="#{reporteController.itemSelect}" update=":reportForm:messages" />  
+                    </p:lineChart>
+
+                    <p:pieChart id="pieChart" value="#{reporteController.pieModel}" rendered="#{reporteController.pieModel ne null}"  
+                                legendPosition="e" fill="true" widgetVar="chart"
+                                showDataLabels="true"  dataFormat="#{reporteController.dataFormat}" style="height: 500px;" legendCols="3" 
+                                sliceMargin="5" diameter="200" >
+                        <p:ajax event="itemSelect" listener="#{reporteController.itemSelect}" update=":reportForm:messages" />  
+                    </p:pieChart>
+
+                </h:panelGroup>
+
+
+
+
+
+
+
+                <br/>
+
+                <h:panelGroup layout="block" rendered="#{reporteController.variables eq 1}">
+
+                    <p:dataTable id="oneDimTable" value="#{reporteController.oneDimList}" var="entry1">
+                        <f:facet name="header">  
+                            Estadísticas  
+                        </f:facet> 
+                        <p:column headerText="#{reporteController.xaxisLabel}">
+                            <h:outputText value="#{entry1.key}" />
+                        </p:column>
+                        <p:column headerText="Cantidad">
+                            <h:outputText value="#{entry1.value}" />
+                        </p:column>
+                        
+                          <p:columnGroup type="footer">  
+                                <p:row>  
+                                    <p:column footerText="Total: " style="text-align:right;font-weight: bold;"/>  
+                                    <p:column footerText="#{reporteController.calcularTotal(reporteController.oneDimList)}" style="text-align: left;font-weight: bold;"/>  
+                                 
+                                </p:row>  
+                            </p:columnGroup> 
+
+                        <f:facet name="footer">
+                            <p:commandButton ajax="false" immediate="true" value="Exportar" icon="excelicon">  
+                                <p:dataExporter type="xls" target="oneDimTable" fileName="export_casos" />  
+                            </p:commandButton>
+                        </f:facet>
+                    </p:dataTable>
+
+
+
+                </h:panelGroup>
+
+                <h:panelGroup layout="block" rendered="#{reporteController.variables eq 2}">
+
+                    <p:dataTable id="twoDimTable" value="#{reporteController.twoDimList}" var="entry">
+
+                        <f:facet name="header">  
+                            Estadísticas  
+                        </f:facet> 
+
+                        <p:columnGroup type="header">  
+                            <p:row>  
+                                <p:column headerText="#{reporteController.xaxisLabel}" />  
+                                <p:column headerText="Cantidad" />  
+                            </p:row>  
+
+                        </p:columnGroup>  
+
+                        <p:subTable var="stats" value="#{entry.value}">  
+                            <f:facet name="header">  
+                                #{entry.key}   
+                            </f:facet>  
+
+                            <p:column>  
+                                #{stats.key}  
+                            </p:column>  
+
+                            <p:column>  
+                                #{stats.value}  
+                            </p:column>                          
+
+                            <p:columnGroup type="footer">  
+                                <p:row>  
+                                    <p:column footerText="Total: " style="text-align:right"/>  
+                                    <p:column footerText="#{reporteController.calcularTotal(entry.value)}" />  
+                                 
+                                </p:row>  
+                            </p:columnGroup>  
+                            
+                            
+                            
+                        </p:subTable>                        
+
+                        
+                    </p:dataTable>
+
+                </h:panelGroup>
+
+                <br/>
+                <hr/>
+
+
+            </h:form>
+
+
+
+            <p:dialog widgetVar="dlg" showEffect="fade" modal="true" header="Chart as an Image" appendTo="@(body)">
+                <p:outputPanel id="output" layout="block" style="width:500px;height:300px"/>
+                <p:commandButton value="Imprimir" type="button" icon="ui-icon-print">  
+                    <p:printer target=":output" />  
+                </p:commandButton>  
+            </p:dialog>
+
+        </ui:define>
+    </ui:composition>
+
+</html>
+

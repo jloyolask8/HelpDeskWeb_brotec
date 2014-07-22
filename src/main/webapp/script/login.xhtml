@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Bienvenido a #{applicationBean.helpdeskTitle}</title>
+        <h:outputStylesheet library="css" name="loginCss.css"/>
+        <h:outputStylesheet library="css" name="jsfcrud.css"/>
+    </h:head>
+
+    <h:body>
+
+
+
+        <div id="header">
+            <div id="divItcs" align="left" style="position: absolute"><div class="logo-img"/></div>
+        </div>
+
+        <p:dialog  closable="false" style="margin-bottom: 500px" draggable="false"
+                   visible="true" id="parent" widgetVar="logindiag" resizable="false"
+                   header="Bienvenido a #{applicationBean.helpdeskTitle}" modal="false" appendTo="@(body)" height="140" width="458">
+            <h:form id="formlogin">
+                <p:growl id="messages" showDetail="true" sticky="false" /> 
+                <p:panelGrid styleClass="logInGrid" columns="1">
+                    <p:inputText id="usuario" value="#{loginController.username}" title="#{bundle.EditUsuarioTitle_idUsuario}" style="margin-left: 5px; width: 380px;" />  
+                    <p:watermark for="usuario" value="Usuario"/>
+                    <p:password id="pass" value="#{loginController.password}"  required="true" label="Password" style="margin-left: 5px; width: 380px;"/> 
+                    <p:watermark for="pass" value="Contraseña"/>
+                    <p:panelGrid style="width: 412px; margin-top: -10px">
+                        <p:row>
+                            <p:column>
+                                <div align="left">
+                                    <div class="checkbox-remember">
+                                        <h:selectBooleanCheckbox id="check" value="1"/>
+                                        <h:outputLabel for="check">Remember?</h:outputLabel>
+                                    </div>
+                                    <div class="remember">Recordar contraseña.</div>
+                                </div>
+                            </p:column>
+                            <p:column>
+                                <div align="right">
+                                    <p:commandButton type="submit" action="#{loginController.loginAction}"
+                                                     value="#{bundle.LoginUsuario}" update=":formlogin"
+                                                     onstart="blockUIWidget1.block()" oncomplete="blockUIWidget1.unblock()"
+                                                     icon="ui-icon-check"/>
+                                </div>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <pe:blockUI target="parent" widgetVar="blockUIWidget1">  
+            <h:panelGrid columns="2">  
+                <p:graphicImage value="/images/ajax-loader1.gif" 
+                                style="margin-right: 12px; vertical-align: middle;"/>  
+                <h:outputText value="Cargando..." style="white-space: nowrap;"/>  
+            </h:panelGrid>  
+        </pe:blockUI> 
+
+    </h:body>
+</html>

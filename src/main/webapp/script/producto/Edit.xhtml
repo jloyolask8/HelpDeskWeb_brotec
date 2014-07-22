@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.EditProductoTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="west">
+            <p:accordionPanel multiple="true" cache="true" id="accionesaccordion1">
+                <p:tab title="Productos" id="accionestab1">
+                    <h:outputLabel escape="false" value="#{bundle.ayudaProductos}"/>
+                </p:tab>
+            </p:accordionPanel>
+        </ui:define>
+        <ui:define name="body">
+            <h:form id="form">
+                <p:messages/>
+                <p:panel header="Editar Información de #{applicationBean.productDescription} #{productoController.selected.nombre}">
+                    <p:tabView id="tabs" activeIndex="#{areaController.editActiveIndex}" dynamic="true">
+                        <p:tab id="d1" title="Datos del #{applicationBean.productDescription}" >
+
+                            <p:messages globalOnly="true"/>
+                            <h:panelGrid columns="3">
+                                <h:outputLabel value="Código #{applicationBean.productDescription}:" for="codigo" style="font-weight: bold"/>
+                                <p:inputText id="codigo" value="#{productoController.selected.idProducto}"  required="true" requiredMessage="#{bundle.RequiredMessage}" disabled="true" readonly="true"/>
+                                <p:message for="codigo"/>
+                                <h:outputLabel value="#{bundle.CreateProductoLabel_nombre}" for="nombre" style="font-weight: bold"/>
+                                <p:inputText id="nombre" value="#{productoController.selected.nombre}"  required="true" requiredMessage="#{bundle.RequiredMessage}"/>
+                                <p:message for="nombre"/>
+                                <h:outputLabel value="#{bundle.CreateProductoLabel_descripcion}" for="descripcion" style="font-weight: bold"/>
+                                <p:inputTextarea id="descripcion" value="#{productoController.selected.descripcion}" autoResize="true" cols="50" />
+                                <p:message for="descripcion"/>
+                                <p:outputLabel style="font-weight: bold;" value="Canal de salida por defecto" for="idCanalSalida"/>
+                                <p:selectOneMenu id="idCanalSalida" style="width: 220px;"
+                                                 filter="true" filterMatchMode="contains"
+                                                 value="#{productoController.selected.idOutCanal}" >
+                                    <f:selectItem itemLabel="" itemValue=""/>
+                                    <f:selectItems value="#{canalController.emailsAvailableSelectOne}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
+                                </p:selectOneMenu>
+
+                                <p:outputLabel value="Logo del #{applicationBean.productDescription}" style="font-weight: bold;"/>
+                                <p:commandLink value="adjuntar un Logo" onclick="uploadLogoProyectoDialog.show()"
+                                               rendered="#{productoController.selected.idLogo eq null}"/>
+
+                                <h:panelGrid columns="4"  rendered="#{productoController.selected.idLogo ne null}">
+
+                                    <p:graphicImage id="imageLogoPreview0" 
+                                                    value="#{productoController.logo}" cache="false"/>
+
+                                    <p:commandButton ajax="false" icon="ui-icon-circle-arrow-s">
+                                        <p:fileDownload value="#{productoController.downloadArchivo(productoController.selected.idLogo)}" />
+                                    </p:commandButton>
+
+                                    <p:commandButton icon="ui-icon-close" update=":formBorrarLogo :uploadLogoProyectoForm"
+                                                     onclick="borrarLogo.show();">
+                                        <f:setPropertyActionListener target="#{productoController.idFileDelete}" 
+                                                                     value="#{productoController.selected.idLogo}"/>
+                                    </p:commandButton>
+                                </h:panelGrid>
+
+                            </h:panelGrid>
+
+
+                        </p:tab>
+
+                        <p:tab id="modelos" title="Modelos" >
+
+                            <h:panelGrid> 
+
+                                <p:commandButton id="showAddModeloBtn" actionListener="#{modeloProductoController.prepareCreate(productoController.selected)}"
+                                                 value="Agregar Modelo" update=":formaddModeloDialog :formaddModeloDialog:addModeloDialog" 
+                                                 icon="ui-icon ui-icon-plus" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" style="float: right;"
+                                                 oncomplete="addModelo.show()" />
+
+                                <!--p:commandButton id="showAddManyModeloBtn" actionListener="#{modeloProductoController.prepareCreateMany()}"
+                                                 value="Cargar Modelos" update=":formaddMany :formaddMany:addManyModeloDialog" 
+                                                 icon="ui-icon ui-icon-plus" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" style="float: right;"
+                                                 oncomplete="addManyModelo.show()" /-->
+
+                                <p:dataTable id="modelosList" value="#{productoController.selected.modeloProductoList}" var="model" 
+                                             emptyMessage="No se encontraron modelos asociados.">
+                                    <p:column filterBy="modeloProductoPK.idModelo" filterMatchMode="contains"> 
+                                        <f:facet name="header">
+                                            <h:outputText value="Código Modelo" />
+                                        </f:facet>
+                                        <h:outputText value="#{model.modeloProductoPK.idModelo}"/>
+                                    </p:column>
+                                    <p:column filterBy="nombre" filterMatchMode="contains">
+                                        <f:facet name="header">
+                                            <h:outputText value="Nombre"/>
+                                        </f:facet>
+                                        <h:outputText id="nombreModelo" value="#{model.nombre}"/>
+
+                                        <p:overlayPanel for="nombreModelo" hideEffect="fade"> 
+                                            <h:outputText value="#{model.descripcion}"/>
+                                        </p:overlayPanel>
+
+                                    </p:column>
+
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Total de #{applicationBean.productSubComponentDescription}(s)"/>
+                                        </f:facet>
+                                        <h:outputText value="#{item.subComponenteList ne null ? item.subComponenteList.size():'0'}" />
+                                    </p:column>
+
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="&nbsp;"/>
+                                        </f:facet>                                       
+
+                                        <p:commandButton actionListener="#{modeloProductoController.prepareEdit(model)}" 
+                                                         oncomplete="addModelo.show()" update=":formaddModeloDialog" 
+                                                         rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
+                                                         icon="ui-icon ui-icon-pencil" title="Editar"/>
+
+                                        <p:commandButton icon="ui-icon ui-icon-trash" actionListener="#{modeloProductoController.prepareEdit(model)}"
+                                                         oncomplete="DeleteModeloconfirmDialog.show()"  update=":formDeleteModelo" title="Eliminar">
+                                        </p:commandButton> 
+
+
+
+
+                                    </p:column>
+
+                                </p:dataTable>
+
+                            </h:panelGrid>
+
+                        </p:tab>
+                        <p:tab id="components" title="#{applicationBean.productComponentDescription}(s)" >
+
+                            <h:panelGrid> 
+
+                                <p:commandButton id="showAddcomponentBtn" actionListener="#{productoController.prepareCreateComponente()}"
+                                                 value="Agregar #{applicationBean.productComponentDescription}" update=":formaddComponentDialog" 
+                                                 icon="ui-icon ui-icon-plus" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" style="float: right;"
+                                                 oncomplete="addComponent.show()" />
+
+                                <p:dataTable id="componentesList" value="#{productoController.selected.componenteList}" var="item" emptyMessage="No se registran #{applicationBean.productComponentDescription}(s)">
+                                    <p:column filterBy="idComponente" filterMatchMode="contains">
+                                        <f:facet name="header">
+                                            <h:outputText value="Código #{applicationBean.productComponentDescription}"/>
+                                        </f:facet>
+                                        <h:outputText value="#{item.idComponente}"/>
+                                    </p:column>
+                                    <p:column filterBy="nombre" filterMatchMode="contains">
+                                        <f:facet name="header">
+                                            <h:outputText value="#{bundle.ListComponenteTitle_nombre}"/>
+                                        </f:facet>
+                                        <h:outputText id="nombreComponente" value="#{item.nombre}"/>
+
+                                        <p:overlayPanel for="nombreComponente" hideEffect="fade"> 
+                                            <h:outputText value="#{item.descripcion}"/>
+                                        </p:overlayPanel>
+
+                                    </p:column>
+
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Total de #{applicationBean.productSubComponentDescription}(s)"/>
+                                        </f:facet>
+                                        <h:outputText value="#{item.subComponenteList ne null ? item.subComponenteList.size():'0'}" />
+                                    </p:column>
+                                    <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="&nbsp;"/>
+                                        </f:facet>
+
+                                        <p:commandButton actionListener="#{productoController.prepareEditComponente(item)}" update=":idformSubComponentes"     
+                                                         oncomplete="SubComponentes.show()"
+                                                         icon="ui-icon-search" title="Ver #{applicationBean.productSubComponentDescription}(s)"/>
+
+                                        <p:commandButton actionListener="#{productoController.prepareEditComponente(item)}" oncomplete="addComponent.show()" update=":formaddComponentDialog" 
+                                                         rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
+                                                         icon="ui-icon ui-icon-pencil" title="Editar"/>
+
+                                        <p:commandButton icon="ui-icon ui-icon-trash" actionListener="#{productoController.prepareEditComponente(item)}"
+                                                         oncomplete="DeleteComponenteconfirmDialog.show()"  update=":formDeleteComponente" title="Eliminar">
+                                        </p:commandButton> 
+
+
+
+
+                                    </p:column>
+
+                                </p:dataTable>
+
+                            </h:panelGrid>
+
+
+
+                        </p:tab>
+                    </p:tabView>
+
+                    <f:facet name="footer">
+                        <p:toolbar>  
+                            <p:toolbarGroup align="left">   
+                                <p:commandButton ajax="false" action="#{productoController.update}" value="#{bundle.SaveLink}" icon="ui-icon-disk"/>
+
+                                <p:separator/>
+
+                                <p:commandButton ajax="false" action="#{productoController.prepareList}" value="#{bundle.ShowAllLink}" immediate="true" icon="ui-icon-folder-open"/>
+
+                                <p:separator/>
+                                <p:commandButton id="showDialogButton" value="#{bundle.DestroyLink}" onclick="confirmation.show()" icon="ui-icon ui-icon-trash" />                                
+                            </p:toolbarGroup>
+                        </p:toolbar>
+
+                    </f:facet>
+
+                </p:panel>
+            </h:form>
+
+
+        </ui:define>
+
+        <ui:define name="dialogs">
+
+            <p:dialog header="Confirma que desea borrar el logo" widgetVar="borrarLogo" modal="true" appendTo="@(body)">
+                <h:form id="formBorrarLogo">
+                    <label>¿Esta seguro de borrar el Logo #{productoController.getFileName(productoController.idFileDelete)}?</label>
+                    <br/>
+                    <br/>
+                    <div style="text-align: right">                       
+                        <p:commandButton value="Si" update=":mainform:messages :form :uploadLogoProyectoForm"
+                                         actionListener="#{productoController.deleteLogoProducto(actionEvent)}" />
+
+                        <p:commandButton value="No" onclick="borrarLogo.hide()" type="button" />
+                    </div>
+                </h:form>
+            </p:dialog>
+
+            <h:form id="uploadLogoProyectoForm" enctype="multipart/form-data">
+                <p:dialog id="uploadLogoProyectoDialog" showEffect="fade" hideEffect="fade"  
+                          header="Adjuntar Logo" widgetVar="uploadLogoProyectoDialog">
+
+                    <p:fileUpload id="fileupload"
+                                  sizeLimit="5242880"
+                                  allowTypes="/(\.|\/)(gif|jpe?g|png)$/"
+                                  invalidSizeMessage="El archivo excede el tamaño maximo: 5MB."
+                                  fileUploadListener="#{productoController.uploadLogoProducto}"
+                                  disabled="#{productoController.selected.idLogo ne null}"
+                                  rendered="true"
+                                  label="seleccionar archivo"
+                                  uploadLabel="Subir"
+                                  cancelLabel="Cancelar Subida"
+                                  invalidFileMessage="Archivo Invalido." 
+                                  mode="advanced"
+                                  dragDropSupport="true"
+                                  auto="true"
+                                  update=":mainform:messages :form:tabs :uploadLogoProyectoForm"
+                                  multiple="false"  
+                                  />
+
+                    <f:facet name="footer">
+
+                    </f:facet>  
+                </p:dialog>
+            </h:form>
+
+
+            <p:dialog id="idformSubComponentes" showEffect="fade" hideEffect="fade"  rendered="#{productoController.currentComponente ne null}" widgetVar="SubComponentes"
+                      header="Listando #{applicationBean.productSubComponentDescription}(s) #{applicationBean.productComponentDescription}: #{productoController.currentComponente.nombre}">
+
+                <h:form id="formSubComponentes">
+
+                    <p:dataTable value="#{productoController.currentComponente.subComponenteList}" var="subitem"
+                                 emptyMessage="No se encontró ningún #{applicationBean.productSubComponentDescription}"
+                                 scrollRows="20" scrollable="true" liveScroll="true" scrollHeight="450" >
+                        <p:column filterBy="idSubComponente" filterMatchMode="contains">
+                            <f:facet name="header">
+                                <h:outputText value="Código #{applicationBean.productSubComponentDescription}"/>
+                            </f:facet>
+                            <h:outputText value="#{subitem.idSubComponente}"/>
+                        </p:column>
+                        <p:column filterBy="nombre" filterMatchMode="contains">
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListSubComponenteTitle_nombre}"/>
+                            </f:facet>
+                            <h:outputText id="nombreSubComponente" value="#{subitem.nombre}"/>
+                            <p:overlayPanel for="nombreSubComponente" hideEffect="fade"> 
+                                <h:outputText value="#{item.descripcion}"/>
+                            </p:overlayPanel>
+                        </p:column>
+
+                        <p:column filterBy="direccionMunicipal" filterMatchMode="contains">
+                            <f:facet name="header">
+                                <h:outputText value="Dirección Municipal"/>
+                            </f:facet>
+                            <h:outputText value="#{subitem.direccionMunicipal}"/>
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Modelo"/>
+                            </f:facet>
+                            <h:outputText value="#{subitem.modelo.nombre}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="&nbsp;"/>
+                            </f:facet>
+
+                            <p:commandButton action="#{productoController.prepareViewSubComponente(subitem)}" 
+                                             ajax="false" value="Ver Detalle"
+                                             rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
+                                             title="ver detalle"/>
+
+                            <p:commandButton actionListener="#{productoController.prepareEditSubComponente(subitem)}" oncomplete="addSubComponent.show()" update=":formaddSubComponentDialog" 
+                                             rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
+                                             icon="ui-icon ui-icon-pencil" title="Editar"/>
+
+                            <p:commandButton icon="ui-icon ui-icon-trash"
+                                             actionListener="#{productoController.prepareEditSubComponente(subitem)}" 
+                                             oncomplete="DeleteSubComponenteconfirmDialog.show()" update=":formDeleteSubComponente"  title="Eliminar">  
+
+                            </p:commandButton> 
+
+                        </p:column>
+                    </p:dataTable>
+
+                    <p:separator/>
+                    <p:commandButton id="showAddSubComponentBtn" actionListener="#{productoController.prepareCreateSubComponente()}"
+                                     value="Agregar #{applicationBean.productSubComponentDescription}" update=":formaddSubComponentDialog" 
+                                     icon="ui-icon ui-icon-plus" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" style="float: right;"
+                                     oncomplete="addSubComponent.show()" />
+
+                </h:form>
+
+            </p:dialog>
+
+
+
+            <h:form id="formDeleteComponente">
+                <p:dialog id="DeleteComponenteconfirmDialog" showEffect="fade" hideEffect="fade" modal="true"
+                          header="Iniciando proceso de eliminación" widgetVar="DeleteComponenteconfirmDialog">
+
+                    <h:outputText value="Está seguro de eliminar el #{applicationBean.productComponentDescription}:  #{productoController.currentComponente.idComponente} ?"/>
+
+                    <f:facet name="footer">
+                        <p:commandButton id="confirm" value="#{bundle.yesDelete}" actionListener="#{componenteController.destroy(productoController.currentComponente)}" 
+                                         update=":form" oncomplete="DeleteComponenteconfirmDialog.hide()">
+                            <p:collector value="#{productoController.currentComponente}" removeFrom="#{productoController.selected.componenteList}" unique="true"/>
+                        </p:commandButton>
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="DeleteComponenteconfirmDialog.hide()" type="button" /> 
+                    </f:facet>
+
+                </p:dialog>
+            </h:form>
+
+            <h:form id="formDeleteModelo">
+                <p:dialog id="DeleteModeloconfirmDialog" showEffect="fade" hideEffect="fade" modal="true"
+                          header="Iniciando proceso de eliminación" widgetVar="DeleteModeloconfirmDialog">
+
+                    <h:outputText value="Está seguro de eliminar el modelo:  #{modeloProductoController.selected.idModelo} ?"/>
+
+                    <f:facet name="footer">
+
+                        <p:commandButton id="confirm" value="#{bundle.yesDelete}" actionListener="#{modeloProductoController.destroy()}" 
+                                         update=":form:tabs:modelosList" oncomplete="DeleteModeloconfirmDialog.hide()">
+
+                        </p:commandButton>
+
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="DeleteModeloconfirmDialog.hide()" type="button" /> 
+                    </f:facet>
+
+                </p:dialog>
+            </h:form>
+
+
+            <h:form id="formDeleteSubComponente">
+                <p:dialog id="DeleteSubComponenteconfirmDialog" showEffect="fade" hideEffect="fade" modal="true"
+                          header="Iniciando proceso de eliminación" widgetVar="DeleteSubComponenteconfirmDialog">
+
+                    <h:outputText value="Está seguro de eliminar el #{applicationBean.productSubComponentDescription}:  #{productoController.currentSubComponente.nombre} ?"/>
+
+                    <f:facet name="footer">
+                        <p:commandButton id="confirm" value="#{bundle.yesDelete}" actionListener="#{subComponenteController.destroy(productoController.currentSubComponente)}" 
+                                         update=":form" oncomplete="DeleteSubComponenteconfirmDialog.hide()" >
+                            <p:collector value="#{productoController.currentSubComponente}"  removeFrom="#{productoController.currentComponente.subComponenteList}" unique="true"/>
+                        </p:commandButton>
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="DeleteSubComponenteconfirmDialog.hide()" type="button" /> 
+                    </f:facet>
+
+                </p:dialog>
+            </h:form>
+
+
+
+            <h:form id="formconfirmDialog">
+                <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
+                          header="Iniciando proceso de eliminación" widgetVar="confirmation">
+
+                    <h:outputText value="Está seguro de eliminar el #{applicationBean.productDescription}:  #{productoController.selected.nombre}?"/>
+
+                    <f:facet name="footer">
+                        <p:commandButton id="confirm" ajax="false" value="#{bundle.yesDelete}" action="#{productoController.destroy()}" 
+                                         update=":form" oncomplete="confirmation.hide()"/>
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
+                    </f:facet>
+
+                </p:dialog>
+            </h:form>
+
+            <h:form id="formaddSubComponentDialog">
+                <p:dialog id="addSubComponentDialog" showEffect="fade" hideEffect="fade"  rendered="#{productoController.currentSubComponente ne null}"
+                          header="#{applicationBean.productSubComponentDescription}" widgetVar="addSubComponent">
+
+                    <h:panelGrid columns="2">
+                        <h:outputLabel value="Código #{applicationBean.productSubComponentDescription}:" for="idSubComponente" rendered="#{productoController.currentSubComponente.idSubComponente eq null}" style="font-weight: bold"/>
+                        <p:inputText id="idSubComponente" value="#{productoController.currentSubComponente.idSubComponente}" rendered="#{productoController.currentSubComponente.idSubComponente eq null}"
+                                     title="#{bundle.CreateSubComponenteTitle_idComponente}" required="true" requiredMessage="#{bundle.CreateSubComponenteRequiredMessage_idSubComponente}"/>
+
+                        <h:outputLabel value="#{bundle.CreateSubComponenteLabel_nombre}" for="nombreSubComponente" style="font-weight: bold"/>
+                        <p:inputText id="nombreSubComponente" value="#{productoController.currentSubComponente.nombre}" title="#{bundle.CreateSubComponenteTitle_nombre}" 
+                                     maxlength="40"/>
+
+                        <h:outputLabel value="Dirección Municip:" for="direccionMunicipal" style="font-weight: bold"/>
+                        <p:inputTextarea id="direccionMunicipal" value="#{productoController.currentSubComponente.direccionMunicipal}" 
+                                         title="#{bundle.CreateSubComponenteTitle_nombre}" 
+                                         style="width: 100%;"/>
+
+                        <h:outputLabel value="Modelo:" for="idComponente2" style="font-weight: bold"/>
+                        <p:selectOneMenu id="idComponente2" value="#{productoController.currentSubComponente.modelo}" editable="false">
+                            <f:selectItems value="#{modeloProductoController.getItemsAvailableSelectOneByProduct(productoController.selected.idProducto)}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="#{bundle.CreateSubComponenteLabel_descripcion}" for="descripcionSubComponente" style="font-weight: bold"/>
+                        <p:inputTextarea id="descripcionSubComponente" style="width: 100%;"
+                                         value="#{productoController.currentSubComponente.descripcion}" />
+
+
+                    </h:panelGrid>
+
+
+                    <f:facet name="footer">
+                        <p:commandButton id="addCompyesCreate2" value="Agregar" actionListener="#{productoController.addSubComponentToComponent}" 
+                                         rendered="#{productoController.currentSubComponente.idSubComponente eq null}"
+                                         update=":idformSubComponentes" oncomplete="addSubComponent.hide()"/>
+                        <p:commandButton id="addCompyesEdit2" value="Guardar" actionListener="#{productoController.handleEditComponent()}" 
+                                         rendered="#{productoController.currentSubComponente.idSubComponente ne null}"
+                                         update=":idformSubComponentes" oncomplete="addSubComponent.hide()"/>
+                        <p:commandButton id="addCompno2" value="Cancelar" onclick="addSubComponent.hide()" type="button" /> 
+                    </f:facet>              
+
+
+
+
+                </p:dialog>
+            </h:form>
+
+
+            <h:form id="formaddComponentDialog">
+                <p:dialog id="addComponentDialog" showEffect="fade" hideEffect="fade"  rendered="#{productoController.currentComponente ne null}"
+                          header="#{applicationBean.productComponentDescription}" widgetVar="addComponent">
+
+                    <h:panelGrid columns="2">
+                        <h:outputLabel value="Código #{applicationBean.productComponentDescription}:" for="idComponente" rendered="#{productoController.currentComponente.idComponente eq null}" style="font-weight: bold"/>
+                        <p:inputText id="idComponente" value="#{productoController.currentComponente.idComponente}" rendered="#{productoController.currentComponente.idComponente eq null}"
+                                     title="#{bundle.CreateComponenteTitle_idComponente}" required="true" requiredMessage="#{bundle.CreateComponenteRequiredMessage_idComponente}"/>
+                        <h:outputLabel value="#{bundle.CreateComponenteLabel_nombre}" for="nombre" style="font-weight: bold"/>
+                        <p:inputText id="nombreComponente" value="#{productoController.currentComponente.nombre}" title="#{bundle.CreateComponenteTitle_nombre}" maxlength="40"/>
+                        <h:outputLabel value="#{bundle.CreateComponenteLabel_descripcion}" for="descripcion" style="font-weight: bold"/>
+
+                        <p:inputTextarea id="descripcionComponente" value="#{productoController.currentComponente.descripcion}" />
+
+                        <h:outputLabel value="#{applicationBean.productDescription}:" for="idProductoComponente" style="font-weight: bold"/>
+                        <p:selectOneMenu id="idProductoComponente" value="#{productoController.currentComponente.idProducto}" editable="false">
+                            <f:selectItems value="#{productoController.itemsAvailableSelectOne}"/>
+                        </p:selectOneMenu>
+                    </h:panelGrid>
+
+
+                    <f:facet name="footer">
+                        <p:commandButton id="addCompyesCreate" value="Agregar" actionListener="#{productoController.addComponentToProduct}" 
+                                         rendered="#{productoController.currentComponente.idComponente eq null}"
+                                         update=":form:tabs:componentesList" oncomplete="addComponent.hide()"/>
+                        <p:commandButton id="addCompyesEdit" value="Guardar" actionListener="#{productoController.handleEditComponent()}" 
+                                         rendered="#{productoController.currentComponente.idComponente ne null}"
+                                         update=":form:tabs:componentesList" oncomplete="addComponent.hide()"/>
+                        <p:commandButton id="addCompno" value="Cancelar" onclick="addComponent.hide()" type="button" /> 
+                    </f:facet>  
+                </p:dialog>
+            </h:form>
+
+            <h:form id="formaddModeloDialog">
+                <p:dialog id="addModeloDialog" showEffect="fade" hideEffect="fade"  rendered="#{modeloProductoController.selected ne null}"
+                          header="Modelo" widgetVar="addModelo">
+
+                    <p:messages/>
+                    <h:panelGrid columns="2">
+
+                        <h:outputLabel value="Código:" for="idModelo" rendered="#{modeloProductoController.selected.modeloProductoPK eq null}" style="font-weight: bold"/>
+                        <p:inputText id="idModelo" rendered="#{modeloProductoController.selected.modeloProductoPK eq null}" value="#{modeloProductoController.selected.idModelo}"
+                                     requiredMessage="El código de modelo es requerido."/>
+
+                        <h:outputLabel value="Nombre:" for="nombre" style="font-weight: bold"/>
+                        <p:inputText id="nombreModelo" value="#{modeloProductoController.selected.nombre}" maxlength="40"/>
+
+                        <h:outputLabel value="Descripción:" for="descripcion" style="font-weight: bold"/>
+                        <p:inputTextarea id="descripcionComponente" value="#{modeloProductoController.selected.descripcion}" />                       
+
+                        <h:outputLabel value="#{applicationBean.productComponentDescription}:" for="idComponente" style="font-weight: bold"/>
+                        <p:selectOneMenu id="idComponente" value="#{modeloProductoController.selected.idComponente}" >
+                            <f:selectItem itemValue="" itemLabel="TODOS" itemDescription="Todos los o las #{applicationBean.productComponentDescription}(s)"/>
+                            <f:selectItems value="#{productoController.selected.componenteList}"/>
+                        </p:selectOneMenu>
+
+                    </h:panelGrid>
+
+                    <f:facet name="footer">
+                        <p:commandButton value="Agregar" actionListener="#{modeloProductoController.create()}"
+                                         rendered="#{modeloProductoController.selected.modeloProductoPK eq null}"
+                                         update=":form:tabs:modelosList :formaddModeloDialog" >                            
+                        </p:commandButton>
+
+                        <p:commandButton value="Guardar" actionListener="#{modeloProductoController.update()}"
+                                         rendered="#{modeloProductoController.selected.modeloProductoPK ne null}"
+                                         update=":form:tabs:modelosList :formaddModeloDialog" />
+                        <p:commandButton value="Cerrar" update=":form:tabs:modelosList" onclick="addModelo.hide()" type="button" /> 
+                    </f:facet>  
+                </p:dialog>
+            </h:form>
+
+            <h:form id="formaddMany"> 
+                <p:dialog id="addManyModeloDialog" showEffect="fade" hideEffect="fade"  
+                          header="Cargar Modelos de excel" widgetVar="addManyModelo">
+
+                    <p:messages showDetail="true"/>  
+
+                    <p:fileUpload value="#{modeloProductoController.fileUpload}" mode="simple"/>  
+
+
+
+                    <f:facet name="footer">                                             
+                        <p:commandButton value="Enviar" update=":formaddMany"
+                                         actionListener="#{modeloProductoController.uploadModelosFile}"/>  
+
+                        <p:commandButton value="Cerrar" onclick="addManyModelo.hide()" type="button" /> 
+                    </f:facet>  
+                </p:dialog>
+            </h:form>
+
+        </ui:define>
+    </ui:composition>
+
+</html>
+

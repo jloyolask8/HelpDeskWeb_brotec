@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.CreateClienteTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{bundle.CreateClienteLabel_rut}" for="rut" />
+                    <h:inputText id="rut" value="#{clienteController.selected.rut}" title="#{bundle.CreateClienteTitle_rut}" />
+                    <h:outputLabel value="#{bundle.CreateClienteLabel_nombres}" for="nombres" />
+                    <h:inputText id="nombres" value="#{clienteController.selected.nombres}" title="#{bundle.CreateClienteTitle_nombres}" />
+                    <h:outputLabel value="#{bundle.CreateClienteLabel_apellidos}" for="apellidos" />
+                    <h:inputText id="apellidos" value="#{clienteController.selected.apellidos}" title="#{bundle.CreateClienteTitle_apellidos}" />
+                    <h:outputLabel value="#{bundle.CreateClienteLabel_fono1}" for="fono1" />
+                    <h:inputText id="fono1" value="#{clienteController.selected.fono1}" title="#{bundle.CreateClienteTitle_fono1}" />
+                    <h:outputLabel value="#{bundle.CreateClienteLabel_fono2}" for="fono2" />
+                    <h:inputText id="fono2" value="#{clienteController.selected.fono2}" title="#{bundle.CreateClienteTitle_fono2}" />
+                    <h:outputLabel value="#{bundle.CreateClienteLabel_dirParticular}" for="dirParticular" />
+                    <h:inputText id="dirParticular" value="#{clienteController.selected.dirParticular}" title="#{bundle.CreateClienteTitle_dirParticular}" />
+                    <h:outputLabel value="#{bundle.CreateClienteLabel_dirComercial}" for="dirComercial" />
+                    <h:inputText id="dirComercial" value="#{clienteController.selected.dirComercial}" title="#{bundle.CreateClienteTitle_dirComercial}" />
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{clienteController.create}" value="#{bundle.CreateClienteSaveLink}" />
+                <br />
+                <br />
+                <h:commandLink action="#{clienteController.prepareList}" value="#{bundle.CreateClienteShowAllLink}" immediate="true" />
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.CreateClienteIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

@@ -1,0 +1,375 @@
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:pm="http://primefaces.org/mobile"
+        contentType="text/html"
+        renderKitId="PRIMEFACES_MOBILE">
+
+    <h:head>
+        <h:outputScript library="js" name="tagmanager.js" />
+        <h:outputScript library="js" name="typeahead.min.js" />
+        <h:outputStylesheet library="css" name="tagmanager.css"/>
+    </h:head>
+
+    <pm:page id="casoPage" title="\##{casoController.selected.idCaso} #{casoController.selected.tema}">
+
+        <f:facet name="postinit">
+            <style type="text/css">
+
+                .ui-widget {
+                    font-size: 12px !important;
+                }
+
+            </style>
+        </f:facet>
+
+        <pm:view id="caso" swatch="#{casoController.swatch}">
+            <pm:header title="\##{casoController.selected.idCaso} #{casoController.selected.tema}">
+                <f:facet name="left">
+                    <p:button value="Casos" icon="back" iconPos="notext" href="index.xhtml"/>
+                </f:facet>
+                <pm:navBar>
+                    <p:button value="Descripción" href="#caso" styleClass="ui-btn-active ui-state-persist"/>
+                    <p:button value="Actividades" href="#actividadesCaso"/>
+                    <p:button value="Propiedades" href="#propiedadesCaso"/>
+                </pm:navBar>
+            </pm:header>
+            <pm:content>
+                <p:accordionPanel dynamic="true">
+                    <f:attribute name="inset" value="false"/>
+
+                    <p:tab title="Descripción del caso">
+                        <h:outputText id="descripcionCaso" value="#{casoController.parseHtmlToText(casoController.selected.descripcion)}" escape="false"/>
+                    </p:tab>
+                    <p:tab title="Info del Caso">
+                        <p:dataList type="inset">
+                            <p:outputLabel value="Cliente:" for="clienteNotNull" style="font-weight: bold">
+                                <h:outputText id="clienteNotNull" value="#{casoController.selected.emailCliente.emailCliente}"  style="float: right;"/>
+                            </p:outputLabel>
+
+                            <p:outputLabel value="#{bundle.EditCasoLabel_owner}" for="owner" style="font-weight: bold">
+                                <h:outputText id="owner" value="#{casoController.selected.owner.capitalName}"  style="float: right;"/>    
+                            </p:outputLabel>
+
+                            <p:outputLabel for="idCategoria" value="#{filtroAcceso.verificarAccesoAFuncionCambiarCategoriaCaso() ? bundle.EditCasoLabel_idCategoria:bundle.EditCasoLabel_idCategoria}" style="font-weight: bold">
+                                <h:outputText id="idCategoria" value="#{(casoController.selected.idCategoria eq null) ? bundle.sinClasificacion:casoController.selected.idCategoria.toString()}" style="float: right;"/>
+                            </p:outputLabel>
+
+                            <p:outputLabel value="#{bundle.EditCasoLabel_idCasoPadre}" for="idCasoPadre" style="font-weight: bold" rendered="#{casoController.selected.idCasoPadre ne null}">
+                                <h:outputText id="idCasoPadre" value="#{casoController.selected.idCasoPadre}" title="#{bundle.EditCasoTitle_idCasoPadre}" style="float: right;"/>
+                            </p:outputLabel>
+
+                            <p:outputLabel value="#{bundle.EditCasoLabel_fechaCreacion}" for="fechaCreacion" style="font-weight: bold">
+                                <h:outputText id="fechaCreacion" value="#{casoController.selected.fechaCreacion}" title="#{bundle.EditCasoTitle_fechaCreacion}" style="float: right;">
+                                    <f:convertDateTime pattern="#{bundle.dateFormat2}"/>
+                                </h:outputText>
+                            </p:outputLabel>
+
+                            <p:outputLabel value="#{bundle.EditCasoLabel_fechaModif}" for="fechaModif" style="font-weight: bold" rendered="#{casoController.selected.fechaModif ne null}">
+                                <h:outputText id="fechaModif" value="#{casoController.selected.fechaModif}" title="#{bundle.EditCasoTitle_fechaModif}" style="float: right;">
+                                    <f:convertDateTime pattern="#{bundle.dateFormat2}"/>
+                                </h:outputText>
+                            </p:outputLabel>
+
+                            <p:outputLabel value="#{bundle.EditCasoLabel_idCanal}" for="idCanal" style="font-weight: bold" rendered="#{casoController.selected.idCanal ne null}">
+                                <h:outputText id="idCanal" value="#{casoController.selected.idCanal.nombre}" title="#{bundle.EditCasoTitle_idCanal}" style="float: right;"/>
+                            </p:outputLabel>
+
+                            <p:outputLabel value="AREA:" for="area_" style="font-weight: bold">
+                                <h:outputText id="area_" value="#{casoController.selected.idArea.nombre}" style="float: right;"/>
+                            </p:outputLabel>
+
+                        </p:dataList>
+                    </p:tab>
+
+                    <p:tab title="Adjuntos">
+
+                        <h:form id="formlistaadjuntos" enctype="multipart/form-data">
+                            <p:dataList value="#{casoController.datosAdjuntosNotEmbedded()}" var="fileitem">
+                                <p:commandLink value="${casoController.nombreArchivoParaDesplegar(fileitem.nombreArchivo)}" >
+                                    <p:fileDownload value="#{casoController.bajarArchivo(fileitem.idAttachment)}" />                                   
+                                </p:commandLink>
+                            </p:dataList>
+                            <br/>
+                            <p:fileUpload value="#{casoController.uploadFile}" mode="simple"/>
+                            <p:commandButton value="Upload" ajax="false" action="#{casoController.upload}"/>
+                        </h:form> 
+
+
+                    </p:tab>
+
+                </p:accordionPanel>
+
+
+
+            </pm:content>
+
+
+
+        </pm:view>
+
+        <pm:view id="actividadView" swatch="#{casoController.swatch}">
+
+            <pm:header title="">
+                <f:facet name="left"><p:button value="" icon="back" iconPos="notext" href="#actividadesCaso?reverse=true"/></f:facet>
+            </pm:header>
+
+            <pm:content>
+                <pm:field>
+                    <h:outputText id="public" value="#{casoController.selectedNota.visible ? 'Pública':'Privada'}"/>  
+                </pm:field>
+                <pm:field>
+                    <h:outputText id="textonota" value="#{casoController.selectedNota.texto}" escape="false"/>
+                </pm:field>
+                <pm:field>
+                    <h:outputText value="#{casoController.selectedNota.fechaCreacion}" >
+                        <f:convertDateTime pattern="#{bundle.dateFormat2}"/>
+                    </h:outputText>
+                </pm:field>
+
+                <pm:field>
+                    <h:outputText value="#{casoController.selectedNota.fechaModificacion}" >
+                        <f:convertDateTime pattern="#{bundle.dateFormat2}"/>
+                    </h:outputText>
+                </pm:field>
+
+                <pm:field>
+                    <h:outputText rendered="#{casoController.selectedNota.tipoNota ne null}" 
+                                  value="#{casoController.selectedNota.tipoNota.nombre}" />
+                </pm:field>
+
+                <pm:field>
+                    <h:outputText value="#{casoController.selectedNota.creadaPor}" />
+                </pm:field>
+
+                <pm:field>
+                    <h:outputText value="#{casoController.selectedNota.enviadoPor}" />
+                </pm:field>
+
+
+
+
+            </pm:content>
+
+        </pm:view>
+
+        <pm:view id="actividad" swatch="#{casoController.swatch}">
+
+            <pm:header title="Nueva Actividad">
+                <f:facet name="left"><p:button value="" icon="back" iconPos="notext" href="#actividadesCaso?reverse=true"/></f:facet>
+            </pm:header>
+
+            <pm:content>
+                <h:form id="newActivityForm">
+
+                    <p:messages globalOnly="true"/>
+
+                    <pm:switch id="public" value="#{casoController.textoNotaVisibilidadPublica}" onLabel="Pública" offLabel="Privada" required="true" />  
+                    <p:message for="public"/>                      
+                    <br/>                    
+                    <p:inputTextarea id="textonota" value="#{casoController.textoNota}" required="true" />
+                    <p:watermark for="textonota" value="Comentarios..."/>
+                    <p:message for="textonota"/>    
+
+                    <p:inputText id="nextResponseDue1" value="#{casoController.selected.nextResponseDue}"  label="Cambiar SLA caso:"
+                                 title="Next Follow Up Due" >
+                        <f:convertDateTime pattern="#{bundle.dateFormat}"/>
+                    </p:inputText>
+                    <p:watermark for="nextResponseDue1" value="dd/MM/aaaa HH:mm"/>
+                    <p:message for="nextResponseDue1"/>
+
+                    <pm:field>
+                        <p:outputLabel for="idSubEstado" value="Cambiar estado caso:"/>
+                        <h:selectOneMenu id="idSubEstado" value="#{casoController.selected.idSubEstado}" >
+                            <f:selectItems value="#{casoController.selected.closed ? casoController.itemsSubEstadoCasoAvailableSelectOneCasoCerrado:casoController.itemsSubEstadoCasoAvailableSelectOneCasoAbierto}"/>
+                        </h:selectOneMenu>
+                        <p:message for="idSubEstado"/>
+                    </pm:field>
+
+
+                    <p:commandButton  type="submit" value="Guardar" action="pm:actividadesCaso" update=":formactividadesCaso :newActivityForm" actionListener="#{casoController.crearNota(false)}"/>
+                    <p:commandButton  type="submit" value="Guardar y notificar al cliente" action="pm:actividadesCaso" update=":formactividadesCaso :newActivityForm" actionListener="#{casoController.crearNota(true)}"/>
+
+                    <p:commandButton  type="submit" value="Responder al Cliente" action="#{casoController.responderMobile()}" update=":formactividadesCaso :newActivityForm" />
+
+
+                </h:form>
+            </pm:content>
+
+        </pm:view>
+
+        <pm:view id="actividadesCaso" swatch="#{casoController.swatch}">
+
+            <pm:header title="\##{casoController.selected.idCaso} #{casoController.selected.tema}">
+                <f:facet name="left">
+                    <p:button value="Casos" icon="back" iconPos="notext" href="index.xhtml"/>
+                </f:facet>
+
+                <pm:navBar>
+                    <p:button value="Descripción" href="#caso"/>
+                    <p:button value="Actividades" href="#actividadesCaso"  styleClass="ui-btn-active ui-state-persist"/>
+                    <p:button value="Propiedades" href="#propiedadesCaso"/>                        
+                </pm:navBar>                        
+            </pm:header>
+
+            <pm:footer fixed="true">
+
+                <p:button value="Propiedades" href="#propiedadesCaso"/>   
+
+            </pm:footer>
+
+            <pm:content>
+                <h:form id="formactividadesCaso">
+
+                    <p:commandButton value="Nueva Actividad"  action="pm:actividad" update=":newActivityForm"
+
+                                     actionListener="#{casoController.prepareCreateNotaGenerica(actionEvent)}"
+                                     title="Su comentario NO se envía ni puede ser visto por el cliente del caso."/>
+                    <br/>
+
+                    <p:dataList id="casoActivities" value="#{casoController.notasList}" var="nota" rendered="#{not empty casoController.selected.notaList}">
+                        <p:column>
+                            <p:commandLink id="linkActivity" update=":actividadView" action="pm:actividadView">
+                                <h1><h:outputText value="#{nota.tipoNota.nombre}"/></h1>                                
+                                <p><h:outputText value="Agente:#{nota.creadaPor}" rendered="#{nota.creadaPor ne null}"/></p>
+                                <p><h:outputText value="Solicitante:#{nota.enviadoPor}" rendered="#{nota.enviadoPor ne null}"/></p>
+                                <p><h:outputText value="Visibilidad: #{nota.visible?'Publica':'Interna'}"/></p>
+                                <p class="ui-li-aside"><h:outputText value="#{nota.fechaCreacion}">
+                                        <f:convertDateTime pattern="#{bundle.dateFormatShort}"/>
+                                    </h:outputText></p>                                
+                                <p> <h:outputText value="#{casoController.parseHtmlToTextPreview(nota.texto)}" /></p>
+                                <f:setPropertyActionListener value="#{nota}" target="#{casoController.selectedNota}" />
+                            </p:commandLink>
+                        </p:column>                     
+                    </p:dataList>
+                    <h:outputText value="No existen actividades asociadas al caso." rendered="#{empty casoController.selected.notaList}"/>
+                </h:form>
+            </pm:content>
+        </pm:view>
+
+        <pm:view id="propiedadesCaso" swatch="#{casoController.swatch}">
+            <pm:header title="\##{casoController.selected.idCaso} #{casoController.selected.tema}">
+                <f:facet name="left">
+                    <p:button value="Casos" icon="back" iconPos="notext" href="index.xhtml"/>
+                </f:facet>
+
+                <pm:navBar>
+                    <p:button value="Descripción" href="#caso" includeViewParams="true" />
+                    <p:button value="Actividades" href="#actividadesCaso" includeViewParams="true"/>
+                    <p:button value="Propiedades" href="#propiedadesCaso" includeViewParams="true" styleClass="ui-btn-active ui-state-persist"/>                        
+                </pm:navBar>
+            </pm:header>
+
+            <pm:content>
+
+
+                <h:form id="formpropiedadesCaso">
+                    <p:messages id="propsMessages" globalOnly="true"/>
+                    <p:panel header="Propiedades del Caso">
+                        <pm:field>
+                            <p:outputLabel for="idTipoCaso" value="Tipo:" style="font-weight: bold"/>
+                            <h:selectOneMenu  disabled="#{casoController.selected.closed}" id="idTipoCaso" value="#{casoController.selected.tipoCaso}" required="true">
+                                <f:selectItem itemLabel="" itemValue=""/>
+                                <f:selectItems value="#{applicationBean.tipoCasoAvailableList}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
+                            </h:selectOneMenu>
+                            <p:message for="idTipoCaso" />
+                        </pm:field>
+
+                        <pm:field>
+                            <p:outputLabel for="idSubEstado" value="#{bundle.EditCasoLabel_idSubEstado}" style="font-weight: bold"/>
+                            <h:selectOneMenu rendered="#{!casoController.selected.closed}" id="idSubEstado" value="#{casoController.selected.idSubEstado}" required="true">
+                                <f:selectItems value="#{casoController.itemsSubEstadoCasoAvailableSelectOneCasoAbierto}" var="subEstad" itemDescription="#{subEstad.description}"/>
+                            </h:selectOneMenu>
+                            <p:outputLabel value="#{casoController.selected.idSubEstado}" rendered="#{casoController.selected.closed}"/>
+                            <p:message for="idSubEstado" />
+                        </pm:field>
+                        <pm:field>
+                            <p:outputLabel value="#{bundle.EditCasoLabel_idPrioridad}" for="idPrioridad" style="font-weight: bold"/>
+                            <h:selectOneMenu disabled="#{casoController.selected.closed}" id="idPrioridad" value="#{casoController.selected.idPrioridad}">
+                                <f:selectItems value="#{prioridadController.itemsAvailableSelectOne}"/>
+                            </h:selectOneMenu>
+                        </pm:field>
+                        <pm:field>
+                            <p:outputLabel value="#{applicationBean.productDescription}:" for="idProducto" style="font-weight: bold"/>
+                            <h:selectOneMenu disabled="#{casoController.selected.closed}" id="idProducto" value="#{casoController.selected.idProducto}">
+                                <f:selectItems value="#{productoController.itemsAvailableSelectOne}"/>
+                                <p:ajax update=":formpropiedadesCaso"  listener="#{casoController.handleProductChange}" />
+                            </h:selectOneMenu>
+                        </pm:field>
+                        <pm:field>
+                            <h:outputLabel value="#{applicationBean.productComponentDescription}:" for="idComponente" style="font-weight: bold"/>
+                            <h:selectOneMenu id="idComponente"  value="#{casoController.selected.idComponente}" 
+                                             disabled="#{casoController.selected.closed or casoController.selected.idProducto eq null}">
+                                <f:selectItem itemLabel="---" itemValue=""/>
+                                <f:selectItems value="#{casoController.selected.idProducto.componenteList}" var="comp" itemLabel="#{comp.nombre}" itemValue="#{comp}"/>
+                                <p:ajax update=":formpropiedadesCaso"  listener="#{casoController.handleProductChange}" />  
+                            </h:selectOneMenu>
+                        </pm:field>
+                        <pm:field>
+                            <h:outputLabel value="#{applicationBean.productSubComponentDescription}:" for="idSubComponente" style="font-weight: bold"/>
+                            <h:selectOneMenu id="idSubComponente" value="#{casoController.selected.idSubComponente}" 
+                                             disabled="#{casoController.selected.closed or casoController.selected.idComponente eq null}">
+                                <f:selectItem itemLabel="---" itemValue=""/>
+                                <f:selectItems value="#{casoController.selected.idComponente.subComponenteList}" var="subc" itemLabel="#{subc.nombre}" itemValue="#{subc}"/>
+                            </h:selectOneMenu>
+                        </pm:field>
+
+
+                        <pm:field>
+                            <p:outputLabel value="#{bundle.EditCasoLabel_nextResponseDue}" for="nextResponseDue" style="font-weight: bold"/>
+                            <p:inputText id="nextResponseDue" value="#{casoController.selected.nextResponseDue}"                                        
+                                         disabled="#{casoController.selected.closed}">
+                                <f:convertDateTime pattern="#{bundle.dateFormatInputText}" type="both" />
+                            </p:inputText>
+                            <p:watermark for="nextResponseDue" value="dd/MM/aaaa HH:mm"/>
+                        </pm:field>
+
+                        <pm:field>
+                            
+                                <script type="text/javascript">
+                                $(function() { 
+                    
+                                    var tagApi =  jQuery(".tm-input").tagsManager({
+                                        prefilled: '#{casoController.selected.etiquetas}',
+                                        CapitalizeFirstLetter: true
+                                    });
+                    
+                                    jQuery(".tm-input").typeahead({
+                                        name: 'etiquetas',
+                                        remote: '#{facesContext.externalContext.requestContextPath}/TagListServlet?q=%QUERY',
+                                        limit: 10  
+                                    }).on('typeahead:selected', function (e, d) {
+ 
+                                        tagApi.tagsManager("pushTag", d.value);
+ 
+                                    });
+                                });
+                            </script>
+                            
+                            <p:outputLabel value="Etiquetas:" for="tags" style="font-weight: bold"/>
+                            <h:inputText disabled="#{casoController.selected.closed}" id="tags" class="tm-input" value="#{casoController.selected.etiquetas}"/>
+                        </pm:field>
+
+                        <pm:field>
+                            <p:commandButton disabled="#{casoController.selected.closed or not (casoController.verificarGrabarCaso())}" update=":formpropiedadesCaso"
+                                             value="Guardar" icon="ui-icon-disk" actionListener="#{casoController.updateListener}" style="width: 100%;"/>
+                        </pm:field>
+
+                    </p:panel>
+
+                </h:form>
+
+            </pm:content>
+
+
+        </pm:view>
+
+
+
+
+
+    </pm:page>
+
+</f:view>

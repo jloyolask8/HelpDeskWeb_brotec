@@ -1,0 +1,278 @@
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:pm="http://primefaces.org/mobile"
+        xmlns:pe="http://primefaces.org/ui/extensions"
+        contentType="text/html"
+        renderKitId="PRIMEFACES_MOBILE">
+
+    <h:head>
+        <h:outputScript library="js" name="tagmanager.js" />
+        <h:outputScript library="js" name="typeahead.min.js" />
+        <h:outputStylesheet library="css" name="tagmanager.css"/>
+    </h:head>
+
+    <pm:page id="newCasoPage" title="Nuevo Caso">
+
+        <f:facet name="postinit">
+            <style type="text/css">
+
+                .ui-widget {
+                    font-size: 12px !important;
+                }
+
+            </style>
+        </f:facet>
+
+        <pm:view id="newCaso1" swatch="#{casoController.swatch}">
+
+            <pm:header title="Nuevo Caso">
+                <f:facet name="left"><p:button value="Cancelar" icon="back" href="index.xhtml?reverse=true"/></f:facet>
+
+                <pm:navBar>
+                    <p:button value="Cliente" href="#newCaso1" includeViewParams="true" styleClass="ui-btn-active ui-state-persist" />
+                    <p:button value="Producto"  />
+                    <p:button value="Datos del Caso"/>                        
+                </pm:navBar>
+            </pm:header>
+
+            <pm:content>
+               
+
+                <h:form id="form">
+                     <p:messages id="messages1" autoUpdate="true" closable="true" />
+
+                    <p:inputText id="emailCliente" value="#{casoController.emailCliente_wizard}" validator="#{inputValidationBean.validarEmail}" label="#{bundle.EditCasoLabel_emailCliente}"
+                                 type="email"   required="true" requiredMessage="Un Email Válido de cliente es requerido para identificar al cliente del caso." size="40">
+                        <p:ajax event="blur" listener="#{casoController.handleEmailSelect(event)}" 
+                                partialSubmit="true" process="emailCliente" update=":form"/>      
+                        <pe:keyFilter mask="email"/>
+                    </p:inputText>
+                    <p:message for="emailCliente"/>
+
+
+                    <p:inputText id="rut" value="#{casoController.rutCliente_wizard}" label="#{bundle.CreateClienteLabel_rut}"   
+                                 title="#{bundle.CreateClienteTitle_rut}" validator="#{inputValidationBean.validarRut}">
+                        <p:ajax event="blur" listener="#{casoController.formateaRutFiltro2}" partialSubmit="true" process="rut" update=":form"/>
+                    </p:inputText>
+                    <p:watermark for="rut" value="Ej: 15.040.452-5"/>
+                    <p:message display="both" for="rut"/>
+
+                    <p:inputText id="nombres" value="#{casoController.selected.emailCliente.cliente.nombres}" label="#{bundle.CreateClienteLabel_nombres}"
+                                 title="#{bundle.CreateClienteTitle_nombres}" required="true" requiredMessage="El Nombre es un dato requerido." size="40"/>
+                    <p:message display="both" for="nombres"/>
+
+                    <p:inputText id="apellidos" value="#{casoController.selected.emailCliente.cliente.apellidos}" label="#{bundle.CreateClienteLabel_apellidos}"
+                                 title="#{bundle.CreateClienteTitle_apellidos}" required="true" requiredMessage="Los Apellidos son un dato requerido." size="40"/>
+                    <p:message display="both" for="apellidos"/>
+
+                    <p:selectOneRadio id="sexo" label="Sexo: " layout="lineDirection">
+                        <f:selectItem itemLabel="Hombre" itemValue="Hombre" />  
+                        <f:selectItem itemLabel="Mujer" itemValue="Mujer" />  
+                    </p:selectOneRadio> 
+
+                    <p:message display="both" for="sexo"/>
+
+                    <p:inputText id="fono1" value="#{casoController.selected.emailCliente.cliente.fono1}" label="#{bundle.CreateClienteLabel_fono1}"
+                                 title="#{bundle.CreateClienteTitle_fono1}" size="40">
+                        <pe:keyFilter regEx="/[\d\.\+\-\(\)]/"/>
+                    </p:inputText>
+                    <p:message display="both" for="fono1"/>
+
+                    <p:inputText id="fono2" value="#{casoController.selected.emailCliente.cliente.fono2}" label="#{bundle.CreateClienteLabel_fono2}"
+                                 title="#{bundle.CreateClienteTitle_fono2}" size="40">
+                        <pe:keyFilter regEx="/[\d\.\+\-\(\)]/"/>
+                    </p:inputText>
+                    <p:message display="both" for="fono2"/>
+
+                    <p:inputTextarea id="dirParticular" value="#{casoController.selected.emailCliente.cliente.dirParticular}" label="#{bundle.CreateClienteLabel_dirParticular}"
+                                     title="#{bundle.CreateClienteTitle_dirParticular}" cols="40" />
+                    <p:message display="both" for="dirParticular"/>
+
+                    <p:inputTextarea id="dirComercial" value="#{casoController.selected.emailCliente.cliente.dirComercial}" label="#{bundle.CreateClienteLabel_dirComercial}"
+                                     title="#{bundle.CreateClienteTitle_dirComercial}" cols="40"/>
+                    <p:message display="both" for="dirComercial"/>
+
+                    <p:selectBooleanCheckbox id="updateClient" itemLabel="Deseo Actualizar los datos del Cliente" label="Actualizar?"
+                                             value="#{casoController.emailCliente_wizard_updateCliente}" rendered="#{casoController.emailCliente_wizard_existeCliente}"/>
+
+
+                    <p:commandButton type="submit" value="Siguiente" action="pm:newCaso2" actionListener="#{casoController.goToNextStepMobile()}" update=":form :newCaso2" icon="arrow-r" iconPos="right" />
+
+                </h:form>
+            </pm:content>
+
+        </pm:view>
+
+
+        <pm:view id="newCaso2" swatch="#{casoController.swatch}">
+
+            <pm:header title="Nuevo Caso">
+                <f:facet name="left"><p:button value="Cancelar" icon="back" href="index.xhtml?reverse=true"/></f:facet>
+
+                <pm:navBar>
+                    <p:button value="Cliente" href="#newCaso1" />
+                    <p:button value="Producto" href="#newCaso2" styleClass="ui-btn-active ui-state-persist"/>
+                    <p:button value="Datos del Caso" />                        
+                </pm:navBar>
+            </pm:header>
+
+            <pm:content>
+
+
+                <h:form id="form2">
+
+                    <p:messages globalOnly="true" showDetail="true" autoUpdate="true" closable="true" />
+
+                    <pm:field>
+                        <p:outputLabel value="#{applicationBean.productDescription}:" for="idProducto" style="font-weight: bold"/>
+                        <h:selectOneMenu  id="idProducto" value="#{casoController.selected.idProducto}" required="true" requiredMessage="Seleccione #{applicationBean.productDescription}.">
+                            <f:selectItems value="#{productoController.itemsAvailableSelectOne}"/>
+                            <p:ajax update=":form2"  listener="#{casoController.handleProductChange}" />
+                        </h:selectOneMenu>
+                        <p:message for="idProducto"/>
+                    </pm:field>
+                    <pm:field>
+                        <h:outputLabel value="#{applicationBean.productComponentDescription}:" for="idComponente" style="font-weight: bold"/>
+                        <h:selectOneMenu id="idComponente"  value="#{casoController.selected.idComponente}" 
+                                         disabled="#{casoController.selected.idProducto eq null}">
+                            <f:selectItem itemLabel="---" itemValue=""/>
+                            <f:selectItems value="#{casoController.selected.idProducto.componenteList}" var="comp" itemLabel="#{comp.nombre}" itemValue="#{comp}"/>
+                            <p:ajax update=":form2"  listener="#{casoController.handleProductChange}" />  
+                        </h:selectOneMenu>
+                        <p:message for="idComponente"/>
+                    </pm:field>
+                    <pm:field>
+                        <h:outputLabel value="#{applicationBean.productSubComponentDescription}:" for="idSubComponente" style="font-weight: bold"/>
+                        <h:selectOneMenu id="idSubComponente" value="#{casoController.selected.idSubComponente}" 
+                                         disabled="#{casoController.selected.idComponente eq null}">
+                            <f:selectItem itemLabel="---" itemValue=""/>
+                            <f:selectItems value="#{casoController.selected.idComponente.subComponenteList}" var="subc" itemLabel="#{subc.nombre}" itemValue="#{subc}"/>
+                        </h:selectOneMenu>
+                        <p:message for="idSubComponente"/>
+                    </pm:field>
+
+                    <p:commandButton type="submit" action="pm:newCaso3" actionListener="#{casoController.goToNextStepMobile()}" update=":form2 :form3" value="Siguiente" icon="arrow-r" iconPos="right" />
+
+                </h:form>
+
+
+            </pm:content>
+        </pm:view>
+
+        <pm:view id="newCaso3" swatch="#{casoController.swatch}">
+
+            <pm:header title="Nuevo Caso">
+                <f:facet name="left"><p:button value="Cancelar" icon="back" href="index.xhtml?reverse=true"/></f:facet>
+
+                <pm:navBar>
+                    <p:button value="Cliente" href="#newCaso1" includeViewParams="true"  />
+                    <p:button value="Producto" href="#newCaso2" includeViewParams="true"/>
+                    <p:button value="Datos del Caso" href="#newCaso3" includeViewParams="true" styleClass="ui-btn-active ui-state-persist"/>                        
+                </pm:navBar>
+            </pm:header>
+
+            <pm:content>
+
+
+
+                <h:form id="form3">  
+                    <p:messages id="messages3" showDetail="true" autoUpdate="true" closable="true" />
+
+                    <p:panel header="Propiedades del Caso">
+
+                        <pm:field>
+                            <p:inputText id="asunto" value="#{casoController.selected.tema}" label="#{bundle.CreateCasoLabel_tema}"
+                                         title="#{bundle.CreateCasoTitle_tema}" required="true" requiredMessage="#{bundle.CreateCasoRequiredMessage_tema}"/>
+                        </pm:field>
+
+                        <pm:field>
+                            <p:inputTextarea value="#{casoController.selected.descripcion}" label="#{bundle.CreateCasoLabel_descripcion}"
+                                             required="true" requiredMessage="La descripción del caso es requerida."
+                                             id="descripcion" />
+                        </pm:field>
+
+                        <p:separator/>
+
+                        <pm:field>
+                            <p:outputLabel for="idTipoCaso" value="Tipo:" style="font-weight: bold"/>
+                            <h:selectOneMenu   id="idTipoCaso" value="#{casoController.selected.tipoCaso}" required="true">
+                                <f:selectItems value="#{applicationBean.tipoCasoAvailableList}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
+                            </h:selectOneMenu>
+                        </pm:field>
+
+                        <pm:field>
+                            <p:outputLabel for="idSubEstado" value="#{bundle.EditCasoLabel_idSubEstado}" style="font-weight: bold"/>
+                            <h:selectOneMenu id="idSubEstado" value="#{casoController.selected.idSubEstado}" required="true">
+                                <f:selectItems value="#{casoController.itemsSubEstadoCasoAvailableSelectOneCasoAbierto}" var="subEstad" itemDescription="#{subEstad.description}"/>
+                            </h:selectOneMenu>
+                        </pm:field>
+
+                        <pm:field>
+                            <p:outputLabel value="#{bundle.EditCasoLabel_idPrioridad}" for="idPrioridad" style="font-weight: bold"/>
+                            <h:selectOneMenu id="idPrioridad" value="#{casoController.selected.idPrioridad}" label="#{bundle.CreateCasoLabel_idPrioridad}" 
+                                             required="true" requiredMessage="La Prioridad del caso es un dato requerido.">
+                                <f:selectItems value="#{prioridadController.itemsAvailableSelectMany}"/>
+                            </h:selectOneMenu>
+                        </pm:field>  
+
+                        <pm:field>
+                            <p:outputLabel for="idArea" value="Área:" style="font-weight: bold"/>
+                            <h:selectOneMenu id="idArea"  value="#{casoController.selected.idArea}" label="Área:"
+                                             required="true" requiredMessage="Seleccione el Area en la cual crear el caso.">
+                                <f:selectItems value="#{areaController.itemsAvailableSelectMany}" />
+                            </h:selectOneMenu>
+                        </pm:field>
+
+                        <pm:field>
+
+                            <script type="text/javascript">
+                                $(function() { 
+                    
+                                    var tagApi =  jQuery(".tm-input").tagsManager({
+                                        prefilled: '#{casoController.selected.etiquetas}',
+                                        CapitalizeFirstLetter: true
+                                    });
+                    
+                                    jQuery(".tm-input").typeahead({
+                                        name: 'etiquetas',
+                                        remote: '#{facesContext.externalContext.requestContextPath}/TagListServlet?q=%QUERY',
+                                        limit: 10  
+                                    }).on('typeahead:selected', function (e, d) {
+ 
+                                        tagApi.tagsManager("pushTag", d.value);
+ 
+                                    });
+                                });
+                            </script>
+
+                            <p:outputLabel value="Etiquetas:" for="tags" style="font-weight: bold"/>
+                            <h:inputText id="tags" class="tm-input" value="#{casoController.selected.etiquetas}"/>
+                         
+                        </pm:field>
+
+                        <p:inputText id="idCasoPadre" value="#{casoController.selected.idCasoPadre}" label="#{bundle.CreateCasoLabel_idCasoPadre}">
+                            <pe:keyFilter mask="pint"/>
+                        </p:inputText>
+
+                        <pm:field>
+                            <p:commandButton type="submit" actionListener="#{casoController.createCaso()}" value="Crear Caso" update=":form3:messages3"/>
+                        </pm:field>
+
+                    </p:panel>
+
+
+
+
+
+
+                </h:form>
+
+            </pm:content>
+        </pm:view>
+
+
+    </pm:page>
+</f:view>

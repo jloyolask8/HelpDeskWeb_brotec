@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.CreateDocumentoTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{bundle.CreateDocumentoLabel_idDocumento}" for="idDocumento" />
+                    <h:inputText id="idDocumento" value="#{documentoController.selected.idDocumento}" title="#{bundle.CreateDocumentoTitle_idDocumento}" required="true" requiredMessage="#{bundle.CreateDocumentoRequiredMessage_idDocumento}"/>
+                    <h:outputLabel value="#{bundle.CreateDocumentoLabel_problema}" for="problema" />
+                    <h:inputTextarea rows="4" cols="30" id="problema" value="#{documentoController.selected.problema}" title="#{bundle.CreateDocumentoTitle_problema}" required="true" requiredMessage="#{bundle.CreateDocumentoRequiredMessage_problema}"/>
+                    <h:outputLabel value="#{bundle.CreateDocumentoLabel_causa}" for="causa" />
+                    <h:inputTextarea rows="4" cols="30" id="causa" value="#{documentoController.selected.causa}" title="#{bundle.CreateDocumentoTitle_causa}" required="true" requiredMessage="#{bundle.CreateDocumentoRequiredMessage_causa}"/>
+                    <h:outputLabel value="#{bundle.CreateDocumentoLabel_solucion}" for="solucion" />
+                    <h:inputTextarea rows="4" cols="30" id="solucion" value="#{documentoController.selected.solucion}" title="#{bundle.CreateDocumentoTitle_solucion}" />
+                    <h:outputLabel value="#{bundle.CreateDocumentoLabel_createdDate}" for="createdDate" />
+                    <h:inputText id="createdDate" value="#{documentoController.selected.createdDate}" title="#{bundle.CreateDocumentoTitle_createdDate}" required="true" requiredMessage="#{bundle.CreateDocumentoRequiredMessage_createdDate}">
+                        <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                    </h:inputText>
+                    <h:outputLabel value="#{bundle.CreateDocumentoLabel_updatedDate}" for="updatedDate" />
+                    <h:inputText id="updatedDate" value="#{documentoController.selected.updatedDate}" title="#{bundle.CreateDocumentoTitle_updatedDate}" >
+                        <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                    </h:inputText>
+                    <h:outputLabel value="#{bundle.CreateDocumentoLabel_visible}" for="visible" />
+                    <h:inputText id="visible" value="#{documentoController.selected.visible}" title="#{bundle.CreateDocumentoTitle_visible}" />
+                    <h:outputLabel value="#{bundle.CreateDocumentoLabel_createdBy}" for="createdBy" />
+                    <h:selectOneMenu id="createdBy" value="#{documentoController.selected.createdBy}" title="#{bundle.CreateDocumentoTitle_createdBy}" required="true" requiredMessage="#{bundle.CreateDocumentoRequiredMessage_createdBy}">
+                        <f:selectItems value="#{usuarioController.itemsAvailableSelectOneNoSystem}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{documentoController.create}" value="#{bundle.CreateDocumentoSaveLink}" />
+                <br />
+                <br />
+                <h:commandLink action="#{documentoController.prepareList}" value="#{bundle.CreateDocumentoShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.CreateDocumentoIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

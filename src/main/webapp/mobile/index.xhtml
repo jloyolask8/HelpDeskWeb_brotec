@@ -1,0 +1,114 @@
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:pm="http://primefaces.org/mobile"
+        contentType="text/html"
+        renderKitId="PRIMEFACES_MOBILE">
+
+    <pm:page title="Vistas">
+
+        <style>
+            .ticket-status {
+                border: 0 solid;
+                border-radius: 4px 4px 4px 4px;
+                box-shadow: 0 1px 0 0 #CCCCCC;
+                font-size: 10px;
+                padding: 0.2em 0.5em;
+                text-align: center;
+            }
+
+            .ui-li-custom .ui-li-count {
+                right: 10px !important;
+            }
+        </style>  
+
+        <!-- Main View -->
+        <pm:view id="main" swatch="#{casoController.swatch}">
+            <pm:header title="Inicio"></pm:header>
+
+            <pm:content>
+                <h:form id="mainForm">
+
+                    <p:dataList type="inset">
+                        <p:commandLink value="Nuevo Caso" actionListener="#{casoController.prepareCreate()}" onsuccess="window.location.href='new.xhtml';"/>
+                        <p:commandLink value="Vistas" action="pm:vistas" update=":vistasForm"/>
+                    </p:dataList>
+
+                </h:form>
+
+            </pm:content>
+
+            <pm:footer fixed="true">
+                <h:form>
+                    <p:commandButton value="Cerrar Sesión" ajax="false" action="pm:main" actionListener="#{loginController.logout_action()}" immediate="true"/>
+                </h:form>
+            </pm:footer>
+
+        </pm:view>
+
+        <pm:view id="vistas" swatch="#{casoController.swatch}">
+            <pm:header title="Vistas">
+                <f:facet name="left"><p:button value="Inicio" icon="home" iconPos="notext" href="#main?reverse=true"/></f:facet>
+            </pm:header>
+
+            <pm:content>
+
+                <p:growl  id="growl" />
+
+                <h:form id="vistasForm">
+                    <p:dataList type="ordered" value="#{vistaController.allVistasItems}" var="vista1" 
+                                rendered="#{not empty vistaController.visibleForAllItems}">
+                        <p:column>                            
+                            <p:commandLink id="link1" value="#{vista1.nombre}" style="font-weight: bold"
+                                           update=":casosForm:casosDataList" action="pm:casos">
+                                <f:setPropertyActionListener value="#{vista1}" target="#{casoController.vista}" />
+                            </p:commandLink>
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{vistaController.countCasosForView(vista1)}" styleClass="ui-li-count"/>
+                        </p:column>
+                    </p:dataList>
+                    <h:outputText value="No tiene ninguna vista creada." rendered="#{empty vistaController.visibleForAllItems}"/>
+                </h:form>
+
+            </pm:content>
+
+        </pm:view>
+
+        <!-- Lists -->
+        <pm:view id="casos" swatch="#{casoController.swatch}">
+            <pm:header title="Casos">
+                <f:facet name="left"><p:button value="Vistas" icon="back" iconPos="notext" href="#vistas?reverse=true"/></f:facet>
+            </pm:header>
+
+            <pm:content>
+
+                <h:form id="casosForm">
+                    <p:dataList id="casosDataList" value="#{casoController.items}" var="item">
+                        <p:column>
+                            <p:commandLink action="caso?faces-redirect=true" ajax="false" >
+                                <p><h:outputText styleClass="ticket-status" style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};" value="\##{item.idCaso}"/></p>
+                                <h3>#{item.tema}</h3>
+                                <p>#{item.owner.capitalName}</p>
+                                <p class="ui-li-aside"><h:outputText value="#{item.fechaCreacion}"><f:convertDateTime pattern="dd-MMM-yy"/></h:outputText></p>
+                                <f:setPropertyActionListener value="#{item}" target="#{casoController.currentCaso}" />
+                            </p:commandLink>
+                        </p:column>                     
+                    </p:dataList>
+                    <br/>
+                    <pm:buttonGroup orientation="horizontal" rendered="#{casoController.pagination.itemsCount > 0}">
+                        <p:commandButton value="Atrás" icon="arrow-l" actionListener="#{casoController.previous}" update=":casosForm" rendered="#{casoController.pagination.hasPreviousPage}"/>
+                        <p:commandButton value="Siguiente" icon="arrow-r" actionListener="#{casoController.next}" update=":casosForm" rendered="#{casoController.pagination.hasNextPage}"/>
+                    </pm:buttonGroup>
+
+                </h:form>
+
+            </pm:content>
+
+        </pm:view>
+
+    </pm:page>
+
+</f:view>

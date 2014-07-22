@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="Black List"></h:outputText>
+        </ui:define>
+
+        <ui:define name="west">
+            <p:accordionPanel multiple="true" cache="true" >
+                <p:tab title="Black List" >
+                    <h:outputLabel escape="false" value=""/>
+                </p:tab>
+            </p:accordionPanel>
+        </ui:define>
+
+        <ui:define name="body">
+            <h:form id="form">
+                <h:panelGroup >                  
+
+                    <p:dataTable widgetVar="table" var="item" value="#{blackListController.items}"
+                                 emptyMessage="No se encontraron direcciones en esta lista." 
+                                 resizableColumns="true" >
+
+                        <f:facet name="header">  
+                            <h:outputText value="Lista negra de direcciones email (#{blackListController.pagination.pageFirstItem + 1} - #{blackListController.pagination.pageLastItem + 1} de #{blackListController.pagination.itemsCount})"></h:outputText>                           
+                        </f:facet>   
+
+                        <p:column headerText="Correo">
+                            <h:outputText value="#{item.emailAddress}"/>
+                        </p:column>
+
+                        <p:column headerText="Descripción">
+                            <h:outputText value="#{item.description}"/>
+                        </p:column>  
+
+                        <p:column headerText="Acción">                           
+                            <p:commandButton id="editBtn" action="#{blackListController.prepareEdit(item)}" 
+                                             update=":formEdit"
+                                             oncomplete="editDialog.show()"
+                                             title="Editar" icon="ui-icon ui-icon-pencil" 
+                                             rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
+                            
+                            <p:commandButton id="showDialogButton" title="Eliminar" update=":formDelete" 
+                                             action="#{blackListController.prepareEdit(item)}" oncomplete="confirmation.show()" icon="ui-icon ui-icon-trash" 
+                                             rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
+                        </p:column>
+
+                        <f:facet name="footer">
+                            <p:toolbar style="border: none;">
+                                <p:toolbarGroup align="center">
+
+                                    <p:outputLabel value="Páginas de "/>
+
+                                    <p:selectOneMenu id="cant" value="#{blackListController.paginationPageSize}" style="top: 7px">
+                                        <p:ajax event="change" listener="#{blackListController.resetPageSize()}" update=":form"/>
+                                        <f:selectItems value="#{blackListController.pagination.pageSizesAvailable}"/>
+                                    </p:selectOneMenu>
+
+                                    <p:separator/>
+
+                                    <p:commandButton ajax="false" action="#{blackListController.first}" disabled="#{not blackListController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{blackListController.pagination.itemsCount > 0}"/>
+
+                                    <p:commandButton ajax="false" action="#{blackListController.previous}" disabled="#{not blackListController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{blackListController.pagination.itemsCount > 0}"/>
+
+                                    <p:commandButton ajax="false" action="#{blackListController.next}" disabled="#{not blackListController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{blackListController.pagination.itemsCount > 0}"/>
+
+                                    <p:commandButton ajax="false" action="#{blackListController.last}" disabled="#{not blackListController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{blackListController.pagination.itemsCount > 0}"/>
+
+                                    <p:separator/>
+
+                                    <p:commandButton action="#{blackListController.prepareCreate()}" oncomplete="addEditDialog.show();" 
+                                                      update=":formAddEdit"
+                                                     value="Agregar Dirección a Lista Negra"  icon="ui-icon ui-icon-plus" /> 
+                                </p:toolbarGroup>
+                            </p:toolbar>
+
+                        </f:facet> 
+                    </p:dataTable>
+                </h:panelGroup>
+
+            </h:form>
+        </ui:define>
+
+        <ui:define name="dialogs">
+            <h:form id="formDelete">
+                <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
+                          header="Iniciando proceso de eliminación" widgetVar="confirmation">
+
+                    <h:outputText value="Está seguro de Quitar la dirección #{blackListController.selected.emailAddress} de la lista ?"/>
+
+                    <f:facet name="footer">
+                        <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{blackListController.destroySelected()}" 
+                                         update=":form" oncomplete="confirmation.hide()"/>
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
+                    </f:facet>
+
+                </p:dialog>
+            </h:form>
+
+
+            <h:form id="formAddEdit">
+                <p:dialog id="addEditDialog" showEffect="fade" hideEffect="fade"  
+                          header="Agregar Dirección de correo" widgetVar="addEditDialog">
+
+                    <h:panelGrid columns="3">
+
+                        <h:outputLabel value="Email address:" for="emailAddress" style="font-weight: bold"/>
+                        <p:inputText id="emailAddress" value="#{blackListController.selected.emailAddress}" validator="#{inputValidationBean.validarEmail}" 
+                                     required="true" requiredMessage="#{bundle.CreateCanalRequiredMessage_idCanal}"/>
+                        <p:message for="emailAddress"/>
+                    
+                        <h:outputLabel value="Descripción:" for="descripcion" style="font-weight: bold"/>
+                        <p:inputTextarea id="descripcion" value="#{blackListController.selected.description}" />
+                        <p:message for="descripcion"/>
+
+                    </h:panelGrid>
+
+                    <f:facet name="footer">                       
+                        <p:commandButton action="#{blackListController.create()}" value="Guardar" update=":formAddEdit :form"
+                                         oncomplete="addEditDialog.hide()" />                               
+
+                        <p:commandButton id="canncel" value="Cancelar" onclick="addEditDialog.hide()" type="button" /> 
+                    </f:facet>
+
+                </p:dialog>
+            </h:form>
+            
+             <h:form id="formEdit">
+                <p:dialog id="editDialog" showEffect="fade" hideEffect="fade"  
+                          header="Actualizar Dirección de correo" widgetVar="editDialog">
+
+                    <h:panelGrid columns="3">
+
+                        <h:outputLabel value="Email address:" for="emailAddress" style="font-weight: bold"/>
+                        <p:inputText id="emailAddress" disabled="true" readonly="true" value="#{blackListController.selected.emailAddress}" validator="#{inputValidationBean.validarEmail}" 
+                                     required="true" requiredMessage="#{bundle.CreateCanalRequiredMessage_idCanal}"/>
+                        <p:message for="emailAddress"/>
+                    
+                        <h:outputLabel value="Descripción:" for="descripcion" style="font-weight: bold"/>
+                        <p:inputTextarea id="descripcion" value="#{blackListController.selected.description}" />
+                        <p:message for="descripcion"/>
+
+                    </h:panelGrid>
+
+                    <f:facet name="footer">                       
+                    
+                        <p:commandButton action="#{blackListController.update()}" value="Actualizar" update=":formAddEdit :form"
+                                         oncomplete="addEditDialog.hide()" />            
+
+                        <p:commandButton id="canncel" value="Cancelar" onclick="addEditDialog.hide()" type="button" /> 
+                    </f:facet>
+
+                </p:dialog>
+            </h:form>
+
+        </ui:define>
+    </ui:composition>
+
+</html>

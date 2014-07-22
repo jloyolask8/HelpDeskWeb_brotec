@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.CreateTipoNotaTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{bundle.CreateTipoNotaLabel_idTipoNota}" for="idTipoNota" />
+                    <h:inputText id="idTipoNota" value="#{tipoNotaController.selected.idTipoNota}" title="#{bundle.CreateTipoNotaTitle_idTipoNota}" required="true" requiredMessage="#{bundle.CreateTipoNotaRequiredMessage_idTipoNota}"/>
+                    <h:outputLabel value="#{bundle.CreateTipoNotaLabel_nombre}" for="nombre" />
+                    <h:inputText id="nombre" value="#{tipoNotaController.selected.nombre}" title="#{bundle.CreateTipoNotaTitle_nombre}" required="true" requiredMessage="#{bundle.CreateTipoNotaRequiredMessage_nombre}"/>
+                    <h:outputLabel value="#{bundle.CreateTipoNotaLabel_descripcion}" for="descripcion" />
+                    <h:inputText id="descripcion" value="#{tipoNotaController.selected.descripcion}" title="#{bundle.CreateTipoNotaTitle_descripcion}" />
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{tipoNotaController.create}" value="#{bundle.CreateTipoNotaSaveLink}" />
+                <br />
+                <br />
+                <h:commandLink action="#{tipoNotaController.prepareList}" value="#{bundle.CreateTipoNotaShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.CreateTipoNotaIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.EditUsuarioTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="west">
+            <p:accordionPanel multiple="true" cache="true" id="accionesaccordion1">
+                <p:tab title="Usuarios" id="accionestab1">
+                    <h:outputLabel escape="false" value="#{bundle.ayudaUsuarios}"/>
+                </p:tab>
+            </p:accordionPanel>
+        </ui:define>
+        <ui:define name="body">
+
+            <h:form>
+                <p:panel header="#{bundle.EditUsuarioTitle}"> 
+
+                    <p:messages showDetail="true"/>
+
+                    <p:tabView id="tabView" effect="fade" effectDuration="normal" dynamic="true" cache="true" activeIndex="#{UserSessionBean.activeIndexOfMyAccount}">  
+
+                        <p:tab title="Datos Personales"> 
+                            <h:panelGrid columns="3" cellpadding="6">
+                                <h:outputLabel value="Rut" for="rut" style="font-weight:bold"/>
+
+                                <h:panelGrid>
+                                    <p:inputText id="rut" value="#{UserSessionBean.current.rut}" title="Rut del usuario"
+                                                 validator="#{inputValidationBean.validarRut}" required="true" requiredMessage="El Rut es requerido.">
+                                    </p:inputText>
+                                    <h:outputText value="Formato Rut: Con puntos y guión."/>
+                                </h:panelGrid>
+
+                                <p:message for="rut" />
+
+                                <h:outputLabel value="#{bundle.EditUsuarioLabel_nombres}" for="nombres" style="font-weight:bold"/>
+                                <p:inputText id="nombres" value="#{UserSessionBean.current.nombres}" title="#{bundle.EditUsuarioTitle_nombres}" size="40">
+                                    <pe:keyFilter mask="alphanum"/>
+                                </p:inputText>
+                                <p:message for="nombres" />
+
+                                <h:outputLabel value="#{bundle.EditUsuarioLabel_apellidos}" for="apellidos" style="font-weight:bold"/>
+                                <p:inputText id="apellidos" value="#{UserSessionBean.current.apellidos}" title="#{bundle.EditUsuarioTitle_apellidos}" size="40">
+                                    <pe:keyFilter mask="alphanum"/>
+                                </p:inputText>
+                                <p:message for="apellidos" />
+
+                                <h:outputLabel value="#{bundle.EditUsuarioLabel_email}" for="email" style="font-weight:bold"/>
+                                <p:inputText id="email" value="#{UserSessionBean.current.email}" title="#{bundle.EditUsuarioTitle_email}" size="40">
+                                    <pe:keyFilter mask="email"/>
+                                </p:inputText>
+                                <p:message for="email" />
+
+                                <h:outputLabel value="#{bundle.EditUsuarioLabel_telFijo}" for="telFijo" style="font-weight:bold"/>
+                                <p:inputText id="telFijo" value="#{UserSessionBean.current.telFijo}" title="#{bundle.EditUsuarioTitle_telFijo}" size="40">
+                                    <pe:keyFilter mask="num"/>
+                                </p:inputText>
+                                <p:message for="telFijo" />
+
+                                <h:outputLabel value="#{bundle.EditUsuarioLabel_telMovil}" for="telMovil" style="font-weight:bold" />
+                                <p:inputText id="telMovil" value="#{UserSessionBean.current.telMovil}" title="#{bundle.EditUsuarioTitle_telMovil}" size="40">
+                                    <pe:keyFilter mask="num"/>
+                                </p:inputText>
+                                <p:message for="telMovil" />
+
+                            </h:panelGrid>
+                        </p:tab>
+
+
+                        <p:tab title="Datos del Sistema"> 
+
+                            <h:panelGrid columns="2" cellpadding="6">
+                                <h:outputLabel value="#{bundle.EditUsuarioLabel_idUsuario}" for="idUsuario" style="font-weight:bold"/>
+                                <h:outputText id="idUsuario" value="#{UserSessionBean.current.idUsuario}" />                             
+
+
+                                <h:outputLabel value="#{bundle.EditUsuarioLabel_activo}" for="activo" style="font-weight:bold"/>
+                                <h:outputText id="activo" value="#{UserSessionBean.current.activo?'yes':'no'}"/>
+
+                                <h:outputLabel value="#{bundle.EditUsuarioLabel_supervisor}" for="supervisor" style="font-weight:bold"/>
+                                <h:outputText id="supervisor" value="#{UserSessionBean.current.supervisor}"/>
+
+                                <h:outputLabel value="Grupos:" for="idGrupo" style="font-weight:bold"/>
+                                <p:dataTable id="idGrupo" var="g" value="#{UserSessionBean.current.grupoList}"                               
+                                             emptyMessage="El agente no esta en ningún grupo." >                             
+
+                                    <p:column headerText="#{bundle.ListGrupoTitle_idGrupo}">
+                                        <p:commandLink ajax="false" action="#{grupoController.prepareView(g)}" disabled="#{not grupoController.puedeEditar(g)}" 
+                                                       title="ver grupo" value="#{g.idGrupo}" />
+                                    </p:column>
+                                    <p:column headerText="#{bundle.ListGrupoTitle_nombre}">
+                                        <p:outputLabel value="#{g.nombre}" />
+                                    </p:column>
+
+                                </p:dataTable>
+
+                                <h:outputLabel value="Roles" style="font-weight:bold"/>
+                                <p:dataTable id="idRol" var="rol" value="#{UserSessionBean.current.rolList}"                               
+                                             emptyMessage="El agente no tiene roles asignados." >                             
+
+                                    <f:facet name="header">
+                                        <h:outputText value="Roles Asignados"/>
+                                    </f:facet>
+                                    <p:column>
+                                        <p:outputLabel value="#{rol.nombre}" />
+                                    </p:column>
+
+                                </p:dataTable>
+
+                            </h:panelGrid>
+                        </p:tab>
+
+                        <p:tab title="Preferencias"> 
+
+                            <h:panelGrid columns="3" cellpadding="6">
+                                <h:outputLabel value="Tema de colores:" for="statefulSwitcher"/> 
+
+
+                                <p:themeSwitcher value="#{UserSessionBean.current.theme}" style="width:200px" effect="fade" id="statefulSwitcher" 
+                                                 required="true" requiredMessage="Debe seleccionar un Tema" var="t">
+                                    <f:selectItem itemLabel="Seleccione un Tema" itemValue="" />
+                                    <f:selectItems value="#{UserSessionBean.advancedThemes}" var="theme" itemLabel="#{theme.name}" itemValue="#{theme}"/>
+                                    <p:column>  
+                                        <p:graphicImage value="/images/themes/#{t.image}"/>  
+                                    </p:column>  
+
+                                    <p:column>  
+                                        #{t.name}  
+                                    </p:column> 
+                                    <p:ajax listener="#{UserSessionBean.saveTheme}" />
+                                </p:themeSwitcher>
+                                <p:message for="statefulSwitcher" />
+                            </h:panelGrid>
+
+
+
+                        </p:tab>
+
+                    </p:tabView>
+
+
+                    <f:facet name="footer">
+                        <p:commandButton ajax="false" action="#{UserSessionBean.updateUsuario}" value="#{bundle.EditUsuarioSaveLink}"/>
+
+                    </f:facet>
+
+                </p:panel>            
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

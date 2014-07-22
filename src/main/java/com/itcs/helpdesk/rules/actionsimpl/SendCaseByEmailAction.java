@@ -1,0 +1,48 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.itcs.helpdesk.rules.actionsimpl;
+
+import com.itcs.helpdesk.persistence.entities.Caso;
+import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
+import com.itcs.helpdesk.rules.Action;
+import com.itcs.helpdesk.rules.ActionExecutionException;
+import com.itcs.helpdesk.util.Log;
+import com.itcs.helpdesk.util.MailNotifier;
+import org.apache.commons.lang3.StringUtils;
+
+/**
+ *
+ * @author jonathan
+ */
+public class SendCaseByEmailAction extends Action {
+
+//    public static final String EMAIL_TO_FIELD_KEY = "emailsToFieldKey";
+//    public static final String ACTION_CLASS = "actionclass";
+    public SendCaseByEmailAction(JPAServiceFacade jpaController) {
+        super(jpaController);
+    }
+
+    @Override
+    public void execute(Caso caso) throws ActionExecutionException {
+
+        caso = getJpaController().find(Caso.class, caso.getIdCaso());
+        Log.createLogger(SendCaseByEmailAction.class.getName()).logSevere("SendCaseByEmailAction.execute on " + caso);
+       
+        String destinationEmails = getConfig();//Gets the parametros, setted 
+        if (StringUtils.isEmpty(destinationEmails)) {
+            throw new ActionExecutionException("Esta accion necesita parametros (destination Email addresses) para poder executarse.");
+        } else {
+            String[] emails = destinationEmails.split(",");
+            for (String email : emails) {
+                try {
+                    MailNotifier.notifyCasoAsHtmlEmail(caso, email);
+                } catch (Exception ex) {
+                    throw new ActionExecutionException("Error al tratar de enviar caso por email a " + destinationEmails + " favor verifique la configuración de correo.", ex);
+                }
+            }
+        }
+
+    }
+}

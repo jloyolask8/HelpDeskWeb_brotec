@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.EditDocumentoTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{bundle.EditDocumentoLabel_idDocumento}" for="idDocumento" />
+                    <h:inputText id="idDocumento" value="#{documentoController.selected.idDocumento}" title="#{bundle.EditDocumentoTitle_idDocumento}" required="true" requiredMessage="#{bundle.EditDocumentoRequiredMessage_idDocumento}"/>
+                    <h:outputLabel value="#{bundle.EditDocumentoLabel_problema}" for="problema" />
+                    <h:inputTextarea rows="4" cols="30" id="problema" value="#{documentoController.selected.problema}" title="#{bundle.EditDocumentoTitle_problema}" required="true" requiredMessage="#{bundle.EditDocumentoRequiredMessage_problema}"/>
+                    <h:outputLabel value="#{bundle.EditDocumentoLabel_causa}" for="causa" />
+                    <h:inputTextarea rows="4" cols="30" id="causa" value="#{documentoController.selected.causa}" title="#{bundle.EditDocumentoTitle_causa}" required="true" requiredMessage="#{bundle.EditDocumentoRequiredMessage_causa}"/>
+                    <h:outputLabel value="#{bundle.EditDocumentoLabel_solucion}" for="solucion" />
+                    <h:inputTextarea rows="4" cols="30" id="solucion" value="#{documentoController.selected.solucion}" title="#{bundle.EditDocumentoTitle_solucion}" />
+                    <h:outputLabel value="#{bundle.EditDocumentoLabel_createdDate}" for="createdDate" />
+                    <h:inputText id="createdDate" value="#{documentoController.selected.createdDate}" title="#{bundle.EditDocumentoTitle_createdDate}" required="true" requiredMessage="#{bundle.EditDocumentoRequiredMessage_createdDate}">
+                        <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                    </h:inputText>
+                    <h:outputLabel value="#{bundle.EditDocumentoLabel_updatedDate}" for="updatedDate" />
+                    <h:inputText id="updatedDate" value="#{documentoController.selected.updatedDate}" title="#{bundle.EditDocumentoTitle_updatedDate}" >
+                        <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                    </h:inputText>
+                    <h:outputLabel value="#{bundle.EditDocumentoLabel_visible}" for="visible" />
+                    <h:inputText id="visible" value="#{documentoController.selected.visible}" title="#{bundle.EditDocumentoTitle_visible}" />
+                    <h:outputLabel value="#{bundle.EditDocumentoLabel_createdBy}" for="createdBy" />
+                    <h:selectOneMenu id="createdBy" value="#{documentoController.selected.createdBy}" title="#{bundle.EditDocumentoTitle_createdBy}" required="true" requiredMessage="#{bundle.EditDocumentoRequiredMessage_createdBy}">
+                        <f:selectItems value="#{usuarioController.itemsAvailableSelectOneNoSystem}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <h:commandLink action="#{documentoController.update}" value="#{bundle.EditDocumentoSaveLink}"/>
+                <br />
+                <br />
+                <h:link outcome="View" value="#{bundle.EditDocumentoViewLink}"/>
+                <br />
+                <h:commandLink action="#{documentoController.prepareList}" value="#{bundle.EditDocumentoShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.EditDocumentoIndexLink}" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

@@ -1,0 +1,49 @@
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:pm="http://primefaces.org/mobile"
+        contentType="text/html"
+        renderKitId="PRIMEFACES_MOBILE">
+
+    <pm:page title="Bienvenido a #{applicationBean.helpdeskTitle} Login">    
+
+        <!-- Main View -->
+        <pm:view id="main" swatch="#{casoController.swatch}">
+            <pm:header title="Bienvenido a #{applicationBean.helpdeskTitle}">
+            </pm:header>
+
+            <pm:content>
+
+                <h:form id="formlogin">
+                    
+                    <p:growl  id="growl" />
+
+                    <p:outputPanel id="content">
+                        <pm:field>
+                            <h:outputLabel for="usuario" value="Nombre de Usuario:" />
+                            <p:inputText id="usuario" value="#{loginController.username}" required="true" requiredMessage="Ingrese su Nombre de Usuario." />  
+                            <p:message for="usuario"/>
+                        </pm:field>
+                        
+                        <pm:field>
+                            <h:outputLabel for="pass" value="Contraseña:" />
+                            <p:password id="pass" value="#{loginController.password}" required="true" requiredMessage="Ingrese su contraseña." />  
+                            <p:message for="pass"/>
+                        </pm:field>                        
+
+                        <p:commandButton type="submit" action="#{loginController.loginAction}"
+                                         value="#{bundle.LoginUsuario}" update=":formlogin"                                                   
+                                         icon="ui-icon-check"/>
+                    </p:outputPanel>        
+
+                </h:form>                                
+
+            </pm:content>
+
+        </pm:view>
+
+    </pm:page>
+
+</f:view>

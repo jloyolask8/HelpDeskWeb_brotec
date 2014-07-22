@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:pe="http://primefaces.org/ui/extensions">
+    <f:view contentType="text/html" encoding="UTF-8">
+        <h:head>
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <title>Cambiar Contraseña</title>
+            <style type="text/css">
+
+                body {
+                    margin: 0px;
+                    padding: 0;
+                    font-size: 12px;
+                }
+
+                #blockUIContent td {  
+                    border: none !important;  
+                    padding: 0 !important;  
+                }  
+
+            </style>
+        </h:head>
+
+        <h:body>
+
+            <h:form id="changePassForm">
+                <p:messages id="messages" showDetail="true" autoUpdate="true"/>  
+                <h:panelGroup id="panelGroup" layout="block" style="margin-right: 20px;">
+                    <p:panel widgetVar="changePassDialog" header="Cambiar Contraseña" >
+                        <h:panelGrid columns="2" id="matchGrid">                     
+                            <h:outputLabel for="pwd" value="Contraseña Actual: *" />  
+                            <p:password id="pwd" value="#{loginController.passwordCurrent}" label="Contraseña Actual" required="true" />  
+
+                            <h:outputLabel for="pwd1" value="Nueva Contraseña: *" />  
+                            <p:password id="pwd1" value="#{loginController.passwordNew1}" match="pwd2" label="Nueva Contraseña" required="true" feedback="true" 
+                                        promptLabel="Favor ingrese contraseña" weakLabel="Débil"  
+                                        goodLabel="Buena" strongLabel="Fuerte" />  
+
+                            <h:outputLabel for="pwd2" value="Repita Nueva Contraseña: *" />  
+                            <p:password id="pwd2" value="#{loginController.passwordNew2}" label="Repita Nueva Contraseña" required="true" feedback="true"   
+                                        promptLabel="Favor repita contraseña" weakLabel="Débil"  
+                                        goodLabel="Buena" strongLabel="Fuerte"/>  
+                        </h:panelGrid> 
+                        <f:facet name="footer">
+                            <p:commandButton id="saveButton" update=":changePassForm" value="Cambiar" action="#{loginController.changePass()}"
+                                             onstart="blockUIWidget1.block()" oncomplete="blockUIWidget1.unblock()"/>  
+                        </f:facet>
+                    </p:panel>
+                </h:panelGroup>
+
+                <pe:blockUI target="panelGroup" widgetVar="blockUIWidget1">  
+                    <h:panelGrid columns="2">  
+                        <p:graphicImage value="/images/ajax-loader1.gif" 
+                                        style="margin-right: 12px; vertical-align: middle;"/>  
+                        <h:outputText value="Cargando..." style="white-space: nowrap;"/>  
+                    </h:panelGrid>  
+                </pe:blockUI> 
+
+                <h:panelGrid id="blockUIContent" columns="2" style="display:none;">  
+                    <h:graphicImage library="images" name="ajax-loader1.gif"  
+                                    style="margin-right: 12px; vertical-align: middle;"/>  
+                    <h:outputText value="Please wait, data is being processed..." style="white-space: nowrap;"/>  
+                </h:panelGrid>  
+            </h:form>
+
+
+        </h:body>
+    </f:view>
+</html>
+
+
