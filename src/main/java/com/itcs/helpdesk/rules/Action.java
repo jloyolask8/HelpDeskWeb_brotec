@@ -19,13 +19,10 @@ import java.util.Properties;
 public abstract class Action {
 
     private JPAServiceFacade jpaController = null;
-    private ManagerCasos managerCasos;
-
-    /**
-     * config represents the parametros column in DB, it can be any String
-     * representation of data that Action needs to execute its purpose.
-     *
-     * 
+    private final ManagerCasos managerCasos;
+    
+     /**
+     * config represents the parametros column in DB, it can be any String representation of data that Action needs to execute its purpose.
      */
     private String config;
 
