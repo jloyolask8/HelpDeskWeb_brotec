@@ -91,7 +91,7 @@
 
             <h:form>
 
-                <p:panel header="Detalles del Producto ">
+                <p:panel header="Detalles de #{applicationBean.productSubComponentDescription}">
 
                     <h:panelGrid columns="2">
                         
@@ -154,9 +154,9 @@
                     </h:panelGrid>
 
                     <f:facet name="footer">
-                        <p:commandButton ajax="false" action="#{productoController.update}" value="#{bundle.EditSubComponenteSaveLink}"/>
+                        <p:commandButton ajax="false" action="#{productoController.updateCurrentSubComponente}" value="#{bundle.EditSubComponenteSaveLink}"/>
 
-                        <p:commandButton ajax="false" action="/script/producto/Edit" value="Volver atrás"/>
+                        <p:commandButton ajax="false" action="#{productoController.getCurrentSubComponenteBackOutcome()}" value="Volver atrás"/>
                     </f:facet>
 
                 </p:panel>

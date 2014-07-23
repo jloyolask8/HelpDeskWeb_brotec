@@ -181,6 +181,7 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
     }
 
     public Date getNow() {
+        //please improve this to use calendar instance get time
         return new java.util.Date();
     }
 

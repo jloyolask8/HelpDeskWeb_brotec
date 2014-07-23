@@ -16,6 +16,8 @@ import com.itcs.helpdesk.persistence.entities.Caso_;
 import com.itcs.helpdesk.persistence.entities.Categoria;
 import com.itcs.helpdesk.persistence.entities.Cliente;
 import com.itcs.helpdesk.persistence.entities.EmailCliente;
+import com.itcs.helpdesk.persistence.entities.FiltroVista;
+import com.itcs.helpdesk.persistence.entities.Grupo;
 import com.itcs.helpdesk.persistence.entities.ModeloProducto;
 import com.itcs.helpdesk.persistence.entities.ModeloProductoPK;
 import com.itcs.helpdesk.persistence.entities.Nota;
@@ -25,12 +27,14 @@ import com.itcs.helpdesk.persistence.entities.Recinto;
 import com.itcs.helpdesk.persistence.entities.SubEstadoCaso;
 import com.itcs.helpdesk.persistence.entities.TipoCaso;
 import com.itcs.helpdesk.persistence.entities.Usuario;
+import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.entityenums.EnumAreas;
 import com.itcs.helpdesk.persistence.entityenums.EnumCanal;
 import com.itcs.helpdesk.persistence.entityenums.EnumEstadoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumPrioridad;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso;
+import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoNota;
 import com.itcs.helpdesk.persistence.entityenums.EnumUsuariosBase;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
@@ -93,6 +97,74 @@ public class ManagerCasos implements Serializable {
 
     private JPAServiceFacade getJpaController() {
         return jpaController;
+    }
+
+    public long countCasosByUsuario(Usuario user) {
+
+        try {
+            Vista vista = new Vista(Caso.class);
+
+            vista.setNombre("count");
+
+            FiltroVista filtroOwner = new FiltroVista();
+            filtroOwner.setIdFiltro(1);//otherwise i dont know what to remove dude.
+            filtroOwner.setIdCampo(Caso_.OWNER_FIELD_NAME);
+            filtroOwner.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+            filtroOwner.setValor(user.getIdUsuario());
+            filtroOwner.setIdVista(vista);
+
+            vista.getFiltrosVistaList().add(filtroOwner);
+
+            FiltroVista filtroEstado = new FiltroVista();
+            filtroEstado.setIdFiltro(2);//otherwise i dont know what to remove dude.
+            filtroEstado.setIdCampo(Caso_.ESTADO_FIELD_NAME);
+            filtroEstado.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+            filtroEstado.setValor(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
+            filtroEstado.setIdVista(vista);
+
+            vista.getFiltrosVistaList().add(filtroEstado);
+
+            return getJpaController().countEntities(vista, null);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, null, ex);
+            return 0L;
+        }
+    }
+
+    public void asignarCasoAUsuarioConMenosCasos(Grupo grupo, Caso caso) throws Exception {
+
+//        System.out.println("asignarCasoAUsuarioConMenosCasos..." + grupo.getUsuarioList());
+        Usuario usuarioConMenosCasos = null;
+        for (Usuario usuario : grupo.getUsuarioList()) {
+            if (usuario.getActivo()) {
+                if (usuarioConMenosCasos == null) {
+                    usuarioConMenosCasos = usuario;
+                } else {
+                    final long countCasosByUsuario = countCasosByUsuario(usuarioConMenosCasos);
+                    final long countCasosByUsuario1 = countCasosByUsuario(usuario);
+
+//                    System.out.println("usuario " + usuarioConMenosCasos + " tiene " + countCasosByUsuario);
+//                    System.out.println("usuario " + usuario + " tiene " + countCasosByUsuario1);
+                    if (countCasosByUsuario > countCasosByUsuario1) {
+                        usuarioConMenosCasos = usuario;
+                    }
+                }
+            }
+        }
+        if (usuarioConMenosCasos != null) {
+            caso.setOwner(usuarioConMenosCasos);
+            System.out.println("asignarCaso " + caso.getIdCaso() + " A UsuarioConMenosCasos:" + usuarioConMenosCasos);
+            getJpaController().mergeCasoWithoutNotify(caso);
+
+            if (ApplicationConfig.isSendNotificationOnTransfer()) {
+                try {
+                    MailNotifier.notifyCasoAssigned(caso, null);
+                } catch (Exception ex) {
+                    Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "No se puede enviar notificacion por correo al agente asignado, dado que el area es null.", ex);
+                }
+            }
+
+        }
     }
 
 //    public void calcularSLA(Caso caso, Date fecha) throws SchedulerException {
@@ -625,7 +697,7 @@ public class ManagerCasos implements Serializable {
             //Cuando este activo acuse de recibo.
             if (caso.getIdCanal() != null) {
 //                if (caso.getIdCanal().getEmailAcusederecibo() != null && caso.getIdArea().getEmailAcusederecibo()) {
-                    MailNotifier.emailClientCasoReceived(caso);
+                MailNotifier.emailClientCasoReceived(caso);
 //                enviarRespuestaAutomatica(caso, caso.getEmailCliente().getEmailCliente());
 //                }
             }
@@ -670,7 +742,7 @@ public class ManagerCasos implements Serializable {
                         cliente_record.setFono1(uCliente.getTelFijo());
                         emailCliente.setCliente(cliente_record);
                         getJpaController().persistEmailCliente(emailCliente);
-                    }else{
+                    } else {
                         emailCliente.setCliente(persistentClientByRut);
                         getJpaController().persistEmailCliente(emailCliente);
                     }
@@ -1125,7 +1197,7 @@ public class ManagerCasos implements Serializable {
 //            Log.createLogger(CasoController.class.getName()).log(Level.INFO, null, ex);
 //        }
 //    }
-    public void crearAdjunto(byte[] bytearray, String contentId, Caso caso, String nombre, String mimeType) throws Exception {
+    public Attachment crearAdjunto(byte[] bytearray, String contentId, Caso caso, String nombre, String mimeType) throws Exception {
 
         String fileName = nombre.trim().replace(" ", "_");
         Archivo archivo = new Archivo();
@@ -1151,6 +1223,7 @@ public class ManagerCasos implements Serializable {
         archivo.setIdAttachment(attach.getIdAttachment());
         getJpaController().persistArchivo(archivo);
         getJpaController().persistAuditLog(createLogReg(caso, "Archivo subido", fileName, ""));
+        return attach;
     }
 
     private String parseHtmlToText(String textoTxt) {

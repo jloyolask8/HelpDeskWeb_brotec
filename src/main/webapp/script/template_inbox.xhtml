@@ -201,10 +201,10 @@
             </pe:layout>  
 
 
-
             <p:dialog modal="false" widgetVar="statusDialog" header="Cargando..."   
                       draggable="false" closable="false" resizable="false">  
-                <p:graphicImage value="/images/ajax-loader1.gif" />  
+                  <p:outputLabel value="Espere..."/>
+                 <p:graphicImage library="images" name="ajaxloadingbar.gif" />
             </p:dialog>
 
             <p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();"/>

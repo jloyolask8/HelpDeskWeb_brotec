@@ -7,6 +7,7 @@ import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Archivo;
+import com.itcs.helpdesk.persistence.entities.Area;
 import com.itcs.helpdesk.persistence.entities.Attachment;
 import com.itcs.helpdesk.persistence.entities.AuditLog;
 import com.itcs.helpdesk.persistence.entities.BlackListEmail;
@@ -19,11 +20,14 @@ import com.itcs.helpdesk.persistence.entities.EmailCliente;
 import com.itcs.helpdesk.persistence.entities.EstadoCaso;
 import com.itcs.helpdesk.persistence.entities.Etiqueta;
 import com.itcs.helpdesk.persistence.entities.FiltroVista;
+import com.itcs.helpdesk.persistence.entities.Grupo;
 import com.itcs.helpdesk.persistence.entities.Item;
 import com.itcs.helpdesk.persistence.entities.ModeloProducto;
+import com.itcs.helpdesk.persistence.entities.NombreAccion;
 import com.itcs.helpdesk.persistence.entities.Nota;
 import com.itcs.helpdesk.persistence.entities.Recinto;
 import com.itcs.helpdesk.persistence.entities.ReglaTrigger;
+import com.itcs.helpdesk.persistence.entities.ScheduleEvent;
 import com.itcs.helpdesk.persistence.entities.SubEstadoCaso;
 import com.itcs.helpdesk.persistence.entities.TipoAlerta;
 import com.itcs.helpdesk.persistence.entities.TipoNota;
@@ -32,6 +36,7 @@ import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.entityenums.EnumCanal;
 import com.itcs.helpdesk.persistence.entityenums.EnumEstadoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumFunciones;
+import com.itcs.helpdesk.persistence.entityenums.EnumNombreAccion;
 import com.itcs.helpdesk.persistence.entityenums.EnumPrioridad;
 import com.itcs.helpdesk.persistence.entityenums.EnumSubEstadoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta;
@@ -48,6 +53,7 @@ import com.itcs.helpdesk.quartz.HelpDeskScheluder;
 import com.itcs.helpdesk.reports.ReportsManager;
 import com.itcs.helpdesk.rules.Action;
 import com.itcs.helpdesk.rules.ActionExecutionException;
+import com.itcs.helpdesk.rules.actionsimpl.CrearCasoVisitaRepSellosAction;
 import com.itcs.helpdesk.util.ApplicationConfig;
 import com.itcs.helpdesk.util.ClippingsPlaceHolders;
 import com.itcs.helpdesk.util.DateUtils;
@@ -94,7 +100,6 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.mail.EmailAttachment;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -197,11 +202,27 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private String accionToRunSelected;
     private String accionToRunParametros;
     private int activeIndexdescOrComment;
+    //visita preventiva
+//    private transient Set<Item> visitaPreventivaItemsAReparar;
+    private transient TreeNode[] visitaPreventivaItemsAReparar;
+    private transient Date visitaPreventivaFechaVisita;
+    private transient Date visitaPreventivaFechaReparacion;
+    private transient Integer visitaPreventivaCrearCasoDiasAntes = 10;
+    private transient Integer visitaPreventivaCrearCasoEnMeses = 6;
+    private transient Area visitaPreventivaAsignarAArea;
+    private transient Grupo visitaPreventivaAsignarAGrupo;
+    private transient String visitaPreventivaSubject;
+    private transient String visitaPreventivaTextoDesc;
+    //fin visita preventiva
 
     public CasoController() {
         super(Caso.class);
     }
-    
+
+    public void submitSelectedManyItems() {
+        executeInClient("selectItemsWidget.hide()");
+    }
+
     public void onChangeActiveIndexdescOrComment(TabChangeEvent event) {
         //THIS CUERO PIC PULGA ES A RAIZ DE UN BUG DE PRIMEFACES, ME ENVIA EL ACTIVE INDEX SIEMPRE EN CER0.
         final String idtab = event.getTab().getId();
@@ -215,8 +236,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             setActiveIndexdescOrComment(0);
         }
     }
-    
-      public List<AuditLog> getAuditLogsCurrentCase() {
+
+    public List<AuditLog> getAuditLogsCurrentCase() {
         Vista vista1 = new Vista(AuditLog.class);
         vista1.setIdUsuarioCreadaPor(userSessionBean.getCurrent());
         vista1.setNombre("Audit Logs");
@@ -338,6 +359,19 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     }
 
+    public boolean isCasoTipoPostventa() {
+        try {
+            if (current.getTipoCaso().equals(EnumTipoCaso.POSTVENTA.getTipoCaso())) {
+                return true;
+            }
+        } catch (Exception e) {
+            //ignore
+        }
+
+        return false;
+
+    }
+
     public boolean isCasoTipoReparacion() {
         try {
             if (current.getTipoCaso().equals(EnumTipoCaso.REPARACION_ITEM.getTipoCaso())) {
@@ -361,20 +395,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
 
         return false;
-
-    }
-
-    public boolean isCasoTipoPreEntregaReady() {
-        try {
-            for (Caso caso : getSelected().getCasosHijosList()) {
-                if (caso.isOpen()) {
-                    return false;
-                }
-            }
-        } catch (Exception e) {
-            //ignore
-        }
-        return true;
 
     }
 
@@ -1005,7 +1025,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         pagination = null;
         recreateModel();
     }
-    
+
     @Override
     public PaginationHelper getPagination() {
         class PaginationHelperImpl extends PaginationHelper {
@@ -1018,7 +1038,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
             @Override
             public int getItemsCount() {
-                if(allCount == null){
+                if (allCount == null) {
                     try {
                         allCount = getJpaController().countCasoEntities(getFilterHelper().getVista(), userSessionBean.getCurrent());
                         return allCount;
@@ -1028,7 +1048,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                         Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-                
+
                 return allCount;
             }
 
@@ -1354,6 +1374,123 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
     }
 
+    public void persistProgramarVisitaPreventivaEvent() {
+
+        try {
+
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(visitaPreventivaFechaVisita);
+            cal.add(Calendar.DAY_OF_MONTH, (visitaPreventivaCrearCasoDiasAntes * (-1)));
+            Date eventDate = cal.getTime();
+
+            ScheduleEvent entityEvent = new ScheduleEvent(null, visitaPreventivaSubject, eventDate, applicationBean.getNow());
+            entityEvent.setAllDay(true);
+            entityEvent.setDescripcion(visitaPreventivaTextoDesc);
+            entityEvent.setEndDate(eventDate);
+            entityEvent.setIdCaso(current);
+            entityEvent.setIdUsuario(userSessionBean.getCurrent());
+            entityEvent.setLugar("dentro del sistema");
+            entityEvent.setPublicEvent(true);
+            entityEvent.setUsuariosInvitedList(visitaPreventivaAsignarAGrupo.getUsuarioList());
+            entityEvent.setExecuteAction(true);
+            final NombreAccion nombreAccion = EnumNombreAccion.CREAR_CASO_VISITA_REP_SELLOS.getNombreAccion();
+            entityEvent.setIdTipoAccion(nombreAccion);
+            Properties props = new Properties();
+            props.put(CrearCasoVisitaRepSellosAction.TEMA_KEY, visitaPreventivaSubject);
+            props.put(CrearCasoVisitaRepSellosAction.DESC_KEY, visitaPreventivaTextoDesc);
+            props.put(CrearCasoVisitaRepSellosAction.AREA_KEY, visitaPreventivaAsignarAArea.getIdArea());
+            props.put(CrearCasoVisitaRepSellosAction.GRUPO_KEY, visitaPreventivaAsignarAGrupo.getIdGrupo());
+
+            String idsItems = "";
+            boolean first = true;
+            for (TreeNode treeNode : getVisitaPreventivaItemsAReparar()) {
+                if (first) {
+                    idsItems = ((Item) treeNode.getData()).getIdItem().toString();
+                    first = false;
+                } else {
+                    idsItems += "," + ((Item) treeNode.getData()).getIdItem().toString();
+                }
+            }
+            props.put(CrearCasoVisitaRepSellosAction.ITEMS_KEY, idsItems);
+
+            entityEvent.setParametrosAccion(Action.getPropertyAsString(props));
+
+            getJpaController().persist(entityEvent);
+
+            if (entityEvent.getExecuteAction() && entityEvent.getIdTipoAccion() != null
+                    && !StringUtils.isEmpty(entityEvent.getIdTipoAccion().getImplementationClassName())) {
+                //we must schedule the selected action
+                String jobID = HelpDeskScheluder.scheduleActionClassExecutorJob(
+                        getSelected().getIdCaso(),
+                        entityEvent.getIdTipoAccion().getImplementationClassName(),
+                        entityEvent.getParametrosAccion(),
+                        entityEvent.getStartDate());
+                entityEvent.setQuartzJobId(jobID);
+                getJpaController().merge(entityEvent);
+            }
+
+            addInfoMessage("Evento agendado exitósamente.");
+            executeInClient("PF('ProgramarVisitaPreventiva').hide();");
+
+        } catch (Exception ex) {
+            Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    public void prepareProgramarVisitaPreventiva(ActionEvent actionEvent) {
+//        //System.out.println("prepareCreateRespuesta");
+        try {
+            //validation
+
+            if (current.getIdSubComponente() == null) {
+                addWarnMessage("Para poder programar la visita preventiva, este caso debe estar asociado a un producto, favor seleccione el producto.");
+                return;
+            }
+
+            if (current.getIdSubComponente().getFechaEntrega() == null) {
+                addWarnMessage("Para poder programar la visita preventiva, el producto " + current.getIdSubComponente()
+                        + " debe tener fecha de entrega, favor modifique el producto e ingrese dicha fecha.");
+                return;
+            }
+
+            if (current.hasOpenSubCasos()) {
+                addWarnMessage("Para poder programar la visita preventiva, este caso no debe tener sub casos abiertos pendientes de resolución.");
+                return;
+
+            }
+
+            if (current.getEmailCliente() == null) {
+                addWarnMessage("Para poder programar la visita preventiva, este caso debe estar asociado a un cliente con el cúal se coordina la visita.");
+                return;
+
+            }
+
+            updateFechasVisitaPreventiva();
+
+            //reset items
+            setVisitaPreventivaItemsAReparar(null);
+            setVisitaPreventivaSubject("Visita programada - reparación de sellos");
+            setVisitaPreventivaAsignarAGrupo(null);
+
+            executeInClient("ProgramarVisitaPreventiva.show()");
+
+            //can be created/scheduled
+            //show the creation dialog
+        } catch (Exception e) {
+            Log.createLogger(this.getClass().getName()).logSevere("Error al preparar la creacion de la actividad del caso.");
+        }
+    }
+
+    public void updateFechasVisitaPreventiva() {
+        Date fechaEntrega = current.getIdSubComponente().getFechaEntrega();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(fechaEntrega);
+        cal.add(Calendar.MONTH, visitaPreventivaCrearCasoEnMeses);
+        setVisitaPreventivaFechaVisita(cal.getTime());
+        setVisitaPreventivaFechaReparacion(cal.getTime());
+    }
+
 //    public String create() {
 //        try {
 //            persist(current);
@@ -1618,9 +1755,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             recreateModel();
         } catch (Exception e) {
             e.printStackTrace();
-        } 
-        
-         return resourceBundle.getString("inbox");
+        }
+
+        return resourceBundle.getString("inbox");
 
     }
 
@@ -1795,9 +1932,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public void refresh() {
         recreateModel();
     }
-    
-    public void refreshNotas()
-    {
+
+    public void refreshNotas() {
         listaActividadesOrdenada = null;
     }
 
@@ -2301,7 +2437,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 changeLog.add(getManagerCasos().createLogReg(current, "Se crea Respuesta Caso", EnumTipoNota.RESPUESTA_A_CLIENTE.getTipoNota().getNombre(), ""));
 
                 //TODO Change it
-                String subject = "Re: "+ManagerCasos.formatIdCaso(current.getIdCaso()) + " " + current.getTema() + " - " + resourceBundle.getString("email.tituloNotas");
+                String subject = "Re: " + ManagerCasos.formatIdCaso(current.getIdCaso()) + " " + current.getTema() + " - " + resourceBundle.getString("email.tituloNotas");
                 correoEnviado = enviarCorreo(current.getEmailCliente().getEmailCliente(), subject, bodyTxt, nuevaNota);
 
                 if (correoEnviado) {
@@ -2321,7 +2457,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             getJpaController().mergeCaso(current, changeLog);
 
 //            JsfUtil.addSuccessMessage("Respuesta enviada exitósamente.");
-
             listaActividadesOrdenada = null;
             selectedClipping = null;//21631091
 
@@ -2627,17 +2762,47 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
     }
 
-    public StreamedContent createVisitaPreventivaPostventa() {
+//    public StreamedContent createVisitaPreventivaPostventa() {
+//        try {
+////            Archivo a = getJpaController().find(Archivo.class,  getSelected().getIdProducto().getIdLogo());  
+//            List<Item> itemsAReparar = new LinkedList<Item>();
+//            for (Caso caso : getSelected().getCasosHijosList()) {
+//                if(caso.isOpen() && caso.getIdItem() != null){
+//                    itemsAReparar.add(caso.getIdItem());
+//                }                
+//            }
+//            byte[] data = ReportsManager.createVisitaPreventivaPostventa(getSelected(), visitaPreventivaFechaVisita, visitaPreventivaFechaReparacion, itemsAReparar);
+////            executeInClient("genDocVisitaPreventiva.hide()");
+//            return new DefaultStreamedContent(
+//                    new ByteArrayInputStream(data), "application/pdf", "VisitaPreventiva_Postventa_" + getSelected().getIdCaso() + ".pdf");
+//        } catch (Exception e) {
+//            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
+//            JsfUtil.addErrorMessage(resourceBundle.getString("attachment.error"));
+//            return new DefaultStreamedContent();
+//        }
+//    }
+    public void createVisitaPreventivaPostventa() {
         try {
+//            Archivo a = getJpaController().find(Archivo.class,  getSelected().getIdProducto().getIdLogo());  
+            List<Item> itemsAReparar = new LinkedList<Item>();
+            for (Caso caso : getSelected().getCasosHijosList()) {
+                if (caso.isOpen() && caso.getIdItem() != null) {
+                    itemsAReparar.add(caso.getIdItem());
+                }
+            }
+            byte[] bytearray = ReportsManager.createVisitaPreventivaPostventa(getSelected(), visitaPreventivaFechaVisita, visitaPreventivaFechaReparacion, itemsAReparar);
 
-//            Archivo a = getJpaController().find(Archivo.class,  getSelected().getIdProducto().getIdLogo());            
-            byte[] data = ReportsManager.createVisitaPreventivaPostventa(getSelected());
-            return new DefaultStreamedContent(
-                    new ByteArrayInputStream(data), "application/pdf", "VisitaPreventivaPostventa_" + getSelected().getIdCaso() + ".pdf");
+            final String nombre = "VisitaPreventiva_Postventa_" + getSelected().getIdCaso() + ".pdf";
+            Attachment attach = getManagerCasos().crearAdjunto(bytearray, null, this.current, nombre, "application/pdf");
+            final String msg = "Documento " + attach.getNombreArchivo() + " creado con exito";
+            textoNota = textoNota + "<hr/>" + msg;
+            armarNota(current, false, textoNota, EnumTipoNota.NOTA.getTipoNota());
+            JsfUtil.addSuccessMessage(msg);
+            executeInClient("genDocVisitaPreventiva.hide()");
+
         } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
-            JsfUtil.addErrorMessage(resourceBundle.getString("attachment.error"));
-            return new DefaultStreamedContent();
+            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "createVisitaPreventivaPostventa", e);
+            JsfUtil.addErrorMessage("Ocurrió un error al generar el documento, favor intente más tarde.");
         }
     }
 
@@ -3704,6 +3869,138 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      */
     public void setActiveIndexdescOrComment(int activeIndexdescOrComment) {
         this.activeIndexdescOrComment = activeIndexdescOrComment;
+    }
+
+    /**
+     * @return the visitaPreventivaItemsAReparar
+     */
+    public TreeNode[] getVisitaPreventivaItemsAReparar() {
+        return visitaPreventivaItemsAReparar;
+    }
+
+    /**
+     * @param visitaPreventivaItemsAReparar the visitaPreventivaItemsAReparar to
+     * set
+     */
+    public void setVisitaPreventivaItemsAReparar(TreeNode[] visitaPreventivaItemsAReparar) {
+        this.visitaPreventivaItemsAReparar = visitaPreventivaItemsAReparar;
+    }
+
+    /**
+     * @return the visitaPreventivaFechaVisita
+     */
+    public Date getVisitaPreventivaFechaVisita() {
+        return visitaPreventivaFechaVisita;
+    }
+
+    /**
+     * @param visitaPreventivaFechaVisita the visitaPreventivaFechaVisita to set
+     */
+    public void setVisitaPreventivaFechaVisita(Date visitaPreventivaFechaVisita) {
+        this.visitaPreventivaFechaVisita = visitaPreventivaFechaVisita;
+    }
+
+    /**
+     * @return the visitaPreventivaFechaReparacion
+     */
+    public Date getVisitaPreventivaFechaReparacion() {
+        return visitaPreventivaFechaReparacion;
+    }
+
+    /**
+     * @param visitaPreventivaFechaReparacion the
+     * visitaPreventivaFechaReparacion to set
+     */
+    public void setVisitaPreventivaFechaReparacion(Date visitaPreventivaFechaReparacion) {
+        this.visitaPreventivaFechaReparacion = visitaPreventivaFechaReparacion;
+    }
+
+    /**
+     * @return the visitaPreventivaSubject
+     */
+    public String getVisitaPreventivaSubject() {
+        return visitaPreventivaSubject;
+    }
+
+    /**
+     * @param visitaPreventivaSubject the visitaPreventivaSubject to set
+     */
+    public void setVisitaPreventivaSubject(String visitaPreventivaSubject) {
+        this.visitaPreventivaSubject = visitaPreventivaSubject;
+    }
+
+    /**
+     * @return the visitaPreventivaTextoDesc
+     */
+    public String getVisitaPreventivaTextoDesc() {
+        return visitaPreventivaTextoDesc;
+    }
+
+    /**
+     * @param visitaPreventivaTextoDesc the visitaPreventivaTextoDesc to set
+     */
+    public void setVisitaPreventivaTextoDesc(String visitaPreventivaTextoDesc) {
+        this.visitaPreventivaTextoDesc = visitaPreventivaTextoDesc;
+    }
+
+    /**
+     * @return the visitaPreventivaCrearCasoDiasAntes
+     */
+    public Integer getVisitaPreventivaCrearCasoDiasAntes() {
+        return visitaPreventivaCrearCasoDiasAntes;
+    }
+
+    /**
+     * @param visitaPreventivaCrearCasoDiasAntes the
+     * visitaPreventivaCrearCasoDiasAntes to set
+     */
+    public void setVisitaPreventivaCrearCasoDiasAntes(Integer visitaPreventivaCrearCasoDiasAntes) {
+        this.visitaPreventivaCrearCasoDiasAntes = visitaPreventivaCrearCasoDiasAntes;
+    }
+
+    /**
+     * @return the visitaPreventivaCrearCasoEnMeses
+     */
+    public Integer getVisitaPreventivaCrearCasoEnMeses() {
+        return visitaPreventivaCrearCasoEnMeses;
+    }
+
+    /**
+     * @param visitaPreventivaCrearCasoEnMeses the
+     * visitaPreventivaCrearCasoEnMeses to set
+     */
+    public void setVisitaPreventivaCrearCasoEnMeses(Integer visitaPreventivaCrearCasoEnMeses) {
+        this.visitaPreventivaCrearCasoEnMeses = visitaPreventivaCrearCasoEnMeses;
+    }
+
+    /**
+     * @return the visitaPreventivaAsignarAGrupo
+     */
+    public Grupo getVisitaPreventivaAsignarAGrupo() {
+        return visitaPreventivaAsignarAGrupo;
+    }
+
+    /**
+     * @param visitaPreventivaAsignarAGrupo the visitaPreventivaAsignarAGrupo to
+     * set
+     */
+    public void setVisitaPreventivaAsignarAGrupo(Grupo visitaPreventivaAsignarAGrupo) {
+        this.visitaPreventivaAsignarAGrupo = visitaPreventivaAsignarAGrupo;
+    }
+
+    /**
+     * @return the visitaPreventivaAsignarAArea
+     */
+    public Area getVisitaPreventivaAsignarAArea() {
+        return visitaPreventivaAsignarAArea;
+    }
+
+    /**
+     * @param visitaPreventivaAsignarAArea the visitaPreventivaAsignarAArea to
+     * set
+     */
+    public void setVisitaPreventivaAsignarAArea(Area visitaPreventivaAsignarAArea) {
+        this.visitaPreventivaAsignarAArea = visitaPreventivaAsignarAArea;
     }
 
     @FacesConverter(forClass = Caso.class)

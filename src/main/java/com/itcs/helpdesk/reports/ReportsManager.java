@@ -6,6 +6,7 @@
 package com.itcs.helpdesk.reports;
 
 import com.itcs.helpdesk.persistence.entities.Caso;
+import com.itcs.helpdesk.persistence.entities.Item;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -13,7 +14,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,23 +53,20 @@ public class ReportsManager {
             Map parameters = new HashMap();
             parameters.put("casoOrigen", caso);
             parameters.put("logoProyecto", in);
-            
+
             JasperPrint jasperPrint = JasperFillManager.fillReport(
                     jasperActaPreEntregaFile, parameters,
                     new JRBeanCollectionDataSource(caso.getCasosHijosList()));
-            return createPdfFromJasper(jasperPrint, "actaPreEntrega"+caso.getIdCaso()+".pdf");
-           
-            
+            return createPdfFromJasper(jasperPrint);
+
 //            InputStream in = new ByteArrayInputStream(bytes);
-            
-            
         } catch (Exception ex) {
             Logger.getLogger(ReportsManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
-    
-    public static byte[] createVisitaPreventivaPostventa(Caso caso) {
+
+    public static byte[] createVisitaPreventivaPostventa(Caso caso, Date fechaVisita, Date fechaReparacion, List<Item> itemsAReparar) {
         JRProperties.setProperty("net.sf.jasperreports.awt.ignore.missing.font", true);
         try {
             if (jasperVisitaPreventivaPostventa == null) {
@@ -76,32 +76,34 @@ public class ReportsManager {
 
             Map parameters = new HashMap();
             parameters.put("casoOrigen", caso);
+            parameters.put("fechaVisita", fechaVisita);
+            parameters.put("fechaReparacion", fechaReparacion);
+           
             JasperPrint jasperPrint = JasperFillManager.fillReport(
-                    jasperVisitaPreventivaPostventa, parameters);
-            return createPdfFromJasper(jasperPrint, "visitaPreventivaPostventa"+caso.getIdCaso()+".pdf");
+                    jasperVisitaPreventivaPostventa, parameters,  new JRBeanCollectionDataSource(itemsAReparar));
+            return createPdfFromJasper(jasperPrint);
         } catch (Exception ex) {
             Logger.getLogger(ReportsManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
-    
-    private static byte[] createPdfFromJasper(JasperPrint jasperPrint, String filename) throws IOException, JRException
-    {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            JRExporter exporter = new JRPdfExporter();
-            //exporter.setParameter(JRExporterParameter.CHARACTER_ENCODING, "ISO-8859-15");
-            exporter.setParameter(JRPdfExporterParameter.METADATA_TITLE, "Acta de pre-entrega");
-            exporter.setParameter(JRPdfExporterParameter.METADATA_SUBJECT, "");
-            exporter.setParameter(JRPdfExporterParameter.METADATA_KEYWORDS, "Acta brotec-icafal");
-            exporter.setParameter(JRPdfExporterParameter.METADATA_CREATOR, "GoDesk");
-            exporter.setParameter(JRPdfExporterParameter.METADATA_AUTHOR, "GoDesk");
-        //exporter.setParameter(JRPdfExporterParameter.PERMISSIONS,new Integer(PdfWriter.ALLOW_PRINTING | PdfWriter.ALLOW_COPY) );
-            //TODO: ver propiedad para no copiar
-            exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 
-            exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, baos);
-            exporter.exportReport();
-            FileOutputStream output = new FileOutputStream(filename);
-            return baos.toByteArray();
+    private static byte[] createPdfFromJasper(JasperPrint jasperPrint) throws IOException, JRException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JRExporter exporter = new JRPdfExporter();
+        //exporter.setParameter(JRExporterParameter.CHARACTER_ENCODING, "ISO-8859-15");
+        exporter.setParameter(JRPdfExporterParameter.METADATA_TITLE, "Documento generado por GoDesk - www.godesk.cl");
+        exporter.setParameter(JRPdfExporterParameter.METADATA_SUBJECT, "Documento generado por GoDesk - www.godesk.cl");
+        exporter.setParameter(JRPdfExporterParameter.METADATA_KEYWORDS, "");
+        exporter.setParameter(JRPdfExporterParameter.METADATA_CREATOR, "GoDesk - www.godesk.cl");
+        exporter.setParameter(JRPdfExporterParameter.METADATA_AUTHOR, "GoDesk - www.godesk.cl");
+        //exporter.setParameter(JRPdfExporterParameter.PERMISSIONS,new Integer(PdfWriter.ALLOW_PRINTING | PdfWriter.ALLOW_COPY) );
+        //TODO: ver propiedad para no copiar
+        exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+
+        exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, baos);
+        exporter.exportReport();
+//        FileOutputStream output = new FileOutputStream(filename);
+        return baos.toByteArray();
     }
 }

@@ -50,7 +50,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     protected transient ManagerCasos managerCasos;
     protected transient DataModel items = null;
     protected transient PaginationHelper pagination;
-    private int paginationPageSize = 10;
+    private int paginationPageSize = 20;
     protected E current;
     private ArrayList<E> selectedItems;
     private JPAFilterHelper filterHelper;

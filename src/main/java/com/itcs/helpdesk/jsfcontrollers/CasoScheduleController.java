@@ -233,18 +233,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 //                entityEvent.setIdUsuario(userSessionBean.getCurrent());
 
             if (event.getId() == null) {
-                for (ScheduleEventReminder scheduleEventReminder : entityEvent.getScheduleEventReminderList()) {
-                    if (scheduleEventReminder.getIdReminder() != null || scheduleEventReminder.getIdReminder() < 0) {
-                        //new added reminders
-                        scheduleEventReminder.setIdReminder(null);
-                    }
-                }
-
-                getJpaController().persist(entityEvent);
-
-                scheduleQuartzEvent(entityEvent);
-
-                scheduleQuartzReminders(entityEvent);
+                persistAndScheduleEvent(entityEvent);
 
                 lazyScheduleEventsModel.addEvent(event);
 
@@ -263,6 +252,21 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
             Logger.getLogger(CasoScheduleController.class.getName()).log(Level.SEVERE, "addEvent", ex);
         }
 
+    }
+
+    public void persistAndScheduleEvent(com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent) throws Exception {
+        for (ScheduleEventReminder scheduleEventReminder : entityEvent.getScheduleEventReminderList()) {
+            if (scheduleEventReminder.getIdReminder() != null || scheduleEventReminder.getIdReminder() < 0) {
+                //new added reminders
+                scheduleEventReminder.setIdReminder(null);
+            }
+        }
+        
+        getJpaController().persist(entityEvent);
+        
+        scheduleQuartzEvent(entityEvent);
+        
+        scheduleQuartzReminders(entityEvent);
     }
 
     private void scheduleQuartzEvent(com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent) throws SchedulerException, Exception {

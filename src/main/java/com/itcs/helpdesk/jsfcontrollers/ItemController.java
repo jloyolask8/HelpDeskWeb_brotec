@@ -34,7 +34,6 @@ import javax.faces.event.ActionEvent;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.persistence.NoResultException;
-import javax.resource.NotSupportedException;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.model.DefaultTreeNode;
@@ -47,6 +46,9 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
 
     @ManagedProperty(value = "#{UserSessionBean}")
     private UserSessionBean userSessionBean;
+
+    @ManagedProperty(value = "#{casoController}")
+    private CasoController casoController;
 //    private Item current;
 //    private Item[] selectedItems;
 //    private transient DataModel items = null;
@@ -54,6 +56,7 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
     private int selectedItemIndex;
     private transient TreeNode itemsTree;
     private transient TreeNode selectedNode;
+//    private transient TreeNode[] selectedNodeItems;
     private transient TreeNode itemNode = null;
     private Item portapapeles = null;
     private int ordenMayor = 0;
@@ -67,6 +70,8 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
         emptyList = new LinkedList<Item>();
     }
 
+   
+
     public String getTextoFiltro() {
         return textoFiltro;
     }
@@ -75,6 +80,7 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
         this.textoFiltro = textoFiltro;
     }
 
+    @Override
     public Item getSelected() {
         if (current == null) {
             current = new Item();
@@ -694,6 +700,7 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
 
     public void filtrarItems() {
         itemsTree = null;
+
     }
 
     public TreeNode getItems(Usuario user) {
@@ -736,38 +743,36 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
      * @return
      */
     public TreeNode getTree() {
-        try
-        {
-        if (itemsTree != null) {
-            return itemsTree;
-        }
+        try {
+            if (itemsTree != null) {
+                return itemsTree;
+            }
 
-        items = getItemsNoPagination();
+            items = getItemsNoPagination();
 
-        if (items != null) {
-            //System.out.println("se reconstruye el arbol");
-            Iterator it = items.iterator();
-            itemsTree = new DefaultTreeNode("Item", null);
-            itemsTree.setExpanded(true);
-            while (it.hasNext()) {
-                Item cat = (Item) it.next();
-                verificaSiEsOrdenMayor(cat.getOrden());
-                if (cat.getIdItemPadre() == null) {
-                    if (cat.getItemList() != null && cat.getItemList().isEmpty()) {
-                        TreeNode subItems = new DefaultTreeNode(cat, itemsTree);
-                        subItems.setExpanded(true);
-                    } else {
-                        TreeNode subItems = new DefaultTreeNode(cat, itemsTree);
-                        subItems.setExpanded(true);
-                        setItems(cat, subItems);
+            if (items != null) {
+                //System.out.println("se reconstruye el arbol");
+                Iterator it = items.iterator();
+                itemsTree = new DefaultTreeNode("Item", null);
+                itemsTree.setExpanded(true);
+                while (it.hasNext()) {
+                    Item cat = (Item) it.next();
+                    verificaSiEsOrdenMayor(cat.getOrden());
+                    if (cat.getIdItemPadre() == null) {
+                        if (cat.getItemList() != null && cat.getItemList().isEmpty()) {
+                            TreeNode subItems = new DefaultTreeNode(cat, itemsTree);
+                            subItems.setExpanded(true);
+                        } else {
+                            TreeNode subItems = new DefaultTreeNode(cat, itemsTree);
+                            subItems.setExpanded(true);
+                            setItems(cat, subItems);
+                        }
                     }
                 }
+            } else {
+                itemsTree = new DefaultTreeNode("Item", null);
             }
-        } else {
-            itemsTree = new DefaultTreeNode("Item", null);
-        }
-        }catch(Exception ex)
-        {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         return itemsTree;
@@ -789,8 +794,7 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
     private void setItems(Item categoria, TreeNode subItems) {
 
         List<Item> cats = (List) categoria.getItemList();
-        if(cats != null)
-        {
+        if (cats != null) {
             Collections.sort(cats, new Comparator<Item>() {
                 @Override
                 public int compare(Item o1, Item o2) {
@@ -893,6 +897,14 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
      */
     public void setSelectedArea(Area selectedArea) {
         this.selectedArea = selectedArea;
+    }
+
+  
+    /**
+     * @param casoController the casoController to set
+     */
+    public void setCasoController(CasoController casoController) {
+        this.casoController = casoController;
     }
 
     @FacesConverter(value = "ItemConverter", forClass = Item.class)

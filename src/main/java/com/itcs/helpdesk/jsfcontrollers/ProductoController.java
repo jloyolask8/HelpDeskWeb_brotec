@@ -79,6 +79,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
     transient Map<String, SubComponente> bulkLoadedSubComponenteMap = new HashMap<String, SubComponente>();
 
     private Long idFileDelete = null;
+    private String currentSubComponenteBackOutcome;
 
     public ProductoController() {
         super(Producto.class);
@@ -626,7 +627,12 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
         currentComponente = item;
     }
 
-    public String prepareViewSubComponente(SubComponente item) {
+    public String prepareViewSubComponente(SubComponente item, String backOutcome) {
+        if(item == null){
+            addWarnMessage("debe especificar un Producto");
+            return null;
+        }
+        this.setCurrentSubComponenteBackOutcome(backOutcome);
         currentSubComponente = item;
         return "/script/producto/ViewSubComponente";
     }
@@ -676,6 +682,17 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
             getJpaController().merge(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ProductoUpdated"));
             return prepareList();
+        } catch (Exception e) {
+            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
+            return null;
+        }
+    }
+    
+    public String updateCurrentSubComponente() {
+        try {
+            getJpaController().merge(currentSubComponente);
+            JsfUtil.addSuccessMessage("Datos actualizados exitósamente.");
+            return getCurrentSubComponenteBackOutcome();
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
             return null;
@@ -972,6 +989,20 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
      */
     public void setIdFileDelete(Long idFileDelete) {
         this.idFileDelete = idFileDelete;
+    }
+
+    /**
+     * @return the currentSubComponenteBackOutcome
+     */
+    public String getCurrentSubComponenteBackOutcome() {
+        return currentSubComponenteBackOutcome;
+    }
+
+    /**
+     * @param currentSubComponenteBackOutcome the currentSubComponenteBackOutcome to set
+     */
+    public void setCurrentSubComponenteBackOutcome(String currentSubComponenteBackOutcome) {
+        this.currentSubComponenteBackOutcome = currentSubComponenteBackOutcome;
     }
 
     @FacesConverter(forClass = Producto.class)

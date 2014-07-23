@@ -308,7 +308,7 @@
                                 <h:outputText value="&nbsp;"/>
                             </f:facet>
 
-                            <p:commandButton action="#{productoController.prepareViewSubComponente(subitem)}" 
+                            <p:commandButton action="#{productoController.prepareViewSubComponente(subitem, '/script/producto/Edit')}" 
                                              ajax="false" value="Ver Detalle"
                                              rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
                                              title="ver detalle"/>

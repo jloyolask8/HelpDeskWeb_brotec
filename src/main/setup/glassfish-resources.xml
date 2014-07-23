@@ -37,10 +37,10 @@
                           max-pool-size="16" max-wait-time-in-millis="60000" name="connectionPoolbrotecquartz" non-transactional-connections="false" 
                           pool-resize-quantity="2" res-type="javax.sql.DataSource" statement-timeout-in-seconds="-1" steady-pool-size="8" 
                           validate-atmost-once-period-in-seconds="0" wrap-jdbc-objects="false">
-        <property name="URL" value="jdbc:postgresql://localhost:5432/helpdesk_brotec_2"/>
+        <property name="URL" value="jdbc:postgresql://localhost:5432/helpdesk_brotec"/>
         <property name="User" value="postgres"/>
-        <property name="Password" value="Itcs2008"/>
-        <property name="DatabaseName" value="helpdesk_brotec_2"/>
+        <property name="Password" value="postgres"/>
+        <property name="DatabaseName" value="helpdesk_brotec"/>
         <property name="ServerName" value="localhost"/>
         <property name="PortNumber" value="5432"/>
     </jdbc-connection-pool>

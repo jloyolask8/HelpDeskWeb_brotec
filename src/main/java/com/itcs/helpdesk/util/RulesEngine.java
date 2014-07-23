@@ -60,7 +60,7 @@ import org.apache.commons.lang3.text.WordUtils;
 public class RulesEngine implements CasoChangeListener {
 
     private JPAServiceFacade jpaController;
-//    private ManagerCasos managerCasos;
+    private ManagerCasos managerCasos;
     private EntityManagerFactory emf = null;
     @ManagedProperty(value = "#{UserSessionBean}")
     private UserSessionBean userSessionBean;
@@ -307,7 +307,7 @@ public class RulesEngine implements CasoChangeListener {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
             try {
-                if (valorAttributo != null && !valorAttributo.isEmpty()) {
+                if (!valorAttributo.isEmpty()) {
                     Date fecha1 = sdf.parse(valorAttributo);
                     Date beanDate = ((Date) value);
 
@@ -351,9 +351,9 @@ public class RulesEngine implements CasoChangeListener {
 
         } else if (fieldType.equals(EnumFieldType.SELECTONE_ENTITY.getFieldType())) {
 
-            EntityManager em = null;
+            EntityManager em = emf.createEntityManager();
             try {
-                em = emf.createEntityManager();
+                
                 //El valor es el id de un entity, que tipo de Entity?= comparableField.tipo
 
                 Class class_ = comparableField.getTipo();//Class.forName(comparableField.getTipo());
@@ -519,7 +519,7 @@ public class RulesEngine implements CasoChangeListener {
                     return (valueBoolean != boolValue);
                 } else if (operador.equals(EnumTipoComparacion.CT.getTipoComparacion())) {//Changed TO =)
 
-                    if ((valueBoolean != null) && (changeList != null)) {
+                    if (changeList != null) {
                         for (AuditLog auditLog : changeList) {
                             if (comparableField.getIdCampo().equalsIgnoreCase(auditLog.getCampo())) {
                                 return (valueBoolean == boolValue);
@@ -589,74 +589,9 @@ public class RulesEngine implements CasoChangeListener {
         return null;
     }
 
-    private long countCasosByUsuario(Usuario user) {
+   
 
-        try {
-            Vista vista = new Vista(Caso.class);
-
-            vista.setNombre("count");
-
-            FiltroVista filtroOwner = new FiltroVista();
-            filtroOwner.setIdFiltro(1);//otherwise i dont know what to remove dude.
-            filtroOwner.setIdCampo(Caso_.OWNER_FIELD_NAME);
-            filtroOwner.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
-            filtroOwner.setValor(user.getIdUsuario());
-            filtroOwner.setIdVista(vista);
-
-            vista.getFiltrosVistaList().add(filtroOwner);
-
-            FiltroVista filtroEstado = new FiltroVista();
-            filtroEstado.setIdFiltro(2);//otherwise i dont know what to remove dude.
-            filtroEstado.setIdCampo(Caso_.ESTADO_FIELD_NAME);
-            filtroEstado.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
-            filtroEstado.setValor(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
-            filtroEstado.setIdVista(vista);
-
-            vista.getFiltrosVistaList().add(filtroEstado);
-
-            return getJpaController().countEntities(vista, null);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, null, ex);
-            return 0L;
-        }
-    }
-
-    private void asignarCasoAUsuarioConMenosCasos(Grupo grupo, Caso caso) throws Exception {
-        
-        System.out.println("asignarCasoAUsuarioConMenosCasos..." + grupo.getUsuarioList());
-        Usuario usuarioConMenosCasos = null;
-        for (Usuario usuario : grupo.getUsuarioList()) {
-            if (usuario.getActivo()) {
-                if (usuarioConMenosCasos == null) {
-                    usuarioConMenosCasos = usuario;
-                } else {
-                    final long countCasosByUsuario = countCasosByUsuario( usuarioConMenosCasos );
-                    final long countCasosByUsuario1 = countCasosByUsuario(usuario);
-                    
-                    System.out.println("usuario " + usuarioConMenosCasos + " tiene " + countCasosByUsuario);
-                    System.out.println("usuario " + usuario + " tiene " + countCasosByUsuario1);
-                    
-                    if (countCasosByUsuario > countCasosByUsuario1) {
-                        usuarioConMenosCasos = usuario;
-                    }
-                }
-            }
-        }
-        if (usuarioConMenosCasos != null) {
-            caso.setOwner(usuarioConMenosCasos);
-            System.out.println("Elegido:"+usuarioConMenosCasos);
-            getJpaController().mergeCasoWithoutNotify(caso);
-
-            if (ApplicationConfig.isSendNotificationOnTransfer()) {
-                try {
-                    MailNotifier.notifyCasoAssigned(caso, null);
-                } catch (Exception ex) {
-                    Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "No se puede enviar notificacion por correo al agente asignado, dado que el area es null.", ex);
-                }
-            }
-
-        }
-    }
+    
 
     private void cambiarCategoria(Accion accion, Caso caso) {
         try {
@@ -672,7 +607,8 @@ public class RulesEngine implements CasoChangeListener {
     private void asignarCasoAGrupo(Accion accion, Caso caso) {
         try {
             Grupo grupo = getJpaController().getGrupoFindByIdGrupo(accion.getParametros());
-            asignarCasoAUsuarioConMenosCasos(grupo, caso);
+            ManagerCasos manager = new ManagerCasos(getJpaController());
+            manager.asignarCasoAUsuarioConMenosCasos(grupo, caso);
         } catch (Exception ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "asignarCasoAGrupo", ex);
         }
