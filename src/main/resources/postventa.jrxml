@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="postventa" pageWidth="600" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="560" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d99b0d33-270b-4727-8e02-395561f70e20">
-	<property name="ireport.zoom" value="6.727499949325821"/>
-	<property name="ireport.x" value="172"/>
-	<property name="ireport.y" value="1401"/>
+	<property name="ireport.zoom" value="1.610510000000052"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="96"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
@@ -10,8 +10,8 @@
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<parameter name="logoProyecto" class="java.io.InputStream"/>
-	<parameter name="fechaVisita" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="fechaReparacion" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="fechaVisita" class="java.util.Date" isForPrompting="false"/>
+	<parameter name="fechaReparacion" class="java.util.Date" isForPrompting="false"/>
 	<parameter name="itemsAReparar" class="java.util.List" isForPrompting="false"/>
 	<queryString>
 		<![CDATA[]]>
@@ -193,7 +193,7 @@
 				<reportElement uuid="436d1ac4-4cd9-44c0-bde1-5fc0d225e804" x="3" y="11" width="141" height="65"/>
 				<imageExpression><![CDATA["./brotec.png"]]></imageExpression>
 			</image>
-			<textField isBlankWhenNull="true">
+			<textField pattern="EEEEE dd &apos;de&apos; MMMMM &apos;de&apos; yyyy" isBlankWhenNull="true">
 				<reportElement uuid="7a3d5df8-e985-4d48-aa6a-f84cbc76c166" x="139" y="167" width="436" height="15"/>
 				<textElement>
 					<font size="9"/>
@@ -314,7 +314,7 @@
 					<pen lineWidth="0.5"/>
 				</graphicElement>
 			</line>
-			<textField isBlankWhenNull="true">
+			<textField pattern="EEEEE dd &apos;de&apos; MMMMM &apos;de&apos; yyyy" isBlankWhenNull="true">
 				<reportElement uuid="a4af492d-f64f-436a-bee2-df9c11799dd0" x="114" y="0" width="379" height="15"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9"/>
