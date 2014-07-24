@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="postventa" pageWidth="600" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="560" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d99b0d33-270b-4727-8e02-395561f70e20">
-	<property name="ireport.zoom" value="4.177248169415789"/>
-	<property name="ireport.x" value="1240"/>
-	<property name="ireport.y" value="177"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="postventa" pageWidth="600" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="560" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isFloatColumnFooter="true" uuid="d99b0d33-270b-4727-8e02-395561f70e20">
+	<property name="ireport.zoom" value="0.8264462809917629"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
@@ -306,7 +306,7 @@
 			</textField>
 		</band>
 	</detail>
-	<pageFooter>
+	<columnFooter>
 		<band height="20">
 			<line>
 				<reportElement uuid="ff5710e0-d7fb-4e2c-91a9-3d73c50e151a" x="1" y="17" width="559" height="1"/>
@@ -321,6 +321,13 @@
 				</textElement>
 				<text><![CDATA[Fecha de Reparación:]]></text>
 			</staticText>
+			<textField pattern="EEEEE dd &apos;de&apos; MMMMM &apos;de&apos; yyyy" isBlankWhenNull="true">
+				<reportElement uuid="a4af492d-f64f-436a-bee2-df9c11799dd0" x="114" y="1" width="379" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{fechaReparacion}]]></textFieldExpression>
+			</textField>
 			<line>
 				<reportElement uuid="b8ecda14-527a-4640-bd1a-7ed735673062" x="0" y="0" width="1" height="18"/>
 				<graphicElement>
@@ -333,13 +340,6 @@
 					<pen lineWidth="0.5"/>
 				</graphicElement>
 			</line>
-			<textField pattern="EEEEE dd &apos;de&apos; MMMMM &apos;de&apos; yyyy" isBlankWhenNull="true">
-				<reportElement uuid="a4af492d-f64f-436a-bee2-df9c11799dd0" x="114" y="1" width="379" height="15"/>
-				<textElement verticalAlignment="Middle">
-					<font size="9"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{fechaReparacion}]]></textFieldExpression>
-			</textField>
 		</band>
-	</pageFooter>
+	</columnFooter>
 </jasperReport>
