@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="postventa" pageWidth="600" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="560" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isFloatColumnFooter="true" uuid="d99b0d33-270b-4727-8e02-395561f70e20">
-	<property name="ireport.zoom" value="0.8264462809917629"/>
+	<property name="ireport.zoom" value="1.4641000000000495"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="144"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
@@ -79,7 +79,7 @@
 			<staticText>
 				<reportElement uuid="83d5332e-2ba7-47b2-aa6b-4f8e7ae2646b" x="3" y="122" width="111" height="15"/>
 				<textElement>
-					<font size="9"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Teléfono]]></text>
 			</staticText>
@@ -98,7 +98,7 @@
 			<staticText>
 				<reportElement uuid="169c94c7-727f-45d4-8b2d-2cc57e0cc602" x="3" y="167" width="111" height="15"/>
 				<textElement>
-					<font size="9"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Fecha de Visita]]></text>
 			</staticText>
@@ -122,7 +122,7 @@
 			<staticText>
 				<reportElement uuid="b8568ca0-5fad-47d8-8339-e36228af57b3" x="3" y="137" width="111" height="15"/>
 				<textElement>
-					<font size="9"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Email]]></text>
 			</staticText>
@@ -176,7 +176,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$P{casoOrigen}.getEmailCliente().getCliente().getFono1()]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
 				<reportElement uuid="c6fcec5c-9d92-46b4-8424-0ee5ca8fce03" x="139" y="152" width="437" height="15"/>
 				<textElement>
 					<font size="9"/>
@@ -194,14 +194,14 @@
 				<reportElement uuid="436d1ac4-4cd9-44c0-bde1-5fc0d225e804" x="3" y="11" width="141" height="65"/>
 				<imageExpression><![CDATA["./brotec.png"]]></imageExpression>
 			</image>
-			<textField pattern="EEEEE dd &apos;de&apos; MMMMM &apos;de&apos; yyyy" isBlankWhenNull="true">
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
 				<reportElement uuid="7a3d5df8-e985-4d48-aa6a-f84cbc76c166" x="139" y="167" width="436" height="15"/>
 				<textElement>
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{fechaVisita}]]></textFieldExpression>
 			</textField>
-			<textField pattern="EEEEE dd &apos;de&apos; MMMMM &apos;de&apos; yyyy">
+			<textField pattern="d/M/yyyy">
 				<reportElement uuid="1378b0cf-6c74-48c6-b8cc-fc4762b689ef" x="421" y="61" width="153" height="15"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9"/>
@@ -321,7 +321,7 @@
 				</textElement>
 				<text><![CDATA[Fecha de Reparación:]]></text>
 			</staticText>
-			<textField pattern="EEEEE dd &apos;de&apos; MMMMM &apos;de&apos; yyyy" isBlankWhenNull="true">
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
 				<reportElement uuid="a4af492d-f64f-436a-bee2-df9c11799dd0" x="114" y="1" width="379" height="15"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9"/>
