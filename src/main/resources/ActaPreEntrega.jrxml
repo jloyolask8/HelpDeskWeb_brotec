@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ActaPreEntrega" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="9b70c661-19fe-4f6d-8636-a19551ab9767">
 	<property name="ireport.zoom" value="1.9487171000000054"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="336"/>
+	<property name="ireport.x" value="144"/>
+	<property name="ireport.y" value="192"/>
 	<style name="Title" fontName="Arial" fontSize="26" isBold="true" pdfFontName="Helvetica-Bold"/>
 	<style name="SubTitle" forecolor="#666666" fontName="Arial" fontSize="18"/>
 	<style name="Column header" forecolor="#666666" fontName="Arial" fontSize="12" isBold="true"/>
@@ -78,133 +78,133 @@
 			<staticText>
 				<reportElement uuid="51c514c4-1c25-40ac-9061-f69b2c010009" x="13" y="90" width="100" height="20"/>
 				<textElement>
-					<font size="9"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Cliente:]]></text>
 			</staticText>
 			<staticText>
 				<reportElement uuid="51c514c4-1c25-40ac-9061-f69b2c010009" x="13" y="130" width="100" height="20"/>
 				<textElement>
-					<font size="9"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Teléfono:]]></text>
 			</staticText>
 			<staticText>
 				<reportElement uuid="51c514c4-1c25-40ac-9061-f69b2c010009" x="13" y="110" width="100" height="20"/>
 				<textElement>
-					<font size="9"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Propiedad:]]></text>
 			</staticText>
 			<staticText>
 				<reportElement uuid="51c514c4-1c25-40ac-9061-f69b2c010009" x="13" y="150" width="100" height="20"/>
 				<textElement>
-					<font size="9"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Email:]]></text>
 			</staticText>
 			<staticText>
 				<reportElement uuid="51c514c4-1c25-40ac-9061-f69b2c010009" x="13" y="170" width="100" height="20"/>
 				<textElement>
-					<font size="9"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Atendió:]]></text>
 			</staticText>
 			<staticText>
 				<reportElement uuid="51c514c4-1c25-40ac-9061-f69b2c010009" x="13" y="190" width="100" height="20"/>
 				<textElement>
-					<font size="9"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Fecha Pre-entrega:]]></text>
 			</staticText>
 			<staticText>
 				<reportElement uuid="51c514c4-1c25-40ac-9061-f69b2c010009" x="288" y="150" width="100" height="20"/>
 				<textElement>
-					<font size="9"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Oficina:]]></text>
 			</staticText>
 			<staticText>
 				<reportElement uuid="51c514c4-1c25-40ac-9061-f69b2c010009" x="288" y="190" width="100" height="20"/>
 				<textElement>
-					<font size="9"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Fecha Entrega:]]></text>
 			</staticText>
 			<staticText>
 				<reportElement uuid="51c514c4-1c25-40ac-9061-f69b2c010009" x="288" y="130" width="100" height="20"/>
 				<textElement>
-					<font size="9"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Celular:]]></text>
 			</staticText>
 			<staticText>
 				<reportElement uuid="51c514c4-1c25-40ac-9061-f69b2c010009" x="288" y="170" width="100" height="20"/>
 				<textElement>
-					<font size="9"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Encargado:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="3cf79210-1f1a-4075-a6bc-fb6c61791385" x="113" y="90" width="300" height="20"/>
+				<reportElement uuid="3cf79210-1f1a-4075-a6bc-fb6c61791385" x="113" y="90" width="442" height="20"/>
 				<textElement>
-					<font size="9" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+					<font size="9" isBold="false" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{casoOrigen}.getEmailCliente().getCliente().getNombres()+" "+$P{casoOrigen}.getEmailCliente().getCliente().getApellidos()]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="3cf79210-1f1a-4075-a6bc-fb6c61791385" x="113" y="110" width="300" height="20"/>
+				<reportElement uuid="3cf79210-1f1a-4075-a6bc-fb6c61791385" x="113" y="110" width="442" height="20"/>
 				<textElement>
-					<font size="9" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+					<font size="9" isBold="false" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{casoOrigen}.getIdSubComponente().getDireccionMunicipal()]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement uuid="3cf79210-1f1a-4075-a6bc-fb6c61791385" x="113" y="130" width="170" height="20"/>
 				<textElement>
-					<font size="9" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+					<font size="9" isBold="false" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{casoOrigen}.getEmailCliente().getCliente().getFono1()]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement uuid="3cf79210-1f1a-4075-a6bc-fb6c61791385" x="113" y="150" width="170" height="20"/>
 				<textElement>
-					<font size="9" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+					<font size="9" isBold="false" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{casoOrigen}.getEmailCliente().getEmailCliente()]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement uuid="3cf79210-1f1a-4075-a6bc-fb6c61791385" x="113" y="170" width="170" height="20"/>
 				<textElement>
-					<font size="9" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+					<font size="9" isBold="false" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{casoOrigen}.getOwner().getCapitalName()]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy h.mm a" isBlankWhenNull="true">
 				<reportElement uuid="3cf79210-1f1a-4075-a6bc-fb6c61791385" x="113" y="190" width="170" height="20"/>
 				<textElement>
-					<font size="9" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+					<font size="9" isBold="false" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement uuid="3cf79210-1f1a-4075-a6bc-fb6c61791385" x="388" y="130" width="170" height="20"/>
 				<textElement>
-					<font size="9" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+					<font size="9" isBold="false" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{casoOrigen}.getEmailCliente().getCliente().getFono2()]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement uuid="3cf79210-1f1a-4075-a6bc-fb6c61791385" x="388" y="170" width="170" height="20"/>
 				<textElement>
-					<font size="9" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+					<font size="9" isBold="false" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{casoOrigen}.getOwner().getCapitalName()]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
 				<reportElement uuid="3cf79210-1f1a-4075-a6bc-fb6c61791385" x="388" y="190" width="170" height="20"/>
 				<textElement>
-					<font size="9" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+					<font size="9" isBold="false" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{casoOrigen}.getNextResponseDue()]]></textFieldExpression>
 			</textField>
@@ -220,7 +220,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="9" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
 				</textElement>
-				<text><![CDATA[Caso]]></text>
+				<text><![CDATA[# Caso]]></text>
 			</staticText>
 			<staticText>
 				<reportElement uuid="bf4d8cea-136b-4045-ba4d-38c1b0ccc8e0" mode="Opaque" x="63" y="0" width="100" height="20" backcolor="#CCCCCC"/>
