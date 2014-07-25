@@ -216,7 +216,8 @@
 
                         <p:outputLabel value="#{bundle.CreateAccionLabel_parametros}" rendered="#{reglaTriggerController.esAccionAsignarAGrupo() or
                                                 reglaTriggerController.esAccionAsignarAUsuario() or reglaTriggerController.esAccionCambiarPrioridad() or
-                                                reglaTriggerController.esAccionEnviarEmail() or reglaTriggerController.esAccionCambioCat()}"/>
+                                                reglaTriggerController.esAccionEnviarEmail() or reglaTriggerController.esAccionCambioCat() or
+                                                reglaTriggerController.esAccionCustom()}"/>
 
                         <p:selectOneMenu value="#{reglaTriggerController.accionParametroArea}" 
                                          rendered="#{reglaTriggerController.esAccionAsignarArea()}">

@@ -15,6 +15,7 @@ import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.entityenums.EnumNombreAccion;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
+import com.itcs.helpdesk.rules.Action;
 import com.itcs.helpdesk.util.EmailStruct;
 import com.thoughtworks.xstream.XStream;
 import java.io.Serializable;
@@ -39,6 +40,8 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.ListDataModel;
 import org.primefaces.model.SelectableDataModel;
 import org.primefaces.model.TreeNode;
+import com.itcs.helpdesk.util.ClassUtils;
+import java.util.LinkedList;
 
 @ManagedBean(name = "reglaTriggerController")
 @SessionScoped
@@ -51,7 +54,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
     private int selectedItemIndex;
     //----logica de reglas
     private List<Accion> acciones = new ArrayList<Accion>();
-    private HashMap<String, String> actionClassNames = new HashMap<String, String>();
+    private List<String> actionClassNames;
     private Accion accionTemp = new Accion();
     //----fin logica de reglas
     private transient XStream xstream;
@@ -66,16 +69,38 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
     public ReglaTriggerController() {
         super(ReglaTrigger.class);
         xstream = new XStream();
-        actionClassNames.put("SendCaseByEmail","com.itcs.helpdesk.rules.actionsimpl.SendCaseByEmailAction");
-        actionClassNames.put("NotifyGroupCasoReceived","com.itcs.helpdesk.rules.actionsimpl.NotifyGroupCasoReceivedAction");
-        actionClassNames.put("ParseCotizacionAddElInmobiliario","com.itcs.helpdesk.rules.customactions.ParseCotizacionAddElInmobiliarioAction");
-        actionClassNames.put("ParseCotizacionEnlaceInmobiliario","com.itcs.helpdesk.rules.customactions.ParseCotizacionEnlaceInmobiliarioAction");
-        actionClassNames.put("ParseCotizacionPortalInmobiliario","com.itcs.helpdesk.rules.customactions.ParseCotizacionPortalInmobiliarioAction");
-        actionClassNames.put("ParseCotizacionPortalInmobiliarioAlt","com.itcs.helpdesk.rules.customactions.ParseCotizacionPortalInmobiliarioAltAction");
-        actionClassNames.put("ParseCotizacionVendedorWeb","com.itcs.helpdesk.rules.customactions.ParseCotizacionVendedorWebAction");
-        actionClassNames.put("ParseCotizacionZoomInmobiliario","com.itcs.helpdesk.rules.customactions.ParseCotizacionZoomInmobiliarioAction");
-        actionClassNames.put("RemoveDuplicatedCasoPreventa","com.itcs.helpdesk.rules.customactions.RemoveDuplicatedCasoPreventaAction");
-                
+        findAllCustomClasses();
+    }
+
+    private void findAllCustomClasses() {
+        if (actionClassNames == null) {
+            actionClassNames = new LinkedList<String>();
+            
+            try {
+                List<Class<?>> classes = ClassUtils.getClassesForPackage("com.itcs.helpdesk.rules.customactions");
+                for (Class<?> class1 : classes) {
+                    
+                    if(Action.class.isAssignableFrom(class1))
+                    {
+                        System.out.println("class found: " + class1.getCanonicalName());
+                        actionClassNames.add(class1.getCanonicalName());
+                    }
+                }
+
+                classes = ClassUtils.getClassesForPackage("com.itcs.helpdesk.rules.actionsimpl");
+                for (Class<?> class1 : classes) {
+                    
+                    if(Action.class.isAssignableFrom(class1))
+                    {
+                        System.out.println("class found: " + class1.getCanonicalName());
+                        actionClassNames.add(class1.getCanonicalName());
+                    }
+                }
+                Collections.sort(actionClassNames);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(ReglaTriggerController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
     public void onReglaOrderEdit() {
@@ -171,7 +196,6 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         filtro.setIdTrigger(null);
     }
 
-
     public void crearEmailTemp() {
         emailTemp = new EmailStruct();
     }
@@ -260,9 +284,8 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
     public boolean esAccionAsignarAGrupo() {
         return esAccion(EnumNombreAccion.ASIGNAR_A_GRUPO);
     }
-    
-    public boolean esAccionRedefinirSLAFechaCompra()
-    {
+
+    public boolean esAccionRedefinirSLAFechaCompra() {
         return esAccion(EnumNombreAccion.DEFINIR_SLA_FECHA_COMPRA);
     }
 
@@ -554,7 +577,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 
     @Override
     public Class getDataModelImplementationClass() {
-       return ReglaTriggerDataModel.class;
+        return ReglaTriggerDataModel.class;
     }
 
     /**
@@ -575,12 +598,10 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
      * @return the actionClassNames
      */
     public Collection<String> getActionClassNames() {
-        return actionClassNames.values();
+        return actionClassNames;
     }
 
-    
-
-    @FacesConverter(forClass = ReglaTrigger.class, value="ReglaTriggerControllerConverter")
+    @FacesConverter(forClass = ReglaTrigger.class, value = "ReglaTriggerControllerConverter")
     public static class ReglaTriggerControllerConverter implements Converter {
 
         @Override
@@ -619,6 +640,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         }
     }
 }
+
 class ReglaTriggerDataModel extends ListDataModel<ReglaTrigger> implements SelectableDataModel<ReglaTrigger> {
 
     public ReglaTriggerDataModel() {
