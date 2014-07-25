@@ -28,6 +28,7 @@ import com.itcs.helpdesk.persistence.jpa.exceptions.PreexistingEntityException;
 import com.itcs.helpdesk.persistence.jpa.exceptions.RollbackFailureException;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.quartz.HelpDeskScheluder;
+import com.itcs.jpautils.EasyCriteriaQuery;
 import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
@@ -166,7 +167,23 @@ public class AutomaticOpsExecutor {
         verificarNombreAcciones(controller);
         verificarSettingsBase(controller);
         verificarTipoCanal(controller);
-
+        fixClientesCasos(controller);
+    }
+    
+    private void fixClientesCasos(JPAServiceFacade jpaController){
+        EasyCriteriaQuery<Caso> ecq = new EasyCriteriaQuery<Caso>(emf, Caso.class);
+        ecq.addEqualPredicate("idCliente", null);
+        ecq.addDistinctPredicate("emailCliente", null);
+        List<Caso> casosToFix = ecq.getAllResultList();
+        
+        for (Caso caso : casosToFix) {
+            caso.setIdCliente(caso.getEmailCliente().getCliente());
+            try {
+                jpaController.merge(caso);
+            } catch (Exception ex) {
+                Logger.getLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
 //    private void printOutContraintViolation(ConstraintViolationException ex, String classname) {
