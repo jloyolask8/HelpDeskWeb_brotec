@@ -44,12 +44,14 @@
 
                                     <p:autoComplete id="emailCliente" value="#{casoController.emailCliente_wizard}" validator="#{inputValidationBean.validarEmail}"
                                                     completeMethod="#{emailClienteController.completeEmailClienteString}"  
-                                                    var="email"  itemValue="#{email}" itemLabel="#{email}"
+                                                    var="email"  itemValue="#{email}" itemLabel="#{email}">  
                                         <p:ajax event="itemSelect" listener="#{casoController.handleEmailSelect}" update=":form:panelDatosCliente" />  
                                         <pe:keyFilter mask="email"/>
                                     </p:autoComplete>
 
+
                                     <p:message for="emailCliente"/>
+
 
                                     <p:outputLabel value="#{bundle.CreateClienteLabel_rut}" for="rut" style="font-weight:bold"/>
                                     <h:panelGrid>
