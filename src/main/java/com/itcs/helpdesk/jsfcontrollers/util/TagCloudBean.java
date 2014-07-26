@@ -28,21 +28,14 @@ import org.primefaces.model.tagcloud.TagCloudModel;
 @SessionScoped
 public class TagCloudBean extends AbstractManagedBean<Etiqueta> implements Serializable {
 
-    private TagCloudModel model;
+    
+    private transient TagCloudModel model;
 
     /**
      * Creates a new instance of TagCloudBean
      */
     public TagCloudBean() {
         super(Etiqueta.class);
-    }
-
-    @Override
-    public JPAServiceFacade getJpaController() {
-        if (jpaController == null) {
-            jpaController = new JPAServiceFacade(utx, emf);
-        }
-        return jpaController;
     }
     
      @Override
@@ -61,14 +54,19 @@ public class TagCloudBean extends AbstractManagedBean<Etiqueta> implements Seria
 
     /**
      * @return the model
+     *  
      */
-    public TagCloudModel getModel() {
-        List<Etiqueta> etiquetas = (List<Etiqueta>) getJpaController().findAll(Etiqueta.class);
+    public TagCloudModel getEtiquetasByUsuario() {
+        List<Etiqueta> etiquetas = (List<Etiqueta>) getJpaController().findEtiquetasByUsuario(getUserSessionBean().getCurrent().getIdUsuario());
         model = new DefaultTagCloudModel();
         for (Etiqueta etiqueta : etiquetas) {
             model.addTag(new DefaultTagCloudItem(etiqueta.getTagId(), getJpaController().countCasosByEtiqueta(etiqueta).intValue()));
         }
         return model;
+    }
+    
+    public List<Etiqueta> getEtiquetasListByUsuario(){
+        return (List<Etiqueta>) getJpaController().findEtiquetasByUsuario(getUserSessionBean().getCurrent().getIdUsuario());
     }
 
     public String getTagJSonList() {

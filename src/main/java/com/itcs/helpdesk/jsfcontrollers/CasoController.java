@@ -106,6 +106,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.ocpsoft.prettytime.PrettyTime;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.FlowEvent;
@@ -333,25 +334,47 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         return model;
     }
 
-    public void tagItemSelectEvent(SelectEvent event) {
+//    public void tagItemSelectEvent(SelectEvent event) {
+//        Object item = event.getObject();
+//        current.setFechaModif(Calendar.getInstance().getTime());
+//        try {
+//            getJpaController().mergeCaso(current, null);
+//            addInfoMessage("Etiqueta Agregada OK!");
+//        } catch (Exception ex) {
+//            addInfoMessage("No se pudo Agregar la etiqueta" + item);
+//            Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//
+//    }
+    
+     public void tagItemSelectEvent(SelectEvent event) {
         Object item = event.getObject();
         current.setFechaModif(Calendar.getInstance().getTime());
         try {
-            getJpaController().mergeCaso(current, null);
+            if (current.getEtiquetaList() != null) {
+                for (Etiqueta etiqueta : current.getEtiquetaList()) {
+                    etiqueta.setOwner(userSessionBean.getCurrent());
+                    if (etiqueta.getCasoList() == null) {
+                        etiqueta.setCasoList(new LinkedList<Caso>());
+                    }
+                    etiqueta.getCasoList().add(current);
+                }
+            }
+            getJpaController().mergeCaso(current, ManagerCasos.createLogReg(current, "Etiquetas" , "Se agrega Etiqueta :" + item.toString(), ""));
             addInfoMessage("Etiqueta Agregada OK!");
         } catch (Exception ex) {
             addInfoMessage("No se pudo Agregar la etiqueta" + item);
-            Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
+            Log.createLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
 
-    public void tagItemUnselectEvent(UnselectEvent event) {
+  public void tagItemUnselectEvent(UnselectEvent event) {
         Object item = event.getObject();
         current.setFechaModif(Calendar.getInstance().getTime());
         try {
-            getJpaController().mergeCaso(current, null);
-            addInfoMessage("Etiqueta Removida OK!");
+            getJpaController().mergeCaso(current, getManagerCasos().createLogReg(current,"Etiquetas", "Etiqueta "+item.toString()+" removida.", ""));
+//            addInfoMessage("Etiqueta Removida OK!");
         } catch (Exception ex) {
             addInfoMessage("No se pudo Remover la etiqueta" + item);
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
@@ -1045,7 +1068,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     } catch (Exception ex) {
                         Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, "getItemsCount", ex);
                         return 0;
-                    } 
+                    }
                 }
 
                 return allCount;
@@ -1212,8 +1235,11 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public String prettyDate(Date date) {
+
         if (date != null) {
-            return PrettyDate.format(date);
+            PrettyTime p = new PrettyTime(new Locale("es"));
+            return p.format(date);
+//            return PrettyDate.format(date);
         } else {
             return "";
         }
@@ -1395,9 +1421,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             props.put(CrearCasoVisitaRepSellosAction.DESC_KEY, visitaPreventivaTextoDesc);
             props.put(CrearCasoVisitaRepSellosAction.AREA_KEY, visitaPreventivaAsignarAArea.getIdArea());
             props.put(CrearCasoVisitaRepSellosAction.GRUPO_KEY, visitaPreventivaAsignarAGrupo.getIdGrupo());
-            
+
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-                    
+
             props.put(CrearCasoVisitaRepSellosAction.FECHA_VISITA_KEY, sdf.format(visitaPreventivaFechaVisita));
             props.put(CrearCasoVisitaRepSellosAction.FECHA_REP_KEY, sdf.format(visitaPreventivaFechaReparacion));
 
@@ -1943,15 +1969,19 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         if (selectedEtiquetas != null && !selectedEtiquetas.isEmpty()) {
 
             for (Caso caso : getSelectedItems()) {
-                caso.setEtiquetaList(selectedEtiquetas);
                 try {
-                    getJpaController().mergeCaso(caso, null);
+                    if (caso.getEtiquetaList() == null) {
+                        caso.setEtiquetaList(new LinkedList<Etiqueta>());
+                    }
+                    List<AuditLog> changeLog = new ArrayList<AuditLog>();
+                    changeLog.add(getManagerCasos().createLogReg(caso, "Lista de etiquetas", selectedEtiquetas.toString(), caso.getEtiquetaList().toString()));
+                    caso.getEtiquetaList().addAll(selectedEtiquetas);
+                    getJpaController().mergeCaso(caso, changeLog);
                     count++;
                 } catch (Exception ex) {
                     Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-
             JsfUtil.addSuccessMessage(count + " casos etiquetados exitosamente.");
         }
     }

@@ -63,7 +63,7 @@
                     </h:form>
                 </p:tab>
                 <p:tab title="Etiquetas">
-                    <p:tagCloud model="#{tagCloudBean.model}" style="width: 100%;">  
+                    <p:tagCloud model="#{tagCloudBean.etiquetasByUsuario}" style="width: 100%;">  
                         <p:ajax event="select" listener="#{casoController.onTagSelect}" 
                                 update=":mainform:messages :formfilter:panelFilter0:panelFilter :form0:panelG1"/>
                     </p:tagCloud> 
@@ -114,19 +114,21 @@
                                 <p:separator />       
 
 
-                                <p:commandButton id="TagAsBtn" value="Etiquetar ..." icon="ui-icon-tag"  type="button" disabled="#{empty casoController.selectedItems}"/> 
+                                <p:commandButton id="TagAsBtn" value="Etiquetar ..." icon="ui-icon-tag"  type="button" 
+                                                 onclick="TagPanel.loadContents()"
+                                                 disabled="#{empty casoController.selectedItems}"/> 
                                 <p:tooltip for="TagAsBtn" value="Etiquetar como" showEffect="fade" hideEffect="fade" />
 
                                 <p:overlayPanel id="TagPanel" widgetVar="TagPanel" for="TagAsBtn" hideEffect="fade" dynamic="true">                                     
 
                                     <h:panelGrid width="220px">
-                                        <p:dataTable id="tabletags" var="tag" value="#{applicationBean.etiquetasAll}" 
+                                        <p:dataTable id="tabletags" var="tag" value="#{tagCloudBean.etiquetasListByUsuario}" 
                                                      emptyMessage="No se encontraron etiquetas." 
                                                      rowKey="#{tag.tagId}"
                                                      selection="#{casoController.selectedEtiquetas}"
                                                      scrollRows="10" scrollable="true" liveScroll="true" scrollHeight="200">  
 
-                                            <p:column selectionMode="multiple"/>  
+                                            <p:column selectionMode="multiple" width="15%"/>  
 
                                             <p:column filterBy="#{tag.tagId}">
                                                 <h:outputText value="#{tag.tagId}" />  
@@ -172,8 +174,6 @@
                         <p:dataTable id="ID_TABLA" value="#{casoController.items}" var="item"                                     
                                      emptyMessage="#{bundle.ListCasoEmpty}" 
                                      rowStyleClass="#{casoController.evaluarStyle(item)}"
-                                     sortBy="fechaCreacion"
-                                     sortOrder="descending"
                                      draggableColumns="true"
                                      rowKey="#{item.idCaso}"
                                      selection="#{casoController.selectedItems}"
