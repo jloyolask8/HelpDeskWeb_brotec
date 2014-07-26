@@ -31,13 +31,21 @@
                 <p:tab title="Info">
                     <p:panelGrid styleClass="filtersGrid">
 
-
                         <p:row>
                             <p:column>
                                 <p:outputLabel value="Cliente:" for="clienteNotNull" style="font-weight:bold"/>
                             </p:column>
                             <p:column>
-                                <p:commandLink id="clienteNotNull" value="#{casoController.selected.emailCliente.cliente ne null ? casoController.selected.emailCliente.cliente.capitalName:''} #{casoController.selected.emailCliente.emailCliente}" style="color: #4183C4 !important;"
+                                <p:commandLink id="clienteNotNull" value="#{casoController.selected.idCliente ne null ? casoController.selected.idCliente.capitalName:''}" style="color: #4183C4 !important;"
+                                               update=":formDatosCliente" onclick="dialogClient.show()" />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Email:" for="emailNotNull" style="font-weight:bold"/>
+                            </p:column>
+                            <p:column>
+                                <p:commandLink id="emailNotNull" value="#{casoController.selected.emailCliente ne null ? casoController.selected.emailCliente.emailCliente:''}" style="color: #4183C4 !important;"
                                                update=":formDatosCliente" onclick="dialogClient.show()" />
                             </p:column>
                         </p:row>
