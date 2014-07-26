@@ -5,23 +5,19 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
+import com.itcs.helpdesk.persistence.entities.AuditLog;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.FiltroVista;
-import com.itcs.helpdesk.persistence.entities.Resource;
+import com.itcs.helpdesk.persistence.entities.ScheduleEvent;
 import com.itcs.helpdesk.persistence.entities.ScheduleEventReminder;
-import com.itcs.helpdesk.persistence.entities.Usuario;
+import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
-import com.itcs.helpdesk.quartz.ActionClassExecutorJob;
-import com.itcs.helpdesk.quartz.HelpDeskScheluder;
-import com.itcs.helpdesk.quartz.ScheduleEventReminderJob;
-import com.itcs.helpdesk.util.Log;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
@@ -29,386 +25,271 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
-import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.ScheduleEntryMoveEvent;
 import org.primefaces.event.ScheduleEntryResizeEvent;
-import org.primefaces.event.SelectEvent;
-import org.primefaces.model.DefaultScheduleEvent;
-import org.primefaces.model.LazyScheduleModel;
-import org.primefaces.model.ScheduleEvent;
-import org.primefaces.model.ScheduleModel;
-import org.quartz.SchedulerException;
+import org.primefaces.extensions.component.timeline.TimelineUpdater;
+import org.primefaces.extensions.event.timeline.TimelineModificationEvent;
+import org.primefaces.extensions.model.timeline.TimelineEvent;
+import org.primefaces.extensions.model.timeline.TimelineModel;
 
 /**
  *
  * @author jonathan
  */
-@ManagedBean(name = "casoScheduleController")
+@ManagedBean(name = "casoTimelineController")
 @SessionScoped
-public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdesk.persistence.entities.ScheduleEvent> implements Serializable {
+public class CasoTimelineController extends AbstractManagedBean<ScheduleEvent> implements Serializable {
 
     @ManagedProperty(value = "#{casoController}")
     private CasoController casoController;
     @ManagedProperty(value = "#{UserSessionBean}")
     private UserSessionBean userSessionBean;
-    private ScheduleModel lazyScheduleEventsModel;
-    private DefaultScheduleEvent event = new DefaultScheduleEvent();
+    private TimelineModel model;
+    private TimelineModel modelScheduleEvents;
 
-    private List<Usuario> filtrosUsuario = new LinkedList<Usuario>();
-    private List<Resource> filtrosRecurso = new LinkedList<Resource>();
-    private boolean insideCasoDisplay = true;
+    private TimelineEvent event; // current event to be changed, edited, deleted or added  
 
-    //temp vars
-    private Usuario selectedUserToAddInvited;
-    private Resource selectedResourceToAddInvited;
+    private long zoomMax;
+    private long zoomMin;
+    private Date start;
+    private Date end;
 
-    public CasoScheduleController() {
+    private TimeZone timeZone = TimeZone.getDefault();
 
-        super(com.itcs.helpdesk.persistence.entities.ScheduleEvent.class);
+    public CasoTimelineController() {
 
-        lazyScheduleEventsModel = new LazyScheduleModel() {
-            @Override
-            public void addEvent(ScheduleEvent event) {
-                super.addEvent(event);
-            }
+        super(ScheduleEvent.class);
 
-            @Override
-            public boolean deleteEvent(ScheduleEvent event) {
-                return super.deleteEvent(event);
-            }
+        // initial zooming is ca. one month to avoid hiding of event details (due to wide time range of events)  
+        zoomMax = 1000L * 60 * 60 * 24 * 30 * 12;
+        zoomMin = 1000L * 60;
 
-            @Override
-            public void updateEvent(ScheduleEvent event) {
-                super.updateEvent(event);
-            }
+        // set initial start / end dates for the axis of the timeline (just for testing)  
+//        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+//        cal.set(2013, Calendar.JUNE, 9, 0, 0, 0);
+//        start = cal.getTime();
+//        cal.set(2013, Calendar.AUGUST, 10, 0, 0, 0);
+//        end = cal.getTime();
+
+        modelScheduleEvents = new TimelineModel() {
 
             @Override
-            public ScheduleEvent getEvent(String id) {
-                return super.getEvent(id);
-            }
+            public List<TimelineEvent> getEvents() {
+                List<TimelineEvent> events = new LinkedList<TimelineEvent>();
 
-            @Override
-            public void loadEvents(Date start, Date end) {
                 try {
-                    getFilterHelper().getVista().setFiltrosVistaList(new ArrayList<FiltroVista>(2));
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
+                    Vista vista0 = new Vista(ScheduleEvent.class);
 
                     //add date filters
-                    FiltroVista f1 = new FiltroVista();
-                    f1.setIdFiltro(1);//otherwise i dont know what to remove dude.
-                    f1.setIdCampo("startDate");
-                    f1.setIdComparador(EnumTipoComparacion.BW.getTipoComparacion());
-                    f1.setValor(sdf.format(start));
-                    f1.setValor2(sdf.format(end));
+                    Caso currentCaso = casoController.getSelected();
+                    //add current caso filter
+                    FiltroVista filtro1 = new FiltroVista();
+                    filtro1.setIdFiltro(3);//otherwise i dont know what to remove dude.
+                    filtro1.setIdCampo("idCaso");
+                    filtro1.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+                    filtro1.setValor(currentCaso.getIdCaso().toString());
+                    filtro1.setIdVista(vista0);
+                    vista0.getFiltrosVistaList().add(filtro1);
 
-                    f1.setIdVista(getFilterHelper().getVista());
-
-                    getFilterHelper().getVista().getFiltrosVistaList().add(f1);
-
-                    if (insideCasoDisplay) {
-                        Caso currentCaso = casoController.getSelected();
-                        //add current caso filter
-                        FiltroVista f3 = new FiltroVista();
-                        f3.setIdFiltro(3);//otherwise i dont know what to remove dude.
-                        f3.setIdCampo("idCaso");
-                        f3.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
-                        f3.setValor(currentCaso.getIdCaso().toString());
-                        f3.setIdVista(getFilterHelper().getVista());
-                        getFilterHelper().getVista().getFiltrosVistaList().add(f3);
-                    }
-
-                    if (filtrosUsuario != null && !filtrosUsuario.isEmpty()) {
-                        //add current caso filter
-                        FiltroVista f4_0 = new FiltroVista();
-                        f4_0.setIdFiltro(4);//otherwise i dont know what to remove dude.
-                        f4_0.setIdCampo("idUsuario");
-                        f4_0.setIdComparador(EnumTipoComparacion.SC.getTipoComparacion());
-                        String commaSeparatedIdOfUsuariosFilter = "";
-                        boolean first = true;
-                        for (Usuario usuario : filtrosUsuario) {
-                            if (first) {
-                                commaSeparatedIdOfUsuariosFilter += usuario.getIdUsuario();
-                                first = false;
-                            } else {
-                                commaSeparatedIdOfUsuariosFilter += ("," + usuario.getIdUsuario());
-                            }
+                    List<ScheduleEvent> findEntities = (List<ScheduleEvent>) getJpaController().findAllEntities(ScheduleEvent.class, vista0, ("startDate"), null);
+                    for (ScheduleEvent log : findEntities) {
+                        if(log.getStartDate().equals(log.getEndDate())){
+                            events.add(new TimelineEvent(log, log.getStartDate(), Boolean.TRUE));
+                        }else{
+                            events.add(new TimelineEvent(log, log.getStartDate(), log.getEndDate(), Boolean.TRUE));
                         }
-
-                        f4_0.setValor(commaSeparatedIdOfUsuariosFilter);
-                        f4_0.setIdVista(getFilterHelper().getVista());
-                        getFilterHelper().getVista().getFiltrosVistaList().add(f4_0);
+                        
                     }
 
-                    if (filtrosUsuario != null && !filtrosUsuario.isEmpty()) {
-                        //add current caso filter
-                        FiltroVista f4 = new FiltroVista();
-                        f4.setIdFiltro(4);//otherwise i dont know what to remove dude.
-                        f4.setIdCampo("usuariosInvitedList");
-                        f4.setIdComparador(EnumTipoComparacion.IM.getTipoComparacion());
-                        String commaSeparatedIdOfUsuariosFilter = "";
-                        boolean first = true;
-                        for (Usuario usuario : filtrosUsuario) {
-                            if (first) {
-                                commaSeparatedIdOfUsuariosFilter += usuario.getIdUsuario();
-                                first = false;
-                            } else {
-                                commaSeparatedIdOfUsuariosFilter += ("," + usuario.getIdUsuario());
-                            }
-                        }
-
-                        f4.setValor(commaSeparatedIdOfUsuariosFilter);
-                        f4.setIdVista(getFilterHelper().getVista());
-                        getFilterHelper().getVista().getFiltrosVistaList().add(f4);
-                    }
-
-                    if (filtrosRecurso != null && !filtrosRecurso.isEmpty()) {
-                        //add current caso filter
-                        FiltroVista f5 = new FiltroVista();
-                        f5.setIdFiltro(4);//otherwise i dont know what to remove dude.
-                        f5.setIdCampo("resourceList");
-                        f5.setIdComparador(EnumTipoComparacion.IM.getTipoComparacion());
-                        String commaSeparatedIdOfResourcesFilter = "";
-                        boolean first = true;
-                        for (Resource r : filtrosRecurso) {
-                            if (first) {
-                                commaSeparatedIdOfResourcesFilter += r.getIdResource();
-                                first = false;
-                            } else {
-                                commaSeparatedIdOfResourcesFilter += ("," + r.getIdResource());
-                            }
-                        }
-
-                        f5.setValor(commaSeparatedIdOfResourcesFilter);
-                        f5.setIdVista(getFilterHelper().getVista());
-                        getFilterHelper().getVista().getFiltrosVistaList().add(f5);
-                    }
-
-                    System.out.println("VISTA=" + getFilterHelper().getVista());
-
-                    final List<com.itcs.helpdesk.persistence.entities.ScheduleEvent> findEntities
-                            = (List<com.itcs.helpdesk.persistence.entities.ScheduleEvent>) getJpaController().findAllEntities(getEntityClass(), getFilterHelper().getVista(), ("startDate"), null);
-//                    System.out.println("events:" + findEntities);
-                    for (com.itcs.helpdesk.persistence.entities.ScheduleEvent scheduleEvent : findEntities) {
-                        final DefaultScheduleEvent defaultScheduleEvent = new DefaultScheduleEvent(scheduleEvent.getTitle(), scheduleEvent.getStartDate(), scheduleEvent.getEndDate());
-                        defaultScheduleEvent.setAllDay(scheduleEvent.getAllDay());
-                        defaultScheduleEvent.setData(scheduleEvent);
-
-                        addEvent(defaultScheduleEvent);
-                    }
                 } catch (Exception ex) {
-                    Logger.getLogger(CasoScheduleController.class.getName()).log(Level.SEVERE, "loadEvents", ex);
+                    Logger.getLogger(CasoTimelineController.class.getName()).log(Level.SEVERE, "getEvents", ex);
                 }
 
+                return events;
             }
         };
 
-        System.out.println("new CasoScheduleController()");
+        model = new TimelineModel() {
 
-    }
+            @Override
+            public List<TimelineEvent> getEvents() {
+                List<TimelineEvent> events = new LinkedList<TimelineEvent>();
 
-    public DefaultScheduleEvent getEvent() {
-        return event;
-    }
+                try {
 
-    public void setEvent(DefaultScheduleEvent event) {
-        this.event = event;
-    }
+                    Vista vista = new Vista(AuditLog.class);
 
-    public void addEvent() {
+                    //add date filters
+                    Caso currentCaso = casoController.getSelected();
+                    //add current caso filter
+                    FiltroVista f3 = new FiltroVista();
+                    f3.setIdFiltro(3);//otherwise i dont know what to remove dude.
+                    f3.setIdCampo("idCaso");
+                    f3.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+                    f3.setValor(currentCaso.getIdCaso().toString());
+                    f3.setIdVista(vista);
+                    vista.getFiltrosVistaList().add(f3);
 
-        System.out.println("void addEvent called");
+                    List<AuditLog> findEntities = (List<AuditLog>) getJpaController().findAllEntities(AuditLog.class, vista, ("fecha"), null);
+                    for (AuditLog log : findEntities) {
+                        events.add(new TimelineEvent(log, log.getFecha(), Boolean.FALSE));
+                    }
 
-        try {
-            com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) event.getData();
+                } catch (Exception ex) {
+                    Logger.getLogger(CasoTimelineController.class.getName()).log(Level.SEVERE, "getEvents", ex);
+                }
 
-            Logger.getLogger(CasoScheduleController.class.getName()).log(Level.SEVERE, "entityEvent:::{0}", entityEvent);
-
-            entityEvent.setTitle(event.getTitle());
-            entityEvent.setStartDate(event.getStartDate());
-            entityEvent.setEndDate(event.getEndDate());
-            entityEvent.setAllDay(event.isAllDay());
-            //----
-//                entityEvent.setFechaCreacion(new Date());
-//                entityEvent.setIdCaso(casoController.getSelected());
-//                entityEvent.setIdUsuario(userSessionBean.getCurrent());
-
-            if (event.getId() == null) {
-                persistAndScheduleEvent(entityEvent);
-
-                lazyScheduleEventsModel.addEvent(event);
-
-                addInfoMessage("Evento agregado exitósamente.");
-                executeInClient("PF('myschedule').update();PF('createEventDialog').hide();");
-
-            } else {
-                getJpaController().merge(entityEvent);
-                lazyScheduleEventsModel.updateEvent(event);
-                executeInClient("PF('myschedule').update();PF('createEventDialog').hide();");
+                return events;
             }
-            event = new DefaultScheduleEvent();
+        };
 
-        } catch (Exception ex) {
-            addErrorMessage("No se pudo agendar el evento:" + ex.getMessage());
-            Logger.getLogger(CasoScheduleController.class.getName()).log(Level.SEVERE, "addEvent", ex);
-        }
+        System.out.println("new CasoTimelineController()");
 
     }
 
-    public void persistAndScheduleEvent(com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent) throws Exception {
+    public void onChange(TimelineModificationEvent e) {
+        // get clone of the TimelineEvent to be changed with new start / end dates  
+        event = e.getTimelineEvent();
+
+        // update booking in DB...  
+        // if everything was ok, no UI update is required. Only the model should be updated  
+        getModel().update(event);
+
+        FacesMessage msg
+                = new FacesMessage(FacesMessage.SEVERITY_INFO, "The booking dates have been updated", null);
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+
+        // otherwise (if DB operation failed) a rollback can be done with the same response as follows:  
+        // TimelineEvent oldEvent = model.getEvent(model.getIndex(event));  
+        // TimelineUpdater timelineUpdater = TimelineUpdater.getCurrentInstance(":mainForm:timeline");  
+        // model.update(oldEvent, timelineUpdater);  
+    }
+
+    public void onEdit(TimelineModificationEvent e) {
+        // get clone of the TimelineEvent to be edited  
+        event = e.getTimelineEvent();
+    }
+
+//    public void onAdd(TimelineAddEvent e) {  
+//        // get TimelineEvent to be added  
+//        event = new TimelineEvent(new Booking(), e.getStartDate(), e.getEndDate(), true, e.getGroup());  
+//  
+//        // add the new event to the model in case if user will close or cancel the "Add dialog"  
+//        // without to update details of the new event. Note: the event is already added in UI.  
+//        model.add(event);  
+//    }  
+    public void onDelete(TimelineModificationEvent e) {
+        // get clone of the TimelineEvent to be deleted  
+        event = e.getTimelineEvent();
+    }
+
+    public void delete() {
+        // delete booking in DB...  
+
+        // if everything was ok, delete the TimelineEvent in the model and update UI with the same response.  
+        // otherwise no server-side delete is necessary (see timelineWdgt.cancelDelete() in the p:ajax onstart).  
+        // we assume, delete in DB was successful  
+        TimelineUpdater timelineUpdater = TimelineUpdater.getCurrentInstance(":mainForm:timeline");
+        getModel().delete(event, timelineUpdater);
+
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "The booking has been deleted", null);
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+    }
+
+    public void saveDetails() {
+        // save the updated booking in DB...  
+
+        // if everything was ok, update the TimelineEvent in the model and update UI with the same response.  
+        // otherwise no server-side update is necessary because UI is already up-to-date.  
+        // we assume, save in DB was successful  
+        TimelineUpdater timelineUpdater = TimelineUpdater.getCurrentInstance(":mainForm:timeline");
+        getModel().update(event, timelineUpdater);
+
+        FacesMessage msg
+                = new FacesMessage(FacesMessage.SEVERITY_INFO, "The booking details  have been saved", null);
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+    }
+
+//    public void addEvent() {
+//
+//        System.out.println("void addEvent called");
+//
+//        try {
+//            ScheduleEvent entityEvent = (ScheduleEvent) event.getData();
+//
+//            Logger.getLogger(CasoTimelineController.class.getName()).log(Level.SEVERE, "entityEvent:::{0}", entityEvent);
+//
+//            entityEvent.setTitle(event.getTitle());
+//            entityEvent.setStartDate(event.getStartDate());
+//            entityEvent.setEndDate(event.getEndDate());
+//            entityEvent.setAllDay(event.isAllDay());
+//
+//            entityEvent.setFechaCreacion(new Date());
+//            //----
+////                entityEvent.setFechaCreacion(new Date());
+////                entityEvent.setIdCaso(casoController.getSelected());
+////                entityEvent.setIdUsuario(userSessionBean.getCurrent());
+//
+//            if (event.getId() == null) {
+//                persistAndScheduleEvent(entityEvent);
+//
+//                lazyScheduleEventsModel.addEvent(event);
+//
+//                addInfoMessage("Evento agregado exitósamente.");
+//                executeInClient("PF('myschedule').update();PF('createEventDialog').hide();");
+//
+//            } else {
+//                getJpaController().merge(entityEvent);
+//                lazyScheduleEventsModel.updateEvent(event);
+//                executeInClient("PF('myschedule').update();PF('createEventDialog').hide();");
+//            }
+//            event = new DefaultScheduleEvent();
+//
+//        } catch (Exception ex) {
+//            addErrorMessage("No se pudo agendar el evento:" + ex.getMessage());
+//            Logger.getLogger(CasoTimelineController.class.getName()).log(Level.SEVERE, "addEvent", ex);
+//        }
+//
+//    }
+    public void persistAndScheduleEvent(ScheduleEvent entityEvent) throws Exception {
         for (ScheduleEventReminder scheduleEventReminder : entityEvent.getScheduleEventReminderList()) {
             if (scheduleEventReminder.getIdReminder() != null || scheduleEventReminder.getIdReminder() < 0) {
                 //new added reminders
                 scheduleEventReminder.setIdReminder(null);
             }
         }
-        
+
         getJpaController().persist(entityEvent);
-        
-        scheduleQuartzEvent(entityEvent);
-        
-        scheduleQuartzReminders(entityEvent);
+
+//        scheduleQuartzEvent(entityEvent);
+//        scheduleQuartzReminders(entityEvent);
     }
 
-    private void scheduleQuartzEvent(com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent) throws SchedulerException, Exception {
-        if (entityEvent.getExecuteAction() && entityEvent.getIdTipoAccion() != null
-                && !StringUtils.isEmpty(entityEvent.getIdTipoAccion().getImplementationClassName())) {
-            //we must schedule the selected action
-            String jobID = HelpDeskScheluder.scheduleActionClassExecutorJob(
-                    casoController.getSelected().getIdCaso(),
-                    entityEvent.getIdTipoAccion().getImplementationClassName(),
-                    entityEvent.getParametrosAccion(),
-                    entityEvent.getStartDate());
-            entityEvent.setQuartzJobId(jobID);
-            getJpaController().merge(entityEvent);
-        }
-    }
-
-    private void scheduleQuartzReminders(com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent) throws Exception {
-        if (entityEvent.getScheduleEventReminderList() != null && !entityEvent.getScheduleEventReminderList().isEmpty()) {
-            //we need to schedule event reminders
-            for (ScheduleEventReminder scheduleEventReminder : entityEvent.getScheduleEventReminderList()) {
-
-                int minituesAmount = (-1) * scheduleEventReminder.getUnitOfTimeInMinutes().intValue() * scheduleEventReminder.getQuantityTime();
-                //calculate when in function of  QuantityTime * UnitOfTimeInMinutes
-                //ejemplo: 1 * 1 = 10 minutos antes del evento
-                //ejemplo: 1 * 60 = 1 horas antes del evento
-                //ejemplo: 1 * 1440 = 1440 minutos (1 dia) antes del evento
-                //ejemplo: 1 * 10080 = 10080 minutos (1 semana) antes del evento
-
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(entityEvent.getStartDate());
-                cal.add(Calendar.MINUTE, minituesAmount);
-
-                String jobId = HelpDeskScheluder.scheduleEventReminderJob(
-                        casoController.getSelected().getIdArea().getIdCanal().getIdCanal(),//TODO handle nPE
-                        entityEvent.getUsuariosInvitedList().toString(), scheduleEventReminder.getEventId().getEventId().toString(),
-                        scheduleEventReminder.getIdReminder().toString(), cal.getTime());
-                scheduleEventReminder.setQuartzJobId(jobId);
-
-                getJpaController().merge(scheduleEventReminder);
-
-            }
-        }
-    }
-
-    private void unscheduleQuartzReminders(com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent) throws Exception {
-        if (entityEvent.getScheduleEventReminderList() != null && !entityEvent.getScheduleEventReminderList().isEmpty()) {
-            //we need to schedule event reminders
-
-            for (ScheduleEventReminder r : entityEvent.getScheduleEventReminderList()) {
-                if (r.getIdReminder() != null && r.getIdReminder() > 0
-                        && !StringUtils.isEmpty(r.getQuartzJobId())) {
-                    //its persistent
-                    ScheduleEventReminderJob.unschedule(r.getQuartzJobId());
-                }
-            }
-        }
-    }
-
-    private void unscheduleQuartzEvent(com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent) throws Exception {
-        if (entityEvent.getExecuteAction() && !StringUtils.isEmpty(entityEvent.getQuartzJobId())) {
-            //we need to un schedule event for resschedule
-            ActionClassExecutorJob.unschedule(entityEvent.getQuartzJobId());
-        }
-    }
-
-    public void addNewScheduleEventReminder() {
-        if (this.event != null) {
-            com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) event.getData();
-            entityEvent.addNewScheduleEventReminder();
-        }
-    }
-
-    public void removeScheduleEventReminder(ScheduleEventReminder r) {
-        System.out.println("removeScheduleEventReminder...");
-        if (this.event != null) {
-            com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) event.getData();
-
-            List<ScheduleEventReminder> scheduleEventReminderList = entityEvent.getScheduleEventReminderList();
-            if (scheduleEventReminderList != null) {
-                scheduleEventReminderList.remove(r);
-
-            }
-
-            if (r.getIdReminder() != null && r.getIdReminder() > 0) {
-                //its persistent
-                if (!StringUtils.isEmpty(r.getQuartzJobId())) {
-                    ScheduleEventReminderJob.unschedule(r.getQuartzJobId());
-                }
-
-                try {
-                    getJpaController().merge(entityEvent);
-                } catch (Exception ex) {
-                    Logger.getLogger(CasoScheduleController.class.getName()).log(Level.SEVERE, "removeScheduleEventReminder merge entityEvent error", ex);
-                }
-            }
-        }
-    }
-
-    public void onEventSelect(SelectEvent selectEvent) {
-        event = (DefaultScheduleEvent) selectEvent.getObject();
-    }
-
-    public void onDateSelect(SelectEvent selectEvent) {
-        List<Usuario> fUsuario = new LinkedList<Usuario>();
-        fUsuario.add(userSessionBean.getCurrent());
-        if (!userSessionBean.getCurrent().equals(casoController.getSelected().getOwner())) {
-            fUsuario.add(casoController.getSelected().getOwner());
-        }
-        com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = new com.itcs.helpdesk.persistence.entities.ScheduleEvent();
-        entityEvent.addNewScheduleEventReminder();
-        entityEvent.setIdCaso(casoController.getSelected());
-        entityEvent.setIdUsuario(userSessionBean.getCurrent());
-        entityEvent.setFechaCreacion(new Date());
-        entityEvent.setUsuariosInvitedList(fUsuario);
-        event = new DefaultScheduleEvent("", (Date) selectEvent.getObject(), (Date) selectEvent.getObject());
-        event.setData(entityEvent);
-    }
-
+//    public void onEventSelect(SelectEvent selectEvent) {
+//        event = (DefaultScheduleEvent) selectEvent.getObject();
+//    }
+//
+//    public void onDateSelect(SelectEvent selectEvent) {
+//        List<Usuario> fUsuario = new LinkedList<Usuario>();
+//        fUsuario.add(userSessionBean.getCurrent());
+//        if (!userSessionBean.getCurrent().equals(casoController.getSelected().getOwner())) {
+//            fUsuario.add(casoController.getSelected().getOwner());
+//        }
+//        ScheduleEvent entityEvent = new ScheduleEvent();
+//        entityEvent.addNewScheduleEventReminder();
+//        entityEvent.setIdCaso(casoController.getSelected());
+//        entityEvent.setIdUsuario(userSessionBean.getCurrent());
+//
+//        entityEvent.setUsuariosInvitedList(fUsuario);
+//        event = new DefaultScheduleEvent("", (Date) selectEvent.getObject(), (Date) selectEvent.getObject());
+//        event.setData(entityEvent);
+//    }
     public void onEventMove(ScheduleEntryMoveEvent event) {
 
         System.out.println("onEventMove");
 
-        com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) event.getScheduleEvent().getData();
-
-        try {
-
-            unscheduleQuartzEvent(entityEvent);
-            unscheduleQuartzReminders(entityEvent);
-
-        } catch (Exception ex) {
-            Logger.getLogger(CasoScheduleController.class.getName()).log(Level.SEVERE, "onEventMove unschedule error", ex);
-        }
-
-        try {
-
-            scheduleQuartzEvent(entityEvent);
-            scheduleQuartzReminders(entityEvent);
-
-            getJpaController().merge(entityEvent);
-        } catch (Exception ex) {
-            Logger.getLogger(CasoScheduleController.class.getName()).log(Level.SEVERE, "onEventMove merge entityEvent error", ex);
-        }
+        ScheduleEvent entityEvent = (ScheduleEvent) event.getScheduleEvent().getData();
 
         addInfoMessage("Event moved, Day delta:" + event.getDayDelta() + ", Minute delta:" + event.getMinuteDelta());
     }
@@ -416,43 +297,14 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
     public void onEventResize(ScheduleEntryResizeEvent event) {
 
         System.out.println("onEventResize");
-        com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) event.getScheduleEvent().getData();
+        ScheduleEvent entityEvent = (ScheduleEvent) event.getScheduleEvent().getData();
         try {
-
-//            unscheduleQuartzEvent(entityEvent);
-//            unscheduleQuartzReminders(entityEvent);
-//
-//            scheduleQuartzEvent(entityEvent);
-//            scheduleQuartzReminders(entityEvent);
             getJpaController().merge(entityEvent);
         } catch (Exception ex) {
-            Logger.getLogger(CasoScheduleController.class.getName()).log(Level.SEVERE, "onEventResize merge entityEvent error", ex);
+            Logger.getLogger(CasoTimelineController.class.getName()).log(Level.SEVERE, "onEventResize merge entityEvent error", ex);
         }
 
         addInfoMessage("Event resized, Day delta:" + event.getDayDelta() + ", Minute delta:" + event.getMinuteDelta());
-    }
-
-//    @Override
-//    public OrderBy getDefaultOrderBy() {
-//        return new OrderBy("startDate", OrderBy.OrderType.DESC);
-//    }
-    @Override
-    public Class getDataModelImplementationClass() {
-        return LazyScheduleModel.class;
-    }
-
-    /**
-     * @return the lazyScheduleEventsModel
-     */
-    public ScheduleModel getLazyScheduleEventsModel() {
-        return lazyScheduleEventsModel;
-    }
-
-    /**
-     * @param lazyScheduleEventsModel the lazyScheduleEventsModel to set
-     */
-    public void setLazyScheduleEventsModel(ScheduleModel lazyScheduleEventsModel) {
-        this.lazyScheduleEventsModel = lazyScheduleEventsModel;
     }
 
     /**
@@ -469,186 +321,94 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
         this.userSessionBean = userSessionBean;
     }
 
-    public List<Usuario> autoCompleteUsuario(String query) {
-        System.out.println(query);
-        //List<EmailCliente> results = new ArrayList<EmailCliente>();
-        List<Usuario> list = getJpaController().findUsuariosEntitiesLike(query, false, 10, 0);
-//        System.out.println(emailClientes);
-        if (list != null && !list.isEmpty()) {
-            return list;
-        } else {
-//            emailCliente_wizard_existeEmail = false;
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "No existe ningun usuario con ese email o nombre...", "No existe ningun usuario con ese email o nombre...");
-            FacesContext.getCurrentInstance().addMessage(null, message);
-            list = new ArrayList<Usuario>();
-            System.out.println("No existe el Cliente con email" + query);
-            return list;
-        }
-
-    }
-
-    public void usuarioFilterItemSelectEvent(SelectEvent event) {
-        Object item = event.getObject();
-        try {
-            if (this.filtrosUsuario == null) {
-                filtrosUsuario = new LinkedList<Usuario>();
-            }
-            filtrosUsuario.add((Usuario) item);
-            selectedUserToAddInvited = null;//reset selection
-            addInfoMessage("Filtro usuario Agregado OK!");
-        } catch (Exception ex) {
-            addInfoMessage("No se pudo Agregar " + item);
-            Log.createLogger(CasoController.class.getName()).log(Level.SEVERE, "usuarioFilterItemSelectEvent", ex);
-        }
-
-    }
-
-    public void usuarioInvitedItemSelectEvent(SelectEvent event) {
-        Object item = event.getObject();
-        System.out.println("item:" + item);
-
-        try {
-
-            com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) this.event.getData();
-            if (entityEvent.getUsuariosInvitedList() == null) {
-                entityEvent.setUsuariosInvitedList(new LinkedList<Usuario>());
-            }
-            entityEvent.getUsuariosInvitedList().add((Usuario) item);
-            selectedUserToAddInvited = null;//reset selection
-
-            addInfoMessage("Agregada OK!");
-        } catch (Exception ex) {
-            addInfoMessage("No se pudo Agregar " + item);
-            Log.createLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }
-
-    public List<Resource> autoCompleteResource(String query) {
-        System.out.println(query);
-        //List<EmailCliente> results = new ArrayList<EmailCliente>();
-        List<Resource> list = getJpaController().findResourcesEntitiesLike(query, false, 10, 0);
-//        System.out.println(emailClientes);
-        if (list != null && !list.isEmpty()) {
-            return list;
-        } else {
-//            emailCliente_wizard_existeEmail = false;
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "No existe ningun Resource...", "No existe ningun Resource...");
-            FacesContext.getCurrentInstance().addMessage(null, message);
-            list = new ArrayList<Resource>();
-            System.out.println("No existe el Resource: " + query);
-            return list;
-        }
-
-    }
-
-    public void resourceInvitedItemSelectEvent(SelectEvent event) {
-        Object item = event.getObject();
-        System.out.println("item:" + item);
-
-        try {
-
-            com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) this.event.getData();
-            if (entityEvent.getResourceList() == null) {
-                entityEvent.setResourceList(new LinkedList<Resource>());
-            }
-            entityEvent.getResourceList().add((Resource) item);
-            setSelectedResourceToAddInvited(null);//reset selection
-
-            addInfoMessage("Resource added OK!");
-        } catch (Exception ex) {
-            addInfoMessage("No se pudo Agregar Resource" + item);
-            Log.createLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }
-
-    public void resourceFilterItemSelectEvent(SelectEvent event) {
-        Object item = event.getObject();
-        try {
-
-            if (this.filtrosRecurso == null) {
-                this.filtrosRecurso = (new LinkedList<Resource>());
-            }
-            this.filtrosRecurso.add((Resource) item);
-            setSelectedResourceToAddInvited(null);//reset selection
-
-            addInfoMessage("Resource filter added OK!");
-        } catch (Exception ex) {
-            addInfoMessage("No se pudo Agregar Resource" + item);
-            Log.createLogger(CasoController.class.getName()).log(Level.SEVERE, "resourceFilterItemSelectEvent", ex);
-        }
-
+    @Override
+    public Class getDataModelImplementationClass() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     /**
-     * @return the selectedUserToAddInvited
+     * @return the model
      */
-    public Usuario getSelectedUserToAddInvited() {
-        return selectedUserToAddInvited;
+    public TimelineModel getModel() {
+        return model;
     }
 
     /**
-     * @param selectedUserToAddInvited the selectedUserToAddInvited to set
+     * @param model the model to set
      */
-    public void setSelectedUserToAddInvited(Usuario selectedUserToAddInvited) {
-        this.selectedUserToAddInvited = selectedUserToAddInvited;
+    public void setModel(TimelineModel model) {
+        this.model = model;
     }
 
     /**
-     * @return the selectedResourceToAddInvited
+     * @return the timeZone
      */
-    public Resource getSelectedResourceToAddInvited() {
-        return selectedResourceToAddInvited;
+    public TimeZone getTimeZone() {
+        System.out.println("timeZone:"+timeZone.toString());
+        return timeZone;
     }
 
     /**
-     * @param selectedResourceToAddInvited the selectedResourceToAddInvited to
-     * set
+     * @param timeZone the timeZone to set
      */
-    public void setSelectedResourceToAddInvited(Resource selectedResourceToAddInvited) {
-        this.selectedResourceToAddInvited = selectedResourceToAddInvited;
+    public void setTimeZone(TimeZone timeZone) {
+        this.timeZone = timeZone;
     }
 
     /**
-     * @return the filtrosUsuario
+     * @return the zoomMax
      */
-    public List<Usuario> getFiltrosUsuario() {
-        return filtrosUsuario;
+    public long getZoomMax() {
+        return zoomMax;
     }
 
     /**
-     * @param filtrosUsuario the filtrosUsuario to set
+     * @param zoomMax the zoomMax to set
      */
-    public void setFiltrosUsuario(List<Usuario> filtrosUsuario) {
-        this.filtrosUsuario = filtrosUsuario;
+    public void setZoomMax(long zoomMax) {
+        this.zoomMax = zoomMax;
     }
 
     /**
-     * @return the filtrosRecurso
+     * @return the start
      */
-    public List<Resource> getFiltrosRecurso() {
-        return filtrosRecurso;
+    public Date getStart() {
+        return start;
     }
 
     /**
-     * @param filtrosRecurso the filtrosRecurso to set
+     * @param start the start to set
      */
-    public void setFiltrosRecurso(List<Resource> filtrosRecurso) {
-        this.filtrosRecurso = filtrosRecurso;
+    public void setStart(Date start) {
+        this.start = start;
     }
 
     /**
-     * @return the insideCasoDisplay
+     * @return the end
      */
-    public boolean isInsideCasoDisplay() {
-        return insideCasoDisplay;
+    public Date getEnd() {
+        return end;
     }
 
     /**
-     * @param insideCasoDisplay the insideCasoDisplay to set
+     * @param end the end to set
      */
-    public void setInsideCasoDisplay(boolean insideCasoDisplay) {
-        this.insideCasoDisplay = insideCasoDisplay;
+    public void setEnd(Date end) {
+        this.end = end;
     }
+
+    /**
+     * @return the modelScheduleEvents
+     */
+    public TimelineModel getModelScheduleEvents() {
+        return modelScheduleEvents;
+    }
+
+    /**
+     * @param modelScheduleEvents the modelScheduleEvents to set
+     */
+    public void setModelScheduleEvents(TimelineModel modelScheduleEvents) {
+        this.modelScheduleEvents = modelScheduleEvents;
+    }
+
 }

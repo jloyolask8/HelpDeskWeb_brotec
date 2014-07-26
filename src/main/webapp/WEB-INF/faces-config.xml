@@ -8,8 +8,11 @@
               xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd">
     
     <factory>
-        <exception-handler-factory>com.itcs.helpdesk.webapputils.ViewExpiredExceptionHandlerFactory</exception-handler-factory>
+        <exception-handler-factory>
+            org.primefaces.extensions.component.ajaxerrorhandler.AjaxExceptionHandlerFactory
+        </exception-handler-factory>
     </factory>
+
   
     <application>
         <locale-config>
@@ -49,7 +52,7 @@
         <converter-class>com.itcs.helpdesk.jsfconverters.RolConverter</converter-class>
     </converter>
     
-     <converter>
+    <converter>
         <converter-id>ProductoConverter</converter-id>
         <converter-class>com.itcs.helpdesk.jsfcontrollers.ProductoController$ProductoControllerConverter</converter-class>
     </converter>
@@ -93,7 +96,7 @@
 
     </navigation-rule>
     
-     <navigation-rule>
+    <navigation-rule>
 		
         <navigation-case>
             <from-outcome>selectProductoModelo</from-outcome>

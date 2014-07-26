@@ -36,13 +36,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.PostConstruct;
+import javax.faces.FacesException;
 import javax.faces.application.FacesMessage;
+import javax.faces.application.ViewExpiredException;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseId;
 import javax.faces.model.SelectItem;
 import org.apache.commons.lang3.StringUtils;
+import org.primefaces.context.RequestContext;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.push.PushContext;
@@ -70,13 +73,30 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
             predefinedVistas.put(enumTipoAlerta.getTipoAlerta().getIdalerta(), createVistaPorAlerta(enumTipoAlerta.getTipoAlerta()));
         }
         vistaRevisarActualizacion = createVistaRevisarActualizacion();
-        
+
         SendCaseByEmailAction caseByEmailAction = new SendCaseByEmailAction(getJpaController());
         predefinedActions.put("SendCaseByEmail", caseByEmailAction);
-        
+
         NotifyGroupCasoReceivedAction casoReceivedAction = new NotifyGroupCasoReceivedAction(getJpaController());
         predefinedActions.put("NotifyGroupCasoReceived", casoReceivedAction);
     }
+    
+    public void onIdle() {
+        
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "Inactividad detectada", 
+                "Su sesión expirará si no realiza ninguna actividad.");
+         
+        RequestContext.getCurrentInstance().showMessageInDialog(message);
+        
+//        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, 
+//                                        "Se ha detectado inactividad.", "Su sesión expirará si no realiza ninguna actividad."));
+    }
+ 
+    public void onActive() {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+                                        "Que bueno que ya estás de vuelta", "Buen Coffee break!"));
+    }
+
 
     /**
      * @return the vistaRevisarActualizacion
@@ -303,7 +323,7 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
     public Set<String> getPredefinedActionsAsString() {
         return predefinedActions.keySet();
     }
-    
+
     public Map<String, Action> getPredefinedActions() {
         return predefinedActions;
     }

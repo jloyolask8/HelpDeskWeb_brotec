@@ -79,7 +79,7 @@
 
                     <h:panelGroup id="panelG1">
 
-                        <p:poll id="polling" widgetVar="poll" interval="70" listener="#{casoController.refresh}" update=":form0:ID_TABLA" />
+                        <p:poll id="polling" widgetVar="poll" interval="90" listener="#{casoController.refresh}" update=":form0:ID_TABLA" />
 
 
                         <p:toolbar id="toolbar1">  
@@ -119,7 +119,7 @@
 
                                 <p:overlayPanel id="TagPanel" widgetVar="TagPanel" for="TagAsBtn" hideEffect="fade" dynamic="true">                                     
 
-                                    <h:panelGrid>
+                                    <h:panelGrid width="220px">
                                         <p:dataTable id="tabletags" var="tag" value="#{applicationBean.etiquetasAll}" 
                                                      emptyMessage="No se encontraron etiquetas." 
                                                      rowKey="#{tag.tagId}"

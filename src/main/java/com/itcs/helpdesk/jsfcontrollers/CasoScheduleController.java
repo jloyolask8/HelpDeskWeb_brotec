@@ -227,6 +227,8 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
             entityEvent.setStartDate(event.getStartDate());
             entityEvent.setEndDate(event.getEndDate());
             entityEvent.setAllDay(event.isAllDay());
+            
+            entityEvent.setFechaCreacion(new Date());
             //----
 //                entityEvent.setFechaCreacion(new Date());
 //                entityEvent.setIdCaso(casoController.getSelected());
@@ -270,7 +272,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
     }
 
     private void scheduleQuartzEvent(com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent) throws SchedulerException, Exception {
-        if (entityEvent.getExecuteAction() && entityEvent.getIdTipoAccion() != null
+        if (entityEvent != null && entityEvent.getExecuteAction() && entityEvent.getIdTipoAccion() != null
                 && !StringUtils.isEmpty(entityEvent.getIdTipoAccion().getImplementationClassName())) {
             //we must schedule the selected action
             String jobID = HelpDeskScheluder.scheduleActionClassExecutorJob(
@@ -288,7 +290,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
             //we need to schedule event reminders
             for (ScheduleEventReminder scheduleEventReminder : entityEvent.getScheduleEventReminderList()) {
 
-                int minituesAmount = (-1) * scheduleEventReminder.getUnitOfTimeInMinutes().intValue() * scheduleEventReminder.getQuantityTime();
+                int minituesAmount = (-1) * scheduleEventReminder.getUnitOfTimeInMinutes() * scheduleEventReminder.getQuantityTime();
                 //calculate when in function of  QuantityTime * UnitOfTimeInMinutes
                 //ejemplo: 1 * 1 = 10 minutos antes del evento
                 //ejemplo: 1 * 60 = 1 horas antes del evento
@@ -379,7 +381,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
         entityEvent.addNewScheduleEventReminder();
         entityEvent.setIdCaso(casoController.getSelected());
         entityEvent.setIdUsuario(userSessionBean.getCurrent());
-        entityEvent.setFechaCreacion(new Date());
+        
         entityEvent.setUsuariosInvitedList(fUsuario);
         event = new DefaultScheduleEvent("", (Date) selectEvent.getObject(), (Date) selectEvent.getObject());
         event.setData(entityEvent);

@@ -14,7 +14,6 @@
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
             <title><ui:insert name="title">#{applicationBean.helpdeskTitle}</ui:insert></title>           
 
-
             <h:outputStylesheet library="css" name="jsfcrud.css"/>
             <h:outputStylesheet library="awesome" name="css/font-awesome.css"/>
 
@@ -73,18 +72,40 @@
                     allDayText: 'Todo el día'
                 };
             </script>
+
+            <script type="text/javascript">
+                function start() {
+                    PF('statusDialog').show();
+                }
+
+                function stop() {
+                    PF('statusDialog').hide();
+                }
+            </script>
             <h:outputScript name="jsf.js" library="javax.faces"/>
 
             <ui:insert name="scripts"></ui:insert>
         </h:head>
 
         <h:body id="mainbody">
+
+            <pe:ajaxErrorHandler /> 
+
+            <p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();"/>
+
+            <p:idleMonitor timeout="1200000">
+                <p:ajax event="idle" listener="#{applicationBean.onIdle}" async="true" 
+                        global="false" />
+                <p:ajax event="active" listener="#{applicationBean.onActive}" update=":mainform:messages" />
+            </p:idleMonitor>
+
             <h:form id="mainform" style="height: 100%">
-                <p:growl id="messages" life="30000" autoUpdate="true"  globalOnly="true" widgetVar="messages"/>
+                <p:growl id="messages" life="30000" autoUpdate="true"  globalOnly="true" widgetVar="messages"
+                         showDetail="true">
+                </p:growl>
             </h:form>
 
             <pe:layout id="fullPage" widgetVar="pagelayout" fullPage="true" stateCookie="true" >  
-
                 <pe:layoutPane position="north" closable="false" resizable="false">  
                     <ui:insert name="header">
                         <h:form id="formTopMenu">
@@ -104,7 +125,8 @@
                                 <p:menuitem value="#{applicationBean.productDescription}(s)" action="#{productoController.prepareList}"
                                             ajax="false" icon="ui-icon ui-icon-star"/>
 
-                                <p:menuitem value="Agenda" action="#{globalScheduleController.prepareList}" ajax="false" icon="ui-icon ui-icon-schedule"/>
+                                <p:menuitem value="Agenda" action="#{globalScheduleController.prepareList}" 
+                                            ajax="false" icon="ui-icon ui-icon-calendar"/>
 
                                 <p:submenu label="Supervision" icon="ui-icon ui-icon-clipboard" rendered="#{filtroAcceso.verificarAccesoAFuncionSupervision()}">
                                     <p:menuitem value="Alertas" action="#{auditLogController.alertList()}" ajax="false" icon="ui-icon ui-icon-alert"></p:menuitem>
@@ -190,6 +212,7 @@
                 </pe:layoutPane> 
 
                 <pe:layoutPane position="center">  
+
                     <ui:insert name="body"></ui:insert>
                 </pe:layoutPane> 
 
@@ -201,13 +224,12 @@
             </pe:layout>  
 
 
-            <p:dialog modal="false" widgetVar="statusDialog" header="Cargando..."   
+            <p:dialog modal="false" widgetVar="statusDialog" header="Espere..."   
                       draggable="false" closable="false" resizable="false">  
-                  <p:outputLabel value="Espere..."/>
-                 <p:graphicImage library="images" name="ajaxloadingbar.gif" />
+                <p:graphicImage library="images" name="ajaxloadingbar.gif" />
             </p:dialog>
 
-            <p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();"/>
+
 
 
 
