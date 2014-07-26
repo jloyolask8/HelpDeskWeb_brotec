@@ -50,7 +50,6 @@ public class CasoTimelineController extends AbstractManagedBean<ScheduleEvent> i
     private TimelineEvent event; // current event to be changed, edited, deleted or added  
 
     private long zoomMax;
-    private long zoomMin;
     private Date start;
     private Date end;
 
@@ -62,7 +61,6 @@ public class CasoTimelineController extends AbstractManagedBean<ScheduleEvent> i
 
         // initial zooming is ca. one month to avoid hiding of event details (due to wide time range of events)  
         zoomMax = 1000L * 60 * 60 * 24 * 30 * 12;
-        zoomMin = 1000L * 60;
 
         // set initial start / end dates for the axis of the timeline (just for testing)  
 //        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
