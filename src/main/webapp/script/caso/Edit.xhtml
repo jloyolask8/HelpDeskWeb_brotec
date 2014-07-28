@@ -18,6 +18,7 @@
             </style>
 
 
+
         </ui:define>
 
 
@@ -219,6 +220,7 @@
 
         <ui:define name="body">
 
+
             <pe:layoutPane id="layoutcenter" position="center" >
 
                 <pe:layoutPane id="layout1_North" position="north" size="70px" minHeight="70px" maxHeight="70px" closable="false" maxSize="70px">              
@@ -278,9 +280,12 @@
                                             update=":genDocVisitaPreventivaForm"/>
                             </p:menu>
 
+
+
                             <p:commandButton rendered="#{casoController.verificarReabrirCaso()}" ajax="true" value="Reabrir Caso" onclick="openCase.show();" />
 
                             <p:commandButton ajax="false" icon="fa fa-download" value="Acta de PreEntrega" 
+                                             onclick="PrimeFaces.monitorDownload(start, stop);"
                                              rendered="#{casoController.casoTipoPreEntrega}">
                                 <p:fileDownload value="#{casoController.generarActaPreEntrega()}" />
                             </p:commandButton>
@@ -458,6 +463,25 @@
                             <h:panelGroup id="panel">
 
                                 <h:form id="formAgendarEvento">
+
+                                    <h2>Cronograma de Eventos</h2>
+
+                                    <pe:timeline id="timelineEvents" value="#{casoTimelineController.modelScheduleEvents}" var="event"  
+                                                 editable="false" 
+                                                 showButtonNew="true" minHeight="200" widgetVar="timelineWdgt">  
+
+                                        <h:panelGrid columns="1">  
+                                            <i class="fa fa-calendar"></i>
+                                            <h:outputText value="#{event.title}"/>  
+                                            <h:outputText value="Agendado por: #{event.idUsuario} (#{casoController.prettyDate(event.startDate)})"/>  
+
+                                        </h:panelGrid>        
+                                    </pe:timeline>  
+
+                                    <p:separator/>
+
+                                    <h2>Calendario de Eventos</h2>
+
                                     <p:schedule id="myschedule" value="#{casoScheduleController.lazyScheduleEventsModel}" 
                                                 firstHour="8" widgetVar="myschedule" >
                                         <p:ajax event="dateSelect" listener="#{casoScheduleController.onDateSelect}" 
@@ -465,8 +489,10 @@
                                         <p:ajax event="eventSelect" listener="#{casoScheduleController.onEventSelect}" 
                                                 update=":createEventForm:eventDetails" oncomplete="PF('createEventDialog').show()" />  
 
-                                        <p:ajax event="eventMove" listener="#{casoScheduleController.onEventMove}" update=":mainform:messages" />  
-                                        <p:ajax event="eventResize" listener="#{casoScheduleController.onEventResize}" update=":mainform:messages" /> 
+                                        <p:ajax event="eventMove" listener="#{casoScheduleController.onEventMove}" 
+                                                update=":inputPanel:formAgendarEvento:timelineEvents :mainform:messages" />  
+                                        <p:ajax event="eventResize" listener="#{casoScheduleController.onEventResize}" 
+                                                update=":inputPanel:formAgendarEvento:timelineEvents :mainform:messages" /> 
                                     </p:schedule>
                                 </h:form>
 
@@ -477,6 +503,26 @@
                         </p:tab>  
 
                         <p:tab id="tab-timeline" title="TimeLine">
+
+
+
+
+                            <pe:timeline id="timeline" value="#{casoTimelineController.model}" var="audit"  
+                                         editable="false" eventStyle="dot" zoomMax="#{casoTimelineController.zoomMax}"
+                                         zoomMin="60000"
+                                         timeZone="#{casoTimelineController.timeZone}"  
+                                         showButtonNew="false" minHeight="200" widgetVar="timelineWdgt">  
+
+                                <h:panelGrid columns="1">  
+                                    <h:outputText value="Info: #{(not empty audit.campo and not empty audit.oldValue) ? audit.campo.concat(' cambió de ').concat(audit.oldValue).concat(' a '):''}
+                                                  #{audit.newValue}"/>  
+                                    <h:outputText value="Realizado por: #{audit.idUser} (#{casoController.prettyDate(audit.fecha)})"/>  
+
+                                </h:panelGrid>        
+                            </pe:timeline>  
+
+
+                            <p:separator/>
 
                             <div class="panel no-border panel-dark">
                                 <div class="timeline">
@@ -501,10 +547,11 @@
                                             </div> <!-- / .tl-body -->
                                         </div> <!-- / .tl-entry -->
 
+                                        <p:separator/>
+
                                     </ui:repeat>
                                 </div> <!-- / .timeline -->
                             </div>
-
 
 
 
@@ -1584,13 +1631,18 @@
                         <p:messages globalOnly="true"/>
 
                         <p:row>
-
-
                             <p:column>
                                 <p:inputText id="title" value="#{casoScheduleController.event.title}" style="width: 100%;"
                                              required="true" requiredMessage="Favor ingrese un titulo para el evento."/> 
                                 <p:watermark for="title" value="Titulo del evento"/>
                                 <p:message for="title"/>
+                            </p:column>
+
+                            <p:column>
+                                <p:inputTextarea id="desc" value="#{casoScheduleController.event.data.descripcion}" style="width: 100%;"
+                                                 required="true" requiredMessage="Favor ingrese una descripción para el evento."/> 
+                                <p:watermark for="desc" value="Descripción del evento"/>
+                                <p:message for="desc"/>
                             </p:column>
                         </p:row>
                         <p:separator/>

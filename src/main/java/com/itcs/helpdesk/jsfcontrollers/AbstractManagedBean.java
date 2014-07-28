@@ -7,6 +7,7 @@ package com.itcs.helpdesk.jsfcontrollers;
 import com.itcs.helpdesk.jsfcontrollers.util.JPAFilterHelper;
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Recinto;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entities.Vista;
@@ -254,6 +255,14 @@ public abstract class AbstractManagedBean<E> implements Serializable {
 
     public List getItemsAvailableForSelect() {
         return getJpaController().findAll(entityClass);
+    }
+    
+     protected UserSessionBean getUserSessionBean() {
+        return (UserSessionBean) JsfUtil.getManagedBean("UserSessionBean");
+    }
+
+    protected CasoController getCasoControllerBean() {
+        return (CasoController) JsfUtil.getManagedBean("casoController");
     }
 
     /**

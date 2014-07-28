@@ -708,7 +708,7 @@ public class ManagerCasos implements Serializable {
                 }
 
                 caso.setCasosHijosList(newCasosHijosSaved);
-                getJpaController().mergeCaso(caso, null);
+                getJpaController().mergeCaso(caso, ManagerCasos.createLogReg(caso, "Se agregan Sub Casos", newCasosHijosSaved.toString(), ""));
 
                 System.out.println("done!!");
             }

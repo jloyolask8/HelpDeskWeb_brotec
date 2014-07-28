@@ -106,6 +106,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.ocpsoft.prettytime.PrettyTime;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.FlowEvent;
@@ -333,25 +334,47 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         return model;
     }
 
-    public void tagItemSelectEvent(SelectEvent event) {
+//    public void tagItemSelectEvent(SelectEvent event) {
+//        Object item = event.getObject();
+//        current.setFechaModif(Calendar.getInstance().getTime());
+//        try {
+//            getJpaController().mergeCaso(current, null);
+//            addInfoMessage("Etiqueta Agregada OK!");
+//        } catch (Exception ex) {
+//            addInfoMessage("No se pudo Agregar la etiqueta" + item);
+//            Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//
+//    }
+    
+     public void tagItemSelectEvent(SelectEvent event) {
         Object item = event.getObject();
         current.setFechaModif(Calendar.getInstance().getTime());
         try {
-            getJpaController().mergeCaso(current, null);
+            if (current.getEtiquetaList() != null) {
+                for (Etiqueta etiqueta : current.getEtiquetaList()) {
+                    etiqueta.setOwner(userSessionBean.getCurrent());
+                    if (etiqueta.getCasoList() == null) {
+                        etiqueta.setCasoList(new LinkedList<Caso>());
+                    }
+                    etiqueta.getCasoList().add(current);
+                }
+            }
+            getJpaController().mergeCaso(current, ManagerCasos.createLogReg(current, "Etiquetas" , "Se agrega Etiqueta :" + item.toString(), ""));
             addInfoMessage("Etiqueta Agregada OK!");
         } catch (Exception ex) {
             addInfoMessage("No se pudo Agregar la etiqueta" + item);
-            Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
+            Log.createLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
 
-    public void tagItemUnselectEvent(UnselectEvent event) {
+  public void tagItemUnselectEvent(UnselectEvent event) {
         Object item = event.getObject();
         current.setFechaModif(Calendar.getInstance().getTime());
         try {
-            getJpaController().mergeCaso(current, null);
-            addInfoMessage("Etiqueta Removida OK!");
+            getJpaController().mergeCaso(current, getManagerCasos().createLogReg(current,"Etiquetas", "Etiqueta "+item.toString()+" removida.", ""));
+//            addInfoMessage("Etiqueta Removida OK!");
         } catch (Exception ex) {
             addInfoMessage("No se pudo Remover la etiqueta" + item);
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
@@ -1049,10 +1072,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     try {
                         allCount = getJpaController().countCasoEntities(getFilterHelper().getVista(), userSessionBean.getCurrent());
                         return allCount;
-                    } catch (NotSupportedException ex) {
-                        Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (ClassNotFoundException ex) {
-                        Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (Exception ex) {
+                        Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, "getItemsCount", ex);
+                        return 0;
                     }
                 }
 
@@ -1066,13 +1088,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     CasoDataModel data = new CasoDataModel(getJpaController().findCasoEntities(getFilterHelper().getVista(), userSessionBean.getCurrent(), getPageSize(), getPageFirstItem(), orderBy));
                     setDatamodel(data);
                     return data;
-                } catch (NotSupportedException ex) {
+                } catch (Exception ex) {
                     JsfUtil.addErrorMessage(ex.getMessage());
-                    Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
-                    return null;
-                } catch (ClassNotFoundException ex) {
-                    JsfUtil.addErrorMessage(ex.getMessage());
-                    Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, "createPageDataModel", ex);
                     return null;
                 }
 
@@ -1225,8 +1243,11 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public String prettyDate(Date date) {
+
         if (date != null) {
-            return PrettyDate.format(date);
+            PrettyTime p = new PrettyTime(new Locale("es"));
+            return p.format(date);
+//            return PrettyDate.format(date);
         } else {
             return "";
         }
@@ -1409,6 +1430,11 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             props.put(CrearCasoVisitaRepSellosAction.AREA_KEY, visitaPreventivaAsignarAArea.getIdArea());
             props.put(CrearCasoVisitaRepSellosAction.GRUPO_KEY, visitaPreventivaAsignarAGrupo.getIdGrupo());
 
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
+            props.put(CrearCasoVisitaRepSellosAction.FECHA_VISITA_KEY, sdf.format(visitaPreventivaFechaVisita));
+            props.put(CrearCasoVisitaRepSellosAction.FECHA_REP_KEY, sdf.format(visitaPreventivaFechaReparacion));
+
             String idsItems = "";
             boolean first = true;
             for (TreeNode treeNode : getVisitaPreventivaItemsAReparar()) {
@@ -1478,7 +1504,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
             //reset items
             setVisitaPreventivaItemsAReparar(null);
-            setVisitaPreventivaSubject("Visita programada - reparación de sellos");
+            setVisitaPreventivaSubject("Generar Caso de postventa (programado) - reparación de sellos");
             setVisitaPreventivaAsignarAGrupo(null);
 
             executeInClient("ProgramarVisitaPreventiva.show()");
@@ -1951,15 +1977,19 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         if (selectedEtiquetas != null && !selectedEtiquetas.isEmpty()) {
 
             for (Caso caso : getSelectedItems()) {
-                caso.setEtiquetaList(selectedEtiquetas);
                 try {
-                    getJpaController().mergeCaso(caso, null);
+                    if (caso.getEtiquetaList() == null) {
+                        caso.setEtiquetaList(new LinkedList<Etiqueta>());
+                    }
+                    List<AuditLog> changeLog = new ArrayList<AuditLog>();
+                    changeLog.add(getManagerCasos().createLogReg(caso, "Lista de etiquetas", selectedEtiquetas.toString(), caso.getEtiquetaList().toString()));
+                    caso.getEtiquetaList().addAll(selectedEtiquetas);
+                    getJpaController().mergeCaso(caso, changeLog);
                     count++;
                 } catch (Exception ex) {
                     Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-
             JsfUtil.addSuccessMessage(count + " casos etiquetados exitosamente.");
         }
     }
@@ -2599,49 +2629,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //            JsfUtil.addErrorMessage(e, resourceBundle.getString("attachment.error"));
 //        }
 //    }
-    public void deleteAttachment(ActionEvent actionEvent) {
-        try {
-            Attachment att = getJpaController().getAttachmentFindByIdAttachment(new Long(idFileDelete));
-            String nombre = att.getNombreArchivo();
-            Archivo archivo = getJpaController().getArchivoFindByIdAttachment(att.getIdAttachment());
-            getJpaController().removeArchivo(archivo);
-            getJpaController().removeAttachment(att);
-
-//            att = new Attachment();
-//            att.setIdCaso(current);
-//            Collection col = getJpaController().findListAttachmentEntities(att);
-//            current.setAttachmentList(col);
-            current = getJpaController().getCasoFindByIdCaso(current.getIdCaso());
-            JsfUtil.addSuccessMessage("Archivo " + nombre + " borrado");
-            getJpaController().persistAuditLog(getManagerCasos().createLogReg(current, "Archivo borrado", nombre, ""));
-
-        } catch (Exception e) {
-            JsfUtil.addSuccessMessage("No se ha podido borrar el archivo");
-            Log.createLogger(this.getClass().getName()).logInfo("No se ha podido borrar el archivo");
-            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
-            //e.printStackTrace();
-        }
-    }
-
-    public void removeAttachment(Long idAtt) {
-        try {
-            if (current.getAttachmentList() != null) {
-                for (Attachment attachment : current.getAttachmentList()) {
-                    if (attachment.getIdAttachment().equals(idAtt)) {
-                        current.getAttachmentList().remove(attachment);
-                        JsfUtil.addSuccessMessage("Archivo " + attachment.getNombreArchivo() + " removido de la lista.");
-                    }
-                }
-            }
-
-        } catch (Exception e) {
-            JsfUtil.addSuccessMessage("Ocurrio un error no esperado, No se ha podido remover el archivo.");
-            Log.createLogger(this.getClass().getName()).logInfo("No se ha podido borrar el archivo");
-            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
-            //e.printStackTrace();
-        }
-    }
-
     private String obtenerHistorial() {
         StringBuilder sbuilder = new StringBuilder("<br/><hr/><b>HISTORIA DEL CASO</b><br/>");
         Collection<Nota> notas = getNotasList();
@@ -2701,7 +2688,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         return sbuilder.toString();
     }
 
-    public String deleteAttachment() {
+    public void deleteAttachment(ActionEvent actionEvent) {
         try {
             Attachment att = getJpaController().getAttachmentFindByIdAttachment(new Long(idFileDelete));
             String nombre = att.getNombreArchivo();
@@ -2709,24 +2696,52 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             getJpaController().removeArchivo(archivo);
             getJpaController().removeAttachment(att);
 
-//            att = new Attachment();
-//            att.setIdCaso(current);
-//            Collection col = getJpaController().findListAttachmentEntities(att);
-//            current.setAttachmentList(col);
             current = getJpaController().getCasoFindByIdCaso(current.getIdCaso());
             JsfUtil.addSuccessMessage("Archivo " + nombre + " borrado");
             getJpaController().persistAuditLog(getManagerCasos().createLogReg(current, "Archivo borrado", nombre, ""));
 
         } catch (Exception e) {
             JsfUtil.addSuccessMessage("No se ha podido borrar el archivo");
-            Log.createLogger(this.getClass().getName()).logInfo("No se ha podido borrar el archivo");
-            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
-            //e.printStackTrace();
+            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "No se ha podido borrar el archivo", e);
         }
-
-        return "/script/caso/Edit";
     }
 
+    public void removeAttachment(Long idAtt) {
+        try {
+            if (current.getAttachmentList() != null) {
+                for (Attachment attachment : current.getAttachmentList()) {
+                    if (attachment.getIdAttachment().equals(idAtt)) {
+                        current.getAttachmentList().remove(attachment);
+                        JsfUtil.addSuccessMessage("Archivo " + attachment.getNombreArchivo() + " removido de la lista.");
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            JsfUtil.addSuccessMessage("Ocurrio un error no esperado, No se ha podido remover el archivo.");
+            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "No se ha podido borrar el archivo", e);
+            //e.printStackTrace();
+        }
+    }
+
+//    public String deleteAttachment() {
+//        try {
+//            Attachment att = getJpaController().getAttachmentFindByIdAttachment(new Long(idFileDelete));
+//            String nombre = att.getNombreArchivo();
+//            Archivo archivo = getJpaController().getArchivoFindByIdAttachment(att.getIdAttachment());
+//            getJpaController().removeArchivo(archivo);
+//            getJpaController().removeAttachment(att);
+//            current = getJpaController().getCasoFindByIdCaso(current.getIdCaso());
+//            JsfUtil.addSuccessMessage("Archivo " + nombre + " borrado");
+//            getJpaController().persistAuditLog(getManagerCasos().createLogReg(current, "Archivo borrado", nombre, ""));
+//
+//        } catch (Exception e) {
+//            JsfUtil.addSuccessMessage("No se ha podido borrar el archivo");
+//            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "No se ha podido borrar el archivo", e);
+//        }
+//
+//        return "/script/caso/Edit";
+//    }
     /**
      * Envia el archivo al componente de PrimeFace filoDownload
      *
@@ -2798,15 +2813,20 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     itemsAReparar.add(caso.getIdItem());
                 }
             }
-            byte[] bytearray = ReportsManager.createVisitaPreventivaPostventa(getSelected(), visitaPreventivaFechaVisita, visitaPreventivaFechaReparacion, itemsAReparar);
 
-            final String nombre = "VisitaPreventiva_Postventa_" + getSelected().getIdCaso() + ".pdf";
-            Attachment attach = getManagerCasos().crearAdjunto(bytearray, null, this.current, nombre, "application/pdf");
-            final String msg = "Documento " + attach.getNombreArchivo() + " creado con exito";
-            textoNota = textoNota + "<hr/>" + msg;
-            armarNota(current, false, textoNota, EnumTipoNota.NOTA.getTipoNota());
-            JsfUtil.addSuccessMessage(msg);
-            executeInClient("genDocVisitaPreventiva.hide()");
+            if (!itemsAReparar.isEmpty()) {
+                byte[] bytearray = ReportsManager.createVisitaPreventivaPostventa(getSelected(), visitaPreventivaFechaVisita, visitaPreventivaFechaReparacion, itemsAReparar);
+
+                final String nombre = "VisitaPreventiva_Postventa_" + getSelected().getIdCaso() + ".pdf";
+                Attachment attach = getManagerCasos().crearAdjunto(bytearray, null, this.current, nombre, "application/pdf");
+                final String msg = "Documento " + attach.getNombreArchivo() + " creado con exito";
+                textoNota = textoNota + "<hr/>" + msg;
+                armarNota(current, false, textoNota, EnumTipoNota.NOTA.getTipoNota());
+                addInfoMessage(msg);
+                executeInClient("genDocVisitaPreventiva.hide()");
+            } else {
+                addWarnMessage("No se puede generar el documento sin Items a Reparar.");
+            }
 
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "createVisitaPreventivaPostventa", e);

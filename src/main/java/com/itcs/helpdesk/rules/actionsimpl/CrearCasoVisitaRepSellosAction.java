@@ -8,17 +8,22 @@ import com.itcs.helpdesk.persistence.entities.Area;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Grupo;
 import com.itcs.helpdesk.persistence.entities.Item;
+import com.itcs.helpdesk.persistence.entities.ScheduleEvent;
 import com.itcs.helpdesk.persistence.entities.TipoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumCanal;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso;
+import com.itcs.helpdesk.persistence.entityenums.EnumUsuariosBase;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.rules.Action;
 import com.itcs.helpdesk.rules.ActionExecutionException;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.ManagerCasos;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -38,8 +43,8 @@ public class CrearCasoVisitaRepSellosAction extends Action {
     public static final String ITEMS_KEY = "idItems";//comma separated id of Items values
     public static final String AREA_KEY = "idArea";
     public static final String GRUPO_KEY = "idGrupo";
-    private static final String FECHA_VISITA_KEY = "FECHA_VISITA";
-    private static final String FECHA_REP_KEY = "FECHA_REP";
+    public static final String FECHA_VISITA_KEY = "FECHA_VISITA";
+    public static final String FECHA_REP_KEY = "FECHA_REP";
 
     public CrearCasoVisitaRepSellosAction(JPAServiceFacade jpaController) {
         super(jpaController);
@@ -87,10 +92,71 @@ public class CrearCasoVisitaRepSellosAction extends Action {
                 }
             }
 
+            //asociar los dos eventos de visita y reparación
+            Calendar calendar = Calendar.getInstance();
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
+            try {
+                String fechaVisitaString = props.getProperty(FECHA_VISITA_KEY);
+                final Date parseDate = sdf.parse(fechaVisitaString);
+
+                calendar.setTime(parseDate);
+                if (calendar.get(Calendar.HOUR_OF_DAY) == 0) {
+                    calendar.set(Calendar.HOUR_OF_DAY, 8);
+                }
+
+                getJpaController().persist(buildEvent(casoPadre, "Visita Inspectiva", "Evento de Visita Inspectiva programado con fecha estimada. La fecha definitiva debe ser confirmada con el cliente.",
+                        calendar.getTime(), calendar.getTime()));
+            } catch (Exception ex) {
+                Logger.getLogger(CrearCasoVisitaRepSellosAction.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            try {
+                String fechaRepString = props.getProperty(FECHA_REP_KEY);
+
+                final Date parseDate = sdf.parse(fechaRepString);
+
+                calendar.setTime(parseDate);
+                if (calendar.get(Calendar.HOUR_OF_DAY) == 0) {
+                    calendar.set(Calendar.HOUR_OF_DAY, 8);
+                }
+                
+                getJpaController().persist(buildEvent(casoPadre, "Evento de Reparación", "Evento de Reparación programado con fecha estimada. La fecha definitiva debe ser confirmada con el cliente y los responsables de reparar.",
+                        calendar.getTime(), calendar.getTime()));
+            } catch (Exception ex) {
+                Logger.getLogger(CrearCasoVisitaRepSellosAction.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
         } else {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Properties error:{0}", "null properties");
 //            return;//dont do a shit. cause i need properties to execute 
         }
+
+    }
+
+    private ScheduleEvent buildEvent(Caso caso, String title, String desc, Date startDate, Date endDate) {
+
+        ScheduleEvent entityEvent = new ScheduleEvent();
+
+        entityEvent.setTitle(title);
+        entityEvent.setStartDate(startDate);
+        entityEvent.setEndDate(endDate);
+        entityEvent.setAllDay(true);
+
+        entityEvent.setIdCaso(caso);
+        entityEvent.setIdUsuario(EnumUsuariosBase.SISTEMA.getUsuario());
+
+        entityEvent.setDescripcion(desc);
+        entityEvent.setLugar("Terreno");
+        entityEvent.setPublicEvent(Boolean.TRUE);
+
+        entityEvent.addNewUsuarioInvited(caso.getOwner());
+
+        entityEvent.addNewScheduleEventReminderWithNoId();
+        
+        entityEvent.setFechaCreacion(Calendar.getInstance().getTime());
+
+        return entityEvent;
 
     }
 

@@ -187,7 +187,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
 
         try {
             return getJpaController().countEntities(vista, userSessionBean.getCurrent()).intValue();
-        } catch (ClassNotFoundException ex) {
+        } catch (Exception ex) {
             addErrorMessage(ex.getMessage());
             Logger.getLogger(VistaController.class.getName()).log(Level.SEVERE, null, ex);
             return 0;

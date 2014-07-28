@@ -9,6 +9,7 @@
         <param-name>javax.faces.DEFAULT_SUFFIX</param-name>
         <param-value>.xhtml</param-value>
     </context-param>
+    
     <filter>
         <filter-name>LoginFilter</filter-name>
         <filter-class>com.itcs.helpdesk.jsfcontrollers.util.LoginFilter</filter-class>

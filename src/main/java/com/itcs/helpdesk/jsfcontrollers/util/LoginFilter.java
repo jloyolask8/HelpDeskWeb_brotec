@@ -1,6 +1,9 @@
 package com.itcs.helpdesk.jsfcontrollers.util;
 
+import com.itcs.helpdesk.rules.actionsimpl.CrearCasoVisitaRepSellosAction;
 import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.*;
 
 import javax.servlet.Filter;
@@ -9,6 +12,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+
 /**
  *
  * @author Danilo
@@ -20,6 +24,18 @@ public class LoginFilter implements Filter {
     public LoginFilter() {
     }
 
+    public static boolean isAjax(HttpServletRequest request) {
+        return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
+    }
+
+    private String xmlPartialRedirectToPage(HttpServletRequest request, String page) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<?xml version='1.0' encoding='UTF-8'?>");
+        sb.append("<partial-response><redirect url=\"").append(request.getContextPath()).append(request.getServletPath()).append(page).append("\"/></partial-response>");
+        return sb.toString();
+    }
+
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
@@ -28,53 +44,73 @@ public class LoginFilter implements Filter {
         HttpSession session = req.getSession();
         String requestedPage = req.getPathTranslated();
         UserSessionBean userSessionBean = (UserSessionBean) session.getAttribute("UserSessionBean");
-        try{
-            if (requestedPage.endsWith(".xhtml")) 
-            {
-                if (requestedPage.endsWith("login.xhtml")) 
-                {
-                    if (userSessionBean != null) 
-                    {
-                        if (userSessionBean.isValidatedSession()) 
-                        {
-                            res.sendRedirect(req.getContextPath() + "/faces/script/index.xhtml");
+
+//        System.out.println("LoginFilter.doFilter:" + requestedPage);
+//        for (Enumeration e = req.getHeaderNames(); e.hasMoreElements();) {
+//            String headerName = (String) e.nextElement();
+//            System.out.println("Name = " + headerName + " = " + req.getHeader(headerName));
+//        }
+
+        try {
+            if (requestedPage.endsWith(".xhtml")) {
+                if (requestedPage.endsWith("login.xhtml")) {
+                    if (userSessionBean != null) {
+                        if (userSessionBean.isValidatedSession()) {
+                            System.out.println("LoginFilter.sendRedirect:" + "/script/index.xhtml");
+                            res.sendRedirect(req.getContextPath() + req.getServletPath() + "/script/index.xhtml");
                             return;
                         }
                     }
-                }
-                else
-                {
-                    if (userSessionBean == null)
-                    {
-                        res.sendRedirect(req.getContextPath() + "/faces/script/login.xhtml");
+                } else {
+                    if (userSessionBean == null) {
+                        System.out.println("userSessionBean == null LoginFilter.sendRedirect:" + "/script/login.xhtml");
+                        if (isAjax(req)) {
+                            res.getWriter().print(xmlPartialRedirectToPage(req, "/script/login.xhtml"));
+                            res.flushBuffer();
+                        } else {
+                            res.sendRedirect(req.getContextPath() + req.getServletPath() + "/script/login.xhtml");
+                        }
+
                         return;
-                    }
-                    else
-                    {
-                        if (!userSessionBean.isValidatedSession())
-                        {
-                            res.sendRedirect(req.getContextPath() + "/faces/script/login.xhtml");
+                    } else {
+                        if (!userSessionBean.isValidatedSession()) {
+                            System.out.println("userSessionBean is not ValidatedSession LoginFilter.sendRedirect:" + "/script/login.xhtml");
+                            if (isAjax(req)) {
+                                res.getWriter().print(xmlPartialRedirectToPage(req, "/script/login.xhtml"));
+                                res.flushBuffer();
+                            } else {
+                                res.sendRedirect(req.getContextPath() + req.getServletPath() + "/script/login.xhtml");
+                            }
                             return;
                         }
                     }
                 }
             }
-        }catch(Exception e){
-            res.sendRedirect(req.getContextPath() + "/faces/script/login.xhtml");
-            return;
+        } catch (Exception e) {
+            Logger.getLogger(CrearCasoVisitaRepSellosAction.class.getName()).log(Level.SEVERE, "LoginFilter.doFilter", e);
+            if (isAjax(req)) {
+                res.getWriter().print(xmlPartialRedirectToPage(req, "/script/login.xhtml"));
+                res.flushBuffer();
+            } else {
+                res.sendRedirect(req.getContextPath() + "/faces/script/login.xhtml");
+                return;
+            }
         }
+
         chain.doFilter(request, response);
 
     }
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
+        System.out.println("LoginFilter.init");
         this.filterConfig = filterConfig;
 //        if (filterConfig != null) {
 //
 //        }
     }
 
+    @Override
     public void destroy() {
         //throw new UnsupportedOperationException("Not supported yet.");
     }
