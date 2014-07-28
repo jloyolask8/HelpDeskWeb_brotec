@@ -25,18 +25,13 @@
             </p:accordionPanel>
         </ui:define>
         <ui:define name="body">
-            <style>
-                .ui-autocomplete-multiple-container{
-                    width:600px !important;
-                }
-            </style>
+
             <h:form id="form">
 
                 <p:panel header="#{bundle.CreateCasoTitle}">
 
                     <p:wizard widgetVar="wiz" 
-                              flowListener="#{casoController.onFlowProcess}" 
-                              nextLabel="Siguiente" backLabel="Anterior" showNavBar="true" showStepStatus="true">
+                              flowListener="#{casoController.onFlowProcess}" nextLabel="Siguiente" backLabel="Anterior" showNavBar="true" showStepStatus="true">
 
 
                         <p:tab id="personal" title="Datos Cliente">
@@ -49,8 +44,7 @@
 
                                     <p:autoComplete id="emailCliente" value="#{casoController.emailCliente_wizard}" validator="#{inputValidationBean.validarEmail}"
                                                     completeMethod="#{emailClienteController.completeEmailClienteString}"  
-                                                    var="email"  itemValue="#{email}" itemLabel="#{email}"
-                                                    required="true" requiredMessage="Un Email Válido de cliente es requerido para identificar al cliente del caso.">  
+                                                    var="email"  itemValue="#{email}" itemLabel="#{email}">  
                                         <p:ajax event="itemSelect" listener="#{casoController.handleEmailSelect}" update=":form:panelDatosCliente" />  
                                         <pe:keyFilter mask="email"/>
                                     </p:autoComplete>
@@ -58,7 +52,8 @@
                                     <p:outputLabel value="#{bundle.CreateClienteLabel_rut}" for="rut" style="font-weight:bold"/>
                                     <h:panelGrid>
                                         <p:inputText id="rut" value="#{casoController.rutCliente_wizard}"  
-                                                     title="#{bundle.CreateClienteTitle_rut}" validator="#{inputValidationBean.validarRut}">
+                                                     title="#{bundle.CreateClienteTitle_rut}" validator="#{inputValidationBean.validarRut}"
+                                                     required="true" requiredMessage="El RUT es un dato requerido.">
                                             <p:ajax event="blur" listener="#{casoController.formateaRutFiltro2}" partialSubmit="true" process="rut" update=":form:panelDatosCliente"/>
                                         </p:inputText>
                                         <p:outputLabel value="Con puntos y guión. Ejemplo: 15.040.452-5"/>
@@ -67,40 +62,40 @@
                                     <p:message display="both" for="rut"/>
 
                                     <p:outputLabel value="#{bundle.CreateClienteLabel_nombres}" for="nombres" style="font-weight:bold"/>
-                                    <p:inputText id="nombres" value="#{casoController.selected.emailCliente.cliente.nombres}" 
+                                    <p:inputText id="nombres" value="#{casoController.selected.idCliente.nombres}" 
                                                  title="#{bundle.CreateClienteTitle_nombres}" required="true" requiredMessage="El Nombre es un dato requerido." size="40"/>
                                     <p:message display="both" for="nombres"/>
 
                                     <p:outputLabel value="#{bundle.CreateClienteLabel_apellidos}" for="apellidos" style="font-weight:bold"/>
-                                    <p:inputText id="apellidos" value="#{casoController.selected.emailCliente.cliente.apellidos}" 
+                                    <p:inputText id="apellidos" value="#{casoController.selected.idCliente.apellidos}" 
                                                  title="#{bundle.CreateClienteTitle_apellidos}" required="true" requiredMessage="Los Apellidos son un dato requerido." size="40"/>
                                     <p:message display="both" for="apellidos"/>
 
                                     <p:outputLabel value="Sexo:" for="sexo" style="font-weight:bold"/>
-                                    <p:selectOneButton id="sexo" value="#{casoController.selected.emailCliente.cliente.sexo}" >  
+                                    <p:selectOneButton id="sexo" value="#{casoController.selected.idCliente.sexo}" >  
                                         <f:selectItem itemLabel="Hombre" itemValue="Hombre" />  
                                         <f:selectItem itemLabel="Mujer" itemValue="Mujer" />  
                                     </p:selectOneButton> 
                                     <p:message display="both" for="sexo"/>
 
                                     <p:outputLabel value="#{bundle.CreateClienteLabel_fono1}" for="fono1" style="font-weight:bold"/>
-                                    <p:inputText id="fono1" value="#{casoController.selected.emailCliente.cliente.fono1}" 
+                                    <p:inputText id="fono1" value="#{casoController.selected.idCliente.fono1}" 
                                                  title="#{bundle.CreateClienteTitle_fono1}" size="40">
                                         <pe:keyFilter regEx="/[\d\.\+\-\(\)]/"/>
                                     </p:inputText>
                                     <p:message display="both" for="fono1"/>
                                     <p:outputLabel value="#{bundle.CreateClienteLabel_fono2}" for="fono2" style="font-weight:bold"/>
-                                    <p:inputText id="fono2" value="#{casoController.selected.emailCliente.cliente.fono2}" 
+                                    <p:inputText id="fono2" value="#{casoController.selected.idCliente.fono2}" 
                                                  title="#{bundle.CreateClienteTitle_fono2}" size="40">
                                         <pe:keyFilter regEx="/[\d\.\+\-\(\)]/"/>
                                     </p:inputText>
                                     <p:message display="both" for="fono2"/>
                                     <p:outputLabel value="#{bundle.CreateClienteLabel_dirParticular}" for="dirParticular" style="font-weight:bold"/>
-                                    <p:inputTextarea id="dirParticular" autoResize="true" value="#{casoController.selected.emailCliente.cliente.dirParticular}" 
+                                    <p:inputTextarea id="dirParticular" autoResize="true" value="#{casoController.selected.idCliente.dirParticular}" 
                                                      title="#{bundle.CreateClienteTitle_dirParticular}" cols="40" />
                                     <p:message display="both" for="dirParticular"/>
                                     <p:outputLabel value="#{bundle.CreateClienteLabel_dirComercial}" for="dirComercial" style="font-weight:bold"/>
-                                    <p:inputTextarea id="dirComercial" autoResize="true" value="#{casoController.selected.emailCliente.cliente.dirComercial}" 
+                                    <p:inputTextarea id="dirComercial" autoResize="true" value="#{casoController.selected.idCliente.dirComercial}" 
                                                      title="#{bundle.CreateClienteTitle_dirComercial}" cols="40"/>
                                     <p:message display="both" for="dirComercial"/>
 
@@ -161,7 +156,7 @@
                                 <h:panelGrid columns="2" id="panelGridDatos">
 
                                     <p:outputLabel value="#{bundle.CreateCasoLabel_tema}" for="tema" style="font-weight:bold"/>
-                                    <p:inputText id="tema" style="width: 300px;" value="#{casoController.selected.tema}" title="#{bundle.CreateCasoTitle_tema}" required="true" requiredMessage="#{bundle.CreateCasoRequiredMessage_tema}"/>
+                                    <p:inputText id="tema" style="width: 590px;" value="#{casoController.selected.tema}" title="#{bundle.CreateCasoTitle_tema}" required="true" requiredMessage="#{bundle.CreateCasoRequiredMessage_tema}"/>
 
 
 
@@ -172,14 +167,14 @@
                                     </p:selectOneMenu>
 
                                     <p:outputLabel value="Área:" for="idArea" style="font-weight: bold;"/>
-                                    <p:selectOneMenu id="idArea"  value="#{casoController.selected.idArea}" required="true"
-                                                     requiredMessage="Seleccione el Area en la cual crear el caso." style="width: 300px;">
+                                    <p:selectOneMenu id="idArea"  value="#{casoController.selected.idArea}" style="width: 300px;"
+                                                     required="true" requiredMessage="Seleccione el Area en la cual crear el caso.">
                                         <f:selectItems value="#{areaController.itemsAvailableSelectMany}" />
                                     </p:selectOneMenu>
 
                                     <p:outputLabel value="#{bundle.CreateCasoLabel_owner}" for="owner" style="font-weight:bold"/>
-                                    <p:selectOneMenu id="owner" value="#{casoController.selected.owner}" 
-                                                     filter="true" filterMatchMode="contains" style="width: 300px;"
+                                    <p:selectOneMenu id="owner" value="#{casoController.selected.owner}" style="width: 300px;"
+                                                     filter="true" filterMatchMode="contains"
                                                      disabled="#{(not filtroAcceso.verificarAccesoAFuncionEditarCualquierCaso()) and not casoController.selected.idCanal.idCanal eq 'INTERNO'}">
                                         <f:selectItems value="#{usuarioController.itemsAvailableSelectOneNoSystem}"/>
                                     </p:selectOneMenu>
@@ -190,7 +185,7 @@
 
                                     <p:autoComplete id="tags"
                                                     value="#{casoController.selected.etiquetaStringList}" forceSelection="true" 
-                                                    completeMethod="#{applicationBean.findEtiquetasByPattern}" multiple="true" style="width: 600px;"/> 
+                                                    completeMethod="#{applicationBean.findEtiquetasByPattern}" multiple="true" styleClass="autocompleteTagsCreate"/> 
 
                                     <p:outputLabel value="#{bundle.CreateCasoLabel_descripcion}" for="descripcion" style="font-weight:bold"/>
 
@@ -204,7 +199,8 @@
 
                                                  ]"
 
-                                                 id="descripcion" width="600" height="120"/>
+                                                 id="descripcion" width="600" height="120"
+                                                 required="true"/>
 
                                     <p:outputLabel value="SubCasos de pre-entrega" for="filtrosVista" style="font-weight:bold"/>
 
@@ -247,7 +243,9 @@
                                     </p:dataTable>
 
                                     <p:outputLabel value="Archivos Adjuntos:" for="fileupload" style="font-weight:bold"/>
-                                    <h:panelGrid >
+                                    <h:panelGrid width="600" style="padding: 0px !important; margin: 0px;">
+                                        <p:row>
+                                            <p:column style="padding: 0px !important; margin: 0px;">
                                         <p:fileUpload id="fileupload"
                                                       fileUploadListener="#{casoController.uploadToSaveLater}"
                                                       label="Seleccionar Archivo"
@@ -259,7 +257,8 @@
                                                       auto="true"
                                                       update=":mainform:messages listaadjuntos fileupload"
                                                       multiple="true"  />
-
+                                            </p:column>
+                                        </p:row>
 
                                         <h:panelGroup id="listaadjuntos" layout="block">
                                             <ui:repeat value="#{casoController.selected.attachmentList}" var="fileitem" >
@@ -281,10 +280,14 @@
 
                                 </h:panelGrid>
 
+                                <f:facet name="footer" >
+                                    <div class="ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all">
+                                        <div align="right" style="width: 100%;">
+                                            <p:commandButton action="#{casoController.createPreentregaAndView()}" value="#{bundle.CreateCasoSaveLink}" ajax="false" style="width: 200px;"/>
+                                        </div>
+                                    </div>
+                                </f:facet>
 
-                                <p:separator/>
-
-                                <p:commandButton action="#{casoController.createPreentregaAndView()}" value="#{bundle.CreateCasoSaveLink}" ajax="false"/>
                             </p:panel>
                         </p:tab>
                     </p:wizard>

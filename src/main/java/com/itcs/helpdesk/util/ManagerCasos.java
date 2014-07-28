@@ -299,6 +299,7 @@ public class ManagerCasos implements Serializable {
                     if (email_cliente.getCliente() == null) {
                         Cliente cliente_record = creaNuevoCliente(datos);
                         email_cliente.setCliente(cliente_record);
+                        caso.setIdCliente(cliente_record);
                         getJpaController().persistEmailCliente(email_cliente);
                     } else {
 
@@ -312,6 +313,7 @@ public class ManagerCasos implements Serializable {
                 } else {
                     EmailCliente new_email_cliente = new EmailCliente(address);
                     Cliente cliente_record = creaNuevoCliente(datos);
+                    caso.setIdCliente(cliente_record);
                     new_email_cliente.setCliente(cliente_record);
                     getJpaController().persistEmailCliente(new_email_cliente);
                     caso.setEmailCliente(new_email_cliente);
@@ -616,7 +618,7 @@ public class ManagerCasos implements Serializable {
 
         if (!caso.getTipoCaso().equals(EnumTipoCaso.PREVENTA.getTipoCaso())) {
             //Cuando este activo acuse de recibo.
-            if (caso.getIdCanal() != null) {
+            if (caso.getIdCanal() != null && caso.getEmailCliente() != null) {
 //                if (caso.getIdCanal().getEmailAcusederecibo() != null && caso.getIdArea().getEmailAcusederecibo()) {
                 MailNotifier.emailClientCasoReceived(caso);
 //                enviarRespuestaAutomatica(caso, caso.getEmailCliente().getEmailCliente());
@@ -678,7 +680,7 @@ public class ManagerCasos implements Serializable {
                     casoHijo.setFechaModif(fechaCreacion);
                     casoHijo.setIdCasoPadre(caso);
                     casoHijo.setIdArea(caso.getIdArea());
-                    casoHijo.setIdCanal(EnumCanal.INTERNO.getCanal());
+                    casoHijo.setIdCanal(EnumCanal.MANUAL.getCanal());
 
                     casoHijo.setIdPrioridad(caso.getIdPrioridad());
 

@@ -73,9 +73,7 @@
         </ui:define>
 
         <ui:define name="body" id="body">
-            <h:form id="form0" style="height: 100%; width: 100%;">
-
-                <pe:layoutPane position="center" id="listaInbox" >                   
+            <h:form id="form0">
 
                     <h:panelGroup id="panelG1">
 
@@ -236,10 +234,10 @@
                                 </h:panelGroup> 
                             </p:column>     
 
-                            <p:column sortBy="#{item.emailCliente.cliente.nombres} #{item.emailCliente.cliente.apellidos}" headerText="Solicitante">                                
-                                <p:commandLink rendered="#{not (item.emailCliente.cliente eq null)}" 
-                                               action="#{emailClienteController.prepareView(item.emailCliente)}" 
-                                               ajax="false" value="#{item.emailCliente.cliente.nombres} #{item.emailCliente.cliente.apellidos} &lt;#{item.emailCliente.emailCliente}&gt;" 
+                            <p:column sortBy="#{item.idCliente.capitalName}" headerText="Solicitante">                                
+                                <p:commandLink rendered="#{not (item.idCliente eq null)}" 
+                                               action="#{clienteController.prepareView(item.idCliente)}" 
+                                               ajax="false" value="#{item.idCliente.capitalName}"
                                                immediate="true"/>
                             </p:column>
 
@@ -272,7 +270,7 @@
                         </p:dataTable>
                         <br/>
                     </h:panelGroup>
-                </pe:layoutPane>
+                
 
             </h:form>
         </ui:define>

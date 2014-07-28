@@ -3,11 +3,16 @@ package com.itcs.helpdesk.jsfcontrollers;
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.Cliente;
+import com.itcs.helpdesk.persistence.entities.EmailCliente;
 import com.itcs.helpdesk.persistence.jpa.exceptions.PreexistingEntityException;
 import com.itcs.helpdesk.util.UtilesRut;
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
@@ -18,7 +23,6 @@ import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import org.primefaces.model.SelectableDataModel;
 
-
 @ManagedBean(name = "clienteController")
 @SessionScoped
 public class ClienteController extends AbstractManagedBean<Cliente> implements Serializable {
@@ -26,6 +30,9 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
 //    private Cliente current;
 //    private Cliente[] selectedItems;
     private int selectedItemIndex;
+    private String searchPattern;
+    private EmailCliente emailToAdd;
+    private boolean canCreate = false;
 
     public ClienteController() {
         super(Cliente.class);
@@ -38,19 +45,39 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
 //        }
 //        return current;
 //    }
-
     @Override
     public PaginationHelper getPagination() {
         if (pagination == null) {
             pagination = new PaginationHelper(getPaginationPageSize()) {
+
+                private Integer count = null;
+
                 @Override
                 public int getItemsCount() {
-                    return getJpaController().count(Cliente.class).intValue();
+                    try {
+                        if (count == null) {
+                            if (searchPattern != null && !searchPattern.trim().isEmpty()) {
+                                count = getJpaController().getClienteJpaController().countSearchEntities(searchPattern).intValue();
+                            } else {
+                                count = getJpaController().getClienteJpaController().getClienteCount();
+                            }
+                        }
+
+                        return count;
+
+                    } catch (Exception ex) {
+                        Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "getItemsCount", ex);
+                    }
+                    return 0;
                 }
 
                 @Override
                 public DataModel createPageDataModel() {
-                    return new ClienteDataModel(getJpaController().queryByRange(Cliente.class, getPageSize(), getPageFirstItem()));
+                    if (searchPattern != null && !searchPattern.trim().isEmpty()) {
+                        return new ClienteDataModel(getJpaController().getClienteJpaController().searchEntities(searchPattern, false, getPageSize(), getPageFirstItem()));
+                    } else {
+                        return new ClienteDataModel(getJpaController().queryByRange(Cliente.class, getPageSize(), getPageFirstItem()));
+                    }
                 }
             };
         }
@@ -59,7 +86,8 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
 
     public String prepareList() {
         recreateModel();
-        return "List";
+        recreatePagination();
+        return "/script/cliente/List";
     }
 
 //    public String prepareView() {
@@ -72,11 +100,17 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
 //        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
 //        return "View";
 //    }
-
     public String prepareCreate() {
         current = new Cliente();
+        current.setEmailClienteList(new LinkedList<EmailCliente>());
+        emailToAdd = new EmailCliente();
         selectedItemIndex = -1;
-        return "Create";
+        return "/script/cliente/Create";
+    }
+    
+    public String reinit() {
+        emailToAdd = new EmailCliente();
+        return null;
     }
 
     public String create() {
@@ -85,7 +119,15 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
             return null;
         }
         try {
+            List<EmailCliente> listaEmails = current.getEmailClienteList();
+            current.setEmailClienteList(null);
             getJpaController().persistCliente(current);
+            for (EmailCliente emailCliente : listaEmails) {
+                emailCliente.setCliente(current);
+                getJpaController().persist(emailCliente);
+            }
+            current.setEmailClienteList(listaEmails);
+            getJpaController().merge(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ClienteCreated"));
             return prepareCreate();
         } catch (PreexistingEntityException existing) {
@@ -96,6 +138,31 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
         return null;
     }
 
+    public String prepareView(Cliente c) {
+        current = c;
+        return "/script/cliente/View";
+    }
+
+    public String prepareEdit(Cliente item) {
+        try {
+            Cliente i = getJpaController().find(Cliente.class, item.getIdCliente());
+            setSelected(i);
+
+        } catch (Exception ex) {
+            Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return "/script/cliente/Edit";
+    }
+
+    public String prepareCreateMasivo() {
+        return "/script/cliente/cargarClientes";
+    }
+
+    public boolean puedeEliminar(Cliente item) {
+        return item.getCasoList().isEmpty();
+    }
+
     public String prepareEdit() {
         if (getSelectedItems().size() != 1) {
             JsfUtil.addSuccessMessage("Se requiere que seleccione una fila para editar.");
@@ -104,14 +171,14 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
             current = getSelectedItems().get(0);
         }
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "Edit";
+        return "/script/cliente/Edit";
     }
 
     public String update() {
         try {
             getJpaController().mergeCliente(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ClienteUpdated"));
-            return "View";
+            return "/script/cliente/View";
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
             return null;
@@ -125,7 +192,7 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         performDestroy();
         recreateModel();
-        return "List";
+        return "/script/cliente/List";
     }
 
     public String destroySelected() {
@@ -140,7 +207,7 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
         }
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         recreateModel();
-        return "List";
+        return "/script/cliente/List";
     }
 
     public String destroyAndView() {
@@ -148,11 +215,11 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
         recreateModel();
         updateCurrentItem();
         if (selectedItemIndex >= 0) {
-            return "View";
+            return "/script/cliente/View";
         } else {
             // all items were removed - go back to list
             recreateModel();
-            return "List";
+            return "/script/cliente/List";
         }
     }
 
@@ -192,27 +259,60 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-//    /**
-//     * @return the selectedItems
-//     */
-//    public Cliente[] getSelectedItems() {
-//        return selectedItems;
-//    }
-//
-//    /**
-//     * @param selectedItems the selectedItems to set
-//     */
-//    public void setSelectedItems(Cliente[] selectedItems) {
-//        this.selectedItems = selectedItems;
-//    }
-//
-//    public SelectItem[] getItemsAvailableSelectMany() {
-//        return JsfUtil.getSelectItems(getJpaController().getClienteFindAll(), false);
-//    }
-//
-//    public SelectItem[] getItemsAvailableSelectOne() {
-//        return JsfUtil.getSelectItems(getJpaController().getClienteFindAll(), true);
-//    }
+    /**
+     * @return the searchPattern
+     */
+    public String getSearchPattern() {
+        return searchPattern;
+    }
+
+    /**
+     * @param searchPattern the searchPattern to set
+     */
+    public void setSearchPattern(String searchPattern) {
+        this.searchPattern = searchPattern;
+    }
+
+    public void onBlurRutInput() {
+        String rutFormateado = UtilesRut.formatear(getSelected().getRut());
+        getSelected().setRut(rutFormateado);
+
+        Cliente c = getJpaController().getClienteJpaController().findByRut(rutFormateado);
+        if (c != null) {//this client exists
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "El rut " + rutFormateado + " pertenece a un cliente existente, favor verificar que el cliente ya exista.", null);
+            FacesContext.getCurrentInstance().addMessage("form:rut", message);
+            setCanCreate(false);
+        }
+        else
+        {
+            setCanCreate(true);
+        }
+    }
+
+    public void setCanCreate(boolean b) {
+        this.canCreate = b;
+    }
+
+    /**
+     * @return the canCreate
+     */
+    public boolean isCanCreate() {
+        return canCreate;
+    }
+
+    /**
+     * @return the emailToAdd
+     */
+    public EmailCliente getEmailToAdd() {
+        return emailToAdd;
+    }
+
+    /**
+     * @param emailToAdd the emailToAdd to set
+     */
+    public void setEmailToAdd(EmailCliente emailToAdd) {
+        this.emailToAdd = emailToAdd;
+    }
 
     @FacesConverter(forClass = Cliente.class)
     public static class ClienteControllerConverter implements Converter {
@@ -253,6 +353,7 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
         }
     }
 }
+
 class ClienteDataModel extends ListDataModel<Cliente> implements SelectableDataModel<Cliente> {
 
     public ClienteDataModel() {

@@ -40,10 +40,9 @@
                                 <p:selectOneMenu id="idCanalSalida" style="width: 220px;"
                                                  filter="true" filterMatchMode="contains"
                                                  value="#{productoController.selected.idOutCanal}" >
-                                    <f:selectItem itemLabel="" itemValue=""/>
                                     <f:selectItems value="#{canalController.emailsAvailableSelectOne}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
                                 </p:selectOneMenu>
-
+                                <p:message for="idCanalSalida"/>
                                 <p:outputLabel value="Logo del #{applicationBean.productDescription}" style="font-weight: bold;"/>
                                 <p:commandLink value="adjuntar un Logo" onclick="uploadLogoProyectoDialog.show()"
                                                rendered="#{productoController.selected.idLogo eq null}"/>

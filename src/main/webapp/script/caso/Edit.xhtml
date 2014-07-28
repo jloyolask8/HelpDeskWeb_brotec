@@ -221,15 +221,13 @@
 
             <pe:layoutPane id="layoutcenter" position="center" >
 
+                <pe:layoutPane id="layout1_North" position="north" size="70px" minHeight="70px" maxHeight="70px" closable="false" maxSize="70px">              
 
-
-                <pe:layoutPane id="layout1_North" position="north" size="95">              
-
-                    <h:form id="botoneraCaso">
+                    <h:form id="botoneraCaso" style="margin-top: 5px;">
                         <h:panelGrid columns="14">     
 
-                            <p:commandButton ajax="false" title="Volver" icon="ui-icon-arrowreturnthick-1-w" action="inbox" style="width: 60px;"/>
-                            <p:commandButton ajax="false" title="Actualizar" icon="ui-icon-arrowrefresh-1-w" actionListener="#{casoController.refreshCaso()}" style="width: 60px;"/>
+                            <p:commandButton ajax="false" title="Volver al inbox" icon="fa fa-level-up" action="inbox" style="width: 60px;"/>
+                            <p:commandButton ajax="false" title="Actualizar" icon="fa fa-refresh" actionListener="#{casoController.refreshCaso()}" style="width: 60px;"/>
                             <p:commandButton rendered="#{casoController.verificarTomarCaso()}" ajax="true" value="Asignármelo" onclick="tomarCaso.show()" />
 
                             <p:commandButton id="panelBotonesResp0" disabled="#{(not casoController.verificarCrearActividad()) and 
@@ -278,21 +276,14 @@
                                             onclick="genDocVisitaPreventiva.show();"                                           
                                             icon="fa fa-file"                                            
                                             update=":genDocVisitaPreventivaForm"/>
-
-
-
                             </p:menu>
 
                             <p:commandButton rendered="#{casoController.verificarReabrirCaso()}" ajax="true" value="Reabrir Caso" onclick="openCase.show();" />
 
-
-                            <p:commandButton ajax="false" icon="ui-icon-circle-arrow-s" value="Acta de PreEntrega" 
+                            <p:commandButton ajax="false" icon="fa fa-download" value="Acta de PreEntrega" 
                                              rendered="#{casoController.casoTipoPreEntrega}">
                                 <p:fileDownload value="#{casoController.generarActaPreEntrega()}" />
                             </p:commandButton>
-
-
-
 
                             <p:commandButton id="panelBotonesResp" value="Otras acciones" type="button" />
                             <p:menu overlay="true" trigger="panelBotonesResp" my="left top" at="left bottom">
@@ -314,15 +305,7 @@
                                 <p:menuitem rendered="#{casoController.verificarEliminarCaso()}"
                                             ajax="true" value="Eliminar Caso" onclick="destroyCase.show();"/>
                             </p:menu>
-
-
-
-
-
-
-
                         </h:panelGrid>
-
                     </h:form>
 
                     <p:panelGrid styleClass="filtersGrid" id="panelGridDatos">
@@ -362,7 +345,7 @@
 
                 </pe:layoutPane>
 
-                <pe:layoutPane id="layout1_1" position="center" >
+                <pe:layoutPane id="layout1_1" position="center">
 
                     <h:form id="formint2">
 
@@ -599,13 +582,7 @@
                                     <f:selectItems value="#{prioridadController.itemsAvailableSelectMany}"/>
                                 </p:selectOneMenu>
                             </p:column>
-
                         </p:row>
-
-
-
-
-
 
                         <p:row>
                             <p:column>
@@ -664,20 +641,28 @@
                             </p:column>
                         </p:row>
                         <p:row rendered="#{not casoController.casoTipoPreventa}">
-                            <p:column>
-                                <p:selectOneMenu id="idSubComponente" value="#{casoController.selected.idSubComponente}"  style="width: 200px;"
-                                                 filter="true" filterMatchMode="contains"
-                                                 disabled="#{casoController.selected.closed or casoController.selected.idComponente eq null or casoController.casoTipoReparacion}">
-                                    <f:selectItem itemLabel="" itemValue=""/>
-                                    <f:selectItems value="#{casoController.selected.idComponente.subComponenteList}" var="subc" itemLabel="#{subc.nombre}" itemValue="#{subc}"/>
-                                </p:selectOneMenu>
-
-                                <p:commandLink action="#{productoController.prepareViewSubComponente(casoController.selected.idSubComponente, '/script/caso/Edit')}" 
-                                               disabled="#{casoController.selected.closed or casoController.selected.idComponente eq null or casoController.casoTipoReparacion}"
-                                               ajax="false" value="Editar"
-                                               rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
-                                               title="ver detalle"/>
-
+                            <p:column style="padding-top: 0px;">
+                                <p:panelGrid style="width: 220px; padding: 0px;">
+                                    <p:row>
+                                        <p:column style="padding: 0px;">
+                                            <div style="width: 100%" align="left">
+                                                <p:selectOneMenu id="idSubComponente" value="#{casoController.selected.idSubComponente}"  style="width: 150px;"
+                                                                 filter="true" filterMatchMode="contains"
+                                                                 disabled="#{casoController.selected.closed or casoController.selected.idComponente eq null or casoController.casoTipoReparacion}">
+                                                    <f:selectItem itemLabel="" itemValue=""/>
+                                                    <f:selectItems value="#{casoController.selected.idComponente.subComponenteList}" var="subc" itemLabel="#{subc.nombre}" itemValue="#{subc}"/>
+                                                </p:selectOneMenu>
+                                            </div>
+                                        </p:column>
+                                        <p:column>
+                                            <p:commandButton action="#{productoController.prepareViewSubComponente(casoController.selected.idSubComponente, '/script/caso/Edit')}" 
+                                                             disabled="#{casoController.selected.closed or casoController.selected.idComponente eq null or casoController.casoTipoReparacion}"
+                                                             ajax="false" value="Editar"
+                                                             rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
+                                                             title="ver detalle"/>
+                                        </p:column>
+                                    </p:row>
+                                </p:panelGrid>
                             </p:column>
                         </p:row>
 

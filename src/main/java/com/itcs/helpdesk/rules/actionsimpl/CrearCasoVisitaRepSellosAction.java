@@ -115,7 +115,7 @@ public class CrearCasoVisitaRepSellosAction extends Action {
 
             casoNuevo.setIdPrioridad(casoPadre.getIdPrioridad());
 //            newTicket.setEtiquetaList(casoPadre.getEtiquetaList());
-            casoNuevo.setIdCanal(EnumCanal.INTERNO.getCanal());
+            casoNuevo.setIdCanal(EnumCanal.MANUAL.getCanal());
 
             casoNuevo.setIdCasoPadre(casoPadre);
             //Brotec-Icafal specifics

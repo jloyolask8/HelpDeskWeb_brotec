@@ -558,6 +558,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                             emailCliente_wizard = null;
                             setEmailCliente_wizard_existeEmail(false);
                         }
+                        current.setIdCliente(c);
                     } else {
 
                         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "El cliente con rut " + rutCliente_wizard + " no está registrado, favor ingresar.", null);
@@ -567,14 +568,16 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
                         if (current.getEmailCliente() != null) {
                             current.getEmailCliente().setCliente(cliente);
-                        } else {
+                        }
+                        else
+                        {
                             if (getEmailCliente_wizard() != null) {
                                 EmailCliente emailCliente = new EmailCliente(getEmailCliente_wizard());
                                 emailCliente.setCliente(cliente);
                                 current.setEmailCliente(emailCliente);
                             }
-
                         }
+                        current.setIdCliente(cliente);
 
                         setEmailCliente_wizard_existeEmail(false);
                         setEmailCliente_wizard_existeCliente(false);
@@ -610,8 +613,12 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         if (emailCliente_wizard_updateCliente && emailCliente_wizard_existeCliente) {
             getJpaController().merge(newCaso.getEmailCliente().getCliente());
         }
+        else if(!emailCliente_wizard_existeCliente)
+        {
+            getJpaController().persist(newCaso.getIdCliente());
+        }
 
-        if (!emailCliente_wizard_existeEmail) {
+        if (!emailCliente_wizard_existeEmail && !StringUtils.isEmpty(emailCliente_wizard)) {
             getJpaController().persistEmailCliente(newCaso.getEmailCliente());
         }
 
@@ -853,7 +860,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public boolean esColaborativo() {
-        return current.getIdCanal().equals(EnumCanal.INTERNO.getCanal());
+        return current.getTipoCaso().equals(EnumTipoCaso.INTERNO.getTipoCaso());
     }
 
 //    public Caso getSelected() {
@@ -896,10 +903,10 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         htmlToView = replaceEmbeddedImages(html);
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("modal", true);
-        options.put("draggable", false);
+        options.put("draggable", true);
         options.put("resizable", true);
         options.put("contentHeight", 500);
-        options.put("contentWidth", 600);
+        options.put("contentWidth", 700);
         RequestContext.getCurrentInstance().openDialog("/script/caso/ViewHtml", options, null);
     }
 
@@ -1159,7 +1166,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             }
 
             current.setTema("[Colab] " + casoTmp.getTema());
-            current.setIdCanal(EnumCanal.INTERNO.getCanal());
+            current.setIdCanal(EnumCanal.MANUAL.getCanal());
             current.setFechaCreacion(Calendar.getInstance().getTime());
             current.setFechaModif(current.getFechaCreacion());
             current.setOwner(null);
@@ -1192,6 +1199,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             current.setTema("Caso de pre-entrega");
             current.setTipoCaso(EnumTipoCaso.PREENTREGA.getTipoCaso());
             current.setIdSubEstado(EnumSubEstadoCaso.PREENTREGA_NUEVO.getSubEstado());
+            current.setIdCanal(EnumCanal.MANUAL.getCanal());
             EmailCliente email = new EmailCliente();
             email.setCliente(new Cliente());
             current.setEmailCliente(email);
@@ -1243,7 +1251,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             current.setOwner(userSessionBean.getCurrent());
             current.setTipoCaso(EnumTipoCaso.CONTACTO.getTipoCaso());
             current.setIdSubEstado(EnumSubEstadoCaso.CONTACTO_NUEVO.getSubEstado());
-            current.setIdCanal(EnumCanal.INTERNO.getCanal());
+            current.setIdCanal(EnumCanal.MANUAL.getCanal());
             EmailCliente email = new EmailCliente();
             email.setCliente(new Cliente());
             current.setEmailCliente(email);
@@ -2011,7 +2019,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public boolean verificarResponderCaso() {
-        return (current.hasAnOwner() && current.isOpen() && puedeResponder());
+        return (current.hasAnOwner() && current.isOpen() && puedeResponder() && current.getEmailCliente() != null);
     }
 
     public boolean verificarGrabarCaso() {
@@ -2259,7 +2267,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 return "";
             }
 
-            if ((caso.getIdCanal() != null) && (caso.getIdCanal().equals(EnumCanal.INTERNO.getCanal()))) {
+            if ((caso.getTipoCaso() != null) && (caso.getTipoCaso().equals(EnumTipoCaso.INTERNO.getTipoCaso()))) {
                 if ((caso.getRevisarActualizacion() != null) && (caso.getRevisarActualizacion())) {
                     return "notaactualizado";
                 } else {
@@ -3081,8 +3089,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public void update(Caso casoToUpdate) throws IllegalOrphanException, NonexistentEntityException, RollbackFailureException, Exception {
 
-        if ((null != casoToUpdate.getEmailCliente().getCliente().getRut()) && (!casoToUpdate.getEmailCliente().getCliente().getRut().isEmpty())) {
-            if (!UtilesRut.validar(casoToUpdate.getEmailCliente().getCliente().getRut())) {
+        if ((null != casoToUpdate.getIdCliente().getRut()) && (!casoToUpdate.getIdCliente().getRut().isEmpty())) {
+            if (!UtilesRut.validar(casoToUpdate.getIdCliente().getRut())) {
                 JsfUtil.addErrorMessage("Rut invalido");
                 return;
             }

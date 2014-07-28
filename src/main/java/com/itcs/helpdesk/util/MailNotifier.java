@@ -112,7 +112,7 @@ public class MailNotifier {
 
     public static void emailClientCasoReceived(Caso caso) {
         //TODO: use configure texts.
-        if (caso != null) {
+        if (caso != null && caso.getEmailCliente() != null) {
             try {
                 String mensaje_ = "fix this text in emailClientCasoReceived";
                 String subject_ = "fix this text in emailClientCasoReceived";
@@ -128,10 +128,13 @@ public class MailNotifier {
 
                 final String subject = ManagerCasos.formatIdCaso(caso.getIdCaso()) + " " + subject_;
                 final String mensaje = mensaje_;
-
-                MailClientFactory.getInstance(caso.getIdArea().getIdCanal().getIdCanal())
-                        .sendHTML(caso.getEmailCliente().getEmailCliente(), subject,
-                                mensaje, null);
+                
+                if(caso.getIdArea()!=null && caso.getIdArea().getIdCanal() != null)
+                {
+                    MailClientFactory.getInstance(caso.getIdArea().getIdCanal().getIdCanal())
+                            .sendHTML(caso.getEmailCliente().getEmailCliente(), subject,
+                                    mensaje, null);
+                }
             } catch (Exception ex) {
                 Logger.getLogger(MailNotifier.class.getName()).log(Level.SEVERE, "emailClientCasoReceived", ex);
             }

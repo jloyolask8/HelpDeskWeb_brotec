@@ -562,7 +562,6 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
 
     public String prepareCreateMasivo() {
         return "/script/emailCliente/cargarClientes";
-
     }
 
     public String saveBulkImport() {
