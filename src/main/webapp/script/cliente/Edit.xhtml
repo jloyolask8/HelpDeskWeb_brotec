@@ -2,45 +2,98 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core">
 
-  <ui:composition template="/script/template_inbox.xhtml">
+    <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
-            <h:outputText value="#{bundle.EditClienteTitle}"></h:outputText>
+            <h:outputText value="Formulario de edici&oacute;n cliente"></h:outputText>
         </ui:define>
-        <ui:define name="body">
-            <h:panelGroup id="messagePanel" layout="block">
-                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
-            </h:panelGroup>
-            <h:form>
-                <h:panelGrid columns="2">
-                    <h:outputLabel value="#{bundle.EditClienteLabel_idCliente}" for="idCliente" />
-                    <h:inputText id="idCliente" value="#{clienteController.selected.idCliente}" title="#{bundle.EditClienteTitle_idCliente}" required="true" requiredMessage="#{bundle.EditClienteRequiredMessage_idCliente}"/>
-                    <h:outputLabel value="#{bundle.EditClienteLabel_rut}" for="rut" />
-                    <h:inputText id="rut" value="#{clienteController.selected.rut}" title="#{bundle.EditClienteTitle_rut}" />
-                    <h:outputLabel value="#{bundle.EditClienteLabel_nombres}" for="nombres" />
-                    <h:inputText id="nombres" value="#{clienteController.selected.nombres}" title="#{bundle.EditClienteTitle_nombres}" />
-                    <h:outputLabel value="#{bundle.EditClienteLabel_apellidos}" for="apellidos" />
-                    <h:inputText id="apellidos" value="#{clienteController.selected.apellidos}" title="#{bundle.EditClienteTitle_apellidos}" />
-                    <h:outputLabel value="#{bundle.EditClienteLabel_fono1}" for="fono1" />
-                    <h:inputText id="fono1" value="#{clienteController.selected.fono1}" title="#{bundle.EditClienteTitle_fono1}" />
-                    <h:outputLabel value="#{bundle.EditClienteLabel_fono2}" for="fono2" />
-                    <h:inputText id="fono2" value="#{clienteController.selected.fono2}" title="#{bundle.EditClienteTitle_fono2}" />
-                    <h:outputLabel value="#{bundle.EditClienteLabel_dirParticular}" for="dirParticular" />
-                    <h:inputText id="dirParticular" value="#{clienteController.selected.dirParticular}" title="#{bundle.EditClienteTitle_dirParticular}" />
-                    <h:outputLabel value="#{bundle.EditClienteLabel_dirComercial}" for="dirComercial" />
-                    <h:inputText id="dirComercial" value="#{clienteController.selected.dirComercial}" title="#{bundle.EditClienteTitle_dirComercial}" />
-                </h:panelGrid>
-                <h:commandLink action="#{clienteController.update}" value="#{bundle.EditClienteSaveLink}"/>
-                <br />
-                <br />
-                <h:link outcome="View" value="#{bundle.EditClienteViewLink}"/>
-                <br />
-                <h:commandLink action="#{clienteController.prepareList}" value="#{bundle.EditClienteShowAllLink}" immediate="true" />
-                <br />
-                <br />
-                <h:link outcome="/index" value="#{bundle.EditClienteIndexLink}" />
+        <ui:define name="west">
+            <p:accordionPanel multiple="true" cache="true" id="accionesaccordion1">
+                <p:tab title="Clientes" id="accionestab1">
+                    <h:outputLabel escape="false" value="#{bundle.ayudaClientes}"/>
+                </p:tab>
+            </p:accordionPanel>
+        </ui:define>
+        <ui:define name="body">     
+            <h:form id="form">
+                <p:messages globalOnly="true"/>
+                <p:panel header="Ingresar Nuevo Cliente">
+
+                    <h:panelGrid id="datosDelCliente" columns="3">
+                        <p:outputLabel id="rutLbl" value="#{bundle.CreateClienteLabel_rut}" for="rut" style="font-weight:bold"/>
+                        <p:inputText id="rut" value="#{clienteController.selected.rut}" 
+                                     title="#{bundle.CreateClienteTitle_rut}" validator="#{inputValidationBean.validarRut}"
+                                     required="true" requiredMessage="Es necesario el RUT del cliente">
+                            <p:ajax event="blur" listener="#{clienteController.onBlurRutInput}" update=":form"/>
+                        </p:inputText>
+                        <p:message id="rutMsg" display="both" for="rut"/>
+
+                        <p:outputLabel value="#{bundle.CreateClienteLabel_nombres}" for="nombres" style="font-weight:bold"/>
+                        <p:inputText id="nombres" value="#{clienteController.selected.nombres}" title="#{bundle.CreateClienteTitle_nombres}" required="true" requiredMessage="El Nombre es un dato requerido."/>
+                        <p:message display="both" for="nombres"/>
+
+                        <p:outputLabel value="#{bundle.CreateClienteLabel_apellidos}" for="apellidos" style="font-weight:bold"/>
+                        <p:inputText id="apellidos" value="#{clienteController.selected.apellidos}" title="#{bundle.CreateClienteTitle_apellidos}" required="true" requiredMessage="Los Apellidos son un dato requerido."/>
+                        <p:message display="both" for="apellidos"/>
+
+                        <p:outputLabel value="Sexo:" for="sexo" style="font-weight:bold"/>
+                        <p:selectOneButton id="sexo" value="#{clienteController.selected.sexo}" required="true" requiredMessage="Seleccione un sexo.">  
+                            <f:selectItem itemLabel="Hombre" itemValue="Hombre" />  
+                            <f:selectItem itemLabel="Mujer" itemValue="Mujer" />  
+                        </p:selectOneButton> 
+                        <p:message display="both" for="sexo"/>
+
+                        <p:outputLabel value="#{bundle.CreateClienteLabel_fono1}" for="fono1" style="font-weight:bold"/>
+                        <p:inputText id="fono1" value="#{clienteController.selected.fono1}" title="#{bundle.CreateClienteTitle_fono1}" />
+                        <p:message display="both" for="fono1"/>
+                        <p:outputLabel value="#{bundle.CreateClienteLabel_fono2}" for="fono2" style="font-weight:bold"/>
+                        <p:inputText id="fono2" value="#{clienteController.selected.fono2}" title="#{bundle.CreateClienteTitle_fono2}" />
+                        <p:message display="both" for="fono2"/>
+                        <p:outputLabel value="#{bundle.CreateClienteLabel_dirParticular}" for="dirParticular" style="font-weight:bold"/>
+                        <p:inputText id="dirParticular" size="60" value="#{clienteController.selected.dirParticular}" title="#{bundle.CreateClienteTitle_dirParticular}" />
+                        <p:message display="both" for="dirParticular"/>
+                        <p:outputLabel value="#{bundle.CreateClienteLabel_dirComercial}" for="dirComercial" style="font-weight:bold"/>
+                        <p:inputText id="dirComercial" size="60" value="#{clienteController.selected.dirComercial}" title="#{bundle.CreateClienteTitle_dirComercial}" />
+                        <p:message display="both" for="dirComercial"/>
+                    </h:panelGrid>
+
+                    <p:panel header="Agregar e-mail" style="margin-bottom:20px">
+                        <h:panelGrid columns="2" cellpadding="5">
+                            <h:outputLabel value="e-mail" for="txt_title"></h:outputLabel>
+                            <p:inputText id="txt_title" value="#{clienteController.emailToAdd.emailCliente}" required="true"/>
+
+                            <p:commandButton id="btn_reset" value="Reset" type="reset"/>
+                            <p:commandButton id="btn_add" value="Agregar" update="books @parent" action="#{clienteController.reinit()}" >
+                                <p:collector value="#{clienteController.emailToAdd}" addTo="#{clienteController.selected.emailClienteList}" unique="true"/>
+                            </p:commandButton>
+                        </h:panelGrid>
+                    </p:panel>
+
+                    <p:outputPanel id="books">
+                        <p:dataTable value="#{clienteController.selected.emailClienteList}" var="email" id="booksTable">
+
+                            <p:column headerText="e-mail">
+                                <h:outputText value="#{email.emailCliente}" />
+                            </p:column>
+
+                            <p:column headerText="Accion">
+                                <p:commandLink value="Eliminar" update=":form:books" process=":form:books">
+                                    <p:collector value="#{email}" removeFrom="#{clienteController.selected.emailClienteList}" unique="true"/>
+                                </p:commandLink>
+                            </p:column>
+
+                        </p:dataTable>
+                    </p:outputPanel>
+
+                    <f:facet name="footer">
+                        <p:commandButton action="#{clienteController.update}" value="Guardar" ajax="true" update=":form"/>                     
+                        <p:commandButton action="#{clienteController.prepareList}" value="Volver" immediate="true" ajax="false" icon="ui-icon-folder-open"/>
+                    </f:facet> 
+
+                </p:panel>
             </h:form>
         </ui:define>
     </ui:composition>

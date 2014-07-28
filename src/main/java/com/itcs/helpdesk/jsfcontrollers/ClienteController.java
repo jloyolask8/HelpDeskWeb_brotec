@@ -107,7 +107,7 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
         selectedItemIndex = -1;
         return "/script/cliente/Create";
     }
-    
+
     public String reinit() {
         emailToAdd = new EmailCliente();
         return null;
@@ -145,6 +145,7 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
 
     public String prepareEdit(Cliente item) {
         try {
+            emailToAdd = new EmailCliente();
             Cliente i = getJpaController().find(Cliente.class, item.getIdCliente());
             setSelected(i);
 
@@ -176,6 +177,13 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
 
     public String update() {
         try {
+            List<EmailCliente> listaEmails = current.getEmailClienteList();
+            for (EmailCliente emailCliente : listaEmails) {
+                if (getJpaController().getReference(EmailCliente.class, emailCliente.getEmailCliente()) == null) {
+                    emailCliente.setCliente(current);
+                    getJpaController().persist(emailCliente);
+                }
+            }
             getJpaController().mergeCliente(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ClienteUpdated"));
             return "/script/cliente/View";
@@ -282,9 +290,7 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "El rut " + rutFormateado + " pertenece a un cliente existente, favor verificar que el cliente ya exista.", null);
             FacesContext.getCurrentInstance().addMessage("form:rut", message);
             setCanCreate(false);
-        }
-        else
-        {
+        } else {
             setCanCreate(true);
         }
     }
