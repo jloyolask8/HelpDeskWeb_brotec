@@ -1230,7 +1230,8 @@
                         <p:commandButton value="Cerrar el caso" ajax="false" update=":mainform:messages"
                                          actionListener="#{casoController.cerrarCaso}"   />
 
-                        <p:commandButton value="Cerrar el caso y programar visita preventiva" rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.PREENTREGA.getTipoCaso()}"
+                        <p:commandButton value="Cerrar el caso y programar visita preventiva" 
+                                         rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.PREENTREGA.getTipoCaso()}"
                                          ajax="true" update=":formCerrarCaso :mainform:messages"
                                          actionListener="#{casoController.cerrarCasoYProgramarVP}"   />
                     </h:panelGrid>

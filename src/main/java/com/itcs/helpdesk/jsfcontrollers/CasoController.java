@@ -2004,7 +2004,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             persistProgramarVisitaPreventivaEvent();
 
             if (isAjaxRequest()) {
-                xmlPartialRedirectToPage("/script/caso/Edit.xhtml");
+                redirect("/script/caso/Edit.xhtml");
             }
 
             //fin visita preventiva

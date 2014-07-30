@@ -340,7 +340,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
 //        nav.performNavigation(viewId);
         try {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            String path_ticket = request.getContextPath() + "/faces/" + viewId + ".xhtml";
+            String path_ticket = request.getContextPath() + request.getServletPath() + "/" + viewId + ".xhtml";
             FacesContext.getCurrentInstance().getExternalContext().redirect(path_ticket);
         } catch (IOException e) {
             e.printStackTrace();
@@ -348,10 +348,12 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     }
 
     /**
-     * redirecciona un request ajax a una pagina especifica
+     * redirecciona un request ajax a una pagina especifica al parecer solo
+     * funciona desde un filter no desde un managed bean =(
+     *
      * @param request
      * @param page
-     * @return 
+     * @return
      */
     public String xmlPartialRedirectToPage(String page) {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
@@ -369,13 +371,10 @@ public abstract class AbstractManagedBean<E> implements Serializable {
         ExternalContext extContext = ctx.getExternalContext();
         String url = extContext.encodeActionURL(ctx.getApplication().getViewHandler().getActionURL(ctx, page));
         try {
-
             extContext.redirect(url);
         } catch (IOException ioe) {
             throw new FacesException(ioe);
-
         }
         return null;
-
     }
 }
