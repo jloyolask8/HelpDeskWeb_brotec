@@ -9,8 +9,10 @@ import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Grupo;
 import com.itcs.helpdesk.persistence.entities.Item;
 import com.itcs.helpdesk.persistence.entities.ScheduleEvent;
+import com.itcs.helpdesk.persistence.entities.SubEstadoCaso;
 import com.itcs.helpdesk.persistence.entities.TipoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumCanal;
+import com.itcs.helpdesk.persistence.entityenums.EnumSubEstadoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumUsuariosBase;
@@ -41,8 +43,8 @@ public class CrearCasoVisitaRepSellosAction extends Action {
     public static final String TEMA_KEY = "tema";
     public static final String DESC_KEY = "desc";
     public static final String ITEMS_KEY = "idItems";//comma separated id of Items values
-    public static final String AREA_KEY = "idArea";
-    public static final String GRUPO_KEY = "idGrupo";
+//    public static final String AREA_KEY = "idArea";
+//    public static final String GRUPO_KEY = "idGrupo";
     public static final String FECHA_VISITA_KEY = "FECHA_VISITA";
     public static final String FECHA_REP_KEY = "FECHA_REP";
 
@@ -70,25 +72,26 @@ public class CrearCasoVisitaRepSellosAction extends Action {
 
         Properties props = getConfigAsProperties();
         if (props != null && !props.isEmpty()) {
-
-            Caso casoPadre = crearSubCaso(props, casoAbuelo, EnumTipoCaso.POSTVENTA.getTipoCaso(), null);
-            Grupo grupo = getJpaController().getGrupoFindByIdGrupo(props.getProperty(GRUPO_KEY));
-            ManagerCasos manager = new ManagerCasos(getJpaController());
-            try {
-                manager.asignarCasoAUsuarioConMenosCasos(grupo, casoPadre);
-            } catch (Exception ex) {
-                Logger.getLogger(CrearCasoVisitaRepSellosAction.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            Caso casoPadre = crearSubCaso(props, casoAbuelo, EnumTipoCaso.PREVENTIVO.getTipoCaso(), EnumSubEstadoCaso.PREVENTIVO_ITEM_NUEVO.getSubEstado(), null);
+//            Grupo grupo = getJpaController().getGrupoFindByIdGrupo(props.getProperty(GRUPO_KEY));
+//            ManagerCasos manager = new ManagerCasos(getJpaController());
+//            try {
+//                manager.asignarCasoAUsuarioConMenosCasos(grupo, casoPadre);
+//            } catch (Exception ex) {
+//                Logger.getLogger(CrearCasoVisitaRepSellosAction.class.getName()).log(Level.SEVERE, null, ex);
+//            }
 
             //crear nietos
             String idItems = props.getProperty(ITEMS_KEY);//comma separated id of Items values
-            String itemsIds[] = idItems.split(",");
-            for (String idItem : itemsIds) {
-                Item i = getJpaController().find(Item.class, Integer.valueOf(idItem));
-                if (i != null) {
-                    crearSubCaso(props, casoPadre, EnumTipoCaso.REPARACION_ITEM.getTipoCaso(), i);
-                } else {
-                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "createSubCasos item error:{0}", idItem);
+            if (idItems != null) {
+                String itemsIds[] = idItems.split(",");
+                for (String idItem : itemsIds) {
+                    Item i = getJpaController().find(Item.class, Integer.valueOf(idItem));
+                    if (i != null) {
+                        crearSubCaso(props, casoPadre, EnumTipoCaso.REPARACION_ITEM.getTipoCaso(), EnumSubEstadoCaso.PREVENTIVO_ITEM_NUEVO.getSubEstado(), i);
+                    } else {
+                        Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "createSubCasos item error:{0}", idItem);
+                    }
                 }
             }
 
@@ -120,7 +123,7 @@ public class CrearCasoVisitaRepSellosAction extends Action {
                 if (calendar.get(Calendar.HOUR_OF_DAY) == 0) {
                     calendar.set(Calendar.HOUR_OF_DAY, 8);
                 }
-                
+
                 getJpaController().persist(buildEvent(casoPadre, "Evento de Reparación", "Evento de Reparación programado con fecha estimada. La fecha definitiva debe ser confirmada con el cliente y los responsables de reparar.",
                         calendar.getTime(), calendar.getTime()));
             } catch (Exception ex) {
@@ -153,23 +156,24 @@ public class CrearCasoVisitaRepSellosAction extends Action {
         entityEvent.addNewUsuarioInvited(caso.getOwner());
 
         entityEvent.addNewScheduleEventReminderWithNoId();
-        
+
         entityEvent.setFechaCreacion(Calendar.getInstance().getTime());
 
         return entityEvent;
 
     }
 
-    private Caso crearSubCaso(Properties props, Caso casoPadre, TipoCaso tipo, Item item) {
+    private Caso crearSubCaso(Properties props, Caso casoPadre, TipoCaso tipo, SubEstadoCaso subestado, Item item) {
         try {
             Caso casoNuevo = new Caso();
             casoNuevo.setIdItem(item);
             casoNuevo.setOwner(casoPadre.getOwner());
             casoNuevo.setTema(props.getProperty(TEMA_KEY));
             casoNuevo.setDescripcion(props.getProperty(DESC_KEY));
-            casoNuevo.setIdArea(getJpaController().find(Area.class, props.getProperty(AREA_KEY)));// casoPadre.getIdArea());
+//            casoNuevo.setIdArea(getJpaController().find(Area.class, props.getProperty(AREA_KEY)));// casoPadre.getIdArea());
 
             casoNuevo.setEmailCliente(casoPadre.getEmailCliente());
+            casoNuevo.setIdCliente(casoPadre.getIdCliente());
 
             casoNuevo.setIdProducto(casoPadre.getIdProducto());
             casoNuevo.setIdModelo(casoPadre.getIdModelo());
@@ -178,11 +182,11 @@ public class CrearCasoVisitaRepSellosAction extends Action {
             casoNuevo.setEstadoAlerta(EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta());
 
             casoNuevo.setTipoCaso(tipo);//TO BE A GENERIC ACTION THIS COULD BE A PARAM
+            casoNuevo.setIdSubEstado(subestado);//TO BE A GENERIC ACTION THIS COULD BE A PARAM
 
             casoNuevo.setIdPrioridad(casoPadre.getIdPrioridad());
 //            newTicket.setEtiquetaList(casoPadre.getEtiquetaList());
-            casoNuevo.setIdCanal(EnumCanal.MANUAL.getCanal());
-
+            casoNuevo.setIdCanal(EnumCanal.SISTEMA.getCanal());
             casoNuevo.setIdCasoPadre(casoPadre);
             //Brotec-Icafal specifics
 

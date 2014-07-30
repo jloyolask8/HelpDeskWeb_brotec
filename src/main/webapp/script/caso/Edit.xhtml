@@ -266,27 +266,21 @@
                                             actionListener="#{casoController.prepareCreateRespuesta(actionEvent)}"
                                             update=":formrespuesta"/>
 
-                                <p:menuitem rendered="#{casoController.casoTipoPreEntrega}"
-                                            value="Programar visita preventiva" 
-                                            title="Programar visita preventiva" 
-                                            actionListener="#{casoController.prepareProgramarVisitaPreventiva(actionEvent)}"                                            
-                                            icon="fa fa-calendar-o"                                            
-                                            update=":formvisitapreventiva"/>
+                              
 
-                                <p:menuitem rendered="#{casoController.casoTipoPostventa}"
+                                <p:menuitem rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.PREVENTIVO.getTipoCaso()}"
                                             value="Generar Documento Visita Preventiva" 
-                                            title="Generar Documento Visita Preventiva" 
-                                            onclick="genDocVisitaPreventiva.show();"                                           
-                                            icon="fa fa-file"                                            
-                                            update=":genDocVisitaPreventivaForm"/>
+                                            title="Generar Documento Visita Preventiva"                                                 
+                                            actionListener="#{casoController.generarPDFVisitaPreventivaPostventa()}"
+                                            icon="fa fa-file"  />
                             </p:menu>
 
 
 
                             <p:commandButton rendered="#{casoController.verificarReabrirCaso()}" ajax="true" value="Reabrir Caso" onclick="openCase.show();" />
 
-                            <p:commandButton ajax="false" icon="fa fa-download" value="Acta de PreEntrega" 
-                                             rendered="#{casoController.casoTipoPreEntrega}">
+                            <p:commandButton ajax="false" icon="fa fa-download" value="Generar Acta de PreEntrega" 
+                                             rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.PREENTREGA.getTipoCaso()}">
                                 <p:fileDownload value="#{casoController.generarActaPreEntrega()}" />
                             </p:commandButton>
 
@@ -457,32 +451,35 @@
                         </p:tab>
 
 
-                        <p:tab id="tabAgendarEvento" title="Agenda" 
-                               disabled="#{(not casoController.verificarCrearActividad()) and (not casoController.verificarResponderCaso())}">
+                        <p:tab id="tabAgendarEvento" title="Agenda">
 
 
-                          
+
 
                             <h:form id="formAgendarEvento">
                                 <h2>Calendario de Eventos</h2>
 
                                 <p:schedule id="myschedule" value="#{casoScheduleController.lazyScheduleEventsModel}" 
                                             firstHour="8" widgetVar="myschedule" >
-                                    <p:ajax event="dateSelect" listener="#{casoScheduleController.onDateSelect}" 
+                                    <p:ajax event="dateSelect" listener="#{casoScheduleController.onDateSelect}"  
+                                            disabled="#{(not casoController.verificarCrearActividad()) and (not casoController.verificarResponderCaso())}"
                                             update=":createEventForm:eventDetails" oncomplete="PF('createEventDialog').show()" />  
                                     <p:ajax event="eventSelect" listener="#{casoScheduleController.onEventSelect}" 
+                                            disabled="#{(not casoController.verificarCrearActividad()) and (not casoController.verificarResponderCaso())}"
                                             update=":createEventForm:eventDetails" oncomplete="PF('createEventDialog').show()" />  
 
                                     <p:ajax event="eventMove" listener="#{casoScheduleController.onEventMove}" 
+                                            disabled="#{(not casoController.verificarCrearActividad()) and (not casoController.verificarResponderCaso())}"
                                             update=":inputPanel:formTimelineAgenda :mainform:messages" />  
                                     <p:ajax event="eventResize" listener="#{casoScheduleController.onEventResize}" 
+                                            disabled="#{(not casoController.verificarCrearActividad()) and (not casoController.verificarResponderCaso())}"
                                             update=":inputPanel:formTimelineAgenda :mainform:messages" /> 
                                 </p:schedule>
                             </h:form>
-                            
-                              <p:separator/>
-                              
-                              <h:form id="formTimelineAgenda">
+
+                            <p:separator/>
+
+                            <h:form id="formTimelineAgenda">
 
                                 <h2>Cronograma de Eventos</h2>
 
@@ -502,7 +499,7 @@
 
                             </h:form>
 
-                          
+
 
 
 
@@ -577,9 +574,9 @@
                 <f:facet name="header">
                     <p:outputLabel value="Detalle de Solicitud"/>
                 </f:facet>
-                
-                
-                               
+
+
+
                 <h:form id="formint1">
 
                     <p:panelGrid style="margin-bottom:10px;" styleClass="filtersGrid" id="panelGridDatos" >
@@ -591,7 +588,7 @@
                         </p:row>
                         <p:row>
                             <p:column>
-                                <p:selectOneMenu disabled="#{casoController.selected.closed or casoController.selected.tipoCaso eq EnumTipoCaso.REPARACION_ITEM.getTipoCaso()}" id="idTipoCaso" style="width: 220px;"
+                                <p:selectOneMenu disabled="#{casoController.selected.closed}" id="idTipoCaso" style="width: 220px;"
                                                  required="true" requiredMessage="El tipo de caso es requerido."
                                                  filter="true" filterMatchMode="contains"
                                                  value="#{casoController.selected.tipoCaso}" >
@@ -638,21 +635,24 @@
                             </p:column>
                         </p:row>
 
-                        <p:row>
+                        <p:row rendered="#{(casoController.selected.tipoCaso eq EnumTipoCaso.REPARACION_ITEM.getTipoCaso()) 
+                                           or (casoController.selected.tipoCaso eq EnumTipoCaso.PREVENTIVO.getTipoCaso())}">
                             <p:column>
                                 <p:outputLabel value="Responsable" for="idResponsable" style="font-weight:bold"/>
                             </p:column>
                         </p:row>
-                        <p:row>
+                        <p:row rendered="#{(casoController.selected.tipoCaso eq EnumTipoCaso.REPARACION_ITEM.getTipoCaso()) 
+                                           or (casoController.selected.tipoCaso eq EnumTipoCaso.PREVENTIVO.getTipoCaso())}">
                             <p:column>
-                                <p:selectOneMenu style="width: 220px;"
+                                <p:selectOneMenu disabled="#{casoController.selected.closed}" style="width: 220px;"
                                                  id="idResponsable" value="#{casoController.selected.idResponsable}" >
                                     <f:selectItems value="#{responsableController.itemsAvailableSelectOne}"/>
                                 </p:selectOneMenu>
                             </p:column>
                         </p:row>
 
-                        <p:row>
+                        <p:row rendered="#{(casoController.selected.tipoCaso eq EnumTipoCaso.REPARACION_ITEM.getTipoCaso()) 
+                                           or (casoController.selected.tipoCaso eq EnumTipoCaso.PREVENTIVO.getTipoCaso())}">
                             <p:column>
                                 <p:panelGrid style="width: 100% !important;">
                                     <p:row>
@@ -663,7 +663,8 @@
                                         </p:column>
                                         <p:column style="padding-left: 0px !important;">
                                             <div align="left">
-                                                <p:selectBooleanCheckbox id="idTechnicalService" value="#{casoController.selected.servicioTecnico}" />
+                                                <p:selectBooleanCheckbox id="idTechnicalService" disabled="#{casoController.selected.closed}" 
+                                                                         value="#{casoController.selected.servicioTecnico}" />
                                             </div>
                                         </p:column>
                                     </p:row>
@@ -1177,7 +1178,6 @@
                                  { name: 'styles', items : [ 'Styles','Format','Font','FontSize' ] },
                                  { name: 'colors', items : [ 'TextColor','BGColor' ] },
                                  { name: 'tools', items : [ 'Maximize', 'ShowBlocks'] }
-
                                  ]"
 
                                  id="textonota" width="560" height="210"/>
@@ -1195,6 +1195,8 @@
 
             <p:dialog header="Cerrar Caso" widgetVar="closeCase" modal="true" appendTo="@(body)" >
                 <h:form id="formCerrarCaso">
+                    
+                    <p:messages/>
 
                     <h:panelGrid columns="3">
 
@@ -1216,12 +1218,21 @@
 
                     </h:panelGrid>
 
-                    <p:outputLabel value="Nota: se cerrarán también los sub-casos (casos hijos del caso actual), si existen."/>
+                    <p:outputLabel value="Nota: se cerrarán también los sub-casos (casos hijos del caso actual), si existen."
+                                   rendered="#{casoController.selected.tipoCaso ne EnumTipoCaso.PREENTREGA.getTipoCaso()}"/>
+                    <p:outputLabel value="Nota: Todos los subcasos deben estar previamente cerrados."
+                                   rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.PREENTREGA.getTipoCaso()}"/>
 
                     <h:panelGrid columns="3">
-                        <p:commandButton value="Aceptar" ajax="false" update=":mainform:messages"
-                                         actionListener="#{casoController.cerrarCaso}"   />
+
                         <p:commandButton value="Cancelar" ajax="true"  onclick="closeCase.hide()"   />
+
+                        <p:commandButton value="Cerrar el caso" ajax="false" update=":mainform:messages"
+                                         actionListener="#{casoController.cerrarCaso}"   />
+
+                        <p:commandButton value="Cerrar el caso y programar visita preventiva" rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.PREENTREGA.getTipoCaso()}"
+                                         ajax="true" update=":formCerrarCaso :mainform:messages"
+                                         actionListener="#{casoController.cerrarCasoYProgramarVP}"   />
                     </h:panelGrid>
 
                 </h:form>
@@ -1289,249 +1300,7 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog header="Generar Documento Visita Informativa Preventiva" widgetVar="genDocVisitaPreventiva" 
-                      modal="true" appendTo="@(body)" closeOnEscape="true">
-                <h:form id="genDocVisitaPreventivaForm">
-
-                    <p:panelGrid id="eventDetails" columns="1" 
-                                 style="margin-bottom:10px;" styleClass="filtersGrid" >
-
-                        <p:messages globalOnly="true"/>
-                        <p:row>
-                            <p:column>
-                                <p:panelGrid columns="4">
-                                    <h:outputLabel for="fechaVisita" value="Fecha coordinada de Visita:" style="font-weight: bold;"/>  
-                                    <p:calendar id="fechaVisita" locale="es" navigator="true" mindate="#{applicationBean.now}" size="14"
-                                                value="#{casoController.visitaPreventivaFechaVisita}"
-                                                required="true" requiredMessage="la fecha de Visita es requerida."
-                                                title="fecha de Visita" pattern="dd/MMMM/yyyy" >
-                                        <f:convertDateTime pattern="dd/MMMM/yyyy" />  
-                                    </p:calendar>
-
-                                    <h:outputLabel for="fechaRep" value="Fecha de Reparación:" style="font-weight: bold;"/>  
-                                    <p:calendar id="fechaRep" locale="es" navigator="true" mindate="#{applicationBean.now}" size="14"
-                                                value="#{casoController.visitaPreventivaFechaReparacion}"
-                                                required="true" requiredMessage="la fecha de Reparación es requerida."
-                                                title="fecha de Reparación" pattern="dd/MMMM/yyyy" >
-                                        <f:convertDateTime pattern="dd/MMMM/yyyy" />  
-                                    </p:calendar>
-                                </p:panelGrid>
-
-                                <p:message for="fechaVisita"/>
-                                <p:message for="fechaRep"/>
-                            </p:column>
-                        </p:row>
-                        <p:separator/>
-
-                        <p:row>
-                            <p:column>
-                                <h:outputLabel for="nota" value="Comentarios:" style="font-weight: bold;"/>  
-                            </p:column>
-
-                            <p:column>
-                                <p:inputTextarea id="nota" value="#{casoController.textoNota}" required="true"
-                                                 requiredMessage="Porfavor ingrese un comentario." style="width: 100%;"/>
-                            </p:column>
-                            <p:message for="nota"/>
-                        </p:row>
-
-                    </p:panelGrid>
-
-                    <p:separator/>
-
-                    <p:commandButton value="Cerrar" oncomplete="genDocVisitaPreventiva.hide()" process="@this">
-                        <p:resetInput target="@form" />
-                    </p:commandButton>
-                    <p:commandButton value="Generar Documento" update=":genDocVisitaPreventivaForm :westPanel :mainform:messages"
-                                     actionListener="#{casoController.createVisitaPreventivaPostventa()}">
-                    </p:commandButton>
-                </h:form>
-            </p:dialog>
-
-            <p:dialog header="Programar Creación de Caso: Visita Preventiva (futura)" widgetVar="ProgramarVisitaPreventiva" modal="true" appendTo="@(body)" closeOnEscape="true">
-                <h:form id="formvisitapreventiva">
-
-                    <p:panelGrid id="eventDetails" columns="1" 
-                                 style="margin-bottom:10px;" styleClass="filtersGrid" >
-                        <p:messages globalOnly="true"/>
-                        <p:row>
-                            <p:column>
-                                <p:inputText id="title" value="#{casoController.visitaPreventivaSubject}" style="width: 100%;"
-                                             required="true" requiredMessage="Favor ingrese un titulo para el caso que se creará cuando se cumpla la fecha."/> 
-                                <p:watermark for="title" value="titulo para el caso que se creará cuando se cumpla la fecha."/>
-                                <p:message for="title"/>
-                            </p:column>
-                        </p:row>
-                        <p:separator/>
-                        <p:row>
-
-
-                            <p:column>
-                                <h:outputLabel value="Programar la visita dentro de "/>
-                            </p:column>
-
-                            <p:column>
-                                <p:spinner id="visitaPreventivaCrearCasoEnMeses" 
-                                           value="#{casoController.visitaPreventivaCrearCasoEnMeses}" size="2" >
-                                    <p:ajax update="fechaVisita fechaRep" process="@this" listener="#{casoController.updateFechasVisitaPreventiva()}"/>
-                                </p:spinner>
-                            </p:column>
-
-                            <p:column>
-                                <h:outputLabel value=" meses a partir de la fecha de entrega del producto (#{casoController.formatDate(casoController.selected.idSubComponente.fechaEntrega)})" for="visitaPreventivaCrearCasoEnMeses"/>
-                            </p:column>
-
-                            <p:column>
-                                <p:panelGrid columns="4">
-                                    <h:outputLabel for="fechaVisita" value="Fecha Estimativa de Visita:" style="font-weight: bold;"/>  
-                                    <p:inplace id="fechaVisita" editor="true">
-                                        <p:calendar id="fechaVisitax" locale="es" navigator="true" mindate="#{applicationBean.now}" size="14"
-                                                    value="#{casoController.visitaPreventivaFechaVisita}"
-                                                    required="true" requiredMessage="la fecha de Visita es requerida."
-                                                    title="fecha de Visita" pattern="dd/MMMM/yyyy" >
-                                            <f:convertDateTime pattern="dd/MMMM/yyyy" />  
-                                        </p:calendar>
-                                    </p:inplace>
-
-                                    <h:outputLabel for="fechaRep" value="Fecha Estimativa de Reparación:" style="font-weight: bold;"/>  
-                                    <p:inplace id="fechaRep" editor="true">
-                                        <p:calendar id="fechaRepx" locale="es" navigator="true" mindate="#{applicationBean.now}" size="14"
-                                                    value="#{casoController.visitaPreventivaFechaReparacion}"
-                                                    required="true" requiredMessage="la fecha de Reparación es requerida."
-                                                    title="fecha de Reparación" pattern="dd/MMMM/yyyy" >
-                                            <f:convertDateTime pattern="dd/MMMM/yyyy" />  
-                                        </p:calendar>
-                                    </p:inplace>
-                                </p:panelGrid>
-
-                                <p:message for="fechaVisita"/>
-                                <p:message for="fechaRep"/>
-                            </p:column>
-                        </p:row>
-
-
-                        <p:separator/>
-
-
-
-                        <p:row>
-                            <p:column>
-                                <h:outputLabel for="ItemsAReparar" value="Items a reparar: " style="font-weight: bold;"/>  
-
-                                <p:commandLink value="Seleccionar items" style="color: #006dcc"
-                                               onclick="selectItemsWidget.show()"
-                                               immediate="true"/>
-                            </p:column>
-
-                            <p:column>
-                                <p:panel id="ItemsAReparar">
-
-                                    <ui:repeat id="visitaPreventivaItemsAReparar" value="#{casoController.visitaPreventivaItemsAReparar}" var="irep" >
-                                        <h:panelGrid columns="2" cellpadding="5" cellspacing="5">
-                                            <h:outputText value="#{irep}"/>
-                                        </h:panelGrid>
-                                    </ui:repeat>
-
-                                </p:panel>
-
-                            </p:column>
-                        </p:row>
-                        <p:separator/>
-
-                        <p:row>
-
-                            <p:column>
-                                <h:outputLabel value="Crear el caso de visita " style="font-weight: bold;" for="visitaPreventivaCrearCasoDiasAntes"/>
-                            </p:column>
-
-                            <p:column>
-                                <p:spinner id="visitaPreventivaCrearCasoDiasAntes" value="#{casoController.visitaPreventivaCrearCasoDiasAntes}" size="2"/>
-                            </p:column>
-
-                            <p:column>
-                                <h:outputLabel value=" días antes de la fecha de visita y asignarlo al area:"/>
-                            </p:column>
-
-                            <p:column>                                  
-                                <p:selectOneMenu id="idAreaSelect" value="#{casoController.visitaPreventivaAsignarAArea}" 
-                                                 required="true" requiredMessage="Debe Seleccionar un area responsable del caso.">
-                                    <f:selectItems value="#{areaController.itemsAvailableSelectOne}"/>
-                                </p:selectOneMenu> 
-                            </p:column>
-
-                            <p:column>
-                                <h:outputLabel value=" y grupo:"/>
-                            </p:column>
-
-                            <p:column>                                  
-                                <p:selectOneMenu id="idGrupoSelect" value="#{casoController.visitaPreventivaAsignarAGrupo}" 
-                                                 required="true" requiredMessage="Debe Seleccionar un grupo responsable del caso.">
-                                    <f:selectItems value="#{grupoController.itemsAvailableSelectOne}"/>
-                                </p:selectOneMenu> 
-                            </p:column>
-
-                            <p:message for="visitaPreventivaCrearCasoDiasAntes"/>
-                        </p:row>
-
-
-                        <p:separator/>
-
-                        <p:row>
-                            <p:column>
-                                <p:inputTextarea id="desc" value="#{casoController.visitaPreventivaTextoDesc}" style="width: 100%;"/> 
-                                <p:watermark for="desc" value="una breve descripcion para el caso que se creará cuando se cumpla la fecha."/>
-                                <p:message for="desc"/>
-                            </p:column>
-                        </p:row>
-
-
-
-                    </p:panelGrid>  
-
-                    <p:separator/>
-
-                    <p:commandButton value="Cerrar" oncomplete="ProgramarVisitaPreventiva.hide()" process="@this">
-                        <p:resetInput target="@form" />
-                    </p:commandButton>
-
-                    <p:commandButton value="Reset" process="@this" >
-                        <p:resetInput target="@form" />
-                    </p:commandButton>
-
-                    <p:commandButton id="addButton" value="Guardar" 
-                                     actionListener="#{casoController.persistProgramarVisitaPreventivaEvent()}"
-                                     update=":formvisitapreventiva:eventDetails" />  
-
-
-                </h:form>
-
-            </p:dialog>
-
-            <p:dialog id="idDialogArbolItems" header="Seleccione Items" widgetVar="selectItemsWidget" modal="true" appendTo="@(body)" height="500" closeOnEscape="true">
-                <h:form id="formItems">
-                    <p:inputText id="searchItems" value="#{itemController.textoFiltro}"
-                                 title="#{bundle.EditCasoTitle_idCaso}" style="width: 250px !important;">
-                        <p:ajax event="keyup" update=":formItems:arbol" listener="#{itemController.filtrarItems()}"/>
-                    </p:inputText>
-                    <p:watermark value="Filtro" for="searchItems"/>
-
-                    <p:scrollPanel style="height: 400px;">
-                        <p:tree id="arbol" value="#{itemController.tree}" var="node" dynamic="true" cache="false" 
-                                selectionMode="checkbox" selection="#{casoController.visitaPreventivaItemsAReparar}"  propagateSelectionUp="false"
-                                style="float: left;border-color: window;">
-
-                            <p:treeNode expandedIcon="fa fa-puzzle-piece"
-                                        collapsedIcon="fa fa-user">
-                                <h:outputText value="#{node.nombre}" />
-                            </p:treeNode>
-                        </p:tree>
-                    </p:scrollPanel>
-
-                    <p:commandButton value="Enviar" actionListener="#{casoController.submitSelectedManyItems()}" update=":formvisitapreventiva:ItemsAReparar" 
-                                     style="float: right;"/>
-                </h:form>
-            </p:dialog>
-
+            
             <p:dialog id="idDialogArbolItem" header="Seleccione Item" widgetVar="idDialogArbolItem" modal="true" appendTo="@(body)" height="550" >
                 <h:form id="formArbolItem">
                     <div align="left">

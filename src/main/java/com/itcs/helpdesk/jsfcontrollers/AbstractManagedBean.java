@@ -61,6 +61,11 @@ public abstract class AbstractManagedBean<E> implements Serializable {
 
     }
 
+    public boolean isAjaxRequest() {
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
+    }
+
     public abstract Class getDataModelImplementationClass();
 
     public String getDefaultOrderBy() {
@@ -256,8 +261,8 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     public List getItemsAvailableForSelect() {
         return getJpaController().findAll(entityClass);
     }
-    
-     protected UserSessionBean getUserSessionBean() {
+
+    protected UserSessionBean getUserSessionBean() {
         return (UserSessionBean) JsfUtil.getManagedBean("UserSessionBean");
     }
 
@@ -340,6 +345,21 @@ public abstract class AbstractManagedBean<E> implements Serializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * redirecciona un request ajax a una pagina especifica
+     * @param request
+     * @param page
+     * @return 
+     */
+    public String xmlPartialRedirectToPage(String page) {
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        StringBuilder sb = new StringBuilder();
+        sb.append("<?xml version='1.0' encoding='UTF-8'?>");
+        sb.append("<partial-response><redirect url=\"").append(request.getContextPath()).append(request.getServletPath()).append(page).append("\"/></partial-response>");
+        Logger.getLogger(AbstractManagedBean.class.getName()).log(Level.SEVERE, "xmlPartialRedirectToPage:{0}", sb.toString());
+        return sb.toString();
     }
 
     public String redirect(String page) {

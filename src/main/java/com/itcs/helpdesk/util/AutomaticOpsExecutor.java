@@ -3,6 +3,7 @@ package com.itcs.helpdesk.util;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.FieldType;
 import com.itcs.helpdesk.persistence.entities.Prioridad;
+import com.itcs.helpdesk.persistence.entities.Responsable;
 import com.itcs.helpdesk.persistence.entities.TipoCanal;
 import com.itcs.helpdesk.persistence.entities.TipoCaso;
 import com.itcs.helpdesk.persistence.entities.Usuario;
@@ -15,6 +16,7 @@ import com.itcs.helpdesk.persistence.entityenums.EnumFunciones;
 import com.itcs.helpdesk.persistence.entityenums.EnumGrupos;
 import com.itcs.helpdesk.persistence.entityenums.EnumNombreAccion;
 import com.itcs.helpdesk.persistence.entityenums.EnumPrioridad;
+import com.itcs.helpdesk.persistence.entityenums.EnumResponsables;
 import com.itcs.helpdesk.persistence.entityenums.EnumRoles;
 import com.itcs.helpdesk.persistence.entityenums.EnumSettingsBase;
 import com.itcs.helpdesk.persistence.entityenums.EnumSubEstadoCaso;
@@ -168,6 +170,7 @@ public class AutomaticOpsExecutor {
         verificarSettingsBase(controller);
         verificarTipoCanal(controller);
         fixClientesCasos(controller);
+        verificarResponsables(jpaController);
     }
     
     private void fixClientesCasos(JPAServiceFacade jpaController){
@@ -328,6 +331,23 @@ public class AutomaticOpsExecutor {
                     jpaController.persistCategoria(enumCat.getCategoria());
                 } catch (Exception e) {
                     Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
+                }
+            }
+        }
+    }
+    
+    private void verificarResponsables(JPAServiceFacade jpaController) {
+        for (EnumResponsables enumResponsables : EnumResponsables.values()) {
+            try {
+                if (null == jpaController.find(Responsable.class, enumResponsables.getResponsable().getIdResponsable())) {
+                    throw new NoResultException();
+                }
+            } catch (NoResultException ex) {
+                Log.createLogger(this.getClass().getName()).logSevere("No existe el responsable " + enumResponsables.getResponsable().getNombreResponsable()+ ", se creara ahora");
+                try {
+                    jpaController.persist(enumResponsables);
+                } catch (Exception e) {
+                    Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, "verificarResponsables", e);
                 }
             }
         }

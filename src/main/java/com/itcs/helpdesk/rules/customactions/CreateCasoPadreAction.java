@@ -14,6 +14,7 @@ import com.itcs.helpdesk.rules.Action;
 import com.itcs.helpdesk.rules.ActionExecutionException;
 import static com.itcs.helpdesk.util.ManagerCasos.createLogReg;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -93,6 +94,7 @@ public class CreateCasoPadreAction extends Action{
                 padre.setCasosHijosList(casosHijosList);
 
                 getJpaController().merge(padre);
+                casoOrigen.setFechaModif(new Date());
                 getJpaController().merge(casoOrigen);
             }
 

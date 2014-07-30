@@ -203,18 +203,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private String accionToRunSelected;
     private String accionToRunParametros;
     private int activeIndexdescOrComment;
-    //visita preventiva
-//    private transient Set<Item> visitaPreventivaItemsAReparar;
-    private transient TreeNode[] visitaPreventivaItemsAReparar;
-    private transient Date visitaPreventivaFechaVisita;
-    private transient Date visitaPreventivaFechaReparacion;
-    private transient Integer visitaPreventivaCrearCasoDiasAntes = 10;
-    private transient Integer visitaPreventivaCrearCasoEnMeses = 6;
-    private transient Area visitaPreventivaAsignarAArea;
-    private transient Grupo visitaPreventivaAsignarAGrupo;
-    private transient String visitaPreventivaSubject;
-    private transient String visitaPreventivaTextoDesc;
-    //fin visita preventiva
+    //visitas preventivas
+    private static final int visitaPreventivaCrearCasoDiasAntes = 10;
+    private static final int visitaPreventivaCrearCasoEnMeses = 6;
 
     public CasoController() {
         super(Caso.class);
@@ -346,8 +337,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //        }
 //
 //    }
-    
-     public void tagItemSelectEvent(SelectEvent event) {
+    public void tagItemSelectEvent(SelectEvent event) {
         Object item = event.getObject();
         current.setFechaModif(Calendar.getInstance().getTime());
         try {
@@ -360,7 +350,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     etiqueta.getCasoList().add(current);
                 }
             }
-            getJpaController().mergeCaso(current, ManagerCasos.createLogReg(current, "Etiquetas" , "Se agrega Etiqueta :" + item.toString(), ""));
+            getJpaController().mergeCaso(current, ManagerCasos.createLogReg(current, "Etiquetas", "Se agrega Etiqueta :" + item.toString(), ""));
             addInfoMessage("Etiqueta Agregada OK!");
         } catch (Exception ex) {
             addInfoMessage("No se pudo Agregar la etiqueta" + item);
@@ -369,29 +359,16 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     }
 
-  public void tagItemUnselectEvent(UnselectEvent event) {
+    public void tagItemUnselectEvent(UnselectEvent event) {
         Object item = event.getObject();
         current.setFechaModif(Calendar.getInstance().getTime());
         try {
-            getJpaController().mergeCaso(current, getManagerCasos().createLogReg(current,"Etiquetas", "Etiqueta "+item.toString()+" removida.", ""));
+            getJpaController().mergeCaso(current, getManagerCasos().createLogReg(current, "Etiquetas", "Etiqueta " + item.toString() + " removida.", ""));
 //            addInfoMessage("Etiqueta Removida OK!");
         } catch (Exception ex) {
             addInfoMessage("No se pudo Remover la etiqueta" + item);
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-    }
-
-    public boolean isCasoTipoPostventa() {
-        try {
-            if (current.getTipoCaso().equals(EnumTipoCaso.POSTVENTA.getTipoCaso())) {
-                return true;
-            }
-        } catch (Exception e) {
-            //ignore
-        }
-
-        return false;
 
     }
 
@@ -408,20 +385,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     }
 
-    public boolean isCasoTipoPreEntrega() {
-        try {
-            if (current.getTipoCaso().equals(EnumTipoCaso.PREENTREGA.getTipoCaso())) {
-                return true;
-            }
-        } catch (Exception e) {
-            //ignore
-        }
-
-        return false;
-
-    }
-
     public boolean isCasoTipoPreventa() {
+        //
         try {
             if (current.getTipoCaso().equals(EnumTipoCaso.PREVENTA.getTipoCaso()) || current.getTipoCaso().equals(EnumTipoCaso.COTIZACION.getTipoCaso())) {
                 return true;
@@ -439,8 +404,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             if (getSelectedItems() != null && getSelectedItems().size() > 0) {
                 blackListMap = new HashMap<String, BlackListEmail>();
                 for (Caso caso : getSelectedItems()) {
-                    if(caso.getEmailCliente() != null && caso.getEmailCliente().getEmailCliente() != null)
-                    {
+                    if (caso.getEmailCliente() != null && caso.getEmailCliente().getEmailCliente() != null) {
                         blackListMap.put(caso.getEmailCliente().getEmailCliente(), new BlackListEmail(caso.getEmailCliente().getEmailCliente()));
                     }
                 }
@@ -492,8 +456,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public void onProductoModeloChosen() {
         //ModeloProducto modeloProducto = (ModeloProducto) event.getObject();
-        if(current.getIdModelo() != null)
-        {
+        if (current.getIdModelo() != null) {
             current.setIdComponente(current.getIdModelo().getIdComponente());
         }
 //        String modelo = "Model:" + current.getIdModelo();
@@ -598,9 +561,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
                         if (current.getEmailCliente() != null) {
                             current.getEmailCliente().setCliente(cliente);
-                        }
-                        else
-                        {
+                        } else {
                             if (getEmailCliente_wizard() != null) {
                                 EmailCliente emailCliente = new EmailCliente(getEmailCliente_wizard());
                                 emailCliente.setCliente(cliente);
@@ -642,9 +603,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         if (emailCliente_wizard_updateCliente && emailCliente_wizard_existeCliente) {
             getJpaController().merge(newCaso.getEmailCliente().getCliente());
-        }
-        else if(!emailCliente_wizard_existeCliente)
-        {
+        } else if (!emailCliente_wizard_existeCliente) {
             getJpaController().persist(newCaso.getIdCliente());
         }
 
@@ -889,10 +848,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
     }
 
-    public boolean esColaborativo() {
-        return current.getTipoCaso().equals(EnumTipoCaso.INTERNO.getTipoCaso());
-    }
-
+//    public boolean esColaborativo() {
+//        return current.getTipoCaso().equals(EnumTipoCaso.INTERNO.getTipoCaso());
+//    }
 //    public Caso getSelected() {
 //        if (current == null) {
 //            current = new Caso();
@@ -1191,7 +1149,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             }
 
             current.setTema("[Colab] " + casoTmp.getTema());
-            current.setIdCanal(EnumCanal.MANUAL.getCanal());
+            current.setIdCanal(EnumCanal.SISTEMA.getCanal());
             current.setFechaCreacion(Calendar.getInstance().getTime());
             current.setFechaModif(current.getFechaCreacion());
             current.setOwner(null);
@@ -1343,11 +1301,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 copy.setOwner(origin.getOwner());
             }
 
-            copy.setTipoCaso(EnumTipoCaso.INTERNO.getTipoCaso());
-            copy.setIdSubEstado(EnumSubEstadoCaso.INTERNO_NUEVO.getSubEstado());
+            copy.setTipoCaso(origin.getTipoCaso());
+            copy.setIdSubEstado(origin.getIdSubEstado());
             copy.setIdEstado(EnumEstadoCaso.ABIERTO.getEstado());
-
-            selectedItemIndex = -1;
 
             if (origin.getEmailCliente() != null) {
                 emailCliente_wizard_existeEmail = true;
@@ -1362,7 +1318,10 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 emailCliente_wizard_existeCliente = true;
             }
 
+            copy.setIdCliente(origin.getIdCliente());
+
             current = copy;
+            selectedItemIndex = -1;
 
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).logInfo("Error al preparar la creacion (copia) de un caso");
@@ -1411,140 +1370,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
     }
 
-    public void persistProgramarVisitaPreventivaEvent() {
-
-        try {
-
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(visitaPreventivaFechaVisita);
-            cal.add(Calendar.DAY_OF_MONTH, (visitaPreventivaCrearCasoDiasAntes * (-1)));
-            Date eventDate = cal.getTime();
-
-            ScheduleEvent entityEvent = new ScheduleEvent(null, visitaPreventivaSubject, eventDate, applicationBean.getNow());
-            entityEvent.setAllDay(true);
-            entityEvent.setDescripcion(visitaPreventivaTextoDesc);
-            entityEvent.setEndDate(eventDate);
-            entityEvent.setIdCaso(current);
-            entityEvent.setIdUsuario(userSessionBean.getCurrent());
-            entityEvent.setLugar("dentro del sistema");
-            entityEvent.setPublicEvent(true);
-            entityEvent.setUsuariosInvitedList(visitaPreventivaAsignarAGrupo.getUsuarioList());
-            entityEvent.setExecuteAction(true);
-            final NombreAccion nombreAccion = EnumNombreAccion.CREAR_CASO_VISITA_REP_SELLOS.getNombreAccion();
-            entityEvent.setIdTipoAccion(nombreAccion);
-            Properties props = new Properties();
-            props.put(CrearCasoVisitaRepSellosAction.TEMA_KEY, visitaPreventivaSubject);
-            props.put(CrearCasoVisitaRepSellosAction.DESC_KEY, visitaPreventivaTextoDesc);
-            props.put(CrearCasoVisitaRepSellosAction.AREA_KEY, visitaPreventivaAsignarAArea.getIdArea());
-            props.put(CrearCasoVisitaRepSellosAction.GRUPO_KEY, visitaPreventivaAsignarAGrupo.getIdGrupo());
-
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-
-            props.put(CrearCasoVisitaRepSellosAction.FECHA_VISITA_KEY, sdf.format(visitaPreventivaFechaVisita));
-            props.put(CrearCasoVisitaRepSellosAction.FECHA_REP_KEY, sdf.format(visitaPreventivaFechaReparacion));
-
-            String idsItems = "";
-            boolean first = true;
-            for (TreeNode treeNode : getVisitaPreventivaItemsAReparar()) {
-                if (first) {
-                    idsItems = ((Item) treeNode.getData()).getIdItem().toString();
-                    first = false;
-                } else {
-                    idsItems += "," + ((Item) treeNode.getData()).getIdItem().toString();
-                }
-            }
-            props.put(CrearCasoVisitaRepSellosAction.ITEMS_KEY, idsItems);
-
-            entityEvent.setParametrosAccion(Action.getPropertyAsString(props));
-
-            getJpaController().persist(entityEvent);
-
-            if (entityEvent.getExecuteAction() && entityEvent.getIdTipoAccion() != null
-                    && !StringUtils.isEmpty(entityEvent.getIdTipoAccion().getImplementationClassName())) {
-                //we must schedule the selected action
-                String jobID = HelpDeskScheluder.scheduleActionClassExecutorJob(
-                        getSelected().getIdCaso(),
-                        entityEvent.getIdTipoAccion().getImplementationClassName(),
-                        entityEvent.getParametrosAccion(),
-                        entityEvent.getStartDate());
-                entityEvent.setQuartzJobId(jobID);
-                getJpaController().merge(entityEvent);
-            }
-
-            addInfoMessage("Evento agendado exitósamente.");
-            executeInClient("PF('ProgramarVisitaPreventiva').hide();");
-
-        } catch (Exception ex) {
-            Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }
-
-    public void prepareProgramarVisitaPreventiva(ActionEvent actionEvent) {
-//        //System.out.println("prepareCreateRespuesta");
-        try {
-            //validation
-
-            if (current.getIdSubComponente() == null) {
-                addWarnMessage("Para poder programar la visita preventiva, este caso debe estar asociado a un producto, favor seleccione el producto.");
-                return;
-            }
-
-            if (current.getIdSubComponente().getFechaEntrega() == null) {
-                addWarnMessage("Para poder programar la visita preventiva, el producto " + current.getIdSubComponente()
-                        + " debe tener fecha de entrega, favor modifique el producto e ingrese dicha fecha.");
-                return;
-            }
-
-            if (current.hasOpenSubCasos()) {
-                addWarnMessage("Para poder programar la visita preventiva, este caso no debe tener sub casos abiertos pendientes de resolución.");
-                return;
-
-            }
-
-            if (current.getEmailCliente() == null) {
-                addWarnMessage("Para poder programar la visita preventiva, este caso debe estar asociado a un cliente con el cúal se coordina la visita.");
-                return;
-
-            }
-
-            updateFechasVisitaPreventiva();
-
-            //reset items
-            setVisitaPreventivaItemsAReparar(null);
-            setVisitaPreventivaSubject("Generar Caso de postventa (programado) - reparación de sellos");
-            setVisitaPreventivaAsignarAGrupo(null);
-
-            executeInClient("ProgramarVisitaPreventiva.show()");
-
-            //can be created/scheduled
-            //show the creation dialog
-        } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).logSevere("Error al preparar la creacion de la actividad del caso.");
-        }
-    }
-
-    public void updateFechasVisitaPreventiva() {
-        Date fechaEntrega = current.getIdSubComponente().getFechaEntrega();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(fechaEntrega);
-        cal.add(Calendar.MONTH, visitaPreventivaCrearCasoEnMeses);
-        setVisitaPreventivaFechaVisita(cal.getTime());
-        setVisitaPreventivaFechaReparacion(cal.getTime());
-    }
-
-//    public String create() {
-//        try {
-//            persist(current);
-//            return prepareCreate();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            Log.createLogger(this.getClass().getName()).logInfo(resourceBundle.getString("PersistenceErrorOccured"));
-//            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
-//            JsfUtil.addErrorMessage(e, resourceBundle.getString("PersistenceErrorOccured"));
-//            return null;
-//        }
-//    }
     public void goToNextStepMobile() {
     }
 
@@ -1695,12 +1520,14 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public String filterByIdCaso(Long idCaso) {
 
-        current = getJpaController().getCasoFindByIdCaso(idCaso);
+       Caso casoToGo = getJpaController().getCasoFindByIdCaso(idCaso);
         listaActividadesOrdenada = null;
 
-        if (current != null) {
+        if (casoToGo != null) {
+            this.current = casoToGo;
             return "/script/caso/Edit";
         } else {
+            addErrorMessage("El caso ya no existe.");
             return null;
         }
     }
@@ -2003,6 +1830,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public boolean puedeResponder() {
+        if(current == null){
+            return false;
+        }
         if (filtroAcceso.verificaAccesoAFuncion(EnumFunciones.RESPONDER_CUALQUIER_CASO)) {
             return true;
         }
@@ -2016,6 +1846,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public boolean puedeModificar() {
+        if(current == null){
+            return false;
+        }
         if (filtroAcceso.verificaAccesoAFuncion(EnumFunciones.EDITAR_CUALQUIER_CASO)) {
             return true;
         }
@@ -2033,10 +1866,16 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public boolean verificarTransferirCaso() {
+        if(current == null){
+            return false;
+        }
         return (filtroAcceso.verificaAccesoAFuncion(EnumFunciones.ASIGNAR_TRANSFERIR_CASO) && current.isOpen() && current.hasAnOwner());
     }
 
     public boolean verificarAsignarCaso() {
+        if(current == null){
+            return false;
+        }
         return (filtroAcceso.verificaAccesoAFuncion(EnumFunciones.ASIGNAR_TRANSFERIR_CASO) && current.isOpen() && !current.hasAnOwner());
     }
 
@@ -2105,23 +1944,232 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
             if (current.getCasosHijosList() != null) {
                 for (Caso casoHijo : current.getCasosHijosList()) {
-                    casoHijo.setIdEstado(EnumEstadoCaso.CERRADO.getEstado());
-                    casoHijo.setFechaCierre(Calendar.getInstance().getTime());
+                    if (casoHijo.isOpen()) {
+                        casoHijo.setIdEstado(EnumEstadoCaso.CERRADO.getEstado());
+                        casoHijo.setFechaCierre(Calendar.getInstance().getTime());
 
-                    JsfUtil.addSuccessMessage(resourceBundle.getString("caso.cerrar.ok"));
-                    changeLog.add(getManagerCasos().createLogReg(casoHijo, "Estado", "Cerrado", ""));
-                    getJpaController().mergeCaso(casoHijo, changeLog);
+                        JsfUtil.addSuccessMessage(resourceBundle.getString("caso.cerrar.ok"));
+                        changeLog.add(getManagerCasos().createLogReg(casoHijo, "Estado", "Cerrado", ""));
+                        getJpaController().mergeCaso(casoHijo, changeLog);
 
-                    HelpDeskScheluder.unscheduleCambioAlertas(casoHijo.getIdCaso());
+                        HelpDeskScheluder.unscheduleCambioAlertas(casoHijo.getIdCaso());
+                    }
                 }
             }
+
+//            executeInClient("closeCase.hide()");
         } catch (Exception e) {
             JsfUtil.addErrorMessage(resourceBundle.getString("caso.cerrar.nook"));
+            return null;
         }
 
         return "/script/caso/Edit";
     }
 
+    /**
+     * cierra el caso y programa una visita preventiva en 6 meses a partir de la
+     * fecha de entrega
+     *
+     * @return
+     */
+    public void cerrarCasoYProgramarVP() {
+
+        //validation
+        if (current.getIdSubComponente() == null) {
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "Atención", "Para poder programar la visita preventiva, este caso debe estar asociado a un producto, favor seleccione el producto.");
+            RequestContext.getCurrentInstance().showMessageInDialog(message);
+            return;
+        }
+        if (current.getIdSubComponente().getFechaEntrega() == null) {
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "Atención", "Para poder programar la visita preventiva, el producto " + current.getIdSubComponente()
+                    + " debe tener fecha de entrega, favor modifique el producto e ingrese dicha fecha.");
+            RequestContext.getCurrentInstance().showMessageInDialog(message);
+
+            return;
+        }
+        if (current.hasOpenSubCasos()) {
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "Atención", "Para poder programar la visita preventiva, este caso no debe tener sub casos abiertos pendientes de resolución.");
+            RequestContext.getCurrentInstance().showMessageInDialog(message);
+            return;
+        }
+        if (current.getEmailCliente() == null) {
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "Atención", "Para poder programar la visita preventiva, este caso debe estar asociado a un cliente con el cúal se coordina la visita.");
+            RequestContext.getCurrentInstance().showMessageInDialog(message);
+            return;
+        }
+
+        if (cerrarCaso() != null) {
+            //visita preventiva
+
+            persistProgramarVisitaPreventivaEvent();
+
+            if (isAjaxRequest()) {
+                xmlPartialRedirectToPage("/script/caso/Edit.xhtml");
+            }
+
+            //fin visita preventiva
+            //cerrado ok
+        }
+
+    }
+
+    //visita preventiva
+    private void persistProgramarVisitaPreventivaEvent() {
+
+        String visitaPreventivaSubject = "Coordinar Visita preventiva con el cliente";
+        String visitaPreventivaTextoDesc = "Caso creado a partir de una visita preventiva otorgada por la inmobiliaria, favor coordinar la fecha de visita definitiva con el cliente.";
+
+        try {
+
+            Date futureDate = getFechaVisitaPreventiva(current);
+
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(futureDate);
+            cal.add(Calendar.DAY_OF_MONTH, (visitaPreventivaCrearCasoDiasAntes * (-1)));
+            Date eventDate = cal.getTime();
+
+            ScheduleEvent entityEvent = new ScheduleEvent(null, visitaPreventivaSubject, eventDate, applicationBean.getNow());
+            entityEvent.setAllDay(true);
+            entityEvent.setDescripcion(visitaPreventivaTextoDesc);
+            entityEvent.setEndDate(eventDate);
+            entityEvent.setIdCaso(current);
+            entityEvent.setIdUsuario(userSessionBean.getCurrent());
+            entityEvent.setLugar("dentro del sistema");
+            entityEvent.setPublicEvent(true);
+//            entityEvent.setUsuariosInvitedList(visitaPreventivaAsignarAGrupo.getUsuarioList());
+            entityEvent.setExecuteAction(true);
+            final NombreAccion nombreAccion = EnumNombreAccion.CREAR_CASO_VISITA_REP_SELLOS.getNombreAccion();
+            entityEvent.setIdTipoAccion(nombreAccion);
+            Properties props = new Properties();
+            props.put(CrearCasoVisitaRepSellosAction.TEMA_KEY, visitaPreventivaSubject);
+            props.put(CrearCasoVisitaRepSellosAction.DESC_KEY, visitaPreventivaTextoDesc);
+//            props.put(CrearCasoVisitaRepSellosAction.AREA_KEY, visitaPreventivaAsignarAArea.getIdArea());
+//            props.put(CrearCasoVisitaRepSellosAction.GRUPO_KEY, visitaPreventivaAsignarAGrupo.getIdGrupo());
+
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
+            props.put(CrearCasoVisitaRepSellosAction.FECHA_VISITA_KEY, sdf.format(futureDate));
+            props.put(CrearCasoVisitaRepSellosAction.FECHA_REP_KEY, sdf.format(futureDate));
+
+//            String idsItems = "";
+//            boolean first = true;
+//            for (TreeNode treeNode : getVisitaPreventivaItemsAReparar()) {
+//                if (first) {
+//                    idsItems = ((Item) treeNode.getData()).getIdItem().toString();
+//                    first = false;
+//                } else {
+//                    idsItems += "," + ((Item) treeNode.getData()).getIdItem().toString();
+//                }
+//            }
+//            props.put(CrearCasoVisitaRepSellosAction.ITEMS_KEY, idsItems);
+            entityEvent.setParametrosAccion(Action.getPropertyAsString(props));
+
+            getJpaController().persist(entityEvent);
+
+            if (entityEvent.getExecuteAction() && entityEvent.getIdTipoAccion() != null
+                    && !StringUtils.isEmpty(entityEvent.getIdTipoAccion().getImplementationClassName())) {
+                //we must schedule the selected action
+                String jobID = HelpDeskScheluder.scheduleActionClassExecutorJob(
+                        getSelected().getIdCaso(),
+                        entityEvent.getIdTipoAccion().getImplementationClassName(),
+                        entityEvent.getParametrosAccion(),
+                        entityEvent.getStartDate());
+                entityEvent.setQuartzJobId(jobID);
+                getJpaController().merge(entityEvent);
+            }
+
+            addInfoMessage("Evento agendado exitósamente.");
+//            executeInClient("PF('ProgramarVisitaPreventiva').hide();");
+
+        } catch (Exception ex) {
+            Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, "persistProgramarVisitaPreventivaEvent", ex);
+        }
+
+    }
+
+//    public void prepareProgramarVisitaPreventiva(ActionEvent actionEvent) {
+////        //System.out.println("prepareCreateRespuesta");
+//        try {
+//
+//            if (!validarSiPuedeProgramarVP(current)) {
+//                return;
+//            }
+//
+//            updateFechasVisitaPreventiva();
+//
+//            //reset items
+//            setVisitaPreventivaItemsAReparar(null);
+//            setVisitaPreventivaSubject("Generar Caso de postventa (programado) - reparación de sellos");
+//            setVisitaPreventivaAsignarAGrupo(null);
+//
+//            executeInClient("ProgramarVisitaPreventiva.show()");
+//
+//            //can be created/scheduled
+//            //show the creation dialog
+//        } catch (Exception e) {
+//            Log.createLogger(this.getClass().getName()).logSevere("Error al preparar la creacion de la actividad del caso.");
+//        }
+//    }
+//    private boolean validarSiPuedeProgramarVP(Caso caso) {
+//        //validation
+//        if (caso.getIdSubComponente() == null) {
+//            addWarnMessage("Para poder programar la visita preventiva, este caso debe estar asociado a un producto, favor seleccione el producto.");
+//            return false;
+//        }
+//        if (caso.getIdSubComponente().getFechaEntrega() == null) {
+//            addWarnMessage("Para poder programar la visita preventiva, el producto " + caso.getIdSubComponente()
+//                    + " debe tener fecha de entrega, favor modifique el producto e ingrese dicha fecha.");
+//            return false;
+//        }
+//        if (caso.hasOpenSubCasos()) {
+//            addWarnMessage("Para poder programar la visita preventiva, este caso no debe tener sub casos abiertos pendientes de resolución.");
+//            return false;
+//        }
+//        if (caso.getEmailCliente() == null) {
+//            addWarnMessage("Para poder programar la visita preventiva, este caso debe estar asociado a un cliente con el cúal se coordina la visita.");
+//            return false;
+//        }
+//        return true;
+//    }
+    private Date getFechaVisitaPreventiva(Caso caso) {
+        Date fechaEntrega = caso.getIdSubComponente().getFechaEntrega();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(fechaEntrega);
+        cal.add(Calendar.MONTH, 6);
+        return cal.getTime();
+    }
+
+    public void generarPDFVisitaPreventivaPostventa() {
+        try {
+//            Archivo a = getJpaController().find(Archivo.class,  getSelected().getIdProducto().getIdLogo());  
+            List<Item> itemsAReparar = new LinkedList<Item>();
+            for (Caso caso : getSelected().getCasosHijosList()) {
+                if (caso.isOpen() && caso.getIdItem() != null) {
+                    itemsAReparar.add(caso.getIdItem());
+                }
+            }
+
+            if (!itemsAReparar.isEmpty()) {
+                byte[] bytearray = ReportsManager.createVisitaPreventivaPostventa(getSelected(), getFechaVisitaPreventiva(current), getFechaVisitaPreventiva(current), itemsAReparar);
+
+                final String nombre = "VisitaPreventiva_Postventa_" + getSelected().getIdCaso() + ".pdf";
+                Attachment attach = getManagerCasos().crearAdjunto(bytearray, null, this.current, nombre, "application/pdf");
+                final String msg = "Documento " + attach.getNombreArchivo() + " creado con exito";
+                textoNota = textoNota + "<br/>" + msg;
+                armarNota(current, false, textoNota, EnumTipoNota.NOTA.getTipoNota());
+                addInfoMessage(msg);
+                executeInClient("genDocVisitaPreventiva.hide()");
+            } else {
+                addWarnMessage("No se puede generar el documento sin Items a Reparar.");
+            }
+
+        } catch (Exception e) {
+            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "createVisitaPreventivaPostventa", e);
+            JsfUtil.addErrorMessage("Ocurrió un error al generar el documento, favor intente más tarde.");
+        }
+    }
+
+    //fin visita preventiva
     public String reabrirCaso() {
 
         List<AuditLog> changeLog = new ArrayList<AuditLog>();
@@ -2417,7 +2465,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             getJpaController().mergeCaso(current, changeLog);
 
         } catch (Exception ex) {
-            Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CasoController.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -2434,7 +2483,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         } catch (Exception ex) {
             JsfUtil.addSuccessMessage("El comentario no pudo ser actualizado.");
-            Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger
+                    .getLogger(CasoController.class
+                            .getName()).log(Level.SEVERE, null, ex);
         }
         return "/script/caso/Edit";
     }
@@ -2569,7 +2620,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             }
         } catch (Exception ex) {
             sended = false;
-            Log.createLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
+            Log
+                    .createLogger(CasoController.class
+                            .getName()).log(Level.SEVERE, null, ex);
             JsfUtil.addErrorMessage(ex, resourceBundle.getString("respuestaCasoNOOK"));
         } finally {
             if (!sended) {
@@ -2779,7 +2832,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             if (getSelected().getIdProducto() != null) {
                 if (getSelected().getIdProducto().getIdLogo() != null) {
                     idLogo = getSelected().getIdProducto().getIdLogo();
-                    archivoLogo = getJpaController().find(Archivo.class, idLogo);
+                    archivoLogo
+                            = getJpaController().find(Archivo.class, idLogo);
                 }
             }
 
@@ -2791,55 +2845,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
             JsfUtil.addErrorMessage(resourceBundle.getString("attachment.error"));
             return new DefaultStreamedContent();
-        }
-    }
-
-//    public StreamedContent createVisitaPreventivaPostventa() {
-//        try {
-////            Archivo a = getJpaController().find(Archivo.class,  getSelected().getIdProducto().getIdLogo());  
-//            List<Item> itemsAReparar = new LinkedList<Item>();
-//            for (Caso caso : getSelected().getCasosHijosList()) {
-//                if(caso.isOpen() && caso.getIdItem() != null){
-//                    itemsAReparar.add(caso.getIdItem());
-//                }                
-//            }
-//            byte[] data = ReportsManager.createVisitaPreventivaPostventa(getSelected(), visitaPreventivaFechaVisita, visitaPreventivaFechaReparacion, itemsAReparar);
-////            executeInClient("genDocVisitaPreventiva.hide()");
-//            return new DefaultStreamedContent(
-//                    new ByteArrayInputStream(data), "application/pdf", "VisitaPreventiva_Postventa_" + getSelected().getIdCaso() + ".pdf");
-//        } catch (Exception e) {
-//            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
-//            JsfUtil.addErrorMessage(resourceBundle.getString("attachment.error"));
-//            return new DefaultStreamedContent();
-//        }
-//    }
-    public void createVisitaPreventivaPostventa() {
-        try {
-//            Archivo a = getJpaController().find(Archivo.class,  getSelected().getIdProducto().getIdLogo());  
-            List<Item> itemsAReparar = new LinkedList<Item>();
-            for (Caso caso : getSelected().getCasosHijosList()) {
-                if (caso.isOpen() && caso.getIdItem() != null) {
-                    itemsAReparar.add(caso.getIdItem());
-                }
-            }
-
-            if (!itemsAReparar.isEmpty()) {
-                byte[] bytearray = ReportsManager.createVisitaPreventivaPostventa(getSelected(), visitaPreventivaFechaVisita, visitaPreventivaFechaReparacion, itemsAReparar);
-
-                final String nombre = "VisitaPreventiva_Postventa_" + getSelected().getIdCaso() + ".pdf";
-                Attachment attach = getManagerCasos().crearAdjunto(bytearray, null, this.current, nombre, "application/pdf");
-                final String msg = "Documento " + attach.getNombreArchivo() + " creado con exito";
-                textoNota = textoNota + "<hr/>" + msg;
-                armarNota(current, false, textoNota, EnumTipoNota.NOTA.getTipoNota());
-                addInfoMessage(msg);
-                executeInClient("genDocVisitaPreventiva.hide()");
-            } else {
-                addWarnMessage("No se puede generar el documento sin Items a Reparar.");
-            }
-
-        } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "createVisitaPreventivaPostventa", e);
-            JsfUtil.addErrorMessage("Ocurrió un error al generar el documento, favor intente más tarde.");
         }
     }
 
@@ -3057,6 +3062,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     if (current.getCreditoPreAprobado()) {
                         if (current.getFechaEstimadaCompra() != null) {
                             long days = DateUtils.daysBetween(new Date(), current.getFechaEstimadaCompra());
+
                             if (days <= 30) {
                                 current.setIdCategoria(getJpaController().find(Categoria.class, 19));//A
                                 current.setIdPrioridad(EnumPrioridad.ALTA.getPrioridad());
@@ -3067,6 +3073,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                                 current.setIdCategoria(getJpaController().find(Categoria.class, 21));//C
                                 current.setIdPrioridad(EnumPrioridad.BAJA.getPrioridad());
                             }
+
                         } else {
                             current.setIdCategoria(getJpaController().find(Categoria.class, 21));//C
                             current.setIdPrioridad(EnumPrioridad.BAJA.getPrioridad());
@@ -3074,6 +3081,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     } else {
                         if (current.getFechaEstimadaCompra() != null) {
                             long days = DateUtils.daysBetween(new Date(), current.getFechaEstimadaCompra());
+
                             if (days < 90) {
                                 current.setIdCategoria(getJpaController().find(Categoria.class, 20));//B
                                 current.setIdPrioridad(EnumPrioridad.MEDIA.getPrioridad());
@@ -3081,6 +3089,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                                 current.setIdCategoria(getJpaController().find(Categoria.class, 21));//C
                                 current.setIdPrioridad(EnumPrioridad.BAJA.getPrioridad());
                             }
+
                         } else {
                             current.setIdCategoria(getJpaController().find(Categoria.class, 21));//C
                             current.setIdPrioridad(EnumPrioridad.BAJA.getPrioridad());
@@ -3137,9 +3146,11 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         if (casoToUpdate.getIdRecinto() != null && null == getJpaController().find(Recinto.class, casoToUpdate.getIdRecinto())) {
             Recinto r = new Recinto();
+
             r.setIdRecinto(casoToUpdate.getIdRecinto());
             r.setNombre(casoToUpdate.getIdRecinto());
-            getJpaController().persist(r);
+            getJpaController()
+                    .persist(r);
         }
 
         getJpaController().mergeCaso(casoToUpdate, lista);
@@ -3172,8 +3183,10 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             JsfUtil.addSuccessMessage("El caso #" + current.getIdCaso() + " fue eliminado exitósamente.");
             try {
                 HelpDeskScheluder.unscheduleCambioAlertas(current.getIdCaso());
+
             } catch (SchedulerException ex) {
-                Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, "unscheduleTask", ex);
+                Logger.getLogger(CasoController.class
+                        .getName()).log(Level.SEVERE, "unscheduleTask", ex);
             }
             actualizaArbolDeCategoria();
             current = null;
@@ -3573,12 +3586,14 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         List<Caso> casosToSend = Collections.EMPTY_LIST;
         if (getSelectedItemsCount() > 0) {
             casosToSend = getSelectedItems();
+
         } else {
             //run on all items in Vista
             try {
                 casosToSend = (List<Caso>) getJpaController().findAllEntities(Caso.class, getFilterHelper().getVista(), getDefaultOrderBy(), userSessionBean.getCurrent());
             } catch (Exception ex) {
-                Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, "findEntities", ex);
+                Logger.getLogger(CasoController.class
+                        .getName()).log(Level.SEVERE, "findEntities", ex);
             }
         }
 
@@ -3587,8 +3602,10 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             try {
                 a.execute(caso);
                 count++;
+
             } catch (ActionExecutionException ex) {
-                Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(CasoController.class
+                        .getName()).log(Level.SEVERE, null, ex);
             }
         }
         addInfoMessage("Acción " + accionToRunSelected + " ejecutada exitosamente en " + count + " casos.");
@@ -3906,138 +3923,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      */
     public void setActiveIndexdescOrComment(int activeIndexdescOrComment) {
         this.activeIndexdescOrComment = activeIndexdescOrComment;
-    }
 
-    /**
-     * @return the visitaPreventivaItemsAReparar
-     */
-    public TreeNode[] getVisitaPreventivaItemsAReparar() {
-        return visitaPreventivaItemsAReparar;
-    }
-
-    /**
-     * @param visitaPreventivaItemsAReparar the visitaPreventivaItemsAReparar to
-     * set
-     */
-    public void setVisitaPreventivaItemsAReparar(TreeNode[] visitaPreventivaItemsAReparar) {
-        this.visitaPreventivaItemsAReparar = visitaPreventivaItemsAReparar;
-    }
-
-    /**
-     * @return the visitaPreventivaFechaVisita
-     */
-    public Date getVisitaPreventivaFechaVisita() {
-        return visitaPreventivaFechaVisita;
-    }
-
-    /**
-     * @param visitaPreventivaFechaVisita the visitaPreventivaFechaVisita to set
-     */
-    public void setVisitaPreventivaFechaVisita(Date visitaPreventivaFechaVisita) {
-        this.visitaPreventivaFechaVisita = visitaPreventivaFechaVisita;
-    }
-
-    /**
-     * @return the visitaPreventivaFechaReparacion
-     */
-    public Date getVisitaPreventivaFechaReparacion() {
-        return visitaPreventivaFechaReparacion;
-    }
-
-    /**
-     * @param visitaPreventivaFechaReparacion the
-     * visitaPreventivaFechaReparacion to set
-     */
-    public void setVisitaPreventivaFechaReparacion(Date visitaPreventivaFechaReparacion) {
-        this.visitaPreventivaFechaReparacion = visitaPreventivaFechaReparacion;
-    }
-
-    /**
-     * @return the visitaPreventivaSubject
-     */
-    public String getVisitaPreventivaSubject() {
-        return visitaPreventivaSubject;
-    }
-
-    /**
-     * @param visitaPreventivaSubject the visitaPreventivaSubject to set
-     */
-    public void setVisitaPreventivaSubject(String visitaPreventivaSubject) {
-        this.visitaPreventivaSubject = visitaPreventivaSubject;
-    }
-
-    /**
-     * @return the visitaPreventivaTextoDesc
-     */
-    public String getVisitaPreventivaTextoDesc() {
-        return visitaPreventivaTextoDesc;
-    }
-
-    /**
-     * @param visitaPreventivaTextoDesc the visitaPreventivaTextoDesc to set
-     */
-    public void setVisitaPreventivaTextoDesc(String visitaPreventivaTextoDesc) {
-        this.visitaPreventivaTextoDesc = visitaPreventivaTextoDesc;
-    }
-
-    /**
-     * @return the visitaPreventivaCrearCasoDiasAntes
-     */
-    public Integer getVisitaPreventivaCrearCasoDiasAntes() {
-        return visitaPreventivaCrearCasoDiasAntes;
-    }
-
-    /**
-     * @param visitaPreventivaCrearCasoDiasAntes the
-     * visitaPreventivaCrearCasoDiasAntes to set
-     */
-    public void setVisitaPreventivaCrearCasoDiasAntes(Integer visitaPreventivaCrearCasoDiasAntes) {
-        this.visitaPreventivaCrearCasoDiasAntes = visitaPreventivaCrearCasoDiasAntes;
-    }
-
-    /**
-     * @return the visitaPreventivaCrearCasoEnMeses
-     */
-    public Integer getVisitaPreventivaCrearCasoEnMeses() {
-        return visitaPreventivaCrearCasoEnMeses;
-    }
-
-    /**
-     * @param visitaPreventivaCrearCasoEnMeses the
-     * visitaPreventivaCrearCasoEnMeses to set
-     */
-    public void setVisitaPreventivaCrearCasoEnMeses(Integer visitaPreventivaCrearCasoEnMeses) {
-        this.visitaPreventivaCrearCasoEnMeses = visitaPreventivaCrearCasoEnMeses;
-    }
-
-    /**
-     * @return the visitaPreventivaAsignarAGrupo
-     */
-    public Grupo getVisitaPreventivaAsignarAGrupo() {
-        return visitaPreventivaAsignarAGrupo;
-    }
-
-    /**
-     * @param visitaPreventivaAsignarAGrupo the visitaPreventivaAsignarAGrupo to
-     * set
-     */
-    public void setVisitaPreventivaAsignarAGrupo(Grupo visitaPreventivaAsignarAGrupo) {
-        this.visitaPreventivaAsignarAGrupo = visitaPreventivaAsignarAGrupo;
-    }
-
-    /**
-     * @return the visitaPreventivaAsignarAArea
-     */
-    public Area getVisitaPreventivaAsignarAArea() {
-        return visitaPreventivaAsignarAArea;
-    }
-
-    /**
-     * @param visitaPreventivaAsignarAArea the visitaPreventivaAsignarAArea to
-     * set
-     */
-    public void setVisitaPreventivaAsignarAArea(Area visitaPreventivaAsignarAArea) {
-        this.visitaPreventivaAsignarAArea = visitaPreventivaAsignarAArea;
     }
 
     @FacesConverter(forClass = Caso.class)
@@ -4078,6 +3964,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             }
         }
     }
+
 }
 
 class CasoDataModel extends ListDataModel<Caso> implements SelectableDataModel<Caso>, Serializable {

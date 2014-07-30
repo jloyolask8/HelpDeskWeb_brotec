@@ -99,7 +99,7 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
 
 //                        return ResourceBundle.getBundle("/Bundle").getString("inbox");
                     } else {
-                        JsfUtil.addErrorMessage("Nombre de usuario o contraseña no son válidos");
+                        JsfUtil.addErrorMessage("El nombre de usuario o la contraseña son incorrectos. Por favor intenténtelo nuevamente.");
 //                        return null;
                     }
                 } else {
