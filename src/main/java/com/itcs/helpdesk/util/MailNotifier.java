@@ -253,10 +253,11 @@ public class MailNotifier {
     }
     
     public static synchronized void scheduleSendMailNota(final String idCanal, final String mensajeFinal,
-            final String to, final String subject, final Long idCaso, final Integer idNota, final List<Long> attachments) throws SchedulerException {
+            final String to, final String subject, final Long idCaso, final Integer idNota, final String attachIds) throws SchedulerException {
 
         System.out.println("scheduleSendMail()");
         final String valueOfIdCaso = String.valueOf(idCaso);
+        final String valueOfIdNota = String.valueOf(idNota);
         final String jobId = CaseResponseByMailJob.formatJobId(idCanal, valueOfIdCaso, to);
         final JobKey jobKey = JobKey.jobKey(jobId, HelpDeskScheluder.GRUPO_CORREO);
         HelpDeskScheluder.unschedule(jobKey);
@@ -265,11 +266,11 @@ public class MailNotifier {
 
         job.getJobDataMap().put(AbstractGoDeskJob.ID_CANAL, idCanal);
         job.getJobDataMap().put(CaseResponseByMailJob.ID_CASO, valueOfIdCaso);
-        job.getJobDataMap().put(CaseResponseByMailJob.ID_NOTA, idNota);
+        job.getJobDataMap().put(CaseResponseByMailJob.ID_NOTA, valueOfIdNota);
         job.getJobDataMap().put(CaseResponseByMailJob.EMAILS_TO, to);
         job.getJobDataMap().put(CaseResponseByMailJob.EMAIL_SUBJECT, subject);
         job.getJobDataMap().put(CaseResponseByMailJob.EMAIL_TEXT, mensajeFinal);
-        job.getJobDataMap().put(CaseResponseByMailJob.EMAIL_ATTACHMENTS, attachments);
+        job.getJobDataMap().put(CaseResponseByMailJob.EMAIL_ATTACHMENTS, attachIds);
 
         HelpDeskScheluder.scheduleToRunNowWithInterval(job, 600);
     }
