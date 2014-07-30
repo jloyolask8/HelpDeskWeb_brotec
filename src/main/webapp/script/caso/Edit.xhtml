@@ -632,6 +632,42 @@
 
                         <p:row>
                             <p:column>
+                                <p:outputLabel value="Responsable" for="idResponsable" style="font-weight:bold"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:selectOneMenu style="width: 220px;"
+                                                 id="idResponsable" value="#{casoController.selected.idResponsable}" >
+                                    <f:selectItems value="#{responsableController.itemsAvailableSelectOne}"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:panelGrid style="width: 100% !important;">
+                                    <p:row>
+                                        <p:column style="padding-left: 0px !important; width: 100px;">
+                                            <div align="left">
+                                                <p:outputLabel value="Servicio Técnico:" for="idTechnicalService" style="font-weight:bold;"/>
+                                            </div>
+                                        </p:column>
+                                        <p:column style="padding-left: 0px !important;">
+                                            <div align="left">
+                                                <p:selectBooleanCheckbox id="idTechnicalService" value="#{casoController.selected.servicioTecnico}" />
+                                            </div>
+                                        </p:column>
+                                    </p:row>
+
+
+                                </p:panelGrid>
+
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
                                 <p:outputLabel value="#{applicationBean.productDescription}:" for="idProducto" style="font-weight:bold"/>
                             </p:column>
                         </p:row>
