@@ -228,12 +228,6 @@
             <version>1</version>
         </dependency>
         <dependency>
-            <groupId>net.sf.squirrel-sql.cli</groupId>
-            <artifactId>dbcopy-cli</artifactId>
-            <version>1.0.2</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
             <version>6.0</version>
