@@ -123,8 +123,17 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
             current.setEmailClienteList(null);
             getJpaController().persistCliente(current);
             for (EmailCliente emailCliente : listaEmails) {
-                emailCliente.setCliente(current);
-                getJpaController().persist(emailCliente);
+                EmailCliente oldEmailCliente = getJpaController().find(EmailCliente.class, emailCliente.getEmailCliente());
+                if(null == oldEmailCliente)
+                {
+                    emailCliente.setCliente(current);
+                    getJpaController().persist(emailCliente);
+                }
+                else
+                {
+                    oldEmailCliente.setCliente(current);
+                    getJpaController().merge(oldEmailCliente);
+                }
             }
             current.setEmailClienteList(listaEmails);
             getJpaController().merge(current);
@@ -179,7 +188,7 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
         try {
             List<EmailCliente> listaEmails = current.getEmailClienteList();
             for (EmailCliente emailCliente : listaEmails) {
-                if (getJpaController().getReference(EmailCliente.class, emailCliente.getEmailCliente()) == null) {
+                if (getJpaController().find(EmailCliente.class, emailCliente.getEmailCliente()) == null) {
                     emailCliente.setCliente(current);
                     getJpaController().persist(emailCliente);
                 }
