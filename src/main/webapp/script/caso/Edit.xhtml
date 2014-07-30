@@ -219,6 +219,7 @@
         </ui:define>
 
         <ui:define name="body">
+            <pe:importEnum type="com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso" var="EnumTipoCaso" allSuffix="ALL_ENUM_VALUES" />
 
 
             <pe:layoutPane id="layoutcenter" position="center" >
@@ -576,6 +577,9 @@
                 <f:facet name="header">
                     <p:outputLabel value="Detalle de Solicitud"/>
                 </f:facet>
+                
+                
+                               
                 <h:form id="formint1">
 
                     <p:panelGrid style="margin-bottom:10px;" styleClass="filtersGrid" id="panelGridDatos" >
@@ -587,7 +591,7 @@
                         </p:row>
                         <p:row>
                             <p:column>
-                                <p:selectOneMenu disabled="#{casoController.selected.closed or casoController.casoTipoReparacion}" id="idTipoCaso" style="width: 220px;"
+                                <p:selectOneMenu disabled="#{casoController.selected.closed or casoController.selected.tipoCaso eq EnumTipoCaso.REPARACION_ITEM.getTipoCaso()}" id="idTipoCaso" style="width: 220px;"
                                                  required="true" requiredMessage="El tipo de caso es requerido."
                                                  filter="true" filterMatchMode="contains"
                                                  value="#{casoController.selected.tipoCaso}" >
@@ -631,6 +635,42 @@
                                                  id="idPrioridad" value="#{casoController.selected.idPrioridad}" >
                                     <f:selectItems value="#{prioridadController.itemsAvailableSelectMany}"/>
                                 </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Responsable" for="idResponsable" style="font-weight:bold"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:selectOneMenu style="width: 220px;"
+                                                 id="idResponsable" value="#{casoController.selected.idResponsable}" >
+                                    <f:selectItems value="#{responsableController.itemsAvailableSelectOne}"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:panelGrid style="width: 100% !important;">
+                                    <p:row>
+                                        <p:column style="padding-left: 0px !important; width: 100px;">
+                                            <div align="left">
+                                                <p:outputLabel value="Servicio Técnico:" for="idTechnicalService" style="font-weight:bold;"/>
+                                            </div>
+                                        </p:column>
+                                        <p:column style="padding-left: 0px !important;">
+                                            <div align="left">
+                                                <p:selectBooleanCheckbox id="idTechnicalService" value="#{casoController.selected.servicioTecnico}" />
+                                            </div>
+                                        </p:column>
+                                    </p:row>
+
+
+                                </p:panelGrid>
+
                             </p:column>
                         </p:row>
 

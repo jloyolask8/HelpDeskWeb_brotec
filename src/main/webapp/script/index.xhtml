@@ -82,15 +82,15 @@
 
                         <p:toolbar id="toolbar1">  
                             <p:toolbarGroup align="left">
-                                <p:commandButton id="updateList" title="Actualizar" icon="ui-icon-arrowrefresh-1-w" disabled="#{not empty casoController.selectedItems}" style="width: 60px;"
+                                <p:commandButton id="updateList" title="Actualizar" icon="fa fa-refresh" disabled="#{not empty casoController.selectedItems}" style="width: 60px;"
                                                  actionListener="#{casoController.refresh()}" update=":form0:panelG1" />
                                 <p:tooltip for="updateList" value="Actualizar" showEffect="fade" hideEffect="fade" />
 
-                                <p:commandButton value="Filtro" onclick="PF('filterViewdialog').show()" type="button" icon="ui-icon-zoomin"/>  
+                                <p:commandButton value="Filtro" onclick="PF('filterViewdialog').show()" type="button" icon="fa fa-filter"/>  
 
-                                <p:commandButton value="Ejecutar Regla" onclick="PF('applyRuleDialog').show()" type="button" /> 
+                                <p:commandButton value="Ejecutar Regla" onclick="PF('applyRuleDialog').show()" type="button" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/> 
 
-                                <p:commandButton value="Ejecutar Acción" onclick="PF('runActionDialog').show()" update=":runActionForm" />  
+                                <p:commandButton value="Ejecutar Acción" onclick="PF('runActionDialog').show()" update=":runActionForm" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>  
 
                                 <p:separator />  
 
