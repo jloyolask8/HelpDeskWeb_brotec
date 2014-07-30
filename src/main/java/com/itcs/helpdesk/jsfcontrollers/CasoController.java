@@ -439,7 +439,10 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             if (getSelectedItems() != null && getSelectedItems().size() > 0) {
                 blackListMap = new HashMap<String, BlackListEmail>();
                 for (Caso caso : getSelectedItems()) {
-                    blackListMap.put(caso.getEmailCliente().getEmailCliente(), new BlackListEmail(caso.getEmailCliente().getEmailCliente()));
+                    if(caso.getEmailCliente() != null && caso.getEmailCliente().getEmailCliente() != null)
+                    {
+                        blackListMap.put(caso.getEmailCliente().getEmailCliente(), new BlackListEmail(caso.getEmailCliente().getEmailCliente()));
+                    }
                 }
                 return new ArrayList<String>(blackListMap.keySet());
             }
@@ -489,14 +492,17 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public void onProductoModeloChosen() {
         //ModeloProducto modeloProducto = (ModeloProducto) event.getObject();
-        current.setIdComponente(current.getIdModelo().getIdComponente());
-        String modelo = "Model:" + current.getIdModelo();
-        String producto = " Product:" + current.getIdProducto().getNombre();
-        String componente = " component:" + current.getIdComponente().getNombre();
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                "Modelo Producto Selected", modelo + producto
-                + componente);
-        FacesContext.getCurrentInstance().addMessage(null, message);
+        if(current.getIdModelo() != null)
+        {
+            current.setIdComponente(current.getIdModelo().getIdComponente());
+        }
+//        String modelo = "Model:" + current.getIdModelo();
+//        String producto = " Product:" + current.getIdProducto().getNombre();
+//        String componente = " component:" + current.getIdComponente().getNombre();
+//        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO,
+//                "Modelo Producto Selected", modelo + producto
+//                + componente);
+//        FacesContext.getCurrentInstance().addMessage(null, message);
     }
 
     public void selectProductoModeloFromDialog(ModeloProducto modeloProducto) {
@@ -518,6 +524,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             FacesContext.getCurrentInstance().addMessage("form:emailCliente", message);
             setEmailCliente_wizard_existeEmail(true);
             if (emailCliente.getCliente() != null) {
+                getSelected().setIdCliente(emailCliente.getCliente());
                 rutCliente_wizard = emailCliente.getCliente().getRut();
                 setEmailCliente_wizard_existeCliente(true);
             } else {
@@ -1218,8 +1225,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             current.setTipoCaso(EnumTipoCaso.PREENTREGA.getTipoCaso());
             current.setIdSubEstado(EnumSubEstadoCaso.PREENTREGA_NUEVO.getSubEstado());
             current.setIdCanal(EnumCanal.MANUAL.getCanal());
+            current.setIdCliente(new Cliente());
             EmailCliente email = new EmailCliente();
-            email.setCliente(new Cliente());
+            email.setCliente(current.getIdCliente());
             current.setEmailCliente(email);
             EstadoCaso ec = new EstadoCaso();
             ec.setIdEstado(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
@@ -2513,7 +2521,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private boolean enviarCorreo(final String emailCliente, final String subject, String mensaje, Nota nota) throws NumberFormatException {
         boolean sended = false;
 
-        List<Long> listIdAtt = new LinkedList<Long>();
+        StringBuilder listIdAtt = new StringBuilder();
 
         if (selectedAttachmensForMail != null) {
             StringBuilder attachmentsNames = new StringBuilder();
@@ -2522,7 +2530,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             int indexAtt = 0;
             while (iteradorAttachments.hasNext()) {
                 Long idatt = new Long((String) iteradorAttachments.next());
-                listIdAtt.add(idatt);
+                listIdAtt.append(idatt);
+                listIdAtt.append(';');
                 Attachment att = getJpaController().getAttachmentFindByIdAttachment(idatt);
                 attachmentsNames.append(att.getNombreArchivo()).append("<br/>");
                 indexAtt++;
@@ -2550,11 +2559,11 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         try {
             if (current.getIdProducto() != null && current.getIdProducto().getIdOutCanal() != null) {
 //                MailClientFactory.getInstance(current.getIdProducto().getIdOutCanal().getIdCanal()).sendHTML(emailCliente, subject, mensaje, attachments);
-                MailNotifier.scheduleSendMailNota(current.getIdProducto().getIdOutCanal().getIdCanal(), mensaje, emailCliente, subject, current.getIdCaso(), nota.getIdNota(), listIdAtt);
+                MailNotifier.scheduleSendMailNota(current.getIdProducto().getIdOutCanal().getIdCanal(), mensaje, emailCliente, subject, current.getIdCaso(), nota.getIdNota(), listIdAtt.toString());
                 sended = true;
             } else if (current.getIdArea() != null && current.getIdArea().getIdCanal() != null) {
 //                MailClientFactory.getInstance(current.getIdArea().getIdCanal().getIdCanal()).sendHTML(emailCliente, subject, mensaje, attachments);
-                MailNotifier.scheduleSendMailNota(current.getIdArea().getIdCanal().getIdCanal(), mensaje, emailCliente, subject, current.getIdCaso(), nota.getIdNota(), listIdAtt);
+                MailNotifier.scheduleSendMailNota(current.getIdArea().getIdCanal().getIdCanal(), mensaje, emailCliente, subject, current.getIdCaso(), nota.getIdNota(), listIdAtt.toString());
 
                 sended = true;
             }
