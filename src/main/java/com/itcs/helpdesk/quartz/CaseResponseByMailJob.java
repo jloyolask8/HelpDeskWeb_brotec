@@ -59,13 +59,22 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
         if (map != null) {
             String idCanal = (String) map.get(DownloadEmailJob.ID_CANAL);
             String idCaso = (String) map.get(ID_CASO);
-            Integer idNota = (Integer) map.get(ID_NOTA);
+            String idNota = (String) map.get(ID_NOTA);
             String emails_to = (String) map.get(EMAILS_TO);
             //---
             String subject = (String) map.get(EMAIL_SUBJECT);
             String email_text = (String) map.get(EMAIL_TEXT);
             emails_to = emails_to.trim().replace(" ", "");
-            List<Long> idAtts = (List<Long>) map.get(EMAIL_ATTACHMENTS);
+            String attachIds = (String) map.get(EMAIL_ATTACHMENTS);
+            
+            List<Long> idAtts = new LinkedList<Long>();
+            String ids[] = attachIds.split(";");
+            for (String string : ids) {
+                try{
+                    Long idAtt = Long.parseLong(string);
+                    idAtts.add(idAtt);
+                }catch(Exception ex){}
+            }
 
             final String formatJobId = formatJobId(idCanal, idCaso, emails_to);
             if (!StringUtils.isEmpty(idCanal) && !StringUtils.isEmpty(idCaso) && !StringUtils.isEmpty(emails_to)) {
@@ -76,7 +85,7 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
                     JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf);
                     //SEND THE EMAIL!
                     List<EmailAttachment> attachments = null;
-                    if (idAtts != null && !idAtts.isEmpty()) {
+                    if (!idAtts.isEmpty()) {
                         attachments = new LinkedList<EmailAttachment>();
                         for (Long idAtt : idAtts) {
 
@@ -98,7 +107,7 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
 
                     try {
                         //if sent ok, then forget about it
-                        Nota nota = jpaController.getReference(Nota.class, idNota);
+                        Nota nota = jpaController.getReference(Nota.class, Integer.valueOf(idNota));
                         nota.setFechaEnvio(new Date());
                         nota.setEnviado(Boolean.TRUE);
                         jpaController.merge(nota);
