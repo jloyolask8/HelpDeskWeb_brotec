@@ -13,7 +13,6 @@ import com.itcs.helpdesk.persistence.entities.ScheduleEventReminder;
 import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
 import java.io.Serializable;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,8 +41,8 @@ public class CasoTimelineController extends AbstractManagedBean<ScheduleEvent> i
 
     @ManagedProperty(value = "#{casoController}")
     private CasoController casoController;
-    @ManagedProperty(value = "#{UserSessionBean}")
-    private UserSessionBean userSessionBean;
+//    @ManagedProperty(value = "#{UserSessionBean}")
+//    private UserSessionBean userSessionBean;
     private TimelineModel model;
     private TimelineModel modelScheduleEvents;
 
@@ -315,9 +314,9 @@ public class CasoTimelineController extends AbstractManagedBean<ScheduleEvent> i
     /**
      * @param userSessionBean the userSessionBean to set
      */
-    public void setUserSessionBean(UserSessionBean userSessionBean) {
-        this.userSessionBean = userSessionBean;
-    }
+//    public void setUserSessionBean(UserSessionBean userSessionBean) {
+//        this.userSessionBean = userSessionBean;
+//    }
 
     @Override
     public Class getDataModelImplementationClass() {

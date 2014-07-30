@@ -37,18 +37,18 @@
 
 
 
-                        <p:column sortBy="idEstado" headerText="#{bundle.ListSubEstadoCasoTitle_idEstado}">
+                        <p:column sortBy="#{item.idEstado.nombre}" headerText="#{bundle.ListSubEstadoCasoTitle_idEstado}">
                             <h:outputText value="#{item.idEstado.nombre}"/>
                         </p:column>
 
-                        <p:column sortBy="tipoCaso"  headerText="#{bundle.ListTipoCasoTitle_idTipoCaso}">
+                        <p:column sortBy="#{item.tipoCaso.nombre}"  headerText="#{bundle.ListTipoCasoTitle_idTipoCaso}">
                             <h:outputText value="#{item.tipoCaso.nombre}"/>
                         </p:column>
 
-                        <p:column  headerText="#{bundle.ListSubEstadoCasoTitle_idSubEstado}">
+                        <p:column headerText="#{bundle.ListSubEstadoCasoTitle_idSubEstado}">
                             <h:outputText value="#{item.idSubEstado}"/>
                         </p:column>
-                        <p:column  headerText="#{bundle.ListSubEstadoCasoTitle_nombre}">
+                        <p:column sortBy="#{item.nombre}" headerText="#{bundle.ListSubEstadoCasoTitle_nombre}">
                             <h:outputText id="stat" styleClass="ticket-status" style="background: \##{item.backgroundColor}; color: \##{item.fontColor};" 
                                           value="#{item.nombre}"/> 
                             <p:tooltip for="stat" value="#{item.descripcion}"/>

@@ -134,7 +134,7 @@
                                              selection="#{casoController.selected}" selectionMode="single"
                                              emptyMessage="#{bundle.ListCasoEmpty}" 
                                              rowKey="#{item.idCaso}" rowStyleClass="#{casoController.evaluarStyle(item)}"
-                                             sortBy="fechaCreacion"
+                                             sortBy="#{item.fechaCreacion}"
                                              sortOrder="descending"
                                              draggableColumns="true">
                                     <f:facet name="header">

@@ -214,7 +214,7 @@
                                 </h:commandLink>
                             </p:column>
 
-                            <p:column sortBy="idCaso" headerText="#">                                
+                            <p:column sortBy="#{item.idCaso}" headerText="#">                                
                                 <p:commandLink id="editBtn" ajax="false" action="#{casoController.prepareEdit(item)}" value="#{item.idCaso}"  title="Abrir caso" immediate="true"/>
                             </p:column>   
 
@@ -223,11 +223,11 @@
                                 <h:outputText styleClass="ticket-status" style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};" value="#{item.idSubEstado.nombre}"/>
                             </p:column>
 
-                            <p:column sortBy="tipoCaso.nombre" headerText="Tipo">                               
+                            <p:column sortBy="#{item.tipoCaso.nombre}" headerText="Tipo">                               
                                 <h:outputText value="#{item.tipoCaso.nombre}"/>
                             </p:column>     
 
-                            <p:column sortBy="tema" headerText="Asunto"> 
+                            <p:column sortBy="#{item.tema}" headerText="Asunto"> 
                                 <h:panelGroup layout="block">  
                                     <p:commandLink id="temalink" title="#{item.idProducto eq null? 'Sin '.concat(applicationBean.productDescription):item.idProducto.nombre} - #{item.idComponente eq null? 'Sin '.concat(applicationBean.productComponentDescription):item.idComponente.nombre} - #{item.idSubComponente eq null? 'Sin '.concat(applicationBean.productSubComponentDescription):item.idSubComponente.nombre}"
                                                    action="#{casoController.prepareEdit(item)}" ajax="false" value="#{item.tema}" immediate="true"/>
@@ -241,7 +241,7 @@
                                                immediate="true"/>
                             </p:column>
 
-                            <p:column sortBy="fechaCreacion" headerText="Creado">                                
+                            <p:column sortBy="#{item.fechaCreacion}" headerText="Creado">                                
                                 <h:outputText value="#{item.fechaCreacion}" >
                                     <f:convertDateTime pattern="#{bundle.dateFormatShortTime}"/>
                                 </h:outputText>
@@ -249,7 +249,7 @@
                                 <p:tooltip for="fechaCreacion" value="#{casoController.formatDate(item.fechaCreacion)}"/>
                             </p:column>
                             
-                             <p:column sortBy="fechaModif" headerText="Modificado">                                
+                             <p:column sortBy="#{item.fechaModif}" headerText="Modificado">                                
                                 <h:outputText value="#{item.fechaModif}" >
                                     <f:convertDateTime pattern="#{bundle.dateFormatShortTime}"/>
                                 </h:outputText>
@@ -257,7 +257,7 @@
                                 <p:tooltip for="fechaModif" value="#{casoController.formatDate(item.fechaModif)}"/>
                             </p:column>
 
-                            <p:column sortBy="idCanal.nombre" headerText="Canal">                             
+                            <p:column sortBy="#{item.idCanal.nombre}" headerText="Canal">                             
                                 <h:outputText value="#{item.idCanal.nombre}" title="#{item.idProducto eq null? 'Sin '.concat(applicationBean.productDescription):item.idProducto.nombre} - #{item.idComponente eq null? 'Sin '.concat(applicationBean.productComponentDescription):item.idComponente.nombre} - #{item.idSubComponente eq null? 'Sin '.concat(applicationBean.productSubComponentDescription):item.idSubComponente.nombre}"/>
                             </p:column>
 

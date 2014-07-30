@@ -70,17 +70,17 @@
 
                         <p:column selectionMode="multiple"  style="width:2%" /> 
 
-                        <p:column  sortBy="idPrioridad"  headerText="#{bundle.ListPrioridadTitle_idPrioridad}">
+                        <p:column  sortBy="#{item.idPrioridad}"  headerText="#{bundle.ListPrioridadTitle_idPrioridad}">
                             <h:outputText value="#{item.idPrioridad}"/>
                         </p:column>
-                        <p:column  sortBy="nombre" headerText="#{bundle.ListPrioridadTitle_nombre}">
+                        <p:column  sortBy="#{item.nombre}" headerText="#{bundle.ListPrioridadTitle_nombre}">
                             <h:outputText value="#{item.nombre}"/>
                         </p:column>
                         <p:column  headerText="#{bundle.ListPrioridadTitle_descripcion}">
                             <h:outputText value="#{item.descripcion}" title="#{item.descripcion}"/>
                         </p:column>
 
-                        <p:column  sortBy="slaHoras" headerText="Horas para responder (SLA)">
+                        <p:column  sortBy="#{item.slaHoras}" headerText="Horas para responder (SLA)">
                             <h:outputText value="#{item.slaHoras}"/>
                         </p:column>
 
