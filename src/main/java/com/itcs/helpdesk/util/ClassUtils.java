@@ -17,46 +17,12 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import org.jboss.net.protocol.file.FileURLConnection;
 
 /**
  *
  * @author jorge
  */
 public class ClassUtils {
-
-    /**
-     * Private helper method
-     *
-     * @param directory The directory to start with
-     * @param pckgname The package name to search for. Will be needed for
-     * getting the Class object.
-     * @param classes if a file isn't loaded but still is in the directory
-     * @throws ClassNotFoundException
-     */
-    private static void checkDirectory(File directory, String pckgname,
-            ArrayList<Class<?>> classes) throws ClassNotFoundException {
-        File tmpDirectory;
-
-        if (directory.exists() && directory.isDirectory()) {
-            final String[] files = directory.list();
-
-            for (final String file : files) {
-                if (file.endsWith(".class")) {
-                    try {
-                        classes.add(Class.forName(pckgname + '.'
-                                + file.substring(0, file.length() - 6)));
-                    } catch (final NoClassDefFoundError e) {
-                    // do nothing. this class hasn't been found by the
-                        // loader, and we don't care.
-                    }
-                } else if ((tmpDirectory = new File(directory, file))
-                        .isDirectory()) {
-                    checkDirectory(tmpDirectory, pckgname + "." + file, classes);
-                }
-            }
-        }
-    }
 
     /**
      * Private helper method.
@@ -122,17 +88,6 @@ public class ClassUtils {
                     if (connection instanceof JarURLConnection) {
                         checkJarFile((JarURLConnection) connection, pckgname,
                                 classes);
-                    } else if (connection instanceof FileURLConnection) {
-                        try {
-                            checkDirectory(
-                                    new File(URLDecoder.decode(url.getPath(),
-                                                    "UTF-8")), pckgname, classes);
-                        } catch (final UnsupportedEncodingException ex) {
-                            throw new ClassNotFoundException(
-                                    pckgname
-                                    + " does not appear to be a valid package (Unsupported encoding)",
-                                    ex);
-                        }
                     } else {
                         throw new ClassNotFoundException(pckgname + " ("
                                 + url.getPath()
