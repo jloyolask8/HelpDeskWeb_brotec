@@ -17,7 +17,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import sun.net.www.protocol.file.FileURLConnection;
+import org.jboss.net.protocol.file.FileURLConnection;
 
 /**
  *
