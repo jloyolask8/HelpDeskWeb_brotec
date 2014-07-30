@@ -133,8 +133,8 @@
                     <h:outputText value="Está seguro de eliminar el Area  #{areaController.selected.nombre}?"/>
 
                     <f:facet name="footer">
-                        <p:commandButton id="confirm" value="#{bundle.yesDelete}" actionListener="#{areaController.destroy()}" 
-                                         update="form" oncomplete="confirmation.hide()"/>
+                        <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{areaController.destroy()}" 
+                                         update="form" oncomplete="confirmation.hide()" ajax="false"/>
                         <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
                     </f:facet>
 

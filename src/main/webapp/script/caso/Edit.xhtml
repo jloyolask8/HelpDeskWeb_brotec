@@ -285,7 +285,6 @@
                             <p:commandButton rendered="#{casoController.verificarReabrirCaso()}" ajax="true" value="Reabrir Caso" onclick="openCase.show();" />
 
                             <p:commandButton ajax="false" icon="fa fa-download" value="Acta de PreEntrega" 
-                                             onclick="PrimeFaces.monitorDownload(start, stop);"
                                              rendered="#{casoController.casoTipoPreEntrega}">
                                 <p:fileDownload value="#{casoController.generarActaPreEntrega()}" />
                             </p:commandButton>
