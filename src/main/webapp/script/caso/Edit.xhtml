@@ -459,52 +459,56 @@
                         <p:tab id="tabAgendarEvento" title="Agenda" 
                                disabled="#{(not casoController.verificarCrearActividad()) and (not casoController.verificarResponderCaso())}">
 
-                            <h:panelGroup id="panel">
 
-                                <h:form id="formAgendarEvento">
+                          
 
-                                    <h2>Cronograma de Eventos</h2>
+                            <h:form id="formAgendarEvento">
+                                <h2>Calendario de Eventos</h2>
 
-                                    <pe:timeline id="timelineEvents" value="#{casoTimelineController.modelScheduleEvents}" var="event"  
-                                                 editable="false" 
-                                                 showButtonNew="true" minHeight="200" widgetVar="timelineWdgt">  
+                                <p:schedule id="myschedule" value="#{casoScheduleController.lazyScheduleEventsModel}" 
+                                            firstHour="8" widgetVar="myschedule" >
+                                    <p:ajax event="dateSelect" listener="#{casoScheduleController.onDateSelect}" 
+                                            update=":createEventForm:eventDetails" oncomplete="PF('createEventDialog').show()" />  
+                                    <p:ajax event="eventSelect" listener="#{casoScheduleController.onEventSelect}" 
+                                            update=":createEventForm:eventDetails" oncomplete="PF('createEventDialog').show()" />  
 
-                                        <h:panelGrid columns="1">  
-                                            <i class="fa fa-calendar"></i>
-                                            <h:outputText value="#{event.title}"/>  
-                                            <h:outputText value="Agendado por: #{event.idUsuario} (#{casoController.prettyDate(event.startDate)})"/>  
+                                    <p:ajax event="eventMove" listener="#{casoScheduleController.onEventMove}" 
+                                            update=":inputPanel:formTimelineAgenda :mainform:messages" />  
+                                    <p:ajax event="eventResize" listener="#{casoScheduleController.onEventResize}" 
+                                            update=":inputPanel:formTimelineAgenda :mainform:messages" /> 
+                                </p:schedule>
+                            </h:form>
+                            
+                              <p:separator/>
+                              
+                              <h:form id="formTimelineAgenda">
 
-                                        </h:panelGrid>        
-                                    </pe:timeline>  
+                                <h2>Cronograma de Eventos</h2>
 
-                                    <p:separator/>
+                                <pe:timeline id="timelineEvents" value="#{casoTimelineController.modelScheduleEvents}" var="event"  
+                                             responsive="true"  timeZone="#{casoTimelineController.timeZone}" 
+                                             showNavigation="true" 
+                                             editable="false" eventStyle="dot"
+                                             showButtonNew="false" minHeight="200" widgetVar="timelineWdgt">  
 
-                                    <h2>Calendario de Eventos</h2>
+                                    <h:panelGrid columns="1">  
+                                        <i class="fa fa-calendar"></i>
+                                        <h:outputText value="#{event.title}"/>  
+                                        <h:outputText value="Agendado por: #{event.idUsuario ne null ? event.idUsuario:''} (#{casoController.prettyDate(event.startDate)})"/>  
 
-                                    <p:schedule id="myschedule" value="#{casoScheduleController.lazyScheduleEventsModel}" 
-                                                firstHour="8" widgetVar="myschedule" >
-                                        <p:ajax event="dateSelect" listener="#{casoScheduleController.onDateSelect}" 
-                                                update=":createEventForm:eventDetails" oncomplete="PF('createEventDialog').show()" />  
-                                        <p:ajax event="eventSelect" listener="#{casoScheduleController.onEventSelect}" 
-                                                update=":createEventForm:eventDetails" oncomplete="PF('createEventDialog').show()" />  
+                                    </h:panelGrid>        
+                                </pe:timeline>  
 
-                                        <p:ajax event="eventMove" listener="#{casoScheduleController.onEventMove}" 
-                                                update=":inputPanel:formAgendarEvento:timelineEvents :mainform:messages" />  
-                                        <p:ajax event="eventResize" listener="#{casoScheduleController.onEventResize}" 
-                                                update=":inputPanel:formAgendarEvento:timelineEvents :mainform:messages" /> 
-                                    </p:schedule>
-                                </h:form>
+                            </h:form>
 
-                            </h:panelGroup>
+                          
+
 
 
 
                         </p:tab>  
 
                         <p:tab id="tab-timeline" title="TimeLine">
-
-
-
 
                             <pe:timeline id="timeline" value="#{casoTimelineController.model}" var="audit"  
                                          editable="false" eventStyle="dot" zoomMax="#{casoTimelineController.zoomMax}"

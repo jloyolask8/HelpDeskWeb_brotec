@@ -127,7 +127,13 @@
 
             <pe:ajaxErrorHandler /> 
 
-            <p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();"/>
+
+            <p:ajaxStatus style="display:block;">
+                <f:facet name="default">
+                    <h:outputText value="Por favor espere..." style="font-weight: bold;"/>
+                </f:facet>               
+            </p:ajaxStatus>
+
 
             <p:idleMonitor timeout="1200000">
                 <p:ajax event="idle" listener="#{applicationBean.onIdle}" async="true" 
@@ -144,6 +150,7 @@
             <pe:layout id="fullPage" widgetVar="pagelayout" fullPage="true" stateCookie="true" >  
                 <pe:layoutPane position="north" closable="false" resizable="false">  
                     <ui:insert name="header">
+
                         <h:form id="formTopMenu">
 
                             <p:menubar id="menubar" autoDisplay="false">
@@ -226,18 +233,42 @@
                                             action="#{casoController.filtraRevisarActualizaciones}" update="formfilter:filtros  formfilter:panelG1"
                                             icon="actualizadoicon">
                                 </p:menuitem>
+
+
+
+
+
                                 <f:facet name="options">
-                                    <p:inputText id="idCaso" value="#{casoController.idCaso}" title="#{bundle.EditCasoTitle_idCaso}"
-                                                 placeholder="id caso" style="margin-right:10px" size="6"/>
-                                    <p:commandButton ajax="false" action="#{casoController.prepareEditCaso}" icon="ui-icon ui-icon-search"/>
+
+                                    <h:panelGrid columns="3">
+                                        <p:ajaxStatus style="margin-right:25px">
+                                            <f:facet name="start">
+                                                <p:graphicImage library="images" name="ajax-loader_red.gif" />
+                                            </f:facet>
+                                        </p:ajaxStatus>
+
+                                        <p:inputText id="idCaso" value="#{casoController.idCaso}" title="#{bundle.EditCasoTitle_idCaso}"
+                                                     placeholder="id caso" style="margin-right:10px" size="6"/>
+                                        <p:commandButton ajax="false" action="#{casoController.prepareEditCaso}" icon="ui-icon ui-icon-search"/>
+                                    </h:panelGrid>
+
                                 </f:facet>
 
                             </p:menubar>
+
                             <p:tooltip for=":formTopMenu:casosActualizados" value="Casos con actualizaciones no revisadas" showEffect="fade" hideEffect="fade" />
                             <p:tooltip for=":formTopMenu:casosPendientes" value="Casos pendientes de resolver" showEffect="fade" hideEffect="fade" />
                             <p:tooltip for=":formTopMenu:casosPorVencer" value="Casos por vencer" showEffect="fade" hideEffect="fade" />
                             <p:tooltip for=":formTopMenu:casosVencidos" value="Casos vencidos" showEffect="fade" hideEffect="fade" />
                         </h:form>
+
+
+
+
+
+
+
+
 
                     </ui:insert>  
                 </pe:layoutPane>  
@@ -250,6 +281,8 @@
 
                 <pe:layoutPane position="center">  
 
+
+
                     <ui:insert name="body"></ui:insert>
                 </pe:layoutPane> 
 
@@ -261,8 +294,8 @@
             </pe:layout>  
 
 
-            <p:dialog modal="false" widgetVar="statusDialog" header="Espere..."   
-                      draggable="false" closable="false" resizable="false">  
+            <p:dialog modal="true" widgetVar="statusDialog" header="Espere..." appendTo="@(body)" dynamic="false"
+                      transient="true" draggable="false" closable="false" resizable="false">  
                 <p:graphicImage library="images" name="ajaxloadingbar.gif" />
             </p:dialog>
 

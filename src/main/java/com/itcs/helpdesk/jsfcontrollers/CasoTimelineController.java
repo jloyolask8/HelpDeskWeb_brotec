@@ -67,11 +67,11 @@ public class CasoTimelineController extends AbstractManagedBean<ScheduleEvent> i
 //        start = cal.getTime();
 //        cal.set(2013, Calendar.AUGUST, 10, 0, 0, 0);
 //        end = cal.getTime();
-
         modelScheduleEvents = new TimelineModel() {
 
             @Override
             public List<TimelineEvent> getEvents() {
+                Logger.getLogger(CasoTimelineController.class.getName()).log(Level.SEVERE, "getEvents");
                 List<TimelineEvent> events = new LinkedList<TimelineEvent>();
 
                 try {
@@ -91,12 +91,7 @@ public class CasoTimelineController extends AbstractManagedBean<ScheduleEvent> i
 
                     List<ScheduleEvent> findEntities = (List<ScheduleEvent>) getJpaController().findAllEntities(ScheduleEvent.class, vista0, ("startDate"), null);
                     for (ScheduleEvent log : findEntities) {
-                        if(log.getStartDate().equals(log.getEndDate())){
-                            events.add(new TimelineEvent(log, log.getStartDate(), Boolean.TRUE));
-                        }else{
-                            events.add(new TimelineEvent(log, log.getStartDate(), log.getEndDate(), Boolean.TRUE));
-                        }
-                        
+                        events.add(new TimelineEvent(log, log.getStartDate(), Boolean.TRUE));
                     }
 
                 } catch (Exception ex) {
@@ -317,7 +312,6 @@ public class CasoTimelineController extends AbstractManagedBean<ScheduleEvent> i
 //    public void setUserSessionBean(UserSessionBean userSessionBean) {
 //        this.userSessionBean = userSessionBean;
 //    }
-
     @Override
     public Class getDataModelImplementationClass() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -341,7 +335,7 @@ public class CasoTimelineController extends AbstractManagedBean<ScheduleEvent> i
      * @return the timeZone
      */
     public TimeZone getTimeZone() {
-        System.out.println("timeZone:"+timeZone.toString());
+        System.out.println("timeZone:" + timeZone.toString());
         return timeZone;
     }
 
