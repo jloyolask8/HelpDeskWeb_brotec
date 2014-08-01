@@ -309,12 +309,12 @@
 			<line>
 				<reportElement uuid="110c1cc7-4076-4d7b-badb-a947850247c4" positionType="FixRelativeToBottom" stretchType="RelativeToBandHeight" x="13" y="19" width="527" height="1"/>
 			</line>
-			<textField isBlankWhenNull="true">
-				<reportElement uuid="d4cc9fd1-fb29-435f-8eb4-dc284ebb0fc0" stretchType="RelativeToTallestObject" x="343" y="0" width="196" height="20"/>
+			<textField>
+				<reportElement uuid="91ee957f-8374-4b3d-a9c0-d84cb3b4c4c3" x="343" y="0" width="196" height="20"/>
 				<textElement verticalAlignment="Middle">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{descripcionTxt}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{descripcion}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
