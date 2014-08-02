@@ -302,7 +302,6 @@ public class ManagerCasos implements Serializable {
                         caso.setIdCliente(cliente_record);
                         getJpaController().persistEmailCliente(email_cliente);
                     } else {
-
                         if (datos.getTelefono() != null && !datos.getTelefono().isEmpty()) {
                             email_cliente.getCliente().setFono1(datos.getTelefono());
                         }
@@ -310,6 +309,7 @@ public class ManagerCasos implements Serializable {
                         getJpaController().merge(email_cliente.getCliente());
                     }
                     caso.setEmailCliente(email_cliente);
+                    caso.setIdCliente(email_cliente.getCliente());
                 } else {
                     EmailCliente new_email_cliente = new EmailCliente(address);
                     Cliente cliente_record = creaNuevoCliente(datos);
@@ -317,6 +317,7 @@ public class ManagerCasos implements Serializable {
                     new_email_cliente.setCliente(cliente_record);
                     getJpaController().persistEmailCliente(new_email_cliente);
                     caso.setEmailCliente(new_email_cliente);
+                    caso.setIdCliente(cliente_record);
                 }
             }
 
