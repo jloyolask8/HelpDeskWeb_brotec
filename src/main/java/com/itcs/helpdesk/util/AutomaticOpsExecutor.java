@@ -170,7 +170,7 @@ public class AutomaticOpsExecutor {
         verificarSettingsBase(controller);
         verificarTipoCanal(controller);
         fixClientesCasos(controller);
-        verificarResponsables(jpaController);
+        verificarResponsables(controller);
     }
     
     private void fixClientesCasos(JPAServiceFacade jpaController){
@@ -345,7 +345,7 @@ public class AutomaticOpsExecutor {
             } catch (NoResultException ex) {
                 Log.createLogger(this.getClass().getName()).logSevere("No existe el responsable " + enumResponsables.getResponsable().getNombreResponsable()+ ", se creara ahora");
                 try {
-                    jpaController.persist(enumResponsables);
+                    jpaController.persist(enumResponsables.getResponsable());
                 } catch (Exception e) {
                     Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, "verificarResponsables", e);
                 }
