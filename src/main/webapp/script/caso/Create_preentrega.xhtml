@@ -190,15 +190,7 @@
                                     <p:outputLabel value="#{bundle.CreateCasoLabel_descripcion}" for="descripcion" style="font-weight:bold"/>
 
                                     <pe:ckEditor value="#{casoController.selected.descripcion}"
-                                                 toolbar="[
-                                                 { name: 'basicstyles', items : [ 'Bold','Italic','Underline'] },
-                                                 { name: 'paragraph', items : [ 'NumberedList','BulletedList','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock' ] },
-                                                 { name: 'styles', items : [ 'Font','FontSize' ] },
-                                                 { name: 'colors', items : [ 'TextColor','BGColor' ] },
-                                                 { name: 'tools', items : [ 'Maximize'] }
-
-                                                 ]"
-
+                                                 toolbar="#{applicationBean.ckEditorToolbar}"
                                                  id="descripcion" width="600" height="120"
                                                  required="true"/>
 

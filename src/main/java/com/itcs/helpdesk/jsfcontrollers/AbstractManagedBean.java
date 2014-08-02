@@ -32,6 +32,7 @@ import javax.faces.model.DataModel;
 import javax.faces.model.SelectItem;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
+import javax.resource.NotSupportedException;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.UserTransaction;
 import org.primefaces.context.RequestContext;
@@ -102,12 +103,21 @@ public abstract class AbstractManagedBean<E> implements Serializable {
                         DataModel<E> dataModel = (DataModel) getDataModelImplementationClass().newInstance();
                         dataModel.setWrappedData(getJpaController().findEntities(entityClass, getFilterHelper().getVista(), getPageSize(), getPageFirstItem(), getDefaultOrderBy(), getDefaultUserWho()));
                         return dataModel;
-                    } catch (Exception ex) {
-                        JsfUtil.addErrorMessage(ex, "Lo sentimos, ocurrió un error inesperado. Favor intente más tarde.");
-                        Logger.getLogger(AbstractManagedBean.class.getName()).log(Level.SEVERE, "createPageDataModel", ex);
+                    } catch (IllegalStateException ex) {//error en el filtro
+                        JsfUtil.addErrorMessage(ex, "Existe un problema con el filtro. Favor corregir e intentar nuevamente.");                        
+                    } catch (ClassNotFoundException ex) {
+                        JsfUtil.addErrorMessage(ex, "Lo sentimos, ocurrió un error inesperado. Favor contactar a soporte.");
+                        Logger.getLogger(AbstractManagedBean.class.getName()).log(Level.SEVERE, "ClassNotFoundException createPageDataModel", ex);
+                    } catch (IllegalAccessException ex) {
+                        JsfUtil.addErrorMessage(ex, "Lo sentimos, ocurrió un error inesperado. Favor contactar a soporte.");
+                        Logger.getLogger(AbstractManagedBean.class.getName()).log(Level.SEVERE, "IllegalAccessException createPageDataModel", ex);
+                    } catch (InstantiationException ex) {
+                        JsfUtil.addErrorMessage(ex, "Lo sentimos, ocurrió un error inesperado. Favor contactar a soporte.");
+                        Logger.getLogger(AbstractManagedBean.class.getName()).log(Level.SEVERE, "InstantiationException createPageDataModel", ex);
+                    } catch (NotSupportedException ex) {
+                        addWarnMessage("Lo sentimos, ocurrió un error inesperado. La acción que desea realizar aún no esta soportada por el sistema.");
                     }
                     return null;
-//                    return new ListDataModel(getJpaController().queryByRange(entityClass, getPageSize(), getPageFirstItem()));
                 }
             };
         }
@@ -160,6 +170,18 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     protected void updateComponentInClient(String componentId)
     {
         RequestContext.getCurrentInstance().update(componentId);
+    }
+
+    /**
+     * RequestContext is a helper with various utilities. Update component(s)
+     * programmatically. Execute javascript from beans. Add ajax callback
+     * parameters as JSON. ScrollTo a specific component after ajax update.
+     * Invoke conditional javascript on page load.
+     *
+     * @return RequestContext
+     */
+    protected RequestContext getPrimefacesRequestContext() {
+        return RequestContext.getCurrentInstance();
     }
 
     protected void refreshPage() {

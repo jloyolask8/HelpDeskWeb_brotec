@@ -1025,24 +1025,7 @@
                         </h:panelGrid>
 
                         <pe:ckEditor value="#{casoController.textoNota}" required="true" language="es"
-                                     toolbar="[
-                                     { name: 'document', items : [ 'Source','Preview','Print' ] },
-                                     { name: 'clipboard', items : [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ] },
-                                     { name: 'editing', items : [ 'SpellChecker', 'Scayt' ] },
-                                     { name: 'insert', items : [ 'Table','HorizontalRule','SpecialChar','PageBreak'] },
-                                     '/',
-                                     { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
-                                     { name: 'paragraph', items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'] },
-                                     '/',
-                                     { name: 'links', items: [ 'Link', 'Unlink', 'Anchor' ] },
-                                     { name: 'insert', items: [ 'Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe' ] },
-                                     '/',
-                                     { name: 'styles', items : [ 'Styles','Format','Font','FontSize' ] },
-                                     { name: 'colors', items : [ 'TextColor','BGColor' ] },
-                                     { name: 'tools', items : [ 'Maximize', 'ShowBlocks'] }
-
-                                     ]"
-
+                                     toolbar="#{applicationBean.ckEditorToolbar}"
                                      id="respuesta" height="210"/>
 
                     </h:panelGrid>
@@ -1104,24 +1087,7 @@
 
                     </h:panelGrid>
                     <pe:ckEditor value="#{casoController.textoNota}" required="true" language="es"
-                                 toolbar="[
-                                 { name: 'document', items : [ 'Source','Preview','Print' ] },
-                                 { name: 'clipboard', items : [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ] },
-                                 { name: 'editing', items : [ 'SpellChecker', 'Scayt' ] },
-                                 { name: 'insert', items : [ 'Table','HorizontalRule','SpecialChar','PageBreak'] },
-                                 '/',
-                                 { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
-                                 { name: 'paragraph', items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'] },
-                                 '/',
-                                 { name: 'links', items: [ 'Link', 'Unlink', 'Anchor' ] },
-                                 { name: 'insert', items: [ 'Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe' ] },
-                                 '/',
-                                 { name: 'styles', items : [ 'Styles','Format','Font','FontSize' ] },
-                                 { name: 'colors', items : [ 'TextColor','BGColor' ] },
-                                 { name: 'tools', items : [ 'Maximize', 'ShowBlocks'] }
-
-                                 ]"
-
+                                toolbar="#{applicationBean.ckEditorToolbar}"
                                  id="textonota" width="560" height="210"/>
 
                     <p:commandButton value="Guardar" ajax="false" update=":formint1 :formCreateNota :westPanel:formlistaadjuntos" actionListener="#{casoController.crearNota(false)}"/>
@@ -1165,24 +1131,8 @@
 
                     </h:panelGrid>
                     <pe:ckEditor value="#{casoController.selectedNota.texto}" required="true" language="es"
-                                 toolbar="[
-                                 { name: 'document', items : [ 'Source','Preview','Print' ] },
-                                 { name: 'clipboard', items : [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ] },
-                                 { name: 'editing', items : [ 'SpellChecker', 'Scayt' ] },
-                                 { name: 'insert', items : [ 'Table','HorizontalRule','SpecialChar','PageBreak'] },
-                                 '/',
-                                 { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
-                                 { name: 'paragraph', items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'] },
-                                 '/',
-                                 { name: 'links', items: [ 'Link', 'Unlink', 'Anchor' ] },
-                                 { name: 'insert', items: [ 'Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe' ] },
-                                 '/',
-                                 { name: 'styles', items : [ 'Styles','Format','Font','FontSize' ] },
-                                 { name: 'colors', items : [ 'TextColor','BGColor' ] },
-                                 { name: 'tools', items : [ 'Maximize', 'ShowBlocks'] }
-                                 ]"
-
-                                 id="textonota" width="560" height="210"/>
+                                toolbar="#{applicationBean.ckEditorToolbar}"
+                                id="textonota" width="560" height="210"/>
 
                     <p:commandButton value="Guardar" ajax="false" update=":formint1 :formCreateNota :westPanel:formlistaadjuntos" actionListener="#{casoController.editNota(false)}"/>
                     <p:commandButton value="Guardar y notificar al cliente" ajax="false" update=":formint1 :formCreateNota :westPanel:formlistaadjuntos" actionListener="#{casoController.editNota(true)}"/>

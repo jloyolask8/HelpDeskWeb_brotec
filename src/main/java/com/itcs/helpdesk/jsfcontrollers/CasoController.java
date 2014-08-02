@@ -1057,11 +1057,15 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     CasoDataModel data = new CasoDataModel(getJpaController().findCasoEntities(getFilterHelper().getVista(), userSessionBean.getCurrent(), getPageSize(), getPageFirstItem(), orderBy));
                     setDatamodel(data);
                     return data;
-                } catch (Exception ex) {
-                    JsfUtil.addErrorMessage(ex.getMessage());
-                    Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, "createPageDataModel", ex);
-                    return null;
+                } catch (IllegalStateException ex) {//error en el filtro
+                    JsfUtil.addErrorMessage(ex, "Existe un problema con el filtro. Favor corregir e intentar nuevamente.");
+                } catch (ClassNotFoundException ex) {
+                    JsfUtil.addErrorMessage(ex, "Lo sentimos, ocurrió un error inesperado. Favor contactar a soporte.");
+                    Logger.getLogger(AbstractManagedBean.class.getName()).log(Level.SEVERE, "ClassNotFoundException createPageDataModel", ex);
+                } catch (NotSupportedException ex) {
+                    addWarnMessage("Lo sentimos, ocurrió un error inesperado. La acción que desea realizar aún no esta soportada por el sistema.");
                 }
+                return null;
 
             }
 
@@ -1533,7 +1537,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public String filterByIdCaso(Long idCaso) {
 
-       Caso casoToGo = getJpaController().getCasoFindByIdCaso(idCaso);
+        Caso casoToGo = getJpaController().getCasoFindByIdCaso(idCaso);
         listaActividadesOrdenada = null;
 
         if (casoToGo != null) {
@@ -1843,7 +1847,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public boolean puedeResponder() {
-        if(current == null){
+        if (current == null) {
             return false;
         }
         if (filtroAcceso.verificaAccesoAFuncion(EnumFunciones.RESPONDER_CUALQUIER_CASO)) {
@@ -1859,7 +1863,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public boolean puedeModificar() {
-        if(current == null){
+        if (current == null) {
             return false;
         }
         if (filtroAcceso.verificaAccesoAFuncion(EnumFunciones.EDITAR_CUALQUIER_CASO)) {
@@ -1879,14 +1883,14 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public boolean verificarTransferirCaso() {
-        if(current == null){
+        if (current == null) {
             return false;
         }
         return (filtroAcceso.verificaAccesoAFuncion(EnumFunciones.ASIGNAR_TRANSFERIR_CASO) && current.isOpen() && current.hasAnOwner());
     }
 
     public boolean verificarAsignarCaso() {
-        if(current == null){
+        if (current == null) {
             return false;
         }
         return (filtroAcceso.verificaAccesoAFuncion(EnumFunciones.ASIGNAR_TRANSFERIR_CASO) && current.isOpen() && !current.hasAnOwner());
