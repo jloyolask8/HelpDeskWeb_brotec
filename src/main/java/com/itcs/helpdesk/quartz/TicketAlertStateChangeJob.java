@@ -9,11 +9,14 @@ import com.itcs.helpdesk.persistence.entities.AuditLog;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.TipoAlerta;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta;
+import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.transaction.UserTransaction;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -21,6 +24,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobKey;
 import org.quartz.SchedulerException;
+import org.quartz.ee.jta.UserTransactionHelper;
 
 /**
  *
@@ -49,16 +53,18 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
                 String idCaso = (String) map.get(ID_CASO);
                 String idalerta = (String) map.get(ID_ESTADO_ALERTA);
                 if (!StringUtils.isEmpty(idCaso) && !StringUtils.isEmpty(idalerta)) {
-                    EntityManager em = createEntityManager();
+                    EntityManagerFactory emf = createEntityManagerFactory();
+                    UserTransaction utx = UserTransactionHelper.lookupUserTransaction();
+                    JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf);
                     try {
                         final Long valueOfIdCaso = Long.valueOf(idCaso);
                         final Integer valueOfIdAlerta = Integer.valueOf(idalerta);
-
-                        Caso caso = em.getReference(Caso.class, valueOfIdCaso);
-                        caso.setEstadoAlerta(em.getReference(TipoAlerta.class, valueOfIdAlerta));
+                        
+                        Caso caso = jpaController.getCasoFindByIdCaso(valueOfIdCaso);
+                        caso.setEstadoAlerta(jpaController.find(TipoAlerta.class, valueOfIdAlerta));
                         caso.setFechaModif(new Date());
 
-                        em.merge(caso);
+                        jpaController.merge(caso);
 
                         String idUser = context.getScheduler().getSchedulerName();
                         AuditLog audit = new AuditLog();
@@ -73,7 +79,7 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
                             audit.setOwner(caso.getOwner().getIdUsuario());
                         }
 
-                        em.persist(audit);
+                        jpaController.persist(audit);
 
                         unschedule(formatJobId(valueOfIdCaso, valueOfIdAlerta));
 
@@ -81,9 +87,7 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
                             HelpDeskScheluder.scheduleAlertaVencido(valueOfIdCaso, caso.getNextResponseDue());
                         }
 
-                    } finally {
-                        em.close();
-                    }
+                    }catch(Exception ex){Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "TicketAlertStateChangeJob.execute", ex);}
 
                 } else {
                     throw new IllegalStateException("los parametros proporcionados al Job CambiarEstadoAlertaCasoJob(schema, idCaso, idalerta) son illegales!");
