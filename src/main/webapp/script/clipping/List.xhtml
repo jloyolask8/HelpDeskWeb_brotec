@@ -80,12 +80,13 @@
                                     <h:outputText value="&nbsp;"/>
                                 </f:facet>
 
-
                                 <p:commandButton id="editBtn" actionListener="#{clippingController.selectItem}" oncomplete="editCreateDialog.show()" update=":form :createEditDialog"
                                                  icon="ui-icon ui-icon-pencil" rendered="#{item.idUsuarioCreadaPor eq UserSessionBean.current}"/>
-                                <p:commandButton id="showDialogButton"  update=":formDelete" 
-                                                 action="#{clippingController.selectItem}" oncomplete="confirmation.show()" 
-                                                 icon="ui-icon ui-icon-trash" rendered="#{item.idUsuarioCreadaPor eq UserSessionBean.current}"/>
+                            
+                                <p:commandButton icon="ui-icon ui-icon-trash" actionListener="#{clippingController.destroy()}" update=":form :mainform:messages">
+                                    <p:confirm header="Confirmación" message="Esta seguro de eliminar #{item.nombre} ??" icon="ui-icon-alert"/>
+                                </p:commandButton>
+
                             </p:column>
 
 
@@ -129,6 +130,12 @@
         </ui:define>
 
         <ui:define name="dialogs">
+
+            <p:confirmDialog closeOnEscape="true" global="true" showEffect="fade" hideEffect="explode" >
+                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/> 	
+            </p:confirmDialog>
+
             <p:dialog id="confirmDialog" showEffect="fade" hideEffect="clip" modal="true"
                       header="Iniciando proceso de eliminación" widgetVar="confirmation">
                 <h:form id="formDelete">
