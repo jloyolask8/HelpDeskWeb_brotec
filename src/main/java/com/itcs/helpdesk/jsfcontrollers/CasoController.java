@@ -161,7 +161,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      * Objetos para filtro
      */
     private transient TreeNode categoria;
-    private Long idCaso;
+    private String idCasoStr;
     /*
      * Objetos para attachments
      */
@@ -230,6 +230,10 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public List<AuditLog> getAuditLogsCurrentCase() {
+        if(current == null)
+        {
+            return null;
+        }
         Vista vista1 = new Vista(AuditLog.class);
         vista1.setIdUsuarioCreadaPor(userSessionBean.getCurrent());
         vista1.setNombre("Audit Logs");
@@ -723,7 +727,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public void init() {
 
 //        if (items == null) {
-        idCaso = null;
+        idCasoStr = null;
         pagination = null;
         items = null;
         prepareCasoFilterForInbox();
@@ -731,7 +735,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public String inbox() {
-        idCaso = null;
+        idCasoStr = null;
         pagination = null;
         items = null;
         prepareCasoFilterForInbox();
@@ -746,12 +750,12 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         this.idCaserel = idCaserel;
     }
 
-    public Long getIdCaso() {
-        return idCaso;
+    public String getIdCaso() {
+        return idCasoStr;
     }
 
-    public void setIdCaso(Long idCaso) {
-        this.idCaso = idCaso;
+    public void setIdCaso(String idCaso) {
+        this.idCasoStr = idCaso;
     }
 
     public String creaTituloDeNota(Nota nota) {
@@ -1490,10 +1494,19 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public String prepareEditCaso() {
-        if (idCaso == null) {
+        if (idCasoStr == null) {
             JsfUtil.addErrorMessage("Debe poner un numero de caso para ir");
             return "";
-        } else {
+        }
+        else {
+            long idCaso = -1;
+            try{
+                idCaso = Long.parseLong(idCasoStr);
+            }catch(NumberFormatException ex)
+            {
+                JsfUtil.addErrorMessage("Debe poner un numero de caso para ir");
+                return "";
+            }
             try {
                 Caso casoSearch = getJpaController().getCasoFindByIdCaso(idCaso);
                 if (casoSearch == null) {
@@ -1699,6 +1712,14 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     }
 
+    /**
+     * Crea un filtro para mostrar los casos con el flag revisar actualizacion
+     * activo.
+     * <p>
+     * Un caso cerrado puede tener actualización (Cuando un cliente responde,
+     * despues de cerrado el caso).
+     * @return La página inbox con el filtro ya definido.
+     */
     public String filtraRevisarActualizaciones() {
 //        //System.out.println("filtraRevisarActualizaciones");
         Vista vista1 = new Vista(Caso.class);
@@ -1712,14 +1733,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         filtroOwner.setIdVista(vista1);
 
         vista1.getFiltrosVistaList().add(filtroOwner);
-
-        FiltroVista filtroEstado = new FiltroVista();
-        filtroEstado.setIdCampo(Caso_.ESTADO_FIELD_NAME);
-        filtroEstado.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
-        filtroEstado.setValor(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
-        filtroEstado.setIdVista(vista1);
-
-        vista1.getFiltrosVistaList().add(filtroEstado);
 
         FiltroVista reviewUpdate = new FiltroVista();
         reviewUpdate.setIdCampo(Caso_.REVISAR_ACTUALIZACION_FIELD_NAME);
@@ -1927,8 +1940,18 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         return "/script/caso/Edit";
     }
+    
+    public void cerrarCaso()
+    {
+        if(cierraCaso())
+        {
+            if (isAjaxRequest()) {
+                redirect("/script/caso/Edit.xhtml");
+            }
+        }
+    }
 
-    public String cerrarCaso() {
+    private boolean cierraCaso() {
 
         List<AuditLog> changeLog = new ArrayList<AuditLog>();
 
@@ -1957,13 +1980,14 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 }
             }
 
-//            executeInClient("closeCase.hide()");
+            refreshCaso();
+            
         } catch (Exception e) {
             JsfUtil.addErrorMessage(resourceBundle.getString("caso.cerrar.nook"));
-            return null;
+            return false;
         }
 
-        return "/script/caso/Edit";
+        return true;
     }
 
     /**
@@ -1998,7 +2022,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             return;
         }
 
-        if (cerrarCaso() != null) {
+        if (cierraCaso()) {
             //visita preventiva
 
             persistProgramarVisitaPreventivaEvent();
