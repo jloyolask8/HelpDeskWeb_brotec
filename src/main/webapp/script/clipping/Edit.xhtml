@@ -39,21 +39,7 @@
 
                  <h:panelGrid>
                             <pe:ckEditor value="#{clippingController.selected.texto}"
-                                     toolbar="[
-                                     { name: 'document', items : [ 'Source','Preview','Print' ] },
-                                     { name: 'clipboard', items : [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ] },
-                                     { name: 'editing', items : [ 'SpellChecker', 'Scayt' ] },
-                                     { name: 'insert', items : [ 'Table','HorizontalRule','SpecialChar','PageBreak'] },
-                                     '/',
-                                     { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
-                                     { name: 'paragraph', items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'] },
-                                     '/',
-                                     { name: 'styles', items : [ 'Styles','Format','Font','FontSize' ] },
-                                     { name: 'colors', items : [ 'TextColor','BGColor' ] },
-                                     { name: 'tools', items : [ 'Maximize', 'ShowBlocks'] }
-
-                                     ]"
-
+                                    toolbar="#{applicationBean.ckEditorToolbar}"
                                      id="editor" width="560" height="210"/>
                         <p:commandLink id="overlayBtn" value="Marcadores de posición"  />  
                         <p:overlayPanel id="MarcadoresPanel" for="overlayBtn" hideEffect="fade" dynamic="true"> 

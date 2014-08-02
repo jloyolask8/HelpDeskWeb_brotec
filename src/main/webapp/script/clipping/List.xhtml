@@ -26,104 +26,104 @@
 
 
             <pe:layoutPane position="center" styleHeader="margin-top: 6px !important;">
-                    <f:facet name="header">
-                        <p:outputLabel value="#{bundle.ListClippingTitle}"/>
-                    </f:facet>                
+                <f:facet name="header">
+                    <p:outputLabel value="#{bundle.ListClippingTitle}"/>
+                </f:facet>                
 
-                    <h:form id="form">
-                        <p:messages />
+                <h:form id="form">
+                    <p:messages />
 
-                        <itcs:filterView controllerMBean="#{clippingController}" filterHelper="#{clippingController.filterHelper}" update=":mainform:messages :form"/>
+                    <itcs:filterView controllerMBean="#{clippingController}" filterHelper="#{clippingController.filterHelper}" update=":mainform:messages :form"/>
 
-                        <h:panelGroup>
-                            <p:dataTable id="panelG1" value="#{clippingController.items}" 
-                                         emptyMessage="#{bundle.ListClippingEmpty}"
-                                         var="item">
-                                <p:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="#{bundle.ListClippingTitle_idClipping}"/>
-                                    </f:facet>
-                                    <h:outputText value="#{item.idClipping}"/>
-                                </p:column>
-                                <p:column sortBy="#{item.nombre}">
-                                    <f:facet name="header">
-                                        <h:outputText value="#{bundle.ListClippingTitle_nombre}"/>
-                                    </f:facet>
-                                    <h:outputText id="name" value="#{item.nombre}"/>
-                                    <p:overlayPanel id="overlayPanel" for="name" hideEffect="fade" dynamic="true">  
-                                        <h:outputText value="#{item.texto}" escape="false"/>
-                                    </p:overlayPanel>
+                    <h:panelGroup>
+                        <p:dataTable id="panelG1" value="#{clippingController.items}" 
+                                     emptyMessage="#{bundle.ListClippingEmpty}"
+                                     var="item">
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{bundle.ListClippingTitle_idClipping}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.idClipping}"/>
+                            </p:column>
+                            <p:column sortBy="#{item.nombre}">
+                                <f:facet name="header">
+                                    <h:outputText value="#{bundle.ListClippingTitle_nombre}"/>
+                                </f:facet>
+                                <h:outputText id="name" value="#{item.nombre}"/>
+                                <p:overlayPanel id="overlayPanel" for="name" hideEffect="fade" dynamic="true">  
+                                    <h:outputText value="#{item.texto}" escape="false"/>
+                                </p:overlayPanel>
 
-                                </p:column>
+                            </p:column>
 
-                                <p:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="#{bundle.ListClippingTitle_visibleToAll}"/>
-                                    </f:facet>
-                                    <h:outputText value="#{item.visibleToAll ? 'Si':'No'}"/>
-                                </p:column>
-                                <p:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="#{bundle.ListClippingTitle_idGrupo}"/>
-                                    </f:facet>
-                                    <h:outputText value="#{item.idGrupo.nombre}"/>
-                                </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{bundle.ListClippingTitle_visibleToAll}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.visibleToAll ? 'Si':'No'}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{bundle.ListClippingTitle_idGrupo}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.idGrupo.nombre}"/>
+                            </p:column>
 
-                                <p:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="#{bundle.ListClippingTitle_idArea}"/>
-                                    </f:facet>
-                                    <h:outputText value="#{item.idArea.nombre}"/>
-                                </p:column>
-                                <p:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="&nbsp;"/>
-                                    </f:facet>
-
-
-                                    <p:commandButton id="editBtn" actionListener="#{clippingController.selectItem}" oncomplete="editCreateDialog.show()" update=":form :createEditDialog"
-                                                     icon="ui-icon ui-icon-pencil" rendered="#{item.idUsuarioCreadaPor eq UserSessionBean.current}"/>
-                                    <p:commandButton id="showDialogButton"  update=":formDelete" 
-                                                     action="#{clippingController.selectItem}" oncomplete="confirmation.show()" 
-                                                     icon="ui-icon ui-icon-trash" rendered="#{item.idUsuarioCreadaPor eq UserSessionBean.current}"/>
-                                </p:column>
-
-
-                                <f:facet name="footer">
-                                    <p:toolbar style="border: none;">
-                                        <p:toolbarGroup align="center">
-
-                                            <p:outputLabel value="Páginas de "/>
-                                            <p:selectOneMenu id="cant" value="#{clippingController.paginationPageSize}" style="top: 7px">
-                                                <p:ajax event="change" listener="#{clippingController.resetPageSize()}" update=":form"/>
-                                                <f:selectItems value="#{clippingController.pagination.pageSizesAvailable}"/>
-                                            </p:selectOneMenu>
-
-                                            <p:separator/>
-
-                                            <p:commandButton ajax="false" action="#{clippingController.first}" disabled="#{not clippingController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{clippingController.pagination.itemsCount > 0}"/>
-
-                                            <p:commandButton ajax="false" action="#{clippingController.previous}" disabled="#{not clippingController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{clippingController.pagination.itemsCount > 0}"/>
-
-                                            <p:commandButton ajax="false" action="#{clippingController.next}" disabled="#{not clippingController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{clippingController.pagination.itemsCount > 0}"/>
-
-                                            <p:commandButton ajax="false" action="#{clippingController.last}" disabled="#{not clippingController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{clippingController.pagination.itemsCount > 0}"/>
-
-                                            <p:separator/>
-
-                                            <p:commandButton actionListener="#{clippingController.prepareCreate}" oncomplete="editCreateDialog.show();" update=":form"
-                                                             value="#{bundle.ListClippingCreateLink}" icon="ui-icon ui-icon-plus"/>
-
-                                        </p:toolbarGroup>
-                                    </p:toolbar>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{bundle.ListClippingTitle_idArea}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.idArea.nombre}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="&nbsp;"/>
                                 </f:facet>
 
-                            </p:dataTable>
-                        </h:panelGroup>
+
+                                <p:commandButton id="editBtn" actionListener="#{clippingController.selectItem}" oncomplete="editCreateDialog.show()" update=":form :createEditDialog"
+                                                 icon="ui-icon ui-icon-pencil" rendered="#{item.idUsuarioCreadaPor eq UserSessionBean.current}"/>
+                                <p:commandButton id="showDialogButton"  update=":formDelete" 
+                                                 action="#{clippingController.selectItem}" oncomplete="confirmation.show()" 
+                                                 icon="ui-icon ui-icon-trash" rendered="#{item.idUsuarioCreadaPor eq UserSessionBean.current}"/>
+                            </p:column>
+
+
+                            <f:facet name="footer">
+                                <p:toolbar style="border: none;">
+                                    <p:toolbarGroup align="center">
+
+                                        <p:outputLabel value="Páginas de "/>
+                                        <p:selectOneMenu id="cant" value="#{clippingController.paginationPageSize}" style="top: 7px">
+                                            <p:ajax event="change" listener="#{clippingController.resetPageSize()}" update=":form"/>
+                                            <f:selectItems value="#{clippingController.pagination.pageSizesAvailable}"/>
+                                        </p:selectOneMenu>
+
+                                        <p:separator/>
+
+                                        <p:commandButton ajax="false" action="#{clippingController.first}" disabled="#{not clippingController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{clippingController.pagination.itemsCount > 0}"/>
+
+                                        <p:commandButton ajax="false" action="#{clippingController.previous}" disabled="#{not clippingController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{clippingController.pagination.itemsCount > 0}"/>
+
+                                        <p:commandButton ajax="false" action="#{clippingController.next}" disabled="#{not clippingController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{clippingController.pagination.itemsCount > 0}"/>
+
+                                        <p:commandButton ajax="false" action="#{clippingController.last}" disabled="#{not clippingController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{clippingController.pagination.itemsCount > 0}"/>
+
+                                        <p:separator/>
+
+                                        <p:commandButton actionListener="#{clippingController.prepareCreate}" oncomplete="editCreateDialog.show();" update=":createEditform"
+                                                         value="#{bundle.ListClippingCreateLink}" icon="ui-icon ui-icon-plus"/>
+
+                                    </p:toolbarGroup>
+                                </p:toolbar>
+                            </f:facet>
+
+                        </p:dataTable>
+                    </h:panelGroup>
 
 
 
-                    </h:form>
+                </h:form>
             </pe:layoutPane>
 
         </ui:define>
@@ -144,39 +144,29 @@
                       showEffect="fade" hideEffect="clip"  closable="true">
 
                 <h:form id="createEditform">
-                    <p:messages />
+                    <p:messages globalOnly="true"/>
                     <h:panelGrid columns="2">
                         <p:outputLabel value="#{bundle.EditClippingLabel_nombre}" for="nombre" style="font-weight: bold"/>
-                        <p:inputText id="nombre" value="#{clippingController.selected.nombre}" style="width: 600px"
-                                     title="#{bundle.EditClippingTitle_nombre}" required="true" 
-                                     requiredMessage="#{bundle.EditClippingRequiredMessage_nombre}"/>
+                        <h:panelGrid>
+                            <p:inputText id="nombre" value="#{clippingController.selected.nombre}" style="width: 600px"
+                                         title="#{bundle.EditClippingTitle_nombre}" required="true" 
+                                         requiredMessage="#{bundle.EditClippingRequiredMessage_nombre}"/>
+                            <p:message for="nombre"/>
+                        </h:panelGrid>
+
 
                         <p:outputLabel value="#{bundle.EditClippingLabel_texto}" style="font-weight: bold"/>
 
                         <h:panelGrid>
 
                             <pe:ckEditor id="respuesta" value="#{clippingController.selected.texto}" widgetVar="textoHtml"
+                                         required="true"
                                          width="600" height="210" language="es"
-                                         toolbar="[
-                                         { name: 'document', items : [ 'Source','Preview','Print' ] },
-                                         { name: 'clipboard', items : [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ] },
-                                         { name: 'editing', items : [ 'SpellChecker', 'Scayt' ] },
-                                         { name: 'insert', items : [ 'Table','HorizontalRule','SpecialChar','PageBreak'] },
-                                         '/',
-                                         { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
-                                         { name: 'paragraph', items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'] },
-                                         '/',
-                                         { name: 'links', items: [ 'Link', 'Unlink', 'Anchor' ] },
-                                         { name: 'insert', items: [ 'Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe' ] },
-                                         '/',
-                                         { name: 'styles', items : [ 'Styles','Format','Font','FontSize' ] },
-                                         { name: 'colors', items : [ 'TextColor','BGColor' ] },
-                                         { name: 'tools', items : [ 'Maximize', 'ShowBlocks'] }
-
-                                         ]"/>
+                                         toolbar="#{applicationBean.ckEditorToolbar}"/>
 
                             <p:commandLink id="overlayBtn" value="Marcadores de posición"  />  
-                            <p:overlayPanel id="MarcadoresPanel" for="overlayBtn" showEffect="clip" hideEffect="clip" dynamic="true"> 
+                            <p:overlayPanel id="MarcadoresPanel" for="overlayBtn" dismissable="true"
+                                            showEffect="clip" hideEffect="clip" dynamic="true"> 
                                 <p:dataTable value="#{clippingController.availablePlaceHolders}" var="holder" emptyMessage="No hay placeholders disponibles.">
                                     <p:column headerText="Marcadores de posición">
                                         <h:outputText value="\${#{holder}}"/>
@@ -186,7 +176,11 @@
                                     </f:facet>
                                 </p:dataTable>
                             </p:overlayPanel>
+
+                            <p:message for="respuesta"/>
                         </h:panelGrid>
+
+
 
 
                         <p:outputLabel value="Disponible Para:" for="VisibilidadPanel" style="font-weight: bold"/>
@@ -200,7 +194,7 @@
                             </p:selectOneRadio>  
 
                             <h:panelGrid>
-                                <h:panelGrid columns="3">
+                                <h:panelGrid columns="4">
                                     <p:radioButton id="visibleToAll" for="visibility" itemIndex="0"/>  
                                     <p:outputLabel value="Todos" for="visibleToAll" style="font-weight: bold"/>
 
@@ -210,42 +204,47 @@
                                         <f:selectItem itemLabel="Todos" itemValue="true" />  
                                         <f:selectItem itemLabel="Sólo yo" itemValue="false" />  
                                     </p:selectOneButton> 
+                                    <p:message for="visibleToAllSelect"/>
                                 </h:panelGrid>
 
-                                <h:panelGrid columns="3">
+                                <h:panelGrid columns="4">
                                     <p:radioButton id="idGrupo" for="visibility" itemIndex="1"/>  
                                     <p:outputLabel value="Grupo:" for="idGrupo" style="font-weight: bold"/>
                                     <p:selectOneMenu id="idGrupoSelect" value="#{clippingController.selected.idGrupo}" required="true" requiredMessage="Debe Seleccionar un grupo si desea Visibilidad a nivel de Grupo."
                                                      rendered="#{clippingController.visibilityOption eq 2}" >
                                         <f:selectItems value="#{grupoController.itemsAvailableSelectOne}"/>
                                     </p:selectOneMenu> 
+                                    <p:message for="idGrupoSelect"/>
                                 </h:panelGrid>
 
-                                <h:panelGrid columns="3">
+                                <h:panelGrid columns="4">
                                     <p:radioButton id="idArea" for="visibility" itemIndex="2"/>  
                                     <p:outputLabel value="Area:" for="idArea" style="font-weight: bold"/>
                                     <p:selectOneMenu id="idAreaSelect" value="#{clippingController.selected.idArea}" required="true" requiredMessage="Debe Seleccionar un Area si desea Visibilidad a nivel de Area."
                                                      rendered="#{clippingController.visibilityOption eq 3}">
                                         <f:selectItems value="#{areaController.itemsAvailableSelectOne}"/>
                                     </p:selectOneMenu>
+                                    <p:message for="idAreaSelect"/>
                                 </h:panelGrid>
                             </h:panelGrid>  
                         </p:outputPanel>
                     </h:panelGrid>
 
+                    <p:separator/>
+
+                    <p:commandButton value="Cerrar" oncomplete="editCreateDialog.hide()" process="@this" icon="ui-icon-arrowreturnthick-1-w"  >
+                        <p:resetInput target="@form" />
+                    </p:commandButton>
+
+                    <p:commandButton action="#{clippingController.update}" update=":createEditform" style="float: right;"
+                                     value="#{bundle.EditClippingSaveLink}" 
+                                     icon="ui-icon-disk" rendered="#{clippingController.selected.idClipping ne null}"/>
+                    <p:commandButton action="#{clippingController.create}" update=":createEditform" style="float: right;"
+                                     value="#{bundle.CreateClippingSaveLink}" 
+                                     icon="ui-icon-disk" rendered="#{clippingController.selected.idClipping eq null}"/>
 
 
-                    <p:toolbar>  
-                        <p:toolbarGroup align="left">   
-                            <p:commandButton action="#{clippingController.update}" update=":form" 
-                                             value="#{bundle.EditClippingSaveLink}" icon="ui-icon-disk" rendered="#{clippingController.selected.idClipping ne null}"/>
-                            <p:commandButton action="#{clippingController.create}" update=":form" 
-                                             value="#{bundle.CreateClippingSaveLink}" icon="ui-icon-disk" rendered="#{clippingController.selected.idClipping eq null}"/>
-                        </p:toolbarGroup>
-                        <p:toolbarGroup align="right">  
-                            <p:commandButton value="Cerrar" immediate="true" icon="ui-icon-arrowreturnthick-1-w"  onclick="editCreateDialog.hide()" update=":form"/>
-                        </p:toolbarGroup>
-                    </p:toolbar>
+
 
                 </h:form>
 

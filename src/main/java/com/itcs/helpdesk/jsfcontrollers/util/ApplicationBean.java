@@ -66,6 +66,10 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
     private final transient Map<Integer, Vista> predefinedVistas = new HashMap<Integer, Vista>();
     private Vista vistaRevisarActualizacion;
     private transient final Map<String, Action> predefinedActions = new HashMap<String, Action>();
+    
+    private String ckEditorToolbar = "[{ name: 'document', items : ['Preview', 'SpellChecker', 'Scayt', 'Link', 'Unlink', 'Iframe', 'Image','Table','HorizontalRule','NumberedList','BulletedList'] },"
+            + "{ name: 'style', items : ['Bold','Italic','Underline','TextColor','BGColor', '-','RemoveFormat','Blockquote'] },"
+            + "{ name: 'style', items : ['Styles','Format','Maximize']}]";
 
     @PostConstruct
     private void init() {
@@ -326,5 +330,19 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
 
     public Map<String, Action> getPredefinedActions() {
         return predefinedActions;
+    }
+
+    /**
+     * @return the ckEditorToolbar
+     */
+    public String getCkEditorToolbar() {
+        return ckEditorToolbar;
+    }
+
+    /**
+     * @param ckEditorToolbar the ckEditorToolbar to set
+     */
+    public void setCkEditorToolbar(String ckEditorToolbar) {
+        this.ckEditorToolbar = ckEditorToolbar;
     }
 }

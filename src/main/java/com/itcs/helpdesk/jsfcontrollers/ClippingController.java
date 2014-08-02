@@ -204,7 +204,9 @@ public class ClippingController extends AbstractManagedBean<Clipping> implements
             }
 
             getJpaController().getClippingJpaController().create(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ClippingCreated"));
+            addInfoMessage(ResourceBundle.getBundle("/Bundle").getString("ClippingCreated"));
+            getPrimefacesRequestContext().execute("editCreateDialog.hide()");
+            getPrimefacesRequestContext().update("form:panelG1");
             return prepareList();
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -245,7 +247,9 @@ public class ClippingController extends AbstractManagedBean<Clipping> implements
 
             }
             getJpaController().getClippingJpaController().edit(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ClippingUpdated"));
+            addInfoMessage(ResourceBundle.getBundle("/Bundle").getString("ClippingUpdated"));
+            getPrimefacesRequestContext().execute("editCreateDialog.hide()");
+            getPrimefacesRequestContext().update("form:panelG1");
             return null;
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
