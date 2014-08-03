@@ -51,21 +51,21 @@
                     border: none !important;
                     padding-top: 0px !important;
                     padding-left: 1px !important;
-                    margin-top: -5px !important;
+                    //margin-top: -5px !important;
                 }
 
                 .ui-layout-pane-center{
                     border: none !important;
                     padding-top: 0px !important;
                     padding-left: 1px !important;
-                    margin-top: -5px !important;
+                    //margin-top: -5px !important;
                 }
 
                 .ui-layout-pane-right{
                     border: none !important;
                     padding-top: 0px !important;
                     padding-left: 1px !important;
-                    margin-top: -5px !important;
+                    //margin-top: -5px !important;
                 }
 
                 .ui-toolbar-group-right{
@@ -155,88 +155,149 @@
 
                             <p:menubar id="menubar" autoDisplay="false" >
                                 <p:menuitem action="#{casoController.inbox}" 
-                                            ajax="false" value="Inbox" icon="fa fa-inbox"></p:menuitem>
+                                            ajax="false" value="Inbox" icon="fa fa-inbox">
+                                    <p:resetInput target="@form" />
+                                </p:menuitem>
                                 <p:submenu label="Casos" icon="fa fa-ticket">
-                                    <p:menuitem value="Crear Nuevo Caso" action="#{casoController.prepareCreate}" ajax="false" icon="ui-icon ui-icon-plus"/>  
-                                    <p:menuitem value="Crear Nuevo Caso Pre-Entrega" action="#{casoController.prepareCreateCasoPreentrega}" ajax="false" icon="paintbrushicon"
-                                                rendered="#{filtroAcceso.verificarAccesoACrearCasoPreentrega()}"/>  
+                                    <p:menuitem value="Crear Nuevo Caso" action="#{casoController.prepareCreate}" ajax="false" icon="fa fa-plus">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+                                    <p:menuitem value="Crear Nuevo Caso Pre-Entrega" action="#{casoController.prepareCreateCasoPreentrega}" ajax="false" icon="fa fa-briefcase"
+                                                rendered="#{filtroAcceso.verificarAccesoACrearCasoPreentrega()}">  
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
                                 </p:submenu>
 
-                                <p:menuitem value="Clientes" action="#{clienteController.prepareList}" ajax="false" icon="fa fa-group"/>
+                                <p:menuitem value="Clientes" action="#{clienteController.prepareList}" ajax="false" icon="fa fa-group">
+                                    <p:resetInput target="@form" />
+                                </p:menuitem>
                                 <p:menuitem value="#{applicationBean.productDescription}(s)" action="#{productoController.prepareList}"
-                                            ajax="false" icon="fa fa-building-o"/>
+                                            ajax="false" icon="fa fa-building-o">
+                                    <p:resetInput target="@form" />
+                                </p:menuitem>
 
-                                <p:menuitem value="Agenda" action="#{globalScheduleController.prepareList}" ajax="false" icon="fa fa-calendar"/>
+                                <p:menuitem value="Agenda" action="#{globalScheduleController.prepareList}" ajax="false" icon="fa fa-calendar">
+                                    <p:resetInput target="@form" />
+                                </p:menuitem>
 
                                 <p:submenu label="Supervision" icon="fa fa-eye" rendered="#{filtroAcceso.verificarAccesoAFuncionSupervision()}">
-                                    <p:menuitem value="Alertas" action="#{auditLogController.alertList()}" ajax="false" icon="ui-icon ui-icon-alert"></p:menuitem>
-                                    <p:menuitem value="Logs de Casos" ajax="false" action="#{auditLogController.prepareList}" icon="ui-icon ui-icon-info"></p:menuitem>
-                                    <p:menuitem value="Reportes" ajax="false" action="/script/report_graphs/reports" icon="chartbaricon"></p:menuitem>
+                                    <p:menuitem value="Alertas" action="#{auditLogController.alertList()}" ajax="false" icon="fa fa-exclamation-triangle">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+                                    <p:menuitem value="Logs de Casos" ajax="false" action="#{auditLogController.prepareList}" icon="fa fa-info-circle">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+                                    <p:menuitem value="Reportes" ajax="false" action="/script/report_graphs/reports" icon="fa fa-bar-chart-o ">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
                                 </p:submenu>
 
                                 <p:submenu label="Ajustes" icon="fa fa-wrench" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">                                
 
-                                    <p:menuitem value="Áreas" action="#{areaController.prepareList}" ajax="false" icon="fa fa-sitemap"/>
-                                    <p:menuitem value="Canales" action="#{canalController.prepareList}" ajax="false" icon="fa fa-exchange"/>
+                                    <p:menuitem value="Áreas" action="#{areaController.prepareList}" ajax="false" icon="fa fa-sitemap">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+                                    <p:menuitem value="Canales" action="#{canalController.prepareList}" ajax="false" icon="fa fa-exchange">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
                                     <p:separator/>
-                                    <p:menuitem value="Roles de Usuario" action="#{rolController.prepareList}" ajax="false" icon="fa fa-key"/>
-                                    <p:menuitem value="Usuarios/Agentes" action="#{usuarioController.prepareList}" ajax="false" icon="fa fa-user"/>
-                                    <p:menuitem value="Grupos de Agentes" action="#{grupoController.prepareList}" ajax="false" icon="fa fa-users"/>
+                                    <p:menuitem value="Roles de Usuario" action="#{rolController.prepareList}" ajax="false" icon="fa fa-key">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+                                    <p:menuitem value="Usuarios/Agentes" action="#{usuarioController.prepareList}" ajax="false" icon="fa fa-user">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+                                    <p:menuitem value="Grupos de Agentes" action="#{grupoController.prepareList}" ajax="false" icon="fa fa-users">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
                                     <p:separator/>
                                     <p:menuitem ajax="false" action="#{vistaController.prepareList()}" value="Vistas" icon="fa fa-filter"
-                                                disabled="#{not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"/>
-                                    <p:menuitem value="Categorías" action="#{categoriaController.prepareList}" ajax="false" icon="fa fa-folder"/>
-                                    <p:menuitem value="Sub Estados de Casos" action="#{subEstadoCasoController.prepareList}" ajax="false" icon="fa fa-bookmark"/>
-                                    <p:menuitem value="Tipos de Casos" action="#{tipoCasoController.prepareList}" ajax="false" icon="fa fa-exclamation"/>
+                                                disabled="#{not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+                                    <p:menuitem value="Categorías" action="#{categoriaController.prepareList}" ajax="false" icon="fa fa-folder">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+                                    <p:menuitem value="Sub Estados de Casos" action="#{subEstadoCasoController.prepareList}" ajax="false" icon="fa fa-bookmark">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+                                    <p:menuitem value="Tipos de Casos" action="#{tipoCasoController.prepareList}" ajax="false" icon="fa fa-exclamation">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
                                     <p:separator/>
-                                    <p:menuitem value="SLA y Prioridad de Casos" action="#{prioridadController.prepareList}" ajax="false" icon="fa fa-bell"/>
-                                    <p:menuitem value="Reglas de Negocio" action="#{reglaTriggerController.prepareList()}" ajax="false" icon="fa fa-cogs"/>
+                                    <p:menuitem value="SLA y Prioridad de Casos" action="#{prioridadController.prepareList}" ajax="false" icon="fa fa-bell">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+                                    <p:menuitem value="Reglas de Negocio" action="#{reglaTriggerController.prepareList()}" ajax="false" icon="fa fa-cogs">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
                                     <p:separator/>
                                     <p:menuitem value="Items de pre-entrega" action="#{itemController.prepareList}" ajax="false" icon="fa fa-briefcase"
-                                                rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarItemsPreentrega()}"/>
+                                                rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarItemsPreentrega()}">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
                                     <p:separator/>
-                                    <p:menuitem value="Lista negra (Correos)" action="#{blackListController.prepareList}" ajax="false" icon="fa fa-ban"  />
-                                    <p:menuitem value="Configuración" action="#{appSettingController.goToConfigPage}" ajax="false" icon="fa fa-wrench" />
+                                    <p:menuitem value="Lista negra (Correos)" action="#{blackListController.prepareList}" ajax="false" icon="fa fa-ban" >
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+                                    <p:menuitem value="Configuración" action="#{appSettingController.goToConfigPage}" ajax="false" icon="fa fa-wrench" >
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
 
                                 </p:submenu>
 
 
                                 <p:submenu label="Ajustes de Sistema" icon="ui-icon ui-icon-wrench" rendered="#{filtroAcceso.esUsuarioSistema()}">
-                                    <p:menuitem value="Funciones del Sistema" action="#{funcionController.prepareList()}" ajax="false" icon="ui-icon-wrench" />
-                                    <p:menuitem value="Estados de Casos" action="#{estadoCasoController.prepareList()}" ajax="false" icon="ui-icon-wrench" />
-                                    <p:menuitem value="Jobs Agendados" action="/script/scheduler/jobs" ajax="false" icon="ui-icon-wrench" />
+                                    <p:menuitem value="Funciones del Sistema" action="#{funcionController.prepareList()}" ajax="false" icon="ui-icon-wrench" >
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+                                    <p:menuitem value="Estados de Casos" action="#{estadoCasoController.prepareList()}" ajax="false" icon="ui-icon-wrench" >
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+                                    <p:menuitem value="Jobs Agendados" action="/script/scheduler/jobs" ajax="false" icon="ui-icon-wrench" >
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
                                 </p:submenu>    
 
                                 <p:submenu label="Mi Cuenta" icon="fa fa-user">                                
-                                    <p:menuitem value="Mis Datos" action="myAccount" ajax="false" icon="ui-icon ui-icon-person"></p:menuitem>
-                                    <p:menuitem value="Respuestas Predefinidas" action="#{clippingController.prepareList()}" ajax="false" icon="ui-icon ui-icon-comment"></p:menuitem>
-                                    <p:menuitem value="Cambiar Contraseña" onclick="panelChangePass.show()" icon="ui-icon ui-icon-key"></p:menuitem>
-                                    <p:menuitem action="#{loginController.logout_action}" ajax="false" value="Cerrar Sesión" icon="ui-icon ui-icon-power"></p:menuitem>
+                                    <p:menuitem value="Mis Datos" action="myAccount" ajax="false" icon="fa fa-user">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+                                    <p:menuitem value="Respuestas Predefinidas" action="#{clippingController.prepareList()}" ajax="false" icon="fa fa-comment-o">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+                                    <p:menuitem value="Cambiar Contraseña" onclick="panelChangePass.show()" icon="fa fa-key">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+                                    <p:menuitem action="#{loginController.logout_action}" ajax="false" value="Cerrar Sesión" icon="fa fa-power-off">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
                                 </p:submenu>
-
-
 
                                 <p:menuitem id="casosPendientes" value="#{casoController.casosPendientes}"
                                             disabled="#{casoController.casosPendientes eq 0}" ajax="false"
                                             action="#{casoController.filtraPorAlertaPendiente}" update="formfilter:filtros  formfilter:panelG1"
-                                            icon="pendienteicon"/>
+                                            icon="pendienteicon">
+                                    <p:resetInput target="@form" />
+                                </p:menuitem>
                                 <p:menuitem id="casosPorVencer" value="#{casoController.casosPorVencer}"
                                             disabled="#{casoController.casosPorVencer eq 0}" ajax="false"
                                             action="#{casoController.filtraPorAlertaPorVencer}" update="formfilter:filtros  formfilter:panelG1"
-                                            icon="porvencericon"/>
+                                            icon="porvencericon">
+                                    <p:resetInput target="@form" />
+                                </p:menuitem>
                                 <p:menuitem id="casosVencidos" value="#{casoController.casosVencido}"
                                             disabled="#{casoController.casosVencido eq 0}" ajax="false"
                                             action="#{casoController.filtraPorAlertaVencido}" update="formfilter:filtros  formfilter:panelG1"
-                                            icon="vencidoicon"/>
+                                            icon="vencidoicon">
+                                    <p:resetInput target="@form" />
+                                </p:menuitem>
                                 <p:menuitem id="casosActualizados" value="#{casoController.countCasosRevisarActualizacion}"
                                             disabled="#{casoController.countCasosRevisarActualizacion eq 0}" ajax="false"
                                             action="#{casoController.filtraRevisarActualizaciones}" update="formfilter:filtros  formfilter:panelG1"
                                             icon="actualizadoicon">
+                                    <p:resetInput target="@form" />
                                 </p:menuitem>
-
-
-
-
 
                                 <f:facet name="options">
 
@@ -246,10 +307,11 @@
                                                 <p:graphicImage library="images" name="ajax-loader_red.gif" />
                                             </f:facet>
                                         </p:ajaxStatus>
-
                                         <p:inputText id="idCaso" value="#{casoController.idCaso}" title="#{bundle.EditCasoTitle_idCaso}"
                                                      placeholder="id caso" style="margin-right:10px" size="6"/>
-                                        <p:commandButton ajax="false" action="#{casoController.prepareEditCaso}" icon="ui-icon ui-icon-search"/>
+                                        <p:commandButton ajax="false" action="#{casoController.prepareEditCaso}" icon="ui-icon ui-icon-search">
+                                            <p:resetInput target="@form" />
+                                        </p:commandButton>
                                     </h:panelGrid>
 
                                 </f:facet>

@@ -56,6 +56,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.mail.internet.MimeUtility;
 import javax.persistence.NoResultException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.mail.EmailAttachment;
@@ -302,7 +303,6 @@ public class ManagerCasos implements Serializable {
                         caso.setIdCliente(cliente_record);
                         getJpaController().persistEmailCliente(email_cliente);
                     } else {
-
                         if (datos.getTelefono() != null && !datos.getTelefono().isEmpty()) {
                             email_cliente.getCliente().setFono1(datos.getTelefono());
                         }
@@ -310,6 +310,7 @@ public class ManagerCasos implements Serializable {
                         getJpaController().merge(email_cliente.getCliente());
                     }
                     caso.setEmailCliente(email_cliente);
+                    caso.setIdCliente(email_cliente.getCliente());
                 } else {
                     EmailCliente new_email_cliente = new EmailCliente(address);
                     Cliente cliente_record = creaNuevoCliente(datos);
@@ -317,6 +318,7 @@ public class ManagerCasos implements Serializable {
                     new_email_cliente.setCliente(cliente_record);
                     getJpaController().persistEmailCliente(new_email_cliente);
                     caso.setEmailCliente(new_email_cliente);
+                    caso.setIdCliente(cliente_record);
                 }
             }
 
@@ -520,16 +522,17 @@ public class ManagerCasos implements Serializable {
                 datos.setEmail(item.getFromEmail().toLowerCase().trim());
 
                 if (item.getFromName() != null) {
-                    if (!item.getFromName().contains("=?ISO") && !item.getFromName().contains("UTF-8")) {//Bug Thunderbird
-                        String[] nombres = item.getFromName().split(" ");
-                        if (nombres.length > 0) {
-                            datos.setNombre(nombres[0]);
-                        }
-                        if (nombres.length > 1) {
-                            datos.setApellidos(nombres[1]);
-                        }
+                    
+                    String from = MimeUtility.decodeText(item.getFromName().replace("\"", ""));
+                    String[] nombres = from.split(" ");
+                    if (nombres.length > 0) {
+                        datos.setNombre(nombres[0]);
                     }
-
+                    if (nombres.length > 2) {
+                        datos.setApellidos(nombres[1] + " " + nombres[2]);
+                    } else if (nombres.length > 1) {
+                        datos.setApellidos(nombres[1]);
+                    }
                 }
 
                 datos.setTipoCaso(EnumTipoCaso.CONTACTO.getTipoCaso().getIdTipoCaso());

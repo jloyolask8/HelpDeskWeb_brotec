@@ -17,8 +17,6 @@
 
             </style>
 
-
-
         </ui:define>
 
 
@@ -266,7 +264,7 @@
                                             actionListener="#{casoController.prepareCreateRespuesta(actionEvent)}"
                                             update=":formrespuesta"/>
 
-                              
+
 
                                 <p:menuitem rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.PREVENTIVO.getTipoCaso()}"
                                             value="Generar Documento Visita Preventiva" 
@@ -594,7 +592,7 @@
                                                  value="#{casoController.selected.tipoCaso}" >
                                     <f:selectItem itemLabel="" itemValue=""/>
                                     <f:selectItems value="#{applicationBean.tipoCasoAvailableList}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
-                                    <p:ajax update=":formint1"/>
+                                    <p:ajax update=":formint1 :formCerrarCaso"/>
 
                                 </p:selectOneMenu>
 
@@ -613,7 +611,7 @@
                                                  filter="true" filterMatchMode="contains"
                                                  value="#{casoController.selected.idSubEstado}" >
                                     <f:selectItems value="#{casoController.itemsSubEstadoCasoAvailableSelectOneCasoAbierto}" var="subEstad" itemDescription="#{subEstad.description}"/>
-
+                                    <p:ajax update=":formint1 :formCerrarCaso"/>
                                 </p:selectOneMenu>
                                 <h:outputText styleClass="ticket-status" style="background: \##{casoController.selected.idSubEstado.backgroundColor}; color: \##{casoController.selected.idSubEstado.fontColor};" value="#{casoController.selected.idSubEstado.nombre}"
                                               rendered="#{casoController.selected.closed}"/>
@@ -631,6 +629,7 @@
                                                  required="true"
                                                  id="idPrioridad" value="#{casoController.selected.idPrioridad}" >
                                     <f:selectItems value="#{prioridadController.itemsAvailableSelectMany}"/>
+                                    <p:ajax update=":formint1 :formCerrarCaso"/>
                                 </p:selectOneMenu>
                             </p:column>
                         </p:row>
@@ -647,6 +646,7 @@
                                 <p:selectOneMenu disabled="#{casoController.selected.closed}" style="width: 220px;"
                                                  id="idResponsable" value="#{casoController.selected.idResponsable}" >
                                     <f:selectItems value="#{responsableController.itemsAvailableSelectOne}"/>
+                                    <p:ajax update=":formint1 :formCerrarCaso"/>
                                 </p:selectOneMenu>
                             </p:column>
                         </p:row>
@@ -664,7 +664,9 @@
                                         <p:column style="padding-left: 0px !important;">
                                             <div align="left">
                                                 <p:selectBooleanCheckbox id="idTechnicalService" disabled="#{casoController.selected.closed}" 
-                                                                         value="#{casoController.selected.servicioTecnico}" />
+                                                                         value="#{casoController.selected.servicioTecnico}" >
+                                                    <p:ajax update=":formint1 :formCerrarCaso"/>
+                                                </p:selectBooleanCheckbox>
                                             </div>
                                         </p:column>
                                     </p:row>
@@ -1145,7 +1147,7 @@
 
             <p:dialog header="Cerrar Caso" widgetVar="closeCase" modal="true" appendTo="@(body)" >
                 <h:form id="formCerrarCaso">
-                    
+
                     <p:messages/>
 
                     <h:panelGrid columns="3">
@@ -1177,7 +1179,7 @@
 
                         <p:commandButton value="Cancelar" ajax="true"  onclick="closeCase.hide()"   />
 
-                        <p:commandButton value="Cerrar el caso" ajax="false" update=":mainform:messages"
+                        <p:commandButton value="Cerrar el caso" ajax="true" update="formCerrarCaso :mainform:messages"
                                          actionListener="#{casoController.cerrarCaso}"   />
 
                         <p:commandButton value="Cerrar el caso y programar visita preventiva" 
@@ -1251,7 +1253,7 @@
                 </h:form>
             </p:dialog>
 
-            
+
             <p:dialog id="idDialogArbolItem" header="Seleccione Item" widgetVar="idDialogArbolItem" modal="true" appendTo="@(body)" height="550" >
                 <h:form id="formArbolItem">
                     <div align="left">

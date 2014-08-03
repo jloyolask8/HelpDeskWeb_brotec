@@ -166,6 +166,11 @@ public abstract class AbstractManagedBean<E> implements Serializable {
         RequestContext context = RequestContext.getCurrentInstance();
         context.execute(command);
     }
+    
+    protected void updateComponentInClient(String componentId)
+    {
+        RequestContext.getCurrentInstance().update(componentId);
+    }
 
     /**
      * RequestContext is a helper with various utilities. Update component(s)
