@@ -308,53 +308,11 @@ public class ClippingController extends AbstractManagedBean<Clipping> implements
         return items;
     }
 
-//    private void recreateModel() {
-//        items = null;
-//    }
-
-//    private void recreatePagination() {
-//        pagination = null;
-//    }
-
-//    public String next() {
-//        getPagination().nextPage();
-//        recreateModel();
-//        return "/script/clipping/List";
-//    }
-//
-//    public String previous() {
-//        getPagination().previousPage();
-//        recreateModel();
-//        return "/script/clipping/List";
-//    }
-//
-//    public String last() {
-//        getPagination().lastPage();
-//        recreateModel();
-//        return "/script/clipping/List";
-//    }
-//
-//    public String first() {
-//        getPagination().firstPage();
-//        recreateModel();
-//        return "/script/clipping/List";
-//    }
-
-//    public SelectItem[] getItemsAvailableSelectMany() {
-//        return JsfUtil.getSelectItems(getJpaController().getClippingJpaController().findClippingEntities(), false);
-//    }
-
     public List<Object> getAvailablePlaceHolders() {
         final ArrayList<Object> arrayList = new ArrayList<Object>(ClippingsPlaceHolders.getAvailablePlaceHolders());
         arrayList.add(ClippingsPlaceHolders.SALUDO_CLIENTE);
         return arrayList;
     }
-
-//    public SelectItem[] getItemsAvailableSelectOne() {
-//        return JsfUtil.getSelectItems(getJpaController().getClippingJpaController().findClippingEntities(), true);
-//    }
-
- 
 
     /**
      * @return the visibilityOption
@@ -372,7 +330,7 @@ public class ClippingController extends AbstractManagedBean<Clipping> implements
 
     @Override
     public Class getDataModelImplementationClass() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("getDataModelImplementationClass Not supported yet.");
     }
 
     @FacesConverter(forClass = Clipping.class)

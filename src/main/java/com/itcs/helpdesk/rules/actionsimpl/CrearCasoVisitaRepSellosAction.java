@@ -4,14 +4,13 @@
  */
 package com.itcs.helpdesk.rules.actionsimpl;
 
-import com.itcs.helpdesk.persistence.entities.Area;
 import com.itcs.helpdesk.persistence.entities.Caso;
-import com.itcs.helpdesk.persistence.entities.Grupo;
 import com.itcs.helpdesk.persistence.entities.Item;
 import com.itcs.helpdesk.persistence.entities.ScheduleEvent;
 import com.itcs.helpdesk.persistence.entities.SubEstadoCaso;
 import com.itcs.helpdesk.persistence.entities.TipoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumCanal;
+import com.itcs.helpdesk.persistence.entityenums.EnumResponsables;
 import com.itcs.helpdesk.persistence.entityenums.EnumSubEstadoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso;
@@ -72,7 +71,12 @@ public class CrearCasoVisitaRepSellosAction extends Action {
 
         Properties props = getConfigAsProperties();
         if (props != null && !props.isEmpty()) {
-            Caso casoPadre = crearSubCaso(props, casoAbuelo, EnumTipoCaso.PREVENTIVO.getTipoCaso(), EnumSubEstadoCaso.PREVENTIVO_ITEM_NUEVO.getSubEstado(), null);
+            Caso casoPadre = crearSubCaso(casoAbuelo, 
+                    EnumTipoCaso.PREVENTIVO.getTipoCaso(), 
+                    EnumSubEstadoCaso.PREVENTIVO_ITEM_NUEVO.getSubEstado(), 
+                    props.getProperty(TEMA_KEY),
+                    props.getProperty(DESC_KEY),
+                    null);
 //            Grupo grupo = getJpaController().getGrupoFindByIdGrupo(props.getProperty(GRUPO_KEY));
 //            ManagerCasos manager = new ManagerCasos(getJpaController());
 //            try {
@@ -86,9 +90,14 @@ public class CrearCasoVisitaRepSellosAction extends Action {
             if (idItems != null) {
                 String itemsIds[] = idItems.split(",");
                 for (String idItem : itemsIds) {
-                    Item i = getJpaController().find(Item.class, Integer.valueOf(idItem));
-                    if (i != null) {
-                        crearSubCaso(props, casoPadre, EnumTipoCaso.REPARACION_ITEM.getTipoCaso(), EnumSubEstadoCaso.PREVENTIVO_ITEM_NUEVO.getSubEstado(), i);
+                    Item item = getJpaController().find(Item.class, Integer.valueOf(idItem));
+                    if (item != null) {
+                        crearSubCaso(casoPadre, 
+                                EnumTipoCaso.REPARACION_ITEM.getTipoCaso(), 
+                                EnumSubEstadoCaso.REPARACION_ITEM_NUEVO.getSubEstado(), 
+                                "Reparación de Item con problema",
+                                "Caso de reparación de item. En este caso se debe detallar todas las actividades relacionadas a la reparación.",
+                                item);
                     } else {
                         Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "createSubCasos item error:{0}", idItem);
                     }
@@ -163,13 +172,20 @@ public class CrearCasoVisitaRepSellosAction extends Action {
 
     }
 
-    private Caso crearSubCaso(Properties props, Caso casoPadre, TipoCaso tipo, SubEstadoCaso subestado, Item item) {
+    private Caso crearSubCaso(Caso casoPadre, TipoCaso tipo, SubEstadoCaso subestado, String tema, String desc, Item item) {
         try {
             Caso casoNuevo = new Caso();
-            casoNuevo.setIdItem(item);
+            if (item != null) {
+                casoNuevo.setIdItem(item);  
+            }
+            
+            if(tipo.equals(EnumTipoCaso.PREVENTIVO.getTipoCaso())){
+                casoNuevo.setIdResponsable(EnumResponsables.INMOBILIARIA.getResponsable());
+            }
+
             casoNuevo.setOwner(casoPadre.getOwner());
-            casoNuevo.setTema(props.getProperty(TEMA_KEY));
-            casoNuevo.setDescripcion(props.getProperty(DESC_KEY));
+            casoNuevo.setTema(tema);
+            casoNuevo.setDescripcion(desc);
 //            casoNuevo.setIdArea(getJpaController().find(Area.class, props.getProperty(AREA_KEY)));// casoPadre.getIdArea());
 
             casoNuevo.setEmailCliente(casoPadre.getEmailCliente());
