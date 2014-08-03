@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ActaPreEntrega" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="9b70c661-19fe-4f6d-8636-a19551ab9767">
-	<property name="ireport.zoom" value="1.771561000000007"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="288"/>
+	<property name="ireport.zoom" value="4.594972986357238"/>
+	<property name="ireport.x" value="96"/>
+	<property name="ireport.y" value="1181"/>
 	<style name="Title" fontName="Arial" fontSize="26" isBold="true" pdfFontName="Helvetica-Bold"/>
 	<style name="SubTitle" forecolor="#666666" fontName="Arial" fontSize="18"/>
 	<style name="Column header" forecolor="#666666" fontName="Arial" fontSize="12" isBold="true"/>
@@ -318,7 +318,7 @@
 	<columnFooter>
 		<band height="1">
 			<line>
-				<reportElement uuid="110c1cc7-4076-4d7b-badb-a947850247c4" x="13" y="-1" width="527" height="1"/>
+				<reportElement uuid="110c1cc7-4076-4d7b-badb-a947850247c4" positionType="Float" x="13" y="-1" width="527" height="1"/>
 			</line>
 		</band>
 	</columnFooter>
