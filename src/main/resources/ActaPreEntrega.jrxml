@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ActaPreEntrega" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="9b70c661-19fe-4f6d-8636-a19551ab9767">
-	<property name="ireport.zoom" value="4.594972986357238"/>
-	<property name="ireport.x" value="96"/>
-	<property name="ireport.y" value="1181"/>
+	<property name="ireport.zoom" value="1.6105100000000072"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
 	<style name="Title" fontName="Arial" fontSize="26" isBold="true" pdfFontName="Helvetica-Bold"/>
 	<style name="SubTitle" forecolor="#666666" fontName="Arial" fontSize="18"/>
 	<style name="Column header" forecolor="#666666" fontName="Arial" fontSize="12" isBold="true"/>
@@ -26,6 +26,12 @@
 	</field>
 	<field name="idRecinto" class="java.lang.String">
 		<fieldDescription><![CDATA[idRecinto]]></fieldDescription>
+	</field>
+	<field name="casosHijosList" class="java.util.List">
+		<fieldDescription><![CDATA[casosHijosList]]></fieldDescription>
+	</field>
+	<field name="tipoCaso" class="com.itcs.helpdesk.persistence.entities.TipoCaso">
+		<fieldDescription><![CDATA[tipoCaso]]></fieldDescription>
 	</field>
 	<background>
 		<band height="802" splitType="Stretch">
@@ -265,6 +271,7 @@
 	</columnHeader>
 	<detail>
 		<band height="20" splitType="Stretch">
+			<printWhenExpression><![CDATA[$F{tipoCaso}.equals(com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso.REPARACION_ITEM.getTipoCaso())]]></printWhenExpression>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement uuid="aa9315c5-5db3-4cb1-a580-0fbebc18dff9" stretchType="RelativeToTallestObject" x="13" y="0" width="50" height="20"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
