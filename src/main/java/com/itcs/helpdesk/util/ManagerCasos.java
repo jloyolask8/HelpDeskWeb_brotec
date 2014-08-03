@@ -500,8 +500,6 @@ public class ManagerCasos implements Serializable {
         return createdCaso;
     }
 
-    
-
     public boolean crearCasoDesdeEmail(Canal canal, EmailMessage item) {
         boolean retorno = false;
         try {
@@ -633,7 +631,7 @@ public class ManagerCasos implements Serializable {
 
             if ((casosHijos != null) && (!casosHijos.isEmpty())) {
 
-                System.out.println("pppppersisting casos hijosss");
+//                System.out.println("pppppersisting casos hijosss");
                 EmailCliente emailCliente = null;
                 String email = null;
                 Usuario uCliente = null;
@@ -680,6 +678,7 @@ public class ManagerCasos implements Serializable {
                     casoHijo.setFechaModif(fechaCreacion);
                     casoHijo.setIdCasoPadre(caso);
                     casoHijo.setIdArea(caso.getIdArea());
+                    casoHijo.setEstadoAlerta(EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta());
                     casoHijo.setIdCanal(EnumCanal.MANUAL.getCanal());
 
                     casoHijo.setIdPrioridad(caso.getIdPrioridad());
