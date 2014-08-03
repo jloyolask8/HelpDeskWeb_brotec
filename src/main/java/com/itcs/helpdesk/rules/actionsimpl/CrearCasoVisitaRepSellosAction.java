@@ -71,9 +71,9 @@ public class CrearCasoVisitaRepSellosAction extends Action {
 
         Properties props = getConfigAsProperties();
         if (props != null && !props.isEmpty()) {
-            Caso casoPadre = crearSubCaso(casoAbuelo, 
-                    EnumTipoCaso.PREVENTIVO.getTipoCaso(), 
-                    EnumSubEstadoCaso.PREVENTIVO_ITEM_NUEVO.getSubEstado(), 
+            Caso casoPadre = crearSubCaso(casoAbuelo,
+                    EnumTipoCaso.PREVENTIVO.getTipoCaso(),
+                    EnumSubEstadoCaso.PREVENTIVO_ITEM_NUEVO.getSubEstado(),
                     props.getProperty(TEMA_KEY),
                     props.getProperty(DESC_KEY),
                     null);
@@ -92,9 +92,9 @@ public class CrearCasoVisitaRepSellosAction extends Action {
                 for (String idItem : itemsIds) {
                     Item item = getJpaController().find(Item.class, Integer.valueOf(idItem));
                     if (item != null) {
-                        crearSubCaso(casoPadre, 
-                                EnumTipoCaso.REPARACION_ITEM.getTipoCaso(), 
-                                EnumSubEstadoCaso.REPARACION_ITEM_NUEVO.getSubEstado(), 
+                        crearSubCaso(casoPadre,
+                                EnumTipoCaso.REPARACION_ITEM.getTipoCaso(),
+                                EnumSubEstadoCaso.REPARACION_ITEM_NUEVO.getSubEstado(),
                                 "Reparación de Item con problema",
                                 "Caso de reparación de item. En este caso se debe detallar todas las actividades relacionadas a la reparación.",
                                 item);
@@ -109,34 +109,44 @@ public class CrearCasoVisitaRepSellosAction extends Action {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
             try {
-                String fechaVisitaString = props.getProperty(FECHA_VISITA_KEY);
-                final Date parseDate = sdf.parse(fechaVisitaString);
+                if (casoPadre != null) {
+                    String fechaVisitaString = props.getProperty(FECHA_VISITA_KEY);
+                    final Date parseDate = sdf.parse(fechaVisitaString);
 
-                calendar.setTime(parseDate);
-                if (calendar.get(Calendar.HOUR_OF_DAY) == 0) {
-                    calendar.set(Calendar.HOUR_OF_DAY, 8);
+                    calendar.setTime(parseDate);
+                    if (calendar.get(Calendar.HOUR_OF_DAY) == 0) {
+                        calendar.set(Calendar.HOUR_OF_DAY, 8);
+                    }
+
+                    getJpaController().persist(buildEvent(casoPadre, "Visita Inspectiva", "Evento de Visita Inspectiva programado con fecha estimada. La fecha definitiva debe ser confirmada con el cliente.",
+                            calendar.getTime(), calendar.getTime()));
+                }else{
+                    Logger.getLogger(CrearCasoVisitaRepSellosAction.class.getName()).log(Level.SEVERE, "no se puede crear el evento, el caso padre es null =(");
                 }
 
-                getJpaController().persist(buildEvent(casoPadre, "Visita Inspectiva", "Evento de Visita Inspectiva programado con fecha estimada. La fecha definitiva debe ser confirmada con el cliente.",
-                        calendar.getTime(), calendar.getTime()));
             } catch (Exception ex) {
-                Logger.getLogger(CrearCasoVisitaRepSellosAction.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(CrearCasoVisitaRepSellosAction.class.getName()).log(Level.SEVERE, "no se puede crear el evento", ex);
             }
 
             try {
-                String fechaRepString = props.getProperty(FECHA_REP_KEY);
+                if (casoPadre != null) {
+                    String fechaRepString = props.getProperty(FECHA_REP_KEY);
 
-                final Date parseDate = sdf.parse(fechaRepString);
+                    final Date parseDate = sdf.parse(fechaRepString);
 
-                calendar.setTime(parseDate);
-                if (calendar.get(Calendar.HOUR_OF_DAY) == 0) {
-                    calendar.set(Calendar.HOUR_OF_DAY, 8);
+                    calendar.setTime(parseDate);
+                    if (calendar.get(Calendar.HOUR_OF_DAY) == 0) {
+                        calendar.set(Calendar.HOUR_OF_DAY, 8);
+                    }
+
+                    getJpaController().persist(buildEvent(casoPadre, "Evento de Reparación", "Evento de Reparación programado con fecha estimada. La fecha definitiva debe ser confirmada con el cliente y los responsables de reparar.",
+                            calendar.getTime(), calendar.getTime()));
+                }else{
+                    Logger.getLogger(CrearCasoVisitaRepSellosAction.class.getName()).log(Level.SEVERE, "no se puede crear el evento, el caso padre es null =(");
                 }
 
-                getJpaController().persist(buildEvent(casoPadre, "Evento de Reparación", "Evento de Reparación programado con fecha estimada. La fecha definitiva debe ser confirmada con el cliente y los responsables de reparar.",
-                        calendar.getTime(), calendar.getTime()));
             } catch (Exception ex) {
-                Logger.getLogger(CrearCasoVisitaRepSellosAction.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(CrearCasoVisitaRepSellosAction.class.getName()).log(Level.SEVERE, "no se puede crear el evento", ex);
             }
 
         } else {
@@ -176,10 +186,10 @@ public class CrearCasoVisitaRepSellosAction extends Action {
         try {
             Caso casoNuevo = new Caso();
             if (item != null) {
-                casoNuevo.setIdItem(item);  
+                casoNuevo.setIdItem(item);
             }
-            
-            if(tipo.equals(EnumTipoCaso.PREVENTIVO.getTipoCaso())){
+
+            if (tipo.equals(EnumTipoCaso.PREVENTIVO.getTipoCaso())) {
                 casoNuevo.setIdResponsable(EnumResponsables.INMOBILIARIA.getResponsable());
             }
 
