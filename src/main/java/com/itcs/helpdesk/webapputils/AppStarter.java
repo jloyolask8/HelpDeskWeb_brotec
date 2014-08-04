@@ -60,8 +60,8 @@ public class AppStarter implements ServletContextListener {
     private void inicializar() throws SchedulerException {
         Log.createLogger(this.getClass().getName()).logInfo("Inicializando");
 
-//        AutomaticOpsExecutor autoOpsExec = new AutomaticOpsExecutor(utx, emf);
-//        autoOpsExec.verificaDatosBase();
+        AutomaticOpsExecutor autoOpsExec = new AutomaticOpsExecutor(utx, emf);
+        autoOpsExec.verificaDatosBase();
 
         //1. Load Settings FROM APP_SETTING Table
         AppSettingJpaController appSettingJpaController = new AppSettingJpaController(utx, emf);
