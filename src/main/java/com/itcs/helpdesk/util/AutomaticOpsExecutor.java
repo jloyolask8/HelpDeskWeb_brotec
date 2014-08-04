@@ -112,6 +112,8 @@ public class AutomaticOpsExecutor {
         JPAServiceFacade controller = getJpaController();
         System.out.println("verificaDatosBase()...");
 
+        verificarTipoCaso(controller);
+        
         verificarAreas(controller);
         verificarGrupos(controller);
         verificarUsuarios(controller);
@@ -119,7 +121,7 @@ public class AutomaticOpsExecutor {
         verificarCategorias(controller);
         verificarRoles(controller);
 
-        verificarTipoCaso(controller);
+        
         verificarEstadosCaso(controller);
         verificarSubEstadosCaso(controller);
 
@@ -407,7 +409,7 @@ public class AutomaticOpsExecutor {
                     throw new NoResultException();
                 }
             } catch (NoResultException ex) {
-                Log.createLogger(this.getClass().getName()).logSevere("No existe sub estado " + enumSubEstado.getSubEstado().getNombre() + ", se creara ahora");
+                Log.createLogger(this.getClass().getName()).logSevere("No existe sub estado !!!, se creara ahora");
                 try {
                     jpaController.persistSubEstadoCaso(enumSubEstado.getSubEstado());
                 } catch (Exception e) {
@@ -424,7 +426,7 @@ public class AutomaticOpsExecutor {
                     throw new NoResultException();
                 }
             } catch (NoResultException ex) {
-                Log.createLogger(this.getClass().getName()).logSevere("No existe el tipo caso " + enumTipoCaso.getTipoCaso().getIdTipoCaso() + ", se creara ahora");
+                Log.createLogger(this.getClass().getName()).logSevere("No existe el tipo caso !!!, se creara ahora");
                 try {
                     jpaController.persist(enumTipoCaso.getTipoCaso());
                 } catch (Exception e) {
