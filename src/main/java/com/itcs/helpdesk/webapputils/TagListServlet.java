@@ -33,9 +33,8 @@ public class TagListServlet extends HttpServlet {
     private JPAServiceFacade jpaController = null;
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -48,26 +47,26 @@ public class TagListServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         try {
             /* TODO output your page here. You may use following sample code. */
-          String q = request.getParameter("q");
-          if(q != null && !StringUtils.isEmpty(q)){
-              out.println(getTagJSonList(q)); 
-          }else{
-              out.println(getTagJSonList()); 
-          }
-                        System.out.println("getTagJSonList("+q+")");
+            String q = request.getParameter("q");
+            String u = request.getParameter("u");
+            if (q != null && !StringUtils.isEmpty(q)) {
+                out.println(getTagJSonList(q, u));
+            } else {
+                out.println(getTagJSonList());
+            }
+            System.out.println("getTagJSonList(" + q + ")");
 
-          
         } finally {
             out.close();
         }
     }
 
-    public String getTagJSonList(String pattern) {
-        JSONArray list = new JSONArray((List<Etiqueta>) getJpaController().findEtiquetasLike(pattern));
+    public String getTagJSonList(String pattern, String idUsuario) {
+        JSONArray list = new JSONArray((List<Etiqueta>) getJpaController().findEtiquetasLike(pattern, idUsuario));
         return list.toString();
     }
-    
-     public String getTagJSonList() {
+
+    public String getTagJSonList() {
         JSONArray list = new JSONArray((List<Etiqueta>) getJpaController().findAll(Etiqueta.class));
         return list.toString();
     }
@@ -81,8 +80,7 @@ public class TagListServlet extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -96,8 +94,7 @@ public class TagListServlet extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
