@@ -238,7 +238,7 @@
                     
                                     jQuery(".tm-input").typeahead({
                                         name: 'etiquetas',
-                                        remote: '#{facesContext.externalContext.requestContextPath}/TagListServlet?q=%QUERY',
+                                        remote: '#{facesContext.externalContext.requestContextPath}/TagListServlet?q=%QUERY&amp;u=#{UserSessionBean.current.idUsuario}',
                                         limit: 10  
                                     }).on('typeahead:selected', function (e, d) {
  
