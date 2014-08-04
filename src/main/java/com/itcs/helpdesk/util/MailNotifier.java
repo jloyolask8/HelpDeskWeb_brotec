@@ -117,17 +117,18 @@ public class MailNotifier {
         //TODO: use configure texts.
         if (caso != null && caso.getEmailCliente() != null) {
             try {
-                String mensaje_ = "fix this text in emailClientCasoReceived";
-                String subject_ = "fix this text in emailClientCasoReceived";
-//                if (caso.getIdArea() != null) {
-//                    if (caso.getIdArea().getTextoRespAutomatica() != null) {
-//                        mensaje_ = (ClippingsPlaceHolders.buildFinalText(caso.getIdArea().getTextoRespAutomatica(), caso));
-//                    }
-//
-//                    if (caso.getIdArea().getSubjectRespAutomatica() != null) {
-//                        subject_ = (ClippingsPlaceHolders.buildFinalText(caso.getIdArea().getSubjectRespAutomatica(), caso));
-//                    }
-//                }
+                String mensaje_ = "";
+                String subject_ = "";
+                
+                if (caso.getIdArea() != null) {
+                    if (caso.getIdArea().getTextoRespAutomatica() != null) {
+                        mensaje_ = (ClippingsPlaceHolders.buildFinalText(caso.getIdArea().getTextoRespAutomatica(), caso));
+                    }
+
+                    if (caso.getIdArea().getSubjectRespAutomatica() != null) {
+                        subject_ = (ClippingsPlaceHolders.buildFinalText(caso.getIdArea().getSubjectRespAutomatica(), caso));
+                    }
+                }
 
                 final String subject = ManagerCasos.formatIdCaso(caso.getIdCaso()) + " " + subject_;
                 final String mensaje = mensaje_;
