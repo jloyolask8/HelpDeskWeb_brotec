@@ -2460,7 +2460,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private void agregarNotaACaso(Nota nota) throws Exception {
 
 //        getJpaController().refresh(current);
-        getJpaController().persist(nota);
+        getJpaController().getNotaJpaController().create(nota);
+//        getJpaController().persist(nota);
         this.justCreadedNotaId = nota.getIdNota();
         List<Nota> notas = current.getNotaList();
         notas.add(nota);

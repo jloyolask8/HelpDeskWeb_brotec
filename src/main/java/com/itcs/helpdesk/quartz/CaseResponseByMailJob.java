@@ -110,7 +110,7 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
                         Nota nota = jpaController.getReference(Nota.class, Integer.valueOf(idNota));
                         nota.setFechaEnvio(new Date());
                         nota.setEnviado(Boolean.TRUE);
-                        jpaController.merge(nota);
+                        jpaController.getNotaJpaController().edit(nota);
                         unschedule(formatJobId);
                     } catch (SchedulerException ex) {
                         Logger.getLogger(CaseResponseByMailJob.class.getName()).log(Level.SEVERE, "no se pudo desagendar " + formatJobId, ex);
