@@ -1,8 +1,6 @@
 package com.itcs.helpdesk.util;
 
 import com.itcs.helpdesk.persistence.entities.Caso;
-import com.itcs.helpdesk.persistence.entities.Cliente;
-import com.itcs.helpdesk.persistence.entities.Cliente_;
 import com.itcs.helpdesk.persistence.entities.FieldType;
 import com.itcs.helpdesk.persistence.entities.Prioridad;
 import com.itcs.helpdesk.persistence.entities.Responsable;
@@ -33,12 +31,10 @@ import com.itcs.helpdesk.persistence.jpa.exceptions.RollbackFailureException;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.quartz.HelpDeskScheluder;
 import com.itcs.jpautils.EasyCriteriaQuery;
-import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.mail.internet.MimeUtility;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.transaction.UserTransaction;
@@ -67,6 +63,49 @@ public class AutomaticOpsExecutor {
             managerCasos.setJpaController(getJpaController());
         }
         return managerCasos;
+    }
+
+    public void agendarAlertasForAllCasos() {
+        //System.out.println("calcularAlertas");
+        if (!alertasAgendadas) {
+
+            List<Caso> casos_pendiente = getJpaController().getCasoFindByEstadoAndAlerta(EnumEstadoCaso.ABIERTO.getEstado(), EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta());
+//            System.out.println("encontrados "+casos.size()+" casos "+EnumTipoAlerta.TIPO_ALERTA_PENDIENTE+" que se debe agendar cambio de alerta");
+
+            for (Caso caso : casos_pendiente) {
+                if (caso.getNextResponseDue() != null) {
+                    try {
+                        if ((caso.getEstadoAlerta().getIdalerta().equals(EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta().getIdalerta()))
+                                && (caso.getNextResponseDue().after(Calendar.getInstance().getTime()))) {
+                            HelpDeskScheluder.scheduleAlertaPorVencer(caso.getIdCaso(), ManagerCasos.calculaCuandoPasaAPorVencer(caso));
+                        }
+
+                        //Siempre se debe agendar el cambio a caso vencido para cuando se acabe el plazo para responder el caso
+                        //                    HelpDeskScheluder.scheduleAlertaVencido(caso.getIdCaso(), caso.getNextResponseDue());
+                        //                    agendarCambioEstadoAlerta(schema, caso);
+                    } catch (SchedulerException ex) {
+                        Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "Caso " + caso.getIdCaso() + " agendarAlertasForAllCasos -> pendientes", ex);
+                    } catch (NullPointerException ex) {
+                        Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "Caso " + caso.getIdCaso() + " error grave: ", ex);
+                    }
+                }
+            }
+
+            List<Caso> casos_por_vencer = getJpaController().getCasoFindByEstadoAndAlerta(EnumEstadoCaso.ABIERTO.getEstado(),
+                    EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta());
+//            System.out.println("encontrados "+casos.size()+" casos "+EnumTipoAlerta.TIPO_ALERTA_POR_VENCER+" que se debe agendar cambio de alerta");
+            for (Caso caso : casos_por_vencer) {
+                try {
+                    HelpDeskScheluder.scheduleAlertaVencido(caso.getIdCaso(), caso.getNextResponseDue());
+//                    agendarCambioEstadoAlerta(schema, caso);
+                } catch (SchedulerException ex) {
+                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "agendarAlertasForAllCasos -> por vencer", ex);
+                }
+            }
+
+            alertasAgendadas = true;
+
+        }
     }
 
 //    public void agendarAgendarAlertas() throws SchedulerException {
@@ -131,49 +170,20 @@ public class AutomaticOpsExecutor {
         verificarSettingsBase(controller);
         verificarTipoCanal(controller);
         fixClientesCasos(controller);
-        fixNombreCliente(controller);
         verificarResponsables(controller);
     }
-
-    private void fixClientesCasos(JPAServiceFacade jpaController) {
+    
+    private void fixClientesCasos(JPAServiceFacade jpaController){
         EasyCriteriaQuery<Caso> ecq = new EasyCriteriaQuery<Caso>(emf, Caso.class);
         ecq.addEqualPredicate("idCliente", null);
         ecq.addDistinctPredicate("emailCliente", null);
         List<Caso> casosToFix = ecq.getAllResultList();
-
+        
         for (Caso caso : casosToFix) {
             caso.setIdCliente(caso.getEmailCliente().getCliente());
             try {
                 jpaController.merge(caso);
             } catch (Exception ex) {
-                Logger.getLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
-
-    private void fixNombreCliente(JPAServiceFacade jpaController) {
-        EasyCriteriaQuery<Cliente> ecq = new EasyCriteriaQuery<Cliente>(emf, Cliente.class);
-        ecq.addLikePredicate(Cliente_.nombres.getName(), "%=?ISO-8859-1%");
-        List<Cliente> clientsToFix = ecq.getAllResultList();
-
-        for (Cliente cliente : clientsToFix) {
-            try {
-                String from = MimeUtility.decodeText(cliente.getNombres().replace("\"", ""));
-                String[] nombres = from.split(" ");
-                if (nombres.length > 0) {
-                    cliente.setNombres(nombres[0]);
-                }
-                if (nombres.length > 2) {
-                    cliente.setApellidos(nombres[1] + " " + nombres[2]);
-                } else if (nombres.length > 1) {
-                    cliente.setApellidos(nombres[1]);
-                }
-                try {
-                    jpaController.merge(cliente);
-                } catch (Exception ex) {
-                    Logger.getLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            } catch (UnsupportedEncodingException ex) {
                 Logger.getLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -214,7 +224,7 @@ public class AutomaticOpsExecutor {
             }
         }
     }
-
+    
     private void verificarTipoCanal(JPAServiceFacade jpaController) {
         for (EnumTipoCanal enumTipoCanal : EnumTipoCanal.values()) {
             System.out.println("verificando tipo de canal");
@@ -223,7 +233,7 @@ public class AutomaticOpsExecutor {
                 if (null == tipoCanal) {
                     throw new NoResultException();
                 }
-            } catch (Exception ex) {
+            } catch (Exception ex ) {
                 Log.createLogger(this.getClass().getName()).logSevere("No existe tipo canal " + enumTipoCanal.getTipoCanal().getIdTipo() + ", se creara ahora");
                 try {
                     jpaController.persist(enumTipoCanal.getTipoCanal());
@@ -325,7 +335,7 @@ public class AutomaticOpsExecutor {
             }
         }
     }
-
+    
     private void verificarResponsables(JPAServiceFacade jpaController) {
         for (EnumResponsables enumResponsables : EnumResponsables.values()) {
             try {
@@ -333,7 +343,7 @@ public class AutomaticOpsExecutor {
                     throw new NoResultException();
                 }
             } catch (NoResultException ex) {
-                Log.createLogger(this.getClass().getName()).logSevere("No existe el responsable " + enumResponsables.getResponsable().getNombreResponsable() + ", se creara ahora");
+                Log.createLogger(this.getClass().getName()).logSevere("No existe el responsable " + enumResponsables.getResponsable().getNombreResponsable()+ ", se creara ahora");
                 try {
                     jpaController.persist(enumResponsables.getResponsable());
                 } catch (Exception e) {

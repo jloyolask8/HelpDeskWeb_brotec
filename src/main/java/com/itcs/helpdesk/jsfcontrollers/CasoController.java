@@ -615,9 +615,15 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             getJpaController().persistEmailCliente(newCaso.getEmailCliente());
         }
 
-        getManagerCasos().persistCaso(newCaso, getManagerCasos().createLogReg(newCaso, "Caso", "Se crea caso manual", ""));
+        getManagerCasos().persistCaso(newCaso, ManagerCasos.createLogReg(newCaso, "Caso", "Se crea caso manual", ""));
+        if(newCaso.getIdCasoPadre() != null)
+        {
+            Caso casoPadre = newCaso.getIdCasoPadre();
+            casoPadre.getCasosHijosList().add(newCaso);
+            getManagerCasos().mergeCaso(casoPadre, ManagerCasos.createLogReg(casoPadre, "Nuevo subCaso", newCaso.getIdCaso().toString(), ""));
+        }
 //        getManagerCasos().agendarAlertas(newCaso);
-        HelpDeskScheluder.scheduleAlertaPorVencer(newCaso.getIdCaso(), getManagerCasos().calculaCuandoPasaAPorVencer(newCaso));
+        HelpDeskScheluder.scheduleAlertaPorVencer(newCaso.getIdCaso(), ManagerCasos.calculaCuandoPasaAPorVencer(newCaso));
         JsfUtil.addSuccessMessage("El Caso " + newCaso.getIdCaso() + " ha sido creado con éxito.");
 
     }
@@ -1139,7 +1145,13 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             current.setIdCasoPadre(casoTmp);
             Usuario usr = casoTmp.getOwner();
             EmailCliente cliente = getJpaController().getEmailClienteFindByEmail(usr.getEmail());
+            current.setIdCliente(casoTmp.getIdCliente());
+            rutCliente_wizard = casoTmp.getIdCliente().getRut();
+            emailCliente_wizard_existeCliente = true;
+            emailCliente_wizard_existeEmail = true;
+            emailCliente_wizard_updateCliente = false;
             if (cliente != null) {
+                emailCliente_wizard = cliente.getEmailCliente();
                 current.setEmailCliente(cliente);
             } else {
                 EmailCliente newCliente = new EmailCliente(usr.getEmail());
@@ -1151,7 +1163,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 newCliente.setCliente(cliente_record);
 //                getJpaController().persistEmailCliente(newCliente);
                 current.setEmailCliente(newCliente);
-
             }
 
             current.setTema("[Colab] " + casoTmp.getTema());
