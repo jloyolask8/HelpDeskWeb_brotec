@@ -14,6 +14,7 @@
 
             <h:form id="form">
                 <p:commandButton value="Reagendar todos los casos" ajax="true" actionListener="#{scheduler.agendarAlertasForAllCasos()}" update=":form"/>
+                <p:commandButton value="Verificar Base de datos" ajax="true" actionListener="#{scheduler.verificaDatosBase()}" update=":form"/>
                 <p:poll autoStart="true" interval="15" update=":form"/>
 
                 <p:dataTable value="#{scheduler.quartzJobList}" var="quartz" >
