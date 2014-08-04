@@ -9,8 +9,10 @@ import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.rules.Action;
 import com.itcs.helpdesk.rules.ActionExecutionException;
 import com.itcs.helpdesk.util.Log;
+import com.itcs.helpdesk.util.MailClientFactory;
 import com.itcs.helpdesk.util.MailNotifier;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.mail.EmailException;
 
 /**
  *
@@ -38,8 +40,10 @@ public class SendCaseByEmailAction extends Action {
             for (String email : emails) {
                 try {
                     MailNotifier.notifyCasoAsHtmlEmail(caso, email);
-                } catch (Exception ex) {
+                } catch (MailClientFactory.MailNotConfiguredException ex) {
                     throw new ActionExecutionException("Error al tratar de enviar caso por email a " + destinationEmails + " favor verifique la configuración de correo.", ex);
+                } catch (EmailException ex) {
+                    throw new ActionExecutionException("Error al tratar de enviar caso por email a " + destinationEmails + " favor verifique los datos del caso.", ex);
                 }
             }
         }

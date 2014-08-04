@@ -278,7 +278,7 @@
                     <h:panelGroup rendered="#{not canalController.tmpEmailFirstStepReady}" style="width: 97%; position: absolute; bottom: 15px;">
                         <p:separator/>
                         <div align="right" style="width: 100%;">
-                            <p:commandButton value="Cancelar" oncomplete="addEditEmailDialogWidget.hide()" process="@this">
+                            <p:commandButton value="Cancelar" oncomplete="addEditEmailDialogWidget.hide()" update=":formAddEditEmail" process="@this">
                                 <p:resetInput target="@form" />
                             </p:commandButton>
                             &nbsp;

@@ -60,6 +60,7 @@ import javax.mail.internet.MimeUtility;
 import javax.persistence.NoResultException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.mail.EmailAttachment;
+import org.apache.commons.mail.EmailException;
 import org.quartz.SchedulerException;
 
 /**
@@ -160,8 +161,10 @@ public class ManagerCasos implements Serializable {
             if (ApplicationConfig.isSendNotificationOnTransfer()) {
                 try {
                     MailNotifier.notifyCasoAssigned(caso, null);
-                } catch (Exception ex) {
-                    Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "No se puede enviar notificacion por correo al agente asignado, dado que el area es null.", ex);
+                } catch (MailClientFactory.MailNotConfiguredException ex) {
+                    Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "failed at ManagerCasos.asignarCasoAUsuarioConMenosCasos MailNotConfiguredException", ex);
+                } catch (EmailException ex) {
+                    Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "failed at ManagerCasos.asignarCasoAUsuarioConMenosCasos EmailException", ex);
                 }
             }
 

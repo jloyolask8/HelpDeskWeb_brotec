@@ -36,10 +36,11 @@ public class MailNotifier {
             String texto = CasoExporter.exportToHtmlText(caso);//ApplicationConfig.getNotificationBodyText();//may contain place holders 
 //            String newTexto = ClippingsPlaceHolders.buildFinalText(texto, current);
 
-            if (caso.getIdCanal() != null && caso.getIdCanal().getEnabled() != null 
+            if (caso.getIdCanal() != null && caso.getIdCanal().getEnabled() != null
                     && caso.getIdCanal().getEnabled()) {
 
-                if (caso.getIdCanal() != null) {
+//                if (caso.getIdCanal() != null) {
+                if (caso.getIdArea() != null && caso.getIdArea().getIdCanal() != null) {
                     MailClientFactory.getInstance(caso.getIdArea().getIdCanal().getIdCanal())
                             .sendHTML(emailTo, asunto,
                                     texto, null);
@@ -48,6 +49,7 @@ public class MailNotifier {
 //                    MailClientFactory.getInstance(EnumCanal.DEFAULT_AREA.getArea().getIdArea())
 //                            .sendHTML(emailTo, asunto,
 //                                    texto, null);
+                    throw new EmailException("No se puede enviar el correo de notificación del caso. El caso no tiene Area asociada.");
                 }
 
             } else {
@@ -67,18 +69,19 @@ public class MailNotifier {
             texto = texto + "<b>Motivo:<b/> " + (motivo != null ? motivo : "Pronta atención del caso");
             String newTexto = ClippingsPlaceHolders.buildFinalText(texto, current);
 
-             if (current.getIdCanal() != null && current.getIdCanal().getEnabled() != null 
+            if (current.getIdCanal() != null && current.getIdCanal().getEnabled() != null
                     && current.getIdCanal().getEnabled()) {
 
-                if (current.getIdCanal() != null) {
+                if (current.getIdArea() != null && current.getIdArea().getIdCanal() != null) {
                     MailClientFactory.getInstance(current.getIdArea().getIdCanal().getIdCanal())
                             .sendHTML(current.getOwner().getEmail(), newAsunto,
                                     newTexto, null);
                 } else {
-                      //no default??? TODO
+                    //no default??? TODO
 //                    MailClientFactory.getInstance(EnumAreas.DEFAULT_AREA.getArea().getIdArea())
 //                            .sendHTML(current.getOwner().getEmail(), newAsunto,
 //                                    newTexto, null);
+                    throw new EmailException("No se puede enviar el correo de asignación del caso. El caso aún no tiene Area asociada.");
                 }
 
             } else {
@@ -128,12 +131,13 @@ public class MailNotifier {
 
                 final String subject = ManagerCasos.formatIdCaso(caso.getIdCaso()) + " " + subject_;
                 final String mensaje = mensaje_;
-                
-                if(caso.getIdArea()!=null && caso.getIdArea().getIdCanal() != null)
-                {
+
+                if (caso.getIdArea() != null && caso.getIdArea().getIdCanal() != null) {
                     MailClientFactory.getInstance(caso.getIdArea().getIdCanal().getIdCanal())
                             .sendHTML(caso.getEmailCliente().getEmailCliente(), subject,
                                     mensaje, null);
+                } else {
+                    throw new EmailException("No se puede enviar el correo al cliente de recepcion de caso. El caso aún no tiene Area asociada.");
                 }
             } catch (Exception ex) {
                 Logger.getLogger(MailNotifier.class.getName()).log(Level.SEVERE, "emailClientCasoReceived", ex);
@@ -176,10 +180,10 @@ public class MailNotifier {
                             + "Favor contactar al cliente lo antes posible.<br/>";
 
                     final String mensajeFinal = mensaje + CasoExporter.exportToHtmlText(caso);
-                    final String idArea = grupo.getIdArea().getIdArea();
+                    final String idCanal = grupo.getIdArea() != null ? grupo.getIdArea().getIdCanal().getIdCanal() : null;
 
                     try {
-                        scheduleNotifyAgentsCasoReceived(idArea, mensajeFinal, to.toString(), subject, caso.getIdCaso());
+                        scheduleNotifyAgentsCasoReceived(idCanal, mensajeFinal, to.toString(), subject, caso.getIdCaso());
                     } catch (Exception ex) {
                         //It may fail right away, we still continue
                         Logger.getLogger(MailNotifier.class.getName()).log(Level.SEVERE, null, ex);
@@ -251,7 +255,7 @@ public class MailNotifier {
 
         HelpDeskScheluder.scheduleToRunNowWithInterval(job, 600);
     }
-    
+
     public static synchronized void scheduleSendMailNota(final String idCanal, final String mensajeFinal,
             final String to, final String subject, final Long idCaso, final Integer idNota, final String attachIds) throws SchedulerException {
 

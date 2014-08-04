@@ -21,10 +21,12 @@ import com.itcs.helpdesk.rules.ActionExecutionException;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.ManagerCasos;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -77,14 +79,19 @@ public class CrearCasoVisitaRepSellosAction extends Action {
                     props.getProperty(TEMA_KEY),
                     props.getProperty(DESC_KEY),
                     null);
-//            Grupo grupo = getJpaController().getGrupoFindByIdGrupo(props.getProperty(GRUPO_KEY));
-//            ManagerCasos manager = new ManagerCasos(getJpaController());
-//            try {
-//                manager.asignarCasoAUsuarioConMenosCasos(grupo, casoPadre);
-//            } catch (Exception ex) {
-//                Logger.getLogger(CrearCasoVisitaRepSellosAction.class.getName()).log(Level.SEVERE, null, ex);
-//            }
 
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+            try {
+                attachEvent(casoPadre, sdf.parse(props.getProperty(FECHA_VISITA_KEY)), "Visita Inspectiva", "Evento de Visita Inspectiva programado con fecha estimada. La fecha definitiva debe ser confirmada con el cliente.");
+            } catch (ParseException ex) {
+                Logger.getLogger(CrearCasoVisitaRepSellosAction.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            try {
+                attachEvent(casoPadre, sdf.parse(props.getProperty(FECHA_REP_KEY)), "Reparación", "Evento de Reparación programado con fecha estimada. La fecha definitiva debe ser confirmada con el cliente y con el responsable.");
+            } catch (ParseException ex) {
+                Logger.getLogger(CrearCasoVisitaRepSellosAction.class.getName()).log(Level.SEVERE, null, ex);
+            }
             //crear nietos
             String idItems = props.getProperty(ITEMS_KEY);//comma separated id of Items values
             if (idItems != null) {
@@ -104,49 +111,10 @@ public class CrearCasoVisitaRepSellosAction extends Action {
                 }
             }
 
-            //asociar los dos eventos de visita y reparación
-            Calendar calendar = Calendar.getInstance();
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-
             try {
-                if (casoPadre != null) {
-                    String fechaVisitaString = props.getProperty(FECHA_VISITA_KEY);
-                    final Date parseDate = sdf.parse(fechaVisitaString);
-
-                    calendar.setTime(parseDate);
-                    if (calendar.get(Calendar.HOUR_OF_DAY) == 0) {
-                        calendar.set(Calendar.HOUR_OF_DAY, 8);
-                    }
-
-                    getJpaController().persist(buildEvent(casoPadre, "Visita Inspectiva", "Evento de Visita Inspectiva programado con fecha estimada. La fecha definitiva debe ser confirmada con el cliente.",
-                            calendar.getTime(), calendar.getTime()));
-                }else{
-                    Logger.getLogger(CrearCasoVisitaRepSellosAction.class.getName()).log(Level.SEVERE, "no se puede crear el evento, el caso padre es null =(");
-                }
-
+                getJpaController().merge(casoPadre);
             } catch (Exception ex) {
-                Logger.getLogger(CrearCasoVisitaRepSellosAction.class.getName()).log(Level.SEVERE, "no se puede crear el evento", ex);
-            }
-
-            try {
-                if (casoPadre != null) {
-                    String fechaRepString = props.getProperty(FECHA_REP_KEY);
-
-                    final Date parseDate = sdf.parse(fechaRepString);
-
-                    calendar.setTime(parseDate);
-                    if (calendar.get(Calendar.HOUR_OF_DAY) == 0) {
-                        calendar.set(Calendar.HOUR_OF_DAY, 8);
-                    }
-
-                    getJpaController().persist(buildEvent(casoPadre, "Evento de Reparación", "Evento de Reparación programado con fecha estimada. La fecha definitiva debe ser confirmada con el cliente y los responsables de reparar.",
-                            calendar.getTime(), calendar.getTime()));
-                }else{
-                    Logger.getLogger(CrearCasoVisitaRepSellosAction.class.getName()).log(Level.SEVERE, "no se puede crear el evento, el caso padre es null =(");
-                }
-
-            } catch (Exception ex) {
-                Logger.getLogger(CrearCasoVisitaRepSellosAction.class.getName()).log(Level.SEVERE, "no se puede crear el evento", ex);
+                Logger.getLogger(CrearCasoVisitaRepSellosAction.class.getName()).log(Level.SEVERE, "merge", ex);
             }
 
         } else {
@@ -154,6 +122,62 @@ public class CrearCasoVisitaRepSellosAction extends Action {
 //            return;//dont do a shit. cause i need properties to execute 
         }
 
+    }
+
+    /**
+     * "Visita Inspectiva" "Evento de Visita Inspectiva programado con fecha
+     * estimada. La fecha definitiva debe ser confirmada con el cliente."
+     * SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+     *
+     * @param casoPadre
+     * @param fecha
+     * @param title
+     * @param desc
+     */
+    private void attachEvent(Caso casoPadre, Date fecha, String title, String desc) {
+        //asociar los dos eventos de visita y reparación
+        Calendar calendar = Calendar.getInstance();
+
+        try {
+            if (casoPadre != null) {
+//                String fechaVisitaString = props.getProperty(FECHA_VISITA_KEY);
+//                final Date parseDate = sdf.parse(fechaVisitaString);
+
+                calendar.setTime(fecha);
+                if (calendar.get(Calendar.HOUR_OF_DAY) == 0) {
+                    calendar.set(Calendar.HOUR_OF_DAY, 8);
+                }
+
+                getJpaController().persist(buildEvent(casoPadre, title, desc,
+                        calendar.getTime(), calendar.getTime()));
+            } else {
+                Logger.getLogger(CrearCasoVisitaRepSellosAction.class.getName()).log(Level.SEVERE, "no se puede crear el evento, el caso padre es null =(");
+            }
+
+        } catch (Exception ex) {
+            Logger.getLogger(CrearCasoVisitaRepSellosAction.class.getName()).log(Level.SEVERE, "no se puede crear el evento", ex);
+        }
+
+//        try {
+//            if (casoPadre != null) {
+//                String fechaRepString = props.getProperty(FECHA_REP_KEY);
+//                
+//                final Date parseDate = sdf.parse(fechaRepString);
+//                
+//                calendar.setTime(parseDate);
+//                if (calendar.get(Calendar.HOUR_OF_DAY) == 0) {
+//                    calendar.set(Calendar.HOUR_OF_DAY, 8);
+//                }
+//                
+//                getJpaController().persist(buildEvent(casoPadre, "Evento de Reparación", "Evento de Reparación programado con fecha estimada. La fecha definitiva debe ser confirmada con el cliente y los responsables de reparar.",
+//                        calendar.getTime(), calendar.getTime()));
+//            }else{
+//                Logger.getLogger(CrearCasoVisitaRepSellosAction.class.getName()).log(Level.SEVERE, "no se puede crear el Evento de Reparación, el caso padre es null =(");
+//            }
+//            
+//        } catch (Exception ex) {
+//            Logger.getLogger(CrearCasoVisitaRepSellosAction.class.getName()).log(Level.SEVERE, "no se puede crear el Evento de Reparación", ex);
+//        }
     }
 
     private ScheduleEvent buildEvent(Caso caso, String title, String desc, Date startDate, Date endDate) {
@@ -177,6 +201,12 @@ public class CrearCasoVisitaRepSellosAction extends Action {
         entityEvent.addNewScheduleEventReminderWithNoId();
 
         entityEvent.setFechaCreacion(Calendar.getInstance().getTime());
+
+        if (caso.getScheduleEventList() == null) {
+            caso.setScheduleEventList(new LinkedList<ScheduleEvent>());
+        }
+
+        caso.getScheduleEventList().add(entityEvent);
 
         return entityEvent;
 
@@ -226,7 +256,8 @@ public class CrearCasoVisitaRepSellosAction extends Action {
 
             casosHijosList.add(casoNuevo);
             casoPadre.setCasosHijosList(casosHijosList);
-            getJpaController().merge(casoPadre);
+            
+             getJpaController().merge(casoPadre);
 
             return casoNuevo;
 

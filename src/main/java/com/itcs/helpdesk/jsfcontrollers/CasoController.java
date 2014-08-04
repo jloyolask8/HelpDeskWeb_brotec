@@ -1103,9 +1103,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public String prepareList() {
         recreateModel();
-        //return "";
-        return resourceBundle.getString("inbox");
-        //return "List";
+        return "inbox";
     }
 
     public void handleFileUpload(FileUploadEvent event) {
@@ -1435,6 +1433,17 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "createAndView", e);
             JsfUtil.addErrorMessage(e, resourceBundle.getString("PersistenceErrorOccured"));
             return null;
+        }
+    }
+    
+    public String goOneLevelUp(){
+        if(current.getIdCasoPadre() != null){
+            //tiene padre 
+            current = current.getIdCasoPadre();
+            recreateModel();
+            return "/script/caso/Edit";
+        }else{
+            return prepareList();
         }
     }
 
@@ -2015,7 +2024,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
             return;
         }
-        if (current.hasOpenSubCasos()) {
+        if (current.hasOpenSubCasosDelTipo(EnumTipoCaso.REPARACION_ITEM.getTipoCaso())) {
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "Atención", "Para poder programar la visita preventiva, este caso no debe tener sub casos abiertos pendientes de resolución.");
             RequestContext.getCurrentInstance().showMessageInDialog(message);
             return;

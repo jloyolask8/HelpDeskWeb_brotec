@@ -353,9 +353,8 @@ public class RulesEngine implements CasoChangeListener {
 
             EntityManager em = emf.createEntityManager();
             try {
-                
-                //El valor es el id de un entity, que tipo de Entity?= comparableField.tipo
 
+                //El valor es el id de un entity, que tipo de Entity?= comparableField.tipo
                 Class class_ = comparableField.getTipo();//Class.forName(comparableField.getTipo());
                 Object oneEntity = value;
 
@@ -543,24 +542,28 @@ public class RulesEngine implements CasoChangeListener {
     }
 
     private void ejecutarAccion(Accion accion, Caso caso) {
-        if (accion.getIdNombreAccion().equals(EnumNombreAccion.CAMBIO_CAT.getNombreAccion())) {
-            cambiarCategoria(accion, caso);
-        } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.ASIGNAR_A_GRUPO.getNombreAccion())) {
-            asignarCasoAGrupo(accion, caso);
-        } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.ASIGNAR_A_AREA.getNombreAccion())) {
-            asignarCasoArea(accion, caso);
-        } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.CUSTOM.getNombreAccion())) {
-            executeCustomAction(accion, caso);
-        } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.ASIGNAR_A_USUARIO.getNombreAccion())) {
-            asignarCasoAUsuario(accion, caso);
-        } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.CAMBIAR_PRIORIDAD.getNombreAccion())) {
-            cambiarPrioridad(accion, caso);
-        } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.RECALCULAR_SLA.getNombreAccion())) {
-            recalcularSLA(caso);
-        } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.DEFINIR_SLA_FECHA_COMPRA.getNombreAccion())) {
-            definirSLAFechaCompra(caso);
-        } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.ENVIAR_EMAIL.getNombreAccion())) {
-            enviarCorreo(accion, caso);
+        try {
+            if (accion.getIdNombreAccion().equals(EnumNombreAccion.CAMBIO_CAT.getNombreAccion())) {
+                cambiarCategoria(accion, caso);
+            } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.ASIGNAR_A_GRUPO.getNombreAccion())) {
+                asignarCasoAGrupo(accion, caso);
+            } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.ASIGNAR_A_AREA.getNombreAccion())) {
+                asignarCasoArea(accion, caso);
+            } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.CUSTOM.getNombreAccion())) {
+                executeCustomAction(accion, caso);
+            } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.ASIGNAR_A_USUARIO.getNombreAccion())) {
+                asignarCasoAUsuario(accion, caso);
+            } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.CAMBIAR_PRIORIDAD.getNombreAccion())) {
+                cambiarPrioridad(accion, caso);
+            } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.RECALCULAR_SLA.getNombreAccion())) {
+                recalcularSLA(caso);
+            } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.DEFINIR_SLA_FECHA_COMPRA.getNombreAccion())) {
+                definirSLAFechaCompra(caso);
+            } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.ENVIAR_EMAIL.getNombreAccion())) {
+                enviarCorreo(accion, caso);
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "ejecutarAccion failed", ex);
         }
     }
 
@@ -588,10 +591,6 @@ public class RulesEngine implements CasoChangeListener {
         }
         return null;
     }
-
-   
-
-    
 
     private void cambiarCategoria(Accion accion, Caso caso) {
         try {
@@ -624,7 +623,7 @@ public class RulesEngine implements CasoChangeListener {
                 try {
                     MailNotifier.notifyCasoAssigned(caso, null);
                 } catch (Exception ex) {
-                    Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "asignarCasoAUsuario: No se puede enviar notificacion por correo al agente asignado, dado que el area es null.");
+                    Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "failed at asignarCasoAUsuario", ex);
                 }
             }
 

@@ -227,7 +227,8 @@
                     <h:form id="botoneraCaso" style="margin-top: 5px;">
                         <h:panelGrid columns="14">     
 
-                            <p:commandButton ajax="false" title="Volver al inbox" icon="fa fa-level-up" action="inbox" style="width: 60px;"/>
+                            <p:commandButton ajax="false" title="Volver" icon="fa fa-level-up" action="#{casoController.goOneLevelUp()}" style="width: 60px;"/>
+                            
                             <p:commandButton ajax="false" title="Actualizar" icon="fa fa-refresh" actionListener="#{casoController.refreshCaso()}" style="width: 60px;"/>
                             <p:commandButton rendered="#{casoController.verificarTomarCaso()}" ajax="true" value="Asignármelo" onclick="tomarCaso.show()" />
 
@@ -1087,7 +1088,7 @@
 
                     </h:panelGrid>
                     <pe:ckEditor value="#{casoController.textoNota}" required="true" language="es"
-                                toolbar="#{applicationBean.ckEditorToolbar}"
+                                 toolbar="#{applicationBean.ckEditorToolbar}"
                                  id="textonota" width="560" height="210"/>
 
                     <p:commandButton value="Guardar" ajax="false" update=":formint1 :formCreateNota :westPanel:formlistaadjuntos" actionListener="#{casoController.crearNota(false)}"/>
@@ -1131,8 +1132,8 @@
 
                     </h:panelGrid>
                     <pe:ckEditor value="#{casoController.selectedNota.texto}" required="true" language="es"
-                                toolbar="#{applicationBean.ckEditorToolbar}"
-                                id="textonota" width="560" height="210"/>
+                                 toolbar="#{applicationBean.ckEditorToolbar}"
+                                 id="textonota" width="560" height="210"/>
 
                     <p:commandButton value="Guardar" ajax="false" update=":formint1 :formCreateNota :westPanel:formlistaadjuntos" actionListener="#{casoController.editNota(false)}"/>
                     <p:commandButton value="Guardar y notificar al cliente" ajax="false" update=":formint1 :formCreateNota :westPanel:formlistaadjuntos" actionListener="#{casoController.editNota(true)}"/>
@@ -1450,7 +1451,7 @@
 
                         <p:row>
                             <p:column>
-                                <h:outputLabel for="invitados" value="Usuarios:" style="font-weight: bold;"/>
+                                <h:outputLabel for="invitados" value="Invitados:" style="font-weight: bold;"/>
                             </p:column>
 
                             <p:column>
@@ -1689,14 +1690,18 @@
 
 
                     <p:separator/>
-                    <p:commandButton type="reset" value="Reset" update=":createEventForm:eventDetails"/>  
-                    <p:commandButton id="addButton" value="Guardar" 
+                    <p:commandButton value="Cerrar" oncomplete="PF('createEventDialog').hide();" update=":createEventForm:eventDetails" process="@this">
+                        <p:resetInput target="@form" />
+                    </p:commandButton>
+                    &nbsp;
+                   
+                    <p:commandButton id="addButton" value="Guardar" style="float: right;"
                                      actionListener="#{casoScheduleController.addEvent()}"
                                      update=":createEventForm:eventDetails" />  
                 </h:form>
             </p:dialog>
 
-            
+
 
         </ui:define>
     </ui:composition>
