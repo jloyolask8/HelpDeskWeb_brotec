@@ -11,11 +11,12 @@
             <h:outputText value="Scheduled Jobs"></h:outputText>
         </ui:define>
         <ui:define name="body">
+            
 
             <h:form id="form">
-                <p:commandButton value="Reagendar todos los casos" ajax="true" actionListener="#{scheduler.agendarAlertasForAllCasos()}" update=":form"/>
+                
                 <p:poll autoStart="true" interval="15" update=":form"/>
-
+                
                 <p:dataTable value="#{scheduler.quartzJobList}" var="quartz" >
 
                     <f:facet  name="header">
@@ -31,13 +32,13 @@
 
                     <p:column>
                         <f:facet name="header">Job Group</f:facet>
-                            #{quartz.jobGroup}
+                        #{quartz.jobGroup}
                     </p:column>
 
                     <p:column>
                         <f:facet name="header">Next Fire Time</f:facet>
                         <h:outputText value="#{quartz.nextFireTime}">
-                            <f:convertDateTime pattern="EEE, dd MMM yyyy HH:mm:ss" />
+                          <f:convertDateTime pattern="EEE, dd MMM yyyy HH:mm:ss" />
                         </h:outputText>
                     </p:column>
 
@@ -45,7 +46,7 @@
                         <f:facet name="header">Action</f:facet>
                         <h:commandLink value="Fire Now"
                                        action="#{scheduler.fireNow(quartz.jobName, quartz.jobGroup)}" />
-                        <h:commandLink value="Delete"
+                          <h:commandLink value="Delete"
                                        action="#{scheduler.deleteJob(quartz.jobName, quartz.jobGroup)}" />
                     </p:column>
 

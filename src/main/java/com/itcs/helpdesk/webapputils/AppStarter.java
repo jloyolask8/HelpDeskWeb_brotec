@@ -107,7 +107,7 @@ public class AppStarter implements ServletContextListener {
         }
         //Done!
 
-//        autoOpsExec.agendarAlertasForAllCasos();
+        autoOpsExec.agendarAlertasForAllCasos();
 
 //        autoOpsExec.agendarAgendarAlertas();
     }
