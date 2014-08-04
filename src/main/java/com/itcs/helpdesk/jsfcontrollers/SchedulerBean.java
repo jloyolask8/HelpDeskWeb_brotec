@@ -10,9 +10,15 @@ package com.itcs.helpdesk.jsfcontrollers;
  */
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
+import com.itcs.helpdesk.persistence.entities.Caso;
+import com.itcs.helpdesk.persistence.entityenums.EnumEstadoCaso;
+import com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta;
 import com.itcs.helpdesk.quartz.HelpDeskScheluder;
+import com.itcs.helpdesk.util.Log;
+import com.itcs.helpdesk.util.ManagerCasos;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -45,7 +51,45 @@ public class SchedulerBean extends AbstractManagedBean<Object> implements Serial
         scheduler.triggerJob(jobKey);
 
     }
-    
+
+    public void agendarAlertasForAllCasos() {
+        System.out.println("agendarAlertasForAllCasos");
+
+        List<Caso> casos_pendiente = getJpaController().getCasoFindByEstadoAndAlerta(EnumEstadoCaso.ABIERTO.getEstado(), EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta());
+//            System.out.println("encontrados "+casos.size()+" casos "+EnumTipoAlerta.TIPO_ALERTA_PENDIENTE+" que se debe agendar cambio de alerta");
+
+        for (Caso caso : casos_pendiente) {
+            if (caso.getNextResponseDue() != null) {
+                try {
+                    if ((caso.getEstadoAlerta().getIdalerta().equals(EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta().getIdalerta()))
+                            && (caso.getNextResponseDue().after(Calendar.getInstance().getTime()))) {
+                        HelpDeskScheluder.scheduleAlertaPorVencer(caso.getIdCaso(), ManagerCasos.calculaCuandoPasaAPorVencer(caso));
+                    }
+
+                        //Siempre se debe agendar el cambio a caso vencido para cuando se acabe el plazo para responder el caso
+                    //                    HelpDeskScheluder.scheduleAlertaVencido(caso.getIdCaso(), caso.getNextResponseDue());
+                    //                    agendarCambioEstadoAlerta(schema, caso);
+                } catch (SchedulerException ex) {
+                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "Caso " + caso.getIdCaso() + " agendarAlertasForAllCasos -> pendientes", ex);
+                } catch (NullPointerException ex) {
+                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "Caso " + caso.getIdCaso() + " error grave: ", ex);
+                }
+            }
+        }
+
+        List<Caso> casos_por_vencer = getJpaController().getCasoFindByEstadoAndAlerta(EnumEstadoCaso.ABIERTO.getEstado(),
+                EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta());
+//            System.out.println("encontrados "+casos.size()+" casos "+EnumTipoAlerta.TIPO_ALERTA_POR_VENCER+" que se debe agendar cambio de alerta");
+        for (Caso caso : casos_por_vencer) {
+            try {
+                HelpDeskScheluder.scheduleAlertaVencido(caso.getIdCaso(), caso.getNextResponseDue());
+//                    agendarCambioEstadoAlerta(schema, caso);
+            } catch (SchedulerException ex) {
+                Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "agendarAlertasForAllCasos -> por vencer", ex);
+            }
+        }
+    }
+
     public void deleteJob(String jobName, String jobGroup)
             throws SchedulerException {
 

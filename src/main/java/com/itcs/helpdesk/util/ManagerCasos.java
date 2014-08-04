@@ -56,6 +56,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.mail.internet.MimeUtility;
 import javax.persistence.NoResultException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.mail.EmailAttachment;
@@ -504,8 +505,6 @@ public class ManagerCasos implements Serializable {
         return createdCaso;
     }
 
-    
-
     public boolean crearCasoDesdeEmail(Canal canal, EmailMessage item) {
         boolean retorno = false;
         try {
@@ -526,17 +525,18 @@ public class ManagerCasos implements Serializable {
                 datos.setEmail(item.getFromEmail().toLowerCase().trim());
 
                 if (item.getFromName() != null) {
-                    if (!item.getFromName().contains("=?ISO") && !item.getFromName().contains("UTF-8")) {//Bug Thunderbird
-                        String[] nombres = item.getFromName().split(" ");
+                    
+                    String from = MimeUtility.decodeText(item.getFromName().replace("\"", ""));
+                    String[] nombres = from.split(" ");
                         if (nombres.length > 0) {
                             datos.setNombre(nombres[0]);
                         }
-                        if (nombres.length > 1) {
+                    if (nombres.length > 2) {
+                        datos.setApellidos(nombres[1] + " " + nombres[2]);
+                    } else if (nombres.length > 1) {
                             datos.setApellidos(nombres[1]);
                         }
                     }
-
-                }
 
                 datos.setTipoCaso(EnumTipoCaso.CONTACTO.getTipoCaso().getIdTipoCaso());
                 datos.setAsunto(subject);
