@@ -230,8 +230,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public List<AuditLog> getAuditLogsCurrentCase() {
-        if(current == null)
-        {
+        if (current == null) {
             return null;
         }
         Vista vista1 = new Vista(AuditLog.class);
@@ -616,8 +615,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
 
         getManagerCasos().persistCaso(newCaso, ManagerCasos.createLogReg(newCaso, "Caso", "Se crea caso manual", ""));
-        if(newCaso.getIdCasoPadre() != null)
-        {
+        if (newCaso.getIdCasoPadre() != null) {
             Caso casoPadre = newCaso.getIdCasoPadre();
             casoPadre.getCasosHijosList().add(newCaso);
             getManagerCasos().mergeCaso(casoPadre, ManagerCasos.createLogReg(casoPadre, "Nuevo subCaso", newCaso.getIdCaso().toString(), ""));
@@ -1446,14 +1444,14 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             return null;
         }
     }
-    
-    public String goOneLevelUp(){
-        if(current.getIdCasoPadre() != null){
+
+    public String goOneLevelUp() {
+        if (current.getIdCasoPadre() != null) {
             //tiene padre 
             current = current.getIdCasoPadre();
             recreateModel();
             return "/script/caso/Edit";
-        }else{
+        } else {
             return prepareList();
         }
     }
@@ -1521,13 +1519,11 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         if (idCasoStr == null) {
             JsfUtil.addErrorMessage("Debe poner un numero de caso para ir");
             return "";
-        }
-        else {
+        } else {
             long idCaso = -1;
-            try{
+            try {
                 idCaso = Long.parseLong(idCasoStr);
-            }catch(NumberFormatException ex)
-            {
+            } catch (NumberFormatException ex) {
                 JsfUtil.addErrorMessage("Debe poner un numero de caso para ir");
                 return "";
             }
@@ -1742,6 +1738,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      * <p>
      * Un caso cerrado puede tener actualización (Cuando un cliente responde,
      * despues de cerrado el caso).
+     *
      * @return La página inbox con el filtro ya definido.
      */
     public String filtraRevisarActualizaciones() {
@@ -1964,11 +1961,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         return "/script/caso/Edit";
     }
-    
-    public void cerrarCaso()
-    {
-        if(cierraCaso())
-        {
+
+    public void cerrarCaso() {
+        if (cierraCaso()) {
             if (isAjaxRequest()) {
                 redirect("/script/caso/Edit.xhtml");
             }
@@ -2005,7 +2000,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             }
 
             refreshCaso();
-            
+
         } catch (Exception e) {
             JsfUtil.addErrorMessage(resourceBundle.getString("caso.cerrar.nook"));
             return false;
@@ -2464,9 +2459,13 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //        getJpaController().persist(nota);
         this.justCreadedNotaId = nota.getIdNota();
         List<Nota> notas = current.getNotaList();
+        if (notas == null) {
+           notas = new LinkedList<Nota>();
+           current.setNotaList(notas);
+        }
         notas.add(nota);
         current.setFechaModif(Calendar.getInstance().getTime());
-//        current.setNotaList(notas);
+        
         JsfUtil.addSuccessMessage(resourceBundle.getString("NotaCreated"));
 //        mergeCaso(current, getManagerCasos().createLogReg(current, "Nueva Nota", nota.getTipoNota().getNombre(), ""));//TODO is merge needed??
         textoNota = "";

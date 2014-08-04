@@ -63,6 +63,10 @@
                         <p:column headerText="Grupos Encargados">
                             <h:outputText value="#{empty item.grupoList ? 'ninguno':item.grupoList }"/>
                         </p:column>
+                        
+                          <p:column headerText="Canal por defecto">
+                            <h:outputText value="#{item.idOutCanal.nombre}"/>
+                        </p:column>
 
                         <p:column headerText="Acción">
                             <p:commandButton id="editBtn" ajax="false" action="#{productoController.prepareEdit(item)}" title="Editar #{applicationBean.productDescription}" icon="ui-icon ui-icon-pencil"/>
