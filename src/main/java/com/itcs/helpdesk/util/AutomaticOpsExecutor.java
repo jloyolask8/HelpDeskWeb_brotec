@@ -115,21 +115,26 @@ public class AutomaticOpsExecutor {
         verificarAreas(controller);
         verificarGrupos(controller);
         verificarUsuarios(controller);
-        verificarCategorias(controller);
-        verificarTiposAlerta(controller);
         verificarFunciones(controller);
+        verificarCategorias(controller);
+        verificarTipoCaso(controller);
+        verificarTipoCanal(controller);
+        verificarTiposAlerta(controller);
+        verificarTiposNota(controller);
+        verificarTipoComparacion(controller);
+        
         verificarRoles(controller);
         verificarEstadosCaso(controller);
         verificarSubEstadosCaso(controller);
-        verificarTipoCaso(controller);
-        verificarCanales(controller);
+
         verificarPrioridades(controller);
-        verificarTiposNota(controller);
+        
         verificarFieldTypes(controller);
-        verificarTipoComparacion(controller);
+        
         verificarNombreAcciones(controller);
         verificarSettingsBase(controller);
-        verificarTipoCanal(controller);
+        
+        verificarCanales(controller);
         fixClientesCasos(controller);
         fixNombreCliente(controller);
         verificarResponsables(controller);
@@ -422,7 +427,7 @@ public class AutomaticOpsExecutor {
                 try {
                     jpaController.persist(enumTipoCaso.getTipoCaso());
                 } catch (Exception e) {
-                    Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
+                    Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, "verificarTipoCaso", e);
                 }
             }
         }
