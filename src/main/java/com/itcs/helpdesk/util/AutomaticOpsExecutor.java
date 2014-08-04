@@ -119,14 +119,13 @@ public class AutomaticOpsExecutor {
         verificarCategorias(controller);
         verificarRoles(controller);
 
-        verificarSubEstadosCaso(controller);
-
         verificarTipoCaso(controller);
+        verificarSubEstadosCaso(controller);
+        
         verificarTipoCanal(controller);
         verificarTiposAlerta(controller);
         verificarTiposNota(controller);
         verificarTipoComparacion(controller);
-
         
         verificarEstadosCaso(controller);
 
