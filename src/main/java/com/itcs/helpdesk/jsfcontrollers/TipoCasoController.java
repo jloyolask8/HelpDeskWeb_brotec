@@ -2,7 +2,10 @@ package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
+import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.TipoCaso;
+import com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso;
+import com.itcs.jpautils.EasyCriteriaQuery;
 import java.io.Serializable;
 import java.util.ResourceBundle;
 import javax.faces.bean.ManagedBean;
@@ -52,7 +55,11 @@ public class TipoCasoController extends AbstractManagedBean<TipoCaso> implements
         return "/script/tipoCaso/View";
     }
 
-  
+  public Long countCasosByTipo(TipoCaso tipo) {
+        EasyCriteriaQuery<Caso> c = new EasyCriteriaQuery<Caso>(emf, Caso.class);
+        c.addEqualPredicate("tipoCaso", tipo);
+        return c.count();
+    }
 
     public String prepareEdit(TipoCaso item) {
         current = item;

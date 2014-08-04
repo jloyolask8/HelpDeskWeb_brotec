@@ -60,7 +60,11 @@ public class TagCloudBean extends AbstractManagedBean<Etiqueta> implements Seria
         List<Etiqueta> etiquetas = (List<Etiqueta>) getJpaController().findEtiquetasByUsuario(getUserSessionBean().getCurrent().getIdUsuario());
         model = new DefaultTagCloudModel();
         for (Etiqueta etiqueta : etiquetas) {
-            model.addTag(new DefaultTagCloudItem(etiqueta.getTagId(), getJpaController().countCasosByEtiqueta(etiqueta).intValue()));
+            final int count = getJpaController().countCasosByEtiqueta(etiqueta).intValue();
+            if(count > 0){
+                model.addTag(new DefaultTagCloudItem(etiqueta.getTagId(), count));
+            }
+            
         }
         return model;
     }

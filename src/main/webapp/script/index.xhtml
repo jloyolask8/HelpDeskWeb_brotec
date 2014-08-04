@@ -63,7 +63,7 @@
                     </h:form>
                 </p:tab>
                 <p:tab title="Etiquetas">
-                    <p:tagCloud model="#{tagCloudBean.etiquetasByUsuario}" style="width: 100%;">  
+                    <p:tagCloud id="tagCloud" model="#{tagCloudBean.etiquetasByUsuario}" style="width: 100%;">  
                         <p:ajax event="select" listener="#{casoController.onTagSelect}" 
                                 update=":mainform:messages :formfilter:panelFilter0:panelFilter :form0:panelG1"/>
                     </p:tagCloud> 
@@ -140,7 +140,7 @@
 
                                     <p:commandButton value="Aplicar"  icon="ui-icon-tag"  
                                                      actionListener="#{casoController.tagManyCasosManyTags}"
-                                                     update=":mainform:messages :form0:ID_TABLA" oncomplete="PF('TagPanel').hide()"/> 
+                                                     update=":accionesaccordion1:tagCloud :mainform:messages :form0:ID_TABLA" oncomplete="PF('TagPanel').hide()"/> 
                                 </p:overlayPanel>  
 
                                 <p:separator />  

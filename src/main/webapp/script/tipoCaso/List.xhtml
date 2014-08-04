@@ -49,7 +49,7 @@
                         </p:column>
                         
                         <p:column headerText="casos">                            
-                            <h:outputText value="#{item.casoList.size()}"/>
+                            <h:outputText value="#{tipoCasoController.countCasosByTipo(item)}"/>
                         </p:column>
                         
                          <p:column headerText="Acción">
@@ -93,16 +93,18 @@
 
                 <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
                           header="Iniciando proceso de eliminación" widgetVar="confirmation" width="300">
+                    
+                    <ui:param name="countCasosByTipo" value="#{tipoCasoController.countCasosByTipo(tipoCasoController.selected)}" />
 
                     <h:outputText value="Está seguro de eliminar el tipo de Caso #{tipoCasoController.selected.nombre}?"
-                                  rendered="#{tipoCasoController.selected.casoList.size() eq 0}"/>
+                                  rendered="#{countCasosByTipo eq 0}"/>
                     
                     <h:outputText value="No se puede eliminar este tipo debido a que tiene casos que dependen de él."
-                                  rendered="#{tipoCasoController.selected.casoList.size() ne 0}"/>
+                                  rendered="#{countCasosByTipo ne 0}"/>
 
                     <f:facet name="footer">
                         <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{tipoCasoController.destroy() }" 
-                                         ajax="false" rendered="#{tipoCasoController.selected.casoList.size() eq 0}"/>
+                                         ajax="false" rendered="#{countCasosByTipo eq 0}"/>
                         <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
                     </f:facet>
 

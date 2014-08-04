@@ -217,7 +217,8 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
         List<Etiqueta> results = new ArrayList<Etiqueta>();
         if (pattern != null) {
             results.add(new Etiqueta(pattern.trim()));
-            results.addAll(getJpaController().findEtiquetasLike(pattern.trim()));
+//          results.addAll(getJpaController().findEtiquetasLike(pattern.trim()));
+            results.addAll(getJpaController().findEtiquetasLike(pattern.trim(), getUserSessionBean().getCurrent().getIdUsuario()));
         }
         //return ((List<Etiqueta>) getJpaController().findEtiquetasLike(pattern));
         return results;
