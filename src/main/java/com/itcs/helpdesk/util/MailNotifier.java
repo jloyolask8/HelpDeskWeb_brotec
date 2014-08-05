@@ -57,32 +57,32 @@ public class MailNotifier {
 
     }
 
-    public static void notifyCasoAssigned(Caso current, String motivo) throws MailNotConfiguredException, EmailException {
-        if (current != null) {
+    public static void notifyCasoAssigned(Caso caso, String motivo) throws MailNotConfiguredException, EmailException {
+        if (caso != null) {
             String asunto = ApplicationConfig.getNotificationSubjectText(); //may contain place holders
-            String newAsunto = ClippingsPlaceHolders.buildFinalText(asunto, current);
+            String newAsunto = ClippingsPlaceHolders.buildFinalText(asunto, caso);
 
             String texto = ApplicationConfig.getNotificationBodyText();//may contain place holders 
             texto = texto + "<b>Motivo:<b/> " + (motivo != null ? motivo : "Pronta atención del caso");
-            String newTexto = ClippingsPlaceHolders.buildFinalText(texto, current);
+            String newTexto = ClippingsPlaceHolders.buildFinalText(texto, caso);
 
-            if (current.getIdCanal() != null && current.getIdCanal().getEnabled() != null
-                    && current.getIdCanal().getEnabled()) {
+            if (caso.getIdCanal() != null && caso.getIdCanal().getEnabled() != null
+                    && caso.getIdCanal().getEnabled()) {
 
-                if (current.getIdArea() != null && current.getIdArea().getIdCanal() != null) {
-                    MailClientFactory.getInstance(current.getIdArea().getIdCanal().getIdCanal())
-                            .sendHTML(current.getOwner().getEmail(), newAsunto,
+                if (caso.getIdArea() != null && caso.getIdArea().getIdCanal() != null) {
+                    MailClientFactory.getInstance(caso.getIdArea().getIdCanal().getIdCanal())
+                            .sendHTML(caso.getOwner().getEmail(), newAsunto,
                                     newTexto, null);
                 } else {
                     //no default??? TODO
 //                    MailClientFactory.getInstance(EnumAreas.DEFAULT_AREA.getArea().getIdArea())
 //                            .sendHTML(current.getOwner().getEmail(), newAsunto,
 //                                    newTexto, null);
-                    throw new EmailException("No se puede enviar el correo de asignación del caso. El caso aún no tiene Area asociada.");
+                    throw new EmailException("No se puede enviar el correo de asignación del caso #" + caso.getIdCaso() + ". El caso aún no tiene Area asociada.");
                 }
 
             } else {
-                throw new EmailException("No se puede enviar el correo. El Area Asociada al caso tiene el envío de correos desabilitado.");
+                throw new EmailException("No se puede enviar el correo. El canal #" + caso.getIdCanal().getIdCanal() + " asociado al caso #" + caso.toString() + " tiene el envío de correos desabilitado.");
             }
 
         }
@@ -116,7 +116,7 @@ public class MailNotifier {
             try {
                 String mensaje_ = "";
                 String subject_ = "";
-                
+
                 if (caso.getIdArea() != null) {
                     if (caso.getIdArea().getTextoRespAutomatica() != null) {
                         mensaje_ = (ClippingsPlaceHolders.buildFinalText(caso.getIdArea().getTextoRespAutomatica(), caso));

@@ -134,17 +134,17 @@ public class HelpDeskScheluder {
         return jobId;
     }
 
-    public static String scheduleEventReminderJob(final String idCanal,
+    public static String scheduleEventReminderJob(
             final String to, final String eventId, String eventReminderId, final Date whenToRun) throws SchedulerException {
 
-        System.out.println("scheduling ScheduleEventReminderJob job");
-        final String jobId = ScheduleEventReminderJob.formatJobId(idCanal, to, eventId, eventReminderId);
+        System.out.println("scheduling ScheduleEventReminderJob");
+        final String jobId = ScheduleEventReminderJob.formatJobId(to, eventId, eventReminderId);
         final JobKey jobKey = JobKey.jobKey(jobId, HelpDeskScheluder.GRUPO_CORREO);
         HelpDeskScheluder.unschedule(jobKey);
 
         JobDetail job = JobBuilder.newJob(ScheduleEventReminderJob.class).withIdentity(jobId, HelpDeskScheluder.GRUPO_CORREO).build();
 
-        job.getJobDataMap().put(AbstractGoDeskJob.ID_CANAL, idCanal);
+//        job.getJobDataMap().put(AbstractGoDeskJob.ID_CANAL, idCanal);//not needed since will send the email from a non-reply email godesk session
         job.getJobDataMap().put(ScheduleEventReminderJob.EMAILS_TO, to);
         job.getJobDataMap().put(ScheduleEventReminderJob.EVENT_ID, eventId);
         job.getJobDataMap().put(ScheduleEventReminderJob.REMINDER_ID, eventReminderId);

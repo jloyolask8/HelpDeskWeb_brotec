@@ -7,6 +7,7 @@ package com.itcs.helpdesk.quartz;
 
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.util.RulesEngine;
+import java.util.Locale;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -20,12 +21,13 @@ import org.quartz.ee.jta.UserTransactionHelper;
  * @author jonathan
  */
 public class AbstractGoDeskJob {
-    
+
+    protected static final Locale LOCALE_ES_CL = new Locale("es", "CL");
+
     public static final String ID_CANAL = "IdCanal";
     public static final String INTERVAL_SECONDS = "intervalInSeconds";
 
 //    public static final String ID_TENANT = "schema";
-
 //    @PersistenceUnit(unitName = "helpdeskPU")
 //    protected EntityManagerFactory emf = null;
 //    @Resource
@@ -45,9 +47,9 @@ public class AbstractGoDeskJob {
         EntityManager em = emf.createEntityManager();
         return em;
     }
-    
-     protected JPAServiceFacade getJpaController() throws SchedulerException{
-         EntityManagerFactory emf = createEntityManagerFactory();
+
+    protected JPAServiceFacade getJpaController() throws SchedulerException {
+        EntityManagerFactory emf = createEntityManagerFactory();
         UserTransaction utx = UserTransactionHelper.lookupUserTransaction();
         JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf);
 //        ManagerCasos managerCasos = new ManagerCasos(jpaController);
@@ -55,7 +57,7 @@ public class AbstractGoDeskJob {
         jpaController.setCasoChangeListener(rulesEngine);
         return jpaController;
     }
-    
+
     protected EntityManagerFactory createEntityManagerFactory() {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("helpdeskPU");
 //        EntityManager em = emf.createEntityManager();

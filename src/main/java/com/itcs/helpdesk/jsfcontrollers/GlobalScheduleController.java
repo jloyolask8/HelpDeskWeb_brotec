@@ -5,7 +5,6 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
-import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.FiltroVista;
 import com.itcs.helpdesk.persistence.entities.Resource;
 import com.itcs.helpdesk.persistence.entities.ScheduleEventReminder;
@@ -287,7 +286,7 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
             //we need to schedule event reminders
             for (ScheduleEventReminder scheduleEventReminder : entityEvent.getScheduleEventReminderList()) {
 
-                int minituesAmount = (-1) * scheduleEventReminder.getUnitOfTimeInMinutes().intValue() * scheduleEventReminder.getQuantityTime();
+                int minituesAmount = (-1) * scheduleEventReminder.getUnitOfTimeInMinutes() * scheduleEventReminder.getQuantityTime();
                 //calculate when in function of  QuantityTime * UnitOfTimeInMinutes
                 //ejemplo: 1 * 1 = 10 minutos antes del evento
                 //ejemplo: 1 * 60 = 1 horas antes del evento
@@ -310,7 +309,6 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
                 }
 
                 String jobId = HelpDeskScheluder.scheduleEventReminderJob(
-                        entityEvent.getIdCaso().getIdArea().getIdCanal().getIdCanal(),
                        mailsTo, scheduleEventReminder.getEventId().getEventId().toString(),
                         scheduleEventReminder.getIdReminder().toString(), cal.getTime());
                 scheduleEventReminder.setQuartzJobId(jobId);

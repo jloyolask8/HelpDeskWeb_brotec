@@ -7,8 +7,10 @@ package com.itcs.helpdesk.rules.actionsimpl;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Item;
 import com.itcs.helpdesk.persistence.entities.ScheduleEvent;
+import com.itcs.helpdesk.persistence.entities.ScheduleEventReminder;
 import com.itcs.helpdesk.persistence.entities.SubEstadoCaso;
 import com.itcs.helpdesk.persistence.entities.TipoCaso;
+import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entityenums.EnumCanal;
 import com.itcs.helpdesk.persistence.entityenums.EnumResponsables;
 import com.itcs.helpdesk.persistence.entityenums.EnumSubEstadoCaso;
@@ -16,6 +18,7 @@ import com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumUsuariosBase;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
+import com.itcs.helpdesk.quartz.HelpDeskScheluder;
 import com.itcs.helpdesk.rules.Action;
 import com.itcs.helpdesk.rules.ActionExecutionException;
 import com.itcs.helpdesk.util.Log;
@@ -31,6 +34,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang3.StringUtils;
+import org.quartz.SchedulerException;
 
 /**
  *
@@ -147,9 +152,14 @@ public class CrearCasoVisitaRepSellosAction extends Action {
                 if (calendar.get(Calendar.HOUR_OF_DAY) == 0) {
                     calendar.set(Calendar.HOUR_OF_DAY, 8);
                 }
+                final ScheduleEvent entityEvent = buildEvent(casoPadre, title, desc,
+                        calendar.getTime(), calendar.getTime());
 
-                getJpaController().persist(buildEvent(casoPadre, title, desc,
-                        calendar.getTime(), calendar.getTime()));
+                getJpaController().persist(entityEvent);
+
+//                scheduleQuartzEvent(entityEvent);
+
+                scheduleQuartzReminders(entityEvent);
             } else {
                 Logger.getLogger(CrearCasoVisitaRepSellosAction.class.getName()).log(Level.SEVERE, "no se puede crear el evento, el caso padre es null =(");
             }
@@ -212,6 +222,50 @@ public class CrearCasoVisitaRepSellosAction extends Action {
 
     }
 
+   
+
+    private void scheduleQuartzReminders(com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent) throws Exception {
+        if (entityEvent.getScheduleEventReminderList() != null && !entityEvent.getScheduleEventReminderList().isEmpty()) {
+            //we need to schedule event reminders
+            for (ScheduleEventReminder scheduleEventReminder : entityEvent.getScheduleEventReminderList()) {
+
+                int minituesAmount = (-1) * scheduleEventReminder.getUnitOfTimeInMinutes() * scheduleEventReminder.getQuantityTime();
+                //calculate when in function of  QuantityTime * UnitOfTimeInMinutes
+                //ejemplo: 1 * 1 = 10 minutos antes del evento
+                //ejemplo: 1 * 60 = 1 horas antes del evento
+                //ejemplo: 1 * 1440 = 1440 minutos (1 dia) antes del evento
+                //ejemplo: 1 * 10080 = 10080 minutos (1 semana) antes del evento
+
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(entityEvent.getStartDate());
+                cal.add(Calendar.MINUTE, minituesAmount);
+
+                //TODO handle NPE
+                String mailsTo = "";
+                boolean first = true;
+                for (Usuario usuario : entityEvent.getUsuariosInvitedList()) {
+                    if (first) {
+                        mailsTo = usuario.getEmail();
+                        first = false;
+                    } else {
+                        mailsTo += ("," + usuario.getEmail());
+                    }
+                }
+
+//                final String idCanal = casoController.getSelected().getIdArea().getIdCanal().getIdCanal(); //EnumCanal.SISTEMA
+                final String eventIdString = entityEvent.getEventId().toString();
+                final String scheduleEventReminderIdString = scheduleEventReminder.getIdReminder().toString();
+
+                String jobId = HelpDeskScheluder.scheduleEventReminderJob(mailsTo, eventIdString, scheduleEventReminderIdString, cal.getTime());
+
+                scheduleEventReminder.setQuartzJobId(jobId);
+
+                getJpaController().merge(scheduleEventReminder);
+
+            }
+        }
+    }
+
     private Caso crearSubCaso(Caso casoPadre, TipoCaso tipo, SubEstadoCaso subestado, String tema, String desc, Item item) {
         try {
             Caso casoNuevo = new Caso();
@@ -256,8 +310,8 @@ public class CrearCasoVisitaRepSellosAction extends Action {
 
             casosHijosList.add(casoNuevo);
             casoPadre.setCasosHijosList(casosHijosList);
-            
-             getJpaController().merge(casoPadre);
+
+            getJpaController().merge(casoPadre);
 
             return casoNuevo;
 

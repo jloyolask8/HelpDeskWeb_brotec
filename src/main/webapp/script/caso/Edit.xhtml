@@ -227,7 +227,7 @@
                     <h:form id="botoneraCaso" style="margin-top: 5px;">
                         <h:panelGrid columns="14">     
 
-                            <p:commandButton ajax="false" title="Volver" icon="fa fa-level-up" action="#{casoController.goOneLevelUp()}" style="width: 60px;"/>
+                            <p:commandButton ajax="false" title="#{casoController.selected.idCasoPadre ne null ? 'Subir al caso '.concat(casoController.selected.idCasoPadre):'Ir al listado de casos'}" icon="fa fa-level-up" action="#{casoController.goOneLevelUp()}" style="width: 60px;"/>
                             
                             <p:commandButton ajax="false" title="Actualizar" icon="fa fa-refresh" actionListener="#{casoController.refreshCaso()}" style="width: 60px;"/>
                             <p:commandButton rendered="#{casoController.verificarTomarCaso()}" ajax="true" value="Asignármelo" onclick="tomarCaso.show()" />
