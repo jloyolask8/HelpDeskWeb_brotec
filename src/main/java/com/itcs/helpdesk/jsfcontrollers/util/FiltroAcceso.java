@@ -7,7 +7,6 @@ package com.itcs.helpdesk.jsfcontrollers.util;
 import com.itcs.helpdesk.persistence.entities.Rol;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entityenums.EnumFunciones;
-import com.itcs.helpdesk.persistence.entityenums.EnumGrupos;
 import com.itcs.helpdesk.persistence.entityenums.EnumRoles;
 import com.itcs.helpdesk.persistence.entityenums.EnumUsuariosBase;
 import java.io.Serializable;
@@ -48,13 +47,7 @@ public class FiltroAcceso implements Serializable {
         return false;
     }
 
-    public boolean verificaAccesoAGrupo(EnumGrupos grupo) {
-        Usuario user = userSessionBean.getCurrent();
-        if (user != null && user.getGrupoList() != null && user.getGrupoList().contains(grupo.getGrupo())) {
-            return true;
-        }
-        return false;
-    }
+   
 
     public boolean esUsuarioSistema() {
         Usuario user = userSessionBean.getCurrent();
@@ -64,9 +57,7 @@ public class FiltroAcceso implements Serializable {
         return false;
     }
 
-    public boolean perteneceAGrupoSistema() {
-        return verificaAccesoAGrupo(EnumGrupos.GRUPO_SISTEMA);
-    }
+    
 
     public boolean verificarAccesoAFuncionAgregarCaso() {
         return verificaAccesoAFuncion(EnumFunciones.AGREGAR_CASO);

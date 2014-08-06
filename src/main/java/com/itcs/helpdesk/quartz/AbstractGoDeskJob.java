@@ -25,6 +25,7 @@ public class AbstractGoDeskJob {
     protected static final Locale LOCALE_ES_CL = new Locale("es", "CL");
 
     public static final String ID_CANAL = "IdCanal";
+    public static final String ID_CASO = "idCaso";
     public static final String INTERVAL_SECONDS = "intervalInSeconds";
 
 //    public static final String ID_TENANT = "schema";

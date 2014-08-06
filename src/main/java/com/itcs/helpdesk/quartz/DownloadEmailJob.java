@@ -41,7 +41,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
     /**
      * {0} = schema {1} = idArea#
      */
-    public static final String JOB_ID = "DownloadEmailCanal_%s";
+    public static final String JOB_ID = "DownloadEmail_Canal_%s";
 
     public static String formatJobId(String idCanal) {
         return String.format(JOB_ID, new Object[]{idCanal});
@@ -100,9 +100,9 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
 //        managerCasos.setJpaController(jpaController);
         Canal canal = jpaController.find(Canal.class, idCanal);
         if (canal != null) {
-            String emailSenderArea = getValueOfCanalSetting(jpaController, canal, EnumEmailSettingKeys.SMTP_USER);
+            String emailSender = getValueOfCanalSetting(jpaController, canal, EnumEmailSettingKeys.SMTP_USER);
                     
-            String emailReceiverArea = getValueOfCanalSetting(jpaController, canal, EnumEmailSettingKeys.INBOUND_USER);
+            String emailReceiver = getValueOfCanalSetting(jpaController, canal, EnumEmailSettingKeys.INBOUND_USER);
 
             EmailClient mailClient = MailClientFactory.getInstance(canal.getIdCanal());
 
@@ -127,8 +127,8 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
 
                 for (EmailMessage emailMessage : messages) {
                     try {
-                        if (!mapBlackList.containsKey(emailMessage.getFromEmail()) && (!emailMessage.getFromEmail().equalsIgnoreCase(emailSenderArea))
-                                && (!emailMessage.getFromEmail().equalsIgnoreCase(emailReceiverArea))) {
+                        if (!mapBlackList.containsKey(emailMessage.getFromEmail()) && (!emailMessage.getFromEmail().equalsIgnoreCase(emailSender))
+                                && (!emailMessage.getFromEmail().equalsIgnoreCase(emailReceiver))) {
                             final boolean casoIsCreated = managerCasos.crearCasoDesdeEmail(canal, emailMessage);
                             if (casoIsCreated) {
                                 mailClient.markReadMessage(emailMessage);

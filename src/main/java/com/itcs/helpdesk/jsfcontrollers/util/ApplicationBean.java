@@ -6,7 +6,6 @@ package com.itcs.helpdesk.jsfcontrollers.util;
 
 import com.itcs.helpdesk.jsfcontrollers.AbstractManagedBean;
 import com.itcs.helpdesk.persistence.entities.Archivo;
-import com.itcs.helpdesk.persistence.entities.Area;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Caso_;
 import com.itcs.helpdesk.persistence.entities.Etiqueta;
@@ -17,9 +16,7 @@ import com.itcs.helpdesk.persistence.entities.ReglaTrigger;
 import com.itcs.helpdesk.persistence.entities.TipoAlerta;
 import com.itcs.helpdesk.persistence.entities.TipoCaso;
 import com.itcs.helpdesk.persistence.entities.Vista;
-import com.itcs.helpdesk.persistence.entityenums.EnumAreas;
 import com.itcs.helpdesk.persistence.entityenums.EnumEstadoCaso;
-import com.itcs.helpdesk.persistence.entityenums.EnumNombreAccion;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
 import com.itcs.helpdesk.persistence.jpa.custom.CasoJPACustomController;
@@ -36,15 +33,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.PostConstruct;
-import javax.faces.FacesException;
 import javax.faces.application.FacesMessage;
-import javax.faces.application.ViewExpiredException;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseId;
 import javax.faces.model.SelectItem;
-import org.apache.commons.lang3.StringUtils;
 import org.primefaces.context.RequestContext;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
@@ -59,7 +53,7 @@ import org.primefaces.push.PushContextFactory;
 @ApplicationScoped
 public class ApplicationBean extends AbstractManagedBean<Object> implements Serializable {
 
-    private String defaultContactEmail = null;
+//    private String defaultContactEmail = null;
     //  Map<String, String> loggedInUsers = new HashMap<String, String>();
     private Map<String, String> channels = new HashMap<String, String>();
     //--pre created Vistas
@@ -67,7 +61,7 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
     private Vista vistaRevisarActualizacion;
     private transient final Map<String, Action> predefinedActions = new HashMap<String, Action>();
     
-    private String ckEditorToolbar = "[{ name: 'document', items : ['Preview', 'SpellChecker', 'Scayt', 'Link', 'Unlink', 'Iframe', 'Image','Table','HorizontalRule','NumberedList','BulletedList'] },"
+    private String ckEditorToolbar = "[{ name: 'document', items : ['Source','Preview', 'SpellChecker', 'Scayt', 'Link', 'Unlink', 'Iframe', 'Image','Table','HorizontalRule','NumberedList','BulletedList'] },"
             + "{ name: 'style', items : ['Bold','Italic','Underline','TextColor','BGColor', '-','RemoveFormat','Blockquote'] },"
             + "{ name: 'style', items : ['Styles','Format','Maximize']}]";
 
@@ -256,18 +250,18 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
         return ApplicationConfig.getCompanyLogo();
     }
 
-    public String getCompanyDefaultContactEmail() {
-//        if (defaultContactEmail == null) {
-//            String idDefaultArea = EnumAreas.DEFAULT_AREA.getArea().getIdArea();
-//            Area a = getJpaController().find(Area.class, idDefaultArea);
-//            if (a != null && !StringUtils.isEmpty(a.getMailInboundUser())) {
-//                defaultContactEmail = a.getMailInboundUser();
-//            }
-//        }
-
-        return defaultContactEmail;
-
-    }
+//    public String getCompanyDefaultContactEmail() {
+////        if (defaultContactEmail == null) {
+////            String idDefaultArea = EnumAreas.DEFAULT_AREA.getArea().getIdArea();
+////            Area a = getJpaController().find(Area.class, idDefaultArea);
+////            if (a != null && !StringUtils.isEmpty(a.getMailInboundUser())) {
+////                defaultContactEmail = a.getMailInboundUser();
+////            }
+////        }
+//
+//        return defaultContactEmail;
+//
+//    }
 
     public String getProductDescription() {
         return ApplicationConfig.getProductDescription();
@@ -318,9 +312,9 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
     /**
      * @return the defaultContactEmail
      */
-    public String getDefaultContactEmail() {
-        return defaultContactEmail;
-    }
+//    public String getDefaultContactEmail() {
+//        return defaultContactEmail;
+//    }
 
     /**
      * @return the predefinedActions

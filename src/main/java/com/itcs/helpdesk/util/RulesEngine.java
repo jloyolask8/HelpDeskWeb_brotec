@@ -625,7 +625,7 @@ public class RulesEngine implements CasoChangeListener {
                 } catch (Exception ex) {
                     Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "failed at asignarCasoAUsuario", ex);
                 }
-            }
+            }//this should be removed since in rules we dont notify actions, there is an option of notity action in the rule.
 
         } catch (Exception ex) {
             Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, null, ex);

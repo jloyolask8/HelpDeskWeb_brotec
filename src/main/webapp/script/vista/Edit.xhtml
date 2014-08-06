@@ -87,8 +87,8 @@
                     <h:outputLabel value="#{bundle.VistaLabel_descripcion}" for="descripcion" style="font-weight: bold"/>
                     <p:inputTextarea id="descripcion" value="#{vistaController.selected.descripcion}" title="#{bundle.VistaTitle_descripcion}" style="width: 100%;"/>
 
-                    <h:outputLabel value="Cambiar Autor:" for="idUsuarioCreadaPor" rendered="#{filtroAcceso.perteneceAGrupoSistema()}"/>
-                    <h:selectOneMenu id="idUsuarioCreadaPor" value="#{vistaController.selected.idUsuarioCreadaPor}" rendered="#{filtroAcceso.perteneceAGrupoSistema()}"
+                    <h:outputLabel value="Cambiar Autor:" for="idUsuarioCreadaPor" rendered="#{filtroAcceso.administradorDelSistema}"/>
+                    <h:selectOneMenu id="idUsuarioCreadaPor" value="#{vistaController.selected.idUsuarioCreadaPor}" rendered="#{filtroAcceso.administradorDelSistema}"
                                      title="Esta opcion es visible solo por usuarios del Grupo Sistema." required="true" requiredMessage="#{bundle.EditVistaRequiredMessage_idUsuarioCreadaPor}">
                         <f:selectItems value="#{usuarioController.itemsAvailableSelectOne}"/>
                     </h:selectOneMenu>

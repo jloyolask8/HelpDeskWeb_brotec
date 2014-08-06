@@ -90,11 +90,11 @@
                             </f:facet>
 
                             <p:commandButton ajax="false" action="#{vistaController.prepareEdit(item)}" title="Editar" icon="ui-icon-pencil" immediate="true"
-                                             rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarVistas() and (item.idUsuarioCreadaPor eq UserSessionBean.current or filtroAcceso.perteneceAGrupoSistema())}"/>
+                                             rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarVistas() and (item.idUsuarioCreadaPor eq UserSessionBean.current or filtroAcceso.administradorDelSistema)}"/>
                             <h:outputText value=" "/>                         
 
                             <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog"  immediate="true"
-                                             oncomplete="confirmation.show()" rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarVistas() and (item.idUsuarioCreadaPor eq UserSessionBean.current or filtroAcceso.perteneceAGrupoSistema())}" icon="ui-icon ui-icon-trash">
+                                             oncomplete="confirmation.show()" rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarVistas() and (item.idUsuarioCreadaPor eq UserSessionBean.current or filtroAcceso.administradorDelSistema)}" icon="ui-icon ui-icon-trash">
                                 <f:setPropertyActionListener value="#{item}" target="#{vistaController.selected}" />
                             </p:commandButton>
                         </p:column>

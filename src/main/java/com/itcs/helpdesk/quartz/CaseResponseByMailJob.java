@@ -34,7 +34,6 @@ import org.quartz.ee.jta.UserTransactionHelper;
  */
 public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
 
-    public static final String ID_CASO = "idCaso";
     public static final String ID_NOTA = "idNota";
     public static final String EMAILS_TO = "to";
     public static final String EMAIL_SUBJECT = "subject";
@@ -46,7 +45,7 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
     /**
      * {0} = idArea,
      */
-    public static final String JOB_ID = "%s_SendCaseResponseByEmail_%s_%s";
+    public static final String JOB_ID = "%s_SendCaseResponseByEmail_#%s_%s";
 
     public static String formatJobId(String idCanal, String idCaso, String to) {
         return String.format(JOB_ID, new Object[]{idCanal, idCaso, to});
@@ -54,6 +53,8 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
+        
+        System.out.println("CaseResponseByMailJob.execute ");
 
         JobDataMap map = context.getMergedJobDataMap();//.getJobDetail().getJobDataMap();
         if (map != null) {
@@ -66,14 +67,15 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
             String email_text = (String) map.get(EMAIL_TEXT);
             emails_to = emails_to.trim().replace(" ", "");
             String attachIds = (String) map.get(EMAIL_ATTACHMENTS);
-            
+
             List<Long> idAtts = new LinkedList<Long>();
             String ids[] = attachIds.split(";");
             for (String string : ids) {
-                try{
+                try {
                     Long idAtt = Long.parseLong(string);
                     idAtts.add(idAtt);
-                }catch(Exception ex){}
+                } catch (Exception ex) {
+                }
             }
 
             final String formatJobId = formatJobId(idCanal, idCaso, emails_to);

@@ -1,9 +1,11 @@
 package com.itcs.helpdesk.util;
 
 import com.itcs.commons.email.EmailClient;
+import com.itcs.helpdesk.persistence.entities.Canal;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Grupo;
 import com.itcs.helpdesk.persistence.entities.Usuario;
+import com.itcs.helpdesk.persistence.entityenums.EnumTipoCanal;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso;
 import com.itcs.helpdesk.quartz.AbstractGoDeskJob;
 import com.itcs.helpdesk.quartz.CaseResponseByMailJob;
@@ -12,6 +14,7 @@ import com.itcs.helpdesk.quartz.TicketNotifyMailToGroup;
 import com.itcs.helpdesk.util.MailClientFactory.MailNotConfiguredException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.mail.EmailException;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
@@ -60,29 +63,52 @@ public class MailNotifier {
     public static void notifyCasoAssigned(Caso caso, String motivo) throws MailNotConfiguredException, EmailException {
         if (caso != null) {
             String asunto = ApplicationConfig.getNotificationSubjectText(); //may contain place holders
-            String newAsunto = ClippingsPlaceHolders.buildFinalText(asunto, caso);
+            String subject_ = ClippingsPlaceHolders.buildFinalText(asunto, caso);
 
             String texto = ApplicationConfig.getNotificationBodyText();//may contain place holders 
             texto = texto + "<b>Motivo:<b/> " + (motivo != null ? motivo : "Pronta atención del caso");
-            String newTexto = ClippingsPlaceHolders.buildFinalText(texto, caso);
+            String mensaje_ = ClippingsPlaceHolders.buildFinalText(texto, caso);
 
-            if (caso.getIdCanal() != null && caso.getIdCanal().getEnabled() != null
-                    && caso.getIdCanal().getEnabled()) {
+            final String subject = ManagerCasos.formatIdCaso(caso.getIdCaso()) + " " + subject_;
+            final String mensaje = mensaje_;
 
-                if (caso.getIdArea() != null && caso.getIdArea().getIdCanal() != null) {
-                    MailClientFactory.getInstance(caso.getIdArea().getIdCanal().getIdCanal())
-                            .sendHTML(caso.getOwner().getEmail(), newAsunto,
-                                    newTexto, null);
-                } else {
-                    //no default??? TODO
-//                    MailClientFactory.getInstance(EnumAreas.DEFAULT_AREA.getArea().getIdArea())
-//                            .sendHTML(current.getOwner().getEmail(), newAsunto,
-//                                    newTexto, null);
-                    throw new EmailException("No se puede enviar el correo de asignación del caso #" + caso.getIdCaso() + ". El caso aún no tiene Area asociada.");
+//            if (caso.getIdCanal() != null && caso.getIdCanal().getEnabled() != null
+//                    && caso.getIdCanal().getEnabled()) {
+//
+//                if (caso.getIdArea() != null && caso.getIdArea().getIdCanal() != null) {
+//                    MailClientFactory.getInstance(caso.getIdArea().getIdCanal().getIdCanal())
+//                            .sendHTML(caso.getOwner().getEmail(), subject,
+//                                    mensaje, null);
+//                } else {
+//                    //no default??? TODO
+////                    MailClientFactory.getInstance(EnumAreas.DEFAULT_AREA.getArea().getIdArea())
+////                            .sendHTML(current.getOwner().getEmail(), newAsunto,
+////                                    newTexto, null);
+//                    throw new EmailException("No se puede enviar el correo de asignación del caso #" + caso.getIdCaso() + ". El caso aún no tiene Area asociada.");
+//                }
+//
+//            } else {
+//                throw new EmailException("No se puede enviar el correo. El canal #" + caso.getIdCanal().getIdCanal() + " asociado al caso #" + caso.toString() + " tiene el envío de correos desabilitado.");
+//            }
+            //choose canal, prioritize the area's default canal
+            Canal canal = (caso.getIdArea() != null && caso.getIdArea().getIdCanal() != null)
+                    ? caso.getIdArea().getIdCanal() : caso.getIdCanal();
+
+            if (canal != null && canal.getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal())
+                    && !StringUtils.isEmpty(canal.getIdCanal())) {
+                try {
+                    HelpDeskScheluder.scheduleSendMailNow(caso.getIdCaso(), canal.getIdCanal(), mensaje,
+                            caso.getOwner().getEmail(),
+                            subject);
+                } catch (SchedulerException ex) {
+                    Logger.getLogger(MailNotifier.class.getName()).log(Level.SEVERE, "error at scheduleSendMailNow", ex);
+                    MailClientFactory.getInstance(canal.getIdCanal())
+                            .sendHTML(caso.getOwner().getEmail(), subject,
+                                    mensaje, null);
                 }
-
             } else {
-                throw new EmailException("No se puede enviar el correo. El canal #" + caso.getIdCanal().getIdCanal() + " asociado al caso #" + caso.toString() + " tiene el envío de correos desabilitado.");
+                throw new EmailException("No se puede enviar el correo de asignación del caso " + caso.toString() + ".Error: El area no tiene canal tipo email, el caso no tiene Area ni Canal o el canal no es del tipo email.");
+
             }
 
         }
@@ -94,9 +120,7 @@ public class MailNotifier {
         if (current != null && current.getEmailCliente() != null) {
             String asunto = ApplicationConfig.getNotificationClientSubjectText(); //may contain place holders
             String newAsunto = ManagerCasos.formatIdCaso(current.getIdCaso()) + " " + ClippingsPlaceHolders.buildFinalText(asunto, current);
-
-            //"Se le ha asignado el caso" + " #[" + current.getIdCaso() + "]";
-            String texto = ApplicationConfig.getNotificationClientBodyText();//may contain place holders 
+            String texto = ClippingsPlaceHolders.buildFinalText(ApplicationConfig.getNotificationClientBodyText(), current);//may contain place holders 
 
             String newTexto = ClippingsPlaceHolders.buildFinalText(texto, current);
 
@@ -110,37 +134,64 @@ public class MailNotifier {
         return null;
     }
 
-    public static void emailClientCasoReceived(Caso caso) {
-        //TODO: use configure texts.
-        if (caso != null && caso.getEmailCliente() != null) {
-            try {
-                String mensaje_ = "";
-                String subject_ = "";
+    public static void emailClientCasoReceived(Caso caso) throws EmailException, SchedulerException {
+        //new: permit to have a global response in the config
+        //new: if area is not enabled, send a receipt confirmation to client from same channel this should be the default.
+        //TODO: record this notification as an activity (Nota) in the case.
 
-                if (caso.getIdArea() != null) {
-                    if (caso.getIdArea().getTextoRespAutomatica() != null) {
-                        mensaje_ = (ClippingsPlaceHolders.buildFinalText(caso.getIdArea().getTextoRespAutomatica(), caso));
+        if (ApplicationConfig.isSendNotificationToClientOnNewTicket()) {
+
+            if (caso != null && caso.getEmailCliente() != null) {
+                try {
+                    String mensaje_ = "";
+                    String subject_ = "";
+
+                    if (caso.getIdArea() != null) {
+                        if (caso.getIdArea().getEmailAcusederecibo()) {
+                            if (!StringUtils.isEmpty(caso.getIdArea().getTextoRespAutomatica())
+                                    && !StringUtils.isEmpty(caso.getIdArea().getSubjectRespAutomatica())) {
+                                //use area config texts
+                                mensaje_ = (ClippingsPlaceHolders.buildFinalText(caso.getIdArea().getTextoRespAutomatica(), caso));
+                                subject_ = (ClippingsPlaceHolders.buildFinalText(caso.getIdArea().getSubjectRespAutomatica(), caso));
+                            } else {
+                                //no tiene textos, use global config 
+                                mensaje_ = (ClippingsPlaceHolders.buildFinalText(ApplicationConfig.getNotificationClientBodyNewTicketText(), caso));
+                                subject_ = (ClippingsPlaceHolders.buildFinalText(ApplicationConfig.getNotificationClientSubjectNewTicketText(), caso));
+                            }
+                        } else {
+                            //area manda! si dice que no enviar entonces no enviar acuse
+                            Logger.getLogger(MailNotifier.class.getName()).log(Level.SEVERE, "area {0} manda! si dice no enviar acuse entonces no enviar acuse", caso.getIdArea() + ":" + caso.getIdArea().getEmailAcusederecibo());
+                            return;
+                        }
+                    } else {
+                        //no tiene area, use global config 
+                        mensaje_ = (ClippingsPlaceHolders.buildFinalText(ApplicationConfig.getNotificationClientBodyNewTicketText(), caso));
+                        subject_ = (ClippingsPlaceHolders.buildFinalText(ApplicationConfig.getNotificationClientSubjectNewTicketText(), caso));
                     }
 
-                    if (caso.getIdArea().getSubjectRespAutomatica() != null) {
-                        subject_ = (ClippingsPlaceHolders.buildFinalText(caso.getIdArea().getSubjectRespAutomatica(), caso));
+                    final String subject = ManagerCasos.formatIdCaso(caso.getIdCaso()) + " " + subject_;
+                    final String mensaje = mensaje_;
+                    //choose canal, prioritize the area's default canal
+                    Canal canal = (caso.getIdArea() != null && caso.getIdArea().getIdCanal() != null)
+                            ? caso.getIdArea().getIdCanal() : caso.getIdCanal();
+
+                    if (canal != null && canal.getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal())
+                            && !StringUtils.isEmpty(canal.getIdCanal())) {
+                        HelpDeskScheluder.scheduleSendMailNow(caso.getIdCaso(), canal.getIdCanal(), mensaje,
+                                caso.getEmailCliente().getEmailCliente(),
+                                subject);
+                    } else {
+                        throw new EmailException("No se puede enviar el correo de recepcion de caso al cliente " + caso.toString() + ".Error: El area no tiene canal tipo email, el caso no tiene Area ni Canal o el canal no es del tipo email.");
+
                     }
+                } catch (EmailException ex) {
+                    Logger.getLogger(MailNotifier.class.getName()).log(Level.SEVERE, "emailClientCasoReceived", ex);
+                    throw ex;
                 }
-
-                final String subject = ManagerCasos.formatIdCaso(caso.getIdCaso()) + " " + subject_;
-                final String mensaje = mensaje_;
-
-                if (caso.getIdArea() != null && caso.getIdArea().getIdCanal() != null) {
-                    MailClientFactory.getInstance(caso.getIdArea().getIdCanal().getIdCanal())
-                            .sendHTML(caso.getEmailCliente().getEmailCliente(), subject,
-                                    mensaje, null);
-                } else {
-                    throw new EmailException("No se puede enviar el correo al cliente de recepcion de caso. El caso aún no tiene Area asociada.");
-                }
-            } catch (Exception ex) {
-                Logger.getLogger(MailNotifier.class.getName()).log(Level.SEVERE, "emailClientCasoReceived", ex);
             }
+
         }
+
     }
 
     /**

@@ -14,7 +14,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.transaction.UserTransaction;
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +31,7 @@ import org.quartz.ee.jta.UserTransactionHelper;
  */
 public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job {
 
-    public static final String ID_CASO = "idCaso";
+    
     public static final String ID_ESTADO_ALERTA = "idalerta";
     /**
      * {0} = schema {1} = caso# {2} = id alerta

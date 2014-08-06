@@ -254,7 +254,10 @@ public class ScheduleEventReminderJob extends AbstractGoDeskJob implements Job {
 //                                    + "		</tr>\n"
 //                                    + "	</tbody>\n"
 //                                    + "</table>";//TODO
-                            NoReplySystemMailSender.sendHTML(emails_to.split(","), subject, bodyText.toString(), null);
+                            final String[] split = emails_to.split(",");
+                            
+                            System.out.println("split emails:"+split);
+                            NoReplySystemMailSender.sendHTML(split, subject, bodyText.toString(), null);
                             //if sent ok, then forget about it
                             unschedule(formatJobId);
                             eventReminder.setNotifiedOk(Boolean.TRUE);

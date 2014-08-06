@@ -19,13 +19,10 @@ import com.itcs.helpdesk.persistence.entities.Responsable;
 import com.itcs.helpdesk.persistence.entities.TipoCanal;
 import com.itcs.helpdesk.persistence.entities.TipoCaso;
 import com.itcs.helpdesk.persistence.entities.Usuario;
-import com.itcs.helpdesk.persistence.entityenums.EnumAreas;
 import com.itcs.helpdesk.persistence.entityenums.EnumCanal;
-import com.itcs.helpdesk.persistence.entityenums.EnumCategorias;
 import com.itcs.helpdesk.persistence.entityenums.EnumEstadoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumFieldType;
 import com.itcs.helpdesk.persistence.entityenums.EnumFunciones;
-import com.itcs.helpdesk.persistence.entityenums.EnumGrupos;
 import com.itcs.helpdesk.persistence.entityenums.EnumNombreAccion;
 import com.itcs.helpdesk.persistence.entityenums.EnumPrioridad;
 import com.itcs.helpdesk.persistence.entityenums.EnumResponsables;
@@ -224,11 +221,8 @@ public class SchedulerBean extends AbstractManagedBean<Object> implements Serial
 //        } catch (InterruptedException ex) {
 //            Logger.getLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, ex);
 //        }
-        verificarAreas(controller);
-        verificarGrupos(controller);
         verificarUsuarios(controller);
         verificarFunciones(controller);
-        verificarCategorias(controller);
         verificarTipoCaso(controller);
         verificarTipoCanal(controller);
         verificarTiposAlerta(controller);
@@ -424,24 +418,24 @@ public class SchedulerBean extends AbstractManagedBean<Object> implements Serial
         }
     }
 
-    private void verificarCategorias(JPAServiceFacade jpaController) {
-        for (EnumCategorias enumCat : EnumCategorias.values()) {
-            try {
-                if (enumCat.isPersistente()) {
-                    if (null == jpaController.getCategoriaFindByIdCategoria(enumCat.getCategoria().getIdCategoria())) {
-                        throw new NoResultException();
-                    }
-                }
-            } catch (NoResultException ex) {
-                Log.createLogger(this.getClass().getName()).logSevere("No existe categoria " + enumCat.getCategoria().getNombre() + ", se creara ahora");
-                try {
-                    jpaController.persistCategoria(enumCat.getCategoria());
-                } catch (Exception e) {
-                    Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
-                }
-            }
-        }
-    }
+//    private void verificarCategorias(JPAServiceFacade jpaController) {
+//        for (EnumCategorias enumCat : EnumCategorias.values()) {
+//            try {
+//                if (enumCat.isPersistente()) {
+//                    if (null == jpaController.getCategoriaFindByIdCategoria(enumCat.getCategoria().getIdCategoria())) {
+//                        throw new NoResultException();
+//                    }
+//                }
+//            } catch (NoResultException ex) {
+//                Log.createLogger(this.getClass().getName()).logSevere("No existe categoria " + enumCat.getCategoria().getNombre() + ", se creara ahora");
+//                try {
+//                    jpaController.persistCategoria(enumCat.getCategoria());
+//                } catch (Exception e) {
+//                    Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
+//                }
+//            }
+//        }
+//    }
 
     private void verificarResponsables(JPAServiceFacade jpaController) {
         for (EnumResponsables enumResponsables : EnumResponsables.values()) {
@@ -460,39 +454,9 @@ public class SchedulerBean extends AbstractManagedBean<Object> implements Serial
         }
     }
 
-    private void verificarAreas(JPAServiceFacade jpaController) {
-        for (EnumAreas enumArea : EnumAreas.values()) {
-            try {
-                if (null == jpaController.getAreaFindByIdArea(enumArea.getArea().getIdArea())) {
-                    throw new NoResultException();
-                }
-            } catch (NoResultException ex) {
-                Log.createLogger(this.getClass().getName()).logSevere("No existe area " + enumArea.getArea().getNombre() + ", se creara ahora");
-                try {
-                    jpaController.persistArea(enumArea.getArea());
-                } catch (Exception e) {
-                    Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
-                }
-            }
-        }
-    }
+    
 
-    private void verificarGrupos(JPAServiceFacade jpaController) {
-        for (EnumGrupos enumGrupos : EnumGrupos.values()) {
-            try {
-                if (null == jpaController.getGrupoFindByIdGrupo(enumGrupos.getGrupo().getIdGrupo())) {
-                    throw new NoResultException();
-                }
-            } catch (NoResultException ex) {
-                Log.createLogger(this.getClass().getName()).logSevere("No existe grupo " + enumGrupos.getGrupo().getNombre() + ", se creara ahora");
-                try {
-                    jpaController.persistGrupo(enumGrupos.getGrupo());
-                } catch (Exception e) {
-                    Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
-                }
-            }
-        }
-    }
+   
 
     private void verificarEstadosCaso(JPAServiceFacade jpaController) {
         for (EnumEstadoCaso enumEstado : EnumEstadoCaso.values()) {

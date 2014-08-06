@@ -48,7 +48,7 @@
                                 <p:outputLabel style="font-weight: bold;" value="#{bundle.EditAreaLabel_nombre}" for="nombre" />
                                 <p:inputText id="nombre" value="#{areaController.selected.nombre}" title="#{bundle.EditAreaTitle_nombre}" required="true" requiredMessage="El nombre es un dato Requerido."/>
 
-                             
+
 
                                 <p:outputLabel style="font-weight: bold;" value="#{bundle.EditAreaLabel_descripcion}" for="descripcion"/>
                                 <p:inputTextarea rows="4" cols="50" id="descripcion" value="#{areaController.selected.descripcion}" title="#{bundle.EditAreaTitle_descripcion}" />
@@ -60,6 +60,33 @@
                                     <f:selectItems value="#{canalController.emailsAvailableSelectOne}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
 
                                 </p:selectOneMenu>
+
+                                <p:outputLabel style="font-weight: bold;" value="#{bundle.EditAreaLabel_emailAcusederecibo}" for="emailAcusederecibo" />
+                                <p:selectBooleanCheckbox id="emailAcusederecibo" value="#{areaController.selected.emailAcusederecibo}"/>
+
+                                <p:outputLabel style="font-weight: bold;" value="Subject:"/>
+                                <h:panelGrid columns="2">
+                                    <p:inputText value="#{areaController.selected.subjectRespAutomatica}" size="60"
+                                                 title="#{bundle.EditAreaTitle_subjectRespAutomatica}" />
+
+                                    <p:commandLink id="overlayBtn" value="Marcadores de posición"  />  
+                                    <p:overlayPanel id="MarcadoresPanel" for="overlayBtn" hideEffect="fade" dynamic="true"> 
+                                        <p:dataTable value="#{clippingController.availablePlaceHolders}" var="holder" emptyMessage="No hay placeholders disponibles.">
+                                            <p:column headerText="Marcadores de posición">
+                                                <h:outputText value="\${#{holder}}"/>
+                                            </p:column>
+                                            <f:facet name="footer">
+                                                <h:outputText value="Utilice marcadores de posición para insertar información (del caso) usada con frecuencia fácilmente en el texto."/>
+                                            </f:facet>
+                                        </p:dataTable>
+                                    </p:overlayPanel>
+                                </h:panelGrid>
+
+
+                                <p:outputLabel value="Texto De Respuesta:" style="font-weight: bold;"/>
+                                <pe:ckEditor value="#{areaController.selected.textoRespAutomatica}"
+                                             toolbar="#{applicationBean.ckEditorToolbar}"
+                                             id="respuesta" height="210"/>
                             </h:panelGrid>
                         </p:fieldset>
                         <br/>
@@ -96,7 +123,7 @@
             </h:form>
         </ui:define>
 
-        
+
     </ui:composition>
 
 </html>

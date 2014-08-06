@@ -2572,6 +2572,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 progresoEnvioRespuesta = 100;
                 return false;
             }
+            //TODO: create an Object Builder factory
             Nota nuevaNota = this.armarNota(current, true, textoNota.trim(), EnumTipoNota.RESPUESTA_A_CLIENTE.getTipoNota());
             if (nuevaNota != null) {
 
@@ -2654,7 +2655,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         try {
             if (current.getIdProducto() != null && current.getIdProducto().getIdOutCanal() != null) {
 //                MailClientFactory.getInstance(current.getIdProducto().getIdOutCanal().getIdCanal()).sendHTML(emailCliente, subject, mensaje, attachments);
-                MailNotifier.scheduleSendMailNota(current.getIdProducto().getIdOutCanal().getIdCanal(), mensaje, emailCliente, subject, current.getIdCaso(), nota.getIdNota(), listIdAtt.toString());
+                MailNotifier.scheduleSendMailNota(current.getIdProducto().getIdOutCanal().getIdCanal(), 
+                        mensaje, emailCliente, subject, current.getIdCaso(), nota.getIdNota(), listIdAtt.toString());
                 sended = true;
             } else if (current.getIdArea() != null && current.getIdArea().getIdCanal() != null) {
 //                MailClientFactory.getInstance(current.getIdArea().getIdCanal().getIdCanal()).sendHTML(emailCliente, subject, mensaje, attachments);

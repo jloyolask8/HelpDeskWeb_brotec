@@ -239,7 +239,7 @@ public class ApplicationConfig {
                             && StringUtils.isNotEmpty(canal.getSetting(EnumEmailSettingKeys.TRANSPORT_PROTOCOL.getKey()))) {
                         props.put(MAIL_TRANSPORT_PROTOCOL, canal.getSetting(EnumEmailSettingKeys.TRANSPORT_PROTOCOL.getKey()));
                     }
-                    
+
                     if (canal.containsKey(EnumEmailSettingKeys.STORE_PROTOCOL.getKey())
                             && StringUtils.isNotEmpty(canal.getSetting(EnumEmailSettingKeys.STORE_PROTOCOL.getKey()))) {
                         props.put(MAIL_STORE_PROTOCOL, canal.getSetting(EnumEmailSettingKeys.STORE_PROTOCOL.getKey()));
@@ -251,7 +251,7 @@ public class ApplicationConfig {
                             && StringUtils.isNotEmpty(canal.getSetting(EnumEmailSettingKeys.INBOUND_USER.getKey()))) {
                         props.put(Email.SENDER_USERNAME, canal.getSetting(EnumEmailSettingKeys.INBOUND_USER.getKey()));
                     }
-                    
+
                     if (canal.containsKey(EnumEmailSettingKeys.INBOUND_PASS.getKey())
                             && StringUtils.isNotEmpty(canal.getSetting(EnumEmailSettingKeys.INBOUND_PASS.getKey()))) {
                         props.put(Email.SENDER_PASSWORD, canal.getSetting(EnumEmailSettingKeys.INBOUND_PASS.getKey()));
@@ -261,7 +261,7 @@ public class ApplicationConfig {
                             && StringUtils.isNotEmpty(canal.getSetting(EnumEmailSettingKeys.INBOUND_SERVER.getKey()))) {
                         props.put(Email.MAIL_EXCHANGE_SERVER, canal.getSetting(EnumEmailSettingKeys.INBOUND_SERVER.getKey()));
                     }
-                    
+
                     if (canal.containsKey(EnumEmailSettingKeys.DOMINIO_EXCHANGE_SALIDA.getKey())
                             && StringUtils.isNotEmpty(canal.getSetting(EnumEmailSettingKeys.DOMINIO_EXCHANGE_SALIDA.getKey()))) {
                         props.put(Email.MAIL_EXCHANGE_DOMAIN, canal.getSetting(EnumEmailSettingKeys.DOMINIO_EXCHANGE_SALIDA.getKey()));
@@ -402,7 +402,25 @@ public class ApplicationConfig {
         }
         return value;
     }
-    
+
+    public static boolean isSendNotificationToClientOnNewTicket() {
+        boolean value = true;
+        try {
+            value = Boolean.valueOf(getProperty(EnumSettingsBase.SEND_NOTIFICATION_TOCLIENT_ON_NEW_TICKET.getAppSetting().getSettingKey(), "false"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return value;
+    }
+
+    public static String getNotificationClientSubjectNewTicketText() {
+        return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_NEW_TICKET_CLIENT_SUBJECT_TEXT.getAppSetting().getSettingKey());
+    }
+
+    public static String getNotificationClientBodyNewTicketText() {
+        return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_NEW_TICKET_CLIENT_BODY_TEXT.getAppSetting().getSettingKey());
+    }
+
 //      public static boolean isSendGroupNotifOnNewCaseEnabled() {
 //        boolean value = false;
 //        try {
@@ -415,7 +433,6 @@ public class ApplicationConfig {
 //        }
 //        return value;
 //    }
-
     public static boolean isAppDebugEnabled() {
         boolean value = false;
         try {

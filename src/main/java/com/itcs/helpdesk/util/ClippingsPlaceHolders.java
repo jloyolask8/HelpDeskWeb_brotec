@@ -36,6 +36,7 @@ public class ClippingsPlaceHolders {
     public static final String SubEstado = "idSubEstado.nombre";
     public static final String Producto = "idProducto.nombre";
     public static final String Prioridad = "idPrioridad.nombre";
+    public static final String tipoCaso = "tipoCaso.nombre";
     //--
     public static final String SALUDO_CLIENTE = "SaludoCliente";
     public static final String NUMERO_CASO = "NumeroCaso";
@@ -52,6 +53,7 @@ public class ClippingsPlaceHolders {
         placeHolders.put(SubEstado, "SubEstado");
         placeHolders.put(Producto, "Producto");
         placeHolders.put(Prioridad, "Prioridad");
+        placeHolders.put(tipoCaso, "TipoCaso");
         placeHolders.put(asunto, "Asunto");
         placeHolders.put(descripcion, "Descripcion");
 
@@ -77,7 +79,6 @@ public class ClippingsPlaceHolders {
         } catch (Exception e) {
             valuesMap.put(SALUDO_CLIENTE, ApplicationConfig.getSaludoClienteUnknown());
         }
-
 
         StrSubstitutor sub = new StrSubstitutor(valuesMap);
         final String replace = sub.replace(templateString);

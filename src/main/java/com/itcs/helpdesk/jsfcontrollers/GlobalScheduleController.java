@@ -297,19 +297,8 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
                 cal.setTime(entityEvent.getStartDate());
                 cal.add(Calendar.MINUTE, minituesAmount);
 
-                String mailsTo = "";
-                boolean first = true;
-                for (Usuario usuario : entityEvent.getUsuariosInvitedList()) {
-                    if (first) {
-                        mailsTo = usuario.getEmail();
-                        first = false;
-                    } else {
-                        mailsTo += ("," + usuario.getEmail());
-                    }
-                }
-
                 String jobId = HelpDeskScheluder.scheduleEventReminderJob(
-                       mailsTo, scheduleEventReminder.getEventId().getEventId().toString(),
+                       entityEvent.getUsuariosInvitedList(), scheduleEventReminder.getEventId().getEventId().toString(),
                         scheduleEventReminder.getIdReminder().toString(), cal.getTime());
                 scheduleEventReminder.setQuartzJobId(jobId);
 

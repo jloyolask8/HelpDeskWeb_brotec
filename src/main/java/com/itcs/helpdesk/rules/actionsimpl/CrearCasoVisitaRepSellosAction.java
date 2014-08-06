@@ -10,7 +10,6 @@ import com.itcs.helpdesk.persistence.entities.ScheduleEvent;
 import com.itcs.helpdesk.persistence.entities.ScheduleEventReminder;
 import com.itcs.helpdesk.persistence.entities.SubEstadoCaso;
 import com.itcs.helpdesk.persistence.entities.TipoCaso;
-import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entityenums.EnumCanal;
 import com.itcs.helpdesk.persistence.entityenums.EnumResponsables;
 import com.itcs.helpdesk.persistence.entityenums.EnumSubEstadoCaso;
@@ -34,8 +33,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.lang3.StringUtils;
-import org.quartz.SchedulerException;
 
 /**
  *
@@ -240,23 +237,10 @@ public class CrearCasoVisitaRepSellosAction extends Action {
                 cal.setTime(entityEvent.getStartDate());
                 cal.add(Calendar.MINUTE, minituesAmount);
 
-                //TODO handle NPE
-                String mailsTo = "";
-                boolean first = true;
-                for (Usuario usuario : entityEvent.getUsuariosInvitedList()) {
-                    if (first) {
-                        mailsTo = usuario.getEmail();
-                        first = false;
-                    } else {
-                        mailsTo += ("," + usuario.getEmail());
-                    }
-                }
-
-//                final String idCanal = casoController.getSelected().getIdArea().getIdCanal().getIdCanal(); //EnumCanal.SISTEMA
                 final String eventIdString = entityEvent.getEventId().toString();
                 final String scheduleEventReminderIdString = scheduleEventReminder.getIdReminder().toString();
 
-                String jobId = HelpDeskScheluder.scheduleEventReminderJob(mailsTo, eventIdString, scheduleEventReminderIdString, cal.getTime());
+                String jobId = HelpDeskScheluder.scheduleEventReminderJob(entityEvent.getUsuariosInvitedList(), eventIdString, scheduleEventReminderIdString, cal.getTime());
 
                 scheduleEventReminder.setQuartzJobId(jobId);
 

@@ -8,7 +8,6 @@ package com.itcs.helpdesk.quartz;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.rules.Action;
-import com.itcs.helpdesk.util.ManagerCasos;
 import java.lang.reflect.Constructor;
 import java.util.logging.Level;
 import java.util.logging.Logger;

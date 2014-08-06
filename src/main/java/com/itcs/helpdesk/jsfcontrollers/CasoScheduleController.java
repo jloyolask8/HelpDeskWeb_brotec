@@ -304,23 +304,10 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
                 cal.setTime(entityEvent.getStartDate());
                 cal.add(Calendar.MINUTE, minituesAmount);
 
-                //TODO handle NPE
-                String mailsTo = "";
-                boolean first = true;
-                for (Usuario usuario : entityEvent.getUsuariosInvitedList()) {
-                    if (first) {
-                        mailsTo = usuario.getEmail();
-                        first = false;
-                    } else {
-                        mailsTo += ("," + usuario.getEmail());
-                    }
-                }
-
-//                final String idCanal = casoController.getSelected().getIdArea().getIdCanal().getIdCanal(); //EnumCanal.SISTEMA
                 final String eventIdString = entityEvent.getEventId().toString();
                 final String scheduleEventReminderIdString = scheduleEventReminder.getIdReminder().toString();
 
-                String jobId = HelpDeskScheluder.scheduleEventReminderJob(mailsTo, eventIdString, scheduleEventReminderIdString, cal.getTime());
+                String jobId = HelpDeskScheluder.scheduleEventReminderJob(entityEvent.getUsuariosInvitedList(), eventIdString, scheduleEventReminderIdString, cal.getTime());
 
                 scheduleEventReminder.setQuartzJobId(jobId);
 

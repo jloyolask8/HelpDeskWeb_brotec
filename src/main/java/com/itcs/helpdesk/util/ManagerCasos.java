@@ -28,7 +28,6 @@ import com.itcs.helpdesk.persistence.entities.SubEstadoCaso;
 import com.itcs.helpdesk.persistence.entities.TipoCaso;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entities.Vista;
-import com.itcs.helpdesk.persistence.entityenums.EnumAreas;
 import com.itcs.helpdesk.persistence.entityenums.EnumCanal;
 import com.itcs.helpdesk.persistence.entityenums.EnumEstadoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumPrioridad;
@@ -437,7 +436,7 @@ public class ManagerCasos implements Serializable {
                 Area a = getJpaController().find(Area.class, datos.getIdArea());
                 caso.setIdArea(a);
             } else {
-                caso.setIdArea(EnumAreas.DEFAULT_AREA.getArea());
+//                caso.setIdArea(EnumAreas.DEFAULT_AREA.getArea());
             }
 
             if (datos.getTags() != null) {
@@ -519,24 +518,24 @@ public class ManagerCasos implements Serializable {
                 }
             }
             if (caso != null) {
-                return crearNotaDesdeEmail(caso, item);
+                return crearNotaDesdeEmail(caso, canal, item);
             } else {
                 DatosCaso datos = new DatosCaso();
                 datos.setEmail(item.getFromEmail().toLowerCase().trim());
 
                 if (item.getFromName() != null) {
-                    
+
                     String from = MimeUtility.decodeText(item.getFromName().replace("\"", ""));
                     String[] nombres = from.split(" ");
-                        if (nombres.length > 0) {
-                            datos.setNombre(nombres[0]);
-                        }
+                    if (nombres.length > 0) {
+                        datos.setNombre(nombres[0]);
+                    }
                     if (nombres.length > 2) {
                         datos.setApellidos(nombres[1] + " " + nombres[2]);
                     } else if (nombres.length > 1) {
-                            datos.setApellidos(nombres[1]);
-                        }
+                        datos.setApellidos(nombres[1]);
                     }
+                }
 
                 datos.setTipoCaso(EnumTipoCaso.CONTACTO.getTipoCaso().getIdTipoCaso());
                 datos.setAsunto(subject);
@@ -621,15 +620,8 @@ public class ManagerCasos implements Serializable {
         getJpaController().persistCaso(caso, changeLog);
 
         if (!caso.getTipoCaso().equals(EnumTipoCaso.PREVENTA.getTipoCaso())) {
-            //Cuando este activo acuse de recibo.
-            if (caso.getIdCanal() != null && caso.getEmailCliente() != null) {
-//                if (caso.getIdCanal().getEmailAcusederecibo() != null && caso.getIdArea().getEmailAcusederecibo()) {
-                MailNotifier.emailClientCasoReceived(caso);
-//                enviarRespuestaAutomatica(caso, caso.getEmailCliente().getEmailCliente());
-//                }
-            }
+            MailNotifier.emailClientCasoReceived(caso);
         }
-//        agendarAlertas(caso);
 
         HelpDeskScheluder.scheduleAlertaPorVencer(caso.getIdCaso(), calculaCuandoPasaAPorVencer(caso));
 
@@ -757,34 +749,58 @@ public class ManagerCasos implements Serializable {
 //            }
 //        }
 //    }
-    private boolean crearNotaDesdeEmail(Caso caso, EmailMessage item) throws Exception {
+    private boolean crearNotaDesdeEmail(Caso caso, Canal canal, EmailMessage item) throws Exception {
         boolean retorno = false;
+        boolean respuestaCliente = true;
+        StringBuilder listIdAtt = new StringBuilder();
         if (caso != null) {
-            caso.setRevisarActualizacion(true);
+            final String emailSender = item.getFromEmail().toLowerCase().trim();
+            String senderName = null;
 
             Nota nota = new Nota();
-            nota.setVisible(true);//cliente, nota publica
-            nota.setEnviadoPor(item.getFromEmail().toLowerCase().trim());
+            nota.setVisible(true);//nota publica
+            nota.setIdCaso(caso);
+
+            //we need to check if the sender is an agent or a client
+            //doing a quick check on the caso.owner may improve response time
+            if (caso.getOwner() != null && caso.getOwner().getEmail().equalsIgnoreCase(emailSender)) {
+                //bingo its an agent
+                nota.setCreadaPor(caso.getOwner());
+                nota.setTipoNota(EnumTipoNota.RESPUESTA_A_CLIENTE.getTipoNota());
+                nota.setEnviado(false);
+                respuestaCliente = false;
+                senderName = caso.getOwner().getIdUsuario();
+            } else /*if (caso.getEmailCliente() != null && caso.getEmailCliente().getEmailCliente().equalsIgnoreCase(emailSender))*/ {
+                //its a client
+                caso.setRevisarActualizacion(true);
+                nota.setTipoNota(EnumTipoNota.RESPUESTA_DE_CLIENTE.getTipoNota());
+                nota.setEnviadoPor(emailSender);
+                respuestaCliente = true;
+                senderName = (caso.getEmailCliente().getCliente() != null
+                        && !StringUtils.isEmpty(caso.getEmailCliente().getCliente().getCapitalName())) ? caso.getEmailCliente().getCliente().getCapitalName() : emailSender;
+
+            }
+
             String textoBody = item.getText();
 //            textoBody = parseHtmlToText(textoBody);
             if (textoBody != null) {
                 nota.setTexto(textoBody);
             }
-            nota.setIdCaso(caso);
-            nota.setCreadaPor(EnumUsuariosBase.SISTEMA.getUsuario());
+
             nota.setFechaCreacion(Calendar.getInstance().getTime());
             if (item.getSubject().startsWith("Undeliverable:")) {
                 nota.setTipoNota(EnumTipoNota.RESPUESTA_SERVIDOR.getTipoNota());
                 nota.setTexto("El servidor de correos comuníca que su respuesta "
                         + "anterior no pudo ser entregada al destinatario");
             } else {
-                nota.setTipoNota(EnumTipoNota.RESPUESTA_DE_CLIENTE.getTipoNota());
 
                 StringBuilder attachmentsNames = new StringBuilder();
                 for (EmailAttachment attachment : item.getAttachments()) {
-                    while (!agregarAdjunto(attachment, caso)) {
-                        //System.out.print(".");
-                    }
+                    Long idAtt = agregarAdjunto(attachment, caso);
+                    listIdAtt.append(idAtt).append(';');
+//                    while (!agregarAdjunto(attachment, caso)) {
+//                        //System.out.print(".");
+//                    }
                     if (attachment.getContentId() == null) {
                         attachmentsNames.append(attachment.getName()).append("<br/>");
                     }
@@ -800,25 +816,43 @@ public class ManagerCasos implements Serializable {
 
             getJpaController().persist(nota);
             caso.getNotaList().add(nota);
-            getJpaController().persistAuditLog(createLogReg(caso, "Respuesta cliente", "nota id:" + nota.getIdNota(), ""));
-            mergeCaso(caso, createLogReg(caso, "Notas", "Se agrega nota respuesta de cliente nota id:" + nota.getIdNota(), ""));
+            List<AuditLog> changeLog = new ArrayList<AuditLog>();
+            if (respuestaCliente) {
+                changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "Se agrega nota respuesta del cliente " + senderName + "al caso vía email, nota#Id:" + nota.getIdNota(), ""));
+
+            } else {
+                changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "Agente " + senderName + " agrega nota pública vía email al cliente nota#Id:" + nota.getIdNota(), ""));
+
+                String emailCliente = caso.getEmailCliente() != null && !StringUtils.isEmpty(caso.getEmailCliente().getEmailCliente())
+                        ? caso.getEmailCliente().getEmailCliente() : null;
+                if (emailCliente != null) {
+                    String subject = formatIdCaso(caso.getIdCaso()) + " " + ClippingsPlaceHolders.buildFinalText("${TipoCaso} ${Asunto}", caso);
+
+                    MailNotifier.scheduleSendMailNota(canal.getIdCanal(),
+                            item.getText(), emailCliente, subject, caso.getIdCaso(), nota.getIdNota(), listIdAtt.toString());
+                }
+
+            }
+
+            mergeCaso(caso, changeLog);
+
             retorno = true;
 //            getJpaController().commitTransaction();
         }
         return retorno;
     }
 
-    private boolean agregarAdjunto(EmailAttachment attachment, Caso caso) {
+    private Long agregarAdjunto(EmailAttachment attachment, Caso caso) {
         try {
             String nombre = attachment.getName();
             nombre = nombre.substring(nombre.lastIndexOf(File.separator) + 1);
             nombre = nombre.substring(nombre.lastIndexOf('\\') + 1);
-            crearAdjunto(attachment.getData(), attachment.getContentId(), caso, nombre, attachment.getMimeType());
-            return true;
+            Attachment a = crearAdjunto(attachment.getData(), attachment.getContentId(), caso, nombre, attachment.getMimeType());
+            return a.getIdAttachment();
         } catch (Exception e) {
             Logger.getLogger(ManagerCasos.class.getName()).log(Level.SEVERE, null, e);
         }
-        return false;
+        return null;
     }
 
     public void evaluarEstadoDelCaso(Caso current) {
@@ -1163,7 +1197,7 @@ public class ManagerCasos implements Serializable {
         StringBuilder attachmentsNames = new StringBuilder();
 //        System.out.println("El correo viene con " + item.getAttachments().size() + " Archivos adjuntos");
         for (EmailAttachment attachment : item.getAttachments()) {
-            while (!agregarAdjunto(attachment, caso)) {
+            while (agregarAdjunto(attachment, caso) != null) {
                 //intentionally. bug fix for exchange api.
             }
             if (attachment.getContentId() == null) {
