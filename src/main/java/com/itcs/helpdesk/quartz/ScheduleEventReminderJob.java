@@ -12,7 +12,6 @@ import com.itcs.helpdesk.persistence.entities.ScheduleEventReminder;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,10 +44,10 @@ public class ScheduleEventReminderJob extends AbstractGoDeskJob implements Job {
     /**
      * {0} = idArea,
      */
-    public static final String JOB_ID = "System_RemindEvent_to_%s_e%sr_%s";
+    public static final String JOB_ID = "System_RemindEvent_to_%s_#%s_e%sr_%s";
 
-    public static String formatJobId(String to, String eventId, String reminderId) {
-        return String.format(JOB_ID, new Object[]{to, eventId, reminderId});
+    public static String formatJobId(String to, String idCaso, String eventId, String reminderId) {
+        return String.format(JOB_ID, new Object[]{to, idCaso, eventId, reminderId});
     }
 
     @Override
@@ -58,17 +57,13 @@ public class ScheduleEventReminderJob extends AbstractGoDeskJob implements Job {
 
         JobDataMap map = context.getMergedJobDataMap();//.getJobDetail().getJobDataMap();
         if (map != null) {
-//            String idCanal = (String) map.get(ID_CANAL);
-//            String idCaso = (String) map.get(ID_CASO);
+            String idCaso = (String) map.get(ID_CASO);
             String emails_to = (String) map.get(EMAILS_TO);
-            //---
-//            String subject = (String) map.get(EMAIL_SUBJECT);
-//            String email_text = (String) map.get(EMAIL_TEXT);
             String eventId = (String) map.get(EVENT_ID);
             String reminderId = (String) map.get(REMINDER_ID);
             emails_to = emails_to.trim().replace(" ", "");
 
-            final String formatJobId = formatJobId(emails_to, eventId, reminderId);
+            final String formatJobId = formatJobId(emails_to, idCaso, eventId, reminderId);
             if (!StringUtils.isEmpty(emails_to)
                     && !StringUtils.isEmpty(eventId) && !StringUtils.isEmpty(reminderId)) {
 
@@ -87,11 +82,6 @@ public class ScheduleEventReminderJob extends AbstractGoDeskJob implements Job {
                             SimpleDateFormat sdf1 = new SimpleDateFormat("EEE dd 'de' MMM 'de' yyyy HH:mm", LOCALE_ES_CL);
                             SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm", LOCALE_ES_CL);
 
-//                            Calendar startDateCal = Calendar.getInstance();
-//                            startDateCal.setTime(event.getStartDate());
-//                            
-//                            Calendar endDateCal = Calendar.getInstance();
-//                            endDateCal.setTime(event.getEndDate());
                             DateTime dtStart = new DateTime(event.getStartDate());
                             DateTime dtEnd = new DateTime(event.getEndDate());
 
@@ -193,70 +183,7 @@ public class ScheduleEventReminderJob extends AbstractGoDeskJob implements Job {
                                     .append("	</tbody>")
                                     .append("</table>");
 
-//                            String bodyText = "<table border=\"0\" cellpadding=\"8\" cellspacing=\"0\" style=\"width:100%\" summary=\"\">\n"
-//                                    + "	<tbody>\n"
-//                                    + "		<tr>\n"
-//                                    + "			<td>\n"
-//                                    + "			<p><font size=\"2\">" + event.getTitle() + "</font></p>\n"
-//                                    + "\n"
-//                                    + "			<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" summary=\"Información del evento\">\n"
-//                                    + "				<tbody>\n"
-//                                    + "					<tr>\n"
-//                                    + "						<td style=\"white-space:nowrap\">\n"
-//                                    + "						<p><span style=\"white-space:normal\">Cu&aacute;ndo</span></p>\n"
-//                                    + "						</td>\n"
-//                                    + "						<td>&nbsp;" + PrettyDate.format(event.getStartDate()) + "</td>\n"
-//                                    + "					</tr>\n"
-//                                    + "					<tr>\n"
-//                                    + "						<td style=\"white-space:nowrap\">\n"
-//                                    + "						<p><span style=\"white-space:normal\">D&oacute;nde</span></p>\n"
-//                                    + "						</td>\n"
-//                                    + "						<td>&nbsp;</td>\n"
-//                                    + "					</tr>\n"
-//                                    + "					<tr>\n"
-//                                    + "						<td style=\"white-space:nowrap\">\n"
-//                                    + "						<p><span style=\"white-space:normal\">Caso</span></p>\n"
-//                                    + "						</td>\n"
-//                                    + "						<td>" + event.getIdCaso().toString() + "</td>\n"
-//                                    + "					</tr>\n"
-//                                    + "					<tr>\n"
-//                                    + "						<td style=\"white-space:nowrap\">\n"
-//                                    + "						<p><span style=\"white-space:normal\">Invitados</span></p>\n"
-//                                    + "						</td>\n"
-//                                    + "						<td>\n"
-//                                    + "						<table cellpadding=\"0\" cellspacing=\"0\">\n"
-//                                    + "							<tbody>\n"
-//                                    + "								<tr>\n";
-//
-//                            for (Usuario usuario : event.getUsuariosInvitedList()) {
-//                                bodyText = bodyText + "<td>&bull;&nbsp;" + usuario.getCapitalName() + "</td>";
-//                            }
-//
-//                            bodyText = bodyText + "								</tr>\n"
-//                                    + "							</tbody>\n"
-//                                    + "						</table>\n"
-//                                    + "						</td>\n"
-//                                    + "					</tr>\n"
-//                                    + "				</tbody>\n"
-//                                    + "			</table>\n"
-//                                    + "\n"
-//                                    + "			<p>&nbsp;</p>\n"
-//                                    + "			</td>\n"
-//                                    + "		</tr>\n"
-//                                    + "		<tr>\n"
-//                                    + "			<td style=\"background-color:#f6f6f6\">\n"
-//                                    + "			<p>Este es un recordatorio de&nbsp;<a href=\"https://www.godesk.cl\" target=\"_blank\">GoDesk&nbsp;Calendar</a>&nbsp;para Brotec-Icafal.</p>\n"
-//                                    + "\n"
-//                                    + "			<p>Si recibes este mensaje de correo electr&oacute;nico en la direcci&oacute;n ${emailAgente}&nbsp;es&nbsp;porque est&aacute;s suscrito para recibir recordatorios del calendario del Sistema Godesk.</p>\n"
-//                                    + "\n"
-//                                    + "			<p>Si deseas dejar de recibir estas notificaciones, accede a tu cuenta en godesk&nbsp;y modifica la configuraci&oacute;n de las notificaciones.</p>\n"
-//                                    + "			</td>\n"
-//                                    + "		</tr>\n"
-//                                    + "	</tbody>\n"
-//                                    + "</table>";//TODO
                             final String[] split = emails_to.split(",");
-                            
-                            System.out.println("split emails:"+split);
                             NoReplySystemMailSender.sendHTML(split, subject, bodyText.toString(), null);
                             //if sent ok, then forget about it
                             unschedule(formatJobId);

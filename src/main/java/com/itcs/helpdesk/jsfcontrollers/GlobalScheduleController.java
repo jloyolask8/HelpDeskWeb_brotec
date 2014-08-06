@@ -298,7 +298,9 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
                 cal.add(Calendar.MINUTE, minituesAmount);
 
                 String jobId = HelpDeskScheluder.scheduleEventReminderJob(
-                       entityEvent.getUsuariosInvitedList(), scheduleEventReminder.getEventId().getEventId().toString(),
+                       entityEvent.getUsuariosInvitedList(), 
+                        entityEvent.getIdCaso().getIdCaso(),
+                        scheduleEventReminder.getEventId().getEventId().toString(),
                         scheduleEventReminder.getIdReminder().toString(), cal.getTime());
                 scheduleEventReminder.setQuartzJobId(jobId);
 

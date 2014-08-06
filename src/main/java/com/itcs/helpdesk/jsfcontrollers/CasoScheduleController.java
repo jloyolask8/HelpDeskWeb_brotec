@@ -307,7 +307,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
                 final String eventIdString = entityEvent.getEventId().toString();
                 final String scheduleEventReminderIdString = scheduleEventReminder.getIdReminder().toString();
 
-                String jobId = HelpDeskScheluder.scheduleEventReminderJob(entityEvent.getUsuariosInvitedList(), eventIdString, scheduleEventReminderIdString, cal.getTime());
+                String jobId = HelpDeskScheluder.scheduleEventReminderJob(entityEvent.getUsuariosInvitedList(), entityEvent.getIdCaso().getIdCaso(), eventIdString, scheduleEventReminderIdString, cal.getTime());
 
                 scheduleEventReminder.setQuartzJobId(jobId);
 

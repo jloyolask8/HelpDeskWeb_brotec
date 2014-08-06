@@ -130,7 +130,7 @@ public class HelpDeskScheluder {
     }
 
     public static String scheduleEventReminderJob(
-            final List<Usuario> usuarios, final String eventId, String eventReminderId, final Date whenToRun) throws SchedulerException {
+            final List<Usuario> usuarios, final Long idCaso, final String eventId, String eventReminderId, final Date whenToRun) throws SchedulerException {
 
         System.out.println("scheduling ScheduleEventReminderJob");
 
@@ -145,7 +145,7 @@ public class HelpDeskScheluder {
             }
         }
 
-        final String jobId = ScheduleEventReminderJob.formatJobId(mailsTo, eventId, eventReminderId);
+        final String jobId = ScheduleEventReminderJob.formatJobId(mailsTo, idCaso.toString(), eventId, eventReminderId);
         final JobKey jobKey = JobKey.jobKey(jobId, HelpDeskScheluder.GRUPO_CORREO);
         HelpDeskScheluder.unschedule(jobKey);
 

@@ -33,8 +33,7 @@ public class MailNotifier {
                     + " " + (caso.getTipoCaso() != null ? caso.getTipoCaso().getNombre() : EnumTipoCaso.CONTACTO.getTipoCaso().getNombre())
                     + " #" + caso.getIdCaso();//ApplicationConfig.getNotificationSubjectText(); //may contain place holders
 
-            String texto = CasoExporter.exportToHtmlText(caso);//ApplicationConfig.getNotificationBodyText();//may contain place holders 
-//            String newTexto = ClippingsPlaceHolders.buildFinalText(texto, current);
+            String texto = ClippingsPlaceHolders.buildFinalText(CasoExporter.exportToHtmlText(caso), caso);//ApplicationConfig.getNotificationBodyText();//may contain place holders 
 
             if (caso.getIdCanal() != null && caso.getIdCanal().getEnabled() != null
                     && caso.getIdCanal().getEnabled()) {
@@ -122,13 +121,11 @@ public class MailNotifier {
             String newAsunto = ManagerCasos.formatIdCaso(current.getIdCaso()) + " " + ClippingsPlaceHolders.buildFinalText(asunto, current);
             String texto = ClippingsPlaceHolders.buildFinalText(ApplicationConfig.getNotificationClientBodyText(), current);//may contain place holders 
 
-            String newTexto = ClippingsPlaceHolders.buildFinalText(texto, current);
-
             EmailClient ec = MailClientFactory.getInstance(current.getIdArea().getIdCanal().getIdCanal());
             if (ec != null) {
                 ec.sendHTML(current.getEmailCliente().getEmailCliente(), newAsunto,
-                        newTexto, null);
-                return newTexto;
+                        texto, null);
+                return texto;
             }
         }
         return null;
