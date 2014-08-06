@@ -2393,13 +2393,13 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             }
 
             if ((caso.getTipoCaso() != null) && (caso.getTipoCaso().equals(EnumTipoCaso.INTERNO.getTipoCaso()))) {
-                if ((caso.getRevisarActualizacion() != null) && (caso.getRevisarActualizacion())) {
+                if (caso.getRevisarActualizacion()) {
                     return "notaactualizado";
                 } else {
                     return "nota";
                 }
             } else {
-                if ((caso.getRevisarActualizacion() != null) && (caso.getRevisarActualizacion())) {
+                if (caso.getRevisarActualizacion()) {
                     return "actualizado";
                 }
             }
