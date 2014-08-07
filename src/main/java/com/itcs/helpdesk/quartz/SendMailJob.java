@@ -15,6 +15,7 @@ import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.util.MailClientFactory;
 import com.itcs.helpdesk.util.ManagerCasos;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
@@ -74,8 +75,9 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
                 try {
                     final EmailClient instance = MailClientFactory.getInstance(idCanal);
                     if (instance != null) {
+                        final String[] split_emails = emails_to.split(",");
                         //SEND THE EMAIL!
-                        instance.sendHTML(emails_to.split(","), subject, email_text, null);
+                        instance.sendHTML(split_emails, subject, email_text, null);
                         //crear una nota de envio de email en el caso!
                         EntityManagerFactory emf = createEntityManagerFactory();
                         UserTransaction utx = UserTransactionHelper.lookupUserTransaction();
@@ -88,6 +90,7 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
                             Caso caso = jpaController.getReference(Caso.class, idCasoLong);
 
                             Nota nota = new Nota();
+                            nota.setEnviadoA(Arrays.toString(split_emails));
                             nota.setCreadaPor(EnumUsuariosBase.SISTEMA.getUsuario());
                             nota.setEnviado(Boolean.TRUE);
                             nota.setFechaCreacion(Calendar.getInstance().getTime());

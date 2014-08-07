@@ -50,12 +50,10 @@ public abstract class JPAFilterHelper implements Serializable {
     public abstract JPAServiceFacade getJpaService();
 
     public List<ComparableField> getComparableFields() throws ClassNotFoundException {
-        System.out.println("getComparableFields()");
         if (comparableFields == null) {
             comparableFields = getJpaService().getAnnotatedComparableFieldsByClass(Class.forName(vista.getBaseEntityType()));
         }
         return comparableFields;
-//         return JsfUtil.getSelectItems(Collections.EMPTY_LIST, true);
     }
 
     public List<ComparableField> getEntityComparableFields() throws ClassNotFoundException {

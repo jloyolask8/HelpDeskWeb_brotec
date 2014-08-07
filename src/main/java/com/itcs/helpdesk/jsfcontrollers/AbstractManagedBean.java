@@ -62,6 +62,11 @@ public abstract class AbstractManagedBean<E> implements Serializable {
 
     }
 
+    public void showMessageInDialog(FacesMessage.Severity severity, String msg, String detail) {
+        FacesMessage message = new FacesMessage(severity, msg, detail);
+        RequestContext.getCurrentInstance().showMessageInDialog(message);
+    }
+
     public boolean isAjaxRequest() {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
@@ -104,7 +109,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
                         dataModel.setWrappedData(getJpaController().findEntities(entityClass, getFilterHelper().getVista(), getPageSize(), getPageFirstItem(), getDefaultOrderBy(), getDefaultUserWho()));
                         return dataModel;
                     } catch (IllegalStateException ex) {//error en el filtro
-                        JsfUtil.addErrorMessage(ex, "Existe un problema con el filtro. Favor corregir e intentar nuevamente.");                        
+                        JsfUtil.addErrorMessage(ex, "Existe un problema con el filtro. Favor corregir e intentar nuevamente.");
                     } catch (ClassNotFoundException ex) {
                         JsfUtil.addErrorMessage(ex, "Lo sentimos, ocurrió un error inesperado. Favor contactar a soporte.");
                         Logger.getLogger(AbstractManagedBean.class.getName()).log(Level.SEVERE, "ClassNotFoundException createPageDataModel", ex);
@@ -166,9 +171,8 @@ public abstract class AbstractManagedBean<E> implements Serializable {
         RequestContext context = RequestContext.getCurrentInstance();
         context.execute(command);
     }
-    
-    protected void updateComponentInClient(String componentId)
-    {
+
+    protected void updateComponentInClient(String componentId) {
         RequestContext.getCurrentInstance().update(componentId);
     }
 

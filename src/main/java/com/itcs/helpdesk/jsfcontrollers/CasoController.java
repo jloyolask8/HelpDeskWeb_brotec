@@ -216,10 +216,12 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         final String idtab = event.getTab().getId();
         if (idtab.contains("tab-actividades")) {
             setActiveIndexdescOrComment(0);
-        } else if (idtab.contains("tabAgendarEvento")) {
-            setActiveIndexdescOrComment(1);
         } else if (idtab.contains("tab-timeline")) {
+            setActiveIndexdescOrComment(1);
+        } else if (idtab.contains("tabAgendarEvento")) {
             setActiveIndexdescOrComment(2);
+        } else if (idtab.contains("tabEditarEvento")) {
+            setActiveIndexdescOrComment(3);
         } else {
             setActiveIndexdescOrComment(0);
         }
@@ -759,7 +761,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public String creaTituloDeNota(Nota nota) {
-        SimpleDateFormat format = new SimpleDateFormat("EEE, dd/MM/yyyy HH:mm");
+        SimpleDateFormat format = new SimpleDateFormat("EEE, dd/MM/yyyy HH:mm", LOCALE_ES_CL);
         if (nota != null && nota.getTipoNota() != null) {
             if (EnumTipoNota.RESPUESTA_DE_CLIENTE.getTipoNota().equals(nota.getTipoNota())) {
                 if (nota.getEnviadoPor() == null) {
@@ -767,13 +769,16 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 } else {
                     return nota.getTipoNota().getNombre() + " - enviado por: " + nota.getEnviadoPor() + " - " + format.format(nota.getFechaCreacion());
                 }
-            } else if (EnumTipoNota.RESPUESTA_A_CLIENTE.getTipoNota().equals(nota.getTipoNota())) {
+            } else if (EnumTipoNota.RESPUESTA_A_CLIENTE.getTipoNota().equals(nota.getTipoNota()) ||
+                    EnumTipoNota.RESPUESTA_AUT_CLIENTE.getTipoNota().equals(nota.getTipoNota())) {
                 StringBuilder sbuilder = new StringBuilder(nota.getTipoNota().getNombre());
                 sbuilder.append(" - creada por ");
                 sbuilder.append(nota.getCreadaPor().getIdUsuario());
                 if (nota.getEnviado() != null && nota.getEnviado()) {
                     sbuilder.append(" - enviada el ");
                     sbuilder.append(format.format(nota.getFechaEnvio()));
+                     sbuilder.append(" a: ");
+                    sbuilder.append(nota.getEnviadoA());
                 } else {
                     sbuilder.append(" - en proceso de envio - ");
                     sbuilder.append(format.format(nota.getFechaCreacion()));
@@ -1560,6 +1565,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             return null;
         }
     }
+    
 
 //    public String redirect(String dir) {
 //        return dir;
@@ -2456,12 +2462,12 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         this.justCreadedNotaId = nota.getIdNota();
         List<Nota> notas = current.getNotaList();
         if (notas == null) {
-           notas = new LinkedList<Nota>();
-           current.setNotaList(notas);
+            notas = new LinkedList<Nota>();
+            current.setNotaList(notas);
         }
         notas.add(nota);
         current.setFechaModif(Calendar.getInstance().getTime());
-        
+
         JsfUtil.addSuccessMessage(resourceBundle.getString("NotaCreated"));
 //        mergeCaso(current, getManagerCasos().createLogReg(current, "Nueva Nota", nota.getTipoNota().getNombre(), ""));//TODO is merge needed??
         textoNota = "";
@@ -2655,7 +2661,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         try {
             if (current.getIdProducto() != null && current.getIdProducto().getIdOutCanal() != null) {
 //                MailClientFactory.getInstance(current.getIdProducto().getIdOutCanal().getIdCanal()).sendHTML(emailCliente, subject, mensaje, attachments);
-                MailNotifier.scheduleSendMailNota(current.getIdProducto().getIdOutCanal().getIdCanal(), 
+                MailNotifier.scheduleSendMailNota(current.getIdProducto().getIdOutCanal().getIdCanal(),
                         mensaje, emailCliente, subject, current.getIdCaso(), nota.getIdNota(), listIdAtt.toString());
                 sended = true;
             } else if (current.getIdArea() != null && current.getIdArea().getIdCanal() != null) {

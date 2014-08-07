@@ -224,7 +224,7 @@
                             </p:column>
 
                             <p:column>
-                                <h:commandLink action="#{casoController.filterByIdCaso(globalScheduleController.event.data.idCaso.idCaso)}" >
+                                <h:commandLink action="#{casoScheduleController.selectCasoByEvento(globalScheduleController.event)}" >
                                     <h:outputText styleClass="ticket-status" 
                                                   style="background: \##{globalScheduleController.event.data.idCaso.idSubEstado.backgroundColor}; color: \##{globalScheduleController.event.data.idCaso.idSubEstado.fontColor};" value="#{globalScheduleController.event.data.idCaso.idSubEstado.nombre}"
                                                   />

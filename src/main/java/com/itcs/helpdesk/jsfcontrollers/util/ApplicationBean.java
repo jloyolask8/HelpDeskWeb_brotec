@@ -60,7 +60,7 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
     private final transient Map<Integer, Vista> predefinedVistas = new HashMap<Integer, Vista>();
     private Vista vistaRevisarActualizacion;
     private transient final Map<String, Action> predefinedActions = new HashMap<String, Action>();
-    
+
     private String ckEditorToolbar = "[{ name: 'document', items : ['Source','Preview', 'SpellChecker', 'Scayt', 'Link', 'Unlink', 'Iframe', 'Image','Table','HorizontalRule','NumberedList','BulletedList'] },"
             + "{ name: 'style', items : ['Bold','Italic','Underline','TextColor','BGColor', '-','RemoveFormat','Blockquote'] },"
             + "{ name: 'style', items : ['Styles','Format','Maximize']}]";
@@ -78,23 +78,25 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
         NotifyGroupCasoReceivedAction casoReceivedAction = new NotifyGroupCasoReceivedAction(getJpaController());
         predefinedActions.put("NotifyGroupCasoReceived", casoReceivedAction);
     }
-    
+
     public void onIdle() {
-        
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "Inactividad detectada", 
+
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "Inactividad detectada",
                 "Su sesión expirará si no realiza ninguna actividad.");
-         
+
         RequestContext.getCurrentInstance().showMessageInDialog(message);
-        
+
 //        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, 
 //                                        "Se ha detectado inactividad.", "Su sesión expirará si no realiza ninguna actividad."));
     }
- 
+
+
+
     public void onActive() {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
-                                        "Que bueno que ya estás de vuelta", "Buen Coffee break!"));
+                "Que bueno que ya estás de vuelta", "Buen Coffee break!"));
+        executeInClient("primefacesmessagedlg.hide()");
     }
-
 
     /**
      * @return the vistaRevisarActualizacion
@@ -262,7 +264,6 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
 //        return defaultContactEmail;
 //
 //    }
-
     public String getProductDescription() {
         return ApplicationConfig.getProductDescription();
     }
@@ -315,7 +316,6 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
 //    public String getDefaultContactEmail() {
 //        return defaultContactEmail;
 //    }
-
     /**
      * @return the predefinedActions
      */

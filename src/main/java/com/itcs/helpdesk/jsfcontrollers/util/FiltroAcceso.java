@@ -29,9 +29,11 @@ public class FiltroAcceso implements Serializable {
     }
 
     public boolean isAdministradorDelSistema() {
-        for (Rol rol : userSessionBean.getCurrent().getRolList()) {
-            if (rol.equals(EnumRoles.ADMINISTRADOR.getRol())) {
-                return true;
+        if (userSessionBean.getCurrent() != null && userSessionBean.getCurrent().getRolList() != null) {
+            for (Rol rol : userSessionBean.getCurrent().getRolList()) {
+                if (rol.equals(EnumRoles.ADMINISTRADOR.getRol())) {
+                    return true;
+                }
             }
         }
         return false;
@@ -39,15 +41,15 @@ public class FiltroAcceso implements Serializable {
 
     public boolean verificaAccesoAFuncion(EnumFunciones funcion) {
         Usuario user = userSessionBean.getCurrent();
-        for (Rol rol : user.getRolList()) {
-            if (rol.getFuncionList().contains(funcion.getFuncion())) {
-                return true;
+        if (user.getRolList() != null) {
+            for (Rol rol : user.getRolList()) {
+                if (rol.getFuncionList().contains(funcion.getFuncion())) {
+                    return true;
+                }
             }
         }
         return false;
     }
-
-   
 
     public boolean esUsuarioSistema() {
         Usuario user = userSessionBean.getCurrent();
@@ -57,8 +59,6 @@ public class FiltroAcceso implements Serializable {
         return false;
     }
 
-    
-
     public boolean verificarAccesoAFuncionAgregarCaso() {
         return verificaAccesoAFuncion(EnumFunciones.AGREGAR_CASO);
     }
@@ -66,14 +66,12 @@ public class FiltroAcceso implements Serializable {
     public boolean verificarAccesoAFuncionAdministrarVistas() {
         return verificaAccesoAFuncion(EnumFunciones.ADMINISTRAR_VISTAS);
     }
-    
-    public boolean verificarAccesoAFuncionAdministrarItemsPreentrega()
-    {
+
+    public boolean verificarAccesoAFuncionAdministrarItemsPreentrega() {
         return verificaAccesoAFuncion(EnumFunciones.ADMINISTRAR_ITEMS_PREENTREGA);
     }
-    
-    public boolean verificarAccesoACrearCasoPreentrega()
-    {
+
+    public boolean verificarAccesoACrearCasoPreentrega() {
         return verificaAccesoAFuncion(EnumFunciones.CREAR_CASO_PREENTREGA);
     }
 

@@ -97,6 +97,13 @@
 
                             <h:outputText value="#{item.idCanal.nombre}"/>
                         </p:column>
+                        
+                          <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Acuse de Recibo por email"/>
+                            </f:facet>
+                            <h:outputText value="#{item.emailAcusederecibo ? 'Si':'No'}" />
+                        </p:column>
 
                         <p:column headerText="Acciones">
                             <p:commandButton ajax="false" action="#{areaController.prepareEdit(item.idArea)}" title="#{bundle.ListAreaEditLink}" iconPos="notext" icon="ui-icon ui-icon-pencil"/>

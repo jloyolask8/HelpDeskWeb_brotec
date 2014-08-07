@@ -282,6 +282,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
             try {
                 subComponent = getJpaController().getReference(SubComponente.class, subComponentId);
             } catch (Exception e) {
+                System.out.println("component not found!");
             }
         }
 
@@ -567,8 +568,8 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
     public String saveBulkImport() {
         try {
             int total = bulkLoadedClients != null ? bulkLoadedClients.size() : 0;
-            int results = getJpaController().getClienteJpaController().persistManyClients(bulkLoadedClients);
-            JsfUtil.addSuccessMessage(results + " Clientes fueron guardados de un total de " + total);
+            Integer[] results = getJpaController().getClienteJpaController().persistManyClients(bulkLoadedClients);
+            JsfUtil.addSuccessMessage(results[0] + " Clientes fueron guardados exitosamente, "+results[1] + " Clientes ya existian en la BBDD, "+results[2] + " Clientes con error al guardar. De un total de " + total);
             return null;
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e.getMessage());

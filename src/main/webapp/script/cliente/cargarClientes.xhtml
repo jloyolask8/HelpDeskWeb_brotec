@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="Importación masiva de Clientes"></h:outputText>
+        </ui:define>
+
+
+        <ui:define name="west">
+            <p:accordionPanel multiple="true" cache="true" id="accionesaccordion1">
+                <p:tab title="Clientes" id="accionestab1">
+                    <h:outputLabel escape="false" value="#{bundle.ayudaClientes}"/>
+                </p:tab>
+            </p:accordionPanel>
+        </ui:define>
+        <ui:define name="body">
+            <h:form id="form" enctype="multipart/form-data">
+                <h:panelGroup id="wrapper" layout="block">  
+                    <h1> <h:outputText value="Importación masiva de Clientes"></h:outputText></h1>
+
+
+                    <p:messages id="messages" globalOnly="true"/>
+
+                    <h:panelGroup id="main-nav-holder" layout="block">  
+                        
+                        <h:outputText value="Especifique las posiciones de las Columnas de cada dato dentro del Achivo Excel:"/>
+                        <h:panelGrid columns="6">
+                            <p:outputLabel value="Rut"/>
+                            <p:outputLabel value="Nombres"/>
+                            <p:outputLabel value="Apellidos"/>
+                            <p:outputLabel value="Email"/>
+                            <p:outputLabel value="Sexo"/>
+                            <p:outputLabel value="Direccion"/>
+                            <p:inputText value="#{emailClienteController.cellPositionRut}" required="true">
+                                <pe:keyFilter mask="alpha"/>
+                            </p:inputText>
+                            <p:inputText value="#{emailClienteController.cellPositionNombre}" required="true">
+                                <pe:keyFilter mask="alpha"/>
+                            </p:inputText>
+                            <p:inputText value="#{emailClienteController.cellPositionApellidos}" required="true">
+                                <pe:keyFilter mask="alpha"/>
+                            </p:inputText>
+                            <p:inputText value="#{emailClienteController.cellPositionCorreo}" required="true">
+                                <pe:keyFilter mask="alpha"/>
+                            </p:inputText>
+                            <p:inputText value="#{emailClienteController.cellPositionSexo}" required="true">
+                                <pe:keyFilter mask="alpha"/>
+                            </p:inputText>
+                            <p:inputText value="#{emailClienteController.cellPositionDireccion1}" required="true">
+                                <pe:keyFilter mask="alpha"/>
+                            </p:inputText>
+                        </h:panelGrid>
+                        
+                         <p:fileUpload value="#{emailClienteController.fileClients}" mode="simple" allowTypes="/(\.|\/)(xls|xlsx)$/" update=":form"/>  
+                        <p:commandButton value="Subir Achivo Excel" ajax="false"  
+                                         actionListener="#{emailClienteController.handleFileUpload}"/>  
+
+                      
+
+
+                        
+
+                    </h:panelGroup>  
+
+
+                    <br/>
+
+
+
+                    <h:panelGroup id="loaded" rendered="#{not empty emailClienteController.bulkLoadedClients}">
+
+                        <p:dataTable widgetVar="dataTable" var="item" value="#{emailClienteController.bulkLoadedClients}"
+                                     emptyMessage="No hay Clientes en el archivo cargado." 
+                                     paginator="true" rows="15"  
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                                     rowsPerPageTemplate="15,50,100,150">
+
+                            <f:facet name="header">  
+                                <h:outputText value="Importación masiva (#{emailClienteController.bulkLoadedClients.size()} Clientes)"></h:outputText>         
+                                <p:commandButton action="#{emailClienteController.saveBulkImport()}" value="Guardar!" title="Solo se guardará los clientes sin errores." 
+                                         rendered="#{not empty emailClienteController.bulkLoadedClients}" icon="ui-icon ui-icon-arrowstop-1-s"
+                                         update=":form" style="float: right;"/>
+                            </f:facet>
+
+
+
+                            <p:column headerText="Emails">
+                                <h:outputText value="#{item.emailClienteList}"/>
+                            </p:column>
+
+                            <p:column headerText="Rut Cliente">
+                                <h:outputText value="#{item.rut}"/>
+                            </p:column>
+                            <p:column headerText="Nombre Cliente">
+                                <h:outputText value="#{item.nombres} #{item.apellidos}"/>
+                            </p:column>
+
+                            <p:column headerText="Sexo">
+                                <h:outputText value="#{item.sexo}"/>
+                            </p:column>
+
+                            <p:column headerText="Direccion 1">
+                                <h:outputText value="#{item.dirParticular}"/>
+                            </p:column>
+
+                        </p:dataTable>
+
+
+
+                    </h:panelGroup>
+
+                    <br/>
+
+                    <h:panelGroup id="loadedWithError" rendered="#{not empty emailClienteController.bulkLoadedClientsErrors}">
+
+                        <h:outputLabel value="Los siguientes datos de clientes contienen errores ya sea en el formato del email, el rut o el sexo. Email debe ser un email valido, Rut Válido y Sexo sólo puede ser Hombre o Mujer."/>
+
+
+                        <p:dataTable widgetVar="dataTable" var="itemError" value="#{emailClienteController.bulkLoadedClientsErrors}"
+                                     emptyMessage="No hay Clientes con errores en el archivo cargado." 
+                                     paginator="true" rows="15"  
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                                     rowsPerPageTemplate="15, 50,100,150">
+
+                            <f:facet name="header">  
+                                <h:outputText value="Errores en Importación masiva (#{emailClienteController.bulkLoadedClientsErrors.size()} Clientes con Error)"></h:outputText>                           
+                            </f:facet>
+
+
+
+                             <p:column headerText="Emails">
+                                <h:outputText value="#{itemError.emailClienteList}"/>
+                            </p:column>
+
+                            <p:column headerText="Rut Cliente">
+                                <h:outputText value="#{itemError.rut}"/>
+                            </p:column>
+                            <p:column headerText="Nombre Cliente">
+                                <h:outputText value="#{itemError.nombres} #{itemError.apellidos}"/>
+                            </p:column>
+
+                            <p:column headerText="Sexo">
+                                <h:outputText value="#{itemError.sexo}"/>
+                            </p:column>
+
+                            <p:column headerText="Direccion 1">
+                                <h:outputText value="#{itemError.dirParticular}"/>
+                            </p:column>
+
+                        </p:dataTable>
+
+
+
+                    </h:panelGroup>
+
+
+                </h:panelGroup>
+
+              
+
+
+            </h:form>
+
+
+
+        </ui:define>
+    </ui:composition>
+
+</html>

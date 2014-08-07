@@ -72,7 +72,7 @@
     </filter-mapping>
     <filter-mapping>
         <filter-name>LoginFilter</filter-name>
-        <url-pattern>/faces/*</url-pattern>
+        <url-pattern>/faces/script/*</url-pattern>
     </filter-mapping>
     <filter-mapping>
         <filter-name>PrimeFaces FileUpload Filter</filter-name>

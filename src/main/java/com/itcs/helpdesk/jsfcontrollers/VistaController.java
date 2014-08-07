@@ -37,23 +37,15 @@ import org.primefaces.model.SelectableDataModel;
 @SessionScoped
 public class VistaController extends AbstractManagedBean<Vista> implements Serializable {
 
-//    @ManagedProperty(value = "#{UserSessionBean}")
-//    private UserSessionBean userSessionBean;
-//    private Vista current;
-//    private transient DataModel items = null;
-//    private transient PaginationHelper pagination;
     @ManagedProperty(value = "#{UserSessionBean}")
     protected UserSessionBean userSessionBean;
     @ManagedProperty(value = "#{filtroAcceso}")
     private FiltroAcceso filtroAcceso;
     private int selectedItemIndex;
     List<Vista> allMyVistas = null;
-//    private Vista listFilter;
     //---
     private Integer visibilityOption = 1;
     //--
-//    private int pageSize = 20;
-//    private transient JPAFilterHelper filterHelper;
     private transient JPAFilterHelper filterHelper2;
 
     private static Comparator<Vista> comparadorVistas = new Comparator<Vista>() {
@@ -85,28 +77,6 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         return userSessionBean.getCurrent();
     }
 
-//    public Vista getSelected() {
-//        if (current == null) {
-//            current = new Vista(Caso.class);
-//            selectedItemIndex = -1;
-//        }
-//        return current;
-//    }
-//    public void setSelected(Vista v) {
-//        this.current = v;
-//    }
-//    @Override
-//    public JPAFilterHelper getFilterHelper() {
-//        if (filterHelper == null) {
-//            filterHelper = new JPAFilterHelper(listFilter, emf) {
-//                @Override
-//                public JPAServiceFacade getJpaService() {
-//                    return getJpaController();
-//                }
-//            };
-//        }
-//        return filterHelper;
-//    }
     /**
      * This one is not used to filter the data displayed, is used to create a
      * View with filters.
@@ -125,43 +95,6 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         return filterHelper2;
     }
 
-//    @Override
-//    public PaginationHelper getPagination() {
-//        if (pagination == null) {
-//            pagination = new PaginationHelper(getPaginationPageSize()) {
-//                @Override
-//                public int getItemsCount() {
-//                    try {
-//                        return getJpaController().countEntities(getFilterHelper().getVista(), getDefaultUserWho()).intValue();// getJpaController().count(Caso.class).intValue();
-//                    } catch (ClassNotFoundException ex) {
-//                        Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, "ClassNotFoundException at getItemsCount", ex);
-//                    }
-//                    return 0;
-//                }
-//
-//                @Override
-//                public DataModel createPageDataModel() {
-//                    if (listFilter.getFiltrosVistaList() != null && !listFilter.getFiltrosVistaList().isEmpty()) {
-//                        try {
-//                            return new ListDataModel(getJpaController().findEntities(Vista.class, listFilter, getPageSize(), getPageFirstItem(), new OrderBy("nombre"), userSessionBean.getCurrent()));
-//                        } catch (NotSupportedException ex) {
-//                            JsfUtil.addErrorMessage(ex, "Error on public List<?> findEntities(Class entityClass, Vista vista, int maxResults, int firstResult)");
-//                            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
-//                        } catch (ClassNotFoundException ex) {
-//                            JsfUtil.addErrorMessage(ex, "Error on public List<?> findEntities(Class entityClass, Vista vista, int maxResults, int firstResult)");
-//                            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
-//                        }
-//                    }
-//                    return new ListDataModel(getJpaController().queryByRange(Vista.class, getPageSize(), getPageFirstItem()));
-//                }
-////                @Override
-////                public DataModel createPageDataModel() {
-////                    return new ListDataModel(getJpaController().getVistaJpaController().findVistasOwnedBy(userSessionBean.getCurrent(), false, getPageSize(), getPageFirstItem()));//findRange(new int[]{getPageFirstItem(), getPageFirstItem() + getPageSize()}));
-////                }
-//            };
-//        }
-//        return pagination;
-//    }
     public String prepareList() {
         recreateModel();
         return "/script/vista/List";
@@ -221,6 +154,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         }
 
         getJpaController().getVistaJpaController().create(view);
+        allMyVistas = null;
 
         JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("VistaCreated"));
 
@@ -230,6 +164,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         try {
             if (filtroAcceso.verificarAccesoAFuncionAdministrarVistas()) {
                 this.create(current);
+                allMyVistas = null;
                 return prepareList();
             } else {
                 addErrorMessage("No tiene privilegios para realizar esta operación!");
@@ -290,6 +225,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
                 }
                 getJpaController().getVistaJpaController().edit(current);
                 JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("VistaUpdated"));
+                allMyVistas = null;
                 return "/script/vista/List";
             } else {
                 addErrorMessage("No tiene privilegios para realizar esta operación!");
@@ -312,6 +248,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         performDestroy();
         recreatePagination();
         recreateModel();
+        allMyVistas = null;
         return "List";
     }
 

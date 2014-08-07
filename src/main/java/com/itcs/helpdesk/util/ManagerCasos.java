@@ -329,13 +329,14 @@ public class ManagerCasos implements Serializable {
             //Tema/Asunto:
             if (StringUtils.isEmpty(datos.getAsunto())) {
                 int endIndex = (datos.getDescripcion() != null && !StringUtils.isEmpty(datos.getDescripcion())) ? datos.getDescripcion().length() : 0;
-                endIndex = (endIndex < 30) ? endIndex : 30;
+                endIndex = (endIndex < 50) ? endIndex : 50;
                 caso.setTema(datos.getDescripcion().substring(0, endIndex));
             } else {
                 caso.setTema(datos.getAsunto());
             }
 
             caso.setDescripcion(datos.getDescripcion());
+            caso.setDescripcionTxt(HtmlUtils.extractText(datos.getDescripcion()));
 
             //Tipo de caso:
             if (!StringUtils.isEmpty(datos.getTipoCaso())) {
