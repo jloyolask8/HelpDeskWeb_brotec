@@ -1,0 +1,151 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <h:head>
+        <title>Inscripción - HelpDesk Brotec-Icafal</title>
+        <style type="text/css">
+
+            html, body, div, span, applet, object, iframe,
+            h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+            a, abbr, acronym, address, big, cite, code,
+            del, dfn, em, img, ins, kbd, q, s, samp,
+            small, strike, strong, sub, sup, tt, var,
+            b, u, i, center,
+            dl, dt, dd, ol, ul, li,
+            fieldset, form, label, legend,
+            table, caption, tbody, tfoot, thead, tr, th, td,
+            article, aside, canvas, details, embed, 
+            figure, figcaption, footer, header, hgroup, 
+            menu, nav, output, ruby, section, summary,
+            time, mark, audio, video {
+                margin: 0;
+                padding: 0;
+                border: 0;
+                font-size: 100%;
+                font: inherit;
+                vertical-align: baseline;
+            }
+
+            .ui-state-error {                
+                color: black;
+            }
+
+            .ui-widget-overlay{background:#000000;opacity:.80;filter:Alpha(Opacity=80);}
+
+            .ui-widget {
+                font-size: 11px !important;
+            }
+
+            .ui-inputtext{
+                background: url("../../images/form-input.png") no-repeat scroll 0 0 transparent;
+                border: medium none;
+                color: #333333;
+                height: 20px;
+                margin: 0 0 10px;
+                padding: 5px 10px;
+                width: 304px;
+            }
+
+            .ui-inputtextarea{
+                background-image:url("../../images/form-textarea.png"); background-repeat:no-repeat;
+                padding:10px 10px; width:304px; height:80px; border:none;
+            }
+
+            .contact-form-postventa {
+                background: none repeat scroll 0 0 #EAEAEA;
+                width: 327px;
+                padding: 20px;
+            }
+
+            .contact-form-postventa .info{
+                color: #7A7A7A;
+                font-size: 13px;
+                margin: 0 0 10px;
+            }
+
+            .contact-form-postventa .field { margin:10px 0 10px 0; }            
+        </style>
+    </h:head>
+    <h:body>
+
+        <f:event type="preRenderView" listener="#{inscripcionSessionBean.initializeData}" />
+
+
+
+        <p:dialog id="messagesDialogId" visible="#{not empty facesContext.messageList}" header="Mensajes" modal="true" closeOnEscape="true"
+                  widgetVar="messagesDialog"  appendTo="@(body)">
+            <h:form id="messagesForm">
+                <h:panelGrid style="padding-left: 10px;">
+                    <h:messages />  
+                </h:panelGrid>
+                <div align="right">
+                    <p:commandButton immediate="true" onclick="messagesDialog.hide();" update=":mainForm"
+                                     type="button" value="OK"/>
+                </div>  
+
+            </h:form>
+        </p:dialog>    
+
+
+
+
+        <h:form id="form_" enctype="multipart/form-data">
+
+            <div class="contact-form-postventa" id="contact-form-proyect" >
+
+                <div class="field">
+                    <p:inputText id="Rut" value="#{inscripcionSessionBean.datos.rut}" title="Ejemplo: 15.040.452-5"
+                                 validator="#{inputValidationBean.validarRut}" 
+                                 required="true" requiredMessage="Ingresa tu rut."> 
+                        <p:ajax event="blur" listener="#{inscripcionSessionBean.formateaRutFiltro3}" partialSubmit="true" process="Rut" update=":messagesDialogId :form_"/>
+                    </p:inputText>
+                    <p:watermark for="Rut" value="Rut (Ej: 15.040.452-5)"/>
+                </div>
+
+                <div class="field">
+                    <p:inputText id="Email" type="email" value="#{inscripcionSessionBean.datos.email}" disabled="#{empty cuposHorarioBean.entries}"
+                                 validator="#{inputValidationBean.validarEmail}"
+                                 required="true" requiredMessage="Debes escribir tu email correctamente."/>
+                    <p:watermark for="Email" value="Email"/>
+                </div>
+
+                <div class="field">
+                    <p:inputText id="Telefono" value="#{inscripcionSessionBean.datos.telefono}" disabled="#{empty cuposHorarioBean.entries}" 
+                                 validator="#{inputValidationBean.validatePhoneNumber}" />
+                    <p:watermark for="Telefono" value="Teléfono EJ: 02-12345678 o 02 12345678"/>
+                </div>
+
+                <div class="field">
+                    <label for="name">Seleccione el horario en que desea participar:</label>
+
+                    <p:selectOneMenu id="horario" value="#{inscripcionSessionBean.datos.horario}" style="width: 100%" disabled="#{empty cuposHorarioBean.entries}">
+                        <f:selectItems value="#{cuposHorarioBean.entries}" var="item" itemLabel="#{item.toString()}" itemValue="#{item.horario}" itemDisabled="#{item.cuposs le 0}"/>
+                    </p:selectOneMenu>
+
+                </div>
+
+
+                <div class="field">
+                    <p:commandButton id="inp" actionListener="#{inscripcionSessionBean.enviarInscripcion(e)}" disabled="#{empty cuposHorarioBean.entries}"
+                                     update=":messagesDialogId :form_"  
+                                     value="#{empty cuposHorarioBean.entries ? 'Lo sentimos, no hay cupos disponibles':'Enviar'}" style="float: right;"/>
+
+                    <p:ajaxStatus style="width:16px;height:16px;" id="ajaxStatusPanel" >  
+                        <f:facet name="start">  
+                            <h:graphicImage value="../../images/loading.gif" /> 
+                        </f:facet>  
+
+                        <f:facet name="complete">  
+                            <h:outputText value="" />  
+                        </f:facet>  
+                    </p:ajaxStatus>  
+                </div>
+            </div>
+        </h:form>
+    </h:body>
+</html>
+
