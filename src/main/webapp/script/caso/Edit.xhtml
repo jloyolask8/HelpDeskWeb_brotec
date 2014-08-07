@@ -149,6 +149,13 @@
                                 <h:panelGrid columns="3">
                                     <h:outputText value="${casoController.nombreArchivoParaDesplegar(fileitem.nombreArchivo)}" title="#{fileitem.nombreArchivo}"/>
 
+                                    <p:lightBox iframe="true" rendered="#{fileitem.imageOrPDF}"> 
+                                        <h:outputLink  value="#{facesContext.externalContext.requestContextPath}/DownloadFileServlet?id=#{fileitem.idAttachment}" 
+                                                       title="Preview">  
+                                            <h:outputText value="Ver" title="Previsualizar"/>
+                                        </h:outputLink>
+                                    </p:lightBox>
+
                                     <p:commandButton ajax="false" icon="ui-icon-circle-arrow-s">
                                         <p:fileDownload value="#{casoController.bajarArchivo(fileitem.idAttachment)}" />
                                     </p:commandButton>
