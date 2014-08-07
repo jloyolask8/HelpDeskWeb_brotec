@@ -4,10 +4,11 @@
  */
 package com.itcs.helpdesk.jsfcontrollers.util.delete;
 
+import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
-public class Cupo  {
+public class Cupo  implements Serializable{
 
     private int id;
     

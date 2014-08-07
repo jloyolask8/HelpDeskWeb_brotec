@@ -154,7 +154,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         }
 
         getJpaController().getVistaJpaController().create(view);
-        allMyVistas = null;
+        resetVistas();
 
         JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("VistaCreated"));
 
@@ -164,7 +164,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         try {
             if (filtroAcceso.verificarAccesoAFuncionAdministrarVistas()) {
                 this.create(current);
-                allMyVistas = null;
+                resetVistas();
                 return prepareList();
             } else {
                 addErrorMessage("No tiene privilegios para realizar esta operación!");
@@ -225,7 +225,6 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
                 }
                 getJpaController().getVistaJpaController().edit(current);
                 JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("VistaUpdated"));
-                allMyVistas = null;
                 return "/script/vista/List";
             } else {
                 addErrorMessage("No tiene privilegios para realizar esta operación!");
@@ -248,7 +247,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         performDestroy();
         recreatePagination();
         recreateModel();
-        allMyVistas = null;
+        resetVistas();
         return "List";
     }
 
@@ -288,7 +287,6 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
             current = (Vista) getJpaController().queryByRange(Vista.class, selectedItemIndex, selectedItemIndex + 1).get(0);
         }
     }
-
 
     public List<Vista> getVistasCustomersItems() {
         List<Vista> lista = new ArrayList<Vista>();

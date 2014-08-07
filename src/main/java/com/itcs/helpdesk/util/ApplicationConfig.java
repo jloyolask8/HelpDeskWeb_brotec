@@ -432,7 +432,7 @@ public class ApplicationConfig {
     }
     
      public static String getNotificationClientSubjectSubscribedToEventText() {
-        return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_SUBSCRIBED_TO_EVENT_CLIENT_SUBJECT_TEXT.getAppSetting().getSettingKey());
+        return ApplicationConfig.getProperty(EnumSettingsBase.NOTIF_SUBSCRIBED_EVENT_CLIENT_SUBJECT.getAppSetting().getSettingKey());
     }
 
     public static String getNotificationClientBodySubscribedToEventText() {

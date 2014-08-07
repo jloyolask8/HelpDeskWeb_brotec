@@ -146,21 +146,24 @@
 
                             <c:forEach items="#{casoController.datosAdjuntosNotEmbedded()}" var="fileitem" >
 
-                                <h:panelGrid columns="3">
-                                    <h:outputText value="${casoController.nombreArchivoParaDesplegar(fileitem.nombreArchivo)}" title="#{fileitem.nombreArchivo}"/>
+                                <h:panelGrid columns="4">
+                                    <h:outputText 
+                                        value="${casoController.nombreArchivoParaDesplegar(fileitem.nombreArchivo)}" 
+                                        title="#{fileitem.nombreArchivo} (#{fileitem.mimeType})"/>
 
                                     <p:lightBox iframe="true" rendered="#{fileitem.imageOrPDF}"> 
                                         <h:outputLink  value="#{facesContext.externalContext.requestContextPath}/DownloadFileServlet?id=#{fileitem.idAttachment}" 
-                                                       title="Preview">  
-                                            <h:outputText value="Ver" title="Previsualizar"/>
+                                                       styleClass="ui-icon ui-icon-search"
+                                                       title="Preview" style="font-weight: bold;float: right;color: #15c;text-decoration: underline;cursor: pointer;white-space: nowrap;">  
+                                            <h:outputText value="Ver" title="Previsualizar "/>
                                         </h:outputLink>
                                     </p:lightBox>
 
-                                    <p:commandButton ajax="false" icon="ui-icon-circle-arrow-s">
+                                    <p:commandButton ajax="false" icon="ui-icon-circle-arrow-s" title="Descargar #{fileitem.nombreArchivo} (#{fileitem.mimeType})">
                                         <p:fileDownload value="#{casoController.bajarArchivo(fileitem.idAttachment)}" />
                                     </p:commandButton>
 
-                                    <p:commandButton icon="ui-icon-close"
+                                    <p:commandButton icon="ui-icon-close" title="Eliminar #{fileitem.nombreArchivo} (#{fileitem.mimeType})"
                                                      onclick="borrarAttachment.show();"
                                                      disabled="#{not casoController.verificarGrabarCaso()}">
                                         <f:setPropertyActionListener target="#{casoController.idFileDelete}" value="#{fileitem.idAttachment}"/>
