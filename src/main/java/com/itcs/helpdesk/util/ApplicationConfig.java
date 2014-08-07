@@ -403,6 +403,16 @@ public class ApplicationConfig {
         return value;
     }
 
+    public static boolean isSendNotificationOnSubscribedToEvent() {
+        boolean value = true;
+        try {
+            value = Boolean.valueOf(getProperty(EnumSettingsBase.SEND_NOTIFICATION_TOCLIENT_ON_SUBSCRIBED_TO_EVENT.getAppSetting().getSettingKey(), "false"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return value;
+    }
+
     public static boolean isSendNotificationToClientOnNewTicket() {
         boolean value = true;
         try {
@@ -419,6 +429,14 @@ public class ApplicationConfig {
 
     public static String getNotificationClientBodyNewTicketText() {
         return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_NEW_TICKET_CLIENT_BODY_TEXT.getAppSetting().getSettingKey());
+    }
+    
+     public static String getNotificationClientSubjectSubscribedToEventText() {
+        return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_SUBSCRIBED_TO_EVENT_CLIENT_SUBJECT_TEXT.getAppSetting().getSettingKey());
+    }
+
+    public static String getNotificationClientBodySubscribedToEventText() {
+        return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_SUBSCRIBED_TO_EVENT_CLIENT_BODY_TEXT.getAppSetting().getSettingKey());
     }
 
 //      public static boolean isSendGroupNotifOnNewCaseEnabled() {

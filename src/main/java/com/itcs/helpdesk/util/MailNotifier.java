@@ -131,7 +131,7 @@ public class MailNotifier {
         return null;
     }
 
-    public static void emailClientCasoReceived(Caso caso) throws EmailException, SchedulerException {
+    public static void notifyClientCasoReceived(Caso caso) throws EmailException, SchedulerException {
         //new: permit to have a global response in the config
         //new: if area is not enabled, send a receipt confirmation to client from same channel this should be the default.
         //TODO: record this notification as an activity (Nota) in the case.
@@ -189,7 +189,45 @@ public class MailNotifier {
 
                     }
                 } catch (EmailException ex) {
-                    Logger.getLogger(MailNotifier.class.getName()).log(Level.SEVERE, "emailClientCasoReceived", ex);
+                    throw ex;
+                }
+            }
+
+        }
+
+    }
+
+    public static void notifyClientConfirmedEvent(Caso caso) throws EmailException, SchedulerException {
+        //TODO: USE THIS AS EVENT CONFIRMATION NOT CASO CREATION. SOON
+
+        if (ApplicationConfig.isSendNotificationOnSubscribedToEvent()) {
+
+            if (caso != null && caso.getEmailCliente() != null) {
+                try {
+
+                    final String mensaje = ManagerCasos.formatIdCaso(caso.getIdCaso()) + " " + (ClippingsPlaceHolders.buildFinalText(ApplicationConfig.getNotificationClientBodySubscribedToEventText(), caso));
+                    final String subject = (ClippingsPlaceHolders.buildFinalText(ApplicationConfig.getNotificationClientSubjectSubscribedToEventText(), caso));
+
+                    //choose canal, prioritize the project's default canal
+                    Canal canal = (caso.getIdProducto() != null && caso.getIdProducto().getIdOutCanal() != null)
+                            ? caso.getIdProducto().getIdOutCanal() : null;
+
+                    //choose canal, prioritize the area's default canal
+                    if (canal == null) {
+                        canal = (caso.getIdArea() != null && caso.getIdArea().getIdCanal() != null)
+                                ? caso.getIdArea().getIdCanal() : caso.getIdCanal();
+                    }
+
+                    if (canal != null && canal.getIdTipoCanal() != null && canal.getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal())
+                            && !StringUtils.isEmpty(canal.getIdCanal())) {
+                        HelpDeskScheluder.scheduleSendMailNow(caso.getIdCaso(), canal.getIdCanal(), mensaje,
+                                caso.getEmailCliente().getEmailCliente(),
+                                subject);
+                    } else {
+                        throw new EmailException("No se puede enviar el correo de subpscripcion al evento " + caso.toString() + ".Error: El area no tiene canal tipo email, el caso no tiene Area ni Canal o el canal no es del tipo email.");
+
+                    }
+                } catch (EmailException ex) {
                     throw ex;
                 }
             }

@@ -372,6 +372,7 @@ public class InscripcionSessionBean extends AbstractManagedBean<Caso> implements
             datos_.setEmail(datos.getEmail());
             datos_.setProducto(datos.getProducto());
             datos_.setTelefono(datos.getTelefono());
+            datos_.setTipoCaso("inscripcion");
 //            datos_.setIdArea("Venta Proyecto - SMP");
             try {
                 Caso caso = getManagerCasos().crearCaso(datos_, EnumCanal.WEBSERVICE.getCanal());
@@ -381,7 +382,7 @@ public class InscripcionSessionBean extends AbstractManagedBean<Caso> implements
                     cuposHorarioBean.decrementCupo(datos.getRut(), datos.getEmail(), datos.getHorario());
 
                     FacesContext.getCurrentInstance().addMessage(null,
-                            new FacesMessage(FacesMessage.SEVERITY_INFO, "Su solicitud de inscripción fué enviada exitósamente. Revisaremos tus datos y te contactaremos luego!",
+                            new FacesMessage(FacesMessage.SEVERITY_INFO, "Su solicitud de inscripción fué enviada exitósamente. Revisaremos sus datos y le contactarémos luego!",
                                     ""));
                     setDatos(new FormCaso());
 

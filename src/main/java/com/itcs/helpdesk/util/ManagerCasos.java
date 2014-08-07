@@ -620,8 +620,12 @@ public class ManagerCasos implements Serializable {
 
         getJpaController().persistCaso(caso, changeLog);
 
-        if (!caso.getTipoCaso().equals(EnumTipoCaso.PREVENTA.getTipoCaso())) {
-            MailNotifier.emailClientCasoReceived(caso);
+        if (caso.getTipoCaso().getIdTipoCaso().equalsIgnoreCase("inscripcion")) {//TODO: CUERO PENE, cambiará pronto
+            MailNotifier.notifyClientConfirmedEvent(caso);
+        } else {
+            if (!caso.getTipoCaso().equals(EnumTipoCaso.PREVENTA.getTipoCaso())) {
+                MailNotifier.notifyClientCasoReceived(caso);
+            }
         }
 
         HelpDeskScheluder.scheduleAlertaPorVencer(caso.getIdCaso(), calculaCuandoPasaAPorVencer(caso));

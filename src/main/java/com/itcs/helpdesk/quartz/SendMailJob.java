@@ -102,7 +102,7 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
                             nota.setTipoNota(EnumTipoNota.RESPUESTA_AUT_CLIENTE.getTipoNota());
                             jpaController.persist(nota);
 
-                            changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "Se envía respuesta automática (acuse de recibo del caso)", ""));
+                            changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "Se envía respuesta automática (acuse de recibo)", ""));
                             caso.setFechaModif(Calendar.getInstance().getTime());
                             getJpaController().mergeCaso(caso, changeLog);
 
