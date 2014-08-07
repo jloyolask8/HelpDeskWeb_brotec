@@ -168,11 +168,18 @@ public class MailNotifier {
 
                     final String subject = ManagerCasos.formatIdCaso(caso.getIdCaso()) + " " + subject_;
                     final String mensaje = mensaje_;
-                    //choose canal, prioritize the area's default canal
-                    Canal canal = (caso.getIdArea() != null && caso.getIdArea().getIdCanal() != null)
-                            ? caso.getIdArea().getIdCanal() : caso.getIdCanal();
 
-                    if (canal != null && canal.getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal())
+                    //choose canal, prioritize the project's default canal
+                    Canal canal = (caso.getIdProducto() != null && caso.getIdProducto().getIdOutCanal() != null)
+                            ? caso.getIdProducto().getIdOutCanal() : null;
+
+                    //choose canal, prioritize the area's default canal
+                    if (canal == null) {
+                        canal = (caso.getIdArea() != null && caso.getIdArea().getIdCanal() != null)
+                                ? caso.getIdArea().getIdCanal() : caso.getIdCanal();
+                    }
+
+                    if (canal != null && canal.getIdTipoCanal() != null && canal.getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal())
                             && !StringUtils.isEmpty(canal.getIdCanal())) {
                         HelpDeskScheluder.scheduleSendMailNow(caso.getIdCaso(), canal.getIdCanal(), mensaje,
                                 caso.getEmailCliente().getEmailCliente(),
