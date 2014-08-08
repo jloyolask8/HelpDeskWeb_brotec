@@ -1184,9 +1184,10 @@ public class ManagerCasos implements Serializable {
         StringBuilder attachmentsNames = new StringBuilder();
 //        System.out.println("El correo viene con " + item.getAttachments().size() + " Archivos adjuntos");
         for (EmailAttachment attachment : item.getAttachments()) {
-            while (agregarAdjunto(attachment, caso) != null) {
-                //intentionally. bug fix for exchange api.
-            }
+            agregarAdjunto(attachment, caso);            
+//            while (agregarAdjunto(attachment, caso) != null) {
+//                //intentionally. bug fix for exchange api.
+//            }
             if (attachment.getContentId() == null) {
                 attachmentsNames.append(attachment.getName()).append("<br/>");
             }
