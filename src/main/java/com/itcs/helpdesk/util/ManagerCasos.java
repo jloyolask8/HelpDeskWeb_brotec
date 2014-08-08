@@ -530,7 +530,7 @@ public class ManagerCasos implements Serializable {
             Caso caso = crearCaso(datos, canal);
             retorno = true;
             handleEmailAttachments(item, caso);
-          
+
         } catch (Exception ex) {
             Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "log: crearCasoDesdeEmail fail", ex);
         }
@@ -745,6 +745,7 @@ public class ManagerCasos implements Serializable {
             String senderName = null;
 
             Nota nota = new Nota();
+            nota.setAttachmentList(new LinkedList<Attachment>());
             nota.setVisible(true);//nota publica
             nota.setIdCaso(caso);
 
@@ -769,7 +770,7 @@ public class ManagerCasos implements Serializable {
             }
 
             String textoBody = item.getText();
-//            textoBody = parseHtmlToText(textoBody);
+//          textoBody = parseHtmlToText(textoBody);
             if (textoBody != null) {
                 nota.setTexto(textoBody);
             }
@@ -783,8 +784,12 @@ public class ManagerCasos implements Serializable {
 
                 StringBuilder attachmentsNames = new StringBuilder();
                 for (EmailAttachment attachment : item.getAttachments()) {
-                    Long idAtt = agregarAdjunto(attachment, caso);
-                    listIdAtt.append(idAtt).append(';');
+
+                    Attachment attachmentEntity = attemptSaveAttachment(attachment, caso);
+                    if (attachmentEntity != null) {
+                        listIdAtt.append(attachmentEntity.getIdAttachment()).append(';');
+                        nota.getAttachmentList().add(attachmentEntity);
+                    }
 //                    while (!agregarAdjunto(attachment, caso)) {
 //                        //System.out.print(".");
 //                    }
@@ -792,6 +797,7 @@ public class ManagerCasos implements Serializable {
                         attachmentsNames.append(attachment.getName()).append("<br/>");
                     }
                 }
+                //TODO delete this after test relationship
                 if (!attachmentsNames.toString().isEmpty()) {
                     StringBuilder textoNota = new StringBuilder(nota.getTexto());
                     textoNota.append("<br/><div>Adjuntos incorporados:<br/>");
@@ -829,15 +835,30 @@ public class ManagerCasos implements Serializable {
         return retorno;
     }
 
-    private Long agregarAdjunto(EmailAttachment attachment, Caso caso) {
+    private Attachment attemptSaveAttachment(EmailAttachment attachment, Caso caso) {
+        int maxAttemptsToSave = 3;
+        int currentAttempt = 0;
+        while (currentAttempt < maxAttemptsToSave) {
+            Attachment attachmentEntity = agregarAdjunto(attachment, caso);
+            //intentionally. bug fix for exchange api.
+            currentAttempt++;
+            if (attachmentEntity != null) {
+                //Lo creo ok!
+                return attachmentEntity;
+            }
+        }
+        return null;
+    }
+
+    private Attachment agregarAdjunto(EmailAttachment attachment, Caso caso) {
         try {
             String nombre = attachment.getName();
             nombre = nombre.substring(nombre.lastIndexOf(File.separator) + 1);
             nombre = nombre.substring(nombre.lastIndexOf('\\') + 1);
             Attachment a = crearAdjunto(attachment.getData(), attachment.getContentId(), caso, nombre, attachment.getMimeType());
-            return a.getIdAttachment();
+            return a;
         } catch (Exception e) {
-            Logger.getLogger(ManagerCasos.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(ManagerCasos.class.getName()).log(Level.SEVERE, "\n\n--- EmailAttachment agregarAdjunto failed: {0}\n\n", e.getMessage());
         }
         return null;
     }
@@ -1175,21 +1196,20 @@ public class ManagerCasos implements Serializable {
         return attach;
     }
 
-    private String parseHtmlToText(String textoTxt) {
-        textoTxt = HtmlUtils.stripInvalidMarkup(textoTxt);
-        return textoTxt;
-    }
+//    private String parseHtmlToText(String textoTxt) {
+//        textoTxt = HtmlUtils.stripInvalidMarkup(textoTxt);
+//        return textoTxt;
+//    }
 
     private void handleEmailAttachments(EmailMessage item, Caso caso) throws Exception {
         StringBuilder attachmentsNames = new StringBuilder();
 //        System.out.println("El correo viene con " + item.getAttachments().size() + " Archivos adjuntos");
         for (EmailAttachment attachment : item.getAttachments()) {
-//            agregarAdjunto(attachment, caso);            
-            while (agregarAdjunto(attachment, caso) == null) {
-                //intentionally. bug fix for exchange api.
-            }
-            if (attachment.getContentId() == null) {
-                attachmentsNames.append(attachment.getName()).append("<br/>");
+            Attachment attachmentEntity = attemptSaveAttachment(attachment, caso);
+            if (attachmentEntity != null) {
+                if (attachment.getContentId() == null) {
+                    attachmentsNames.append(attachment.getName()).append("<br/>");
+                }
             }
         }
 
