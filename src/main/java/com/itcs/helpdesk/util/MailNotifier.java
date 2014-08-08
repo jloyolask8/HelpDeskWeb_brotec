@@ -205,8 +205,8 @@ public class MailNotifier {
             if (caso != null && caso.getEmailCliente() != null) {
                 try {
 
-                    final String mensaje = ManagerCasos.formatIdCaso(caso.getIdCaso()) + " " + (ClippingsPlaceHolders.buildFinalText(ApplicationConfig.getNotificationClientBodySubscribedToEventText(), caso));
-                    final String subject = (ClippingsPlaceHolders.buildFinalText(ApplicationConfig.getNotificationClientSubjectSubscribedToEventText(), caso));
+                    final String mensaje = (ClippingsPlaceHolders.buildFinalText(ApplicationConfig.getNotificationClientBodySubscribedToEventText(), caso));
+                    final String subject = ManagerCasos.formatIdCaso(caso.getIdCaso()) + " " +  (ClippingsPlaceHolders.buildFinalText(ApplicationConfig.getNotificationClientSubjectSubscribedToEventText(), caso));
 
                     //choose canal, prioritize the project's default canal
                     Canal canal = (caso.getIdProducto() != null && caso.getIdProducto().getIdOutCanal() != null)

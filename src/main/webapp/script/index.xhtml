@@ -235,12 +235,7 @@
                             <h:panelGroup layout="block">  
                                 <p:commandLink id="temalink" title="#{item.idProducto eq null? 'Sin '.concat(applicationBean.productDescription):item.idProducto.nombre} - #{item.idComponente eq null? 'Sin '.concat(applicationBean.productComponentDescription):item.idComponente.nombre} - #{item.idSubComponente eq null? 'Sin '.concat(applicationBean.productSubComponentDescription):item.idSubComponente.nombre}"
                                                action="#{casoController.prepareEdit(item)}" ajax="false" value="#{item.tema}" immediate="true"/>
-                                <h:panelGroup rendered="#{item.scheduleEventList.size() gt 0}">
-                                    <i class="fa fa-calendar"></i>
-                                </h:panelGroup>
-                                <h:panelGroup rendered="#{item.cantidadAttachment gt 0}">
-                                    <i class="fa fa-paperclip"></i>    
-                                </h:panelGroup>  
+                                 
                             </h:panelGroup> 
                         </p:column>     
 

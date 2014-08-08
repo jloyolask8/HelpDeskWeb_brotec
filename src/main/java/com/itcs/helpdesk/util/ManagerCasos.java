@@ -189,15 +189,15 @@ public class ManagerCasos implements Serializable {
         return String.format(FORMAT_ID_CASO, new Object[]{idCaso});
     }
 
-    private Long extractIdCaso(String subject) {
+    public static Long extractIdCaso(String subject) {
         Long idCaso = extractIdCaso(subject, patternIdCaso);
         if (idCaso == null) {
-            idCaso = extractIdCaso(subject, patternIdCasoLegacy);
+            idCaso = extractIdCaso(subject, patternIdCasoLegacy);//legacy
         }
         return idCaso;
     }
 
-    private Long extractIdCaso(String subject, Pattern pattern) {
+    private static Long extractIdCaso(String subject, Pattern pattern) {
         try {
             Matcher m = pattern.matcher(subject);
             if (m.find()) {
@@ -206,9 +206,9 @@ public class ManagerCasos implements Serializable {
                 return idCaso;
             }
         } catch (NumberFormatException e) {
-            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "NumberFormatException extractIdCaso failed on " + subject, e);
+            Log.createLogger(ManagerCasos.class.getName()).log(Level.SEVERE, "NumberFormatException extractIdCaso failed on " + subject, e);
         }
-        return null;//means new caso
+        return null;//means email does not ref# to an existing ticket
     }
 
     /**
@@ -508,49 +508,31 @@ public class ManagerCasos implements Serializable {
     public boolean crearCasoDesdeEmail(Canal canal, EmailMessage item) {
         boolean retorno = false;
         try {
-            String subject = item.getSubject();
-            Long idCaso = extractIdCaso(subject);
-            Caso caso = null;
-            if (idCaso != null) {
-                try {
-                    caso = getJpaController().getCasoFindByIdCaso(idCaso);
-                } catch (NoResultException ex) {
-                    //ignore. as part of the logic.
+            DatosCaso datos = new DatosCaso();
+            datos.setEmail(item.getFromEmail().toLowerCase().trim());
+            if (item.getFromName() != null) {
+
+                String from = MimeUtility.decodeText(item.getFromName().replace("\"", ""));
+                String[] nombres = from.split(" ");
+                if (nombres.length > 0) {
+                    datos.setNombre(nombres[0]);
+                }
+                if (nombres.length > 2) {
+                    datos.setApellidos(nombres[1] + " " + nombres[2]);
+                } else if (nombres.length > 1) {
+                    datos.setApellidos(nombres[1]);
                 }
             }
-            if (caso != null) {
-                return crearNotaDesdeEmail(caso, canal, item);
-            } else {
-                DatosCaso datos = new DatosCaso();
-                datos.setEmail(item.getFromEmail().toLowerCase().trim());
-
-                if (item.getFromName() != null) {
-
-                    String from = MimeUtility.decodeText(item.getFromName().replace("\"", ""));
-                    String[] nombres = from.split(" ");
-                    if (nombres.length > 0) {
-                        datos.setNombre(nombres[0]);
-                    }
-                    if (nombres.length > 2) {
-                        datos.setApellidos(nombres[1] + " " + nombres[2]);
-                    } else if (nombres.length > 1) {
-                        datos.setApellidos(nombres[1]);
-                    }
-                }
-
-                datos.setTipoCaso(EnumTipoCaso.CONTACTO.getTipoCaso().getIdTipoCaso());
-                datos.setAsunto(subject);
-                datos.setDescripcion(item.getText());
-//                datos.setIdArea(canal.getIdArea());//This is important to know what email received the ticket
-
-                caso = crearCaso(datos, canal);
-                retorno = true;
-
-                handleEmailAttachments(item, caso);
-
-            }
+            datos.setTipoCaso(EnumTipoCaso.CONTACTO.getTipoCaso().getIdTipoCaso());
+            datos.setAsunto(item.getSubject());
+            datos.setDescripcion(item.getText());
+//          datos.setIdArea(canal.getIdArea());//This is not important anymore
+            Caso caso = crearCaso(datos, canal);
+            retorno = true;
+            handleEmailAttachments(item, caso);
+          
         } catch (Exception ex) {
-            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "log: crearCasoDesdeEmail fail", ex);
         }
         return retorno;
     }
@@ -754,7 +736,7 @@ public class ManagerCasos implements Serializable {
 //            }
 //        }
 //    }
-    private boolean crearNotaDesdeEmail(Caso caso, Canal canal, EmailMessage item) throws Exception {
+    public boolean crearNotaDesdeEmail(Caso caso, Canal canal, EmailMessage item) throws Exception {
         boolean retorno = false;
         boolean respuestaCliente = true;
         StringBuilder listIdAtt = new StringBuilder();
