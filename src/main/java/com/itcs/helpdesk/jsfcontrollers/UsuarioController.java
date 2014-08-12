@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -497,6 +498,16 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
         List<Usuario> lista = getJpaController().getUsuarioFindAll();
         lista.remove(EnumUsuariosBase.SISTEMA.getUsuario());
         return JsfUtil.getSelectItems(lista, true);
+    }
+    
+    public SelectItem[] getStringItemsAvailableSelectOneNoSystem() {
+        List<Usuario> lista = getJpaController().getUsuarioFindAll();
+        lista.remove(EnumUsuariosBase.SISTEMA.getUsuario());
+        List<String> ids = new LinkedList<String>();
+        for (Usuario usuario : lista) {
+            ids.add(usuario.getIdUsuario());
+        }
+        return JsfUtil.getSelectItems(ids, true);
     }
 
     public SelectItem[] getItemsAvailableSelectOneNoPropietario() {

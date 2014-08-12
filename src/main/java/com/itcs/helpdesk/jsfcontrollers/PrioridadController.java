@@ -5,6 +5,7 @@ import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.Prioridad;
 import com.itcs.helpdesk.persistence.entityenums.EnumPrioridad;
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -17,6 +18,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
+import javax.faces.model.SelectItem;
 import org.primefaces.model.SelectableDataModel;
 
 @ManagedBean(name = "prioridadController")
@@ -119,6 +121,15 @@ public class PrioridadController extends AbstractManagedBean<Prioridad> implemen
             items = getPagination().createPageDataModel();
         }
         return items;
+    }
+    
+    public SelectItem[] getStringItemsAvailableSelectOne() {
+        List<Prioridad> lista = (List<Prioridad>) getJpaController().findAll(Prioridad.class);
+        List<String> ids = new LinkedList<String>();
+        for (Prioridad prioridad : lista) {
+            ids.add(prioridad.getIdPrioridad());
+        }
+        return JsfUtil.getSelectItems(ids, true);
     }
 
     @Override

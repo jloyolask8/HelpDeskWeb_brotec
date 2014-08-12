@@ -168,25 +168,46 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 
     public void handleAnyChangeEvent() {
     }
+    
+    public boolean puedeEliminarCondicion()
+    {
+        if (current.getCondicionList() != null && !current.getCondicionList().isEmpty()) {
+            return current.getCondicionList().size()>1;
+        }
+        return false;
+    }
+    
+    public boolean puedeEliminarAccion()
+    {
+        if (current.getAccionList()!= null && !current.getAccionList().isEmpty()) {
+            return current.getAccionList().size()>1;
+        }
+        return false;
+    }
+    
+    private int createRandomInt() {
+        Random randomGenerator = new Random();
+        int n = randomGenerator.nextInt();
+        if (n > 0) {
+            n = n * (-1);
+        }
+        return n;
+    }
 
     public void addNewFiltroVista() {
         Condicion filtro = new Condicion();
         if (current.getCondicionList() == null || current.getCondicionList().isEmpty()) {
             current.setCondicionList(new ArrayList<Condicion>());
         }
-        Random randomGenerator = new Random();
-        int n = randomGenerator.nextInt();
-        if (n > 0) {
-            n = n * (-1);
-        }
+        int n = createRandomInt();
         filtro.setIdCondicion(n);//Ugly patch to solve identifier unknown when new items are added to the datatable.
         filtro.setIdTrigger(current);
         System.out.println(filtro);
         current.getCondicionList().add(filtro);
-
     }
 
     public void removeFiltroFromVista(Condicion filtro) {
+        System.out.println("filtro:"+filtro);
         if (current.getCondicionList() == null || current.getCondicionList().isEmpty()) {
             JsfUtil.addErrorMessage("No hay criterios en la regla!");
         }
@@ -194,10 +215,34 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
             current.getCondicionList().remove(filtro);
         }
         filtro.setIdTrigger(null);
+        updateComponentInClient("form");
+    }
+    
+    public void addNewAccionVista(){
+        Accion newAccion = new Accion();
+        if(current.getAccionList() == null || current.getAccionList().isEmpty()){
+            current.setAccionList(new LinkedList<Accion>());
+        }
+        newAccion.setIdAccion(createRandomInt());
+        newAccion.setIdTrigger(current);
+//        System.out.println(newAccion);
+        current.getAccionList().add(newAccion);
+    }
+    
+    public void removeAccionFromVista(Accion accion) {
+        if (current.getCondicionList() == null || current.getCondicionList().isEmpty()) {
+            JsfUtil.addErrorMessage("No hay acciones en la regla!");
+        }
+        if (current.getAccionList().contains(accion)) {
+            current.getAccionList().remove(accion);
+        }
+        accion.setIdTrigger(null);
     }
 
-    public void crearEmailTemp() {
+    public void crearEmailTemp(Accion accion) {
+        accionTemp = accion;
         emailTemp = new EmailStruct();
+        updateComponentInClient("mailcomposer");
     }
 
     public void setAccionParametroGrupo(Grupo grupo) {
@@ -269,44 +314,42 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 //        }
 //        return pagination;
 //    }
-    public boolean esAccionCambioCat() {
-        return esAccion(EnumNombreAccion.CAMBIO_CAT);
+
+    public boolean esAccionAsignarArea(Accion accion) {
+        return esAccion(accion,EnumNombreAccion.ASIGNAR_A_AREA);
     }
 
-    public boolean esAccionAsignarArea() {
-        return esAccion(EnumNombreAccion.ASIGNAR_A_AREA);
+    public boolean esAccionCustom(Accion accion) {
+        return esAccion(accion,EnumNombreAccion.CUSTOM);
     }
 
-    public boolean esAccionCustom() {
-        return esAccion(EnumNombreAccion.CUSTOM);
+    public boolean esAccionAsignarAGrupo(Accion accion) {
+        return esAccion(accion,EnumNombreAccion.ASIGNAR_A_GRUPO);
     }
 
-    public boolean esAccionAsignarAGrupo() {
-        return esAccion(EnumNombreAccion.ASIGNAR_A_GRUPO);
+    public boolean esAccionRedefinirSLAFechaCompra(Accion accion) {
+        return esAccion(accion,EnumNombreAccion.DEFINIR_SLA_FECHA_COMPRA);
     }
 
-    public boolean esAccionRedefinirSLAFechaCompra() {
-        return esAccion(EnumNombreAccion.DEFINIR_SLA_FECHA_COMPRA);
+    public boolean esAccionAsignarAUsuario(Accion accion) {
+        return esAccion(accion,EnumNombreAccion.ASIGNAR_A_USUARIO);
     }
 
-    public boolean esAccionAsignarAUsuario() {
-        return esAccion(EnumNombreAccion.ASIGNAR_A_USUARIO);
+    public boolean esAccionCambiarPrioridad(Accion accion) {
+        return esAccion(accion,EnumNombreAccion.CAMBIAR_PRIORIDAD);
     }
 
-    public boolean esAccionCambiarPrioridad() {
-        return esAccion(EnumNombreAccion.CAMBIAR_PRIORIDAD);
+    public boolean esAccionEnviarEmail(Accion accion) {
+        return esAccion(accion,EnumNombreAccion.ENVIAR_EMAIL);
     }
 
-    public boolean esAccionEnviarEmail() {
-        return esAccion(EnumNombreAccion.ENVIAR_EMAIL);
-    }
-
-    public boolean esAccionRecalcularSLA() {
-        return esAccion(EnumNombreAccion.RECALCULAR_SLA);
+    public boolean esAccionRecalcularSLA(Accion accion) {
+        return esAccion(accion, EnumNombreAccion.RECALCULAR_SLA);
     }
 
     public String prepareList() {
         recreateModel();
+        reglaItems = null;
         return "/script/reglaTrigger/List";
     }
 
@@ -322,9 +365,9 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         current = new ReglaTrigger();
         current.setCondicionList(new ArrayList<Condicion>());
         current.setOrden(0);
-        accionTemp = new Accion();
-        acciones = new ArrayList<Accion>();
         selectedItemIndex = -1;
+        addNewFiltroVista();
+        addNewAccionVista();
         return "/script/reglaTrigger/Create";
     }
 
@@ -333,11 +376,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         accionTemp.setParametros(xml);
         if (getAcciones() != null) {
             accionTemp.setIdTrigger(current);
-            Random randomGenerator = new Random();
-            int n = randomGenerator.nextInt();
-            if (n > 0) {
-                n = n * (-1);
-            }
+            int n = createRandomInt();
             accionTemp.setIdAccion(n);
             getAcciones().add(accionTemp);
         }
@@ -351,11 +390,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
     public String prepareCreateAccion() {
         if (getAcciones() != null) {
             accionTemp.setIdTrigger(current);
-            Random randomGenerator = new Random();
-            int n = randomGenerator.nextInt();
-            if (n > 0) {
-                n = n * (-1);
-            }
+            int n = createRandomInt();
             accionTemp.setIdAccion(n);
             getAcciones().add(accionTemp);
         }
@@ -563,11 +598,11 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         this.emailTemp = emailTemp;
     }
 
-    private boolean esAccion(EnumNombreAccion enumAccion) {
-        if ((accionTemp == null) || (accionTemp.getIdNombreAccion() == null)) {
+    private boolean esAccion(Accion accion, EnumNombreAccion enumAccion) {
+        if ((accion == null) || (accion.getIdNombreAccion() == null)) {
             return false;
         }
-        return accionTemp.getIdNombreAccion().equals(enumAccion.getNombreAccion());
+        return accion.getIdNombreAccion().equals(enumAccion.getNombreAccion());
     }
 
     @Override
