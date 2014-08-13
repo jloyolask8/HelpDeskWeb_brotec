@@ -52,7 +52,7 @@ public class ParseCotizacionPortalInmobiliarioAltAction2 extends ParseCotizacion
             Matcher m = p.matcher(txt);
             if (m.find()) {
                 String string1 = m.group(2);
-                datos.setRut(UtilesRut.formatear(string1.toString().trim()));
+                datos.setRut(UtilesRut.formatear(string1.replace(":", "").trim()));
             }
 //                System.out.println("rutCotizanteInput:" + rutCotizanteInput);
         } catch (Exception e) {
@@ -66,7 +66,7 @@ public class ParseCotizacionPortalInmobiliarioAltAction2 extends ParseCotizacion
             if (m.find()) {
                 String string1 = m.group();
 //                    System.out.print("(" + string1.toString() + ")\n");
-                datos.setEmail(string1.toString().trim());
+                datos.setEmail(string1.trim());
             }
 //                System.out.println("emailCotizanteInput:" + emailCotizanteInput);
         } catch (Exception e) {
@@ -82,7 +82,7 @@ public class ParseCotizacionPortalInmobiliarioAltAction2 extends ParseCotizacion
             if (m.find()) {
                 String string1 = m.group(2);
                 //String int1 = m.group(2);
-                nombreProyecto = string1.toString();
+                nombreProyecto = string1.replace(":", "");
                 nombreProyecto = nombreProyecto.trim();
                 datos.setProducto(nombreProyecto);
             } else {
@@ -99,7 +99,7 @@ public class ParseCotizacionPortalInmobiliarioAltAction2 extends ParseCotizacion
             if (m.find()) {
                 String string1 = m.group(2);
 //                    fonoCotizanteInput = string1.toString().trim();
-                datos.setTelefono(string1.toString().trim());
+                datos.setTelefono(string1.replace(":", "").trim());
             }
 //                System.out.println("fonoCotizanteInput:" + fonoCotizanteInput);
         } catch (Exception e) {
@@ -113,7 +113,7 @@ public class ParseCotizacionPortalInmobiliarioAltAction2 extends ParseCotizacion
             if (m.find()) {
                 String string1 = m.group(2);
 //                    fonoCotizanteInput = string1.toString().trim();
-                datos.setTelefono2(string1.toString().trim());
+                datos.setTelefono2(string1.replace(":", "").trim());
             }
 //                System.out.println("fonoCotizanteInput:" + fonoCotizanteInput);
         } catch (Exception e) {

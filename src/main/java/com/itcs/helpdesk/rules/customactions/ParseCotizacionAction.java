@@ -196,6 +196,8 @@ public abstract class ParseCotizacionAction extends Action
                     tryToCollectUnknownData(persistentClient, datos);
 
                     getJpaController().merge(persistentClient);
+                    caso.setIdCliente(persistentClient);
+                    getJpaController().merge(caso);
 
                 }
                 else
@@ -240,7 +242,7 @@ public abstract class ParseCotizacionAction extends Action
                 }
                 if (persistentClient != null)
                 {
-
+                    caso.setIdCliente(persistentClient);
                     newEmailCliente.setCliente(persistentClient);
                     persistentClient.getEmailClienteList().add(newEmailCliente);
 
@@ -251,6 +253,7 @@ public abstract class ParseCotizacionAction extends Action
                     Cliente cliente = new Cliente();
                     setClienteData(cliente, datos);
                     getJpaController().persist(cliente);
+                    caso.setIdCliente(cliente);
                     newEmailCliente.setCliente(cliente);
                 }
 

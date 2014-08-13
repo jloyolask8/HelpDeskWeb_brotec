@@ -407,11 +407,11 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
             for (Condicion c : current.getCondicionList()) {
                 c.setIdCondicion(null);
             }
-            for (Accion accion : acciones) {
+            for (Accion accion : current.getAccionList()) {
                 accion.setIdAccion(null);
             }
 
-            current.setAccionList(acciones);
+//            current.setAccionList(acciones);
             getJpaController().persistReglaTrigger(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ReglaTriggerCreated"));
             reglaItems = null;
@@ -432,7 +432,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         if (current == null) {
             return "";
         }
-        setAcciones(current.getAccionList());
+//        setAcciones(current.getAccionList());
 //        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         return "/script/reglaTrigger/Edit";
     }
@@ -445,7 +445,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
                 }
             }
 
-            for (Accion accion : acciones) {
+            for (Accion accion : current.getAccionList()) {
                 if (accion.getIdAccion() < 0) {
                     accion.setIdAccion(null);
                 }
