@@ -41,7 +41,8 @@
                                  emptyMessage="#{bundle.emptyList}">
 
                         <f:facet name="header">  
-                            <h:outputText value="Clientes (#{clienteController.pagination.pageFirstItem + 1} - #{clienteController.pagination.pageLastItem + 1} de #{clienteController.pagination.itemsCount})"></h:outputText>                           
+                            <h:outputText rendered="#{clienteController.pagination.itemsCount gt 0}" value="Clientes (#{clienteController.pagination.pageFirstItem + 1} - #{clienteController.pagination.pageLastItem + 1} de #{clienteController.pagination.itemsCount})"></h:outputText>                           
+                            <h:outputText rendered="#{clienteController.pagination.itemsCount eq 0}" value="No se han encontrado resultados"></h:outputText>                           
                         </f:facet>
 
                         <p:column headerText="Nombre Cliente">

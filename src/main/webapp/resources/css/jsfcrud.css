@@ -11,6 +11,21 @@ body {
     color: #616161;
 }
 
+.hide-column-names table thead tr {
+    display: none;
+}
+
+.hide-column-names table tbody td {
+    padding: 4px 5px;
+    overflow: visible;
+    border-width: 1px;
+    border-style: none;
+}
+
+/*.ui-datatable-odd {
+    background: none repeat scroll 0 0 #F2F5F9;
+}*/
+
 
 .respfromclient
 {

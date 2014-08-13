@@ -28,68 +28,106 @@
                 <p:messages id="messages"/>
                 <h:panelGrid>
 
-                    <h:panelGrid columns="2">
-                        <p:outputLabel value="Nombre:" for="idTrigger" style="font-weight: bold;"/>
-                        <p:inputText id="idTrigger" value="#{reglaTriggerController.selected.idTrigger}" size="60" maxlength="40" 
-                                     title="#{bundle.CreateReglaTriggerTitle_idTrigger}" required="true" 
-                                     requiredMessage="#{bundle.CreateReglaTriggerRequiredMessage_idTrigger}"/>
-
-                    
-
-                        <p:outputLabel value="Ejecutar Cuando: " for="eventoid" style="font-weight: bold;"/>
-                        <p:selectOneMenu id="eventoid" rendered="#{reglaTriggerController.selected ne null}"  value="#{reglaTriggerController.selected.evento}" 
-                                         required="true" requiredMessage="Seleccione el Evento al cual esta asociada esta regla.">
-                            <f:selectItem itemLabel="Se Cree un nuevo caso" itemValue="CREATE"/>
-                            <f:selectItem itemLabel="Se Modifique un caso" itemValue="UPDATE"/>
-                        </p:selectOneMenu>
-
-                        
+                    <h:panelGrid>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Nombre:" for="idTrigger" />
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="idTrigger" value="#{reglaTriggerController.selected.idTrigger}" size="40" maxlength="40" 
+                                             title="#{bundle.CreateReglaTriggerTitle_idTrigger}" required="true" 
+                                             requiredMessage="#{bundle.CreateReglaTriggerRequiredMessage_idTrigger}"/>
+                            </p:column>
+                        </p:row>
+                        <p:row></p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Ejecutar cuando&nbsp;&nbsp;" for="eventoid" />
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="eventoid" rendered="#{reglaTriggerController.selected ne null}"  value="#{reglaTriggerController.selected.evento}" 
+                                                 style="top: 7px; width: 226px;">
+                                    <f:selectItem itemLabel="se cree un nuevo caso" itemValue="CREATE"/>
+                                    <f:selectItem itemLabel="se modifique un caso" itemValue="UPDATE"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+                        <p:row></p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Si&nbsp;&nbsp;" for="anyall" />
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="anyall" rendered="#{reglaTriggerController.selected ne null}"  value="#{reglaTriggerController.selected.anyOrAll}"
+                                                 style="top: 7px;">
+                                    <f:selectItem itemLabel="alguna de" itemValue="ANY"/>
+                                    <f:selectItem itemLabel="todas" itemValue="ALL"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="&nbsp;&nbsp;las siguientes condiciones se cumplen:" for="anyall" />
+                            </p:column>
+                        </p:row>
                     </h:panelGrid>
+                    <br/>
 
-                    <p:dataTable id="filtrosVista" value="#{reglaTriggerController.selected.condicionList}" var="filtro" >                     
+                    <style type="text/css">
+                        .full-width{
+                            width: 100% !important;
+                        }
+
+                        .ui-datatable-odd {
+                            background: none repeat scroll 0 0 #F2F5F9;
+                        }
+                    </style>
+                    <p:dataTable id="filtrosCondicionReglas" value="#{reglaTriggerController.selected.condicionList}" var="filtro" resizableColumns="true"
+                                 styleClass="hide-column-names" style="width: 800px; table-layout: fixed;">                     
 
                         <f:facet name="header">
-                            <h:outputText value="Condiciones"/>
+                            <h:outputText value="condiciones"></h:outputText>
                         </f:facet>
 
-
-
-                        <p:column headerText="Atributo">
-                            <p:selectOneMenu id="idCampox"  value="#{filtro.idCampo}" 
-                                             panelStyle="width:170px" style="width:160px"  filter="true" filterMatchMode="startsWith"
-                                             required="true" requiredMessage="Favor Seleccione Attributo.">
+                        <p:column style="width: 190px;">
+                            <p:selectOneMenu id="idCampox"  value="#{filtro.idCampo}" styleClass="full-width"
+                                             filter="true" filterMatchMode="startsWith"
+                                             required="true" requiredMessage="Se requiere de una condici&oacute;n para ejecutar la regla.">
                                 <f:selectItem itemLabel="seleccione un atributo" itemValue="" noSelectionOption="true"/>
                                 <f:selectItems value="#{reglaTriggerController.filterHelper.comparableFields}" var="comparableField" itemValue="#{comparableField.idCampo}" itemLabel="#{comparableField.label}"/>
-                                <p:ajax update=":form:messages :form:filtrosVista" listener="#{reglaTriggerController.handleIdCampoChangeEvent()}"/>
+                                <p:ajax update=":form:messages :form:filtrosCondicionReglas" listener="#{reglaTriggerController.handleIdCampoChangeEvent()}"/>
                             </p:selectOneMenu>
 
                         </p:column>
 
-                        <p:column headerText="Operador">
+                        <p:column style="width: 220px;">
 
                             <p:selectOneMenu id="idComparador" value="#{filtro.idComparador}" rendered="#{filtro.idCampo ne null}"
-                                               filter="true" filterMatchMode="startsWith"
-                                             required="true" requiredMessage="Favor Seleccione Operador.">
+                                             filter="true" filterMatchMode="startsWith"
+                                             required="true" requiredMessage="Favor Seleccione Operador." styleClass="full-width">
                                 <f:selectItem itemLabel="Operador..." itemValue="" noSelectionOption="true"/>
                                 <f:selectItems value="#{reglaTriggerController.filterHelper.findTipoComparacionesAvailable(filtro.idCampo)}" var="tipoComparador" itemValue="#{tipoComparador}" itemLabel="#{tipoComparador.nombre}" itemDescription="#{tipoComparador.descripcion}"/>
-                                <p:ajax update=":form:messages :form:filtrosVista" listener="#{reglaTriggerController.handleAnyChangeEvent()}"/>
+                                <p:ajax update=":form:messages :form:filtrosCondicionReglas" listener="#{reglaTriggerController.handleAnyChangeEvent()}"/>
                             </p:selectOneMenu>
 
                         </p:column>
 
-                        <p:column headerText="#{bundle.ListFiltroVistaTitle_valor}">
-                            <p:inputText id="valortext" value="#{filtro.valor}" rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'TEXT'}" 
-                                         required="true" requiredMessage="Se necesita un valor para comparar."/>
-                            <p:selectOneRadio id="valorradio" value="#{filtro.valor}" rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'RADIO'}">
+                        <p:column style="width: 200px;">
+                            <p:inputText styleClass="full-width" id="valortext" value="#{filtro.valor}" rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'TEXT'}" 
+                                         required="true" requiredMessage="Se necesita un valor para comparar.">
+                                <p:ajax/>
+                            </p:inputText>
+                            <p:selectOneRadio id="valorradio" value="#{filtro.valor}" 
+                                              rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'RADIO'}">
                                 <f:selectItems value="#{reglaTriggerController.filterHelper.findPosibleOptionsIncludingAllPlaceHolders(filtro.idCampo, UserSessionBean.current)}" />
+                                <p:ajax/>
                             </p:selectOneRadio>
 
-                            <p:selectOneMenu id="valorentity1" value="#{filtro.valor}" panelStyle="width:300px" style="width:180px"  filter="true" filterMatchMode="contains"
+                            <p:selectOneMenu styleClass="full-width" id="valorentity1" value="#{filtro.valor}"  filter="true" filterMatchMode="contains"
                                              rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'SELECTONE_ENTITY' and filtro.idComparador.idComparador ne 'SC' and filtro.idCampo ne 'emailCliente'}">
                                 <f:selectItems value="#{reglaTriggerController.filterHelper.findPosibleOptionsIncludingAllPlaceHolders(filtro.idCampo, UserSessionBean.current)}" />
+                                <p:ajax/>
                             </p:selectOneMenu>
 
-                            <p:autoComplete value="#{filtro.valor}"
+                            <p:autoComplete styleClass="full-width" value="#{filtro.valor}"
                                             id="valorentity11" completeMethod="#{emailClienteController.completeEmailCliente}"  
                                             var="email"  itemValue="#{email.emailCliente}" itemLabel="#{email}"
                                             required="true" requiredMessage="Debe Seleccionar un email."
@@ -111,82 +149,126 @@
                                         <h:outputText value="#{email.cliente.rut}" /> 
                                     </h:panelGrid>  
                                 </f:facet>  
-
+                                <p:ajax/>
                             </p:autoComplete>  
 
                             <p:selectCheckboxMenu id="valorentity2" label="Selección..."   value="#{filtro.valoresList}" filter="true" filterMatchMode="contains"
-                                                  panelStyle="width:300px" style="width:180px"
+                                                  styleClass="full-width"
                                                   rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'SELECTONE_ENTITY' and filtro.idComparador.idComparador eq 'SC'}">
                                 <f:selectItems value="#{reglaTriggerController.filterHelper.findPosibleOptions(filtro.idCampo, UserSessionBean.current)}" />
+                                <p:ajax/>
                             </p:selectCheckboxMenu>
 
-                            <p:selectOneMenu id="valorcheckboolean" value="#{filtro.valor}" rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'CHECKBOX'}">
+                            <p:selectOneMenu styleClass="full-width" id="valorcheckboolean" value="#{filtro.valor}" rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'CHECKBOX'}">
                                 <f:selectItems value="#{reglaTriggerController.filterHelper.findPosibleOptionsIncludingAllPlaceHolders(filtro.idCampo, UserSessionBean.current)}" />
+                                <p:ajax/>
                             </p:selectOneMenu>
                             <script>
                                 $(function() {
-                                    $( ".datepicker" ).datepicker({
+                                    $(".datepicker").datepicker({
                                         dateFormat: "dd/mm/yy"
                                     });
                                 });
                             </script>
-                            <p:inputText id="valorcalendar1" styleClass="datepicker" value="#{filtro.valor}"  title="Desde:"
-                                         rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR'}" />
-                            <p:inputText id="valorcalendar2" styleClass="datepicker" value="#{filtro.valor2}"  title="Hasta:"
-                                         rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR' and filtro.idComparador.idComparador eq 'BW'}" />
+                            <p:inputText style="width: 100px;" id="valorcalendar1" styleClass="datepicker" value="#{filtro.valor}"  title="Desde:"
+                                         rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR'}">
+                                <p:ajax/>
+                            </p:inputText>
+                            &nbsp;
+                            <p:inputText style="width: 100px;" id="valorcalendar2" styleClass="datepicker" value="#{filtro.valor2}"  title="Hasta:"
+                                         rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR' and filtro.idComparador.idComparador eq 'BW'}" >
+                                <p:ajax/>
+                            </p:inputText>
 
                         </p:column>
 
 
-                        <p:column>
-                            <f:facet name="header">
-
-                                <p:commandButton icon="ui-icon-plus" actionListener="#{reglaTriggerController.addNewFiltroVista}" immediate="true"
-                                                 update=":form:messages :form:filtrosVista" value="Agregar Criterio" />
-                            </f:facet>
-                            <p:commandButton icon="ui-icon-close" actionListener="#{reglaTriggerController.removeFiltroFromVista(filtro)}" ajax="true" immediate="true"
-                                             update=":form" value="Quitar" />
+                        <p:column style="width: 50px;">
+                            <p:commandButton icon="ui-icon-minus" actionListener="#{reglaTriggerController.removeFiltroFromVista(filtro)}" ajax="true" immediate="false"
+                                             update=":form" title="Eliminar condici&oacute;n" disabled="#{not reglaTriggerController.puedeEliminarCondicion()}" process="@this">
+                                <p:resetInput target="@form" />
+                            </p:commandButton>
+                            <p:commandButton icon="ui-icon-plus" actionListener="#{reglaTriggerController.addNewFiltroVista}" immediate="true"
+                                             update=":form:messages :form:filtrosCondicionReglas" title="Agregar condici&oacute;n"/>
                         </p:column>
                     </p:dataTable>
 
                     <br/>
+                    <br/>
+                    <p:outputLabel value="Realizar las siguientes condiciones acciones:" />
+                    <br/>             
+                    <p:dataTable id="accionesTable" value="#{reglaTriggerController.selected.accionList}" var="accion" resizableColumns="true"
+                                 styleClass="hide-column-names" style="width: 800px; table-layout: fixed;"> 
+                        <f:facet name="header">
+                            <h:outputText value="acciones"></h:outputText>
+                        </f:facet>
 
-                    <p:outputPanel id="acciones">
-                        <p:dataTable value="#{reglaTriggerController.acciones}" var="accion" id="accionesTable">
-                            <p:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Acción" />
-                                </f:facet>
-                                <h:outputText id="nombreAccionx" value="#{accion.idNombreAccion.nombre}" />
-                                <p:tooltip for="nombreAccionx" value="Parametro(s): #{accion.parametros}" style="width: 550px;"/>
+                        <p:column style="width: 300px;">
+                            <p:selectOneMenu id="idNombreAccion" value="#{accion.idNombreAccion}" 
+                                             required="true" requiredMessage="Se requiere una acci&oacute;n para ejecutar en la regla" styleClass="full-width">
+                                <p:ajax update=":form:accionesTable" listener="#{reglaTriggerController.resetTempVars()}"/>
+                                <f:selectItems value="#{nombreAccionController.itemsAvailableSelectOne}"/>
+                            </p:selectOneMenu>
 
-                            </p:column>
+                        </p:column>
+
+                        <p:column style="width: 300px;">
+                            <p:selectOneMenu value="#{accion.parametros}" 
+                                             rendered="#{reglaTriggerController.esAccionAsignarArea(accion)}"
+                                             required="true" requiredMessage="Se requiere que seleccione una Accion."
+                                             styleClass="full-width">
+                                <p:ajax update=":form:accionesTable"/>
+                                <f:selectItems value="#{areaController.stringItemsAvailableSelectOne}"/>
+                            </p:selectOneMenu>
+
+                            <p:selectOneMenu id="idAccionCustom" label="Action Class" filter="true" filterMatchMode="contains"
+                                             value="#{accion.parametros}" styleClass="full-width"
+                                             required="true" requiredMessage="Se requiere que seleccione una clase que implemente la Accion."                               
+                                             rendered="#{reglaTriggerController.esAccionCustom(accion)}">
+                                <f:selectItems value="#{reglaTriggerController.actionClassNames}"/>
+                                <p:ajax update=":form:accionesTable"/>
+                            </p:selectOneMenu>
+
+                            <p:selectOneMenu value="#{accion.parametros}" 
+                                             rendered="#{reglaTriggerController.esAccionAsignarAGrupo(accion)}"
+                                             styleClass="full-width">
+                                <p:ajax update=":form:accionesTable"/>
+                                <f:selectItems value="#{grupoController.stringItemsAvailableSelectOne}"/>
+                            </p:selectOneMenu>
+
+                            <p:selectOneMenu value="#{accion.parametros}" 
+                                             rendered="#{reglaTriggerController.esAccionAsignarAUsuario(accion)}"
+                                             styleClass="full-width">
+                                <p:ajax update=":form:accionesTable"/>
+                                <f:selectItems value="#{usuarioController.stringItemsAvailableSelectOneNoSystem}"/>
+                            </p:selectOneMenu>
+
+                            <p:selectOneMenu value="#{accion.parametros}" 
+                                             rendered="#{reglaTriggerController.esAccionCambiarPrioridad(accion)}"
+                                             styleClass="full-width">
+                                <p:ajax update=":form:accionesTable"/>
+                                <f:selectItems value="#{prioridadController.stringItemsAvailableSelectOne}"/>
+                            </p:selectOneMenu>
+
+                            <p:commandButton rendered="#{reglaTriggerController.esAccionEnviarEmail(accion)}" update=":form:accionesTable :formrespuesta"
+                                             value="Componer email" ajax="true" immediate="true" actionListener="#{reglaTriggerController.crearEmailTemp(accion)}"
+                                             oncomplete="#{p:widgetVar('mailcomposer')}.show()"
+                                             styleClass="full-width"/>
+
+                        </p:column>
 
 
-
-                            <p:column>
-                                <f:facet name="header">
-                                    <p:commandButton value="Agregar" onclick="addAccionPopup.show();" type="button"/>
-                                </f:facet>
-                                <p:commandLink value="Remover" update=":form:acciones" process=":form:acciones">
-                                    <p:collector value="#{accion}" removeFrom="#{reglaTriggerController.acciones}" unique="true"/>
-                                </p:commandLink>
-                            </p:column>
-
-                            <f:facet name="header">
-                                <h:outputText value="Acciones"/>
-                            </f:facet>
-
-                            <f:facet name="footer">
-                                <h:outputText value="* Estas acciones se realizarán al cumplirse TODAS las condiciones de la Regla."/>
-                            </f:facet>
-
-                        </p:dataTable>
-                    </p:outputPanel>
+                        <p:column style="width: 50px;">
+                            <p:commandButton icon="ui-icon-minus" actionListener="#{reglaTriggerController.removeAccionFromVista(accion)}" ajax="true" immediate="true"
+                                             update=":form:messages :form:accionesTable" title="Eliminar acci&oacute;n" disabled="#{not reglaTriggerController.puedeEliminarAccion()}"/>
+                            <p:commandButton icon="ui-icon-plus" actionListener="#{reglaTriggerController.addNewAccionVista}" immediate="true"
+                                             update=":form:messages :form:accionesTable" title="Agregar acci&oacute;n"/>
+                        </p:column>
+                    </p:dataTable>
 
                     <h:panelGrid columns="2">
                         <p:outputLabel value="#{bundle.CreateReglaTriggerLabel_desccripcion}" for="descripcion" />                        
-                        <p:inputTextarea rows="4" cols="60" id="descripcion" value="#{reglaTriggerController.selected.desccripcion}" title="#{bundle.CreateReglaTriggerTitle_desccripcion}" />
+                        <p:inputTextarea rows="2" cols="117" id="descripcion" value="#{reglaTriggerController.selected.desccripcion}" title="#{bundle.CreateReglaTriggerTitle_desccripcion}" />
                     </h:panelGrid>
 
 
@@ -194,97 +276,14 @@
 
 
                 <br/>
-                <p:commandButton action="#{reglaTriggerController.create}" value="#{bundle.CreateAreaSaveLink}" ajax="false"/>                     
-                <p:commandButton action="#{reglaTriggerController.prepareList}" value="Volver a las Reglas" immediate="true" ajax="false" icon="ui-icon-folder-open"/>
+                <div align="right" style="width: 800px;">
+                    <p:commandButton action="#{reglaTriggerController.prepareList}" value="Volver a las Reglas" immediate="true" ajax="false" icon="fa fa-level-up"/>
+                    &nbsp;
+                    <p:commandButton action="#{reglaTriggerController.create}" value="#{bundle.CreateAreaSaveLink}" ajax="false" icon="fa fa-floppy-o"/>                     
+                </div>
 
             </h:form>
 
-
-
-            <p:dialog id="modalDialogAcciones" header="Agregar Acción" widgetVar="addAccionPopup" modal="true" appendTo="@(body)" height="300" width="700">
-
-                <h:form id="accionForm">
-                    <h:panelGrid columns="3">
-
-                        <p:outputLabel value="Seleccione Acción:" for="idNombreAccion" />
-                        <p:selectOneMenu id="idNombreAccion" value="#{reglaTriggerController.accionTemp.idNombreAccion}" 
-                                         required="true">
-                            <p:ajax update=":accionForm" listener="#{reglaTriggerController.resetTempVars()}"/>
-                            <f:selectItems value="#{nombreAccionController.itemsAvailableSelectOne}"/>
-                        </p:selectOneMenu>
-                        <p:message for="idNombreAccion"/>
-
-                        <p:outputLabel value="#{bundle.CreateAccionLabel_parametros}" rendered="#{reglaTriggerController.esAccionAsignarAGrupo() or
-                                                reglaTriggerController.esAccionAsignarAUsuario() or reglaTriggerController.esAccionCambiarPrioridad() or
-                                                reglaTriggerController.esAccionEnviarEmail() or reglaTriggerController.esAccionCambioCat() or
-                                                reglaTriggerController.esAccionCustom()}"/>
-
-                        <p:selectOneMenu value="#{reglaTriggerController.accionParametroArea}" 
-                                         rendered="#{reglaTriggerController.esAccionAsignarArea()}">
-                            <p:ajax update=":accionForm"/>
-                            <f:selectItems value="#{areaController.itemsAvailableSelectOne}"/>
-                        </p:selectOneMenu>
-
-                        <p:selectOneMenu id="idAccionCustom" label="Action Class" filter="true" filterMatchMode="contains"
-                                         value="#{reglaTriggerController.accionTemp.parametros}" style="width: 100%;"
-                                         required="true" requiredMessage="Se requiere que seleccione una clase que implemente la Accion."                                   
-                                         rendered="#{reglaTriggerController.esAccionCustom()}">
-
-                            <f:selectItems value="#{reglaTriggerController.actionClassNames}"/>
-                        </p:selectOneMenu>
-
-                        <p:selectOneMenu value="#{reglaTriggerController.accionParametroGrupo}" 
-                                         rendered="#{reglaTriggerController.esAccionAsignarAGrupo()}">
-                            <p:ajax update=":accionForm"/>
-                            <f:selectItems value="#{grupoController.itemsAvailableSelectOne}"/>
-                        </p:selectOneMenu>
-
-                        <p:selectOneMenu value="#{reglaTriggerController.accionParametroUsuario}" 
-                                         rendered="#{reglaTriggerController.esAccionAsignarAUsuario()}">
-                            <p:ajax update=":accionForm"/>
-                            <f:selectItems value="#{usuarioController.itemsAvailableSelectOneNoSystem}"/>
-                        </p:selectOneMenu>
-
-                        <p:selectOneMenu value="#{reglaTriggerController.accionParametroPrioridad}" 
-                                         rendered="#{reglaTriggerController.esAccionCambiarPrioridad()}">
-                            <p:ajax update=":accionForm"/>
-                            <f:selectItems value="#{prioridadController.itemsAvailableSelectOne}"/>
-                        </p:selectOneMenu>
-
-                        <p:commandButton rendered="#{reglaTriggerController.esAccionEnviarEmail()}" update=":accionForm :formrespuesta"
-                                         value="Componer email" action="#{reglaTriggerController.crearEmailTemp()}" oncomplete="#{p:widgetVar('mailcomposer')}.show()"/>
-
-                        <p:inputText value="#{reglaTriggerController.accionTemp.parametros}" id="idAccionCat" required="true" requiredMessage="Se requiere un parametro"
-                                     title="#{bundle.CreateAccionLabel_parametros}"
-                                     rendered="#{reglaTriggerController.esAccionCambioCat()}">
-                            <p:ajax event="click" listener="#{casoController.actualizaArbolDeCategoria}" update=":formArbol:arbol" oncomplete="#{p:widgetVar('idDialogArbol')}.show()"/>
-                        </p:inputText>
-                        <p:message for="idAccionCat" rendered="#{reglaTriggerController.esAccionCambioCat()}"/>
-
-                    </h:panelGrid>
-
-                    <p:commandButton id="btn_add" value="Agregar Acción" update=":form:acciones :accionForm :form:messages" action="#{reglaTriggerController.prepareCreateAccion()}" ajax="true"/>
-                    <p:commandButton value="Cerrar" ajax="true"  onclick="addAccionPopup.hide()"   />
-                </h:form>
-
-            </p:dialog>
-
-
-            <p:dialog id="idDialogArbol" header="Seleccione area" widgetVar="selCat" modal="true" appendTo="@(body)" width="400" height="300">
-                <h:form id="formArbol">
-                    <div align="left">
-                        <p:tree id="arbol" value="#{categoriaController.categorias}" var="node" dynamic="true" cache="false"
-                                selectionMode="single" selection="#{reglaTriggerController.catNodeSelected}"
-                                style="border-color: window;">
-                            <p:ajax event="select" update=":accionForm" oncomplete="selCat.hide()"/>
-                            <p:treeNode expandedIcon="myfoldericon16"
-                                        collapsedIcon="myfoldericon16">
-                                <h:outputText value="#{node.nombre}" />
-                            </p:treeNode>
-                        </p:tree>
-                    </div>
-                </h:form>
-            </p:dialog>
             <p:dialog id="mailcomposer" header="Compositor Email" widgetVar="mailComposerWidget" modal="true" appendTo="@(body)" height="420" width="600">
                 <h:form id="formrespuesta">
 
@@ -296,11 +295,11 @@
                             <p:inputText id="emailSubject" value="#{reglaTriggerController.emailTemp.subject}" title="asunto" style="width: 494px;"/>
                         </h:panelGrid>
                         <pe:ckEditor value="#{reglaTriggerController.emailTemp.body}"
-                                    toolbar="#{applicationBean.ckEditorToolbar}"
+                                     toolbar="#{applicationBean.ckEditorToolbar}"
                                      id="respuesta" width="560" height="190"/>
 
 
-                        <p:commandButton id="btn_add_action" value="Agregar Acción" update=":form:acciones :accionForm :form:messages :formrespuesta" 
+                        <p:commandButton id="btn_add_action" value="Agregar Acción" update=":form:accionesTable :form:messages :formrespuesta" 
                                          action="#{reglaTriggerController.prepareCreateAccionEmail()}" ajax="true" oncomplete="mailComposerWidget.hide()"/>
 
                         <p:commandButton value="Cerrar" ajax="true" onclick="mailComposerWidget.hide()"   />

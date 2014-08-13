@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.faces.bean.ManagedBean;
@@ -22,6 +23,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
+import javax.faces.model.SelectItem;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.DualListModel;
 import org.primefaces.model.SelectableDataModel;
@@ -185,6 +187,15 @@ public class GrupoController extends AbstractManagedBean<Grupo> implements Seria
     public void selectItem(Grupo item) {
         //System.out.println("selectItem="+item.getIdGrupo());
         current = item;
+    }
+    
+    public SelectItem[] getStringItemsAvailableSelectOne() {
+        List<Grupo> lista = (List<Grupo>) getJpaController().findAll(Grupo.class);
+        List<String> ids = new LinkedList<String>();
+        for (Grupo grupo : lista) {
+            ids.add(grupo.getIdGrupo());
+        }
+        return JsfUtil.getSelectItems(ids, true);
     }
 
     public String prepareEdit() {

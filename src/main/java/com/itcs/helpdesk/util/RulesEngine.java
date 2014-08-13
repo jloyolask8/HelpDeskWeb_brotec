@@ -4,11 +4,13 @@
  */
 package com.itcs.helpdesk.util;
 
+import com.itcs.commons.email.impl.NoReplySystemMailSender;
 import com.itcs.helpdesk.jsfcontrollers.util.ApplicationBean;
 import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Accion;
 import com.itcs.helpdesk.persistence.entities.Area;
 import com.itcs.helpdesk.persistence.entities.AuditLog;
+import com.itcs.helpdesk.persistence.entities.Canal;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Caso_;
 import com.itcs.helpdesk.persistence.entities.Categoria;
@@ -24,6 +26,7 @@ import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.entityenums.EnumEstadoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumFieldType;
 import com.itcs.helpdesk.persistence.entityenums.EnumNombreAccion;
+import com.itcs.helpdesk.persistence.entityenums.EnumTipoCanal;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
 import com.itcs.helpdesk.persistence.jpa.custom.CasoJPACustomController;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
@@ -50,7 +53,9 @@ import javax.faces.bean.ManagedProperty;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.resource.NotSupportedException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
+import org.apache.commons.mail.EmailException;
 
 /**
  *
@@ -96,11 +101,21 @@ public class RulesEngine implements CasoChangeListener {
             for (ReglaTrigger reglaTrigger : lista) {
                 if (reglaTrigger.getReglaActiva()) {
 //                    Log.createLogger(this.getClass().getName()).logInfo("*** Verificando regla -> " + reglaTrigger);
+                    boolean any = false;
+                    if (reglaTrigger.getAnyOrAll() != null) {
+                        any = reglaTrigger.getAnyOrAll().equals("ANY");
+                    }
+
                     boolean aplica = false;
                     for (Condicion condicion : reglaTrigger.getCondicionList()) {
                         try {
-                            aplica = verificarCondicion(reglaTrigger, condicion, caso, new ArrayList<AuditLog>());//no changes =)
-                            if (!aplica) {
+                            boolean applyCondition = verificarCondicion(reglaTrigger, condicion, caso, new ArrayList<AuditLog>());//no changes =)
+                            if (any) {
+                                if (applyCondition) {
+                                    aplica = true;
+                                }
+                            } else if (!applyCondition) {
+                                aplica = false;
                                 break;
                             }
                         } catch (Exception e) {
@@ -543,9 +558,10 @@ public class RulesEngine implements CasoChangeListener {
 
     private void ejecutarAccion(Accion accion, Caso caso) {
         try {
-            if (accion.getIdNombreAccion().equals(EnumNombreAccion.CAMBIO_CAT.getNombreAccion())) {
-                cambiarCategoria(accion, caso);
-            } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.ASIGNAR_A_GRUPO.getNombreAccion())) {
+//            if (accion.getIdNombreAccion().equals(EnumNombreAccion.CAMBIO_CAT.getNombreAccion())) {
+//                cambiarCategoria(accion, caso);
+//            } else 
+            if (accion.getIdNombreAccion().equals(EnumNombreAccion.ASIGNAR_A_GRUPO.getNombreAccion())) {
                 asignarCasoAGrupo(accion, caso);
             } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.ASIGNAR_A_AREA.getNombreAccion())) {
                 asignarCasoArea(accion, caso);
@@ -571,8 +587,26 @@ public class RulesEngine implements CasoChangeListener {
         try {
             XStream xstream = new XStream();
             EmailStruct emailStruct = (EmailStruct) xstream.fromXML(accion.getParametros());
-            MailClientFactory.getInstance(caso.getIdArea().getIdCanal().getIdCanal())
-                    .sendHTML(emailStruct.getToAdress(), ManagerCasos.formatIdCaso(caso.getIdCaso()) + " " + emailStruct.getSubject(), emailStruct.getBody(), null);
+
+            //choose canal, prioritize the project's default canal
+            Canal canal = (caso.getIdProducto() != null && caso.getIdProducto().getIdOutCanal() != null)
+                    ? caso.getIdProducto().getIdOutCanal() : null;
+
+            //choose canal, prioritize the area's default canal
+            if (canal == null) {
+                canal = (caso.getIdArea() != null && caso.getIdArea().getIdCanal() != null)
+                        ? caso.getIdArea().getIdCanal() : caso.getIdCanal();
+            }
+
+            if (canal != null && canal.getIdTipoCanal() != null && canal.getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal())
+                    && !StringUtils.isEmpty(canal.getIdCanal())) {
+                HelpDeskScheluder.scheduleSendMailNow(caso.getIdCaso(), canal.getIdCanal(), emailStruct.getBody(),
+                        emailStruct.getToAdress(),
+                        emailStruct.getSubject());
+            } else {
+                throw new EmailException("No se puede enviar el correo de recepcion de caso al cliente " + caso.toString() + ".Error: El area no tiene canal tipo email, el caso no tiene Area ni Canal o el canal no es del tipo email.");
+
+            }
         } catch (Exception ex) {
             Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "enviarCorreo", ex);
         }

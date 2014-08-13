@@ -12,6 +12,7 @@ import com.itcs.helpdesk.util.Log;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -24,6 +25,7 @@ import javax.faces.convert.FacesConverter;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
+import javax.faces.model.SelectItem;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.SelectableDataModel;
 import org.primefaces.model.TreeNode;
@@ -84,6 +86,15 @@ public class AreaController extends AbstractManagedBean<Area> implements Seriali
         current = getJpaController().getAreaFindByIdArea(idArea);
         editActiveIndex = 0;
         return "/script/area/View";
+    }
+    
+    public SelectItem[] getStringItemsAvailableSelectOne() {
+        List<Area> lista = (List<Area>) getJpaController().findAll(Area.class);
+        List<String> ids = new LinkedList<String>();
+        for (Area area : lista) {
+            ids.add(area.getIdArea());
+        }
+        return JsfUtil.getSelectItems(ids, true);
     }
 
     public String prepareCreate() {
