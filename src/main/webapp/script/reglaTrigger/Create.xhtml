@@ -206,7 +206,7 @@
                         <p:column style="width: 300px;">
                             <p:selectOneMenu id="idNombreAccion" value="#{accion.idNombreAccion}" 
                                              required="true" requiredMessage="Se requiere una acci&oacute;n para ejecutar en la regla" styleClass="full-width">
-                                <p:ajax update=":form:accionesTable" listener="#{reglaTriggerController.resetTempVars()}"/>
+                                <p:ajax update=":form:accionesTable"/>
                                 <f:selectItems value="#{nombreAccionController.itemsAvailableSelectOne}"/>
                             </p:selectOneMenu>
 

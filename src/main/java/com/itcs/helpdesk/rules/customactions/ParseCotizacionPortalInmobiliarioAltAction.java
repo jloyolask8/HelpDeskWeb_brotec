@@ -66,6 +66,12 @@ public class ParseCotizacionPortalInmobiliarioAltAction extends ParseCotizacionA
             Matcher m = p.matcher(txt);
             if (m.find()) {
                 String string1 = m.group();
+                int i = 1;
+                while(m.find())
+                {
+                    string1 = m.group();
+                    i++;
+                }
 //                    System.out.print("(" + string1.toString() + ")\n");
                 datos.setEmail(string1.toString().trim());
             }

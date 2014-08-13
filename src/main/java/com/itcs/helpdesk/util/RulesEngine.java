@@ -100,29 +100,7 @@ public class RulesEngine implements CasoChangeListener {
             lista = new LinkedList<ReglaTrigger>(listaSup);
             for (ReglaTrigger reglaTrigger : lista) {
                 if (reglaTrigger.getReglaActiva()) {
-//                    Log.createLogger(this.getClass().getName()).logInfo("*** Verificando regla -> " + reglaTrigger);
-                    boolean any = false;
-                    if (reglaTrigger.getAnyOrAll() != null) {
-                        any = reglaTrigger.getAnyOrAll().equals("ANY");
-                    }
-
-                    boolean aplica = false;
-                    for (Condicion condicion : reglaTrigger.getCondicionList()) {
-                        try {
-                            boolean applyCondition = verificarCondicion(reglaTrigger, condicion, caso, new ArrayList<AuditLog>());//no changes =)
-                            if (any) {
-                                if (applyCondition) {
-                                    aplica = true;
-                                }
-                            } else if (!applyCondition) {
-                                aplica = false;
-                                break;
-                            }
-                        } catch (Exception e) {
-                            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "error on casoCreated Listener", e);
-                            break;
-                        }
-                    }
+                    boolean aplica = verifyRuleCanApply(reglaTrigger, caso);
                     if (aplica) {
                         if (ApplicationConfig.isAppDebugEnabled()) {
                             Log.createLogger(this.getClass().getName()).logInfo("regla " + reglaTrigger.getIdTrigger() + " APLICA_AL_CASO " + caso.toString());
@@ -161,6 +139,39 @@ public class RulesEngine implements CasoChangeListener {
 //            }
 //        }
     }
+    
+    private boolean verifyRuleCanApply(ReglaTrigger reglaTrigger, Caso caso) {
+        return verifyRuleCanApply(reglaTrigger, caso, null);
+    }
+
+    private boolean verifyRuleCanApply(ReglaTrigger reglaTrigger, Caso caso, List<AuditLog> changeList) {
+//                    Log.createLogger(this.getClass().getName()).logInfo("*** Verificando regla -> " + reglaTrigger);
+        boolean any = false;
+        if (reglaTrigger.getAnyOrAll() != null) {
+            any = reglaTrigger.getAnyOrAll().equals("ANY");
+        }
+        boolean aplica = false;
+        for (Condicion condicion : reglaTrigger.getCondicionList()) {
+            try {
+                boolean applyCondition = verificarCondicion(reglaTrigger, condicion, caso, (changeList == null) ? new ArrayList<AuditLog>() : changeList);//no changes =)
+                if (any) {
+                    if (applyCondition) {
+                        aplica = true;
+                        break;
+                    }
+                } else if (applyCondition) {
+                    aplica = true;
+                } else {
+                    aplica = false;
+                    break;
+                }
+            } catch (Exception e) {
+                Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "error on casoCreated Listener", e);
+                break;
+            }
+        }
+        return aplica;
+    }
 
     @Override
     public void casoChanged(Caso caso, List<AuditLog> changeList) {
@@ -178,22 +189,7 @@ public class RulesEngine implements CasoChangeListener {
             lista = new LinkedList<ReglaTrigger>(listaSup);
             for (ReglaTrigger reglaTrigger : lista) {
                 if (reglaTrigger.getReglaActiva()) {
-                    boolean aplica = true;
-                    for (Condicion condicion : reglaTrigger.getCondicionList()) {
-//                        Log.createLogger(this.getClass().getName()).logInfo("***********" + condicion.toString());
-                        try {
-                            aplica = verificarCondicion(reglaTrigger, condicion, caso, changeList);
-                            if (!aplica) {
-//                                Log.createLogger(this.getClass().getName()).logInfo("regla " + reglaTrigger.getIdTrigger() + " no aplica al caso " + caso.getIdCaso());
-//                                Log.createLogger(this.getClass().getName()).logInfo("condicion fallida " + condicion.getIdCampo().getIdCampo() + " " + condicion.getIdComparador().getSimbolo() + " " + condicion.getValor());
-                                break;
-                            }
-                        } catch (Exception ex) {
-                            Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "error on casoChanged verificarCondicion", ex);
-                            break;
-                        }
-
-                    }
+                    boolean aplica = verifyRuleCanApply(reglaTrigger, caso, changeList);
                     if (aplica) {
                         Log.createLogger(this.getClass().getName()).logInfo("regla " + reglaTrigger.getIdTrigger() + " APLICA_AL_CASO " + caso.toString());
                         listaSup.remove(reglaTrigger);
@@ -218,18 +214,7 @@ public class RulesEngine implements CasoChangeListener {
 
         for (Caso caso : selectedCasos) {
             if (reglaTrigger.getReglaActiva()) {
-                boolean aplica = false;
-                for (Condicion condicion : reglaTrigger.getCondicionList()) {
-                    try {
-                        aplica = verificarCondicion(reglaTrigger, condicion, caso, new ArrayList<AuditLog>());//no changes =)
-                        if (!aplica) {
-                            break;
-                        }
-                    } catch (Exception e) {
-                        Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "error applyRuleOnThisCasos", e);
-                        break;
-                    }
-                }
+                boolean aplica = verifyRuleCanApply(reglaTrigger, caso);
                 if (aplica) {
                     Log.createLogger(this.getClass().getName()).logInfo("regla " + reglaTrigger.getIdTrigger() + " APLICA_AL_CASO " + caso.toString());
                     for (Accion accion : reglaTrigger.getAccionList()) {
