@@ -44,6 +44,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.DecimalFormat;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -782,7 +783,6 @@ public class ManagerCasos implements Serializable {
                         + "anterior no pudo ser entregada al destinatario");
             } else {
 
-                StringBuilder attachmentsNames = new StringBuilder();
                 for (EmailAttachment attachment : item.getAttachments()) {
 
                     Attachment attachmentEntity = attemptSaveAttachment(attachment, caso);
@@ -790,20 +790,13 @@ public class ManagerCasos implements Serializable {
                         listIdAtt.append(attachmentEntity.getIdAttachment()).append(';');
                         nota.getAttachmentList().add(attachmentEntity);
                     }
-//                    while (!agregarAdjunto(attachment, caso)) {
-//                        //System.out.print(".");
+//                    if (attachment.getContentId() == null) {
+//                        attachmentsNames.append(attachment.getName()).append("<br/>");
 //                    }
-                    if (attachment.getContentId() == null) {
-                        attachmentsNames.append(attachment.getName()).append("<br/>");
-                    }
                 }
-                //TODO delete this after test relationship
-                if (!attachmentsNames.toString().isEmpty()) {
-                    StringBuilder textoNota = new StringBuilder(nota.getTexto());
-                    textoNota.append("<br/><div>Adjuntos incorporados:<br/>");
-                    textoNota.append(attachmentsNames);
-                    textoNota.append("</div>");
-                    nota.setTexto(textoNota.toString());
+                if (nota.getAttachmentList() != null && !nota.getAttachmentList().isEmpty()) {
+                    caso.setHasAttachments(true);
+                    nota.setHasAttachments(true);
                 }
             }
 
@@ -836,12 +829,14 @@ public class ManagerCasos implements Serializable {
     }
 
     private Attachment attemptSaveAttachment(EmailAttachment attachment, Caso caso) {
+
         int maxAttemptsToSave = 3;
         int currentAttempt = 0;
         while (currentAttempt < maxAttemptsToSave) {
             Attachment attachmentEntity = agregarAdjunto(attachment, caso);
             //intentionally. bug fix for exchange api.
             currentAttempt++;
+            System.out.println("attemptSaveAttachment(" + currentAttempt + ")");//TODO Remove
             if (attachmentEntity != null) {
                 //Lo creo ok!
                 return attachmentEntity;
@@ -855,7 +850,7 @@ public class ManagerCasos implements Serializable {
             String nombre = attachment.getName();
             nombre = nombre.substring(nombre.lastIndexOf(File.separator) + 1);
             nombre = nombre.substring(nombre.lastIndexOf('\\') + 1);
-            Attachment a = crearAdjunto(attachment.getData(), attachment.getContentId(), caso, nombre, attachment.getMimeType());
+            Attachment a = crearAdjunto(attachment.getData(), attachment.getContentId(), caso, nombre, attachment.getMimeType(), attachment.getSize());
             return a;
         } catch (Exception e) {
             Logger.getLogger(ManagerCasos.class.getName()).log(Level.SEVERE, "\n\n--- EmailAttachment agregarAdjunto failed: {0}\n\n", e.getMessage());
@@ -1167,13 +1162,25 @@ public class ManagerCasos implements Serializable {
 //            Log.createLogger(CasoController.class.getName()).log(Level.INFO, null, ex);
 //        }
 //    }
-    public Attachment crearAdjunto(byte[] bytearray, String contentId, Caso caso, String nombre, String mimeType) throws Exception {
+    private String getReadableFileSize(Long fileSize) {
+        if (fileSize <= 0) {
+            return "0";
+        }
+        final String[] units = new String[]{"B", "KB", "MB", "GB", "TB"};
+        int digitGroups = (int) (Math.log10(fileSize) / Math.log10(1024));
+        return new DecimalFormat("#,##0.#").format(fileSize / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
+    }
+
+    public Attachment crearAdjunto(byte[] bytearray, String contentId, Caso caso, final String nombre, String mimeType, Long size) throws Exception {
+
+        System.out.println("crearAdjunto()");
 
         String fileName = nombre.trim().replace(" ", "_");
         Archivo archivo = new Archivo();
         archivo.setArchivo(bytearray);
         archivo.setContentType(mimeType);
-//        archivo.setFileName(fileName);
+        archivo.setFileSize(size);
+        archivo.setFileName(fileName);
         try {
             archivo.setFormat(fileName.substring(fileName.lastIndexOf(".") + 1));
         } catch (Exception e) {
@@ -1183,7 +1190,10 @@ public class ManagerCasos implements Serializable {
 
         Attachment attach = new Attachment();
         attach.setIdCaso(caso);
+        attach.setFileExtension(archivo.getFormat());
+        attach.setNombreArchivoOriginal(nombre);
         attach.setNombreArchivo(fileName);
+        attach.setFileSizeHuman(getReadableFileSize(size));
         attach.setMimeType(mimeType);
         attach.setContentId(contentId);
 
@@ -1192,7 +1202,8 @@ public class ManagerCasos implements Serializable {
         caso.setAttachmentList(col);
         archivo.setIdAttachment(attach.getIdAttachment());
         getJpaController().persistArchivo(archivo);
-        getJpaController().persistAuditLog(createLogReg(caso, "Archivo subido", fileName, ""));
+        getJpaController().persistAuditLog(createLogReg(caso, "Archivo subido", "archivo atachado: " + fileName, ""));
+        getJpaController().merge(caso);
         return attach;
     }
 
@@ -1200,7 +1211,6 @@ public class ManagerCasos implements Serializable {
 //        textoTxt = HtmlUtils.stripInvalidMarkup(textoTxt);
 //        return textoTxt;
 //    }
-
     private void handleEmailAttachments(EmailMessage item, Caso caso) throws Exception {
         StringBuilder attachmentsNames = new StringBuilder();
 //        System.out.println("El correo viene con " + item.getAttachments().size() + " Archivos adjuntos");

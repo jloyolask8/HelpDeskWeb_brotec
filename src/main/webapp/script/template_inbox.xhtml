@@ -124,6 +124,8 @@
         </h:head>
 
         <h:body id="mainbody">
+            
+            <f:event type="preRenderView" listener="#{casoController.initializeData}" />
 
             <pe:ajaxErrorHandler /> 
 
@@ -274,26 +276,29 @@
                                     </p:menuitem>
                                 </p:submenu>
 
-                                <p:menuitem id="casosPendientes" value="#{casoController.casosPendientes}"
-                                            disabled="#{casoController.casosPendientes eq 0}" ajax="false"
+                             
+
+
+                                <p:menuitem id="casosPendientes" value="#{casoController.casosPendientes.toString()}"
+                                            disabled="#{casoController.casosPendientes le 0}"  ajax="false"
                                             action="#{casoController.filtraPorAlertaPendiente}" update="formfilter:filtros  formfilter:panelG1"
                                             icon="pendienteicon">
                                     <p:resetInput target="@form" />
                                 </p:menuitem>
-                                <p:menuitem id="casosPorVencer" value="#{casoController.casosPorVencer}"
-                                            disabled="#{casoController.casosPorVencer eq 0}" ajax="false"
+                                <p:menuitem id="casosPorVencer" value="#{casoController.casosPorVencer.toString()}"
+                                            disabled="#{casoController.casosPorVencer le 0}" ajax="false"
                                             action="#{casoController.filtraPorAlertaPorVencer}" update="formfilter:filtros  formfilter:panelG1"
                                             icon="porvencericon">
                                     <p:resetInput target="@form" />
                                 </p:menuitem>
-                                <p:menuitem id="casosVencidos" value="#{casoController.casosVencido}"
-                                            disabled="#{casoController.casosVencido eq 0}" ajax="false"
+                                <p:menuitem id="casosVencidos" value="#{casoController.casosVencidos.toString()}"
+                                            disabled="#{casoController.casosVencidos le 0}" ajax="false"
                                             action="#{casoController.filtraPorAlertaVencido}" update="formfilter:filtros  formfilter:panelG1"
                                             icon="vencidoicon">
                                     <p:resetInput target="@form" />
                                 </p:menuitem>
-                                <p:menuitem id="casosActualizados" value="#{casoController.countCasosRevisarActualizacion}"
-                                            disabled="#{casoController.countCasosRevisarActualizacion eq 0}" ajax="false"
+                                <p:menuitem id="casosActualizados" value="#{casoController.countCasosRevisarActualizacion.toString()}"
+                                            disabled="#{casoController.countCasosRevisarActualizacion le 0}" ajax="false"
                                             action="#{casoController.filtraRevisarActualizaciones}" update="formfilter:filtros  formfilter:panelG1"
                                             icon="actualizadoicon">
                                     <p:resetInput target="@form" />
@@ -335,7 +340,7 @@
                     </ui:insert>  
                 </pe:layoutPane>  
 
-                <pe:layoutPane position="west" size="280" resizable="true" >               
+                <pe:layoutPane position="west" size="370" resizable="true" >               
 
                     <ui:insert name="west"/>               
 

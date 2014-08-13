@@ -169,6 +169,7 @@ public class MailNotifier {
                     final String subject = ManagerCasos.formatIdCaso(caso.getIdCaso()) + " " + subject_;
                     final String mensaje = mensaje_;
 
+                    //TODO Refactor this code in a method called sendEmailToClient(Caso, Subject, Message)
                     //choose canal, prioritize the project's default canal
                     Canal canal = (caso.getIdProducto() != null && caso.getIdProducto().getIdOutCanal() != null)
                             ? caso.getIdProducto().getIdOutCanal() : null;

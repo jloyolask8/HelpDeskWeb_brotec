@@ -87,7 +87,7 @@
                     <p:tab title="Adjuntos">
 
                         <h:form id="formlistaadjuntos" enctype="multipart/form-data">
-                            <p:dataList value="#{casoController.datosAdjuntosNotEmbedded()}" var="fileitem">
+                            <p:dataList value="#{casoController.selected.attachmentsNotEmbedded}" var="fileitem">
                                 <p:commandLink value="${casoController.nombreArchivoParaDesplegar(fileitem.nombreArchivo)}" >
                                     <p:fileDownload value="#{casoController.bajarArchivo(fileitem.idAttachment)}" />                                   
                                 </p:commandLink>
@@ -229,7 +229,7 @@
                                      title="Su comentario NO se envía ni puede ser visto por el cliente del caso."/>
                     <br/>
 
-                    <p:dataList id="casoActivities" value="#{casoController.notasList}" var="nota" rendered="#{not empty casoController.selected.notaList}">
+                    <p:dataList id="casoActivities" value="#{casoController.selected.notaList}" var="nota" rendered="#{not empty casoController.selected.notaList}">
                         <p:column>
                             <p:commandLink id="linkActivity" update=":actividadView" action="pm:actividadView">
                                 <h1><h:outputText value="#{nota.tipoNota.nombre}"/></h1>                                

@@ -14,20 +14,17 @@
 
         <ui:define name="west">
             <p:accordionPanel multiple="true" cache="true" >
-                <p:tab title="Áreas" >
+           <p:tab title="Áreas" >
                     <h:outputLabel escape="false" value="Un Área es una division o departamento de su organización, ejemplo: Ventas, PostVenta, Soporte."/>
                     <br/>
                     <h:outputLabel escape="false" value="Cada Área Puede tener su propia cuenta de correo con la cual interactuar con sus clientes."/>
                     <br/>
                     <h:outputLabel escape="false" value="Configuración correo de Salida:" style="font-weight: bold"/>
                     <br/>
-                    <h:outputLabel escape="false" value="Cuenta de correo con la cual el sistema envía Correos a sus clientes."/>
-                    <br/>
-                    <h:outputLabel escape="false" value="Configuración Correo de Entrada:" style="font-weight: bold"/>
-                    <br/>
-                    <h:outputLabel escape="false" value="Cuenta de correo con la cual el sistema recibe Correos desde sus clientes, con los cuales se crean y/o actualizan los casos automáticamente."/>
-                    <br/>
-                    <h:outputLabel escape="false" value="Para un buen funcionamiento, es recomendable usar la misma cuenta de correo tanto para enviar como recibir." style="font-weight: bold"/>
+                    <h:outputLabel escape="false" value="Ud. puede configurar un canal de correo por el cual ésta área enviará Correos a sus clientes."/>
+                     <h:outputLabel escape="false" value="Sin embargo la forma de responder a un cliente siempre prioriza el producto al cual esta asociado el caso. 
+                                    Es decir si el caso tiene producto y el producto tiene asignado un canal de correo asignado, se utilizará éste en primera instancia.
+                                    Si el caso no tiene producto, se intentará usar el canal de correo del área, y si el caso no esta en un área asignado, se utilizará el canal por el cual llegó el caso."/>
                 </p:tab>
             </p:accordionPanel>
         </ui:define>

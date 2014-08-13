@@ -8,9 +8,7 @@ import com.itcs.helpdesk.persistence.entities.Grupo;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.quartz.DownloadEmailJob;
 import com.itcs.helpdesk.quartz.HelpDeskScheluder;
-import com.itcs.helpdesk.util.ApplicationConfig;
 import com.itcs.helpdesk.util.Log;
-import com.itcs.helpdesk.util.MailClientFactory;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -32,82 +30,29 @@ import org.primefaces.model.TreeNode;
 import org.quartz.JobKey;
 import org.quartz.SchedulerException;
 
-
 @ManagedBean(name = "areaController")
 @SessionScoped
 public class AreaController extends AbstractManagedBean<Area> implements Serializable {
 
- 
-//    private Area current;
-//    private Area[] selectedItems;
-//    private transient DataModel items = null;
-//    private transient PaginationHelper pagination;
     private long selectedItemIndex;
-    private transient TreeNode root;
+    private transient TreeNode root = null;
     private int editActiveIndex;
     private int editActiveIndex2;
-    private boolean showStoreProtocol = true;
-    private boolean sendMailExchange = false;
-    private boolean sendMailExchangeInbound = false;
-    private String sslOrTls = "SSL";
+    private boolean expanded = false;
 
     public AreaController() {
         super(Area.class);
     }
 
-    public void onTabChange(){
-        
+    public void onTabChange() {
+
     }
-//    public Area getSelected() {
-//        if (current == null) {
-//            current = new Area();
-//            selectedItemIndex = -1;
-//        }
-//        return current;
-//    }
-//
-//    public void setSelected(Area a) {
-//        current = a;
-//    }
 
     public void handleUseJndiChange() {
     }
 
     public void handleSimpleChange() {
     }
-
-//    public void handleSmtpSslOrTlsChange() {
-//        if (getSslOrTls().equalsIgnoreCase("SSL")) {
-//
-//            getSelected().setMailSmtpSslEnable(true);
-//            getSelected().setMailTransportTls(false);
-//
-//        } else {
-//            getSelected().setMailSmtpSslEnable(false);
-//            getSelected().setMailTransportTls(true);
-//        }
-//    }
-//
-//    public void handleEmailServerTypeSalidaChange() {
-//        if (getSelected().getMailServerTypeSalida().equalsIgnoreCase(ApplicationConfig.EnumMailServerType.SMTP.getValue())) {
-//
-//            this.setSendMailExchange(false);
-//
-//        } else if (getSelected().getMailServerTypeSalida().equalsIgnoreCase(ApplicationConfig.EnumMailServerType.EXCHANGE.getValue())) {
-//            this.setSendMailExchange(true);
-//        }
-//    }
-//
-//    public void handleEmailServerTypeChange() {
-//        if (getSelected().getMailServerType().equalsIgnoreCase(ApplicationConfig.EnumMailServerType.POPIMAP.getValue())) {
-//            this.setSendMailExchangeInbound(false);
-//            this.setShowStoreProtocol(true);
-//
-//        } else if (getSelected().getMailServerType().equalsIgnoreCase(ApplicationConfig.EnumMailServerType.EXCHANGE.getValue())) {
-//            this.setSendMailExchangeInbound(true);
-//            this.setShowStoreProtocol(false);
-//        }
-//    }
 
     public void handleMailStoreProtocolChange() {
     }
@@ -166,88 +111,28 @@ public class AreaController extends AbstractManagedBean<Area> implements Seriali
         return "/script/area/Edit";
     }
 
-//    public String prepareEdit() {
-//
-//        if (getSelectedItems().length != 1) {
-//            JsfUtil.addSuccessMessage("Se requiere que seleccione una fila para editar.");
-//            return "";
-//        } else {
-//            current = getSelectedItems()[0];
-//        }
-//        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-//        editActiveIndex = 0;
-//        return "Edit";
-//    }
-    
-     public String update() {
+    public String update() {
         try {
-//            handleSmtpSslOrTlsChange();
             getJpaController().merge(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AreaUpdated"));
 
-//            if (current.getEmailEnabled() != null && current.getEmailEnabled()) {
-//
-//                try {
-//                    //Email Enabled is false by default, so if its not configured yet, we schedule nothing, this means when we change the config to true, we must re-schedule.
-//                    MailClientFactory.createInstance(current);
-//                    HelpDeskScheluder.scheduleRevisarCorreo(current.getIdArea(), current.getEmailFrecuencia());
-//
-//                } catch (SchedulerException ex) {
-//                    JsfUtil.addErrorMessage(ex, "No se pudo inicializar La revision de correo del area " + current.getIdArea());
-//                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "No se pudo inicializar La revision de correo del area " + current.getIdArea(), ex);
-//                }
-//            } else 
-            {
-                try {
-                    //disable Job revisar correo!
-                    final String downloadEmailJobId = DownloadEmailJob.formatJobId(current.getIdArea());
-                    final JobKey jobKey = JobKey.jobKey(downloadEmailJobId, HelpDeskScheluder.GRUPO_CORREO);
-                    HelpDeskScheluder.unschedule(jobKey);
-                } catch (SchedulerException ex) {
-                    JsfUtil.addWarningMessage("Error del sistema, No se pudo desabilitar La revision de correo del area " + current.getIdArea());
-                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "No se pudo inicializar La revision de correo del area " + current.getIdArea(), ex);
-                }
+            try {
+                //disable Job revisar correo!
+                final String downloadEmailJobId = DownloadEmailJob.formatJobId(current.getIdArea());
+                final JobKey jobKey = JobKey.jobKey(downloadEmailJobId, HelpDeskScheluder.GRUPO_CORREO);
+                HelpDeskScheluder.unschedule(jobKey);
+            } catch (SchedulerException ex) {
+                JsfUtil.addWarningMessage("Error del sistema, No se pudo desabilitar La revision de correo del area " + current.getIdArea());
+                Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "No se pudo inicializar La revision de correo del area " + current.getIdArea(), ex);
             }
 
-            return "/script/area/List";
+            return prepareList();
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "update", e);
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
             return null;
         }
     }
-     
-//    public String update() {
-//        try {
-//            getJpaController().mergeArea(current);
-//            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AreaUpdated"));
-//
-//            if (current.getEmailEnabled() != null && current.getEmailEnabled()) {
-//                try {
-//                    HelpDeskScheluder.unscheduleTask("revisarCorreoArea" + current.getIdArea(), HelpDeskScheluder.GRUPO_CORREO);
-//                    //Email Enabled is false by default, so if its not configured yet, we schedule nothing, this means when we change the config to true, we must re-schedule.
-//                    AutomaticMailExecutor mailExec = new AutomaticMailExecutor(current, utx, emf);
-//                    mailExec.agendarRevisarCorreo();
-//                } catch (FileNotFoundException ex) {
-//                    JsfUtil.addErrorMessage(ex, "No se pudo inicializar La revision de correo del area " + current.getIdArea());
-//                    Logger.getLogger(AppStarter.class.getName()).log(Level.SEVERE, "No se pudo inicializar La revision de correo del area " + current.getIdArea(), ex);
-//                } catch (IOException ex) {
-//                    JsfUtil.addErrorMessage(ex, "No se pudo inicializar La revision de correo del area " + current.getIdArea());
-//                    Logger.getLogger(AppStarter.class.getName()).log(Level.SEVERE, "No se pudo inicializar La revision de correo del area " + current.getIdArea(), ex);
-//                }
-//            } else {
-//                //disable Job revisar correo!
-//                HelpDeskScheluder.unscheduleTask("revisarCorreoArea" + current.getIdArea(), HelpDeskScheluder.GRUPO_CORREO);
-//            }
-//
-//            return "/script/area/View";
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            Log.createLogger(this.getClass().getName()).logSevere(e);
-//            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
-//            return null;
-//        }
-//    }
 
     public String destroy() {
         if (current == null) {
@@ -320,84 +205,53 @@ public class AreaController extends AbstractManagedBean<Area> implements Seriali
         return new AreaDataModel(listOfArea);
     }
 
-//    /**
-//     * @return the selectedItems
-//     */
-//    public Area[] getSelectedItems() {
-//        return selectedItems;
-//    }
-//
-//    /**
-//     * @param selectedItems the selectedItems to set
-//     */
-//    public void setSelectedItems(Area[] selectedItems) {
-//        this.selectedItems = selectedItems;
-//    }
+    public void toggleAllTree() {
+        setExpanded(!isExpanded());
+        toggleChildNodes(root, isExpanded());
+    }
+    
+    public void refreshTree() {
+        this.root = null;
+    }
 
-//    private void recreateModel() {
-//        items = null;
-//    }
-//
-//    public String next() {
-//        getPagination().nextPage();
-//        recreateModel();
-//        return "/script/area/List";
-//    }
-//
-//    public String previous() {
-//        getPagination().previousPage();
-//        recreateModel();
-//        return "/script/area/List";
-//    }
-//
-//    public String last() {
-//        getPagination().lastPage();
-//        recreateModel();
-//        return "/script/area/List";
-//    }
-//
-//    public String first() {
-//        getPagination().firstPage();
-//        recreateModel();
-//        return "/script/area/List";
-//    }
-
-//    public SelectItem[] getItemsAvailableSelectMany() {
-//        return JsfUtil.getSelectItems(getJpaController().getAreaFindAll(), false);
-//    }
-//
-//    public SelectItem[] getItemsAvailableSelectOne() {
-//        return JsfUtil.getSelectItems(getJpaController().getAreaFindAll(), true);
-//    }
+    private void toggleChildNodes(TreeNode node, boolean expanded) {
+        if (node.getChildCount() > 0) {
+            node.setExpanded(expanded);
+            for (TreeNode treeNode : node.getChildren()) {
+                toggleChildNodes(treeNode, expanded);
+            }
+        }
+    }
 
     /**
      * @return the root
      */
     public TreeNode getRoot() {
 
-        root = new DefaultTreeNode("Áreas", null);
+        if (root == null) {
+            root = new DefaultTreeNode("Áreas", null);
 //        TreeNode areasNode = new DefaultTreeNode("Areas", root); 
 
+            List<Area> areas = getJpaController().getAreaFindAll();
+            for (Area area : areas) {
+                TreeNode areaNode = new DefaultTreeNode("areas", area, root);
+//                TreeNode gruposNode = new DefaultTreeNode("Grupos", areaNode);
+//                TreeNode catsNode = new DefaultTreeNode("Categorías", areaNode);
 
-
-        List<Area> areas = getJpaController().getAreaFindAll();
-        for (Area area : areas) {
-            TreeNode areaNode = new DefaultTreeNode("areas", area, root);
-            TreeNode gruposNode = new DefaultTreeNode("Grupos", areaNode);
-            TreeNode catsNode = new DefaultTreeNode("Categorías", areaNode);
-           
-            
-            for (Grupo grupo : area.getGrupoList()) {
-                TreeNode grupoNode = new DefaultTreeNode("grupos", grupo, gruposNode);
+                for (Grupo grupo : area.getGrupoList()) {
+                    TreeNode grupoNode = new DefaultTreeNode("grupos", grupo, areaNode);
 //                 TreeNode agentsNode = new DefaultTreeNode("Agentes", grupoNode);
-                for (Usuario usuario : grupo.getUsuarioList()) {
-                    TreeNode agentNode = new DefaultTreeNode("agentes", usuario, grupoNode);
+                    for (Usuario usuario : grupo.getUsuarioList()) {
+                        TreeNode agentNode = new DefaultTreeNode("agentes", usuario, grupoNode);
+                    }
                 }
+
+//                for (Categoria cat : area.getCategoriaList()) {
+//                    TreeNode catNode = new DefaultTreeNode("categorias", cat, catsNode);
+//                }
             }
             
-            for (Categoria cat : area.getCategoriaList()) {
-                TreeNode catNode = new DefaultTreeNode("categorias", cat, catsNode);
-            }
+             toggleChildNodes(root, isExpanded());
         }
 
         return root;
@@ -425,20 +279,6 @@ public class AreaController extends AbstractManagedBean<Area> implements Seriali
     }
 
     /**
-     * @return the showStoreProtocol
-     */
-    public boolean isShowStoreProtocol() {
-        return showStoreProtocol;
-    }
-
-    /**
-     * @param showStoreProtocol the showStoreProtocol to set
-     */
-    public void setShowStoreProtocol(boolean showStoreProtocol) {
-        this.showStoreProtocol = showStoreProtocol;
-    }
-
-    /**
      * @return the editActiveIndex2
      */
     public int getEditActiveIndex2() {
@@ -452,51 +292,23 @@ public class AreaController extends AbstractManagedBean<Area> implements Seriali
         this.editActiveIndex2 = editActiveIndex2;
     }
 
-    /**
-     * @return the sendMailExchange
-     */
-    public boolean isSendMailExchange() {
-        return sendMailExchange;
-    }
-
-    /**
-     * @param sendMailExchange the sendMailExchange to set
-     */
-    public void setSendMailExchange(boolean sendMailExchange) {
-        this.sendMailExchange = sendMailExchange;
-    }
-
-    /**
-     * @return the sendMailExchangeInbound
-     */
-    public boolean isSendMailExchangeInbound() {
-        return sendMailExchangeInbound;
-    }
-
-    /**
-     * @param sendMailExchangeInbound the sendMailExchangeInbound to set
-     */
-    public void setSendMailExchangeInbound(boolean sendMailExchangeInbound) {
-        this.sendMailExchangeInbound = sendMailExchangeInbound;
-    }
-
-    /**
-     * @return the sslOrTls
-     */
-    public String getSslOrTls() {
-        return sslOrTls;
-    }
-
-    /**
-     * @param sslOrTls the sslOrTls to set
-     */
-    public void setSslOrTls(String sslOrTls) {
-        this.sslOrTls = sslOrTls;
-    }
-
     @Override
     public Class getDataModelImplementationClass() {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    /**
+     * @return the expanded
+     */
+    public boolean isExpanded() {
+        return expanded;
+    }
+
+    /**
+     * @param expanded the expanded to set
+     */
+    public void setExpanded(boolean expanded) {
+        this.expanded = expanded;
     }
 
     @FacesConverter(forClass = Area.class)
@@ -538,6 +350,7 @@ public class AreaController extends AbstractManagedBean<Area> implements Seriali
         }
     }
 }
+
 class AreaDataModel extends ListDataModel<Area> implements SelectableDataModel<Area> {
 
     public AreaDataModel() {

@@ -656,13 +656,13 @@ public class InscripcionSessionBean extends AbstractManagedBean<Caso> implements
     }
 
     //----------------------------------------------------------------------------
-    public List<Attachment> datosAdjuntosNotEmbedded() {
-        try {
-            return getJpaController().getAttachmentWOContentId(getSelected());
-        } catch (Exception e) {
-            return new ArrayList<Attachment>();
-        }
-    }
+//    public List<Attachment> datosAdjuntosNotEmbedded() {
+//        try {
+//            return getJpaController().getAttachmentWOContentId(getSelected());
+//        } catch (Exception e) {
+//            return new ArrayList<Attachment>();
+//        }
+//    }
 
     /**
      * Envia el archivo al componente de PrimeFace filoDownload
