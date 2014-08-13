@@ -64,6 +64,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
     transient protected UserSessionBean userSessionBean;
     @ManagedProperty(value = "#{vistaController}")
     transient protected VistaController vistaController;
+    private boolean showFilter = false;
 
     /**
      * @param userSessionBean the userSessionBean to set
@@ -177,7 +178,6 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
             twoDimData.put(xlabel, yhashMap);
         }
 
-
     }
 
     @PostConstruct
@@ -248,8 +248,12 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
 
     public String generateModel() {
         try {
-            setXaxisLabel(filterHelper.getComparableFieldsMap().get(campoCompCasoEjeXSeriesEntity.getIdCampo()).getLabel());
+            if (campoCompCasoEjeXSeriesEntity != null && filterHelper != null) {
 
+                final ComparableField campo = filterHelper.getComparableFieldsMap().get(campoCompCasoEjeXSeriesEntity.getIdCampo());
+                setXaxisLabel(campo != null ? campo.getLabel() : "");
+
+            }
             if (variables == 1) {
                 createOneDimentionModel();
             } else if (variables == 2) {
@@ -266,6 +270,8 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                 JsfUtil.addErrorMessage("Numero de variables no soportado. solo podemos generar graficos en una y dos variables");
                 return null;
             }
+
+            this.showFilter = true;
             return "reports";
         } catch (Exception ex) {
             resetOptions();
@@ -297,11 +303,9 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         viewMatrix = new HashMap<Integer, ArrayList<Vista>>();
         int seriesIndex = 0;
 
-
         try {
 
             for (SelectItem y : filterHelper.findPosibleOptionsSelectManyIncludeNullFor(comparableFieldY.getIdCampo(), userSessionBean.getCurrent())) {
-
 
                 ChartSeries serie_y = new ChartSeries();
                 serie_y.setLabel(y.getLabel());
@@ -413,7 +417,6 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                         calendar_from.setTime(from_date);
                     }
 
-
                 } else if (comparableFieldX.getFieldTypeId().getFieldTypeId().equalsIgnoreCase(EnumFieldType.CHECKBOX.getFieldType().getFieldTypeId())) {
 
                     for (SelectItem x : filterHelper.findPosibleOptions(comparableFieldX.getIdCampo(), userSessionBean.getCurrent())) {
@@ -449,9 +452,6 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                 } else if (comparableFieldX.getFieldTypeId().getFieldTypeId().equalsIgnoreCase(EnumFieldType.SELECTONE_ENTITY.getFieldType().getFieldTypeId())) {
 
                     //If not a Date or Calendar then see what the options are: options are those selected.
-
-
-
                     if (campoCompCasoEjeXSeriesEntity.getIdComparador().equals(EnumTipoComparacion.SC.getTipoComparacion())) {
 
                         //SUB-CONJUNTO:SC
@@ -506,7 +506,6 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
 
                         }
 
-
                     } else {
                         //SELECTED VALUE
 
@@ -556,9 +555,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
 
                         items_eje_x.add(vista1);
 
-
                     }
-
 
                 } else {
                     throw new NotSupportedException("Aun no se implementa esta funcionalidad, sorry!");
@@ -571,7 +568,6 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
 
             setChartModelTitle(comparableFieldX.getLabel() + " v/s N° de Casos por " + comparableFieldY.getLabel());
 
-
         } finally {
             em.close();
         }
@@ -583,7 +579,6 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         EntityManager em = emf.createEntityManager();
         ComparableField comparableFieldX = filterHelper.getComparableFieldsMap().get(campoCompCasoEjeXSeriesEntity.getIdCampo());
         try {
-
 
             //Pie Model can only be One Dimension
             ChartSeries serie = new ChartSeries();
@@ -603,7 +598,6 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
             viewMatrix = new HashMap<Integer, ArrayList<Vista>>();
             int seriesIndex = 0;
             serie.setLabel(comparableFieldX.getLabel());
-
             Class entity_type = comparableFieldX.getTipo();
 
             ArrayList<Vista> vistaItems = new ArrayList<Vista>();
@@ -646,8 +640,6 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                     String fecha_from = format.format(from_date);//ok to start any day i want for any period.
                     Date fecha_from_plus_periodDays = null;
                     String fecha_to = "";
-
-
 
                     String label = "";
                     if (period == 1) {
@@ -734,7 +726,6 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
             } else if (comparableFieldX.getFieldTypeId().getFieldTypeId().equalsIgnoreCase(EnumFieldType.SELECTONE_ENTITY.getFieldType().getFieldTypeId())) {
 
                 //If not a Date or Calendar then see what the options are: options are those selected.
-
                 if (campoCompCasoEjeXSeriesEntity.getIdComparador().equals(EnumTipoComparacion.SC.getTipoComparacion())) {
                     //SUB-CONJUNTO:SC
                     //                for (SelectItem x : vistaController.findPosibleOptionsFor(campoCompCasoEjeXSeriesEntity.getIdCampo(), false, true, false)) {
@@ -828,17 +819,12 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                     vistaItems.add(vista1);
                 }
 
-
             } else {
                 throw new NotSupportedException("Aun no se implementa esta funcionalidad, sorry!");
             }
 
-
-
-
             viewMatrix.put(seriesIndex, vistaItems);
             setChartModelTitle("N° de Casos por " + comparableFieldX.getLabel());
-
 
         } finally {
             em.close();
@@ -852,7 +838,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
     }
 
     public String prepareCategoryModelCasosPorArea() {
-
+        this.setShowFilter(false);
         variables = 2;
         twoDimData = new HashMap<String, Map<String, Integer>>();
         pieModel = null;//Hide Pie chart
@@ -902,8 +888,6 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                 serieEstado.set(a.getIdArea(), countCasosForView);
                 addTwoDimTableValue(a.getIdArea(), estado.getNombre(), countCasosForView);
 
-
-
             }
 
             categoryModel.addSeries(serieEstado);
@@ -915,6 +899,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
     }
 
     public String prepareCategoryModelCasosPorAgente() {
+        this.setShowFilter(false);
         variables = 2;
         twoDimData = new HashMap<String, Map<String, Integer>>();
         pieModel = null;//Hide Pie chart
@@ -1005,6 +990,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
     }
 
     public String preparePieModelEstadoCasos() {
+        this.setShowFilter(false);
         variables = 1;
         oneDimData = new HashMap<String, Integer>();
         System.out.println("preparePieModelEstadoCasos()");
@@ -1065,6 +1051,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
     }
 
     public String preparePieModelCasosPorAgente() {
+        this.setShowFilter(false);
         variables = 1;
         oneDimData = new HashMap<String, Integer>();
         pieModel = new PieChartModel();
@@ -1122,6 +1109,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
     }
 
     public String preparePieModelCasosPorArea() {
+        this.setShowFilter(false);
         variables = 1;
         oneDimData = new HashMap<String, Integer>();
         pieModel = new PieChartModel();
@@ -1171,6 +1159,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
     }
 
     private String preparePieModelAntiguedadCasosAbiertos(boolean asignados) {
+        this.setShowFilter(false);
         variables = 1;
         oneDimData = new HashMap<String, Integer>();
         int howManyPeriodsToShow = 8;
@@ -1190,7 +1179,6 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         for (int i = 1; i <= howManyPeriodsToShow; i++) {
 
             String fecha2 = format.format(now);
-
 
             now = new Date(now.getTime() - (periodDays * 24 * 60 * 60 * 1000));
 
@@ -1243,16 +1231,13 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
             pieModel.set((i) + (i > 1 ? " días" : " día") + (i != howManyPeriodsToShow ? "" : " o más"), vistaController.countCasosForView(view));
             vistaItems.add(view);
 
-
         }
 
         viewMatrix.put(seriesIndex, vistaItems);
 
         //2. Para cada elemento del eje x, como calculo el numero de casos?? usando varios criterios/filtros. por defecto hay un filtro que siempre va = el exe x.
-
         setChartModelTitle("Antiguedad de Casos Abiertos (" + (asignados ? "Asignados" : "No Asignados") + ")");
         return "reports";
-
 
     }
 
@@ -1502,5 +1487,19 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
     @Override
     public Class getDataModelImplementationClass() {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    /**
+     * @return the showFilter
+     */
+    public boolean isShowFilter() {
+        return showFilter;
+    }
+
+    /**
+     * @param showFilter the showFilter to set
+     */
+    public void setShowFilter(boolean showFilter) {
+        this.showFilter = showFilter;
     }
 }

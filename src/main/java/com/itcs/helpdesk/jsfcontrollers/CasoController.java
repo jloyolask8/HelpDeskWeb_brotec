@@ -2202,6 +2202,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 final String msg = "Documento " + attach.getNombreArchivo() + " creado con exito";
                 textoNota = textoNota + "<br/>" + msg;
                 armarNota(current, false, textoNota, EnumTipoNota.NOTA.getTipoNota());
+                getJpaController().merge(this.current);
                 addInfoMessage(msg);
                 executeInClient("genDocVisitaPreventiva.hide()");
             } else {
@@ -3045,7 +3046,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             if (this.current != null) {
                 getManagerCasos().crearAdjunto(bytearray, null, this.current, nombre, event.getFile().getContentType(), event.getFile().getSize());
                 JsfUtil.addSuccessMessage("Archivo " + nombre + " subido con exito");
-
+                getJpaController().merge(this.current);
             } else {
                 JsfUtil.addErrorMessage("Archivo " + nombre + " no se puede cargar. Favor intente nuevamente.");
             }

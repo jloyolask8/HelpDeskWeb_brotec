@@ -1203,7 +1203,7 @@ public class ManagerCasos implements Serializable {
         archivo.setIdAttachment(attach.getIdAttachment());
         getJpaController().persistArchivo(archivo);
         getJpaController().persistAuditLog(createLogReg(caso, "Archivo subido", "archivo atachado: " + fileName, ""));
-        getJpaController().merge(caso);
+        
         return attach;
     }
 

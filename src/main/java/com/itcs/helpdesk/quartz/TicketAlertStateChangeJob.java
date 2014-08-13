@@ -63,7 +63,7 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
                         caso.setEstadoAlerta(jpaController.find(TipoAlerta.class, valueOfIdAlerta));
                         caso.setFechaModif(new Date());
 
-                        jpaController.merge(caso);
+                        jpaController.mergeInTx(caso);
 
                         String idUser = context.getScheduler().getSchedulerName();
                         AuditLog audit = new AuditLog();
@@ -78,7 +78,7 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
                             audit.setOwner(caso.getOwner().getIdUsuario());
                         }
 
-                        jpaController.persist(audit);
+                        jpaController.persistInTx(audit);
 
                         unschedule(formatJobId(valueOfIdCaso, valueOfIdAlerta));
 

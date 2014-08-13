@@ -193,7 +193,9 @@
                 <h1><p:outputLabel value="#{reporteController.chartModelTitle}"/></h1>
                 <p:messages id="messages" showDetail="true" showSummary="true"/>  
 
-                <itcs:filterView controllerMBean="#{reporteController}" filterHelper="#{reporteController.filterHelper2}" update=":mainform:messages :reportForm"/>
+                <itcs:filterView rendered="#{reporteController.showFilter}"
+                    controllerMBean="#{reporteController}"
+                                 filterHelper="#{reporteController.filterHelper2}" update=":mainform:messages :reportForm"/>
 
                 <br />
 
