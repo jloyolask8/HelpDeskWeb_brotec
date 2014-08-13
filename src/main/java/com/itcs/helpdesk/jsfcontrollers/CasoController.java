@@ -1466,12 +1466,12 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public String prepareEdit() throws Exception {
         if (current == null) {
             JsfUtil.addSuccessMessage("Se requiere que seleccione una fila para editar.");
-            return "";
+            return null;
         } else {
             if (current != null) {
                 current = getJpaController().getCasoFindByIdCaso(current.getIdCaso());
                 System.out.println("FOUND CASO:" + current);
-                if ((current.getOwner() != null) && (current.getOwner().equals(userSessionBean.getCurrent()))) {
+                if (current != null && (current.getOwner() != null) && (current.getOwner().equals(userSessionBean.getCurrent()))) {
                     if (current.getRevisarActualizacion()) {
                         current.setRevisarActualizacion(false);
                         List<AuditLog> changeList = getManagerCasos().verificaCambios(current);

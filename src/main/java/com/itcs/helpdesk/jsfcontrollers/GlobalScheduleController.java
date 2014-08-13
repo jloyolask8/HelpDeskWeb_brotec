@@ -515,7 +515,7 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
             entityEvent.getUsuariosInvitedList().add((Usuario) item);
             selectedUserToAddInvited = null;//reset selection
 
-            addInfoMessage("Agregada OK!");
+//            addInfoMessage("Agregada OK!");
         } catch (Exception ex) {
             addInfoMessage("No se pudo Agregar " + item);
             Log.createLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);

@@ -217,7 +217,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
        
         this.event = scheduleEvent;
         com.itcs.helpdesk.persistence.entities.ScheduleEvent scheduleEvent1 = (com.itcs.helpdesk.persistence.entities.ScheduleEvent)scheduleEvent.getData();
-        casoController.setActiveIndexdescOrComment(3);
+        casoController.setActiveIndexdescOrComment(6);
         return casoController.filterByIdCaso(scheduleEvent1.getIdCaso().getIdCaso());
         
     }
@@ -311,7 +311,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
                 lazyScheduleEventsModel.updateEvent(event);
                 executeInClient("PF('myschedule').update();");
                 addInfoMessage("Evento actualizado exitósamente.");
-                casoController.setActiveIndexdescOrComment(3);
+                casoController.setActiveIndexdescOrComment(6);
                 this.event = null;
             }
 
@@ -331,7 +331,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     public void goEditEvent() {
         //casoController.onChangeActiveIndexdescOrComment(event);
-        casoController.setActiveIndexdescOrComment(3);
+        casoController.setActiveIndexdescOrComment(6);
         executeInClient("PF('viewEventDialog').hide();PF('createEventDialog').hide();");
     }
 
@@ -684,7 +684,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
             entityEvent.getUsuariosInvitedList().add((Usuario) item);
             selectedUserToAddInvited = null;//reset selection
 
-            addInfoMessage("Agregada OK!");
+//            addInfoMessage("Agregada OK!");
         } catch (Exception ex) {
             addInfoMessage("No se pudo Agregar " + item);
             Log.createLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
