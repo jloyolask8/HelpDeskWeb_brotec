@@ -23,9 +23,9 @@ import java.util.logging.Logger;
  *
  * @author jorge
  */
-public class CreateCasoPadreAction extends Action{
+public class CreateCasoPreventaIfNeededAction extends Action{
 
-    public CreateCasoPadreAction(JPAServiceFacade jpaController) {
+    public CreateCasoPreventaIfNeededAction(JPAServiceFacade jpaController) {
         super(jpaController);
     }
 
