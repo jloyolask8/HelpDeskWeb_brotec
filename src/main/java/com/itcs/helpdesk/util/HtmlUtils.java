@@ -24,6 +24,9 @@ import net.htmlparser.jericho.StartTag;
 import net.htmlparser.jericho.StartTagType;
 import net.htmlparser.jericho.Tag;
 import org.apache.commons.lang3.StringUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 /**
  *
@@ -33,36 +36,36 @@ public class HtmlUtils {
 
     // list of HTML elements that will be retained in the final output:
     private static final Set<String> VALID_ELEMENT_NAMES = new HashSet<String>(Arrays.asList(new String[]{
-                HTMLElementName.BR,
-                HTMLElementName.P,
-                HTMLElementName.B,
-                HTMLElementName.I,
-                HTMLElementName.OL,
-                HTMLElementName.UL,
-                HTMLElementName.LI,
-                HTMLElementName.A,
-                HTMLElementName.TABLE,
-                HTMLElementName.TD,
-                HTMLElementName.TR,
-                HTMLElementName.DIV,
-                HTMLElementName.COL,
-                HTMLElementName.H1,
-                HTMLElementName.H2,
-                HTMLElementName.H3,
-                HTMLElementName.H4,
-                HTMLElementName.H5,
-                HTMLElementName.H6,
-                HTMLElementName.IMG,
-                HTMLElementName.FONT,
-                HTMLElementName.U,
-                HTMLElementName.LINK,
-                HTMLElementName.SPAN,
-                HTMLElementName.CENTER
-            }));
+        HTMLElementName.BR,
+        HTMLElementName.P,
+        HTMLElementName.B,
+        HTMLElementName.I,
+        HTMLElementName.OL,
+        HTMLElementName.UL,
+        HTMLElementName.LI,
+        HTMLElementName.A,
+        HTMLElementName.TABLE,
+        HTMLElementName.TD,
+        HTMLElementName.TR,
+        HTMLElementName.DIV,
+        HTMLElementName.COL,
+        HTMLElementName.H1,
+        HTMLElementName.H2,
+        HTMLElementName.H3,
+        HTMLElementName.H4,
+        HTMLElementName.H5,
+        HTMLElementName.H6,
+        HTMLElementName.IMG,
+        HTMLElementName.FONT,
+        HTMLElementName.U,
+        HTMLElementName.LINK,
+        HTMLElementName.SPAN,
+        HTMLElementName.CENTER
+    }));
     // list of HTML attributes that will be retained in the final output:
     private static final Set<String> VALID_ATTRIBUTE_NAMES = new HashSet<String>(Arrays.asList(new String[]{
-                "id", "class", "href", "target", "title"
-            }));
+        "id", "class", "href", "target", "title"
+    }));
     private static final Object VALID_MARKER = new Object();
 
     /**
@@ -165,7 +168,17 @@ public class HtmlUtils {
      * tags.
      */
     public static String stripInvalidMarkup(String pseudoHTML) {
-        return stripInvalidMarkup(pseudoHTML, false);
+        Document doc = Jsoup.parse(pseudoHTML);
+        Elements styles = doc.select("style");
+        for (org.jsoup.nodes.Element style : styles) {
+            style.remove();
+        }
+
+        Elements scripts = doc.select("script");
+        for (org.jsoup.nodes.Element script : scripts) {
+            script.remove();
+        }
+        return stripInvalidMarkup(doc.toString(), false);
     }
 
     /**
@@ -313,8 +326,8 @@ public class HtmlUtils {
     //////////////////////////////////////////////////////////////////////////////////////
     // See test/src/samples/HTMLSanitiserTest.java for a comprehensive test suite.
     public static void main(String[] args) throws Exception {
-        
-        String textoTest = "<table>\n" +
+
+        String textoTest = "<script>alert('hola');</script><style>html{}</style><table>\n" +
 "        <tbody><tr>\n" +
 "            <td>\n" +
 "                <table>\n" +
@@ -464,8 +477,8 @@ public class HtmlUtils {
 "            </td>\n" +
 "        </tr>\n" +
 "    </tbody></table>";
-        
-        System.out.println("texto extraido:\n"+extractPlainText(textoTest));
+
+        System.out.println("texto extraido:\n" + stripInvalidMarkup(textoTest));
 //        System.out.println("Examples of HTMLSanitiser.encodeInvalidMarkup:");
 //        System.out.println("----------------------------------------------\n");
 //
@@ -513,7 +526,7 @@ public class HtmlUtils {
     private static void display(String input, String explanation, String output) {
         System.out.println(explanation + ":\ninput : " + input + "\noutput: " + output + "\n");
     }
-    
+
     public static String extractPlainText(String html)
     {
         if (StringUtils.isEmpty(html))
@@ -536,7 +549,7 @@ public class HtmlUtils {
 
     public static String extractText(String html) {
         if(StringUtils.isEmpty(html)){
-           return ""; 
+            return "";
         }
         StringBuilder sbuilder = new StringBuilder();
         MicrosoftConditionalCommentTagTypes.register();
