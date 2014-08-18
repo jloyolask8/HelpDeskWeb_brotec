@@ -27,12 +27,11 @@ import java.util.logging.Level;
  */
 @ActionInfo(name = "Evaluar categoría del cliente",
         description = "Evalua según atributo crédito pre-aprobado y fecha estimada de"
-                + "compra la categoría del cliente y la prioridad del caso", mustShow = true)
+        + "compra la categoría del cliente y la prioridad del caso", mustShow = true)
 public class EvalCategoriaClienteAction extends Action {
 
 //    @ManagedProperty(value = "#{UserSessionBean}")
 //    protected transient UserSessionBean userSessionBean;
-
     public EvalCategoriaClienteAction(JPAServiceFacade jpaController) {
         super(jpaController);
     }
@@ -40,10 +39,14 @@ public class EvalCategoriaClienteAction extends Action {
     @Override
     public void execute(Caso current) throws ActionExecutionException {
         try {
-            if (current.getTipoCaso().equals(EnumTipoCaso.PREVENTA.getTipoCaso()) || current.getTipoCaso().equals(EnumTipoCaso.COTIZACION.getTipoCaso())) {
-                current.getEtiquetaList().remove(new Etiqueta("CLIENTE CATEGORIA B"));
-                current.getEtiquetaList().remove(new Etiqueta("CLIENTE CATEGORIA C"));
-                current.getEtiquetaList().remove(new Etiqueta("CLIENTE CATEGORIA A"));
+
+            if ((current.getTipoCaso() != null)
+                    && (current.getTipoCaso().equals(EnumTipoCaso.PREVENTA.getTipoCaso()) || current.getTipoCaso().equals(EnumTipoCaso.COTIZACION.getTipoCaso()))) {
+                if (current.getEtiquetaList() != null) {
+                    current.getEtiquetaList().remove(new Etiqueta("CLIENTE CATEGORIA B"));
+                    current.getEtiquetaList().remove(new Etiqueta("CLIENTE CATEGORIA C"));
+                    current.getEtiquetaList().remove(new Etiqueta("CLIENTE CATEGORIA A"));
+                }
                 Etiqueta selected = null;
                 if (current.getCreditoPreAprobado()) {
                     if (current.getFechaEstimadaCompra() != null) {
@@ -95,30 +98,19 @@ public class EvalCategoriaClienteAction extends Action {
                 etiquetaList.add(selected);
 
                 try {
-                        for (Etiqueta etiqueta : etiquetaList) {
+                    for (Etiqueta etiqueta : etiquetaList) {
 //                            etiqueta.setOwner(userSessionBean.getCurrent());
                         if (etiqueta.getCasoList() == null) {
                             etiqueta.setCasoList(new LinkedList<Caso>());
                         }
                         etiqueta.getCasoList().add(current);
                     }
-                    getJpaController().mergeCaso(current, createLogReg(current, "Etiquetas", "Se agrega Etiqueta :" + selected.toString(), ""));
+                    current.setEtiquetaList(etiquetaList);
+                    getJpaController().mergeCasoWithoutNotify(current, createLogReg(current, "Etiquetas", "Se agrega Etiqueta: " + selected.toString(), ""));
                 } catch (Exception ex) {
                     System.out.println("No se pudo Agregar la etiqueta" + selected);
                     Log.createLogger(EvalCategoriaClienteAction.class.getName()).log(Level.SEVERE, null, ex);
                 }
-//                selected.getCasoList().add(current);
-//                Etiqueta etiquetaFound = getJpaController().find(Etiqueta.class, selected.getTagId());
-//                if(etiquetaFound != null){
-//                    current.getEtiquetaList().add(etiquetaFound);
-//                    etiquetaFound.getCasoList().add(current);
-////                    getJpaController().mergeInTx(etiquetaFound);
-//                }
-//                else{
-//                    current.getEtiquetaList().add(selected);
-////                    getJpaController().persist(selected);
-//                }
-//                getJpaController().mergeCaso(current, createLogReg(current, "se clasifica categoria cliente", selected.getTagId(), ""));
             }
 
         } catch (Exception e) {

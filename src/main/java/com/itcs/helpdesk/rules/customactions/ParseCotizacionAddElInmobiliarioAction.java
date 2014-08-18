@@ -76,7 +76,7 @@ public class ParseCotizacionAddElInmobiliarioAction extends ParseCotizacionActio
              Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "error tratar de extraer Propiedad", e);
         }
 
-        System.out.println("DATOS:" + datos);
+//        System.out.println("DATOS:" + datos);
         return datos;
     }
 

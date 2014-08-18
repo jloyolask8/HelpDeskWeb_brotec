@@ -10,7 +10,6 @@ import com.itcs.helpdesk.persistence.entities.Area;
 import com.itcs.helpdesk.persistence.entities.AuditLog;
 import com.itcs.helpdesk.persistence.entities.Canal;
 import com.itcs.helpdesk.persistence.entities.Caso;
-import com.itcs.helpdesk.persistence.entities.Categoria;
 import com.itcs.helpdesk.persistence.entities.Condicion;
 import com.itcs.helpdesk.persistence.entities.FieldType;
 import com.itcs.helpdesk.persistence.entities.Grupo;
@@ -75,14 +74,7 @@ public class RulesEngine implements CasoChangeListener {
 
     @Override
     public void casoCreated(Caso caso) {
-
-//        Area a = caso.getIdArea();
-//        if (a == null)
-//        {
-//            a = EnumAreas.DEFAULT_AREA.getArea();
-//        }
-//        Log.createLogger(this.getClass().getName()).logInfo("verificando reglas para caso recien creado:" + caso);
-        List<ReglaTrigger> listaSup = getJpaController().getReglaTriggerFindByEvento("CREATE");
+        List<ReglaTrigger> listaSup = getJpaController().getReglaTriggerFindByEvento("%CREATE%");
         List<ReglaTrigger> lista;
 
         if (ApplicationConfig.isAppDebugEnabled()) {
@@ -99,7 +91,7 @@ public class RulesEngine implements CasoChangeListener {
                         }
                         listaSup.remove(reglaTrigger);
                         for (Accion accion : reglaTrigger.getAccionList()) {
-                            ejecutarAccion(accion, caso);
+                            executeAction(accion, caso);
                         }
                     } else {
                         if (ApplicationConfig.isAppDebugEnabled()) {
@@ -113,23 +105,27 @@ public class RulesEngine implements CasoChangeListener {
                 }
             }
         } while (lista.size() > listaSup.size());
+    }
 
-//        if (ApplicationConfig.isRealTimeNotifToAgentsEnabled()) {
-//            caso = getJpaController().getReference(Caso.class, caso.getIdCaso());
-//            //Online notification 
-//            if (caso.getOwner() != null) {
-//                String user = caso.getOwner().getIdUsuario();
-//                notifyAllWatchersOnline(caso, user, "Un nuevo caso ha sido asignado a ud. Tipo:" + (caso.getTipoCaso() != null ? caso.getTipoCaso().getNombre() : "caso") + " #" + caso.getIdCaso() + ": " + caso.getTema());
-//            }
-//        }
-//        if (ApplicationConfig.isSendGroupNotifOnNewCaseEnabled()) {
-//            //Notify all agents in the groups
-//            if (caso.getIdProducto() != null) {
-//                for (Grupo grupo : caso.getIdProducto().getGrupoList()) {
-//                    MailNotifier.notifyGroupCasoReceived(grupo, caso, caso.getNotaList());
-//                }
-//            }
-//        }
+    @Override
+    public void casoChanged(Caso caso, List<AuditLog> changeList) {
+        List<ReglaTrigger> listaSup = getJpaController().getReglaTriggerFindByEvento("%UPDATE%");
+        List<ReglaTrigger> lista;
+        do {
+            lista = new LinkedList<ReglaTrigger>(listaSup);
+            for (ReglaTrigger reglaTrigger : lista) {
+                if (reglaTrigger.getReglaActiva()) {
+                    boolean aplica = evalConditions(reglaTrigger, caso, changeList);
+                    if (aplica) {
+                        Log.createLogger(this.getClass().getName()).logInfo("regla " + reglaTrigger.getIdTrigger() + " APLICA_AL_CASO " + caso.toString());
+                        listaSup.remove(reglaTrigger);
+                        for (Accion accion : reglaTrigger.getAccionList()) {
+                            executeAction(accion, caso);
+                        }
+                    }
+                }
+            }
+        } while (lista.size() > listaSup.size());
     }
     
     private boolean evalConditions(ReglaTrigger reglaTrigger, Caso caso) {
@@ -137,7 +133,7 @@ public class RulesEngine implements CasoChangeListener {
     }
 
     private boolean evalConditions(ReglaTrigger reglaTrigger, Caso caso, List<AuditLog> changeList) {
-//                    Log.createLogger(this.getClass().getName()).logInfo("*** Verificando regla -> " + reglaTrigger);
+        Log.createLogger(this.getClass().getName()).logInfo("*** Verificando regla -> " + reglaTrigger);
         boolean any = false;
         if (reglaTrigger.getAnyOrAll() != null) {
             any = reglaTrigger.getAnyOrAll().equals("ANY");
@@ -165,43 +161,6 @@ public class RulesEngine implements CasoChangeListener {
         return aplica;
     }
 
-    @Override
-    public void casoChanged(Caso caso, List<AuditLog> changeList) {
-
-//        Area a = caso.getIdArea();
-//        if (a == null)
-//        {
-//            a = EnumAreas.DEFAULT_AREA.getArea();
-//        }
-//        long start = System.currentTimeMillis();
-//        Log.createLogger(this.getClass().getName()).logInfo("verificando reglas para caso recien ACTUALIZADO:" + caso);
-        List<ReglaTrigger> listaSup = getJpaController().getReglaTriggerFindByEvento("UPDATE");
-        List<ReglaTrigger> lista;
-        do {
-            lista = new LinkedList<ReglaTrigger>(listaSup);
-            for (ReglaTrigger reglaTrigger : lista) {
-                if (reglaTrigger.getReglaActiva()) {
-                    boolean aplica = evalConditions(reglaTrigger, caso, changeList);
-                    if (aplica) {
-                        Log.createLogger(this.getClass().getName()).logInfo("regla " + reglaTrigger.getIdTrigger() + " APLICA_AL_CASO " + caso.toString());
-                        listaSup.remove(reglaTrigger);
-                        for (Accion accion : reglaTrigger.getAccionList()) {
-                            ejecutarAccion(accion, caso);
-                        }
-                    }
-                }
-            }
-        } while (lista.size() > listaSup.size());
-
-//        if (ApplicationConfig.isRealTimeNotifToAgentsEnabled() || ApplicationConfig.isRealTimeNotifToCustomerEnabled()) {
-//            //Online notification 
-//            if (changeList != null && !changeList.isEmpty()) {
-//                String user = changeList.get(0).getIdUser();
-//                notifyAllWatchersOnline(caso, user, "Uno de sus casos ha sido modificado, " + (caso.getTipoCaso() != null ? caso.getTipoCaso().getNombre() : "caso") + " #[" + caso.getIdCaso() + "]: " + caso.getTema());
-//            }
-//        }
-    }
-
     public void applyRuleOnThisCasos(ReglaTrigger reglaTrigger, List<Caso> selectedCasos) {
 
         for (Caso caso : selectedCasos) {
@@ -210,7 +169,7 @@ public class RulesEngine implements CasoChangeListener {
                 if (aplica) {
                     Log.createLogger(this.getClass().getName()).logInfo("regla " + reglaTrigger.getIdTrigger() + " APLICA_AL_CASO " + caso.toString());
                     for (Accion accion : reglaTrigger.getAccionList()) {
-                        ejecutarAccion(accion, caso);
+                        executeAction(accion, caso);
                     }
                 }
             }
@@ -249,10 +208,9 @@ public class RulesEngine implements CasoChangeListener {
         expresion.execute();
         final Object value = expresion.getValue();
 
-        if (ApplicationConfig.isAppDebugEnabled()) {
-            System.out.println("caso." + methodName + " = " + value);
-        }
-
+//        if (ApplicationConfig.isAppDebugEnabled()) {
+//            System.out.println("caso." + methodName + " = " + value);
+//        }
         if (fieldType.equals(EnumFieldType.TEXT.getFieldType()) || fieldType.equals(EnumFieldType.TEXTAREA.getFieldType())) {
             //El valor es de tipo String, usarlo tal como esta
             if (operador.equals(EnumTipoComparacion.EQ.getTipoComparacion())) {
@@ -533,7 +491,7 @@ public class RulesEngine implements CasoChangeListener {
         return false;
     }
 
-    private void ejecutarAccion(Accion accion, Caso caso) {
+    private void executeAction(Accion accion, Caso caso) {
         try {
 //            if (accion.getIdNombreAccion().equals(EnumNombreAccion.CAMBIO_CAT.getNombreAccion())) {
 //                cambiarCategoria(accion, caso);
@@ -586,31 +544,6 @@ public class RulesEngine implements CasoChangeListener {
             }
         } catch (Exception ex) {
             Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "enviarCorreo", ex);
-        }
-    }
-
-    private Integer extractId(String parametros) {
-        try {
-            int index = parametros.lastIndexOf(" ID[");//no tocar cuero pico de pulga
-            if (index >= 0) {
-                String sub = parametros.substring(index).split("\\[")[1];
-                String id = sub.replaceAll("]", "");
-                return Integer.parseInt(id);
-            }
-        } catch (Exception e) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "No se pudo extraer ID de categoria", e);
-        }
-        return null;
-    }
-
-    private void cambiarCategoria(Accion accion, Caso caso) {
-        try {
-            int idCat = extractId(accion.getParametros());
-            Categoria cat = getJpaController().getCategoriaFindByIdCategoria(idCat);
-            caso.setIdCategoria(cat);
-            getJpaController().mergeCasoWithoutNotify(caso);
-        } catch (Exception ex) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "cambiarCategoria", ex);
         }
     }
 

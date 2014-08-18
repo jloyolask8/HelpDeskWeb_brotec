@@ -43,13 +43,14 @@
                         <p:row></p:row>
                         <p:row>
                             <p:column>
-                                <p:outputLabel value="Ejecutar cuando&nbsp;&nbsp;" for="eventoid" />
+                                <p:outputLabel value="Ejecutar &nbsp;&nbsp;" for="eventoid" />
                             </p:column>
                             <p:column>
                                 <p:selectOneMenu id="eventoid" rendered="#{reglaTriggerController.selected ne null}"  value="#{reglaTriggerController.selected.evento}" 
                                                  style="top: 7px; width: 226px;">
-                                    <f:selectItem itemLabel="se cree un nuevo caso" itemValue="CREATE"/>
-                                    <f:selectItem itemLabel="se modifique un caso" itemValue="UPDATE"/>
+                                    <f:selectItem itemLabel="cuando se cree un caso" itemValue="CREATE"/>
+                                    <f:selectItem itemLabel="cuando se modifique un caso" itemValue="UPDATE"/>
+                                    <f:selectItem itemLabel="siempre" itemValue="UPDATE OR CREATE"/>
                                 </p:selectOneMenu>
                             </p:column>
                         </p:row>

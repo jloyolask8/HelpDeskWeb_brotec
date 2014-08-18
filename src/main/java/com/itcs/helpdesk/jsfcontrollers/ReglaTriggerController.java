@@ -75,6 +75,22 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         findAllCustomClasses();
     }
 
+    public void reorderTable() throws Exception {
+        String newOrder = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("newOrder");
+        String[] noArr = newOrder.split(",");
+
+        int index = 0;
+        for (String s : noArr) {
+            ReglaTrigger regla = reglaItems.get(Integer.parseInt(s));
+            regla.setOrden(index++);
+            getJpaController().merge(regla);
+        }
+        reglaItems = null;
+//        myList = n;
+
+//        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Reordered! New order is:" + newOrder));
+    }
+
     private void findAllCustomClasses() {
         if (actionClassNames == null) {
             actionClassNames = new LinkedList<String>();
@@ -88,9 +104,8 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
             }
         }
     }
-    
-    public ActionInfo findActionInfo(String classCanonicalName)
-    {
+
+    public ActionInfo findActionInfo(String classCanonicalName) {
         return actionClassInfoMap.get(classCanonicalName);
     }
 
@@ -458,7 +473,6 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
                     accion.setIdAccion(null);
                 }
             }
-            current.setAccionList(acciones);
             getJpaController().mergeReglaTrigger(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ReglaTriggerUpdated"));
             recreateModel();

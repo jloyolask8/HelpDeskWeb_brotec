@@ -97,6 +97,8 @@ public class CreateCasoPreventaIfNeededAction extends Action{
                     casosHijosList.add(casoOrigen);
                 }
                 padre.setCasosHijosList(casosHijosList);
+                padre.setRevisarActualizacion(true);
+                padre.setFechaModif(new Date());
 
                 getJpaController().merge(padre);
                 casoOrigen.setFechaModif(new Date());
