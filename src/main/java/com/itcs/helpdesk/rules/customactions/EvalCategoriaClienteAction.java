@@ -12,18 +12,26 @@ import com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.rules.Action;
 import com.itcs.helpdesk.rules.ActionExecutionException;
+import com.itcs.helpdesk.rules.ActionInfo;
 import com.itcs.helpdesk.util.DateUtils;
 import com.itcs.helpdesk.util.Log;
 import static com.itcs.helpdesk.util.ManagerCasos.createLogReg;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 
 /**
  *
  * @author jorge
  */
+@ActionInfo(name = "Evaluar categoría del cliente",
+        description = "Evalua según atributo crédito pre-aprobado y fecha estimada de"
+                + "compra la categoría del cliente y la prioridad del caso", mustShow = true)
 public class EvalCategoriaClienteAction extends Action {
+
+//    @ManagedProperty(value = "#{UserSessionBean}")
+//    protected transient UserSessionBean userSessionBean;
 
     public EvalCategoriaClienteAction(JPAServiceFacade jpaController) {
         super(jpaController);
@@ -80,20 +88,37 @@ public class EvalCategoriaClienteAction extends Action {
                         current.setIdPrioridad(EnumPrioridad.BAJA.getPrioridad());
                     }
                 }
-                if(selected.getCasoList() == null){
-                    selected.setCasoList(new LinkedList<Caso>());
+                List<Etiqueta> etiquetaList = current.getEtiquetaList();
+                if (etiquetaList == null) {
+                    etiquetaList = new LinkedList<Etiqueta>();
                 }
-                selected.getCasoList().add(current);
-                Etiqueta etiquetaFound = getJpaController().find(Etiqueta.class, selected.getTagId());
-                if(etiquetaFound != null){
-                    etiquetaFound.getCasoList().add(current);
-                    getJpaController().merge(etiquetaFound);
+                etiquetaList.add(selected);
+
+                try {
+                        for (Etiqueta etiqueta : etiquetaList) {
+//                            etiqueta.setOwner(userSessionBean.getCurrent());
+                        if (etiqueta.getCasoList() == null) {
+                            etiqueta.setCasoList(new LinkedList<Caso>());
+                        }
+                        etiqueta.getCasoList().add(current);
+                    }
+                    getJpaController().mergeCaso(current, createLogReg(current, "Etiquetas", "Se agrega Etiqueta :" + selected.toString(), ""));
+                } catch (Exception ex) {
+                    System.out.println("No se pudo Agregar la etiqueta" + selected);
+                    Log.createLogger(EvalCategoriaClienteAction.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                else{
-                    current.getEtiquetaList().add(selected);
-                    getJpaController().persist(selected);
-                }
-                getJpaController().mergeCaso(current, createLogReg(current, "se clasifica categoria cliente", selected.getTagId(), ""));
+//                selected.getCasoList().add(current);
+//                Etiqueta etiquetaFound = getJpaController().find(Etiqueta.class, selected.getTagId());
+//                if(etiquetaFound != null){
+//                    current.getEtiquetaList().add(etiquetaFound);
+//                    etiquetaFound.getCasoList().add(current);
+////                    getJpaController().mergeInTx(etiquetaFound);
+//                }
+//                else{
+//                    current.getEtiquetaList().add(selected);
+////                    getJpaController().persist(selected);
+//                }
+//                getJpaController().mergeCaso(current, createLogReg(current, "se clasifica categoria cliente", selected.getTagId(), ""));
             }
 
         } catch (Exception e) {

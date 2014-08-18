@@ -16,13 +16,13 @@ import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.entityenums.EnumNombreAccion;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.rules.Action;
+import com.itcs.helpdesk.rules.ActionInfo;
 import com.itcs.helpdesk.util.EmailStruct;
 import com.thoughtworks.xstream.XStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -41,6 +41,8 @@ import javax.faces.model.ListDataModel;
 import org.primefaces.model.SelectableDataModel;
 import org.primefaces.model.TreeNode;
 import com.itcs.helpdesk.util.ClassUtils;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 @ManagedBean(name = "reglaTriggerController")
@@ -55,6 +57,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
     //----logica de reglas
     private List<Accion> acciones = new ArrayList<Accion>();
     private List<String> actionClassNames;
+    private Map<String, ActionInfo> actionClassInfoMap;
     private Accion accionTemp = new Accion();
     //----fin logica de reglas
     private transient XStream xstream;
@@ -75,30 +78,38 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
     private void findAllCustomClasses() {
         if (actionClassNames == null) {
             actionClassNames = new LinkedList<String>();
-            
+            actionClassInfoMap = new HashMap<String, ActionInfo>();
             try {
-                List<Class<?>> classes = ClassUtils.getClassesForPackage("com.itcs.helpdesk.rules.customactions");
-                for (Class<?> class1 : classes) {
-                    
-                    if(Action.class.isAssignableFrom(class1))
-                    {
-                        System.out.println("class found: " + class1.getCanonicalName());
-                        actionClassNames.add(class1.getCanonicalName());
-                    }
-                }
-
-                classes = ClassUtils.getClassesForPackage("com.itcs.helpdesk.rules.actionsimpl");
-                for (Class<?> class1 : classes) {
-                    
-                    if(Action.class.isAssignableFrom(class1))
-                    {
-                        System.out.println("class found: " + class1.getCanonicalName());
-                        actionClassNames.add(class1.getCanonicalName());
-                    }
-                }
+                getAllPublicActionImplementations("com.itcs.helpdesk.rules.customactions", actionClassNames);
+                getAllPublicActionImplementations("com.itcs.helpdesk.rules.actionsimpl", actionClassNames);
                 Collections.sort(actionClassNames);
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(ReglaTriggerController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    public ActionInfo findActionInfo(String classCanonicalName)
+    {
+        return actionClassInfoMap.get(classCanonicalName);
+    }
+
+    private void getAllPublicActionImplementations(String packagePath, List<String> lista) throws ClassNotFoundException {
+        List<Class<?>> classes = ClassUtils.getClassesForPackage(packagePath);
+        for (Class<?> class1 : classes) {
+
+            if (Action.class.isAssignableFrom(class1)
+                    && !Modifier.isAbstract(class1.getModifiers())
+                    && !Modifier.isInterface(class1.getModifiers())) {
+                ActionInfo actionInfo = class1.getAnnotation(ActionInfo.class);
+                if (actionInfo != null) {
+                    if (actionInfo.mustShow()) {
+                        System.out.println("class found: " + class1.getCanonicalName());
+                        lista.add(class1.getCanonicalName());
+                        actionClassInfoMap.put(class1.getCanonicalName(), actionInfo);
+                    }
+                }
+
             }
         }
     }
@@ -168,23 +179,21 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 
     public void handleAnyChangeEvent() {
     }
-    
-    public boolean puedeEliminarCondicion()
-    {
+
+    public boolean puedeEliminarCondicion() {
         if (current.getCondicionList() != null && !current.getCondicionList().isEmpty()) {
-            return current.getCondicionList().size()>1;
+            return current.getCondicionList().size() > 1;
         }
         return false;
     }
-    
-    public boolean puedeEliminarAccion()
-    {
-        if (current.getAccionList()!= null && !current.getAccionList().isEmpty()) {
-            return current.getAccionList().size()>1;
+
+    public boolean puedeEliminarAccion() {
+        if (current.getAccionList() != null && !current.getAccionList().isEmpty()) {
+            return current.getAccionList().size() > 1;
         }
         return false;
     }
-    
+
     private int createRandomInt() {
         Random randomGenerator = new Random();
         int n = randomGenerator.nextInt();
@@ -207,7 +216,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
     }
 
     public void removeFiltroFromVista(Condicion filtro) {
-        System.out.println("filtro:"+filtro);
+        System.out.println("filtro:" + filtro);
         if (current.getCondicionList() == null || current.getCondicionList().isEmpty()) {
             JsfUtil.addErrorMessage("No hay criterios en la regla!");
         }
@@ -217,10 +226,10 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         filtro.setIdTrigger(null);
         updateComponentInClient("form");
     }
-    
-    public void addNewAccionVista(){
+
+    public void addNewAccionVista() {
         Accion newAccion = new Accion();
-        if(current.getAccionList() == null || current.getAccionList().isEmpty()){
+        if (current.getAccionList() == null || current.getAccionList().isEmpty()) {
             current.setAccionList(new LinkedList<Accion>());
         }
         newAccion.setIdAccion(createRandomInt());
@@ -228,7 +237,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 //        System.out.println(newAccion);
         current.getAccionList().add(newAccion);
     }
-    
+
     public void removeAccionFromVista(Accion accion) {
         if (current.getCondicionList() == null || current.getCondicionList().isEmpty()) {
             JsfUtil.addErrorMessage("No hay acciones en la regla!");
@@ -314,33 +323,32 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 //        }
 //        return pagination;
 //    }
-
     public boolean esAccionAsignarArea(Accion accion) {
-        return esAccion(accion,EnumNombreAccion.ASIGNAR_A_AREA);
+        return esAccion(accion, EnumNombreAccion.ASIGNAR_A_AREA);
     }
 
     public boolean esAccionCustom(Accion accion) {
-        return esAccion(accion,EnumNombreAccion.CUSTOM);
+        return esAccion(accion, EnumNombreAccion.CUSTOM);
     }
 
     public boolean esAccionAsignarAGrupo(Accion accion) {
-        return esAccion(accion,EnumNombreAccion.ASIGNAR_A_GRUPO);
+        return esAccion(accion, EnumNombreAccion.ASIGNAR_A_GRUPO);
     }
 
     public boolean esAccionRedefinirSLAFechaCompra(Accion accion) {
-        return esAccion(accion,EnumNombreAccion.DEFINIR_SLA_FECHA_COMPRA);
+        return esAccion(accion, EnumNombreAccion.DEFINIR_SLA_FECHA_COMPRA);
     }
 
     public boolean esAccionAsignarAUsuario(Accion accion) {
-        return esAccion(accion,EnumNombreAccion.ASIGNAR_A_USUARIO);
+        return esAccion(accion, EnumNombreAccion.ASIGNAR_A_USUARIO);
     }
 
     public boolean esAccionCambiarPrioridad(Accion accion) {
-        return esAccion(accion,EnumNombreAccion.CAMBIAR_PRIORIDAD);
+        return esAccion(accion, EnumNombreAccion.CAMBIAR_PRIORIDAD);
     }
 
     public boolean esAccionEnviarEmail(Accion accion) {
-        return esAccion(accion,EnumNombreAccion.ENVIAR_EMAIL);
+        return esAccion(accion, EnumNombreAccion.ENVIAR_EMAIL);
     }
 
     public boolean esAccionRecalcularSLA(Accion accion) {

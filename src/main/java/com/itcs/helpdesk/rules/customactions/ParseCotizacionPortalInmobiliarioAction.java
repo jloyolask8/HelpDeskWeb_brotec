@@ -6,6 +6,7 @@ package com.itcs.helpdesk.rules.customactions;
 
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.rules.ActionExecutionException;
+import com.itcs.helpdesk.rules.ActionInfo;
 import com.itcs.helpdesk.util.ApplicationConfig;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.UtilesRut;
@@ -19,6 +20,8 @@ import org.jsoup.nodes.Document;
  *
  * @author jonathan
  */
+@ActionInfo(name = "Analizar cotización de Portal Inmobiliario",
+        description = "Analiza y extrae información de cotizaciones enviadas desde Portal Inmobiliario", mustShow = true)
 public class ParseCotizacionPortalInmobiliarioAction extends ParseCotizacionAction {
 
     public ParseCotizacionPortalInmobiliarioAction(JPAServiceFacade jpaController) {

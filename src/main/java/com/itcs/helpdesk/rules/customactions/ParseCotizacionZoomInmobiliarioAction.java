@@ -6,8 +6,8 @@ package com.itcs.helpdesk.rules.customactions;
 
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.rules.ActionExecutionException;
+import com.itcs.helpdesk.rules.ActionInfo;
 import com.itcs.helpdesk.util.Log;
-import com.itcs.helpdesk.util.ManagerCasos;
 import com.itcs.helpdesk.util.UtilesRut;
 import com.itcs.helpdesk.webservices.DatosCaso;
 import java.util.logging.Level;
@@ -18,6 +18,8 @@ import java.util.regex.Pattern;
  *
  * @author jonathan
  */
+@ActionInfo(name = "Analizar cotización de Zoom Inmobiliario",
+        description = "Analiza y extrae información de cotizaciones enviadas desde Zoom Inmobiliario", mustShow = true)
 public class ParseCotizacionZoomInmobiliarioAction extends ParseCotizacionAction {
 
     public ParseCotizacionZoomInmobiliarioAction(JPAServiceFacade jpaController) {
@@ -124,4 +126,5 @@ public class ParseCotizacionZoomInmobiliarioAction extends ParseCotizacionAction
     protected String getCanalName() {
        return canalName;
     }
+
 }

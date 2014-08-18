@@ -12,6 +12,7 @@ import com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.rules.Action;
 import com.itcs.helpdesk.rules.ActionExecutionException;
+import com.itcs.helpdesk.rules.ActionInfo;
 import static com.itcs.helpdesk.util.ManagerCasos.createLogReg;
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,6 +24,10 @@ import java.util.logging.Logger;
  *
  * @author jorge
  */
+@ActionInfo(name = "Crear caso de preventa",
+        description = "Crea caso de preventa cuando el caso es cotizacion."
+                + " En caso de que ya exista un caso de preventa para el cliente,"
+                + "se asocia este caso al caso de preventa ya existente.", mustShow = true)
 public class CreateCasoPreventaIfNeededAction extends Action{
 
     public CreateCasoPreventaIfNeededAction(JPAServiceFacade jpaController) {

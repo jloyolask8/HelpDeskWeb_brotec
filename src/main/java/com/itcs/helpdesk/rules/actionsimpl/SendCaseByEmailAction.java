@@ -8,6 +8,7 @@ import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.rules.Action;
 import com.itcs.helpdesk.rules.ActionExecutionException;
+import com.itcs.helpdesk.rules.ActionInfo;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.MailClientFactory;
 import com.itcs.helpdesk.util.MailNotifier;
@@ -18,6 +19,8 @@ import org.apache.commons.mail.EmailException;
  *
  * @author jonathan
  */
+@ActionInfo(name = "Envia caso por email",
+        description = "Envia el caso completo por email", mustShow = true)
 public class SendCaseByEmailAction extends Action {
 
 //    public static final String EMAIL_TO_FIELD_KEY = "emailsToFieldKey";

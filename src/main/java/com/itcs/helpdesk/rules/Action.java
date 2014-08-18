@@ -43,6 +43,7 @@ public abstract class Action {
      * caso in case the action updates the caso.
      */
     public abstract void execute(Caso caso) throws ActionExecutionException;
+    
 
     public JPAServiceFacade getJpaController() {
 
