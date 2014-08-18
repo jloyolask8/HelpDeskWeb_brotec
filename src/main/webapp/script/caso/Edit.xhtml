@@ -486,6 +486,28 @@
                                 </p:column>
                             </p:row>
 
+
+                            <p:row>
+                                <p:column colspan="2">
+
+                                    <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar">
+                                        <f:facet name="output">
+                                            <h:outputText value="#{casoController.selected.etiquetaStringList}"/>
+                                            <i class="fa fa-search"></i>                                           
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:autoComplete id="tags" disabled="#{casoController.selected.closed}" 
+                                                            value="#{casoController.selected.etiquetaStringList}" forceSelection="true" 
+                                                            completeMethod="#{applicationBean.findEtiquetasByPattern}" multiple="true">
+                                                <p:ajax  event="itemSelect"  listener="#{casoController.tagItemSelectEvent}"  update=":mainform:messages"  />
+                                                <p:ajax  event="itemUnselect"  listener="#{casoController.tagItemUnselectEvent}"  update=":mainform:messages"  />
+                                            </p:autoComplete>
+                                            <p:watermark for="tags" value="Etiquetas"/>
+                                        </f:facet>
+                                    </p:inplace>
+                                </p:column>
+                            </p:row>
+
                             <p:row>
                                 <p:column colspan="2">
                                 </p:column>
