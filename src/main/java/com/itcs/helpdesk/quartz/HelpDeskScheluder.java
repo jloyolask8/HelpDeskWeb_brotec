@@ -229,8 +229,9 @@ public class HelpDeskScheluder {
     }
 
     public static void unscheduleAlertasDelCaso(final Long idCaso) throws SchedulerException {
+        System.out.println("unscheduleAlertasDelCaso()");
         final String jobIdPorVencer = TicketAlertStateChangeJob.formatJobId(idCaso, EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta().getIdalerta());
-        final String jobIdVencido = TicketAlertStateChangeJob.formatJobId(idCaso, EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta().getIdalerta());
+        final String jobIdVencido = TicketAlertStateChangeJob.formatJobId(idCaso, EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta().getIdalerta());
 
         TicketAlertStateChangeJob.unschedule(jobIdPorVencer);
         TicketAlertStateChangeJob.unschedule(jobIdVencido);
