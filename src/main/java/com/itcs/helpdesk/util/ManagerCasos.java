@@ -337,7 +337,7 @@ public class ManagerCasos implements Serializable {
             }
 
             caso.setDescripcion(datos.getDescripcion());
-            caso.setDescripcionTxt(HtmlUtils.extractText(datos.getDescripcion()));
+            caso.setDescripcionTxt(HtmlUtils.stripInvalidMarkup(datos.getDescripcion()));
 
             //Tipo de caso:
             if (!StringUtils.isEmpty(datos.getTipoCaso())) {
@@ -593,7 +593,7 @@ public class ManagerCasos implements Serializable {
             throw new Exception("ERROR!! Tipo caso cannot be null");
         }
 
-        caso.setDescripcionTxt(HtmlUtils.extractText(caso.getDescripcion()));
+        caso.setDescripcionTxt(HtmlUtils.stripInvalidMarkup(caso.getDescripcion()));
 
         calcularSLA(caso);
 
@@ -773,7 +773,7 @@ public class ManagerCasos implements Serializable {
             String textoBody = item.getText();
 //          textoBody = parseHtmlToText(textoBody);
             if (textoBody != null) {
-                nota.setTexto(textoBody);
+                nota.setTexto(HtmlUtils.removeScriptsAndStyles(textoBody));
             }
 
             nota.setFechaCreacion(Calendar.getInstance().getTime());
@@ -814,7 +814,7 @@ public class ManagerCasos implements Serializable {
                 if (emailCliente != null) {
                     String subject = formatIdCaso(caso.getIdCaso()) + " " + ClippingsPlaceHolders.buildFinalText("${TipoCaso} ${Asunto}", caso);
 
-                    MailNotifier.scheduleSendMailNota(canal.getIdCanal(),
+                    HelpDeskScheluder.scheduleSendMailNota(canal.getIdCanal(),
                             item.getText(), emailCliente, subject, caso.getIdCaso(), nota.getIdNota(), listIdAtt.toString());
                 }
 
@@ -864,23 +864,20 @@ public class ManagerCasos implements Serializable {
                 current.setEstadoAlerta(EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta());
                 getJpaController().mergeCaso(current, verificaCambios(current));
                 HelpDeskScheluder.scheduleAlertaPorVencer(current.getIdCaso(), calculaCuandoPasaAPorVencer(current));
-//                HelpDeskScheluder.scheduleAlertaVencido(current.getIdCaso(), current.getNextResponseDue());
-//                agendarAlertas(current);
 
-            } else {
-                current.setEstadoAlerta(EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta());
-                getJpaController().mergeCaso(current, verificaCambios(current));
-
-                final String jobId = TicketAlertStateChangeJob.formatJobId(current.getIdCaso(),
-                        EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta().getIdalerta());
-                TicketAlertStateChangeJob.unschedule(jobId);
-
-                final String jobId2 = TicketAlertStateChangeJob.formatJobId(current.getIdCaso(),
-                        EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta().getIdalerta());
-                TicketAlertStateChangeJob.unschedule(jobId2);
-
-//                desagendarCambioAlerta(current);
             }
+//                else {
+//                current.setEstadoAlerta(EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta());
+//                getJpaController().mergeCaso(current, verificaCambios(current));
+//
+//                final String jobId = TicketAlertStateChangeJob.formatJobId(current.getIdCaso(),
+//                        EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta().getIdalerta());
+//                TicketAlertStateChangeJob.unschedule(jobId);
+//
+//                final String jobId2 = TicketAlertStateChangeJob.formatJobId(current.getIdCaso(),
+//                        EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta().getIdalerta());
+//                TicketAlertStateChangeJob.unschedule(jobId2);
+//            }
         } catch (Exception ex) {
             Log.createLogger(ManagerCasos.class.getName()).log(Level.SEVERE, null, ex);
         }

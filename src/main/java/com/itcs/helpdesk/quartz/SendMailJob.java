@@ -12,6 +12,7 @@ import com.itcs.helpdesk.persistence.entities.Nota;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoNota;
 import com.itcs.helpdesk.persistence.entityenums.EnumUsuariosBase;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
+import com.itcs.helpdesk.util.HtmlUtils;
 import com.itcs.helpdesk.util.MailClientFactory;
 import com.itcs.helpdesk.util.ManagerCasos;
 import java.util.ArrayList;
@@ -91,13 +92,13 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
 
                             Nota nota = new Nota();
                             nota.setEnviadoA(Arrays.toString(split_emails));
-                            nota.setCreadaPor(EnumUsuariosBase.SISTEMA.getUsuario());
+                            nota.setCreadaPor(EnumUsuariosBase.SISTEMA.getUsuario());//TODO remove
                             nota.setEnviado(Boolean.TRUE);
                             nota.setFechaCreacion(Calendar.getInstance().getTime());
                             nota.setFechaEnvio(Calendar.getInstance().getTime());
                             nota.setFechaModificacion(Calendar.getInstance().getTime());
                             nota.setIdCaso(caso);
-                            nota.setTexto(email_text);
+                            nota.setTexto(HtmlUtils.removeScriptsAndStyles(email_text));
                             nota.setVisible(Boolean.FALSE);
                             nota.setTipoNota(EnumTipoNota.RESPUESTA_AUT_CLIENTE.getTipoNota());
                             jpaController.persist(nota);

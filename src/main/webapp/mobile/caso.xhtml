@@ -41,7 +41,7 @@
                     <f:attribute name="inset" value="false"/>
 
                     <p:tab title="Descripción del caso">
-                        <h:outputText id="descripcionCaso" value="#{casoController.parseHtmlToText(casoController.selected.descripcion)}" escape="false"/>
+                        <h:outputText id="descripcionCaso" value="#{(casoController.selected.descripcionTxt eq null) ? casoController.parseHtmlToText(casoController.selected.descripcion):casoController.selected.descripcionTxt}" escape="false"/>
                     </p:tab>
                     <p:tab title="Info del Caso">
                         <p:dataList type="inset">

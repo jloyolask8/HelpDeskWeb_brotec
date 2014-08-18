@@ -277,6 +277,7 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
     }
 
     public List<TipoCaso> getTipoCasoAvailableList() {
+        System.out.println("*** getTipoCasoAvailableList()");
         return (List<TipoCaso>) getJpaController().findAll(TipoCaso.class);
     }
 

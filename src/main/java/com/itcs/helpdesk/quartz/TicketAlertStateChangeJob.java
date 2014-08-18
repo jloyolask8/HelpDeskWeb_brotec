@@ -9,11 +9,12 @@ import com.itcs.helpdesk.persistence.entities.AuditLog;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.TipoAlerta;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta;
-import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
+import com.itcs.helpdesk.persistence.jpa.exceptions.NonexistentEntityException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.transaction.UserTransaction;
 import org.apache.commons.lang3.StringUtils;
@@ -29,9 +30,9 @@ import org.quartz.ee.jta.UserTransactionHelper;
  *
  * @author jonathan
  */
+//@ExecuteInJTATransaction
 public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job {
 
-    
     public static final String ID_ESTADO_ALERTA = "idalerta";
     /**
      * {0} = schema {1} = caso# {2} = id alerta
@@ -50,49 +51,87 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
             JobDataMap map = context.getMergedJobDataMap();//.getJobDetail().getJobDataMap();
             if (map != null) {
                 String idCaso = (String) map.get(ID_CASO);
-                String idalerta = (String) map.get(ID_ESTADO_ALERTA);
-                if (!StringUtils.isEmpty(idCaso) && !StringUtils.isEmpty(idalerta)) {
+                String idAlerta = (String) map.get(ID_ESTADO_ALERTA);
+                if (!StringUtils.isEmpty(idCaso) && !StringUtils.isEmpty(idAlerta)) {
                     EntityManagerFactory emf = createEntityManagerFactory();
                     UserTransaction utx = UserTransactionHelper.lookupUserTransaction();
-                    JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf);
+//                    JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf);
+                    EntityManager em = null;
+                    
+                    final Long valueOfIdCaso = Long.valueOf(idCaso);
+                    final Integer valueOfIdAlerta = Integer.valueOf(idAlerta);
+                    
                     try {
-                        final Long valueOfIdCaso = Long.valueOf(idCaso);
-                        final Integer valueOfIdAlerta = Integer.valueOf(idalerta);
                         
-                        Caso caso = jpaController.getCasoFindByIdCaso(valueOfIdCaso);
-                        caso.setEstadoAlerta(jpaController.find(TipoAlerta.class, valueOfIdAlerta));
-                        caso.setFechaModif(new Date());
+                        if (valueOfIdCaso != null && valueOfIdAlerta != null) {
+                            utx.begin();
+                            em = emf.createEntityManager();
+                            Caso caso = em.find(Caso.class, valueOfIdCaso);
+                            if (caso != null) {
 
-                        jpaController.mergeInTx(caso);
+                                final TipoAlerta tipoAlerta = em.find(TipoAlerta.class, valueOfIdAlerta);
+                                if (tipoAlerta != null) {
 
-                        String idUser = context.getScheduler().getSchedulerName();
-                        AuditLog audit = new AuditLog();
-                        audit.setIdUser(idUser);
-                        audit.setFecha(Calendar.getInstance().getTime());
-                        audit.setTabla(Caso.class.getSimpleName());
-                        audit.setNewValue("Estado de alerta pasa a " + caso.getEstadoAlerta().getNombre());
-                        audit.setIdCaso(caso.getIdCaso());
-                        if (caso.getOwner() == null) {
-                            audit.setOwner(null);
-                        } else {
-                            audit.setOwner(caso.getOwner().getIdUsuario());
+                                    caso.setEstadoAlerta(tipoAlerta);
+                                    caso.setFechaModif(new Date());
+
+                                    em.merge(caso);
+
+                                    //Audit Log
+                                    String idUser = context.getScheduler().getSchedulerName();
+                                    AuditLog audit = new AuditLog();
+                                    audit.setIdUser(idUser);
+                                    audit.setFecha(Calendar.getInstance().getTime());
+                                    audit.setTabla(Caso.class.getSimpleName());
+                                    audit.setNewValue("Estado de alerta pasa a " + caso.getEstadoAlerta().getNombre());
+                                    audit.setIdCaso(caso.getIdCaso());
+                                    if (caso.getOwner() == null) {
+                                        audit.setOwner(null);
+                                    } else {
+                                        audit.setOwner(caso.getOwner().getIdUsuario());
+                                    }
+
+                                    em.persist(audit);
+                                    //End Audit Log
+
+                                    unschedule(formatJobId(valueOfIdCaso, valueOfIdAlerta));
+
+                                    if (valueOfIdAlerta.equals(EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta().getIdalerta())) {
+                                        HelpDeskScheluder.scheduleAlertaVencido(valueOfIdCaso, caso.getNextResponseDue());
+                                    }
+
+                                    utx.commit();
+
+                                } else {
+                                    throw new NonexistentEntityException("El tipo de Alerta " + idAlerta + " no existe!!!");
+                                }
+
+                            } else {
+                                throw new NonexistentEntityException("El caso " + idCaso + " ya no existe!!!");
+                            }
                         }
 
-                        jpaController.persistInTx(audit);
-
+                    } catch (NonexistentEntityException ex) {
+                        Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "NonexistentEntityException at TicketAlertStateChangeJob.execute:{0}", ex.getMessage());
                         unschedule(formatJobId(valueOfIdCaso, valueOfIdAlerta));
 
-                        if (valueOfIdAlerta.equals(EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta().getIdalerta())) {
-                            HelpDeskScheluder.scheduleAlertaVencido(valueOfIdCaso, caso.getNextResponseDue());
+                    } catch (Exception ex) {
+                        Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "TicketAlertStateChangeJob.execute", ex);
+                    } finally {
+                        if (em != null) {
+                            em.close();
                         }
-
-                    }catch(Exception ex){Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "TicketAlertStateChangeJob.execute", ex);}
+                    }
 
                 } else {
                     throw new IllegalStateException("los parametros proporcionados al Job CambiarEstadoAlertaCasoJob(schema, idCaso, idalerta) son illegales!");
                 }
             }
-        } catch (Exception ex) {
+        } catch (NumberFormatException nfe) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "NumberFormatException at TicketAlertStateChangeJob.execute", nfe);
+        } catch (IllegalStateException ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "TicketAlertStateChangeJob.execute", ex);
+        } catch (SchedulerException ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "TicketAlertStateChangeJob.execute", ex);
         }
     }

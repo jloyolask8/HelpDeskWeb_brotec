@@ -217,7 +217,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
        
         this.event = scheduleEvent;
         com.itcs.helpdesk.persistence.entities.ScheduleEvent scheduleEvent1 = (com.itcs.helpdesk.persistence.entities.ScheduleEvent)scheduleEvent.getData();
-        casoController.setActiveIndexdescOrComment(6);
+        casoController.setActiveIndexCasoSections(6);
         return casoController.filterByIdCaso(scheduleEvent1.getIdCaso().getIdCaso());
         
     }
@@ -311,7 +311,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
                 lazyScheduleEventsModel.updateEvent(event);
                 executeInClient("PF('myschedule').update();");
                 addInfoMessage("Evento actualizado exitósamente.");
-                casoController.setActiveIndexdescOrComment(6);
+                casoController.setActiveIndexCasoSections(6);
                 this.event = null;
             }
 
@@ -331,7 +331,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     public void goEditEvent() {
         //casoController.onChangeActiveIndexdescOrComment(event);
-        casoController.setActiveIndexdescOrComment(6);
+        casoController.setActiveIndexCasoSections(6);
         executeInClient("PF('viewEventDialog').hide();PF('createEventDialog').hide();");
     }
 

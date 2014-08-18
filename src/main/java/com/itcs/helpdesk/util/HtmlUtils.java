@@ -168,17 +168,27 @@ public class HtmlUtils {
      * tags.
      */
     public static String stripInvalidMarkup(String pseudoHTML) {
-        Document doc = Jsoup.parse(pseudoHTML);
-        Elements styles = doc.select("style");
-        for (org.jsoup.nodes.Element style : styles) {
-            style.remove();
+        String newHtml = HtmlUtils.removeScriptsAndStyles(pseudoHTML);
+        return stripInvalidMarkup(newHtml, false);
+    }
+
+    public static String removeScriptsAndStyles(String pseudoHTML) {
+        try {
+            Document doc = Jsoup.parse(pseudoHTML);
+            Elements styles = doc.select("style");
+            for (org.jsoup.nodes.Element style : styles) {
+                style.remove();
+            }
+
+            Elements scripts = doc.select("script");
+            for (org.jsoup.nodes.Element script : scripts) {
+                script.remove();
+            }
+            return doc.toString();
+        } catch (Exception e) {
+            return pseudoHTML;
         }
 
-        Elements scripts = doc.select("script");
-        for (org.jsoup.nodes.Element script : scripts) {
-            script.remove();
-        }
-        return stripInvalidMarkup(doc.toString(), false);
     }
 
     /**
