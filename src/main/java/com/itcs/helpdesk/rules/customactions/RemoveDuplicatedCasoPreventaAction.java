@@ -70,5 +70,4 @@ public class RemoveDuplicatedCasoPreventaAction extends Action {
             }
         }
     }
-
 }

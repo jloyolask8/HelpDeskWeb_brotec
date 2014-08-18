@@ -20,6 +20,7 @@ import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.quartz.HelpDeskScheluder;
 import com.itcs.helpdesk.rules.Action;
 import com.itcs.helpdesk.rules.ActionExecutionException;
+import com.itcs.helpdesk.rules.ActionInfo;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.ManagerCasos;
 import java.io.IOException;
@@ -304,4 +305,6 @@ public class CrearCasoVisitaRepSellosAction extends Action {
             return null;
         }
     }
+    
+    
 }

@@ -9,6 +9,7 @@ import com.itcs.helpdesk.persistence.entities.Grupo;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.rules.Action;
 import com.itcs.helpdesk.rules.ActionExecutionException;
+import com.itcs.helpdesk.rules.ActionInfo;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.MailNotifier;
 import java.util.logging.Level;
@@ -18,6 +19,8 @@ import java.util.logging.Logger;
  *
  * @author jonathan
  */
+@ActionInfo(name = "Notificar a grupo recepción de caso",
+        description = "Notifica a grupo de la recepción de un caso", mustShow = true)
 public class NotifyGroupCasoReceivedAction extends Action {
 
     public NotifyGroupCasoReceivedAction(JPAServiceFacade jpaController) {
@@ -40,4 +43,5 @@ public class NotifyGroupCasoReceivedAction extends Action {
         }
 
     }
+
 }

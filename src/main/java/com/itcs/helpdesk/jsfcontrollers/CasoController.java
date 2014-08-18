@@ -3019,49 +3019,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public String update() {
         try {
-            try {
-                if (current.getTipoCaso().equals(EnumTipoCaso.PREVENTA.getTipoCaso()) || current.getTipoCaso().equals(EnumTipoCaso.COTIZACION.getTipoCaso())) {
-                    if (current.getCreditoPreAprobado()) {
-                        if (current.getFechaEstimadaCompra() != null) {
-                            long days = DateUtils.daysBetween(new Date(), current.getFechaEstimadaCompra());
-
-                            if (days <= 30) {
-                                current.setIdCategoria(getJpaController().find(Categoria.class, 19));//A
-                                current.setIdPrioridad(EnumPrioridad.ALTA.getPrioridad());
-                            } else if (days > 30 && days < 90) {
-                                current.setIdCategoria(getJpaController().find(Categoria.class, 20));//B
-                                current.setIdPrioridad(EnumPrioridad.MEDIA.getPrioridad());
-                            } else {
-                                current.setIdCategoria(getJpaController().find(Categoria.class, 21));//C
-                                current.setIdPrioridad(EnumPrioridad.BAJA.getPrioridad());
-                            }
-
-                        } else {
-                            current.setIdCategoria(getJpaController().find(Categoria.class, 21));//C
-                            current.setIdPrioridad(EnumPrioridad.BAJA.getPrioridad());
-                        }
-                    } else {
-                        if (current.getFechaEstimadaCompra() != null) {
-                            long days = DateUtils.daysBetween(new Date(), current.getFechaEstimadaCompra());
-
-                            if (days < 90) {
-                                current.setIdCategoria(getJpaController().find(Categoria.class, 20));//B
-                                current.setIdPrioridad(EnumPrioridad.MEDIA.getPrioridad());
-                            } else {
-                                current.setIdCategoria(getJpaController().find(Categoria.class, 21));//C
-                                current.setIdPrioridad(EnumPrioridad.BAJA.getPrioridad());
-                            }
-
-                        } else {
-                            current.setIdCategoria(getJpaController().find(Categoria.class, 21));//C
-                            current.setIdPrioridad(EnumPrioridad.BAJA.getPrioridad());
-                        }
-                    }
-                }
-
-            } catch (Exception e) {
-                Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "CasoController.update", e);
-            }
             update(current);
             return "/script/caso/Edit";
         } catch (Exception e) {

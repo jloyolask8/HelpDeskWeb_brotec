@@ -7,6 +7,7 @@ package com.itcs.helpdesk.rules.customactions;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.rules.ActionExecutionException;
+import com.itcs.helpdesk.rules.ActionInfo;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.ManagerCasos;
 import com.itcs.helpdesk.util.UtilesRut;
@@ -19,6 +20,8 @@ import java.util.regex.Pattern;
  *
  * @author jonathan ParseCotizacionAddElInmobiliarioAction
  */
+@ActionInfo(name = "Analizar cotización de Vendedor Web",
+        description = "Analiza y extrae información de cotizaciones enviadas desde Vendedor Web", mustShow = false)
 public class ParseCotizacionVendedorWebAction extends ParseCotizacionAction {
 
     public ParseCotizacionVendedorWebAction(JPAServiceFacade jpaController) {

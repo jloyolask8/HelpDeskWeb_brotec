@@ -6,6 +6,7 @@ package com.itcs.helpdesk.rules.customactions;
 
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.rules.ActionExecutionException;
+import com.itcs.helpdesk.rules.ActionInfo;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.UtilesRut;
 import com.itcs.helpdesk.webservices.DatosCaso;
@@ -17,6 +18,8 @@ import org.jsoup.nodes.Document;
  *
  * @author jonathan
  */
+@ActionInfo(name = "Analizar cotización de El Inmobiliario",
+        description = "Analiza y extrae información de cotizaciones enviadas desde El Inmobiliario", mustShow = true)
 public class ParseCotizacionAddElInmobiliarioAction extends ParseCotizacionAction {
 
     public ParseCotizacionAddElInmobiliarioAction(JPAServiceFacade jpaController) {
@@ -73,7 +76,7 @@ public class ParseCotizacionAddElInmobiliarioAction extends ParseCotizacionActio
              Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "error tratar de extraer Propiedad", e);
         }
 
-        System.out.println("DATOS:" + datos);
+//        System.out.println("DATOS:" + datos);
         return datos;
     }
 
