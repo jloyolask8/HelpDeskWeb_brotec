@@ -63,7 +63,7 @@ public class CreateCasoPreventaIfNeededAction extends Action{
                 padre.setTema("Pre-Venta generada para gestión de cliente ");
                 padre.setDescripcion("Pre-Venta única generada para gestion del cliente. Este caso contiene sub-casos.");
                 padre.setEmailCliente(casoOrigen.getEmailCliente());
-
+                padre.setIdCliente(casoOrigen.getIdCliente());
                 padre.setIdProducto(casoOrigen.getIdProducto());
                 padre.setIdModelo(casoOrigen.getIdModelo());
                 padre.setEstadoAlerta(casoOrigen.getEstadoAlerta());
@@ -85,6 +85,10 @@ public class CreateCasoPreventaIfNeededAction extends Action{
                 padre.setIdSubComponente(casoOrigen.getIdSubComponente());
                 padre.setIdCategoria(casoOrigen.getIdCategoria());
                 padre.setIdPrioridad(casoOrigen.getIdPrioridad());
+                if(padre.getIdCliente() == null)
+                {
+                    padre.setIdCliente(casoOrigen.getIdCliente());
+                }
             }
 
             if (padre != null) {

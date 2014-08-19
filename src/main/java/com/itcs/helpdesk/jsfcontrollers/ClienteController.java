@@ -170,7 +170,11 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
     }
 
     public boolean puedeEliminar(Cliente item) {
-        return item.getCasoList().isEmpty();
+        if(item != null && item.getCasoList() != null)
+        {
+            return item.getCasoList().isEmpty();
+        }
+        return false;
     }
 
     public String prepareEdit() {
