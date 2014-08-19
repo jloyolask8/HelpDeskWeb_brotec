@@ -14,7 +14,9 @@
 
         <ui:define name="head">
             <style type="text/css">
-
+                .ui-autocomplete-multiple-container{
+                    width: 100% !important;
+                }
             </style>
 
         </ui:define>
@@ -231,7 +233,7 @@
                                     <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar">
                                         <f:facet name="output">
                                             <h:outputText value="#{casoController.selected.servicioTecnico eq true ? 'Si':'No'}"/>
-                                            <i class="fa fa-search"></i>                                           
+                                            <i class="fa fa-edit"></i>                                           
                                         </f:facet>
                                         <f:facet name="input">
                                             <p:selectBooleanCheckbox id="idTechnicalService" disabled="#{casoController.selected.closed}" 
@@ -390,7 +392,7 @@
                                     <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar">
                                         <f:facet name="output">
                                             <h:outputText value="#{casoController.prettyDate(casoController.selected.fechaEstimadaCompra)}"/>
-                                            <i class="fa fa-search"></i>                                           
+                                            <i class="fa fa-edit"></i>                                           
                                         </f:facet>
                                         <f:facet name="input">
 
@@ -443,7 +445,7 @@
                                     <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar">
                                         <f:facet name="output">
                                             <h:outputText value="#{casoController.prettyDate(casoController.selected.nextResponseDue)}"/>
-                                            <i class="fa fa-search"></i>                                           
+                                            <i class="fa fa-edit"></i>                                           
                                         </f:facet>
                                         <f:facet name="input">
 
@@ -472,7 +474,7 @@
                                                           style="background: #eb6420; color: #FFFFFF;"
                                                           value="#{(casoController.selected.idCategoria eq null) ? bundle.sinClasificacion:casoController.selected.idCategoria.toString()}" 
                                                           title="#{bundle.EditCasoTitle_idCategoria}"/>
-                                            <i class="fa fa-search"></i>                                           
+                                            <i class="fa fa-edit"></i>                                           
                                         </f:facet>
                                         <f:facet name="input">
 
@@ -488,12 +490,27 @@
 
 
                             <p:row>
-                                <p:column colspan="2">
+
+                                <p:column>
+                                    <p:outputLabel value="Etiquetas" style="font-weight:bold"/>
+                                </p:column>
+
+                                <p:column>
 
                                     <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar">
                                         <f:facet name="output">
-                                            <h:outputText value="#{casoController.selected.etiquetaStringList}"/>
-                                            <i class="fa fa-search"></i>                                           
+                                            <h:panelGroup>
+                                                <ui:repeat value="#{casoController.selected.etiquetaStringList}" var="idTag">
+                                                    <p:commandLink actionListener="#{casoController.onTagIdSelectCaso(idTag)}"
+                                                     styleClass="ticket-status" 
+                                                                  style="color: rgb(102, 102, 102);background-color: rgb(221, 221, 221);" 
+                                                                  value="#{idTag}"/>&nbsp;
+                                                </ui:repeat>
+                                                <i class="fa fa-edit"></i> 
+                                            </h:panelGroup>
+
+
+                                                                                      
                                         </f:facet>
                                         <f:facet name="input">
                                             <p:autoComplete id="tags" disabled="#{casoController.selected.closed}" 

@@ -2565,7 +2565,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             if (nuevaNota != null) {
 
 //                changeLog.add(ManagerCasos.createLogReg(current, "Se crea Respuesta Caso", EnumTipoNota.RESPUESTA_A_CLIENTE.getTipoNota().getNombre(), ""));
-
                 //TODO Change it
                 String subject = "Re: " + ManagerCasos.formatIdCaso(current.getIdCaso()) + " " + current.getTema() + " - " + resourceBundle.getString("email.tituloNotas");
                 correoAgendado = enviarCorreo(current.getEmailCliente().getEmailCliente(), subject, bodyTxt, nuevaNota);
@@ -2763,7 +2762,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             //e.printStackTrace();
         }
     }
-
 
     /**
      * Envia el archivo al componente de PrimeFace filoDownload
@@ -3073,7 +3071,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
 
         getJpaController().mergeCaso(casoToUpdate, lista);
-        
+
         //re-schedule alerts
         if (lista != null) {
             for (AuditLog auditLog : lista) {
@@ -3216,17 +3214,19 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         return 0;
     }
 
-//    public void onRowSelect(SelectEvent event) {
-//        try {
-//          //  //System.out.println(getSelectedItems().size());
-//            for (Caso caso : getSelectedItems()) {
-//                //System.out.println("#" + caso.getIdCaso());
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
+    public void onRowSelect(SelectEvent event) {
+        try {
+            Caso caso = (Caso) event.getObject();
+            if (caso != null) {
+                current = caso;
+                redirect("/script/caso/Edit.xhtml");
+            }
+        } catch (Exception e) {
+           Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "Error onRowSelect", e);
+            addErrorMessage("Lo sentimos, no se pudo recuperar la información del caso.");
+        }
+
+    }
 //
 //    public void onRowUnselect(UnselectEvent event) {
 //        try {
@@ -3252,6 +3252,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //            current = (Caso) getJpaController().queryByRange(Caso.class, 1, selectedItemIndex).get(0);
 //        }
 //    }
+
     public DataModel getItems() {
 //        //System.out.println(caso);
         if (items == null) {

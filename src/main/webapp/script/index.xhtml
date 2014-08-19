@@ -183,7 +183,7 @@
 
 
                         <p:ajax event="toggleSelect" update=":form0:panelG1" />                             
-                        <p:ajax event="rowSelect" update=":form0:panelG1" />  
+                        <p:ajax event="rowSelect"  listener="#{casoController.onRowSelect}" update=":form0:panelG1" />  
                         <p:ajax event="rowUnselect" update=":form0:panelG1" />  
                         <p:ajax event="rowSelectCheckbox" update=":form0:panelG1" />  
                         <p:ajax event="rowUnselectCheckbox" update=":form0:panelG1" />  
