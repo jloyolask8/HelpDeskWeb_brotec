@@ -17,13 +17,14 @@
                 .ui-autocomplete-multiple-container{
                     width: 100% !important;
                 }
+                 .ui-panelgrid-odd{
+                   background: none repeat scroll 0 0 #F2F5F9;
+                }
             </style>
 
         </ui:define>
 
-
         <ui:define name="west">
-
             <p:accordionPanel cache="false" multiple="true" id="westPanel" activeIndex="#{casoController.activeIndexWestPanel}">        
 
                 <p:ajax event="tabChange"/>
@@ -31,7 +32,7 @@
                 <p:tab title="Info">
                     <h:form id="formint1">
 
-                        <p:panelGrid style="margin-bottom:10px;" styleClass="filtersGrid" id="panelGridDatos" >
+                        <p:panelGrid style="margin-bottom:10px;" styleClass="filtersGrid" id="panelGridDatos"  >
 
                             <p:row>
                                 <p:column>
@@ -66,8 +67,7 @@
                                     <p:outputLabel value="#{bundle.EditCasoLabel_fechaCreacion}" for="fechaCreacion" style="font-weight:bold"/>
                                 </p:column>
                                 <p:column>
-                                    <h:outputText id="fechaCreacion" value="#{casoController.formatDate(casoController.selected.fechaCreacion)} (#{casoController.prettyDate(casoController.selected.fechaCreacion)})">
-                                    </h:outputText>
+                                    <h:outputText id="fechaCreacion" value="#{casoController.formatShortDate(casoController.selected.fechaCreacion)}" title="#{casoController.prettyDate(casoController.selected.fechaCreacion)}"/>
                                 </p:column>
                             </p:row>
                             <p:row>
@@ -75,8 +75,7 @@
                                     <p:outputLabel value="#{bundle.EditCasoLabel_fechaModif}" for="fechaModif" style="font-weight:bold"/>
                                 </p:column>
                                 <p:column>
-                                    <h:outputText id="fechaModif" value="#{casoController.formatDate(casoController.selected.fechaModif)} (#{casoController.prettyDate(casoController.selected.fechaModif)})">
-                                    </h:outputText>
+                                    <h:outputText id="fechaModif" value="#{casoController.formatShortDate(casoController.selected.fechaModif)}" title="#{casoController.prettyDate(casoController.selected.fechaModif)}"/>
                                 </p:column>
 
                             </p:row>
@@ -115,9 +114,6 @@
                                     <h:commandLink id="idCasoPadre" action="#{casoController.filterByIdCaso(casoController.selected.idCasoPadre.idCaso)}" value="${casoController.selected.idCasoPadre.tipoCaso.nombre} N°${casoController.selected.idCasoPadre.idCaso} - ${casoController.selected.idCasoPadre.tema}"/>
                                 </p:column>
                             </p:row>
-
-
-
 
 
                             <p:row>
@@ -462,33 +458,6 @@
                                 </p:column>
                             </p:row>
 
-
-                            <p:row>
-                                <p:column>
-                                    <p:outputLabel value="#{bundle.EditCasoLabel_idCategoria}" style="font-weight:bold"/>
-                                </p:column>
-                                <p:column>
-                                    <p:inplace editor="true" emptyLabel="vacío" saveLabel="Guardar" toggleable="#{filtroAcceso.verificarAccesoAFuncionCambiarCategoriaCaso()}">
-                                        <f:facet name="output">                                           
-                                            <h:outputText id="idCategoria" styleClass="ticket-status"
-                                                          style="background: #eb6420; color: #FFFFFF;"
-                                                          value="#{(casoController.selected.idCategoria eq null) ? bundle.sinClasificacion:casoController.selected.idCategoria.toString()}" 
-                                                          title="#{bundle.EditCasoTitle_idCategoria}"/>
-                                            <i class="fa fa-edit"></i>                                           
-                                        </f:facet>
-                                        <f:facet name="input">
-
-                                            <p:commandButton id="idCategoriaButton" disabled="#{casoController.selected.closed}" style="width: 220px;"
-                                                             value="#{(casoController.selected.idCategoria eq null) ? bundle.sinClasificacion:casoController.selected.idCategoria.toString()}" 
-                                                             action="#{casoController.actualizaArbolDeCategoria()}"
-                                                             update=":formArbol:arbol" oncomplete="#{p:widgetVar('idDialogArbol')}.show()"/>
-
-                                        </f:facet>
-                                    </p:inplace>
-                                </p:column>
-                            </p:row>
-
-
                             <p:row>
 
                                 <p:column>
@@ -499,18 +468,18 @@
 
                                     <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar">
                                         <f:facet name="output">
-                                            <h:panelGroup>
+                                            <ul style="padding-left: 0px;">
                                                 <ui:repeat value="#{casoController.selected.etiquetaStringList}" var="idTag">
-                                                    <p:commandLink actionListener="#{casoController.onTagIdSelectCaso(idTag)}"
-                                                     styleClass="ticket-status" 
-                                                                  style="color: rgb(102, 102, 102);background-color: rgb(221, 221, 221);" 
-                                                                  value="#{idTag}"/>&nbsp;
+                                                    <li data-token-value="#{idTag}" class="ui-autocomplete-token ui-state-active ui-corner-all">
+                                                        <p:commandLink actionListener="#{casoController.onTagIdSelectCaso(idTag)}">
+                                                            <span class="ui-autocomplete-token-label">#{idTag}</span>
+                                                        </p:commandLink>
+                                                    </li>
                                                 </ui:repeat>
-                                                <i class="fa fa-edit"></i> 
-                                            </h:panelGroup>
+                                            </ul>
 
+                                            <i class="fa fa-edit"></i> 
 
-                                                                                      
                                         </f:facet>
                                         <f:facet name="input">
                                             <p:autoComplete id="tags" disabled="#{casoController.selected.closed}" 
@@ -525,10 +494,7 @@
                                 </p:column>
                             </p:row>
 
-                            <p:row>
-                                <p:column colspan="2">
-                                </p:column>
-                            </p:row>
+                          
 
                             <p:row>
                                 <p:column colspan="2">
@@ -629,7 +595,7 @@
 
                                     <p:column>
                                         <h:commandLink id="prio" disabled="#{casoController.selected.closed}" >
-                                            <p:graphicImage library="images" name="#{casoController.selected.esPrioritario ? 'starEnabled.png':'starDisabled.png'}" title="Importante!"/>
+                                            <p:graphicImage library="images" name="#{casoController.selected.esPrioritario ? 'star-enabled.png':'star-disabled.png'}" title="Importante!"/>
                                             <p:ajax id="aj2" listener="#{casoController.changePriority(casoController.selected, casoController.selected.esPrioritario)}" update="prio"/>
 
                                         </h:commandLink>
@@ -1555,7 +1521,7 @@
 
 
         <ui:define name="dialogs">
-            <p:dialog header="Asignarme el Caso" widgetVar="tomarCaso" modal="true" dynamic="true">
+            <p:dialog header="Asignarme el Caso" widgetVar="tomarCaso" modal="true" dynamic="true" closeOnEscape="true" closable="false">
                 <h:form>
                     <h:outputLabel value="¿Está seguro de auto-asignarse el Caso y todos sus Sub-Casos?" /><br></br>
                     <div style="text-align: right">
@@ -1566,7 +1532,7 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog header="Datos Cliente" widgetVar="dialogClient" modal="true" dynamic="true" >
+            <p:dialog header="Datos Cliente" widgetVar="dialogClient" modal="true" dynamic="true"  closeOnEscape="true" closable="false">
                 <h:form id="formDatosCliente">
                     <p:messages globalOnly="true"/>
 
@@ -1635,7 +1601,7 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog header="Confirmar Borrar Archivo" widgetVar="borrarAttachment" modal="true" dynamic="true">
+            <p:dialog header="Confirmar Borrar Archivo" widgetVar="borrarAttachment" modal="true" dynamic="true" closeOnEscape="true" closable="false">
                 <h:form>
                     <label id="textoEliminar" >¿Esta seguro de borrar el archivo?</label><br></br>
                     <br></br>
@@ -1648,13 +1614,13 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog widgetVar="pbDialog" header="Enviando respuesta" height="60" width="300" closable="false" resizable="false" draggable="false" dynamic="true">
+            <p:dialog widgetVar="pbDialog" header="Enviando respuesta" height="60" width="300" resizable="false" draggable="false" dynamic="true" closable="false">
                 <p:progressBar widgetVar="pbAjax" ajax="true" value="#{casoController.progresoEnvioRespuesta}" labelTemplate="{value}%" interval="100">
                     <p:ajax event="complete" oncomplete="pbAjax.cancel(); pbDialog.hide();Responder.hide();" update=":inputPanel:formlistaadjuntos"/>
                 </p:progressBar>
             </p:dialog>
 
-            <p:dialog header="Editar Comentario" widgetVar="Nota" modal="true" dynamic="true">
+            <p:dialog header="Editar Comentario" widgetVar="Nota" modal="true" dynamic="true" closeOnEscape="true" closable="false">
                 <h:form id="formEditNota">
                     <p:messages globalOnly="true"/>
 
@@ -1697,7 +1663,7 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog header="Cerrar Caso" widgetVar="closeCase" modal="true" dynamic="true">
+            <p:dialog header="Cerrar Caso" widgetVar="closeCase" modal="true" dynamic="true" closeOnEscape="true" closable="false">
                 <h:form id="formCerrarCaso">
 
                     <p:messages/>
@@ -1743,7 +1709,7 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog header="Eliminar Caso" widgetVar="destroyCase" modal="true" dynamic="true">
+            <p:dialog header="Eliminar Caso" widgetVar="destroyCase" modal="true" dynamic="true" closeOnEscape="true" closable="false">
                 <h:form id="formEliminarCaso">
                     <h:outputLabel value="#{bundle.EliminarCaso}" />
                     <br/><br/>
@@ -1753,7 +1719,7 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog header="ReAbrir Caso" widgetVar="openCase" modal="true" dynamic="true">
+            <p:dialog header="ReAbrir Caso" widgetVar="openCase" modal="true" dynamic="true" closeOnEscape="true" closable="false">
                 <h:form>
                     <h:outputLabel value="#{bundle.ReabrirCaso}" />
 
@@ -1773,7 +1739,7 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog header="Agregar Casos Relacionado" widgetVar="casosRela" modal="true" dynamic="true">
+            <p:dialog header="Agregar Casos Relacionado" widgetVar="casosRela" modal="true" dynamic="true" closeOnEscape="true" closable="false">
                 <h:form>
                     <h:panelGrid columns="2">
                         <h:outputLabel value="Id Caso relacionado:" for="idcasorel" style="font-weight: bold"/>
@@ -1786,7 +1752,7 @@
             </p:dialog>
 
             <p:dialog id="idDialogArbolItem" header="Seleccione Item" widgetVar="idDialogArbolItem" dynamic="true" rendered="#{casoController.casoTipoReparacion}"
-                      modal="true" height="550" >
+                      modal="true" height="550" closeOnEscape="true" closable="false">
                 <h:form id="formArbolItem">
                     <div align="left">
                         <p:tree id="arbol" value="#{itemController.tree}" var="node" dynamic="true" cache="false"
@@ -1801,7 +1767,7 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog id="idDialogArbol" header="Seleccione Categoría" widgetVar="selCat" modal="true" dynamic="true">
+            <p:dialog id="idDialogArbol" header="Seleccione Categoría" widgetVar="selCat" modal="true" dynamic="true" closeOnEscape="true" closable="false">
                 <h:form id="formArbol">
                     <div align="left">
                         <p:tree id="arbol" value="#{categoriaController.categorias}" var="node" dynamic="true" cache="false"
@@ -1820,7 +1786,7 @@
 
 
 
-            <p:dialog header="Transferir Caso" widgetVar="transferir" modal="true" closeOnEscape="true" dynamic="true">
+            <p:dialog header="Transferir Caso" widgetVar="transferir" modal="true" dynamic="true" closeOnEscape="true" closable="false">
                 <h:form id="transferForm">
 
                     <p:panel id="panel-transferir">
@@ -1920,7 +1886,7 @@
 
 
             <p:dialog id="createEventDialog" widgetVar="createEventDialog" header="Crear Evento" dynamic="true"
-                      showEffect="fade" hideEffect="fade" closeOnEscape="true">  
+                      showEffect="fade" hideEffect="fade" closeOnEscape="true" closable="false">  
                 <h:form id="createEventForm">
 
                     <p:panelGrid id="eventDetails" columns="1" 
@@ -2021,7 +1987,7 @@
             </p:dialog>
 
             <p:dialog id="viewEventDialog" widgetVar="viewEventDialog" header="Evento" dynamic="true"
-                      showEffect="fade" hideEffect="fade" closeOnEscape="true">  
+                      showEffect="fade" hideEffect="fade" closeOnEscape="true" closable="false">  
                 <h:form id="viewEventForm">
 
                     <p:panelGrid id="eventDetails" columns="1" 

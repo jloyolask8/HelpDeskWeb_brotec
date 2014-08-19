@@ -21,7 +21,6 @@
                 .ui-datatable thead th, .ui-datatable tbody td, .ui-datatable tfoot td {
                     border-width: 0px  !important;
                 }
-
             </style>
 
             <script type="text/javascript">
@@ -183,14 +182,34 @@
 
 
                         <p:ajax event="toggleSelect" update=":form0:panelG1" />                             
-                        <p:ajax event="rowSelect"  listener="#{casoController.onRowSelect}" update=":form0:panelG1" />  
+
+                        <p:ajax event="rowSelect"  listener="#{casoController.onRowSelect}" update=":form0:panelG1" /> 
                         <p:ajax event="rowUnselect" update=":form0:panelG1" />  
                         <p:ajax event="rowSelectCheckbox" update=":form0:panelG1" />  
                         <p:ajax event="rowUnselectCheckbox" update=":form0:panelG1" />  
 
-                        <p:column selectionMode="multiple"  style="width:2%" />  
+                        <p:column selectionMode="multiple"   />  
 
-                        <p:column headerText="A" exportable="false" style="width:2%">
+                        <p:column headerText="" exportable="false"  >
+                            <h:commandLink id="prio">
+                                <p:graphicImage library="images" name="#{item.esPrioritario ? 'star-enabled.png':'star-disabled.png'}" title="Prioritario"/>
+                                <p:ajax id="aj2" listener="#{casoController.changePriority(item, item.esPrioritario)}" update="prio"/>
+                            </h:commandLink>
+                        </p:column>
+
+                        <p:column headerText="Vía">                                
+                            <i title="Creado vía #{item.idCanal.nombre}" class="#{(item.idCanal.idTipoCanal.idTipo eq 'EMAIL') ? 'fa fa-envelope-o fa-lg':((item.idCanal.idTipoCanal.idTipo eq 'CHAT') ? 'fa fa-comment-o fa-lg':((item.idCanal.idTipoCanal.idTipo eq 'MANUAL') ? 'fa fa-pencil-square-o fa-lg':((item.idCanal.idTipoCanal.idTipo eq 'FORMULARIO') ? 'fa fa-list-alt fa-lg':'')))}"></i>
+                        </p:column>
+
+                        <p:column sortBy="#{item.clientName}" headerText="Solicitante">                                
+                            <p:commandLink  
+                                action="#{clienteController.prepareView(item.idCliente)}" 
+                                ajax="false" value="#{item.clientName}" title="#{item.emailCliente.emailCliente}"
+                                immediate="true"/>
+
+                        </p:column>
+
+                        <p:column headerText="" exportable="false" >
                             <h:graphicImage value="/images/user-available.png" 
                                             title="Vence #{casoController.prettyDate(item.nextResponseDue)} (#{casoController.formatDate(item.nextResponseDue)})" 
                                             rendered="#{item.estadoAlerta eq EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta() and item.isOpen()}"/>
@@ -209,32 +228,16 @@
 
                         </p:column>
 
-
-
-                        <p:column headerText="P" exportable="false" style="width:1%" >
-                            <h:commandLink id="prio">
-                                <p:graphicImage library="images" name="#{item.esPrioritario ? 'starEnabled.png':'starDisabled.png'}" title="Prioritario"/>
-                                <p:ajax id="aj2" listener="#{casoController.changePriority(item, item.esPrioritario)}" update="prio"/>
-                            </h:commandLink>
-                        </p:column>
-
-                        <p:column sortBy="#{item.idCaso}" headerText="#">                                
-                            <p:commandLink id="editBtn" ajax="false" action="#{casoController.prepareEdit(item)}" value="#{item.idCaso}"  title="Abrir caso" immediate="true"/>
-                        </p:column>   
-
-                        <p:column sortBy="#{item.idSubEstado.nombre}">
-                            <f:facet name="header"><h:outputText value="Estado"/></f:facet>
-                            <h:outputText styleClass="ticket-status" style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};" value="#{item.idSubEstado.nombre}"/>
-                        </p:column>
-
-                        <p:column sortBy="#{item.tipoCaso.nombre}" headerText="Tipo">                               
-                            <h:outputText value="#{item.tipoCaso.nombre}"/>
-                        </p:column>     
-
                         <p:column sortBy="#{item.tema}" headerText="Asunto"> 
-                            <h:panelGroup layout="block">  
-                                <p:commandLink id="temalink" title="#{item.idProducto eq null? 'Sin '.concat(applicationBean.productDescription):item.idProducto.nombre} - #{item.idComponente eq null? 'Sin '.concat(applicationBean.productComponentDescription):item.idComponente.nombre} - #{item.idSubComponente eq null? 'Sin '.concat(applicationBean.productSubComponentDescription):item.idSubComponente.nombre}"
-                                               action="#{casoController.prepareEdit(item)}" ajax="false" value="#{item.tema}" immediate="true"/>
+                            <h:panelGroup layout="block" >  
+
+                                <h:outputText styleClass="ticket-status" style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};" value="#{item.idSubEstado.nombre}"/>
+
+                                <p:commandLink id="temalink" action="#{casoController.prepareEdit(item)}" 
+                                               ajax="false" style="color: #000" immediate="true">
+                                    #{item.tipoCaso.nombre} \##{item.idCaso} #{item.tema}
+                                </p:commandLink>
+
                                 <h:panelGroup rendered="#{item.hasScheduledEvents}">
                                     <i class="fa fa-calendar"></i>
                                 </h:panelGroup>
@@ -244,38 +247,27 @@
                             </h:panelGroup> 
                         </p:column>     
 
-                        <p:column sortBy="#{item.idCliente.capitalName}" headerText="Solicitante">                                
-                            <p:commandLink  
-                                           action="#{clienteController.prepareView(item.idCliente)}" 
-                                           ajax="false" value="#{item.idCliente.capitalName} #{item.emailCliente}"
-                                           immediate="true"/>
+                      
+
+                        <p:column sortBy="#{item.owner.capitalName}" headerText="Agente">
+                            <p:commandLink value="#{item.owner.capitalName}"
+                                           rendered="#{not (item.owner eq null)}" 
+                                           action="#{usuarioController.prepareView(item.owner)}" ajax="false" immediate="true"/>
                         </p:column>
 
                         <p:column sortBy="#{item.fechaCreacion}" headerText="Creado">                                
-                            <h:outputText value="#{item.fechaCreacion}" >
-                                <f:convertDateTime pattern="#{bundle.dateFormatShortTime}"/>
-                            </h:outputText>
-                            <h:outputText id="fechaCreacion" value=" (#{casoController.prettyDate(item.fechaCreacion)})"/>
-                            <p:tooltip for="fechaCreacion" value="#{casoController.formatDate(item.fechaCreacion)}"/>
+                            <h:outputText id="fechaCreacion" value="#{casoController.formatShortDate(item.fechaCreacion)}" />
+                            <pe:tooltip for="fechaCreacion" value="Creado: #{casoController.formatDate(item.fechaCreacion)} (#{casoController.prettyDate(item.fechaCreacion)})"  />
                         </p:column>
 
-                        <p:column sortBy="#{item.fechaModif}" headerText="Modificado">                                
-                            <h:outputText value="#{item.fechaModif}" >
-                                <f:convertDateTime pattern="#{bundle.dateFormatShortTime}"/>
-                            </h:outputText>
-                            <h:outputText id="fechaModif" value=" (#{casoController.prettyDate(item.fechaModif)})"/>
-                            <p:tooltip for="fechaModif" value="#{casoController.formatDate(item.fechaModif)}"/>
-                        </p:column>
-
-                        <p:column sortBy="#{item.idCanal.nombre}" headerText="Canal">                             
-                            <h:outputText value="#{item.idCanal.nombre}" title="#{item.idProducto eq null? 'Sin '.concat(applicationBean.productDescription):item.idProducto.nombre} - #{item.idComponente eq null? 'Sin '.concat(applicationBean.productComponentDescription):item.idComponente.nombre} - #{item.idSubComponente eq null? 'Sin '.concat(applicationBean.productSubComponentDescription):item.idSubComponente.nombre}"/>
+                        <p:column sortBy="#{item.fechaModif}" headerText="Modif">    
+                            <h:outputText id="fechaModif" value="#{casoController.formatShortDate(item.fechaModif)}" />
+                            <pe:tooltip for="fechaModif" value="Modificado: #{casoController.formatDate(item.fechaModif)} (#{casoController.prettyDate(item.fechaModif)})"  />
                         </p:column>
 
 
 
-                        <p:column sortBy="#{item.owner.capitalName}" headerText="#{bundle.ListCasoTitle_owner}">
-                            <p:commandLink rendered="#{not (item.owner eq null)}" action="#{usuarioController.prepareView(item.owner)}" ajax="false" value="#{item.owner.capitalName}" immediate="true"/>
-                        </p:column>
+
 
                     </p:dataTable>
                     <br/>

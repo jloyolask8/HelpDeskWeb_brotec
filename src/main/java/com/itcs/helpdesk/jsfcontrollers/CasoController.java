@@ -128,6 +128,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     private static final Locale LOCALE_ES_CL = new Locale("es", "CL");
     private static final SimpleDateFormat fullDateFormat = new SimpleDateFormat("EEE, dd 'de' MMMM 'de' yyyy HH:mm", LOCALE_ES_CL);
+    private static final SimpleDateFormat dayDateFormat = new SimpleDateFormat("HH:mm");
+    private static final SimpleDateFormat monthDateFormat = new SimpleDateFormat("dd MMM", LOCALE_ES_CL);
+    private static final SimpleDateFormat yearDateFormat = new SimpleDateFormat("dd/MM/yy", LOCALE_ES_CL);
 //  
     @ManagedProperty(value = "#{applicationBean}")
     private ApplicationBean applicationBean;
@@ -1245,6 +1248,21 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             PrettyTime p = new PrettyTime(new Locale("es"));
             return p.format(date);
 //            return PrettyDate.format(date);
+        } else {
+            return "";
+        }
+    }
+
+    public String formatShortDate(Date date) {
+        if (date != null) {
+
+            if (DateUtils.isToday(date)) {
+                return dayDateFormat.format(date);
+            } else if (DateUtils.isThisYear(date)) {
+                return monthDateFormat.format(date);
+            } else {
+                return yearDateFormat.format(date);
+            }
         } else {
             return "";
         }
@@ -3222,7 +3240,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 redirect("/script/caso/Edit.xhtml");
             }
         } catch (Exception e) {
-           Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "Error onRowSelect", e);
+            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "Error onRowSelect", e);
             addErrorMessage("Lo sentimos, no se pudo recuperar la información del caso.");
         }
 

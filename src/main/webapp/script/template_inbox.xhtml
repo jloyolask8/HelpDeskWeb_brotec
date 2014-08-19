@@ -124,7 +124,7 @@
         </h:head>
 
         <h:body id="mainbody">
-            
+
             <f:event type="preRenderView" listener="#{casoController.initializeData}" />
 
             <pe:ajaxErrorHandler /> 
@@ -276,7 +276,7 @@
                                     </p:menuitem>
                                 </p:submenu>
 
-                             
+
 
 
                                 <p:menuitem id="casosPendientes" value="#{casoController.casosPendientes.toString()}"
@@ -340,26 +340,14 @@
                     </ui:insert>  
                 </pe:layoutPane>  
 
-                <pe:layoutPane position="west" size="370" resizable="true" >               
-
-                    <ui:insert name="west"/>               
-
-                </pe:layoutPane> 
-
                 <pe:layoutPane position="center">  
-
-
-
                     <ui:insert name="body"></ui:insert>
                 </pe:layoutPane> 
 
-
-
-
-
-
+                <pe:layoutPane position="west" size="370" resizable="true" >               
+                    <ui:insert name="west"/>               
+                </pe:layoutPane> 
             </pe:layout>  
-
 
             <p:dialog modal="true" widgetVar="statusDialog" header="Espere..." appendTo="@(body)" dynamic="false"
                       transient="true" draggable="false" closable="false" resizable="false" closeOnEscape="true">  
