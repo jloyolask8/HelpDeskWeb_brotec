@@ -42,9 +42,9 @@
                 <p:tab title="Vistas">
                     <h:form id="vistasForm">
                         <p:dataList paginator="true" paginatorAlwaysVisible="false" type="ordered" rows="10" style="width: 100%;border: 0px;"
-                                    value="#{vistaController.allVistasItems}" var="vista1">
+                                    value="#{vistaController.allVistasItems}" var="vista1" >
                             <p:column>
-                                <p:commandLink id="link1" ajax="true" update=":accionesaccordion1:vistasForm :mainform:messages :formfilter:panelFilter0:panelFilter :form0:panelG1" 
+                                <p:commandLink id="link1" ajax="true" update=":mainform:messages :formfilter:panelFilter0:panelFilter :form0:panelG1" 
                                                action="#{casoController.applyViewFilter(vista1)}" 
                                                value="#{vista1.nombre}" style="font-weight: bold" styleClass="ui-state-default" />
                                 <p:tooltip for="link1" value="#{vista1.descripcion}" showEffect="fade" hideEffect="fade" />  
@@ -310,8 +310,11 @@
             <h:form id="applyRuleForm">
                 <p:dialog id="applyRuleDialog" header="Ejecutar Regla de Negocio en casos seleccionados" modal="true"
                           widgetVar="applyRuleDialog" dynamic="true" closeOnEscape="true">
+                    
+                      <h:outputLabel value="Esta regla se ejecutará solo en #{casoController.selectedItems.size()} casos seleccionados." rendered="#{not empty casoController.selectedItems}"/>
+                    <h:outputLabel value="Esta regla se ejecutará en todos los casos de la vista (#{casoController.pagination.itemsCount} casos)." rendered="#{empty casoController.selectedItems and casoController.pagination.itemsCount gt 0}"/>
 
-                    <p:selectOneMenu disabled="#{casoController.pagination.itemsCount le 0}" label="Seleccione la regla"
+                    <p:selectOneMenu label="Seleccione la regla"
                                      id="applyRuleSelectRule" 
                                      required="true" requiredMessage="Seleccione una regla, esto es requerido."
                                      filter="true" filterMatchMode="contains" converter="ReglaTriggerControllerConverter"

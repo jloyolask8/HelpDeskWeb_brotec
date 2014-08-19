@@ -336,13 +336,65 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         subcaso.setIdCasoPadre(null);
     }
 
-    public void applyReglaToSelectedCasos() {
+    public void runActionOnSelectedCasos() {
+
+//        System.out.println("accionToRunSelected:" + accionToRunSelected);
+        Action a = applicationBean.getPredefinedActions().get(accionToRunSelected);
+        a.setConfig(accionToRunParametros);
+
+        List<Caso> casosToSend = Collections.EMPTY_LIST;
         if (getSelectedItemsCount() > 0) {
-            RulesEngine rulesEngine = new RulesEngine(emf, jpaController);
-            rulesEngine.applyRuleOnThisCasos(reglaTriggerSelected, getSelectedItems());
-            addInfoMessage("Regla " + reglaTriggerSelected + " ejecutada en " + getSelectedItemsCount() + " casos.");
+            casosToSend = getSelectedItems();
+
         } else {
-            addWarnMessage("Seleccione los casos a los cuales desea ejecutar la regla de negocio.");
+            //run on all items in Vista
+            try {
+                casosToSend = (List<Caso>) getJpaController().findAllEntities(Caso.class, getFilterHelper().getVista(), getDefaultOrderBy(), userSessionBean.getCurrent());
+            } catch (Exception ex) {
+                Logger.getLogger(CasoController.class
+                        .getName()).log(Level.SEVERE, "findEntities", ex);
+            }
+        }
+
+        int count = 0;
+        for (Caso caso : casosToSend) {
+            try {
+                a.execute(caso);
+                count++;
+
+            } catch (ActionExecutionException ex) {
+                Logger.getLogger(CasoController.class
+                        .getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        addInfoMessage("Acción " + accionToRunSelected + " ejecutada exitosamente en " + count + " casos.");
+        if (getSelectedItemsCount() > count) {
+            addWarnMessage("Error: " + (getSelectedItemsCount() - count) + " casos no han sido enviados, favor revisar la configuración de correo del area correspondiente.");
+        }
+
+    }
+
+    public void applyReglaToSelectedCasos() {
+        RulesEngine rulesEngine = new RulesEngine(emf, jpaController);
+        List<Caso> casosToSend = Collections.EMPTY_LIST;
+        if (getSelectedItemsCount() > 0) {
+            casosToSend = getSelectedItems();
+
+        } else {
+            //run on all items in Vista
+            try {
+                casosToSend = (List<Caso>) getJpaController().findAllEntities(Caso.class, getFilterHelper().getVista(), getDefaultOrderBy(), userSessionBean.getCurrent());
+            } catch (Exception ex) {
+                Logger.getLogger(CasoController.class
+                        .getName()).log(Level.SEVERE, "findEntities", ex);
+            }
+        }
+
+        if (casosToSend != null && !casosToSend.isEmpty()) {
+            rulesEngine.applyRuleOnThisCasos(reglaTriggerSelected, casosToSend);
+            addInfoMessage("Regla " + reglaTriggerSelected + " ejecutada en " + casosToSend.size() + " casos.");
+        } else {
+            addWarnMessage("No se ha Seleccionado ningun caso para ejecutar la regla de negocio.");
         }
     }
 
@@ -3500,44 +3552,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      */
     public void setHtmlToView(String htmlToView) {
         this.htmlToView = htmlToView;
-    }
-
-    public void runActionOnSelectedCasos() {
-
-        System.out.println("accionToRunSelected:" + accionToRunSelected);
-        Action a = applicationBean.getPredefinedActions().get(accionToRunSelected);
-        a.setConfig(accionToRunParametros);
-
-        List<Caso> casosToSend = Collections.EMPTY_LIST;
-        if (getSelectedItemsCount() > 0) {
-            casosToSend = getSelectedItems();
-
-        } else {
-            //run on all items in Vista
-            try {
-                casosToSend = (List<Caso>) getJpaController().findAllEntities(Caso.class, getFilterHelper().getVista(), getDefaultOrderBy(), userSessionBean.getCurrent());
-            } catch (Exception ex) {
-                Logger.getLogger(CasoController.class
-                        .getName()).log(Level.SEVERE, "findEntities", ex);
-            }
-        }
-
-        int count = 0;
-        for (Caso caso : casosToSend) {
-            try {
-                a.execute(caso);
-                count++;
-
-            } catch (ActionExecutionException ex) {
-                Logger.getLogger(CasoController.class
-                        .getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        addInfoMessage("Acción " + accionToRunSelected + " ejecutada exitosamente en " + count + " casos.");
-        if (getSelectedItemsCount() > count) {
-            addWarnMessage("Error: " + (getSelectedItemsCount() - count) + " casos no han sido enviados, favor revisar la configuración de correo del area correspondiente.");
-        }
-
     }
 
     private String createEmbeddedImage(String contentId) {
