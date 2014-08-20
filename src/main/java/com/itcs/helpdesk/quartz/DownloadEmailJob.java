@@ -107,9 +107,9 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
 
             String emailReceiver = getValueOfCanalSetting(jpaController, canal, EnumEmailSettingKeys.INBOUND_USER);
             EmailClient mailClient;
-            try{
+            try {
                 mailClient = MailClientFactory.getInstance(canal.getIdCanal());
-            }catch(MailClientFactory.MailNotConfiguredException ex){
+            } catch (MailClientFactory.MailNotConfiguredException ex) {
                 mailClient = MailClientFactory.createInstance(canal);
             }
 
@@ -150,7 +150,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                                 if (users != null && !users.isEmpty()) {
                                     //ignore emails from users of the system !!
                                     //let them know that this is now allowed!!
-                                    System.out.println("ignoring email from user  of the system :" + users );
+                                    System.out.println("ignoring email from user  of the system :" + users);
                                 } else {
                                     final boolean casoIsCreated = managerCasos.crearCasoDesdeEmail(canal, emailMessage);
                                     if (casoIsCreated) {
@@ -179,7 +179,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                     Log.createLogger(this.getClass().getName()).logDebug("Revisión de correo " + canal + "exitósa: " + messages.size() + " mensajes leídos. Intancia: brotec-icafal");
                 }
             } else {
-                throw new MailClientFactory.MailNotConfiguredException("No se puede enviar correos, favor comunicarse con el administrador para que configure la cuenta de correo asociada al Área.");
+                throw new MailClientFactory.MailNotConfiguredException("No se puede descargar correos del canal " + idCanal + ", favor comunicarse con el administrador para que configure la cuenta de correo.");
             }
         }
 

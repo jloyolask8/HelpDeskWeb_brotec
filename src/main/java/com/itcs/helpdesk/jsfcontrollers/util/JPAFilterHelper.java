@@ -56,8 +56,7 @@ public abstract class JPAFilterHelper implements Serializable {
         return comparableFields;
     }
 
-    public List<ComparableField> getEntityComparableFields() throws ClassNotFoundException {
-        System.out.println("getComparableFieldsByFieldType()");
+    public List<ComparableField> getEntityOrCalendarComparableFields() throws ClassNotFoundException {
         List<ComparableField> comparableFieldsOfType = new ArrayList<ComparableField>();
         if (comparableFields == null) {
             comparableFields = getJpaService().getAnnotatedComparableFieldsByClass(Class.forName(vista.getBaseEntityType()));
@@ -65,6 +64,20 @@ public abstract class JPAFilterHelper implements Serializable {
         for (ComparableField comparableField : comparableFields) {
             if (comparableField.getFieldTypeId().equals(EnumFieldType.SELECTONE_ENTITY.getFieldType())
                     || comparableField.getFieldTypeId().equals(EnumFieldType.CALENDAR.getFieldType())) {
+                comparableFieldsOfType.add(comparableField);
+            }
+        }
+        return comparableFieldsOfType;
+//         return JsfUtil.getSelectItems(Collections.EMPTY_LIST, true);
+    }
+    
+     public List<ComparableField> getEntityComparableFields() throws ClassNotFoundException {
+        List<ComparableField> comparableFieldsOfType = new ArrayList<ComparableField>();
+        if (comparableFields == null) {
+            comparableFields = getJpaService().getAnnotatedComparableFieldsByClass(Class.forName(vista.getBaseEntityType()));
+        }
+        for (ComparableField comparableField : comparableFields) {
+            if (comparableField.getFieldTypeId().equals(EnumFieldType.SELECTONE_ENTITY.getFieldType())) {
                 comparableFieldsOfType.add(comparableField);
             }
         }

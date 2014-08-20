@@ -73,7 +73,7 @@
                                              required="true" requiredMessage="Favor Seleccione La Serie del Eje X.">
                                 <p:ajax update=":mainform:messages :advancedReportForm:accordion1" listener="#{reporteController.handleIdCampoChangeEvent()}"/>
                                 <f:selectItem itemLabel="seleccione un atributo" itemValue="" noSelectionOption="true"/>
-                                <f:selectItems value="#{reporteController.filterHelper.entityComparableFields}" var="comparableField" itemValue="#{comparableField.idCampo}" itemLabel="#{comparableField.label}"/>
+                                <f:selectItems value="#{reporteController.filterHelper.entityOrCalendarComparableFields}" var="comparableField" itemValue="#{comparableField.idCampo}" itemLabel="#{comparableField.label}"/>
                             </p:selectOneMenu>
 
 

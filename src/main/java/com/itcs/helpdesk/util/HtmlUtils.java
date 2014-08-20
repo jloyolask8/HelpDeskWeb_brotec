@@ -171,6 +171,10 @@ public class HtmlUtils {
         String newHtml = HtmlUtils.removeScriptsAndStyles(pseudoHTML);
         return stripInvalidMarkup(newHtml, false);
     }
+    
+    public static String stripInvalidMarkupLegacy(String pseudoHTML) {
+        return stripInvalidMarkup(pseudoHTML, false);
+    }
 
     public static String removeScriptsAndStyles(String pseudoHTML) {
         try {

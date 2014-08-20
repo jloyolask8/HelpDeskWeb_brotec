@@ -15,6 +15,7 @@ public class UtilesRut {
             rut = rut.replace(" ", "");
             rut = rut.replace(".", "");
             rut = rut.replace("-", "");
+            rut = rut.replace("k", "K");
             format = "-" + rut.substring(rut.length() - 1);
             for (int i = rut.length() - 2; i >= 0; i--) {
                 format = rut.substring(i, i + 1) + format;
@@ -28,23 +29,26 @@ public class UtilesRut {
         }
         return formattedVal;
     }
-    
-      public static int getAsNumber(String rut) {
+
+    public static int getAsNumber(String rut) {
         try {
-         
             String rutInt = rut.replace(".", "");
             rutInt = rutInt.replace("-", "");
             rutInt = rutInt.replace("k", "1");
             rutInt = rutInt.replace("K", "1");
-            
+
             return Integer.valueOf(rutInt);
-            
+
         } catch (Exception ex) {
             return 0;
         }
     }
 
-    public static synchronized boolean validar(String rut) {
+//    public static void main(String[] args) {
+//        System.out.println("Valid:" + UtilesRut.validar("96.792.430-k"));
+//    }
+
+    public static boolean validar(String rut) {
         try {
             int dvR, dvT, suma = 0;
             int[] serie = {
@@ -52,7 +56,7 @@ public class UtilesRut {
             };
             rut = rut.replace(".", "");
             rut = rut.replace("-", "");
-            if (rut.substring(rut.length() - 1).equals("K")) {
+            if (rut.substring(rut.length() - 1).equalsIgnoreCase("K")) {
                 dvR = 10;
             } else {
                 dvR = Integer.valueOf(rut.substring(rut.length() - 1));
