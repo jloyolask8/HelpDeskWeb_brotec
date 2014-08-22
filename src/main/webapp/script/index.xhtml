@@ -331,7 +331,7 @@
             <p:dialog id="filterViewdialog" header="Criterios de Selección de la vista" widgetVar="filterViewdialog" dynamic="true" closeOnEscape="true">
                 <h:form id="formfilter">
 
-                    <itcs:filterView id="panelFilter0" controllerMBean="#{casoController}" filterHelper="#{casoController.filterHelper}" canChangeFilters="#{filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
+                    <itcs:filterView id="panelFilter0" controllerMBean="#{casoController}" filterHelper="#{casoController.filterHelper}" canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
                                      update=":mainform:messages :formfilter:panelFilter0:panelFilter :form0:panelG1"/>
 
 

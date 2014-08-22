@@ -66,6 +66,10 @@ public class FiltroAcceso implements Serializable {
     public boolean verificarAccesoAFuncionAdministrarVistas() {
         return verificaAccesoAFuncion(EnumFunciones.ADMINISTRAR_VISTAS);
     }
+    
+    public boolean verificarAccesoAFiltrosIndex() {
+        return verificaAccesoAFuncion(EnumFunciones.FILTROS_INBOX);
+    }
 
     public boolean verificarAccesoAFuncionAdministrarItemsPreentrega() {
         return verificaAccesoAFuncion(EnumFunciones.ADMINISTRAR_ITEMS_PREENTREGA);
