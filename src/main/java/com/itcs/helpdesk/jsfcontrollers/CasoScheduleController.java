@@ -436,15 +436,19 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
         }
     }
 
-    private void unscheduleQuartzReminders(com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent) throws Exception {
+    private void unscheduleQuartzReminders(com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent)  {
         if (entityEvent.getScheduleEventReminderList() != null && !entityEvent.getScheduleEventReminderList().isEmpty()) {
             //we need to schedule event reminders
 
             for (ScheduleEventReminder r : entityEvent.getScheduleEventReminderList()) {
                 if (r.getIdReminder() != null && r.getIdReminder() > 0
                         && !StringUtils.isEmpty(r.getQuartzJobId())) {
-                    //its persistent
-                    ScheduleEventReminderJob.unschedule(r.getQuartzJobId());
+                    try {
+                        //its persistent
+                        ScheduleEventReminderJob.unschedule(r.getQuartzJobId());
+                    } catch (SchedulerException ex) {
+                        Logger.getLogger(CasoScheduleController.class.getName()).log(Level.SEVERE, "unscheduleQuartzReminders:{0}", ex.getMessage());
+                    }
                 }
             }
         }
@@ -478,7 +482,11 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
             if (r.getIdReminder() != null && r.getIdReminder() > 0) {
                 //its persistent
                 if (!StringUtils.isEmpty(r.getQuartzJobId())) {
-                    ScheduleEventReminderJob.unschedule(r.getQuartzJobId());
+                    try {
+                        ScheduleEventReminderJob.unschedule(r.getQuartzJobId());
+                    } catch (SchedulerException ex) {
+                        Logger.getLogger(CasoScheduleController.class.getName()).log(Level.SEVERE, "removeScheduleEventReminder:{0}", ex.getMessage());
+                    }
                 }
 
                 try {

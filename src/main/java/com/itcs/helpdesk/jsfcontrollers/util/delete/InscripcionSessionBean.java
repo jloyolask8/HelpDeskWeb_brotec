@@ -366,7 +366,7 @@ public class InscripcionSessionBean extends AbstractManagedBean<Caso> implements
             String mensajeRetorno;
 
             DatosCaso datos_ = new DatosCaso();
-            datos_.setAsunto("[Inscripción] Horario: " + datos.getHorario());
+            datos_.setAsunto("Horario: " + datos.getHorario());
             datos_.setDescripcion(datos.getDescripcion());
             datos_.setRut(datos.getRut());
             datos_.setEmail(datos.getEmail());
@@ -375,7 +375,7 @@ public class InscripcionSessionBean extends AbstractManagedBean<Caso> implements
             datos_.setTipoCaso("inscripcion");
 //            datos_.setIdArea("Venta Proyecto - SMP");
             try {
-                Caso caso = getManagerCasos().crearCaso(datos_, EnumCanal.WEBSERVICE.getCanal());
+                Caso caso = getManagerCasos().crearCaso(datos_, EnumCanal.SISTEMA.getCanal());
                 if (caso != null) {
 //                    mensajeRetorno = "Caso creado con éxito. ID caso " + caso.getIdCaso() + ". Revisaremos su consulta y lo contactaremos a la brevedad.";
 

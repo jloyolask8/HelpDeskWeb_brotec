@@ -61,6 +61,8 @@ public class HelpDeskScheluder {
 //            if (ApplicationConfig.isAppDebugEnabled()) {
             Log.createLogger(HelpDeskScheluder.class.getName()).logInfo("unschedule jobKey:" + jobKey.getName() + "/" + jobKey.getGroup() + (unscheduled ? " succeeded." : "failed."));
 //            }
+        } else {
+            throw new SchedulerException("unschedule jobKey Error: No existe el job " + jobKey.getName());
         }
 
         return unscheduled;
@@ -110,7 +112,9 @@ public class HelpDeskScheluder {
         System.out.println("scheduling SendMail job");
         final String jobId = SendMailJob.formatJobId(idCanal, idCaso.toString(), to);
         final JobKey jobKey = JobKey.jobKey(jobId, HelpDeskScheluder.GRUPO_CORREO);
-        HelpDeskScheluder.unschedule(jobKey);
+        if (getInstance().checkExists(jobKey)) {
+            HelpDeskScheluder.unschedule(jobKey);
+        }
 
         JobDetail job = JobBuilder.newJob(SendMailJob.class).withIdentity(jobId, HelpDeskScheluder.GRUPO_CORREO).build();
 
@@ -145,13 +149,16 @@ public class HelpDeskScheluder {
             }
         }
 
-        final String jobId = ScheduleEventReminderJob.formatJobId(mailsTo, idCaso.toString(), eventId, eventReminderId);
+        final String jobId = ScheduleEventReminderJob.formatJobId(idCaso.toString(), eventId, eventReminderId);
         final JobKey jobKey = JobKey.jobKey(jobId, HelpDeskScheluder.GRUPO_CORREO);
-        HelpDeskScheluder.unschedule(jobKey);
+        if (getInstance().checkExists(jobKey)) {
+            HelpDeskScheluder.unschedule(jobKey);
+        }
 
         JobDetail job = JobBuilder.newJob(ScheduleEventReminderJob.class).withIdentity(jobId, HelpDeskScheluder.GRUPO_CORREO).build();
 
 //        job.getJobDataMap().put(AbstractGoDeskJob.ID_CANAL, idCanal);//not needed since will send the email from a non-reply email godesk session
+        job.getJobDataMap().put(ScheduleEventReminderJob.ID_CASO, idCaso.toString());
         job.getJobDataMap().put(ScheduleEventReminderJob.EMAILS_TO, mailsTo);
         job.getJobDataMap().put(ScheduleEventReminderJob.EVENT_ID, eventId);
         job.getJobDataMap().put(ScheduleEventReminderJob.REMINDER_ID, eventReminderId);
@@ -164,7 +171,9 @@ public class HelpDeskScheluder {
 
         final String downloadEmailJobId = DownloadEmailJob.formatJobId(idCanal);
         final JobKey jobKey = JobKey.jobKey(downloadEmailJobId, HelpDeskScheluder.GRUPO_CORREO);
-        HelpDeskScheluder.unschedule(jobKey);
+        if (getInstance().checkExists(jobKey)) {
+            HelpDeskScheluder.unschedule(jobKey);
+        }
 
         JobDetail job = JobBuilder.newJob(DownloadEmailJob.class).withIdentity(downloadEmailJobId, HelpDeskScheluder.GRUPO_CORREO).build();
 
@@ -244,7 +253,10 @@ public class HelpDeskScheluder {
         final String valueOfIdCaso = String.valueOf(idCaso);
         final String jobId = TicketNotifyMailToGroup.formatJobId(idCanal, valueOfIdCaso, to);
         final JobKey jobKey = JobKey.jobKey(jobId, HelpDeskScheluder.GRUPO_CORREO);
-        HelpDeskScheluder.unschedule(jobKey);
+
+        if (getInstance().checkExists(jobKey)) {
+            HelpDeskScheluder.unschedule(jobKey);
+        }
 
         JobDetail job = JobBuilder.newJob(TicketNotifyMailToGroup.class).withIdentity(jobId, HelpDeskScheluder.GRUPO_CORREO).build();
 
@@ -278,7 +290,9 @@ public class HelpDeskScheluder {
         final String valueOfIdNota = String.valueOf(idNota);
         final String jobId = CaseResponseByMailJob.formatJobId(idCanal, valueOfIdCaso, to);
         final JobKey jobKey = JobKey.jobKey(jobId, HelpDeskScheluder.GRUPO_CORREO);
-        HelpDeskScheluder.unschedule(jobKey);
+        if (getInstance().checkExists(jobKey)) {
+            HelpDeskScheluder.unschedule(jobKey);
+        }
 
         JobDetail job = JobBuilder.newJob(CaseResponseByMailJob.class).withIdentity(jobId, HelpDeskScheluder.GRUPO_CORREO).build();
 

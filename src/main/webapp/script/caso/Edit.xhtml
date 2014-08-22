@@ -861,6 +861,7 @@
                                     <p:accordionPanel multiple="true" id="listanotas" rendered="#{casoController.selected.hasNotas()}">
                                         <c:forEach items="#{casoController.selected.notaList}" var="item" >
                                             <p:tab title="#{casoController.creaTituloDeNota(item)} - #{item.visible?'Publico':'Interno'}" 
+                                                   titletip="#{item.fechaCreacion} - #{item.enviadoA}"
                                                    titleStyleClass="#{casoController.getNotaStyle(item.tipoNota)}">
 
                                                 <p:commandButton actionListener="#{casoController.prepareEditNota(item)}" style="float: right"
@@ -914,7 +915,7 @@
                                          timeZone="#{casoTimelineController.timeZone}"  
                                          showButtonNew="false" minHeight="200" widgetVar="timelineWdgt">  
 
-                                <h:panelGrid columns="1">  
+                                <h:panelGrid columns="1" title="#{audit}">  
                                     <h:outputText 
                                         value="Info: #{(not empty audit.campo and not empty audit.oldValue) ? 
                                                        audit.campo.concat(' cambió de \'').concat(audit.oldValue).concat('\' a ').concat('\'').concat(audit.newValue).concat('\'')

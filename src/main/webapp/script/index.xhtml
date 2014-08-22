@@ -84,7 +84,7 @@
 
                     <p:toolbar id="toolbar1">  
                         <p:toolbarGroup align="left">
-                            <p:commandButton id="updateList" title="Actualizar" icon="fa fa-refresh" disabled="#{not empty casoController.selectedItems}" style="width: 60px;"
+                            <p:commandButton id="updateList" title="Actualizar" icon="fa fa-refresh" style="width: 40px;"
                                              actionListener="#{casoController.refresh()}" update=":form0:panelG1" />
                             <p:tooltip for="updateList" value="Actualizar" showEffect="fade" hideEffect="fade" />
 
@@ -101,21 +101,15 @@
                                              oncomplete="deleteSelectedCasos.show();" update=":formdeleteSelectedCasos" /> 
                             <p:tooltip for="deleteBtn" value="Eliminar" showEffect="fade" hideEffect="fade" />
 
-                            <p:separator />  
-
                             <p:commandButton id="spamBtn"  icon="ui-icon-circle-minus"  
                                              iconPos="notext" 
                                              oncomplete="blackListSelected.show();" update=":formBlackList"
                                              disabled="#{empty casoController.selectedItems}"/> 
                             <p:tooltip for="spamBtn" value="Agregar dirección de correo a lista negra" showEffect="fade" hideEffect="fade" />
 
-
-
                             <p:separator />       
-
-
-                            <p:commandButton id="TagAsBtn" value="Etiquetar ..." icon="ui-icon-tag"  type="button" 
-                                             onclick="TagPanel.loadContents()"
+                            <p:commandButton id="TagAsBtn" iconPos="notext" icon="ui-icon-tag"  type="button" 
+                                             onclick="TagPanel.loadContents()" title="Etiquetar casos seleccionados"
                                              disabled="#{empty casoController.selectedItems}"/> 
                             <p:tooltip for="TagAsBtn" value="Etiquetar como" showEffect="fade" hideEffect="fade" />
 
@@ -436,7 +430,7 @@
                     </p:dataList>
 
                     <p:commandButton value="#{bundle.yesDelete}" actionListener="#{casoController.destroySelected()}" disabled="#{empty casoController.selectedItems}"
-                                     update=":form0:panelG1" oncomplete="deleteSelectedCasos.hide()"/>
+                                     update=":form0:panelG1 :accionesaccordion1:vistasForm" oncomplete="deleteSelectedCasos.hide()"/>
                     <p:commandButton value="#{bundle.decline}" onclick="deleteSelectedCasos.hide()" type="button" /> 
                 </h:form>
 

@@ -10,11 +10,14 @@ import com.itcs.helpdesk.persistence.entities.Resource;
 import com.itcs.helpdesk.persistence.entities.ScheduleEvent;
 import com.itcs.helpdesk.persistence.entities.ScheduleEventReminder;
 import com.itcs.helpdesk.persistence.entities.Usuario;
-import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.ocpsoft.prettytime.PrettyTime;
@@ -24,6 +27,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobKey;
 import org.quartz.SchedulerException;
+import org.quartz.ee.jta.UserTransactionHelper;
 
 /**
  *
@@ -44,10 +48,10 @@ public class ScheduleEventReminderJob extends AbstractGoDeskJob implements Job {
     /**
      * {0} = idArea,
      */
-    public static final String JOB_ID = "System_RemindEvent_to_%s_#%s_e%sr_%s";
+    public static final String JOB_ID = "EventReminder_#%s_e%sr_%s";
 
-    public static String formatJobId(String to, String idCaso, String eventId, String reminderId) {
-        return String.format(JOB_ID, new Object[]{to, idCaso, eventId, reminderId});
+    public static String formatJobId(String idCaso, String eventId, String reminderId) {
+        return String.format(JOB_ID, new Object[]{idCaso, eventId, reminderId});
     }
 
     @Override
@@ -63,15 +67,23 @@ public class ScheduleEventReminderJob extends AbstractGoDeskJob implements Job {
             String reminderId = (String) map.get(REMINDER_ID);
             emails_to = emails_to.trim().replace(" ", "");
 
-            final String formatJobId = formatJobId(emails_to, idCaso, eventId, reminderId);
+            final String formatJobId = formatJobId(idCaso, eventId, reminderId);
             if (!StringUtils.isEmpty(emails_to)
                     && !StringUtils.isEmpty(eventId) && !StringUtils.isEmpty(reminderId)) {
 
-                try {
-                    JPAServiceFacade jpaController = getJpaController();
+                EntityManagerFactory emf = createEntityManagerFactory();
 
-                    ScheduleEvent event = jpaController.find(ScheduleEvent.class, Integer.valueOf(eventId));
-                    ScheduleEventReminder eventReminder = jpaController.find(ScheduleEventReminder.class, Integer.valueOf(reminderId));
+//                    JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf);
+                UserTransaction utx = null;
+                EntityManager em = null;
+
+                try {
+                    utx = UserTransactionHelper.lookupUserTransaction();
+                    utx.begin();
+                    em = emf.createEntityManager();
+
+                    ScheduleEvent event = em.find(ScheduleEvent.class, Integer.valueOf(eventId));
+                    ScheduleEventReminder eventReminder = em.find(ScheduleEventReminder.class, Integer.valueOf(reminderId));
 
                     if (event != null && eventReminder != null) {
                         //database represents the real data, we only send reminders in case the event or reminders have not been deleted
@@ -185,14 +197,12 @@ public class ScheduleEventReminderJob extends AbstractGoDeskJob implements Job {
 
                             final String[] split = emails_to.split(",");
                             NoReplySystemMailSender.sendHTML(split, subject, bodyText.toString(), null);
+
                             //if sent ok, then forget about it
                             unschedule(formatJobId);
+
                             eventReminder.setNotifiedOk(Boolean.TRUE);
-                            try {
-                                jpaController.merge(eventReminder);
-                            } catch (Exception ex) {
-                                Logger.getLogger(ScheduleEventReminderJob.class.getName()).log(Level.SEVERE, "merge error", ex);
-                            }
+                            em.merge(eventReminder);
 
                             System.out.println("ScheduleEventReminderJob DONE!");
 
@@ -209,30 +219,44 @@ public class ScheduleEventReminderJob extends AbstractGoDeskJob implements Job {
                         unschedule(formatJobId);
                     }
 
+                    utx.commit();
+
                 } catch (Exception ex) {
+                     if (utx != null) {
+                         try {
+                             utx.rollback();
+                         } catch (IllegalStateException ex1) {
+                             Logger.getLogger(ScheduleEventReminderJob.class.getName()).log(Level.SEVERE, "rollback error: IllegalStateException", ex1);
+                         } catch (SecurityException ex1) {
+                             Logger.getLogger(ScheduleEventReminderJob.class.getName()).log(Level.SEVERE, "rollback error: SecurityException", ex1);
+                         } catch (SystemException ex1) {
+                             Logger.getLogger(ScheduleEventReminderJob.class.getName()).log(Level.SEVERE, "rollback error: SystemException", ex1);
+                         }
+                    }
                     Logger.getLogger(ScheduleEventReminderJob.class.getName()).log(Level.SEVERE, "ScheduleEventReminderJob error", ex);
                     throw new JobExecutionException(ex);
+                } finally {
+                    if (em != null) {
+                        em.close();
+                    }
                 }
             } else {
                 Logger.getLogger(ScheduleEventReminderJob.class.getName()).log(Level.SEVERE, "ScheduleEventReminderJob execution failed: Illegal parameters");
-                unschedule(formatJobId);
+//                unschedule(formatJobId);
             }
 
         } else {
             Logger.getLogger(ScheduleEventReminderJob.class.getName()).log(Level.SEVERE, "JobDataMap is null");
+            //                unschedule(formatJobId);
         }
 
     }
 
-    public static boolean unschedule(String formatJobId) {
-        try {
+    public static boolean unschedule(String formatJobId) throws SchedulerException {
             //        final String formatJobId = formatJobId( idCaso, idalerta);
             final JobKey jobKey = JobKey.jobKey(formatJobId, HelpDeskScheluder.GRUPO_CORREO);
             return HelpDeskScheluder.unschedule(jobKey);
-        } catch (SchedulerException ex) {
-            Logger.getLogger(ScheduleEventReminderJob.class.getName()).log(Level.SEVERE, "unschedule " + formatJobId, ex);
-            return false;
-        }
+      
     }
 
 }

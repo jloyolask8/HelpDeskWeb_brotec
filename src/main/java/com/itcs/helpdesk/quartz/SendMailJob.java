@@ -18,9 +18,11 @@ import com.itcs.helpdesk.util.ManagerCasos;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.transaction.UserTransaction;
 import org.apache.commons.lang3.StringUtils;
@@ -57,8 +59,8 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        
-        System.out.println("SendMailJob.execute ");
+
+        Logger.getLogger(SendMailJob.class.getName()).log(Level.INFO, "SendMailJob.execute ");
 
         JobDataMap map = context.getMergedJobDataMap();//.getJobDetail().getJobDataMap();
         if (map != null) {
@@ -78,17 +80,21 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
                     if (instance != null) {
                         final String[] split_emails = emails_to.split(",");
                         //SEND THE EMAIL!
+                        Logger.getLogger(SendMailJob.class.getName()).log(Level.INFO, "SendMailJob sending email to {0}", split_emails);
                         instance.sendHTML(split_emails, subject, email_text, null);
                         //crear una nota de envio de email en el caso!
                         EntityManagerFactory emf = createEntityManagerFactory();
                         UserTransaction utx = UserTransactionHelper.lookupUserTransaction();
-                        JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf);
+                        EntityManager em = null;
+//                        JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf);
 
                         try {
-                            List<AuditLog> changeLog = new ArrayList<AuditLog>();
 
                             final long idCasoLong = Long.parseLong(idCaso);
-                            Caso caso = jpaController.getReference(Caso.class, idCasoLong);
+
+                            utx.begin();
+                            em = emf.createEntityManager();
+                            Caso caso = em.find(Caso.class, idCasoLong);
 
                             Nota nota = new Nota();
                             nota.setEnviadoA(Arrays.toString(split_emails));
@@ -99,34 +105,50 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
                             nota.setFechaModificacion(Calendar.getInstance().getTime());
                             nota.setIdCaso(caso);
                             nota.setTexto(HtmlUtils.removeScriptsAndStyles(email_text));
-                            nota.setVisible(Boolean.FALSE);
-                            nota.setTipoNota(EnumTipoNota.RESPUESTA_AUT_CLIENTE.getTipoNota());
-                            jpaController.persist(nota);
+                            nota.setVisible(Boolean.FALSE);//registro interno
+                            nota.setTipoNota(EnumTipoNota.REG_ENVIO_CORREO.getTipoNota());
+                            nota.setEnviadoPorQuartzJobId(formatJobId);
+//                            em.persist(nota);//not needed!
 
-                            changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "Se envía respuesta automática (acuse de recibo)", ""));
+                            List<Nota> notaList = caso.getNotaList();
+                            if (notaList == null) {
+                                caso.setNotaList(new LinkedList<Nota>());
+                            }
+
+                            caso.getNotaList().add(nota);
+
+                            List<AuditLog> changeLog = new ArrayList<AuditLog>();
+                            changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "Se envía correo a: " + nota.getEnviadoA() , ""));
+
+                            for (AuditLog auditLog : changeLog) {
+                                em.persist(auditLog);
+                            }
+
                             caso.setFechaModif(Calendar.getInstance().getTime());
-                            getJpaController().mergeCaso(caso, changeLog);
+                            em.merge(caso);
 
-                        } catch (Exception ex) {
-                            Logger.getLogger(SendMailJob.class.getName()).log(Level.SEVERE, "SendMailJob no se pudo persistir la nota en el caso", ex);
-                        }
-
-                        try {
                             //if sent ok, then forget about it
                             unschedule(formatJobId);
-                        } catch (SchedulerException ex) {
-                            Logger.getLogger(SendMailJob.class.getName()).log(Level.SEVERE, "no se pudo desagendar " + formatJobId, ex);
-                            //ignore
+
+                            utx.commit();
+
+                        } catch (Exception ex) {
+                            Logger.getLogger(SendMailJob.class.getName()).log(Level.SEVERE, "SendMailJob fallo la transaccion!!", ex);
+                        } finally {
+                            if (em != null) {
+                                em.close();
+                            }
                         }
+
                     } else {
-                        Logger.getLogger(SendMailJob.class.getName()).log(Level.SEVERE, "Mail Not Configured for {0}", idCanal);
-                        try {
-                            //if MailNotConfigured, then forget about it
-                            unschedule(formatJobId);
-                        } catch (SchedulerException exe) {
-                            Logger.getLogger(SendMailJob.class.getName()).log(Level.SEVERE, "no se pudo desagendar " + formatJobId, exe);
-                            //ignore
-                        }
+                        throw new MailClientFactory.MailNotConfiguredException("Mail Not Configured for {0}" + idCanal);
+//                        try {
+//                            //if MailNotConfigured, then forget about it
+//                            unschedule(formatJobId);
+//                        } catch (SchedulerException exe) {
+//                            Logger.getLogger(SendMailJob.class.getName()).log(Level.SEVERE, "no se pudo desagendar " + formatJobId, exe);
+//                            //ignore
+//                        }
                     }
 
                 } catch (EmailException ex) {

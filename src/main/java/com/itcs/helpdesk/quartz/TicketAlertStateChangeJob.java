@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.Job;
@@ -116,7 +117,18 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
                         unschedule(formatJobId(valueOfIdCaso, valueOfIdAlerta));
 
                     } catch (Exception ex) {
-                        Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "TicketAlertStateChangeJob.execute", ex);
+                        if (utx != null) {
+                         try {
+                             utx.rollback();
+                         } catch (IllegalStateException ex1) {
+                             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "rollback error: IllegalStateException", ex1);
+                         } catch (SecurityException ex1) {
+                             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "rollback error: SecurityException", ex1);
+                         } catch (SystemException ex1) {
+                             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "rollback error: SystemException", ex1);
+                         }
+                    }
+                        Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "TicketAlertStateChangeJob.execute exception", ex);
                     } finally {
                         if (em != null) {
                             em.close();

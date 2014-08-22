@@ -8,13 +8,12 @@ import com.itcs.helpdesk.jsfcontrollers.util.JPAFilterHelper;
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
-import com.itcs.helpdesk.persistence.entities.Recinto;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
+import com.itcs.helpdesk.persistence.utils.OrderBy;
 import com.itcs.helpdesk.util.ManagerCasos;
 import com.itcs.helpdesk.webapputils.UAgentInfo;
-import com.itcs.jpautils.EasyCriteriaQuery;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -59,8 +58,8 @@ public abstract class AbstractManagedBean<E> implements Serializable {
 
     public AbstractManagedBean(Class<E> entityClass) {
         this.entityClass = entityClass;
-
-    }
+        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "{0} for {1} created", new Object[]{this.getClass().getSimpleName(), entityClass.getSimpleName()});
+}
 
     public void showMessageInDialog(FacesMessage.Severity severity, String msg, String detail) {
         FacesMessage message = new FacesMessage(severity, msg, detail);
@@ -73,8 +72,8 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     }
 
     public abstract Class getDataModelImplementationClass();
-
-    public String getDefaultOrderBy() {
+    
+    public OrderBy getDefaultOrderBy(){
         return null;
     }
 
@@ -129,13 +128,13 @@ public abstract class AbstractManagedBean<E> implements Serializable {
         return pagination;
     }
 
-//    public DataModel getItems() {
-//        if (items == null) {
-//            items = getPagination().createPageDataModel();
-//        }
-//        return items;
-//    }
-//    
+    public DataModel getItems() {
+        if (items == null) {
+            items = getPagination().createPageDataModel();
+        }
+        return items;
+    }
+    
     protected void recreateModel() {
         items = null;
     }
