@@ -405,6 +405,9 @@ public class DatosCaso {
         private String fieldKey;
         private String fieldValue;
 
+        public CustomField() {
+        }
+
         public CustomField(String fieldKey, String fieldValue) {
             this.fieldKey = fieldKey;
             this.fieldValue = fieldValue;

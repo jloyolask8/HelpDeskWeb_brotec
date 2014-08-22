@@ -65,8 +65,8 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
             + "{ name: 'style', items : ['Bold','Italic','Underline','TextColor','BGColor', '-','RemoveFormat','Blockquote'] },"
             + "{ name: 'style', items : ['Styles','Format','Maximize']}]";
 
-    @PostConstruct
-    private void init() {
+//    @PostConstruct
+    public void init() {
         for (EnumTipoAlerta enumTipoAlerta : EnumTipoAlerta.values()) {
             predefinedVistas.put(enumTipoAlerta.getTipoAlerta().getIdalerta(), createVistaPorAlerta(enumTipoAlerta.getTipoAlerta()));
         }

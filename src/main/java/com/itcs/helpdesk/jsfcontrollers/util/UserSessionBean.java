@@ -17,7 +17,9 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 import javax.annotation.PostConstruct;
+import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +28,8 @@ import org.apache.commons.lang3.StringUtils;
  *
  * @author Jonathan
  */
+@ManagedBean(name = "UserSessionBean")
+@SessionScoped
 public class UserSessionBean extends AbstractManagedBean<Usuario> implements Serializable {
 
     @ManagedProperty(value = "#{applicationBean}")
@@ -96,6 +100,10 @@ public class UserSessionBean extends AbstractManagedBean<Usuario> implements Ser
     }
 
     public void setCurrent(Usuario current) {
+        if((sessionUser == null) && (current != null))
+        {
+            applicationBean.init();
+        }
         this.sessionUser = current;
     }
 
