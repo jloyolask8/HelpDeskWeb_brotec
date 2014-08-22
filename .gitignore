@@ -11,3 +11,5 @@ src/main/setup/glassfish-resources.xml
 nb-configuration.xml
 
 nb-configuration.xml
+
+src/main/webapp/WEB-INF/weblogic.xml
