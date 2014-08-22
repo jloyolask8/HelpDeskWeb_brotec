@@ -13,6 +13,7 @@ import com.itcs.helpdesk.persistence.entityenums.EnumEstadoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
 import com.itcs.helpdesk.persistence.jpa.exceptions.RollbackFailureException;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
+import com.itcs.helpdesk.persistence.utils.OrderBy;
 import com.itcs.helpdesk.util.Constants;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -60,16 +61,9 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
 //        listFilter = new Vista(Vista.class);
     }
 
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
-
     @Override
-    public String getDefaultOrderBy() {
-        return ("nombre");
+    public OrderBy getDefaultOrderBy() {
+        return new OrderBy("nombre");
     }
 
     @Override

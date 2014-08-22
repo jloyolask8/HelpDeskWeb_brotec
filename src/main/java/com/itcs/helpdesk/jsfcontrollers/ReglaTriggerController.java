@@ -15,6 +15,7 @@ import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.entityenums.EnumNombreAccion;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
+import com.itcs.helpdesk.persistence.utils.OrderBy;
 import com.itcs.helpdesk.rules.Action;
 import com.itcs.helpdesk.rules.ActionInfo;
 import com.itcs.helpdesk.util.EmailStruct;
@@ -50,8 +51,8 @@ import java.util.LinkedList;
 public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> implements Serializable {
 
 //    private ReglaTrigger current;
-    private List<ReglaTrigger> reglaItems = null;
-    private Integer rows = 15;
+//    private List<ReglaTrigger> reglaItems = null;
+//    private Integer rows = 15;
 //    private transient PaginationHelper pagination;
     private int selectedItemIndex;
     //----logica de reglas
@@ -67,7 +68,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
     private Usuario usuarioTemp;
     private Prioridad prioridadTemp;
     private transient EmailStruct emailTemp;
-    private transient JPAFilterHelper filterHelper;
+    private transient JPAFilterHelper filterHelperForConditions;
 
     public ReglaTriggerController() {
         super(ReglaTrigger.class);
@@ -81,11 +82,11 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 
         int index = 0;
         for (String s : noArr) {
-            ReglaTrigger regla = reglaItems.get(Integer.parseInt(s));
+            ReglaTrigger regla = ((List<ReglaTrigger>)getItems().getWrappedData()).get(Integer.parseInt(s));
             regla.setOrden(index++);
             getJpaController().merge(regla);
         }
-        reglaItems = null;
+        recreateModel();
 //        myList = n;
 
 //        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Reordered! New order is:" + newOrder));
@@ -129,23 +130,23 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         }
     }
 
-    public void onReglaOrderEdit() {
-//        Object oldValue = event.getOldValue();  
-//        Object newValue = event.getNewValue();  
-//          
-//        if(newValue != null && !newValue.equals(oldValue)) {  
-        Collections.sort(reglaItems);
-        for (ReglaTrigger reglaTrigger : reglaItems) {
-            try {
-                getJpaController().merge(reglaTrigger);
-            } catch (Exception ex) {
-                addMessage(FacesMessage.SEVERITY_ERROR, "No se pudo persistir el cambio de orden de la regla " + reglaTrigger.getIdTrigger());
-                Logger.getLogger(ReglaTriggerController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-//        }  
-
-    }
+//    public void onReglaOrderEdit() {
+////        Object oldValue = event.getOldValue();  
+////        Object newValue = event.getNewValue();  
+////          
+////        if(newValue != null && !newValue.equals(oldValue)) {  
+//        Collections.sort(reglaItems);
+//        for (ReglaTrigger reglaTrigger : reglaItems) {
+//            try {
+//                getJpaController().merge(reglaTrigger);
+//            } catch (Exception ex) {
+//                addMessage(FacesMessage.SEVERITY_ERROR, "No se pudo persistir el cambio de orden de la regla " + reglaTrigger.getIdTrigger());
+//                Logger.getLogger(ReglaTriggerController.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//        }
+////        }  
+//
+//    }
 
     /**
      * @deprecated @param node
@@ -179,10 +180,10 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         ReglaTrigger regla = getJpaController().getReglaTriggerFindByIdTrigger(idRegla);
         regla.setReglaActiva(Boolean.valueOf(valor));
         try {
-            getJpaController().mergeReglaTrigger(regla);
-            reglaItems = null;
+            getJpaController().mergeReglaTrigger(regla);            
             JsfUtil.addSuccessMessage("Regla " + idRegla + " actualizada");
             System.out.println("regla " + idRegla + " actualizada");
+            recreateModel();
         } catch (Exception ex) {
             Logger.getLogger(ReglaTriggerController.class.getName()).log(Level.SEVERE, null, ex);
             JsfUtil.addErrorMessage(ex, "Error actualizando regla " + idRegla);
@@ -308,36 +309,19 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         return prioridadTemp;
     }
 
-    @Override
-    public JPAFilterHelper getFilterHelper() {
-        if (filterHelper == null) {
-            filterHelper = new JPAFilterHelper(new Vista(Caso.class), emf) {
+    public JPAFilterHelper getFilterHelperForConditions() {
+        if (filterHelperForConditions == null) {
+            filterHelperForConditions = new JPAFilterHelper(new Vista(Caso.class), emf) {
                 @Override
                 public JPAServiceFacade getJpaService() {
                     return getJpaController();
                 }
             };
         }
-        return filterHelper;
+        return filterHelperForConditions;
     }
 
-//    public PaginationHelper getPagination() {
-//        if (pagination == null) {
-//            pagination = new PaginationHelper(10) {
-//                @Override
-//                public int getItemsCount() {
-//                    return getJpaController().count(ReglaTrigger.class).intValue();
-//                }
-//
-//                @Override
-//                public DataModel createPageDataModel() {
-//                    System.out.println("createPageDataModel");
-//                    return new ReglaTriggerDataModel(getJpaController().queryByRange(ReglaTrigger.class, getPageSize(), getPageFirstItem()));
-//                }
-//            };
-//        }
-//        return pagination;
-//    }
+
     public boolean esAccionAsignarArea(Accion accion) {
         return esAccion(accion, EnumNombreAccion.ASIGNAR_A_AREA);
     }
@@ -372,7 +356,6 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 
     public String prepareList() {
         recreateModel();
-        reglaItems = null;
         return "/script/reglaTrigger/List";
     }
 
@@ -437,7 +420,6 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 //            current.setAccionList(acciones);
             getJpaController().persistReglaTrigger(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ReglaTriggerCreated"));
-            reglaItems = null;
             return prepareList();
         } catch (Exception e) {
             e.printStackTrace();
@@ -504,7 +486,6 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 //        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         performDestroy();
         recreateModel();
-        reglaItems = null;
         return "/script/reglaTrigger/List";
     }
 
@@ -519,7 +500,6 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 //            recreateModel();
 //        }
         recreateModel();
-        reglaItems = null;
         return "/script/reglaTrigger/List";
     }
 
@@ -561,12 +541,12 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         }
     }
 
-    public List<ReglaTrigger> getItems() {
-        if (reglaItems == null) {
-            reglaItems = (List<ReglaTrigger>) getJpaController().findAll(ReglaTrigger.class, "orden");//getPagination().createPageDataModel();
-        }
-        return reglaItems;
-    }
+//    public List<ReglaTrigger> getItems() {
+//        if (reglaItems == null) {
+//            reglaItems = (List<ReglaTrigger>) getJpaController().findAll(ReglaTrigger.class, "orden");//getPagination().createPageDataModel();
+//        }
+//        return reglaItems;
+//    }
 
     /**
      * @return the acciones
@@ -628,28 +608,16 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
     }
 
     @Override
-    public PaginationHelper getPagination() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public Class getDataModelImplementationClass() {
         return ReglaTriggerDataModel.class;
     }
 
-    /**
-     * @return the rows
-     */
-    public Integer getRows() {
-        return rows;
+    @Override
+    public OrderBy getDefaultOrderBy() {
+       return new OrderBy("orden");
     }
-
-    /**
-     * @param rows the rows to set
-     */
-    public void setRows(Integer rows) {
-        this.rows = rows;
-    }
+    
+    
 
     /**
      * @return the actionClassNames

@@ -132,7 +132,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private static final SimpleDateFormat dayDateFormat = new SimpleDateFormat("HH:mm");
     private static final SimpleDateFormat monthDateFormat = new SimpleDateFormat("dd MMM", LOCALE_ES_CL);
     private static final SimpleDateFormat yearDateFormat = new SimpleDateFormat("dd/MM/yy", LOCALE_ES_CL);
-//  
+    //  other bean references
     @ManagedProperty(value = "#{applicationBean}")
     private ApplicationBean applicationBean;
     @ManagedProperty(value = "#{filtroAcceso}")
@@ -141,15 +141,14 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private transient VistaController vistaController;
     @ManagedProperty(value = "#{UserSessionBean}")
     protected transient UserSessionBean userSessionBean;
-//    private Caso current;
-//    private Caso[] selectedItems = new Caso[0];
+    // end other bean references
     private List<Etiqueta> selectedEtiquetas = new ArrayList<Etiqueta>();
     private transient HashMap<String, BlackListEmail> blackListMap;
 //    private transient DataModel items = null;
 //    private transient PaginationHelper pagination;
     private int selectedItemIndex;
     private int activeIndexMenuAccordionPanel;
-    private String activeIndexWestPanel = "0";
+    private String activeIndexWestPanel = "0";//TODO should be an int
     //Notas
     private String textoNota = null;
     private boolean textoNotaVisibilidadPublica = false;
@@ -437,18 +436,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         return model;
     }
 
-//    public void tagItemSelectEvent(SelectEvent event) {
-//        Object item = event.getObject();
-//        current.setFechaModif(Calendar.getInstance().getTime());
-//        try {
-//            getJpaController().mergeCaso(current, null);
-//            addInfoMessage("Etiqueta Agregada OK!");
-//        } catch (Exception ex) {
-//            addInfoMessage("No se pudo Agregar la etiqueta" + item);
-//            Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//
-//    }
     public void tagItemSelectEvent(SelectEvent event) {
         Object item = event.getObject();
         current.setFechaModif(Calendar.getInstance().getTime());
@@ -1202,21 +1189,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
-//    public String misCasos() {
-//        //categoria = null;
-//        //System.out.println("misCasos()");
-//        idCaso = null;
-//        caso = new CasoVO();
-//        caso.setInbox(false);
-//        orderBy = "";
-//        this.caso.setUsuarioQueConsulta(userSessionBean.getCurrent());
-//        this.caso.setOwner(userSessionBean.getCurrent());
-//        this.caso.setNoOwner(false);
-//        this.caso.setIdEstado(EnumEstadoCaso.ABIERTO.getEstado());
-//        recreatePagination();
-//        recreateModel();
-//        return resourceBundle.getString("inbox");
-//    }
     public String onFlowProcess(FlowEvent event) {
         return event.getNewStep();
     }
@@ -1462,6 +1434,10 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
     }
 
+    /**
+     * DUPLICATE: createAndView()
+     * @return 
+     */
     public String createPreentregaAndView() {
         try {
             persist(current);
@@ -1638,7 +1614,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         categoria = null;
         recreateModel();
         recreatePagination();
-        return resourceBundle.getString("inbox");
+        return "inbox";
     }
 
     public void onTagIdSelectCaso(String idTag) {
@@ -1725,7 +1701,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
         }
 
-        return resourceBundle.getString("inbox");
+        return "inbox";
 
     }
 
@@ -1832,7 +1808,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         getFilterHelper().setVista(vista1);
         recreatePagination();
         recreateModel();
-        return resourceBundle.getString("inbox");
+        return "inbox";
     }
 
     public String filtraPorAlerta(TipoAlerta alerta) {
@@ -1868,7 +1844,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         getFilterHelper().setVista(vista1);
         recreatePagination();
         recreateModel();
-        return resourceBundle.getString("inbox");
+        return "inbox";
     }
 
     public void filterCatCarpetas() {
@@ -2453,6 +2429,11 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     }
 
+    /**
+     * TODO deprecate this code
+     * @param caso
+     * @return 
+     */
     public String evaluarStyle(Caso caso) {
         if (caso != null) {
             if (caso.getIdSubEstado() == null) {
@@ -2733,12 +2714,10 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             sended = true;
             textoNota = null;
         } catch (Exception ex) {
-//          System.out.println("mail send exception in enviarCorreo");
             sended = false;
             Log.createLogger(CasoController.class.getName()).log(Level.SEVERE, "enviarCorreo", ex);
         } finally {
             if (!sended) {
-//              System.out.println("mail not sent!");
                 JsfUtil.addErrorMessage(resourceBundle.getString("respuestaCasoNOOK"));
             }
         }
@@ -2757,7 +2736,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     private String obtenerHistorial() {
         StringBuilder sbuilder = new StringBuilder("<br/><hr/><b>HISTORIA DEL CASO</b><br/>");
-//        Collection<Nota> notas = getNotasList();
         if (current != null && current.getNotaList() != null) {
             for (Nota nota : current.getNotaList()) {
                 if (nota.getTipoNota().equals(EnumTipoNota.RESPUESTA_A_CLIENTE.getTipoNota()) || nota.getTipoNota().equals(EnumTipoNota.RESPUESTA_DE_CLIENTE.getTipoNota())) {
@@ -2871,6 +2849,10 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
     }
 
+    /**
+     * Brotec icafal specific
+     * @return 
+     */
     public StreamedContent generarActaPreEntrega() {
         try {
             Long idLogo = null;
@@ -3114,17 +3096,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     }
 
-//    public void parseCotizacionEmail() {
-//        try {
-//
-//            Action parserAction = new ParseCotizacionZoomInmobiliarioAction(getJpaController());
-//            parserAction.execute(current);
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
     public void updateListener() {
         update();
     }
@@ -3234,67 +3205,19 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         } catch (Exception e) {
             addErrorMessage(e.getLocalizedMessage());
         }
-//        return resourceBundle.getString("inbox");
-        //return "List";
     }
 
-//    public String destroyAndView() {
-//        performDestroy();
-//        recreateModel();
-//        updateCurrentItem();
-//        if (selectedItemIndex >= 0) {
-//            return "/script/caso/View";
-//            //return "View";
-//        } else {
-//            // all items were removed - go back to list
-//            recreateModel();
-//            return resourceBundle.getString("inbox");
-//            //return "List";
-//        }
-//    }
     private boolean performDestroy(Caso caso) {
         try {
-
-//            caso = getJpaController().getCasoFindByIdCaso(caso.getIdCaso());
-//            if (caso.getNotaList() != null) {
-//                for (Nota nota : caso.getNotaList()) {
-//                    getJpaController().removeNota(nota);
-//                }
-//            }
-//            if (caso.getAttachmentList() != null) {
-//                for (Attachment attachment : caso.getAttachmentList()) {
-//                    Archivo archivo = getJpaController().getArchivoFindByIdAttachment(attachment.getIdAttachment());
-//                    if (archivo != null) {
-//                        getJpaController().removeArchivo(archivo);
-//                    }
-////                    getJpaController().removeAttachment(attachment);//replaced by @CascadeOnDelete
-//                }
-//            }
             getJpaController().persistAuditLog(ManagerCasos.createLogReg(caso, "Eliminar", userSessionBean.getCurrent().getIdUsuario() + " elimina el caso manualmente", ""));
-//            getJpaController().removeCaso(caso);
             getJpaController().remove(Caso.class, caso);
-
             return true;
-
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "Error al tratar de eliminar caso " + caso.toString() + ":" + e.getMessage(), e);
             return false;
         }
     }
 
-//    public List<Nota> getNotasList() {
-//        try {
-//            if (listaActividadesOrdenada == null) {
-////                //System.out.println("se crea listaActividadesOrdenada");
-//                listaActividadesOrdenada = getJpaController().getNotaFindByIdCaso(getSelected());
-//                Collections.sort(current.getNotaList());
-//            }
-//            return listaActividadesOrdenada;
-//        } catch (Exception e) {
-//            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "", e);
-//            return new LinkedList();
-//        }
-//    }
     public int getSelectedItemsCount() {
         try {
             return getSelectedItems().size();
@@ -3890,7 +3813,6 @@ class CasoDataModel extends ListDataModel<Caso> implements SelectableDataModel<C
                 }
             }
         }
-
         return null;
     }
 

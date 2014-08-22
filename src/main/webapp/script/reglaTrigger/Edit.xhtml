@@ -93,7 +93,7 @@
                                              filter="true" filterMatchMode="startsWith"
                                              required="true" requiredMessage="Favor Seleccione Attributo.">
                                 <f:selectItem itemLabel="seleccione un atributo" itemValue="" noSelectionOption="true"/>
-                                <f:selectItems value="#{reglaTriggerController.filterHelper.comparableFields}" var="comparableField" itemValue="#{comparableField.idCampo}" itemLabel="#{comparableField.label}"/>
+                                <f:selectItems value="#{reglaTriggerController.filterHelperForConditions.comparableFields}" var="comparableField" itemValue="#{comparableField.idCampo}" itemLabel="#{comparableField.label}"/>
                                 <p:ajax update=":form:messages :form:filtrosCondicionReglas" listener="#{reglaTriggerController.handleIdCampoChangeEvent()}"/>
                             </p:selectOneMenu>
 
@@ -105,26 +105,26 @@
                                              filter="true" filterMatchMode="startsWith"
                                              required="true" requiredMessage="Favor Seleccione Operador." styleClass="full-width">
                                 <f:selectItem itemLabel="Operador..." itemValue="" noSelectionOption="true"/>
-                                <f:selectItems value="#{reglaTriggerController.filterHelper.findTipoComparacionesAvailable(filtro.idCampo)}" var="tipoComparador" itemValue="#{tipoComparador}" itemLabel="#{tipoComparador.nombre}" itemDescription="#{tipoComparador.descripcion}"/>
+                                <f:selectItems value="#{reglaTriggerController.filterHelperForConditions.findTipoComparacionesAvailable(filtro.idCampo)}" var="tipoComparador" itemValue="#{tipoComparador}" itemLabel="#{tipoComparador.nombre}" itemDescription="#{tipoComparador.descripcion}"/>
                                 <p:ajax update=":form:messages :form:filtrosCondicionReglas" listener="#{reglaTriggerController.handleAnyChangeEvent()}"/>
                             </p:selectOneMenu>
 
                         </p:column>
 
                         <p:column style="width: 200px;">
-                            <p:inputText styleClass="full-width" id="valortext" value="#{filtro.valor}" rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'TEXT'}" 
+                            <p:inputText styleClass="full-width" id="valortext" value="#{filtro.valor}" rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelperForConditions.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'TEXT'}" 
                                          required="true" requiredMessage="Se necesita un valor para comparar.">
                                 <p:ajax/>
                             </p:inputText>
                             <p:selectOneRadio id="valorradio" value="#{filtro.valor}" 
-                                              rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'RADIO'}">
-                                <f:selectItems value="#{reglaTriggerController.filterHelper.findPosibleOptionsIncludingAllPlaceHolders(filtro.idCampo, UserSessionBean.current)}" />
+                                              rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelperForConditions.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'RADIO'}">
+                                <f:selectItems value="#{reglaTriggerController.filterHelperForConditions.findPosibleOptionsIncludingAllPlaceHolders(filtro.idCampo, UserSessionBean.current)}" />
                                 <p:ajax/>
                             </p:selectOneRadio>
 
                             <p:selectOneMenu styleClass="full-width" id="valorentity1" value="#{filtro.valor}"  filter="true" filterMatchMode="contains"
-                                             rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'SELECTONE_ENTITY' and filtro.idComparador.idComparador ne 'SC' and filtro.idCampo ne 'emailCliente'}">
-                                <f:selectItems value="#{reglaTriggerController.filterHelper.findPosibleOptionsIncludingAllPlaceHolders(filtro.idCampo, UserSessionBean.current)}" />
+                                             rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelperForConditions.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'SELECTONE_ENTITY' and filtro.idComparador.idComparador ne 'SC' and filtro.idCampo ne 'emailCliente'}">
+                                <f:selectItems value="#{reglaTriggerController.filterHelperForConditions.findPosibleOptionsIncludingAllPlaceHolders(filtro.idCampo, UserSessionBean.current)}" />
                                 <p:ajax/>
                             </p:selectOneMenu>
 
@@ -132,7 +132,7 @@
                                             id="valorentity11" completeMethod="#{emailClienteController.completeEmailCliente}"  
                                             var="email"  itemValue="#{email.emailCliente}" itemLabel="#{email}"
                                             required="true" requiredMessage="Debe Seleccionar un email."
-                                            rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'SELECTONE_ENTITY' and filtro.idComparador.idComparador ne 'SC' and filtro.idCampo eq 'emailCliente'}">  
+                                            rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelperForConditions.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'SELECTONE_ENTITY' and filtro.idComparador.idComparador ne 'SC' and filtro.idCampo eq 'emailCliente'}">  
 
                                 <f:facet name="itemtip">  
                                     <h:panelGrid  columns="2" cellpadding="5">  
@@ -155,13 +155,13 @@
 
                             <p:selectCheckboxMenu id="valorentity2" label="Selección..."   value="#{filtro.valoresList}" filter="true" filterMatchMode="contains"
                                                   styleClass="full-width"
-                                                  rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'SELECTONE_ENTITY' and filtro.idComparador.idComparador eq 'SC'}">
-                                <f:selectItems value="#{reglaTriggerController.filterHelper.findPosibleOptions(filtro.idCampo, UserSessionBean.current)}" />
+                                                  rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelperForConditions.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'SELECTONE_ENTITY' and filtro.idComparador.idComparador eq 'SC'}">
+                                <f:selectItems value="#{reglaTriggerController.filterHelperForConditions.findPosibleOptions(filtro.idCampo, UserSessionBean.current)}" />
                                 <p:ajax/>
                             </p:selectCheckboxMenu>
 
-                            <p:selectOneMenu styleClass="full-width" id="valorcheckboolean" value="#{filtro.valor}" rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'CHECKBOX'}">
-                                <f:selectItems value="#{reglaTriggerController.filterHelper.findPosibleOptionsIncludingAllPlaceHolders(filtro.idCampo, UserSessionBean.current)}" />
+                            <p:selectOneMenu styleClass="full-width" id="valorcheckboolean" value="#{filtro.valor}" rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelperForConditions.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'CHECKBOX'}">
+                                <f:selectItems value="#{reglaTriggerController.filterHelperForConditions.findPosibleOptionsIncludingAllPlaceHolders(filtro.idCampo, UserSessionBean.current)}" />
                                 <p:ajax/>
                             </p:selectOneMenu>
                             <script>
@@ -172,12 +172,12 @@
                                 });
                             </script>
                             <p:inputText style="width: 100px;" id="valorcalendar1" styleClass="datepicker" value="#{filtro.valor}"  title="Desde:"
-                                         rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR'}">
+                                         rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelperForConditions.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR'}">
                                 <p:ajax/>
                             </p:inputText>
                             &nbsp;
                             <p:inputText style="width: 100px;" id="valorcalendar2" styleClass="datepicker" value="#{filtro.valor2}"  title="Hasta:"
-                                         rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR' and filtro.idComparador.idComparador eq 'BW'}" >
+                                         rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelperForConditions.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR' and filtro.idComparador.idComparador eq 'BW'}" >
                                 <p:ajax/>
                             </p:inputText>
 

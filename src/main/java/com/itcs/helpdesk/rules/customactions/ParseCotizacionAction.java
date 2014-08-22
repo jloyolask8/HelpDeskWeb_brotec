@@ -17,6 +17,7 @@ import com.itcs.helpdesk.persistence.entityenums.EnumSubEstadoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
+import com.itcs.helpdesk.persistence.utils.OrderBy;
 import com.itcs.helpdesk.rules.Action;
 import com.itcs.helpdesk.rules.ActionExecutionException;
 import com.itcs.helpdesk.util.ApplicationConfig;
@@ -343,7 +344,7 @@ public abstract class ParseCotizacionAction extends Action
                 }
                 vista.getFiltrosVistaList().add(filter1);
 
-                List<ModeloProducto> modelos = (List<ModeloProducto>) getJpaController().findAllEntities(ModeloProducto.class, vista, "nombre", null);
+                List<ModeloProducto> modelos = (List<ModeloProducto>) getJpaController().findAllEntities(ModeloProducto.class, vista, new OrderBy("nombre"), null);
 
 //                System.out.println("modelos:" + modelos);
                 if (modelos != null)

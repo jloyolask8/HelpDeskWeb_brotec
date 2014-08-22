@@ -44,11 +44,9 @@
                     });
                 </script>
 
-                <p:dataTable  id="tablareglas" widgetVar="ReglasTable" var="item" value="#{reglaTriggerController.items}" 
-                              emptyMessage="#{bundle.ListUsuarioEmpty}" rowIndexVar="rowIndex"
-                              paginator="true" rows="#{reglaTriggerController.rows}"  paginatorAlwaysVisible="false"
-                              paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
-                              rowsPerPageTemplate="15,50,100">
+                <p:dataTable id="tablareglas" value="#{reglaTriggerController.items}" var="item"                                     
+                             emptyMessage="#{bundle.ListReglaEmpty}" 
+                             rowKey="#{item.idTrigger}">
 
 
                     <f:facet name="header">
@@ -93,9 +91,21 @@
                         <p:toolbar style="border: none;">
                             <p:toolbarGroup align="center">
 
-                                <p:commandButton action="#{reglaTriggerController.onReglaOrderEdit}" value="Reordenar" icon="ui-icon-arrowthick-2-n-s" update=":form:tablareglas"
-                                                 rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" />
+                                <p:outputLabel value="Páginas de "/>
+                                <p:selectOneMenu id="cant" value="#{reglaTriggerController.paginationPageSize}" style="top: 7px" >
+                                    <p:ajax event="change" listener="#{reglaTriggerController.filter()}" update=":form"/>
+                                    <f:selectItems value="#{reglaTriggerController.pagination.pageSizesAvailable}"/>
+                                </p:selectOneMenu>
+
                                 <p:separator/>
+                                <h:outputText value="#{reglaTriggerController.pagination.pageFirstItem + 1}-#{reglaTriggerController.pagination.pageLastItem + 1} de #{reglaTriggerController.pagination.itemsCount}" rendered="#{reglaTriggerController.pagination.itemsCount gt 0}"></h:outputText>
+                                <p:separator/>
+                                <p:commandButton action="#{reglaTriggerController.first}" update=":form" disabled="#{not reglaTriggerController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{reglaTriggerController.pagination.itemsCount > 0}"/>
+                                <p:commandButton action="#{reglaTriggerController.previous}" update=":form" disabled="#{not reglaTriggerController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{reglaTriggerController.pagination.itemsCount > 0}"/>
+                                <p:commandButton action="#{reglaTriggerController.next}" update=":form" disabled="#{not reglaTriggerController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{reglaTriggerController.pagination.itemsCount > 0}"/>
+                                <p:commandButton action="#{reglaTriggerController.last}" update=":form" disabled="#{not reglaTriggerController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{reglaTriggerController.pagination.itemsCount > 0}"/>
+                                <p:separator/>
+
                                 <p:commandButton ajax="false" action="#{reglaTriggerController.prepareCreate}" value="Crear regla" icon="ui-icon ui-icon-plus" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" />
 
                             </p:toolbarGroup>

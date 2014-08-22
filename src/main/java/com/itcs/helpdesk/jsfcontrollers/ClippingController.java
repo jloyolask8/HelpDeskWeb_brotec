@@ -4,6 +4,7 @@ import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Clipping;
+import com.itcs.helpdesk.persistence.utils.OrderBy;
 import com.itcs.helpdesk.util.ClippingsPlaceHolders;
 import com.itcs.helpdesk.util.Constants;
 import java.io.Serializable;
@@ -75,7 +76,7 @@ public class ClippingController extends AbstractManagedBean<Clipping> implements
                 public DataModel createPageDataModel() {
                     if (getFilterHelper().getVista().getFiltrosVistaList() != null && !getFilterHelper().getVista().getFiltrosVistaList().isEmpty()) {
                         try {
-                            return new ListDataModel(getJpaController().findEntities(Clipping.class, getFilterHelper().getVista(), getPageSize(), getPageFirstItem(), "idClipping", userSessionBean.getCurrent()));
+                            return new ListDataModel(getJpaController().findEntities(Clipping.class, getFilterHelper().getVista(), getPageSize(), getPageFirstItem(), new OrderBy("idClipping", OrderBy.OrderType.DESC), userSessionBean.getCurrent()));
                         } catch (NotSupportedException ex) {
                             JsfUtil.addErrorMessage(ex, "Error on findClippingEntities");
                             Logger.getLogger(ClippingController.class.getName()).log(Level.SEVERE, null, ex);

@@ -10,6 +10,7 @@ import com.itcs.helpdesk.persistence.entities.FiltroVista;
 import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
+import com.itcs.helpdesk.persistence.utils.OrderBy;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -98,7 +99,7 @@ public class EmailClienteListServlet extends HttpServlet {
             }
             vista.getFiltrosVistaList().add(filter1);
 
-            return (List<EmailCliente>) getJpaController().findEntities(EmailCliente.class, vista, 10, 0, "emailCliente", null);
+            return (List<EmailCliente>) getJpaController().findEntities(EmailCliente.class, vista, 10, 0, new OrderBy("emailCliente"), null);
         }
 
     }
