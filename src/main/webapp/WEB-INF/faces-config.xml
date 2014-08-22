@@ -32,14 +32,6 @@
         <phase-listener>com.itcs.helpdesk.util.MultiPageMessagesSupport</phase-listener>
     </lifecycle>
 
-    <managed-bean>
-        <managed-bean-name>UserSessionBean</managed-bean-name>
-        <managed-bean-class>com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean</managed-bean-class>
-    
-
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
     <converter>
         <converter-id>FuncionConverter</converter-id>
         <!--converter-class>cl.cnsv.unimail.jsfconverters.FuncionConverter</converter-class-->

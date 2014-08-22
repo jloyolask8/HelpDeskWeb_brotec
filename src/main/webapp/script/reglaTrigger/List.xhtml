@@ -4,7 +4,8 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions">
 
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
@@ -23,6 +24,12 @@
             </p:accordionPanel>
         </ui:define>
         <ui:define name="body">
+            <style type="text/css">
+                .ui-tooltip {
+                    width: 500px;
+                    max-width: 500px;
+                }
+            </style>
             <h1>Reglas de Negocio</h1>
             <p:separator/>
             <br/>
@@ -48,38 +55,33 @@
                              emptyMessage="#{bundle.ListReglaEmpty}" 
                              rowKey="#{item.idTrigger}">
 
-
                     <f:facet name="header">
                         <h:outputText value="Listado de Reglas"></h:outputText>
                     </f:facet>
 
-
-
                     <p:column headerText="Estado" exportable="false">
-                        <p:selectBooleanButton id="EstadoRegla" value="#{item.reglaActiva}" onLabel="ON" offLabel="OFF" onIcon="ui-icon-check" offIcon="ui-icon-close">  
+                        <p:selectBooleanButton style="width: 50px; height: 20px;" id="EstadoRegla" value="#{item.reglaActiva}" onLabel="ON" offLabel="OFF" onIcon="ui-icon-check" offIcon="ui-icon-close">  
                             <p:ajax update=":form" listener="#{reglaTriggerController.update(item)}"/>  
                         </p:selectBooleanButton>  
                         <p:tooltip for="EstadoRegla" value="#{item.desccripcion}"/>
 
                     </p:column>
 
-
                     <p:column >
                         <f:facet name="header">
-                            <h:outputText value="Nombre"/>
+                            <h:outputText value="Descripci&oacute;n"/>
                         </f:facet>
-                        <h:outputText id="Nombre" value="#{item.idTrigger}"/>
-                        <p:tooltip for="Nombre" value="#{item.desccripcion}"/>
+                        <h:panelGroup id="nombreDescripcion">
+                            <h:outputText id="Nombre" value="#{item.idTrigger}" style="font-weight: bold;"/>
+                            &nbsp;
+                            <h:outputText id="evento" title=""
+                                          value="#{item.desccripcion}" escape="false"/>
+                        </h:panelGroup>
+                        <pe:tooltip for="nombreDescripcion" atPosition="bottom center" hideEffect="blur">
+                            <h:outputText value="#{item.toString()}" escape="false" />
+                        </pe:tooltip>
                     </p:column>
 
-                    <p:column >
-                        <f:facet name="header">
-                            <h:outputText value="Descripción"/>
-                        </f:facet>
-                        <h:outputText id="evento" title=""
-                                      value="#{item.toString()}" escape="false"/>
-
-                    </p:column>
 
 
                     <p:column headerText="Acción">
