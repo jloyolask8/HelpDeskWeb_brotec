@@ -59,11 +59,11 @@ public class HelpDeskScheluder {
         if (getInstance().checkExists(jobKey)) {
             unscheduled = getInstance().deleteJob(jobKey);
 //            if (ApplicationConfig.isAppDebugEnabled()) {
-            Log.createLogger(HelpDeskScheluder.class.getName()).logInfo("unschedule jobKey:" + jobKey.getName() + "/" + jobKey.getGroup() + (unscheduled ? " succeeded." : "failed."));
+            Log.createLogger(HelpDeskScheluder.class.getName()).logInfo("unscheduled job with jobKey:" + jobKey.getName() + "/" + jobKey.getGroup() + (unscheduled ? " succeeded." : "failed."));
 //            }
-        } else {
-            throw new SchedulerException("unschedule jobKey Error: No existe el job " + jobKey.getName());
-        }
+        } //else {
+            //throw new SchedulerException("unschedule jobKey Error: No existe el job " + jobKey.getName());
+        //}
 
         return unscheduled;
 //        } catch (SchedulerException ex) {
