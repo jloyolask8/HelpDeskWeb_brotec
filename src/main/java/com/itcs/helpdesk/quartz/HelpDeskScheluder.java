@@ -55,9 +55,10 @@ public class HelpDeskScheluder {
 
     /**
      * removed synchronized
+     *
      * @param jobKey
      * @return
-     * @throws SchedulerException 
+     * @throws SchedulerException
      */
     public static boolean unschedule(final JobKey jobKey) throws SchedulerException {
 //        try {
@@ -67,9 +68,10 @@ public class HelpDeskScheluder {
 //            if (ApplicationConfig.isAppDebugEnabled()) {
             Log.createLogger(HelpDeskScheluder.class.getName()).logInfo("unscheduled job with jobKey:" + jobKey.getName() + "/" + jobKey.getGroup() + (unscheduled ? " succeeded." : "failed."));
 //            }
-        } //else {
+        } else {
             //throw new SchedulerException("unschedule jobKey Error: No existe el job " + jobKey.getName());
-        //}
+            Log.createLogger(HelpDeskScheluder.class.getName()).logInfo("job " + jobKey.getName() + "/" + jobKey.getGroup() + " does not exists!!!.");
+        }
 
         return unscheduled;
 //        } catch (SchedulerException ex) {

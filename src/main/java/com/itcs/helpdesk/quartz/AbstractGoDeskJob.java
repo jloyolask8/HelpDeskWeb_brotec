@@ -5,15 +5,10 @@
  */
 package com.itcs.helpdesk.quartz;
 
-import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
-import com.itcs.helpdesk.util.RulesEngine;
 import java.util.Locale;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.transaction.UserTransaction;
-import org.quartz.SchedulerException;
-import org.quartz.ee.jta.UserTransactionHelper;
 //import org.eclipse.persistence.config.EntityManagerProperties;
 
 /**
@@ -33,15 +28,6 @@ public class AbstractGoDeskJob {
         EntityManager em = emf.createEntityManager();
         return em;
     }
-
-//    protected JPAServiceFacade getJpaController() throws SchedulerException {
-//        EntityManagerFactory emf = createEntityManagerFactory();
-//        UserTransaction utx = UserTransactionHelper.lookupUserTransaction();
-//        JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf);
-//        RulesEngine rulesEngine = new RulesEngine(emf, jpaController);
-//        jpaController.setCasoChangeListener(rulesEngine);
-//        return jpaController;
-//    }
 
     protected EntityManagerFactory createEntityManagerFactory() {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("helpdeskPU");
