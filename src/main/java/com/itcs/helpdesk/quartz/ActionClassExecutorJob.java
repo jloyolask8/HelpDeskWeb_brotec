@@ -8,10 +8,13 @@ package com.itcs.helpdesk.quartz;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.rules.Action;
+import com.itcs.helpdesk.util.RulesEngine;
 import java.lang.reflect.Constructor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.transaction.UserTransaction;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -19,6 +22,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobKey;
 import org.quartz.SchedulerException;
+import org.quartz.ee.jta.UserTransactionHelper;
 
 /**
  *
@@ -50,21 +54,31 @@ public class ActionClassExecutorJob extends AbstractGoDeskJob implements Job {
                 String idTime = (String) map.get(ID_TIME);
                 String actionClassName = (String) map.get(ACTION_CLASSNAME);
                 if (!StringUtils.isEmpty(actionClassName) && !StringUtils.isEmpty(idCaso)) {
-                    EntityManager em = createEntityManager();
+                    EntityManagerFactory emf = createEntityManagerFactory();
+                    UserTransaction utx = UserTransactionHelper.lookupUserTransaction();
+                    JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf);
+                    RulesEngine rulesEngine = new RulesEngine(emf, jpaController);
+                    jpaController.setCasoChangeListener(rulesEngine);
+
+                    EntityManager em = emf.createEntityManager();
                     try {
+                        utx.begin();
                         Caso caso = em.find(Caso.class, Long.valueOf(idCaso));
 //                        final Action action = (Action) Class.forName(actionClassName.trim()).newInstance();
                         Constructor actionConstructor = Class.forName(actionClassName.trim()).getConstructor(JPAServiceFacade.class);
-                        final Action action = (Action) actionConstructor.newInstance(getJpaController());
+                        final Action action = (Action) actionConstructor.newInstance(jpaController);
                         //Action being scheduled must not Receive any parametros!!! ???
                         action.setConfig(params);
                         action.execute(caso);
                         unschedule(formatJobId(idCaso, actionClassName, idTime));
+                        utx.commit();
                     } catch (Exception ex) {
+                        utx.rollback();
                         Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "ActionClassExecutorJob: Error trying to execute Action class::" + actionClassName, ex);
                         throw new JobExecutionException(ex);
                     } finally {
                         em.close();
+                        UserTransactionHelper.returnUserTransaction(utx);
                     }
                 } else {
                     throw new JobExecutionException("los parametros proporcionados al Job ActionClassExecutorJob(schema, idCaso, actionClassName) son illegales!");

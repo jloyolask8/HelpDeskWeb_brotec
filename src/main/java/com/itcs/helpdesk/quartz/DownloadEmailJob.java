@@ -138,7 +138,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                             Long idCaso = ManagerCasos.extractIdCaso(subject);
 
                             if (idCaso != null) {
-                                Caso caso = getJpaController().getCasoFindByIdCaso(idCaso);
+                                Caso caso = jpaController.getCasoFindByIdCaso(idCaso);
                                 if (caso != null) {
                                     managerCasos.crearNotaDesdeEmail(caso, canal, emailMessage);
                                 }
@@ -146,7 +146,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                             } else {
                                 //block messages that do not ref# to a case comming from an FromEmail configured as a agent's email addresss.
                                 //NEW TICKET?
-                                List<Usuario> users = getJpaController().getUsuarioFindByEmail(emailMessage.getFromEmail());
+                                List<Usuario> users = jpaController.getUsuarioFindByEmail(emailMessage.getFromEmail());
                                 if (users != null && !users.isEmpty()) {
                                     //ignore emails from users of the system !!
                                     //let them know that this is now allowed!!
@@ -174,6 +174,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
 
                 mailClient.closeFolder();
                 mailClient.disconnectStore();
+                UserTransactionHelper.returnUserTransaction(utx);
 
                 if (ApplicationConfig.isAppDebugEnabled()) {
                     Log.createLogger(this.getClass().getName()).logDebug("Revisión de correo " + canal + "exitósa: " + messages.size() + " mensajes leídos. Intancia: brotec-icafal");

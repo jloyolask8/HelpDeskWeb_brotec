@@ -131,6 +131,7 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
                             unschedule(formatJobId);
 
                             utx.commit();
+                            UserTransactionHelper.returnUserTransaction(utx);
 
                         } catch (Exception ex) {
                             Logger.getLogger(SendMailJob.class.getName()).log(Level.SEVERE, "SendMailJob fallo la transaccion!!", ex);

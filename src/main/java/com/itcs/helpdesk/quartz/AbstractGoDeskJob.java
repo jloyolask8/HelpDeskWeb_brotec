@@ -34,14 +34,14 @@ public class AbstractGoDeskJob {
         return em;
     }
 
-    protected JPAServiceFacade getJpaController() throws SchedulerException {
-        EntityManagerFactory emf = createEntityManagerFactory();
-        UserTransaction utx = UserTransactionHelper.lookupUserTransaction();
-        JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf);
-        RulesEngine rulesEngine = new RulesEngine(emf, jpaController);
-        jpaController.setCasoChangeListener(rulesEngine);
-        return jpaController;
-    }
+//    protected JPAServiceFacade getJpaController() throws SchedulerException {
+//        EntityManagerFactory emf = createEntityManagerFactory();
+//        UserTransaction utx = UserTransactionHelper.lookupUserTransaction();
+//        JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf);
+//        RulesEngine rulesEngine = new RulesEngine(emf, jpaController);
+//        jpaController.setCasoChangeListener(rulesEngine);
+//        return jpaController;
+//    }
 
     protected EntityManagerFactory createEntityManagerFactory() {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("helpdeskPU");

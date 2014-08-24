@@ -237,6 +237,7 @@ public class ScheduleEventReminderJob extends AbstractGoDeskJob implements Job {
                     throw new JobExecutionException(ex);
                 } finally {
                     if (em != null) {
+                        UserTransactionHelper.returnUserTransaction(utx);
                         em.close();
                     }
                 }

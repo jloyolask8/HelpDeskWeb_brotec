@@ -120,6 +120,9 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
                     } catch (Exception ex) {
                         Logger.getLogger(CaseResponseByMailJob.class.getName()).log(Level.SEVERE, "Excepcion en " + formatJobId, ex);
                     }
+                    
+                    UserTransactionHelper.returnUserTransaction(utx);
+                    
                 } catch (MailClientFactory.MailNotConfiguredException ex) {
                     Logger.getLogger(CaseResponseByMailJob.class.getName()).log(Level.SEVERE, "Mail Not Configured for " + idCanal, ex);
                     try {

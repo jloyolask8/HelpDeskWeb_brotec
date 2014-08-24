@@ -132,6 +132,7 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
                     } finally {
                         if (em != null) {
                             em.close();
+                            UserTransactionHelper.returnUserTransaction(utx);
                         }
                     }
 

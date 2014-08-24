@@ -65,6 +65,13 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
             + "{ name: 'style', items : ['Bold','Italic','Underline','TextColor','BGColor', '-','RemoveFormat','Blockquote'] },"
             + "{ name: 'style', items : ['Styles','Format','Maximize']}]";
 
+    /**
+     * Creates a new instance of ApplicationBean
+     */
+    public ApplicationBean() {
+        super(Object.class);
+    }
+
 //    @PostConstruct
     public void init() {
         for (EnumTipoAlerta enumTipoAlerta : EnumTipoAlerta.values()) {
@@ -89,8 +96,6 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
 //        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, 
 //                                        "Se ha detectado inactividad.", "Su sesión expirará si no realiza ninguna actividad."));
     }
-
-
 
     public void onActive() {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
@@ -168,13 +173,6 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
         vista1.getFiltrosVistaList().add(filtroAlerta);
 
         return vista1;
-    }
-
-    /**
-     * Creates a new instance of ApplicationBean
-     */
-    public ApplicationBean() {
-        super(Object.class);
     }
 
     public void addChannel(String user, String channel) {

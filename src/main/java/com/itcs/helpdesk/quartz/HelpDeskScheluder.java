@@ -37,7 +37,7 @@ public class HelpDeskScheluder {
     static private Scheduler scheduler = null;
     public static final int INTERVAL_10_MIN = 600;
 
-    public static synchronized Scheduler getInstance() throws SchedulerException {
+    public static Scheduler getInstance() throws SchedulerException {
         if (scheduler == null) {
 //            SchedulerFactory sf = new StdSchedulerFactory();
             scheduler = StdSchedulerFactory.getDefaultScheduler();// sf.getScheduler();
@@ -53,7 +53,13 @@ public class HelpDeskScheluder {
         }
     }
 
-    public static synchronized boolean unschedule(final JobKey jobKey) throws SchedulerException {
+    /**
+     * removed synchronized
+     * @param jobKey
+     * @return
+     * @throws SchedulerException 
+     */
+    public static boolean unschedule(final JobKey jobKey) throws SchedulerException {
 //        try {
         boolean unscheduled = false;
         if (getInstance().checkExists(jobKey)) {
@@ -72,14 +78,14 @@ public class HelpDeskScheluder {
 //        }
     }
 
-    public static synchronized void scheduleToRunNowWithInterval(JobDetail job, Integer intervalInSeconds) throws SchedulerException {
+    public static void scheduleToRunNowWithInterval(JobDetail job, Integer intervalInSeconds) throws SchedulerException {
         Trigger trigger = TriggerBuilder.newTrigger().withIdentity(TRIGGER_NAME + job.getKey().getName(), job.getKey().getGroup())
                 .startNow().withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(intervalInSeconds)
                         .repeatForever()).build();
         getInstance().scheduleJob(job, trigger);
     }
 
-    protected static synchronized void scheduleToRunNow(JobDetail job) throws SchedulerException {
+    protected static void scheduleToRunNow(JobDetail job) throws SchedulerException {
 //        JobDetail job = JobBuilder.newJob(UnimailJob.class).withIdentity(jobId, group).build();
 //        Trigger trigger = TriggerBuilder.newTrigger().withIdentity(TRIGGER_NAME + job.getKey().getName(), job.getKey().getGroup())
 //                .startAt(startDate).withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(intervalInSeconds)
@@ -93,7 +99,7 @@ public class HelpDeskScheluder {
         getInstance().scheduleJob(job, trigger);
     }
 
-    public static synchronized void schedule(JobDetail job, Date startDate) throws SchedulerException {
+    public static void schedule(JobDetail job, Date startDate) throws SchedulerException {
         Trigger trigger = TriggerBuilder.newTrigger()
                 .withIdentity(TRIGGER_NAME + job.getKey().getName(), job.getKey().getGroup())
                 .startAt(startDate).build();
@@ -222,7 +228,7 @@ public class HelpDeskScheluder {
 
     }
 
-    public static synchronized void scheduleAlertaPorVencer(final Long idCaso, final Date whenToRun) throws SchedulerException {
+    public static void scheduleAlertaPorVencer(final Long idCaso, final Date whenToRun) throws SchedulerException {
 
         unscheduleAlertasDelCaso(idCaso);
 
@@ -282,7 +288,7 @@ public class HelpDeskScheluder {
      * @param attachIds
      * @throws SchedulerException
      */
-    public static synchronized void scheduleSendMailNota(final String idCanal, final String mensajeFinal,
+    public static void scheduleSendMailNota(final String idCanal, final String mensajeFinal,
             final String to, final String subject, final Long idCaso, final Integer idNota, final String attachIds) throws SchedulerException {
 
         System.out.println("scheduleSendMail()");

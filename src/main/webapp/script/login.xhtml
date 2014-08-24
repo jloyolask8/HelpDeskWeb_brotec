@@ -22,11 +22,16 @@
             <div id="divItcs" align="left" style="position: absolute"><div class="logo-img"/></div>
         </div>
 
+
+
         <p:dialog  closable="false" style="margin-bottom: 500px" draggable="false"
                    visible="true" id="parent" widgetVar="logindiag" resizable="false"
                    header="Bienvenido a #{applicationBean.helpdeskTitle}" modal="false" appendTo="@(body)" height="140" width="458">
             <h:form id="formlogin">
                 <p:growl id="messages" showDetail="true" sticky="false" /> 
+                <div class="formSeparator">
+                                    <h2>Autentificación de usuario</h2>
+                                </div>
                 <p:panelGrid styleClass="logInGrid" columns="1">
                     <p:inputText id="usuario" value="#{loginController.username}" title="#{bundle.EditUsuarioTitle_idUsuario}" style="margin-left: 5px; width: 380px;" />  
                     <p:watermark for="usuario" value="Usuario"/>
@@ -35,6 +40,7 @@
                     <p:panelGrid style="width: 412px; margin-top: -10px">
                         <p:row>
                             <p:column>
+                                
                                 <div align="left">
                                     <div class="checkbox-remember">
                                         <h:selectBooleanCheckbox id="check" value="1"/>

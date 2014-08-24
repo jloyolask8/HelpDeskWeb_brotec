@@ -39,10 +39,11 @@ import org.primefaces.context.RequestContext;
 /**
  *
  * @author jonathan
+ * @param <E>
  */
 public abstract class AbstractManagedBean<E> implements Serializable {
 
-    private Class<E> entityClass;
+    private final Class<E> entityClass;
     @Resource
     protected UserTransaction utx = null;
     @PersistenceUnit(unitName = "helpdeskPU")
