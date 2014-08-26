@@ -138,7 +138,7 @@
                                     <h:panelGrid  columns="2" cellpadding="5">  
                                         <f:facet name="header">  
                                             <h:outputText value="#{email.emailCliente}" />  
-                                        </f:facet>
+                                        </f:facet>  
 
                                         <h:outputText value="Nombre: " />  
                                         <h:outputText value="#{email.cliente.nombres}" />  
@@ -180,8 +180,6 @@
                                          rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelperForConditions.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR' and filtro.idComparador.idComparador eq 'BW'}" >
                                 <p:ajax/>
                             </p:inputText>
-                            
-                            <h:outputText value="#{filtro.valorDesc}"/>
 
                         </p:column>
 
