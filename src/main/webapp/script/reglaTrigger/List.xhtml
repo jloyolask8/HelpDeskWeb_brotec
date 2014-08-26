@@ -56,7 +56,17 @@
                              rowKey="#{item.idTrigger}">
 
                     <f:facet name="header">
-                        <h:outputText value="Listado de Reglas"></h:outputText>
+                        <h:outputText value="Listado de Reglas" style="float: left;"></h:outputText>
+                        <div align="right" >
+                            <p:outputPanel style="margin-top: -2px">  
+                                <p:inputText id="globalFilter" value="#{reglaTriggerController.searchPattern}"
+                                             style="width:250px;height:12px; border-radius: 4em; text-align: left; padding-left: 10px;" />  
+                                <p:watermark for="globalFilter" value="buscar" id="watermark"/>
+                                <p:commandButton value="" icon="fa fa-search"
+                                                 style="float: right; background: none; border: 0px !important;top: 4px;"
+                                                 actionListener="#{reglaTriggerController.prepareList()}" update=":form"/>
+                            </p:outputPanel>
+                        </div>
                     </f:facet>
 
                     <p:column headerText="Estado" exportable="false">

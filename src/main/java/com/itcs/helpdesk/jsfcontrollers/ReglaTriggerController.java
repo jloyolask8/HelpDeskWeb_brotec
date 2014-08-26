@@ -75,6 +75,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
     private Prioridad prioridadTemp;
     private transient EmailStruct emailTemp;
     private transient JPAFilterHelper filterHelperForConditions;
+    private String searchPattern;
 
     public ReglaTriggerController() {
         super(ReglaTrigger.class);
@@ -360,6 +361,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 
     public String prepareList() {
         recreateModel();
+        recreatePagination();
         return "/script/reglaTrigger/List";
     }
 
@@ -712,6 +714,20 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
      */
     public Collection<String> getActionClassNames() {
         return actionClassNames;
+    }
+
+    /**
+     * @return the searchPattern
+     */
+    public String getSearchPattern() {
+        return searchPattern;
+    }
+
+    /**
+     * @param searchPattern the searchPattern to set
+     */
+    public void setSearchPattern(String searchPattern) {
+        this.searchPattern = searchPattern;
     }
 
     @FacesConverter(forClass = ReglaTrigger.class, value = "ReglaTriggerControllerConverter")
