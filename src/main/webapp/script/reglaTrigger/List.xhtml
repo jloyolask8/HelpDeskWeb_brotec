@@ -110,6 +110,9 @@
 
                                 <p:commandButton ajax="false" action="#{reglaTriggerController.prepareCreate}" value="Crear regla" icon="ui-icon ui-icon-plus" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" />
 
+                                <p:commandButton ajax="false" action="#{reglaTriggerController.updateAllJustToFixLabels()}" 
+                                                 value="UPDATE LABELS" rendered="#{filtroAcceso.esUsuarioSistema()}" />
+
                             </p:toolbarGroup>
                         </p:toolbar>
                     </f:facet>

@@ -421,6 +421,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         if (casosToSend != null && !casosToSend.isEmpty()) {
             rulesEngine.applyRuleOnThisCasos(reglaTriggerSelected, casosToSend);
             addInfoMessage("Regla " + reglaTriggerSelected + " ejecutada en " + casosToSend.size() + " casos.");
+            recreateModel();
         } else {
             addWarnMessage("No se ha Seleccionado ningun caso para ejecutar la regla de negocio.");
         }
@@ -1251,8 +1252,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             current.setFechaModif(current.getFechaCreacion());
             current.setOwner(userSessionBean.getCurrent());
             current.setTema("Caso de pre-entrega");
-            current.setTipoCaso(EnumTipoCaso.PREENTREGA.getTipoCaso());
-            current.setIdSubEstado(EnumSubEstadoCaso.PREENTREGA_NUEVO.getSubEstado());
+            current.setTipoCaso(EnumTipoCaso.ENTREGA.getTipoCaso());
+            current.setIdSubEstado(EnumSubEstadoCaso.ENTREGA_NUEVO.getSubEstado());
             current.setIdCanal(EnumCanal.MANUAL.getCanal());
             current.setIdCliente(new Cliente());
             EmailCliente email = new EmailCliente();
@@ -1273,7 +1274,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             rutCliente_wizard = null;
             selectedItemIndex = -1;
         } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).logInfo("Error al preparar la creacion de un caso de preentrega");
+            Log.createLogger(this.getClass().getName()).logInfo("Error al preparar la creación de un caso de entrega");
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
         }
         return "/script/caso/Create_preentrega";
@@ -1876,6 +1877,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public void refresh() {
         recreateModel();
+        recreatePagination();
     }
 
 //    public void refreshNotas() {
@@ -3200,6 +3202,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
                 setSelectedItems(notDeleted);
                 recreateModel();
+                recreatePagination();
             }
 
         } catch (Exception e) {

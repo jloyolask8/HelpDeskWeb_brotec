@@ -18,24 +18,52 @@
             </p:accordionPanel>
         </ui:define>
         <ui:define name="body">
+
+
+
             <h:form id="form">
                 <p:messages globalOnly="true"/>
                 <h:panelGroup>
 
                     <p:panel header="Buscar" toggleable="true" >
                         <h:panelGrid columns="3">
-
-                            <p:inputText id="searchRut" value="#{clienteController.searchPattern}" size="50"  />
-                            
+                            <p:inputText id="searchRut" value="#{clienteController.searchPattern}" size="50"  />                            
                             <p:message for="searchRut"/>
                             <p:commandButton actionListener="#{clienteController.prepareList()}" icon="ui-icon-search" update=":form"/>
-
                             <p:watermark for="searchRut" value="Nombre o Apellido o email o rut o dirección municipal..."/>
                         </h:panelGrid>
-
                     </p:panel>
 
                     <br/>
+
+                    <p:toolbar style="border: none;">
+                        <p:toolbarGroup align="right">
+
+                            <p:outputLabel value="Páginas de "/>
+
+                            <p:selectOneMenu value="#{clienteController.paginationPageSize}" style="top: 7px">
+                                <p:ajax event="change" listener="#{clienteController.resetPageSize()}" update=":form"/>
+                                <f:selectItems value="#{clienteController.pagination.pageSizesAvailable}"/>
+                            </p:selectOneMenu>
+
+                            <p:separator/>
+
+                            <p:commandButton action="#{clienteController.first}" update=":form" disabled="#{not clienteController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{clienteController.pagination.itemsCount > 0}"/>
+
+                            <p:commandButton action="#{clienteController.previous}" update=":form" disabled="#{not clienteController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{clienteController.pagination.itemsCount > 0}"/>
+
+                            <p:commandButton action="#{clienteController.next}" update=":form" disabled="#{not clienteController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{clienteController.pagination.itemsCount > 0}"/>
+
+                            <p:commandButton action="#{clienteController.last}" update=":form" disabled="#{not clienteController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{clienteController.pagination.itemsCount > 0}"/>
+
+
+                            <p:separator/>
+                            <p:commandButton ajax="false" action="#{clienteController.prepareCreate}" value="Crear cliente" icon="ui-icon ui-icon-plus" />
+
+                          
+                        </p:toolbarGroup>
+                    </p:toolbar>
+
 
                     <p:dataTable widgetVar="dataTable" var="item" value="#{clienteController.items}" selectionMode="single"
                                  emptyMessage="#{bundle.emptyList}">
@@ -48,11 +76,11 @@
                         <p:column headerText="Nombre Cliente">
                             <h:outputText value="#{item.nombres} #{item.apellidos}"/>
                         </p:column>
-                        
+
                         <p:column headerText="Rut Cliente">
                             <h:outputText value="#{item.rut}"/>
                         </p:column>
-                                                
+
                         <p:column headerText="Email">
                             <p:dataList value="#{item.emailClienteList}" var="r" style="border: none" rendered="#{not empty item.emailClienteList}">
                                 #{r.emailCliente}
@@ -67,45 +95,46 @@
 
 
 
-                        <f:facet name="footer">
-
-
-
-                            <p:toolbar style="border: none;">
-                                <p:toolbarGroup align="center">
-
-                                    <p:outputLabel value="Páginas de "/>
-
-                                    <p:selectOneMenu id="cant" value="#{clienteController.paginationPageSize}" style="top: 7px">
-                                        <p:ajax event="change" listener="#{clienteController.resetPageSize()}" update=":form"/>
-                                        <f:selectItems value="#{clienteController.pagination.pageSizesAvailable}"/>
-                                    </p:selectOneMenu>
-
-                                    <p:separator/>
-
-                                    <p:commandButton action="#{clienteController.first}" update=":form" disabled="#{not clienteController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{clienteController.pagination.itemsCount > 0}"/>
-
-                                    <p:commandButton action="#{clienteController.previous}" update=":form" disabled="#{not clienteController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{clienteController.pagination.itemsCount > 0}"/>
-
-                                    <p:commandButton action="#{clienteController.next}" update=":form" disabled="#{not clienteController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{clienteController.pagination.itemsCount > 0}"/>
-
-                                    <p:commandButton action="#{clienteController.last}" update=":form" disabled="#{not clienteController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{clienteController.pagination.itemsCount > 0}"/>
-
-
-                                    <p:separator/>
-                                    <p:commandButton ajax="false" action="#{clienteController.prepareCreate}" value="Crear cliente" icon="ui-icon ui-icon-plus" />
-
-                                    <p:separator/>
-                                    <p:commandButton ajax="false" action="#{clienteController.prepareCreateMasivo()}" value="Importación masiva de clientes" icon="ui-icon ui-icon-arrowstop-1-n" />
-                                    <p:commandButton ajax="false" action="cargarClienteProducto" value="Importar Relación Cliente/#{applicationBean.productSubComponentDescription}" icon="ui-icon ui-icon-arrowstop-1-n" />
-
-                                </p:toolbarGroup>
-                            </p:toolbar>
-
-                        </f:facet> 
                     </p:dataTable>
 
                 </h:panelGroup>
+
+                <p:toolbar style="border: none;">
+                    
+                    <p:toolbarGroup align="left">
+                           <p:commandButton ajax="false" action="#{clienteController.prepareCreateMasivo()}" value="Importación masiva de clientes" icon="ui-icon ui-icon-arrowstop-1-n" />
+                        <p:commandButton ajax="false" action="cargarClienteProducto" value="Importar Relación Cliente/#{applicationBean.productSubComponentDescription}" icon="ui-icon ui-icon-arrowstop-1-n" />
+
+                    </p:toolbarGroup>
+                    
+                    
+                        
+                    <p:toolbarGroup align="right">
+
+                        <p:outputLabel value="Páginas de "/>
+
+                        <p:selectOneMenu value="#{clienteController.paginationPageSize}" style="top: 7px">
+                            <p:ajax event="change" listener="#{clienteController.resetPageSize()}" update=":form"/>
+                            <f:selectItems value="#{clienteController.pagination.pageSizesAvailable}"/>
+                        </p:selectOneMenu>
+
+                        <p:separator/>
+
+                        <p:commandButton action="#{clienteController.first}" update=":form" disabled="#{not clienteController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{clienteController.pagination.itemsCount > 0}"/>
+
+                        <p:commandButton action="#{clienteController.previous}" update=":form" disabled="#{not clienteController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{clienteController.pagination.itemsCount > 0}"/>
+
+                        <p:commandButton action="#{clienteController.next}" update=":form" disabled="#{not clienteController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{clienteController.pagination.itemsCount > 0}"/>
+
+                        <p:commandButton action="#{clienteController.last}" update=":form" disabled="#{not clienteController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{clienteController.pagination.itemsCount > 0}"/>
+
+
+                        <p:separator/>
+                        <p:commandButton ajax="false" action="#{clienteController.prepareCreate}" value="Crear cliente" icon="ui-icon ui-icon-plus" />
+
+                     
+                    </p:toolbarGroup>
+                </p:toolbar>
 
 
 

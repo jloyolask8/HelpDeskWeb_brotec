@@ -144,8 +144,8 @@
             </p:idleMonitor>
 
             <h:form id="mainform" style="height: 100%">
-                <p:growl id="messages" life="30000" autoUpdate="true"  globalOnly="true" widgetVar="messages"
-                         showDetail="true">
+                <p:growl id="messages" life="10000" autoUpdate="true"  globalOnly="true" widgetVar="messages"
+                         showDetail="false">
                 </p:growl>
             </h:form>
 
@@ -164,7 +164,7 @@
                                     <p:menuitem value="Crear Nuevo Caso" action="#{casoController.prepareCreate}" ajax="false" icon="fa fa-plus">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
-                                    <p:menuitem value="Crear Nuevo Caso Pre-Entrega" action="#{casoController.prepareCreateCasoPreentrega}" ajax="false" icon="fa fa-briefcase"
+                                    <p:menuitem value="Crear Nuevo Caso de Entrega" action="#{casoController.prepareCreateCasoPreentrega}" ajax="false" icon="fa fa-briefcase"
                                                 rendered="#{filtroAcceso.verificarAccesoACrearCasoPreentrega()}">  
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
@@ -313,7 +313,7 @@
                                             </f:facet>
                                         </p:ajaxStatus>
                                         <p:inputText id="idCaso" value="#{casoController.idCaso}" title="#{bundle.EditCasoTitle_idCaso}"
-                                                     placeholder="id caso" style="margin-right:10px" size="6"/>
+                                                     placeholder="id caso" style="margin-right:10px" size="10"/>
                                         <p:commandButton ajax="false" action="#{casoController.prepareEditCaso}" icon="ui-icon ui-icon-search">
                                             <p:resetInput target="@form" />
                                         </p:commandButton>

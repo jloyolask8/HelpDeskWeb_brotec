@@ -230,6 +230,26 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
     public void setEvent(DefaultScheduleEvent event) {
         this.event = event;
     }
+    
+    public void deleteSelectedEvent() {
+        try {
+            com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) event.getData();
+
+            if (event.getId() == null) {
+                addInfoMessage("El evento no se puede eliminar por que no existe.");
+            } else {
+                Logger.getLogger(CasoScheduleController.class.getName()).log(Level.SEVERE, "deleteSelectedEvent entityEvent::{0}", entityEvent);
+                lazyScheduleEventsModel.deleteEvent(event);
+                getJpaController().remove(com.itcs.helpdesk.persistence.entities.ScheduleEvent.class, entityEvent);                
+                executeInClient("PF('myschedule').update();PF('viewEventDialog').hide();");
+            }
+
+        } catch (Exception ex) {
+            addErrorMessage("No se pudo eliminar el evento:" + ex.getMessage());
+            Logger.getLogger(CasoScheduleController.class.getName()).log(Level.SEVERE, "deleteSelectedEvent", ex);
+        }
+
+    }
 
     public void quickSaveEvent() {
 

@@ -554,7 +554,7 @@
                             <p:commandButton rendered="#{casoController.verificarReabrirCaso()}" ajax="true" value="Reabrir Caso" onclick="openCase.show();" />
 
                             <p:commandButton ajax="false" icon="fa fa-download" value="Generar Acta de PreEntrega" 
-                                             rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.PREENTREGA.getTipoCaso()}">
+                                             rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.ENTREGA.getTipoCaso()}">
                                 <p:fileDownload value="#{casoController.generarActaPreEntrega()}" />
                             </p:commandButton>
 
@@ -1690,9 +1690,9 @@
                     </h:panelGrid>
 
                     <p:outputLabel value="Nota: se cerrarán también los sub-casos (casos hijos del caso actual), si existen."
-                                   rendered="#{casoController.selected.tipoCaso ne EnumTipoCaso.PREENTREGA.getTipoCaso()}"/>
+                                   rendered="#{casoController.selected.tipoCaso ne EnumTipoCaso.ENTREGA.getTipoCaso()}"/>
                     <p:outputLabel value="Nota: Todos los subcasos deben estar previamente cerrados."
-                                   rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.PREENTREGA.getTipoCaso()}"/>
+                                   rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.ENTREGA.getTipoCaso()}"/>
 
                     <h:panelGrid columns="3">
 
@@ -1702,7 +1702,7 @@
                                          actionListener="#{casoController.cerrarCaso}"   />
 
                         <p:commandButton value="Cerrar el caso y programar visita preventiva" 
-                                         rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.PREENTREGA.getTipoCaso()}"
+                                         rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.ENTREGA.getTipoCaso()}"
                                          ajax="true" update=":formCerrarCaso :mainform:messages"
                                          actionListener="#{casoController.cerrarCasoYProgramarVP}"   />
                     </h:panelGrid>
@@ -2140,6 +2140,10 @@
                     <p:commandButton id="addButton" value="Guardar" 
                                      actionListener="#{casoScheduleController.quickSaveEvent()}"
                                      update=":viewEventForm:eventDetails" />
+                    
+                      &nbsp;
+                    <p:commandButton id="delButton" value="Eliminar" 
+                                     actionListener="#{casoScheduleController.deleteSelectedEvent()}"/>
                     &nbsp;
                     <p:commandLink id="editButton" value="Editar evento »" style="font-weight: bold;float: right;color: #15c;text-decoration: underline;cursor: pointer;white-space: nowrap;"
                                    actionListener="#{casoScheduleController.goEditEvent()}" update=":inputPanel"/>

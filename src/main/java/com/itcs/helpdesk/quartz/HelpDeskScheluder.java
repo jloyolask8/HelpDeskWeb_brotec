@@ -54,30 +54,15 @@ public class HelpDeskScheluder {
     }
 
     /**
-     * removed synchronized
+     * Delete the identified Job from the Scheduler - and any associated
+     * Triggers. removed synchronized
      *
      * @param jobKey
      * @return
      * @throws SchedulerException
      */
     public static boolean unschedule(final JobKey jobKey) throws SchedulerException {
-//        try {
-        boolean unscheduled = false;
-        if (getInstance().checkExists(jobKey)) {
-            unscheduled = getInstance().deleteJob(jobKey);
-//            if (ApplicationConfig.isAppDebugEnabled()) {
-            Log.createLogger(HelpDeskScheluder.class.getName()).logInfo("unscheduled job with jobKey:" + jobKey.getName() + "/" + jobKey.getGroup() + (unscheduled ? " succeeded." : "failed."));
-//            }
-        } else {
-            //throw new SchedulerException("unschedule jobKey Error: No existe el job " + jobKey.getName());
-            Log.createLogger(HelpDeskScheluder.class.getName()).logInfo("job " + jobKey.getName() + "/" + jobKey.getGroup() + " does not exists!!!.");
-        }
-
-        return unscheduled;
-//        } catch (SchedulerException ex) {
-//            Log.createLogger(HelpDeskScheluder.class.getName()).log(Level.SEVERE, null, ex);
-//            return false;
-//        }
+        return getInstance().deleteJob(jobKey);
     }
 
     public static void scheduleToRunNowWithInterval(JobDetail job, Integer intervalInSeconds) throws SchedulerException {
@@ -114,7 +99,7 @@ public class HelpDeskScheluder {
         scheduleSendMail(idCaso, idCanal, mensajeFinal, tos, subject, null);
     }
 
-    public static String scheduleSendMail(final Long idCaso, final String idCanal, final String mensajeFinal,
+    private static String scheduleSendMail(final Long idCaso, final String idCanal, final String mensajeFinal,
             final String to, final String subject, final Date whenToRun) throws SchedulerException {
 
         System.out.println("scheduling SendMail job");

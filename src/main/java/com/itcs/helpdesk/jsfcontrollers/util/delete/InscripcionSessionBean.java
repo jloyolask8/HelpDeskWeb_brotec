@@ -263,7 +263,7 @@ public class InscripcionSessionBean extends AbstractManagedBean<Caso> implements
     }
 
     public void checkAccessToCasosList(javax.faces.event.ComponentSystemEvent event) {
-        System.out.println("checkSession()...");
+        System.out.println("checkAccessToCasosList()...");
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         checkEmbeddedParam(request);
         String rut_req = request.getParameter("rut");

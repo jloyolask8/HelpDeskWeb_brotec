@@ -4,6 +4,7 @@
  */
 package com.itcs.helpdesk.jsfcontrollers;
 
+import com.itcs.helpdesk.jsfcontrollers.util.ApplicationBean;
 import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.FiltroVista;
 import com.itcs.helpdesk.persistence.entities.Resource;
@@ -15,6 +16,8 @@ import com.itcs.helpdesk.quartz.ActionClassExecutorJob;
 import com.itcs.helpdesk.quartz.HelpDeskScheluder;
 import com.itcs.helpdesk.quartz.ScheduleEventReminderJob;
 import com.itcs.helpdesk.util.Log;
+import com.itcs.helpdesk.util.ManagerCasos;
+import com.itcs.helpdesk.util.view.Colors;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -47,6 +50,8 @@ import org.quartz.SchedulerException;
 @SessionScoped
 public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpdesk.persistence.entities.ScheduleEvent> implements Serializable {
 
+    @ManagedProperty(value = "#{applicationBean}")
+    private ApplicationBean applicationBean;
     @ManagedProperty(value = "#{casoController}")
     private CasoController casoController;
     @ManagedProperty(value = "#{UserSessionBean}")
@@ -93,96 +98,104 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
                     getFilterHelper().getVista().setFiltrosVistaList(new ArrayList<FiltroVista>(2));
                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
-                    //add date filters
-                    FiltroVista f1 = new FiltroVista();
-                    f1.setIdFiltro(1);//otherwise i dont know what to remove dude.
-                    f1.setIdCampo("startDate");
-                    f1.setIdComparador(EnumTipoComparacion.BW.getTipoComparacion());
-                    f1.setValor(sdf.format(start));
-                    f1.setValor2(sdf.format(end));
-
-                    f1.setIdVista(getFilterHelper().getVista());
-
-                    getFilterHelper().getVista().getFiltrosVistaList().add(f1);
-
+//                    if (filtrosUsuario != null && !filtrosUsuario.isEmpty()) {
+//                        //add current caso filter
+//                        FiltroVista f4_0 = new FiltroVista();
+//                        f4_0.setIdFiltro(4);//otherwise i dont know what to remove dude.
+//                        f4_0.setIdCampo("idUsuario");
+//                        f4_0.setIdComparador(EnumTipoComparacion.SC.getTipoComparacion());
+//                        String commaSeparatedIdOfUsuariosFilter = "";
+//                        boolean first = true;
+//                        for (Usuario usuario : filtrosUsuario) {
+//                            if (first) {
+//                                commaSeparatedIdOfUsuariosFilter += usuario.getIdUsuario();
+//                                first = false;
+//                            } else {
+//                                commaSeparatedIdOfUsuariosFilter += ("," + usuario.getIdUsuario());
+//                            }
+//                        }
+//
+//                        f4_0.setValor(commaSeparatedIdOfUsuariosFilter);
+//                        f4_0.setIdVista(getFilterHelper().getVista());
+//                        getFilterHelper().getVista().getFiltrosVistaList().add(f4_0);
+//                    }
                     if (filtrosUsuario != null && !filtrosUsuario.isEmpty()) {
-                        //add current caso filter
-                        FiltroVista f4_0 = new FiltroVista();
-                        f4_0.setIdFiltro(4);//otherwise i dont know what to remove dude.
-                        f4_0.setIdCampo("idUsuario");
-                        f4_0.setIdComparador(EnumTipoComparacion.SC.getTipoComparacion());
-                        String commaSeparatedIdOfUsuariosFilter = "";
-                        boolean first = true;
+
                         for (Usuario usuario : filtrosUsuario) {
-                            if (first) {
-                                commaSeparatedIdOfUsuariosFilter += usuario.getIdUsuario();
-                                first = false;
-                            } else {
-                                commaSeparatedIdOfUsuariosFilter += ("," + usuario.getIdUsuario());
-                            }
-                        }
 
-                        f4_0.setValor(commaSeparatedIdOfUsuariosFilter);
-                        f4_0.setIdVista(getFilterHelper().getVista());
-                        getFilterHelper().getVista().getFiltrosVistaList().add(f4_0);
-                    }
+                            //add date filter
+                            FiltroVista f1 = new FiltroVista();
+                            f1.setIdFiltro(1);//otherwise i dont know what to remove dude.
+                            f1.setIdCampo("startDate");
+                            f1.setIdComparador(EnumTipoComparacion.BW.getTipoComparacion());
+                            f1.setValor(sdf.format(start));
+                            f1.setValor2(sdf.format(end));
 
-                    if (filtrosUsuario != null && !filtrosUsuario.isEmpty()) {
-                        //add current caso filter
-                        FiltroVista f4 = new FiltroVista();
-                        f4.setIdFiltro(4);//otherwise i dont know what to remove dude.
-                        f4.setIdCampo("usuariosInvitedList");
-                        f4.setIdComparador(EnumTipoComparacion.IM.getTipoComparacion());
-                        String commaSeparatedIdOfUsuariosFilter = "";
-                        boolean first = true;
-                        for (Usuario usuario : filtrosUsuario) {
-                            if (first) {
-                                commaSeparatedIdOfUsuariosFilter += usuario.getIdUsuario();
-                                first = false;
-                            } else {
-                                commaSeparatedIdOfUsuariosFilter += ("," + usuario.getIdUsuario());
-                            }
-                        }
+                            f1.setIdVista(getFilterHelper().getVista());
 
-                        f4.setValor(commaSeparatedIdOfUsuariosFilter);
-                        f4.setIdVista(getFilterHelper().getVista());
-                        getFilterHelper().getVista().getFiltrosVistaList().add(f4);
-                    }
+                            getFilterHelper().getVista().getFiltrosVistaList().add(f1);
+                        //end date filter
 
-                    if (filtrosRecurso != null && !filtrosRecurso.isEmpty()) {
-                        //add current caso filter
-                        FiltroVista f5 = new FiltroVista();
-                        f5.setIdFiltro(4);//otherwise i dont know what to remove dude.
-                        f5.setIdCampo("resourceList");
-                        f5.setIdComparador(EnumTipoComparacion.IM.getTipoComparacion());
-                        String commaSeparatedIdOfResourcesFilter = "";
-                        boolean first = true;
-                        for (Resource r : filtrosRecurso) {
-                            if (first) {
-                                commaSeparatedIdOfResourcesFilter += r.getIdResource();
-                                first = false;
-                            } else {
-                                commaSeparatedIdOfResourcesFilter += ("," + r.getIdResource());
-                            }
-                        }
+                            //add current caso filter
+                            FiltroVista f4 = new FiltroVista();
+                            f4.setIdFiltro(4);//otherwise i dont know what to remove dude.
+                            f4.setIdCampo("usuariosInvitedList");
+                            f4.setIdComparador(EnumTipoComparacion.IM.getTipoComparacion());
+//                            String commaSeparatedIdOfUsuariosFilter = "";
+//                            boolean first = true;
+//                            for (Usuario usuario : filtrosUsuario) {
+//                                if (first) {
+//                                    commaSeparatedIdOfUsuariosFilter += usuario.getIdUsuario();
+//                                    first = false;
+//                                } else {
+//                                    commaSeparatedIdOfUsuariosFilter += ("," + usuario.getIdUsuario());
+//                                }
+//                            }
 
-                        f5.setValor(commaSeparatedIdOfResourcesFilter);
-                        f5.setIdVista(getFilterHelper().getVista());
-                        getFilterHelper().getVista().getFiltrosVistaList().add(f5);
-                    }
+                            f4.setValor(usuario.getIdUsuario());
+                            f4.setIdVista(getFilterHelper().getVista());
+                            getFilterHelper().getVista().getFiltrosVistaList().add(f4);
 
-                    System.out.println("VISTA=" + getFilterHelper().getVista());
-
-                    final List<com.itcs.helpdesk.persistence.entities.ScheduleEvent> findEntities
-                            = (List<com.itcs.helpdesk.persistence.entities.ScheduleEvent>) getJpaController().findAllEntities(getEntityClass(), getFilterHelper().getVista(), new OrderBy("startDate", OrderBy.OrderType.DESC), null);
+                            final List<com.itcs.helpdesk.persistence.entities.ScheduleEvent> findEntities
+                                    = (List<com.itcs.helpdesk.persistence.entities.ScheduleEvent>) getJpaController().findAllEntities(getEntityClass(), getFilterHelper().getVista(), new OrderBy("startDate", OrderBy.OrderType.DESC), null);
 //                    System.out.println("events:" + findEntities);
-                    for (com.itcs.helpdesk.persistence.entities.ScheduleEvent scheduleEvent : findEntities) {
-                        final DefaultScheduleEvent defaultScheduleEvent = new DefaultScheduleEvent(scheduleEvent.getTitle(), scheduleEvent.getStartDate(), scheduleEvent.getEndDate());
-                        defaultScheduleEvent.setAllDay(scheduleEvent.getAllDay());
-                        defaultScheduleEvent.setData(scheduleEvent);
+                            for (com.itcs.helpdesk.persistence.entities.ScheduleEvent scheduleEvent : findEntities) {
+                                final DefaultScheduleEvent defaultScheduleEvent
+                                        = new DefaultScheduleEvent(scheduleEvent.getTitle(),
+                                                scheduleEvent.getStartDate(), scheduleEvent.getEndDate());
+                                defaultScheduleEvent.setAllDay(scheduleEvent.getAllDay());
+                                defaultScheduleEvent.setData(scheduleEvent);
+                                defaultScheduleEvent.setStyleClass(usuario.getIdUsuario());
 
-                        addEvent(defaultScheduleEvent);
+                                addEvent(defaultScheduleEvent);
+                            }
+
+                        }
+
                     }
+
+//                    if (filtrosRecurso != null && !filtrosRecurso.isEmpty()) {
+//                        //add current caso filter
+//                        FiltroVista f5 = new FiltroVista();
+//                        f5.setIdFiltro(4);//otherwise i dont know what to remove dude.
+//                        f5.setIdCampo("resourceList");
+//                        f5.setIdComparador(EnumTipoComparacion.IM.getTipoComparacion());
+//                        String commaSeparatedIdOfResourcesFilter = "";
+//                        boolean first = true;
+//                        for (Resource r : filtrosRecurso) {
+//                            if (first) {
+//                                commaSeparatedIdOfResourcesFilter += r.getIdResource();
+//                                first = false;
+//                            } else {
+//                                commaSeparatedIdOfResourcesFilter += ("," + r.getIdResource());
+//                            }
+//                        }
+//
+//                        f5.setValor(commaSeparatedIdOfResourcesFilter);
+//                        f5.setIdVista(getFilterHelper().getVista());
+//                        getFilterHelper().getVista().getFiltrosVistaList().add(f5);
+//                    }
+//                    System.out.println("VISTA=" + getFilterHelper().getVista());
                 } catch (Exception ex) {
                     Logger.getLogger(GlobalScheduleController.class.getName()).log(Level.SEVERE, "loadEvents", ex);
                 }
@@ -206,6 +219,10 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
 
     public void setEvent(DefaultScheduleEvent event) {
         this.event = event;
+    }
+    
+    public void removeAllUsuariosFilters() {
+        this.filtrosUsuario = new LinkedList<Usuario>();
     }
 
     public void addEvent() {
@@ -299,7 +316,7 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
                 cal.add(Calendar.MINUTE, minituesAmount);
 
                 String jobId = HelpDeskScheluder.scheduleEventReminderJob(
-                       entityEvent.getUsuariosInvitedList(), 
+                        entityEvent.getUsuariosInvitedList(),
                         entityEvent.getIdCaso().getIdCaso(),
                         scheduleEventReminder.getEventId().getEventId().toString(),
                         scheduleEventReminder.getIdReminder().toString(), cal.getTime());
@@ -311,7 +328,7 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
         }
     }
 
-    private void unscheduleQuartzReminders(com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent)  {
+    private void unscheduleQuartzReminders(com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent) {
         if (entityEvent.getScheduleEventReminderList() != null && !entityEvent.getScheduleEventReminderList().isEmpty()) {
             //we need to schedule event reminders
 
@@ -501,9 +518,26 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
             if (this.filtrosUsuario == null) {
                 filtrosUsuario = new LinkedList<Usuario>();
             }
-            filtrosUsuario.add((Usuario) item);
-            selectedUserToAddInvited = null;//reset selection
-            addInfoMessage("Filtro usuario Agregado OK!");
+
+            final Usuario usuario = (Usuario) item;
+            if (!filtrosUsuario.contains(usuario)) {
+                if (StringUtils.isEmpty(usuario.getRandomColor())) {
+                    final String color = Colors.getColor(filtrosUsuario.size()+1);
+                    if(color != null){
+                        usuario.setRandomColor(color);
+                        filtrosUsuario.add(usuario);
+                    }else{
+                         addInfoMessage("No puede agregar más usuarios, favor quitar algunos que no necesite ver, para agregar más!");
+                    }
+                    
+                }
+                
+                selectedUserToAddInvited = null;//reset selection
+
+            } else {
+                addInfoMessage("Este usuario ya existe en la lista!");
+            }
+
         } catch (Exception ex) {
             addInfoMessage("No se pudo Agregar " + item);
             Log.createLogger(CasoController.class.getName()).log(Level.SEVERE, "usuarioFilterItemSelectEvent", ex);
@@ -576,14 +610,19 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
         try {
 
             if (this.filtrosRecurso == null) {
-                this.filtrosRecurso = (new LinkedList<Resource>());
+                filtrosRecurso = new LinkedList<Resource>();
             }
-            this.filtrosRecurso.add((Resource) item);
-            setSelectedResourceToAddInvited(null);//reset selection
 
-            addInfoMessage("Resource filter added OK!");
+            final Resource res = (Resource) item;
+            if (!filtrosRecurso.contains(res)) {
+                filtrosRecurso.add(res);
+                setSelectedResourceToAddInvited(null);//reset selection
+
+            } else {
+                addInfoMessage("Filtro recurso ya existe!");
+            }
         } catch (Exception ex) {
-            addInfoMessage("No se pudo Agregar Resource" + item);
+            addInfoMessage("No se pudo Agregar el recurso al filtro: " + item);
             Log.createLogger(CasoController.class.getName()).log(Level.SEVERE, "resourceFilterItemSelectEvent", ex);
         }
 
@@ -658,5 +697,12 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
      */
     public void setInsideCasoDisplay(boolean insideCasoDisplay) {
         this.insideCasoDisplay = insideCasoDisplay;
+    }
+
+    /**
+     * @param applicationBean the applicationBean to set
+     */
+    public void setApplicationBean(ApplicationBean applicationBean) {
+        this.applicationBean = applicationBean;
     }
 }

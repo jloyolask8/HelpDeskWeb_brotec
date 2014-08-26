@@ -14,21 +14,26 @@
             <h:outputText value="#{applicationBean.helpdeskTitle} - Agenda"></h:outputText>
         </ui:define>
 
-        <ui:define name="head">
+        <ui:define name="head" id="head">
 
             <style type="text/css">
-
                 .ui-datatable thead th, .ui-datatable tbody td, .ui-datatable tfoot td {
                     border-width: 0px  !important;
                 }
-
             </style>
+
+
+
+
 
 
         </ui:define>
 
         <ui:define name="west" id="west">
             <h:form id="filterSchedule">
+
+
+
                 <p:panelGrid columns="1" styleClass="filtersGrid">
                     <p:row>
                         <p:column>
@@ -37,7 +42,7 @@
 
                         <p:column>
                             <p:autoComplete id="invitados" value="#{globalScheduleController.selectedUserToAddInvited}" 
-                                            completeMethod="#{globalScheduleController.autoCompleteUsuario}"  
+                                            completeMethod="#{globalScheduleController.autoCompleteUsuario}"  dropdown="true"
                                             var="u"  itemValue="#{u}" itemLabel="#{u.capitalName}">  
 
                                 <p:ajax  event="itemSelect"  listener="#{globalScheduleController.usuarioFilterItemSelectEvent}"  
@@ -74,20 +79,47 @@
 
                                 <h:outputText value="mostrar agenda de todos" rendered="#{empty globalScheduleController.filtrosUsuario}"/>
 
-                                <ui:repeat id="invitadosList" value="#{globalScheduleController.filtrosUsuario}" var="userFilter">
-                                    <h:panelGroup styleClass="ticket-status" style="background: #4abf5a; color: #FFFFFF;"
-                                                  layout="block">
+                                <p:dataTable id="invitadosList" value="#{globalScheduleController.filtrosUsuario}" var="userFilter"
+                                             styleClass="hide-column-names"
+                                             emptyMessage="favor agregue un calendario/Agenda de un usuario del sistema." 
+                                             scrollRows="22" scrollable="true" liveScroll="true" scrollHeight="250">  
+
+
+                                    <p:column width="5%">
+                                        <span style="overflow: hidden;width: 1em;
+                                              height: 1em;display: block;border: solid 1px #000;text-indent: 1em;white-space: nowrap;background-color: ##{userFilter.randomColor};">
+                                        </span>
+                                    </p:column>
+                                    <p:column>
                                         <h:outputText   value="#{userFilter.capitalName} (#{userFilter.idUsuario})"/>
-                                        <p:commandLink value="x" update=":filterSchedule :formAgendarEvento" 
+                                    </p:column>  
+
+                                    <p:column width="5%">
+                                        <p:commandLink update=":filterSchedule :formAgendarEvento" 
                                                        process="@form"
                                                        style="border: none !important;"
                                                        styleClass="btn btn-xs btn-danger btn-outline">
                                             <p:collector unique="true" value="#{userFilter}" 
                                                          removeFrom="#{globalScheduleController.filtrosUsuario}"/>
+                                            <i class="fa fa-times"></i>
                                         </p:commandLink>
-                                    </h:panelGroup>&nbsp;
+                                    </p:column>
 
-                                </ui:repeat>
+                                </p:dataTable>  
+
+                                <p:commandLink update=":filterSchedule :formAgendarEvento" rendered="#{globalScheduleController.filtrosUsuario.size() gt 1}"
+                                               actionListener="#{globalScheduleController.removeAllUsuariosFilters()}"
+                                               process="@this">                                    
+                                    <i class="fa fa-times"></i>&nbsp;Quitar todos
+                                </p:commandLink>
+
+                                <style type="text/css">
+                                    <ui:repeat value="#{globalScheduleController.filtrosUsuario}" var="user">
+                                    <h:outputText value=".#{user.idUsuario}{background: \##{user.randomColor}; border: 1px solid \##{user.randomColor}; color: #FFFFFF;} " />          
+                                    </ui:repeat>
+                                </style>
+
+
                             </p:panel>
                             <p:message for="invitadosList"/>
                         </p:column>
@@ -106,7 +138,7 @@
 
                         <p:column>
                             <p:autoComplete id="resources" value="#{globalScheduleController.selectedResourceToAddInvited}" 
-                                            completeMethod="#{globalScheduleController.autoCompleteResource}"  
+                                            completeMethod="#{globalScheduleController.autoCompleteResource}"  dropdown="true"
                                             var="rr"  itemValue="#{rr}" itemLabel="#{rr.nombre}">  
 
                                 <p:ajax  event="itemSelect"  listener="#{globalScheduleController.resourceFilterItemSelectEvent}" 
@@ -172,11 +204,13 @@
             <pe:layoutPane position="center" id="listaInbox">                   
                 <div style="margin-top: 12px !important;">
 
+                    <h1>Agenda Glogal</h1>
+
                     <h:panelGroup id="panel">
 
                         <h:form id="formAgendarEvento">
                             <p:schedule id="myschedule" value="#{globalScheduleController.lazyScheduleEventsModel}" 
-                                        firstHour="8" widgetVar="myschedule" >
+                                        firstHour="8" widgetVar="myschedule">
                                 <p:ajax event="dateSelect" listener="#{globalScheduleController.onDateSelect}" 
                                         update=":createEventForm:eventDetails" oncomplete="PF('createEventDialog').show()" />  
                                 <p:ajax event="eventSelect" listener="#{globalScheduleController.onEventSelect}" 

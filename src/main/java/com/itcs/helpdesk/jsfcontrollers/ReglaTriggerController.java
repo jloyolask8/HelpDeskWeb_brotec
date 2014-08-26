@@ -8,13 +8,18 @@ import com.itcs.helpdesk.persistence.entities.Area;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Categoria;
 import com.itcs.helpdesk.persistence.entities.Condicion;
+import com.itcs.helpdesk.persistence.entities.FieldType;
 import com.itcs.helpdesk.persistence.entities.Grupo;
 import com.itcs.helpdesk.persistence.entities.Prioridad;
 import com.itcs.helpdesk.persistence.entities.ReglaTrigger;
+import com.itcs.helpdesk.persistence.entities.TipoComparacion;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entities.Vista;
+import com.itcs.helpdesk.persistence.entityenums.EnumFieldType;
 import com.itcs.helpdesk.persistence.entityenums.EnumNombreAccion;
+import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
+import com.itcs.helpdesk.persistence.utils.ComparableField;
 import com.itcs.helpdesk.persistence.utils.OrderBy;
 import com.itcs.helpdesk.rules.Action;
 import com.itcs.helpdesk.rules.ActionInfo;
@@ -45,6 +50,7 @@ import com.itcs.helpdesk.util.ClassUtils;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.LinkedList;
+import javax.faces.model.SelectItem;
 
 @ManagedBean(name = "reglaTriggerController")
 @SessionScoped
@@ -82,7 +88,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 
         int index = 0;
         for (String s : noArr) {
-            ReglaTrigger regla = ((List<ReglaTrigger>)getItems().getWrappedData()).get(Integer.parseInt(s));
+            ReglaTrigger regla = ((List<ReglaTrigger>) getItems().getWrappedData()).get(Integer.parseInt(s));
             regla.setOrden(index++);
             getJpaController().merge(regla);
         }
@@ -147,7 +153,6 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 ////        }  
 //
 //    }
-
     /**
      * @deprecated @param node
      */
@@ -180,7 +185,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         ReglaTrigger regla = getJpaController().getReglaTriggerFindByIdTrigger(idRegla);
         regla.setReglaActiva(Boolean.valueOf(valor));
         try {
-            getJpaController().mergeReglaTrigger(regla);            
+            getJpaController().mergeReglaTrigger(regla);
             JsfUtil.addSuccessMessage("Regla " + idRegla + " actualizada");
             System.out.println("regla " + idRegla + " actualizada");
             recreateModel();
@@ -321,7 +326,6 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         return filterHelperForConditions;
     }
 
-
     public boolean esAccionAsignarArea(Accion accion) {
         return esAccion(accion, EnumNombreAccion.ASIGNAR_A_AREA);
     }
@@ -408,26 +412,6 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         return null;
     }
 
-    public String create() {
-        try {
-            for (Condicion c : current.getCondicionList()) {
-                c.setIdCondicion(null);
-            }
-            for (Accion accion : current.getAccionList()) {
-                accion.setIdAccion(null);
-            }
-
-//            current.setAccionList(acciones);
-            getJpaController().persistReglaTrigger(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ReglaTriggerCreated"));
-            return prepareList();
-        } catch (Exception e) {
-            e.printStackTrace();
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
-            return null;
-        }
-    }
-
     public String prepareEdit(ReglaTrigger item) {
         setSelected(item);
         return prepareEdit();
@@ -442,23 +426,18 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         return "/script/reglaTrigger/Edit";
     }
 
-    public String update() {
+    public String create() {
         try {
             for (Condicion condicion : current.getCondicionList()) {
-                if (condicion.getIdCondicion() < 0) {
-                    condicion.setIdCondicion(null);
-                }
+                setConditionLabel(condicion);
+                condicion.setIdCondicion(null);
+            }
+            for (Accion accion : current.getAccionList()) {
+                accion.setIdAccion(null);
             }
 
-            for (Accion accion : current.getAccionList()) {
-                if (accion.getIdAccion() < 0) {
-                    accion.setIdAccion(null);
-                }
-            }
-            getJpaController().mergeReglaTrigger(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ReglaTriggerUpdated"));
-            recreateModel();
-            recreatePagination();
+            getJpaController().persistReglaTrigger(current);
+            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ReglaTriggerCreated"));
             return prepareList();
         } catch (Exception e) {
             e.printStackTrace();
@@ -467,17 +446,129 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         }
     }
 
-    public String update(ReglaTrigger regla) {
+    /**
+     * helper method to fix labels of reglas, only used by user SISTEMA
+     *
+     * @return
+     */
+    public String updateAllJustToFixLabels() {
+        List<ReglaTrigger> reglas = (List<ReglaTrigger>) getItems().getWrappedData();
+        for (ReglaTrigger reglaTrigger : reglas) {
+            update(reglaTrigger, true);
+        }
+
+        return prepareList();
+
+    }
+    
+     private void update(ReglaTrigger current, boolean updateLabels) {
         try {
-            System.out.println(regla + " regla estado:" + regla.getReglaActiva());
-            getJpaController().mergeReglaTrigger(regla);
+            if (updateLabels) {
+                for (Condicion condicion : current.getCondicionList()) {
+                    setConditionLabel(condicion);
+
+                    if (condicion.getIdCondicion() < 0) {
+                        condicion.setIdCondicion(null);
+                    }
+                }
+
+                for (Accion accion : current.getAccionList()) {
+                    if (accion.getIdAccion() < 0) {
+                        accion.setIdAccion(null);
+                    }
+                }
+            }
+
+            getJpaController().mergeReglaTrigger(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ReglaTriggerUpdated"));
-            return prepareEdit();
         } catch (Exception e) {
+            e.printStackTrace();
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
-            return null;
         }
     }
+
+    public void update(ReglaTrigger current) {
+        update(current, false);
+    }
+
+    public String update() {
+
+        update(current, true);
+
+        recreateModel();
+        recreatePagination();
+        return prepareList();
+
+//        try {
+//            for (Condicion condicion : current.getCondicionList()) {
+//                setConditionLabel(condicion);
+//
+//                if (condicion.getIdCondicion() < 0) {
+//                    condicion.setIdCondicion(null);
+//                }
+//            }
+//
+//            for (Accion accion : current.getAccionList()) {
+//                if (accion.getIdAccion() < 0) {
+//                    accion.setIdAccion(null);
+//                }
+//            }
+//            getJpaController().mergeReglaTrigger(current);
+//            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ReglaTriggerUpdated"));
+//            recreateModel();
+//            recreatePagination();
+//            return prepareList();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
+//            return null;
+//        }
+    }
+
+    private void setConditionLabel(Condicion condicion) throws Exception {
+
+        final String idCampo = condicion.getIdCampo();
+        final TipoComparacion idComparador = condicion.getIdComparador();
+        final ComparableField comparableField = getFilterHelperForConditions().getComparableField(idCampo);
+        final FieldType fieldTypeId = comparableField.getFieldTypeId();
+
+        if (fieldTypeId.equals(EnumFieldType.SELECTONE_ENTITY.getFieldType())) {
+
+            SelectItem[] selectItems = getFilterHelperForConditions().findPosibleOptions(condicion.getIdCampo(), null);
+
+            if (!idComparador.equals(EnumTipoComparacion.SC.getTipoComparacion()) && !condicion.getIdCampo().equalsIgnoreCase("emailCliente")) {
+
+                for (SelectItem selectItem : selectItems) {
+                    final String itemId = selectItem.getValue().toString();
+                    if (itemId.equalsIgnoreCase(condicion.getValor())) {
+                        condicion.setValorDesc(selectItem.getLabel());
+                        break;
+                    }
+                }
+
+            } else if (condicion.getIdComparador().equals(EnumTipoComparacion.SC.getTipoComparacion()) && !condicion.getIdCampo().equalsIgnoreCase("emailCliente")) {
+
+                final List<String> valores = condicion.getValoresList();
+                List<String> valorDesc = new ArrayList<String>(valores.size());
+
+                for (String valor : valores) {
+
+                    for (SelectItem selectItem : selectItems) {
+                        final String itemId = selectItem.getValue().toString();
+                        if (itemId.equalsIgnoreCase(valor)) {
+                            valorDesc.add(selectItem.getLabel());
+                            break;
+                        }
+                    }
+                }
+
+                condicion.setValorDesc(valorDesc.toString());
+
+            }
+        }
+    }
+
+   
 
     public String destroy() {
         if (current == null) {
@@ -547,7 +638,6 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 //        }
 //        return reglaItems;
 //    }
-
     /**
      * @return the acciones
      */
@@ -614,10 +704,8 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 
     @Override
     public OrderBy getDefaultOrderBy() {
-       return new OrderBy("orden");
+        return new OrderBy("orden");
     }
-    
-    
 
     /**
      * @return the actionClassNames

@@ -24,6 +24,7 @@ import com.itcs.helpdesk.rules.Action;
 import com.itcs.helpdesk.rules.actionsimpl.NotifyGroupCasoReceivedAction;
 import com.itcs.helpdesk.rules.actionsimpl.SendCaseByEmailAction;
 import com.itcs.helpdesk.util.ApplicationConfig;
+import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -338,5 +340,26 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
      */
     public void setCkEditorToolbar(String ckEditorToolbar) {
         this.ckEditorToolbar = ckEditorToolbar;
+    }
+
+    public String generateRandomColor() {
+        Color baseColor = new Color(123, 209, 72);        
+        Random random = new Random();
+        int red = random.nextInt(256);
+        int green = random.nextInt(256);
+        int blue = random.nextInt(256);
+
+        // mix the color
+        if (baseColor != null) {
+            red = (red + baseColor.getRed()) / 2;
+            green = (green + baseColor.getGreen()) / 2;
+            blue = (blue + baseColor.getBlue()) / 2;
+        }
+
+        String color = "#" + Integer.toHexString(red)
+                + Integer.toHexString(green)
+                + Integer.toHexString(blue);
+
+        return color;
     }
 }

@@ -240,12 +240,14 @@ public class MailNotifier {
      */
     public static Canal chooseDefaultCanalToSendMail(Caso caso) throws NoOutChannelException {
         //choose canal, prioritize the project's default canal
-        Canal canal = (caso.getIdProducto() != null && caso.getIdProducto().getIdOutCanal() != null)
+        Canal canal = (caso.getIdProducto() != null && caso.getIdProducto().getIdOutCanal() != null
+                && caso.getIdProducto().getIdOutCanal().getIdTipoCanal() != null && caso.getIdProducto().getIdOutCanal().getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal()))
                 ? caso.getIdProducto().getIdOutCanal() : null;
 
         //choose canal, prioritize the area's default canal
         if (canal == null) {
-            canal = (caso.getIdArea() != null && caso.getIdArea().getIdCanal() != null)
+            canal = (caso.getIdArea() != null && caso.getIdArea().getIdCanal() != null
+                    && caso.getIdArea().getIdCanal().getIdTipoCanal() != null && caso.getIdArea().getIdCanal().getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal()))
                     ? caso.getIdArea().getIdCanal() : caso.getIdCanal();
         }
 

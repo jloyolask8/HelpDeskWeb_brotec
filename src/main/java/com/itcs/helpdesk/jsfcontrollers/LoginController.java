@@ -86,7 +86,7 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
                     if (usuario.getPass().equals(passMD5)) {
                         getUserSessionBean().setCurrent(usuario);
                         ConfigurableNavigationHandler nav = (ConfigurableNavigationHandler) FacesContext.getCurrentInstance().getApplication().getNavigationHandler();
-                        JsfUtil.addSuccessMessage("Autenticación exitosa, Cargando Datos...");
+                        JsfUtil.addSuccessMessage("Bienvenido, " + usuario.getCapitalName());
 
                         if (isThisRequestCommingFromAMobileDevice(JsfUtil.getRequest())) {
                             nav.performNavigation("inboxMobile");//DeskTop Version

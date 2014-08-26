@@ -177,7 +177,7 @@ public class WSCasos {
 
             caso.setTema((caso.getTema() != null ? caso.getTema() : "") + "[" + tema + "] " + descripcion.substring(0, endIndex) + "...");
 
-            getManagerCasos().calcularSLA(caso);
+            ManagerCasos.calcularSLA(caso);
             caso.setEstadoAlerta(EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta());
 
 //            caso.setIdArea(EnumAreas.DEFAULT_AREA.getArea());//This is important to know what email received the ticket, but in WS there is no specific email.
