@@ -51,6 +51,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import javax.faces.model.DataModel;
 import javax.faces.model.SelectItem;
+import javax.resource.NotSupportedException;
 
 @ManagedBean(name = "reglaTriggerController")
 @SessionScoped
@@ -154,8 +155,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 ////        }  
 //
 //    }
-    
-     @Override
+    @Override
     public PaginationHelper getPagination() {
         if (pagination == null) {
             pagination = new PaginationHelper(getPaginationPageSize()) {
@@ -186,13 +186,34 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
                     if (searchPattern != null && !searchPattern.trim().isEmpty()) {
                         return new ReglaTriggerDataModel(getJpaController().getReglaTriggerJpaController().searchEntities(searchPattern, false, getPageSize(), getPageFirstItem()));
                     } else {
-                        return new ReglaTriggerDataModel(getJpaController().queryByRange(ReglaTrigger.class, getPageSize(), getPageFirstItem()));
+//                        return new ReglaTriggerDataModel(getJpaController().queryByRange(ReglaTrigger.class, getPageSize(), getPageFirstItem()));
+
+                        try {
+                            DataModel<ReglaTrigger> dataModel = (DataModel) getDataModelImplementationClass().newInstance();
+                            dataModel.setWrappedData(getJpaController().findEntities(ReglaTrigger.class, getFilterHelper().getVista(), getPageSize(), getPageFirstItem(), getDefaultOrderBy(), getDefaultUserWho()));
+                            return dataModel;
+                        } catch (IllegalStateException ex) {//error en el filtro
+                            JsfUtil.addErrorMessage(ex, "Existe un problema con el filtro. Favor corregir e intentar nuevamente.");
+                        } catch (ClassNotFoundException ex) {
+                            JsfUtil.addErrorMessage(ex, "Lo sentimos, ocurrió un error inesperado. Favor contactar a soporte.");
+                            Logger.getLogger(AbstractManagedBean.class.getName()).log(Level.SEVERE, "ClassNotFoundException createPageDataModel", ex);
+                        } catch (IllegalAccessException ex) {
+                            JsfUtil.addErrorMessage(ex, "Lo sentimos, ocurrió un error inesperado. Favor contactar a soporte.");
+                            Logger.getLogger(AbstractManagedBean.class.getName()).log(Level.SEVERE, "IllegalAccessException createPageDataModel", ex);
+                        } catch (InstantiationException ex) {
+                            JsfUtil.addErrorMessage(ex, "Lo sentimos, ocurrió un error inesperado. Favor contactar a soporte.");
+                            Logger.getLogger(AbstractManagedBean.class.getName()).log(Level.SEVERE, "InstantiationException createPageDataModel", ex);
+                        } catch (NotSupportedException ex) {
+                            addWarnMessage("Lo sentimos, ocurrió un error inesperado. La acción que desea realizar aún no esta soportada por el sistema.");
+                        }
+                        return null;
                     }
                 }
             };
         }
         return pagination;
     }
+
     /**
      * @deprecated @param node
      */
@@ -500,8 +521,8 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         return prepareList();
 
     }
-    
-     private void update(ReglaTrigger current, boolean updateLabels) {
+
+    private void update(ReglaTrigger current, boolean updateLabels) {
         try {
             if (updateLabels) {
                 for (Condicion condicion : current.getCondicionList()) {
@@ -607,8 +628,6 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
             }
         }
     }
-
-   
 
     public String destroy() {
         if (current == null) {
