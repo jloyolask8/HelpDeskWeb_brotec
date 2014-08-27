@@ -68,6 +68,31 @@
                     </p:tagCloud> 
                 </p:tab>
 
+                <p:tab title="Usuarios Conectados">
+
+                    <p:dataTable value="#{applicationBean.usersLoggedIn}" var="userLoggedIn" 
+                                 styleClass="hide-column-names"
+                                 emptyMessage="Muy raro que no haya un usuario aqui =(" 
+                                 scrollRows="22" scrollable="true" liveScroll="true" scrollHeight="250">  
+
+
+                        <p:column width="5%">
+                           <h:graphicImage value="/images/user-available.png" />
+                        </p:column>
+                        <p:column>
+                          <h:outputText value="#{userLoggedIn}"/>
+                        </p:column>  
+
+                        <p:column width="5%">
+                            <p:commandLink disabled="true" title="Chat with #{userLoggedIn}">  
+                                <i class="fa fa-comments"></i>
+                            </p:commandLink>
+                        </p:column>
+
+                    </p:dataTable>  
+
+                </p:tab>
+
             </p:accordionPanel>
         </ui:define>
 
@@ -204,9 +229,7 @@
                         </p:column>
 
                         <p:column headerText="" exportable="false" >
-                            <h:graphicImage value="/images/user-available.png" 
-                                            title="Vence #{casoController.prettyDate(item.nextResponseDue)} (#{casoController.formatDate(item.nextResponseDue)})" 
-                                            rendered="#{item.estadoAlerta eq EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta() and item.isOpen()}"/>
+                           
 
                             <h:graphicImage id="warningim" value="/images/dialog-warning-3.png" 
                                             title="Vence #{casoController.prettyDate(item.nextResponseDue)} (#{casoController.formatDate(item.nextResponseDue)})" 
@@ -241,7 +264,7 @@
                             </h:panelGroup> 
                         </p:column>     
 
-                      
+
 
                         <p:column sortBy="#{item.owner.capitalName}" headerText="Agente">
                             <p:commandLink value="#{item.owner.capitalName}"
@@ -305,8 +328,8 @@
             <h:form id="applyRuleForm">
                 <p:dialog id="applyRuleDialog" header="Ejecutar Regla de Negocio en casos seleccionados" modal="true"
                           widgetVar="applyRuleDialog" dynamic="true" closeOnEscape="true">
-                    
-                      <h:outputLabel value="Esta regla se ejecutará solo en #{casoController.selectedItems.size()} casos seleccionados." rendered="#{not empty casoController.selectedItems}"/>
+
+                    <h:outputLabel value="Esta regla se ejecutará solo en #{casoController.selectedItems.size()} casos seleccionados." rendered="#{not empty casoController.selectedItems}"/>
                     <h:outputLabel value="Esta regla se ejecutará en todos los casos de la vista (#{casoController.pagination.itemsCount} casos)." rendered="#{empty casoController.selectedItems and casoController.pagination.itemsCount gt 0}"/>
 
                     <p:selectOneMenu label="Seleccione la regla"

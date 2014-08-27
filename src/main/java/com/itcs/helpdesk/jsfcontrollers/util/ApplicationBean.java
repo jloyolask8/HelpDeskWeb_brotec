@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
@@ -72,6 +71,12 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
      */
     public ApplicationBean() {
         super(Object.class);
+    }
+
+    public List<String> getUsersLoggedIn() {
+        List<String> users = new ArrayList<String>(channels.size());
+        users.addAll(channels.keySet());
+        return users;
     }
 
 //    @PostConstruct
@@ -181,6 +186,12 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
         channels.put(user, channel);
     }
 
+    public void removeChannel(String user) {
+        if (channels.containsKey(user)) {
+            channels.remove(user);
+        }
+    }
+
     public String getChannel(String user) {
         return channels.get(user);
     }
@@ -189,10 +200,9 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
 
         PushContext pushContext = PushContextFactory.getDefault().getPushContext();
         final String channel = getChannel(idUsuario);
-
-//        System.out.println("SENDING NOTIFICATION TO " + channel);
+        
         if (channel != null) {
-//            System.out.println("SENT NOTIFICATION TO " + channel);
+            System.out.println("SENT NOTIFICATION TO " + channel);
             pushContext.push(channel, new FacesMessage(m));
         } else {
             System.out.println("CHANNEL NOT OPPENED, COULD NOT SEND NOTIFICATION TO " + idUsuario);
@@ -343,7 +353,7 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
     }
 
     public String generateRandomColor() {
-        Color baseColor = new Color(123, 209, 72);        
+        Color baseColor = new Color(123, 209, 72);
         Random random = new Random();
         int red = random.nextInt(256);
         int green = random.nextInt(256);

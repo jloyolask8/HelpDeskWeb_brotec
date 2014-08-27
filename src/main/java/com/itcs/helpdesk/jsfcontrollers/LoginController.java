@@ -1,5 +1,6 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
+import com.itcs.helpdesk.jsfcontrollers.util.ApplicationBean;
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
@@ -8,10 +9,12 @@ import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.UtilSecurity;
 import com.itcs.helpdesk.webapputils.UAgentInfo;
 import java.io.Serializable;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.application.ConfigurableNavigationHandler;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
 import javax.persistence.NoResultException;
@@ -21,6 +24,9 @@ import javax.servlet.http.HttpServletRequest;
 @RequestScoped
 public class LoginController extends AbstractManagedBean<Usuario> implements Serializable {
 
+    @ManagedProperty(value = "#{applicationBean}")
+    private ApplicationBean applicationBean;
+    
     //private LengthValidator passwordLengthValidator = new LengthValidator();
     private String username;
     private String password;
@@ -32,12 +38,12 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
     private String passwordNew2;
 
     /**
-     * <p>Construct a new request data bean instance.</p>
+     * <p>
+     * Construct a new request data bean instance.</p>
      */
     public LoginController() {
         super(Usuario.class);
     }
-
 
     public String changePass() {
         try {
@@ -85,7 +91,13 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
 //                    System.out.println("usuario pass: "+usuario.getPass());
                     if (usuario.getPass().equals(passMD5)) {
                         getUserSessionBean().setCurrent(usuario);
+
+                        String channel = "/" + UUID.randomUUID().toString();
+                        getUserSessionBean().setChannel(channel);
+                        getApplicationBean().addChannel(usuario.getIdUsuario(), channel);
+
                         ConfigurableNavigationHandler nav = (ConfigurableNavigationHandler) FacesContext.getCurrentInstance().getApplication().getNavigationHandler();
+
                         JsfUtil.addSuccessMessage("Bienvenido, " + usuario.getCapitalName());
 
                         if (isThisRequestCommingFromAMobileDevice(JsfUtil.getRequest())) {
@@ -95,7 +107,6 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
                             nav.performNavigation("inbox");//DeskTop Version
 
                         }
-
 
 //                        return ResourceBundle.getBundle("/Bundle").getString("inbox");
                     } else {
@@ -126,13 +137,14 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
 
     public String logout_action() {
         HttpServletRequest request = (HttpServletRequest) JsfUtil.getRequest();
+        getApplicationBean().removeChannel(getUserSessionBean().getCurrent().getIdUsuario());
         request.getSession().invalidate();
         return "/faces/script/login.xhtml?faces-redirect=true";
     }
 
-    protected UserSessionBean getUserSessionBean() {
-        return (UserSessionBean) JsfUtil.getManagedBean("UserSessionBean");
-    }
+//    protected UserSessionBean getUserSessionBean() {
+//        return (UserSessionBean) JsfUtil.getManagedBean("UserSessionBean");
+//    }
 
     public String getPassword() {
         return password;
@@ -200,5 +212,19 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
     @Override
     public Class getDataModelImplementationClass() {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    /**
+     * @return the applicationBean
+     */
+    public ApplicationBean getApplicationBean() {
+        return applicationBean;
+    }
+
+    /**
+     * @param applicationBean the applicationBean to set
+     */
+    public void setApplicationBean(ApplicationBean applicationBean) {
+        this.applicationBean = applicationBean;
     }
 }

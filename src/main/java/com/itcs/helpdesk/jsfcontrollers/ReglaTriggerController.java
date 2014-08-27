@@ -35,7 +35,6 @@ import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
@@ -50,6 +49,7 @@ import com.itcs.helpdesk.util.ClassUtils;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.LinkedList;
+import javax.faces.model.DataModel;
 import javax.faces.model.SelectItem;
 
 @ManagedBean(name = "reglaTriggerController")
@@ -154,6 +154,45 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 ////        }  
 //
 //    }
+    
+     @Override
+    public PaginationHelper getPagination() {
+        if (pagination == null) {
+            pagination = new PaginationHelper(getPaginationPageSize()) {
+
+                private Integer count = null;
+
+                @Override
+                public int getItemsCount() {
+                    try {
+                        if (count == null) {
+                            if (searchPattern != null && !searchPattern.trim().isEmpty()) {
+                                count = getJpaController().getReglaTriggerJpaController().countSearchEntities(searchPattern).intValue();
+                            } else {
+                                count = getJpaController().getReglaTriggerJpaController().getReglaTriggerCount();
+                            }
+                        }
+
+                        return count;
+
+                    } catch (Exception ex) {
+                        Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "getItemsCount", ex);
+                    }
+                    return 0;
+                }
+
+                @Override
+                public DataModel createPageDataModel() {
+                    if (searchPattern != null && !searchPattern.trim().isEmpty()) {
+                        return new ReglaTriggerDataModel(getJpaController().getReglaTriggerJpaController().searchEntities(searchPattern, false, getPageSize(), getPageFirstItem()));
+                    } else {
+                        return new ReglaTriggerDataModel(getJpaController().queryByRange(ReglaTrigger.class, getPageSize(), getPageFirstItem()));
+                    }
+                }
+            };
+        }
+        return pagination;
+    }
     /**
      * @deprecated @param node
      */
@@ -361,7 +400,6 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 
     public String prepareList() {
         recreateModel();
-        recreatePagination();
         return "/script/reglaTrigger/List";
     }
 

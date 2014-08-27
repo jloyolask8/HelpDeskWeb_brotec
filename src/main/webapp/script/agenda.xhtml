@@ -77,11 +77,9 @@
                         <p:column>
                             <p:panel>
 
-                                <h:outputText value="mostrar agenda de todos" rendered="#{empty globalScheduleController.filtrosUsuario}"/>
-
                                 <p:dataTable id="invitadosList" value="#{globalScheduleController.filtrosUsuario}" var="userFilter"
                                              styleClass="hide-column-names"
-                                             emptyMessage="favor agregue un calendario/Agenda de un usuario del sistema." 
+                                             emptyMessage="Favor agregue un usuario para ver su agenda." 
                                              scrollRows="22" scrollable="true" liveScroll="true" scrollHeight="250">  
 
 
