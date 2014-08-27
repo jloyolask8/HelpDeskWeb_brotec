@@ -39,17 +39,17 @@
                         
                       
 
-                        <p:column headerText="#{bundle.ListUsuarioTitle_idUsuario}" sortBy="idUsuario">
+                        <p:column headerText="#{bundle.ListUsuarioTitle_idUsuario}" sortBy="#{item.idUsuario}">
                             <h:outputText value="#{item.idUsuario}"/>
                         </p:column>
-                        <p:column headerText="#{bundle.ListUsuarioTitle_nombres}" sortBy="nombres">
+                        <p:column headerText="#{bundle.ListUsuarioTitle_nombres}" sortBy="#{item.nombres}">
                             <h:outputText value="#{item.nombres}"/>
                         </p:column>
-                        <p:column headerText="#{bundle.ListUsuarioTitle_apellidos}" sortBy="apellidos">
+                        <p:column headerText="#{bundle.ListUsuarioTitle_apellidos}" sortBy="#{item.apellidos}">
 
                             <h:outputText value="#{item.apellidos}"/>
                         </p:column>
-                        <p:column headerText="#{bundle.ListUsuarioTitle_email}" sortBy="email">
+                        <p:column headerText="#{bundle.ListUsuarioTitle_email}" sortBy="#{item.email}">
 
                             <h:outputText value="#{item.email}"/>
                         </p:column>

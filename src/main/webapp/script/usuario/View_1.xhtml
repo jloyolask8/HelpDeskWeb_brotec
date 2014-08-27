@@ -105,7 +105,7 @@
                 <p:dataTable widgetVar="CasoTable" var="item" value="#{usuarioController.casoAbiertoList}"                               
                              emptyMessage="(No se han encontrado elementos)" 
                              rowKey="#{item.idCaso}" rowStyleClass="#{casoController.evaluarStyle(item)}"
-                             sortBy="fechaCreacion"
+                             sortBy="#{item.fechaCreacion}"
                              sortOrder="descending"
                              draggableColumns="true">                                   
 
