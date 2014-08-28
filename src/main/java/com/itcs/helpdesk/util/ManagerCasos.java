@@ -581,6 +581,7 @@ public class ManagerCasos implements Serializable {
 
                     if (toLowerCase.contains("nuevo") || toLowerCase.contains("new")) {
                         suposedFirstSubEstadoCaso = subEstadoCaso;
+                        break;
                     }
                 }
                 //Aggggrrrrrrrrrrr sometimes shit happens
@@ -848,11 +849,18 @@ public class ManagerCasos implements Serializable {
     private Attachment agregarAdjunto(EmailAttachment attachment, Caso caso) {
         try {
             String nombre = attachment.getName();
-            nombre = nombre.substring(nombre.lastIndexOf(File.separator) + 1);
-            nombre = nombre.substring(nombre.lastIndexOf('\\') + 1);
+            if((nombre != null) && (!nombre.trim().isEmpty())){
+                nombre = nombre.substring(nombre.lastIndexOf(File.separator) + 1);
+                nombre = nombre.substring(nombre.lastIndexOf('\\') + 1);
+            }
+            else{
+                nombre = "att"+System.currentTimeMillis();
+                attachment.setName(nombre);
+            }
             Attachment a = crearAdjunto(attachment.getData(), attachment.getContentId(), caso, nombre, attachment.getMimeType(), attachment.getSize());
             return a;
         } catch (Exception e) {
+            e.printStackTrace();
             Logger.getLogger(ManagerCasos.class.getName()).log(Level.SEVERE, "\n\n--- EmailAttachment agregarAdjunto failed: {0}\n\n", e.getMessage());
         }
         return null;
