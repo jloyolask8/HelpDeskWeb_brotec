@@ -7,12 +7,8 @@ package com.itcs.helpdesk.rules.customactions;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.rules.ActionExecutionException;
 import com.itcs.helpdesk.rules.ActionInfo;
-import com.itcs.helpdesk.util.Log;
-import com.itcs.helpdesk.util.UtilesRut;
+import com.itcs.helpdesk.util.HtmlUtils;
 import com.itcs.helpdesk.webservices.DatosCaso;
-import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  *
@@ -33,119 +29,13 @@ public class ParseCotizacionEnlaceInmobiliarioAction extends ParseCotizacionActi
     protected DatosCaso collectData(String txt) throws ActionExecutionException{
 
         DatosCaso datos = new DatosCaso();
-
-        try {
-            String re1 = "(Nombre:)(.*?)(<)";//This finds the name!
-            Pattern p = Pattern.compile(re1, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-            Matcher m = p.matcher(txt);
-            if (m.find()) {
-                String string1 = m.group(2);
-                //String int1 = m.group(2);                  
-                datos.parseNombre(string1.toString().trim());
-            }
-//                System.out.println("nombreCotizanteInput:" + nombreCotizanteInput);
-        } catch (Exception e) {
-             Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "error tratar de extraer nombre del solicitante", e);
-        }
-
-        try {
-            String re1 = "(Rut:)(.*?)(<)";
-            Pattern p = Pattern.compile(re1, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-            Matcher m = p.matcher(txt);
-            if (m.find()) {
-                String string1 = m.group(2);
-                datos.setRut(UtilesRut.formatear(string1.toString().trim()));
-            }
-//                System.out.println("rutCotizanteInput:" + rutCotizanteInput);
-        } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "error tratar de extraer RUT", e);
-        }
-
-        try {
-            String re1 = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
-            Pattern p = Pattern.compile(re1, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-            Matcher m = p.matcher(txt);
-            if (m.find()) {
-                String string1 = m.group();
-//                    System.out.print("(" + string1.toString() + ")\n");
-                datos.setEmail(string1.toString().trim());
-            }
-//                System.out.println("emailCotizanteInput:" + emailCotizanteInput);
-        } catch (Exception e) {
-              throw new ActionExecutionException("gether E-mail error", e);
-//            e.printStackTrace();
-        }
-        
-        try {
-            String nombreProyecto = null;
-            String re1 = "(Proyecto:)(.*?)(<)";
-            Pattern p = Pattern.compile(re1, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-            Matcher m = p.matcher(txt);
-            if (m.find()) {
-                String string1 = m.group(2);
-                //String int1 = m.group(2);
-                nombreProyecto = string1.toString();
-                nombreProyecto = nombreProyecto.trim();
-                datos.setProducto(nombreProyecto);
-            } else {
-                Log.createLogger(this.getClass().getName()).logWarning("nombreProyecto no encontrado!");
-            }
-        } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "error tratar de extraer nombreProyecto", e);
-        }
-
-        try {
-            String re1 = "(Teléfono Particular:)(.*?)(<)";
-            Pattern p = Pattern.compile(re1, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-            Matcher m = p.matcher(txt);
-            if (m.find()) {
-                String string1 = m.group(2);
-//                    fonoCotizanteInput = string1.toString().trim();
-                datos.setTelefono(string1.toString().trim());
-            }
-//                System.out.println("fonoCotizanteInput:" + fonoCotizanteInput);
-        } catch (Exception e) {
-          Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "error tratar de extraer Teléfono", e);
-        }
-        
-        try {
-            String re1 = "(Teléfono Movil:)(.*?)(<)";
-            Pattern p = Pattern.compile(re1, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-            Matcher m = p.matcher(txt);
-            if (m.find()) {
-                String string1 = m.group(2);
-//                    fonoCotizanteInput = string1.toString().trim();
-                datos.setTelefono2(string1.toString().trim());
-            }
-//                System.out.println("fonoCotizanteInput:" + fonoCotizanteInput);
-        } catch (Exception e) {
-          Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "error tratar de extraer Teléfono", e);
-        }
-
-        try {
-            String modelo = null;
-            String re1 = "(Unidad: )(.*?)(<)";
-            Pattern p = Pattern.compile(re1, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-            Matcher m = p.matcher(txt);
-            if (m.find()) {
-                String string1 = m.group(2);
-                //String int1 = m.group(2);
-                modelo = string1.toString();
-
-                modelo = modelo.replace("Casa", "");
-                modelo = modelo.replace("Departamento", "");
-                modelo = modelo.replace("Depto", "");
-                modelo = modelo.replace("Dpto", "");
-                modelo = modelo.replace("Oficina", "");
-                modelo = modelo.trim();
-                datos.setModelo(modelo);
-            }
-        } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "error tratar de extraer Propiedad", e);
-        }
-
-
-
+        txt = HtmlUtils.extractPlainText(txt);
+        extractNombre(datos, txt);
+        extractRut(datos, txt);
+        extractEmail(txt, datos);
+        extractProyecto(datos, txt);
+        extractTelefono(datos, txt);
+        extractModelo(txt, datos);
         return datos;
     }
 
