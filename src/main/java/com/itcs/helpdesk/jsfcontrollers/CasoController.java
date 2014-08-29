@@ -2,9 +2,7 @@ package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.ApplicationBean;
 import com.itcs.helpdesk.jsfcontrollers.util.FiltroAcceso;
-import com.itcs.helpdesk.jsfcontrollers.util.JPAFilterHelper;
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Archivo;
 import com.itcs.helpdesk.persistence.entities.Attachment;
@@ -13,7 +11,6 @@ import com.itcs.helpdesk.persistence.entities.BlackListEmail;
 import com.itcs.helpdesk.persistence.entities.Canal;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Caso_;
-import com.itcs.helpdesk.persistence.entities.Categoria;
 import com.itcs.helpdesk.persistence.entities.Cliente;
 import com.itcs.helpdesk.persistence.entities.Clipping;
 import com.itcs.helpdesk.persistence.entities.EmailCliente;
@@ -82,7 +79,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.event.ActionEvent;
-import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 import javax.resource.NotSupportedException;
@@ -175,7 +171,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //    private List<Nota> listaActividadesOrdenada = null;
     private boolean incluirHistoria;
     private Integer progresoEnvioRespuesta;
-    private Categoria categorySelected;
     private ReglaTrigger reglaTriggerSelected;
     private String emailCliente_wizard;
     private String rutCliente_wizard;
@@ -787,16 +782,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
     }
 
-    public void onNodeSelect(NodeSelectEvent event) {
-        Object res = JsfUtil.getManagedBean("categoriaController");
-        if (res != null) {
-            CategoriaController catController = ((CategoriaController) res);
-            Categoria catSelected = (Categoria) catController.getCategoria().getData();
-//            //System.out.println("categoria " + catSelected + " seleccionada");
-            current.setIdCategoria(catSelected);
-        }
-    }
-
     public boolean getIncluirHistoria() {
         return incluirHistoria;
     }
@@ -1177,7 +1162,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //        }
 //        return pagination;
 //    }
-
     public String prepareList() {
         recreateModel();
 //        recreatePagination();
@@ -1197,7 +1181,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public String crearCasoColab(Caso casoTmp) {
         try {
             current = new Caso();
-            current.setIdCategoria(null);
             current.setRevisarActualizacion(false);
             current.setIdCasoPadre(casoTmp);
             Usuario usr = casoTmp.getOwner();
@@ -1245,7 +1228,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public String prepareCreateCasoPreentrega() {
         try {
             current = new Caso();
-            current.setIdCategoria(null);
             current.setRevisarActualizacion(true);
             current.setIdPrioridad(null);
             current.setFechaCreacion(Calendar.getInstance().getTime());
@@ -1317,7 +1299,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public String prepareCreate() {
         try {
             current = new Caso();
-            current.setIdCategoria(null);
             current.setRevisarActualizacion(true);
             current.setIdPrioridad(null);
             current.setFechaCreacion(Calendar.getInstance().getTime());
@@ -1361,7 +1342,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private String prepareCopy(Caso origin, boolean assignme) {
         try {
             Caso copy = new Caso();
-            copy.setIdCategoria(origin.getIdCategoria());
             copy.setDescripcion(origin.getDescripcion());
             copy.setDescripcionTxt(origin.getDescripcionTxt());
             copy.setEmailCliente(origin.getEmailCliente());
@@ -1437,7 +1417,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     /**
      * DUPLICATE: createAndView()
-     * @return 
+     *
+     * @return
      */
     public String createPreentregaAndView() {
         try {
@@ -1846,33 +1827,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         recreatePagination();
         recreateModel();
         return "inbox";
-    }
-
-    public void filterCatCarpetas() {
-//        //System.out.println("filterCatCarpetas");
-        Vista vista1 = new Vista(Caso.class);
-        vista1.setIdUsuarioCreadaPor(userSessionBean.getCurrent());
-        vista1.setNombre("Casos de la Categoria " + getCategorySelected().getNombre());
-
-        FiltroVista filtroEstado = new FiltroVista();
-        filtroEstado.setIdCampo(Caso_.ESTADO_FIELD_NAME);
-        filtroEstado.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
-        filtroEstado.setValor(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
-        filtroEstado.setIdVista(vista1);
-
-        vista1.getFiltrosVistaList().add(filtroEstado);
-
-        FiltroVista filtroCategoria = new FiltroVista();
-        filtroCategoria.setIdCampo(Caso_.CATEGORIA_FIELD_NAME);
-        filtroCategoria.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
-        filtroCategoria.setValor(getCategorySelected().getIdCategoria().toString());
-        filtroCategoria.setIdVista(vista1);
-
-        vista1.getFiltrosVistaList().add(filtroCategoria);
-
-        getFilterHelper().setVista(vista1);
-        recreateModel();
-        recreatePagination();
     }
 
     public void refresh() {
@@ -2433,8 +2387,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     /**
      * TODO deprecate this code
+     *
      * @param caso
-     * @return 
+     * @return
      */
     public String evaluarStyle(Caso caso) {
         if (caso != null) {
@@ -2676,6 +2631,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         boolean sended = false;
 
         StringBuilder listIdAtt = new StringBuilder();
+        String texto = nota.getTexto() != null ? nota.getTexto() : "";
 
         if (selectedAttachmensForMail != null) {
             StringBuilder attachmentsNames = new StringBuilder();
@@ -2691,18 +2647,11 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 indexAtt++;
                 progresoEnvioRespuesta = (int) (((50f / (float) selectedAttachmensForMail.size())) * indexAtt);
             }
-            if (!(attachmentsNames.toString().isEmpty())) {
-                StringBuilder nuevoTextoNota = new StringBuilder(textoNota);
-                nuevoTextoNota.append("<br/><b>Archivos adjuntos:</b><br/>");
-                nuevoTextoNota.append(attachmentsNames);
-                textoNota = nuevoTextoNota.toString();
-            }
         }
 
         if (incluirHistoria) {
-            StringBuilder nuevoTextoNota = new StringBuilder(textoNota);
+            StringBuilder nuevoTextoNota = new StringBuilder(texto);
             nuevoTextoNota.append("<br/><b>Se ha agregado historia del caso</b><br/>");
-            textoNota = nuevoTextoNota.toString();
 
             StringBuilder textoMensaje = new StringBuilder(mensaje);
             textoMensaje.append(obtenerHistorial());
@@ -2714,7 +2663,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             Canal canal = MailNotifier.chooseDefaultCanalToSendMail(current);
             HelpDeskScheluder.scheduleSendMailNota(canal.getIdCanal(), mensaje, emailCliente, subject, current.getIdCaso(), nota.getIdNota(), listIdAtt.toString());
             sended = true;
-            textoNota = null;
         } catch (Exception ex) {
             sended = false;
             Log.createLogger(CasoController.class.getName()).log(Level.SEVERE, "enviarCorreo", ex);
@@ -2853,7 +2801,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     /**
      * Brotec icafal specific
-     * @return 
+     *
+     * @return
      */
     public StreamedContent generarActaPreEntrega() {
         try {
@@ -3261,17 +3210,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         this.usuarioSeleccionadoTransfer = null;
     }
 
-    public TreeNode getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(TreeNode categoria) {
-        if (categoria != null) {
-            categorySelected = (Categoria) categoria.getData();
-        }
-        this.categoria = categoria;
-    }
-
     public SelectItem[] getClippingsItemsAvailableSelectOne() {
         return JsfUtil.getSelectItems(getJpaController().getClippingJpaController().findClippingEntities(), true);
     }
@@ -3469,13 +3407,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      */
     public void setVisibilityOption(Integer visibilityOption) {
         this.visibilityOption = visibilityOption;
-    }
-
-    /**
-     * @return the categorySelected
-     */
-    public Categoria getCategorySelected() {
-        return categorySelected;
     }
 
     /**
