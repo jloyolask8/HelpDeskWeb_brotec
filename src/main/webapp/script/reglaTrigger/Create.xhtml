@@ -305,9 +305,9 @@
 
 
                         <p:commandButton id="btn_add_action" value="Agregar Acción" update=":form:accionesTable :form:messages :formrespuesta" 
-                                         action="#{reglaTriggerController.prepareCreateAccionEmail()}" ajax="true" oncomplete="mailComposerWidget.hide()"/>
+                                         action="#{reglaTriggerController.prepareCreateAccionEmail()}" ajax="true" oncomplete="PF('mailComposerWidget').hide()"/>
 
-                        <p:commandButton value="Cerrar" ajax="true" onclick="mailComposerWidget.hide()"   />
+                        <p:commandButton value="Cerrar" ajax="true" onclick="PF('mailComposerWidget').hide()"   />
                     </h:panelGrid>
 
 

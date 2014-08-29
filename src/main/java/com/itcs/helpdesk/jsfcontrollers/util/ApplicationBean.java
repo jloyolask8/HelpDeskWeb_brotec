@@ -186,6 +186,11 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
         channels.put(user, channel);
     }
 
+    public boolean containsChannel(String user) {
+         System.out.println("containsChannel("+user+")");
+        return channels.containsKey(user);
+    }
+
     public void removeChannel(String user) {
         if (channels.containsKey(user)) {
             channels.remove(user);
@@ -193,6 +198,7 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
     }
 
     public String getChannel(String user) {
+        System.out.println("getChannel("+user+")");
         return channels.get(user);
     }
 
@@ -200,7 +206,7 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
 
         PushContext pushContext = PushContextFactory.getDefault().getPushContext();
         final String channel = getChannel(idUsuario);
-        
+
         if (channel != null) {
             System.out.println("SENT NOTIFICATION TO " + channel);
             pushContext.push(channel, new FacesMessage(m));

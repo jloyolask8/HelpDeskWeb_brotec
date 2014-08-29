@@ -7,12 +7,13 @@
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd">
     
-    <factory>
-        <exception-handler-factory>
+
+  <factory>
+       <exception-handler-factory>
             org.primefaces.extensions.component.ajaxerrorhandler.AjaxExceptionHandlerFactory
         </exception-handler-factory>
+        <!--exception-handler-factory>org.primefaces.application.exceptionhandler.PrimeExceptionHandlerFactory</exception-handler-factory-->
     </factory>
-
   
     <application>
         <locale-config>
@@ -26,6 +27,9 @@
         <navigation-handler>org.primefaces.application.DialogNavigationHandler</navigation-handler>
         <view-handler>org.primefaces.application.DialogViewHandler</view-handler>
         
+          <navigation-handler>org.primefaces.mobile.application.MobileNavigationHandler</navigation-handler>
+        
+        <el-resolver>org.primefaces.application.exceptionhandler.PrimeExceptionHandlerELResolver</el-resolver>
     </application>
     
     <lifecycle>
@@ -57,11 +61,6 @@
     <converter>
         <converter-id>UsuarioConverter</converter-id>
         <converter-class>com.itcs.helpdesk.jsfcontrollers.UsuarioController$UsuarioControllerConverter</converter-class>
-    </converter>
-    
-    <converter>
-        <converter-id>CategoriaConverter</converter-id>
-        <converter-class>com.itcs.helpdesk.jsfcontrollers.CategoriaController$CategoriaControllerConverter</converter-class>
     </converter>
     
     <converter>

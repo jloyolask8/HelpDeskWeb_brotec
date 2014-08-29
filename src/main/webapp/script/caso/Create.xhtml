@@ -276,9 +276,9 @@
                     <br></br>
                     <div style="text-align: right">                       
                         <p:commandButton value="Si" update=":mainform:messages :form:listaadjuntos"
-                                         actionListener="#{casoController.removeAttachment(casoController.idFileRemove)}" oncomplete="borrarAttachment.hide()"/>
+                                         actionListener="#{casoController.removeAttachment(casoController.idFileRemove)}" oncomplete="PF('borrarAttachment').hide()"/>
 
-                        <p:commandButton value="No" onclick="borrarAttachment.hide()" type="button" />
+                        <p:commandButton value="No" onclick="PF('borrarAttachment').hide()" type="button" />
                     </div>
                 </h:form>
             </p:dialog>

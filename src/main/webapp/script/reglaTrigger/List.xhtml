@@ -87,16 +87,14 @@
                             <h:outputText id="evento" title=""
                                           value="#{item.desccripcion}" escape="false"/>
                         </h:panelGroup>
-                        <pe:tooltip for="nombreDescripcion" atPosition="bottom center" hideEffect="blur">
-                            <h:outputText value="#{item.toString()}" escape="false" />
-                        </pe:tooltip>
+                        <p:tooltip for="nombreDescripcion" value="#{item.toString()}" escape="false"/>
                     </p:column>
 
 
 
                     <p:column headerText="Acción">
                         <p:commandButton id="editBtn" ajax="false" action="#{reglaTriggerController.prepareEdit(item)}" title="Editar" icon="ui-icon ui-icon-pencil"/>
-                        <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" action="#{reglaTriggerController.setSelected(item)}" oncomplete="confirmation.show()" icon="ui-icon ui-icon-trash"/>
+                        <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" action="#{reglaTriggerController.setSelected(item)}" oncomplete="PF('confirmation').show()" icon="ui-icon ui-icon-trash"/>
                     </p:column>
 
                     <f:facet name="footer">
@@ -138,7 +136,7 @@
                     <f:facet name="footer">
                         <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{reglaTriggerController.destroySelected()}" 
                                          ajax="false"/>
-                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
                     </f:facet>
 
                 </p:dialog>

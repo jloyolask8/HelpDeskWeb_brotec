@@ -55,19 +55,19 @@
                             <div align="center">
                                 <p:commandButton id="editBtn" action="#{canalController.prepareEdit(item)}" 
                                                  update=":formAddEdit"
-                                                 oncomplete="addEditDialog.show()"
+                                                 oncomplete="PF('addEditDialog').show()"
                                                  title="Editar" icon="ui-icon ui-icon-pencil" 
                                                  rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes() and not(item.idTipoCanal.idTipo eq 'EMAIL')}"/>
 
                                 <p:commandButton id="editBtnEmail" action="#{canalController.prepareEditEmail(item)}" 
                                                  update=":formAddEditEmail"
-                                                 oncomplete="addEditEmailDialogWidget.show()"
+                                                 oncomplete="PF('addEditEmailDialogWidget').show()"
                                                  title="Editar" icon="ui-icon ui-icon-pencil" 
                                                  rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes() and (item.idTipoCanal.idTipo eq 'EMAIL') }"/>
 
 
                                 <p:commandButton id="showDialogButton" title="Eliminar" update=":formDelete" 
-                                                 action="#{canalController.prepareEdit(item)}" oncomplete="confirmation.show()" icon="ui-icon ui-icon-trash" 
+                                                 action="#{canalController.prepareEdit(item)}" oncomplete="PF('confirmation').show()" icon="ui-icon ui-icon-trash" 
                                                  rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
                             </div>
                         </p:column>
@@ -128,8 +128,8 @@
 
                     <f:facet name="footer">
                         <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{canalController.destroySelected()}" 
-                                         update=":form" oncomplete="confirmation.hide()"/>
-                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
+                                         update=":form" oncomplete="PF('confirmation').hide()"/>
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
                     </f:facet>
 
                 </p:dialog>
@@ -278,7 +278,7 @@
                     <h:panelGroup rendered="#{not canalController.tmpEmailFirstStepReady}" style="width: 97%; position: absolute; bottom: 15px;">
                         <p:separator/>
                         <div align="right" style="width: 100%;">
-                            <p:commandButton value="Cancelar" oncomplete="addEditEmailDialogWidget.hide()" update=":formAddEditEmail" process="@this">
+                            <p:commandButton value="Cancelar" oncomplete="PF('addEditEmailDialogWidget').hide()" update=":formAddEditEmail" process="@this">
                                 <p:resetInput target="@form" />
                             </p:commandButton>
                             &nbsp;
@@ -291,14 +291,14 @@
                     <h:panelGroup rendered="#{canalController.tmpEmailFirstStepReady}" style="width: 97%; position: absolute; bottom: 15px;">
                         <p:separator/>
                         <div align="right">
-                            <p:commandButton value="Cancelar" oncomplete="addEditEmailDialogWidget.hide()" process="@this">
+                            <p:commandButton value="Cancelar" oncomplete="PF('addEditEmailDialogWidget').hide()" process="@this">
                                 <p:resetInput target="@form" />
                             </p:commandButton>
                             &nbsp;
                             <p:commandButton value="Verificar" actionListener="#{canalController.verifyEmailAccount()}" process="@form" update=":formAddEditEmail"/>
                             &nbsp;
                             <p:commandButton action="#{canalController.createCanalEmail()}" value="Finalizado" update=":form"
-                                             oncomplete="addEditEmailDialogWidget.hide()" disabled="#{not canalController.tmpEmailFinalizeReady}"/>
+                                             oncomplete="PF('addEditEmailDialogWidget').hide()" disabled="#{not canalController.tmpEmailFinalizeReady}"/>
                         </div>
                     </h:panelGroup>
 
@@ -327,7 +327,7 @@
                     <h:panelGroup style="width: 97%; position: absolute; bottom: 12px;">
                         <p:separator/>
                         <div align="right">
-                            <p:commandButton id="canncel" value="Cancelar" onclick="addEditDialog.hide()" process="@this">
+                            <p:commandButton id="canncel" value="Cancelar" onclick="PF('addEditDialog').hide()" process="@this">
                                 <p:resetInput target="@form" />
                             </p:commandButton>
                             

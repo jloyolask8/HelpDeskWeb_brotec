@@ -62,33 +62,7 @@
                             </f:facet> 
                         </p:dataTable>
 
-                        <br/>
-
-                        <p:dataTable widgetVar="categoriasTableByArea" var="item" value="#{grupoController.selected.categoriaList}"                                 
-                                     emptyMessage="(No se han encontrado elementos)" paginatorAlwaysVisible="false"
-                                     resizableColumns="true" paginator="true" rows="15"
-                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                     rowsPerPageTemplate="5,10,15,30,50">
-
-                            <f:facet name="header">  
-                                <h:outputText value="Categorias Asociadas"></h:outputText>                           
-                            </f:facet>   
-
-
-                            <p:column headerText="#{bundle.ListCategoriaTitle_nombre}">
-
-                                <h:outputText value="#{item.nombre}"/>
-                            </p:column>
-                            <p:column headerText="#{bundle.ListCategoriaTitle_idCategoriaPadre}">
-
-                                <h:outputText value="#{item.idCategoriaPadre.nombre}"/>
-                            </p:column>
-
-
-                            <f:facet name="footer">
-                                <h:commandLink action="#{categoriaController.prepareList}" value="Ver Categorias" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
-                            </f:facet> 
-                        </p:dataTable>
+                       
                         
                     <f:facet name="footer">       
 
@@ -102,7 +76,7 @@
 
                             <p:toolbarGroup align="right">   
                                 <p:separator/>
-                                <p:commandButton id="showDialogButton" value="#{bundle.destroy}" onclick="confirmation.show()" icon="ui-icon ui-icon-trash" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>         
+                                <p:commandButton id="showDialogButton" value="#{bundle.destroy}" onclick="PF('confirmation').show()" icon="ui-icon ui-icon-trash" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>         
                             </p:toolbarGroup>  
 
                         </p:toolbar>
@@ -119,8 +93,8 @@
 
                     <f:facet name="footer">
                         <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{grupoController.destroy()}" 
-                                         ajax="false" oncomplete="confirmation.hide()"/>
-                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
+                                         ajax="false" oncomplete="PF('confirmation').hide()"/>
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
                     </f:facet>
 
                 </p:dialog>

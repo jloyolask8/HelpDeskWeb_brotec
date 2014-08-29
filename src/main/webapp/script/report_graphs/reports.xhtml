@@ -55,8 +55,17 @@
 
 
                         <h:panelGrid columns="1" cellpadding="5"> 
+                            
+                             <h:outputText value="Tipo de Gráfico" style="font-weight: bold;"/>
+                            <p:selectOneMenu id="chartType"  value="#{reporteController.tipoGraficoSelected}" 
+                                             required="true" requiredMessage="Favor Seleccione el tipo de Chart que desea desplegar en el reporte.">
+                                <f:selectItem itemLabel="Torta" itemValue="pie" rendered="#{reporteController.variables eq 1}"/>
+                                <f:selectItem itemLabel="Barras" itemValue="bar" rendered="#{reporteController.variables eq 2}"/>
+                                <f:selectItem itemLabel="Lineas" itemValue="line" rendered="#{reporteController.variables eq 2}"/>
+                                <p:ajax update=":advancedReportForm:accordion1" listener="#{vistaController.handleAnyChangeEvent()}" process="@form"/>
+                            </p:selectOneMenu>
 
-                            <h:outputText value="Dimensiones del Reporte" style="font-weight: bold;"/>
+                            <h:outputText value="Dimensiones" style="font-weight: bold;"/>
                             <p:selectOneMenu id="variables"  value="#{reporteController.variables}"
                                              required="true" requiredMessage="Favor Seleccione Si desea un reporte de una o dos variables.">
                                 <f:selectItem itemLabel="Una Dimensión" itemValue="1"/>
@@ -130,7 +139,7 @@
 
                                 <script>
                                     $(function() {
-                                        $( ".datepicker" ).datepicker({
+                                        $(".datepicker").datepicker({
                                             dateFormat: "dd/mm/yy"
                                         });
                                     });
@@ -162,14 +171,7 @@
 
 
 
-                            <h:outputText value="Tipo de Gráfico" style="font-weight: bold;"/>
-                            <p:selectOneMenu id="chartType"  value="#{reporteController.tipoGraficoSelected}" 
-                                             required="true" requiredMessage="Favor Seleccione el tipo de Chart que desea desplegar en el reporte.">
-                                <f:selectItem itemLabel="Torta" itemValue="pieChart" rendered="#{reporteController.variables eq 1}"/>
-                                <f:selectItem itemLabel="Barras" itemValue="barChart" rendered="#{reporteController.variables eq 2}"/>
-                                <f:selectItem itemLabel="Lineas" itemValue="lineChart" rendered="#{reporteController.variables eq 2}"/>
-                                <p:ajax update=":advancedReportForm:accordion1" listener="#{vistaController.handleAnyChangeEvent()}" process="@form"/>
-                            </p:selectOneMenu>
+                           
 
 
 
@@ -194,70 +196,53 @@
                 <p:messages id="messages" showDetail="true" showSummary="true"/>  
 
                 <itcs:filterView rendered="#{reporteController.showFilter}"
-                    controllerMBean="#{reporteController}"
+                                 controllerMBean="#{reporteController}"
                                  filterHelper="#{reporteController.filterHelper2}" update=":mainform:messages :reportForm"/>
 
                 <br />
 
                 <h:panelGrid>
-                    <h:panelGrid columns="2">
-                        <h:outputText value="Apilar:" rendered="#{reporteController.categoryModel ne null and reporteController.tipoGraficoSelected eq 'barChart'}" style="font-weight: bold;"/>
-                        <p:selectBooleanCheckbox value="#{reporteController.stacked}" 
-                                                 rendered="#{reporteController.categoryModel ne null and reporteController.tipoGraficoSelected eq 'barChart'}">
+                    <h:panelGrid columns="2" rendered="#{reporteController.tipoGraficoSelected eq 'bar' or reporteController.tipoGraficoSelected eq 'line'}">
+                        <h:outputText value="Apilar:"  style="font-weight: bold;"/>
+                        <p:selectBooleanCheckbox value="#{reporteController.stacked}">
                             <p:ajax update=":reportForm:barChart :advancedReportForm:accordion1" listener="#{vistaController.handleAnyChangeEvent()}"/>
                         </p:selectBooleanCheckbox>
                     </h:panelGrid>
 
                     <h:panelGrid columns="2">
-                        <h:outputText value="Fill:" rendered="#{reporteController.categoryModel ne null and reporteController.tipoGraficoSelected eq 'lineChart'}" style="font-weight: bold;"/>
-                        <p:selectBooleanCheckbox value="#{reporteController.fill}" 
-                                                 rendered="#{reporteController.categoryModel ne null and reporteController.tipoGraficoSelected eq 'lineChart'}">
-                            <p:ajax update=":reportForm:lineChart :advancedReportForm:accordion1" listener="#{vistaController.handleAnyChangeEvent()}"/>
-                        </p:selectBooleanCheckbox>
-                    </h:panelGrid>
-
-                    <h:panelGrid columns="2">
-                        <p:outputLabel value="Formato de los datos" rendered="#{reporteController.tipoGraficoSelected eq 'pieChart'}" style="font-weight: bold;"/>
-                        <p:selectOneButton value="#{reporteController.dataFormat}" rendered="#{reporteController.tipoGraficoSelected eq 'pieChart'}">  
+                        <p:outputLabel value="Formato de los datos" rendered="#{reporteController.tipoGraficoSelected eq 'pie'}" style="font-weight: bold;"/>
+                        <p:selectOneButton value="#{reporteController.dataFormat}" rendered="#{reporteController.tipoGraficoSelected eq 'pie'}">  
                             <f:selectItem itemLabel="Total" itemValue="value" />  
                             <f:selectItem itemLabel="%" itemValue="percent" />  
-                            <p:ajax update=":reportForm:pieChart"/>
+                            <p:ajax update=":reportForm:pie"/>
                         </p:selectOneButton>  
                     </h:panelGrid>
 
 
 
                     <p:commandButton type="button" value="Exportar Gráfico" icon="ui-icon-extlink" onclick="exportChart()" style="float: right;"
-                                     rendered="#{reporteController.pieModel ne null or reporteController.categoryModel ne null}"/>
+                                     rendered="#{reporteController.pieModel ne null or reporteController.barChartModel ne null or reporteController.lineChartModel ne null}"/>
 
                 </h:panelGrid>
 
                 <h:panelGroup layout="block">                   
 
 
-                    <p:barChart id="barChart" value="#{reporteController.categoryModel}" zoom="true" xaxisAngle="-50" legendCols="3" 
-                                style="height: 500px;" 
-                                rendered="#{reporteController.categoryModel ne null and reporteController.tipoGraficoSelected eq 'barChart'}" legendPosition="ne"  widgetVar="chart" 
-                                stacked="#{reporteController.stacked}" barMargin="30" shadow="true" animate="false" 
-                                yaxisLabel="#{reporteController.yaxisLabel}"
-                                xaxisLabel="#{reporteController.xaxisLabel}">
+                    <p:chart id="barChart" type="bar" model="#{reporteController.barChartModel}" widgetVar="chart" 
+                             style="height: 500px;" 
+                             rendered="#{reporteController.barChartModel ne null and reporteController.tipoGraficoSelected eq 'bar'}">
                         <p:ajax event="itemSelect" listener="#{reporteController.itemSelect}" update=":reportForm:messages" />  
-                    </p:barChart>
+                    </p:chart>
 
-                    <p:lineChart id="lineChart" value="#{reporteController.categoryModel}" fill="#{reporteController.fill}" zoom="true" xaxisAngle="-50" legendCols="3" style="height: 500px;" 
-                                 rendered="#{reporteController.categoryModel ne null and reporteController.tipoGraficoSelected eq 'lineChart'}" legendPosition="ne" widgetVar="chart"
-                                 stacked="#{reporteController.stacked}" shadow="true" animate="true" 
-                                 yaxisLabel="#{reporteController.yaxisLabel}"
-                                 xaxisLabel="#{reporteController.xaxisLabel}">
+                    <p:chart id="lineChart" type="line" model="#{reporteController.lineChartModel}" widgetVar="chart" style="height: 500px;" 
+                             rendered="#{reporteController.lineChartModel ne null and reporteController.tipoGraficoSelected eq 'line'}">
                         <p:ajax event="itemSelect" listener="#{reporteController.itemSelect}" update=":reportForm:messages" />  
-                    </p:lineChart>
+                    </p:chart>
 
-                    <p:pieChart id="pieChart" value="#{reporteController.pieModel}" rendered="#{reporteController.pieModel ne null}"  
-                                legendPosition="e" fill="true" widgetVar="chart"
-                                showDataLabels="true"  dataFormat="#{reporteController.dataFormat}" style="height: 500px;" legendCols="3" 
-                                sliceMargin="5" diameter="200" >
+                    <p:chart id="pie" type="pie" model="#{reporteController.pieModel}" rendered="#{reporteController.pieModel ne null}"  
+                             style="height: 500px;"  widgetVar="chart">
                         <p:ajax event="itemSelect" listener="#{reporteController.itemSelect}" update=":reportForm:messages" />  
-                    </p:pieChart>
+                    </p:chart>
 
                 </h:panelGroup>
 
@@ -281,14 +266,14 @@
                         <p:column headerText="Cantidad">
                             <h:outputText value="#{entry1.value}" />
                         </p:column>
-                        
-                          <p:columnGroup type="footer">  
-                                <p:row>  
-                                    <p:column footerText="Total: " style="text-align:right;font-weight: bold;"/>  
-                                    <p:column footerText="#{reporteController.calcularTotal(reporteController.oneDimList)}" style="text-align: left;font-weight: bold;"/>  
-                                 
-                                </p:row>  
-                            </p:columnGroup> 
+
+                        <p:columnGroup type="footer">  
+                            <p:row>  
+                                <p:column footerText="Total: " style="text-align:right;font-weight: bold;"/>  
+                                <p:column footerText="#{reporteController.calcularTotal(reporteController.oneDimList)}" style="text-align: left;font-weight: bold;"/>  
+
+                            </p:row>  
+                        </p:columnGroup> 
 
                         <f:facet name="footer">
                             <p:commandButton ajax="false" immediate="true" value="Exportar" icon="excelicon">  
@@ -334,15 +319,15 @@
                                 <p:row>  
                                     <p:column footerText="Total: " style="text-align:right"/>  
                                     <p:column footerText="#{reporteController.calcularTotal(entry.value)}" />  
-                                 
+
                                 </p:row>  
                             </p:columnGroup>  
-                            
-                            
-                            
+
+
+
                         </p:subTable>                        
 
-                        
+
                     </p:dataTable>
 
                 </h:panelGroup>

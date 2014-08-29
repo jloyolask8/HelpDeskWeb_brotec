@@ -44,20 +44,7 @@
                         </h:panelGrid>
                     </p:fieldset>
                     <br/>
-                    <p:fieldset legend="Categorías asociadas">
-                        <h:outputLabel value="Que Categorías puede ver" for="checkboxTree" style="font-weight: bold"/>
-                        <p:tree value="#{grupoController.treeNodeCategorias}" var="node" id="checkboxTree"  
-                                selectionMode="checkbox"  
-                                selection="#{grupoController.selectedCategoriasNodes}"
-                                style="border: none; width: 388px !important;">  
-
-                            <p:treeNode expandedIcon="myfolderopenicon"
-                                        collapsedIcon="myfoldericon">  
-                                <h:outputText value="#{node}" />  
-                            </p:treeNode>  
-                        </p:tree>
-                    </p:fieldset>
-                    <br/>
+                  
                     <p:fieldset legend="Usuarios del Grupo">
                         <p:pickList id="pojoPickList"  value="#{grupoController.usuariosDualListModel}" var="u" effect="slide" 
                                     itemValue="#{u}" itemLabel="#{u.capitalName} (#{u.idUsuario})" converter="UsuarioConverter"
@@ -99,7 +86,7 @@
                                 <p:commandButton ajax="false" action="#{grupoController.prepareView()}" value="Ver" icon="ui-icon-document"/>
                                 <p:commandButton ajax="false" action="#{grupoController.prepareList}" value="#{bundle.EditGrupoShowAllLink}" immediate="true" icon="ui-icon-folder-open"/>
                                 <p:separator/>
-                                <p:commandButton id="showDialogButton" value="#{bundle.destroy}" onclick="confirmation.show()" icon="ui-icon ui-icon-trash" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>         
+                                <p:commandButton id="showDialogButton" value="#{bundle.destroy}" onclick="PF('confirmation').show()" icon="ui-icon ui-icon-trash" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>         
                             </p:toolbarGroup>  
 
                         </p:toolbar>
@@ -115,8 +102,8 @@
 
                     <f:facet name="footer">
                         <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{grupoController.destroy()}" 
-                                         ajax="false" oncomplete="confirmation.hide()"/>
-                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
+                                         ajax="false" oncomplete="PF('confirmation').hide()"/>
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
                     </f:facet>
 
                 </p:dialog>

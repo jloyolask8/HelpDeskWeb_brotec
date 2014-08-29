@@ -44,7 +44,7 @@
                                 </p:selectOneMenu>
                                 <p:message for="idCanalSalida"/>
                                 <p:outputLabel value="Logo del #{applicationBean.productDescription}" style="font-weight: bold;"/>
-                                <p:commandLink value="adjuntar un Logo" onclick="uploadLogoProyectoDialog.show()"
+                                <p:commandLink value="adjuntar un Logo" onclick="PF('uploadLogoProyectoDialog').show()"
                                                rendered="#{productoController.selected.idLogo eq null}"/>
 
                                 <h:panelGrid columns="4"  rendered="#{productoController.selected.idLogo ne null}">
@@ -75,12 +75,12 @@
                                 <p:commandButton id="showAddModeloBtn" actionListener="#{modeloProductoController.prepareCreate(productoController.selected)}"
                                                  value="Agregar Modelo" update=":formaddModeloDialog :formaddModeloDialog:addModeloDialog" 
                                                  icon="ui-icon ui-icon-plus" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" style="float: right;"
-                                                 oncomplete="addModelo.show()" />
+                                                 oncomplete="PF('addModelo').show()" />
 
                                 <!--p:commandButton id="showAddManyModeloBtn" actionListener="#{modeloProductoController.prepareCreateMany()}"
                                                  value="Cargar Modelos" update=":formaddMany :formaddMany:addManyModeloDialog" 
                                                  icon="ui-icon ui-icon-plus" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" style="float: right;"
-                                                 oncomplete="addManyModelo.show()" /-->
+                                                 oncomplete="PF('addManyModelo').show()" /-->
 
                                 <p:dataTable id="modelosList" value="#{productoController.selected.modeloProductoList}" var="model" 
                                              emptyMessage="No se encontraron modelos asociados.">
@@ -115,12 +115,12 @@
                                         </f:facet>                                       
 
                                         <p:commandButton actionListener="#{modeloProductoController.prepareEdit(model)}" 
-                                                         oncomplete="addModelo.show()" update=":formaddModeloDialog" 
+                                                         oncomplete="PF('addModelo').show()" update=":formaddModeloDialog" 
                                                          rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
                                                          icon="ui-icon ui-icon-pencil" title="Editar"/>
 
                                         <p:commandButton icon="ui-icon ui-icon-trash" actionListener="#{modeloProductoController.prepareEdit(model)}"
-                                                         oncomplete="DeleteModeloconfirmDialog.show()"  update=":formDeleteModelo" title="Eliminar">
+                                                         oncomplete="PF('DeleteModeloconfirmDialog').show()"  update=":formDeleteModelo" title="Eliminar">
                                         </p:commandButton> 
 
 
@@ -140,7 +140,7 @@
                                 <p:commandButton id="showAddcomponentBtn" actionListener="#{productoController.prepareCreateComponente()}"
                                                  value="Agregar #{applicationBean.productComponentDescription}" update=":formaddComponentDialog" 
                                                  icon="ui-icon ui-icon-plus" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" style="float: right;"
-                                                 oncomplete="addComponent.show()" />
+                                                 oncomplete="PF('addComponent').show()" />
 
                                 <p:dataTable id="componentesList" value="#{productoController.selected.componenteList}" var="item" emptyMessage="No se registran #{applicationBean.productComponentDescription}(s)">
                                     <p:column filterBy="idComponente" filterMatchMode="contains">
@@ -173,15 +173,15 @@
                                         </f:facet>
 
                                         <p:commandButton actionListener="#{productoController.prepareEditComponente(item)}" update=":idformSubComponentes"     
-                                                         oncomplete="SubComponentes.show()"
+                                                         oncomplete="PF('SubComponentes').show()"
                                                          icon="ui-icon-search" title="Ver #{applicationBean.productSubComponentDescription}(s)"/>
 
-                                        <p:commandButton actionListener="#{productoController.prepareEditComponente(item)}" oncomplete="addComponent.show()" update=":formaddComponentDialog" 
+                                        <p:commandButton actionListener="#{productoController.prepareEditComponente(item)}" oncomplete="PF('addComponent').show()" update=":formaddComponentDialog" 
                                                          rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
                                                          icon="ui-icon ui-icon-pencil" title="Editar"/>
 
                                         <p:commandButton icon="ui-icon ui-icon-trash" actionListener="#{productoController.prepareEditComponente(item)}"
-                                                         oncomplete="DeleteComponenteconfirmDialog.show()"  update=":formDeleteComponente" title="Eliminar">
+                                                         oncomplete="PF('DeleteComponenteconfirmDialog').show()"  update=":formDeleteComponente" title="Eliminar">
                                         </p:commandButton> 
 
 
@@ -208,7 +208,7 @@
                                 <p:commandButton ajax="false" action="#{productoController.prepareList}" value="#{bundle.ShowAllLink}" immediate="true" icon="ui-icon-folder-open"/>
 
                                 <p:separator/>
-                                <p:commandButton id="showDialogButton" value="#{bundle.DestroyLink}" onclick="confirmation.show()" icon="ui-icon ui-icon-trash" />                                
+                                <p:commandButton id="showDialogButton" value="#{bundle.DestroyLink}" onclick="PF('confirmation').show()" icon="ui-icon ui-icon-trash" />                                
                             </p:toolbarGroup>
                         </p:toolbar>
 
@@ -231,7 +231,7 @@
                         <p:commandButton value="Si" update=":mainform:messages :form :uploadLogoProyectoForm"
                                          actionListener="#{productoController.deleteLogoProducto(actionEvent)}" />
 
-                        <p:commandButton value="No" onclick="borrarLogo.hide()" type="button" />
+                        <p:commandButton value="No" onclick="PF('borrarLogo').hide()" type="button" />
                     </div>
                 </h:form>
             </p:dialog>
@@ -312,13 +312,13 @@
                                              rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
                                              title="ver detalle"/>
 
-                            <p:commandButton actionListener="#{productoController.prepareEditSubComponente(subitem)}" oncomplete="addSubComponent.show()" update=":formaddSubComponentDialog" 
+                            <p:commandButton actionListener="#{productoController.prepareEditSubComponente(subitem)}" oncomplete="PF('addSubComponent').show()" update=":formaddSubComponentDialog" 
                                              rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
                                              icon="ui-icon ui-icon-pencil" title="Editar"/>
 
                             <p:commandButton icon="ui-icon ui-icon-trash"
                                              actionListener="#{productoController.prepareEditSubComponente(subitem)}" 
-                                             oncomplete="DeleteSubComponenteconfirmDialog.show()" update=":formDeleteSubComponente"  title="Eliminar">  
+                                             oncomplete="PF('DeleteSubComponenteconfirmDialog').show()" update=":formDeleteSubComponente"  title="Eliminar">  
 
                             </p:commandButton> 
 
@@ -329,7 +329,7 @@
                     <p:commandButton id="showAddSubComponentBtn" actionListener="#{productoController.prepareCreateSubComponente()}"
                                      value="Agregar #{applicationBean.productSubComponentDescription}" update=":formaddSubComponentDialog" 
                                      icon="ui-icon ui-icon-plus" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" style="float: right;"
-                                     oncomplete="addSubComponent.show()" />
+                                     oncomplete="PF('addSubComponent').show()" />
 
                 </h:form>
 
@@ -345,10 +345,10 @@
 
                     <f:facet name="footer">
                         <p:commandButton id="confirm" value="#{bundle.yesDelete}" actionListener="#{componenteController.destroy(productoController.currentComponente)}" 
-                                         update=":form" oncomplete="DeleteComponenteconfirmDialog.hide()">
+                                         update=":form" oncomplete="PF('DeleteComponenteconfirmDialog').hide()">
                             <p:collector value="#{productoController.currentComponente}" removeFrom="#{productoController.selected.componenteList}" unique="true"/>
                         </p:commandButton>
-                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="DeleteComponenteconfirmDialog.hide()" type="button" /> 
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('DeleteComponenteconfirmDialog').hide()" type="button" /> 
                     </f:facet>
 
                 </p:dialog>
@@ -363,11 +363,11 @@
                     <f:facet name="footer">
 
                         <p:commandButton id="confirm" value="#{bundle.yesDelete}" actionListener="#{modeloProductoController.destroy()}" 
-                                         update=":form:tabs:modelosList" oncomplete="DeleteModeloconfirmDialog.hide()">
+                                         update=":form:tabs:modelosList" oncomplete="PF('DeleteModeloconfirmDialog').hide()">
 
                         </p:commandButton>
 
-                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="DeleteModeloconfirmDialog.hide()" type="button" /> 
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('DeleteModeloconfirmDialog').hide()" type="button" /> 
                     </f:facet>
 
                 </p:dialog>
@@ -382,10 +382,10 @@
 
                     <f:facet name="footer">
                         <p:commandButton id="confirm" value="#{bundle.yesDelete}" actionListener="#{subComponenteController.destroy(productoController.currentSubComponente)}" 
-                                         update=":form" oncomplete="DeleteSubComponenteconfirmDialog.hide()" >
+                                         update=":form" oncomplete="PF('DeleteSubComponenteconfirmDialog').hide()" >
                             <p:collector value="#{productoController.currentSubComponente}"  removeFrom="#{productoController.currentComponente.subComponenteList}" unique="true"/>
                         </p:commandButton>
-                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="DeleteSubComponenteconfirmDialog.hide()" type="button" /> 
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('DeleteSubComponenteconfirmDialog').hide()" type="button" /> 
                     </f:facet>
 
                 </p:dialog>
@@ -401,8 +401,8 @@
 
                     <f:facet name="footer">
                         <p:commandButton id="confirm" ajax="false" value="#{bundle.yesDelete}" action="#{productoController.destroy()}" 
-                                         update=":form" oncomplete="confirmation.hide()"/>
-                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
+                                         update=":form" oncomplete="PF('confirmation').hide()"/>
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('PF('confirmation')').hide()" type="button" /> 
                     </f:facet>
 
                 </p:dialog>
@@ -442,11 +442,11 @@
                     <f:facet name="footer">
                         <p:commandButton id="addCompyesCreate2" value="Agregar" actionListener="#{productoController.addSubComponentToComponent}" 
                                          rendered="#{productoController.currentSubComponente.idSubComponente eq null}"
-                                         update=":idformSubComponentes" oncomplete="addSubComponent.hide()"/>
+                                         update=":idformSubComponentes" oncomplete="PF('addSubComponent').hide()"/>
                         <p:commandButton id="addCompyesEdit2" value="Guardar" actionListener="#{productoController.handleEditComponent()}" 
                                          rendered="#{productoController.currentSubComponente.idSubComponente ne null}"
-                                         update=":idformSubComponentes" oncomplete="addSubComponent.hide()"/>
-                        <p:commandButton id="addCompno2" value="Cancelar" onclick="addSubComponent.hide()" type="button" /> 
+                                         update=":idformSubComponentes" oncomplete="PF('addSubComponent').hide()"/>
+                        <p:commandButton id="addCompno2" value="Cancelar" onclick="PF('addSubComponent').hide()" type="button" /> 
                     </f:facet>              
 
 
@@ -480,11 +480,11 @@
                     <f:facet name="footer">
                         <p:commandButton id="addCompyesCreate" value="Agregar" actionListener="#{productoController.addComponentToProduct}" 
                                          rendered="#{productoController.currentComponente.idComponente eq null}"
-                                         update=":form:tabs:componentesList" oncomplete="addComponent.hide()"/>
+                                         update=":form:tabs:componentesList" oncomplete="PF('addComponent').hide()"/>
                         <p:commandButton id="addCompyesEdit" value="Guardar" actionListener="#{productoController.handleEditComponent()}" 
                                          rendered="#{productoController.currentComponente.idComponente ne null}"
-                                         update=":form:tabs:componentesList" oncomplete="addComponent.hide()"/>
-                        <p:commandButton id="addCompno" value="Cancelar" onclick="addComponent.hide()" type="button" /> 
+                                         update=":form:tabs:componentesList" oncomplete="PF('addComponent').hide()"/>
+                        <p:commandButton id="addCompno" value="Cancelar" onclick="PF('addComponent').hide()" type="button" /> 
                     </f:facet>  
                 </p:dialog>
             </h:form>
@@ -523,7 +523,7 @@
                         <p:commandButton value="Guardar" actionListener="#{modeloProductoController.update()}"
                                          rendered="#{modeloProductoController.selected.modeloProductoPK ne null}"
                                          update=":form:tabs:modelosList :formaddModeloDialog" />
-                        <p:commandButton value="Cerrar" update=":form:tabs:modelosList" onclick="addModelo.hide()" type="button" /> 
+                        <p:commandButton value="Cerrar" update=":form:tabs:modelosList" onclick="PF('addModelo').hide()" type="button" /> 
                     </f:facet>  
                 </p:dialog>
             </h:form>
@@ -542,7 +542,7 @@
                         <p:commandButton value="Enviar" update=":formaddMany"
                                          actionListener="#{modeloProductoController.uploadModelosFile}"/>  
 
-                        <p:commandButton value="Cerrar" onclick="addManyModelo.hide()" type="button" /> 
+                        <p:commandButton value="Cerrar" onclick="PF('addManyModelo').hide()" type="button" /> 
                     </f:facet>  
                 </p:dialog>
             </h:form>

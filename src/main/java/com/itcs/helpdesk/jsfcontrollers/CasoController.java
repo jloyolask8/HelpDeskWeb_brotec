@@ -2,9 +2,7 @@ package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.ApplicationBean;
 import com.itcs.helpdesk.jsfcontrollers.util.FiltroAcceso;
-import com.itcs.helpdesk.jsfcontrollers.util.JPAFilterHelper;
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Archivo;
 import com.itcs.helpdesk.persistence.entities.Attachment;
@@ -13,7 +11,6 @@ import com.itcs.helpdesk.persistence.entities.BlackListEmail;
 import com.itcs.helpdesk.persistence.entities.Canal;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Caso_;
-import com.itcs.helpdesk.persistence.entities.Categoria;
 import com.itcs.helpdesk.persistence.entities.Cliente;
 import com.itcs.helpdesk.persistence.entities.Clipping;
 import com.itcs.helpdesk.persistence.entities.EmailCliente;
@@ -82,7 +79,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.event.ActionEvent;
-import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 import javax.resource.NotSupportedException;
@@ -160,7 +156,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     /*
      * Objetos para filtro
      */
-    private transient TreeNode categoria;
+//    private transient TreeNode categoria;
     private String idCasoStr;
     /*
      * Objetos para attachments
@@ -175,7 +171,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //    private List<Nota> listaActividadesOrdenada = null;
     private boolean incluirHistoria;
     private Integer progresoEnvioRespuesta;
-    private Categoria categorySelected;
     private ReglaTrigger reglaTriggerSelected;
     private String emailCliente_wizard;
     private String rutCliente_wizard;
@@ -743,23 +738,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         //return null;
     }
 
-    public void actualizaArbolDeCategoria() {
-//        //System.out.println("actualizaArbolDeCategoria");
-        Object res = JsfUtil.getManagedBean("categoriaController");
-        if (res != null) {
-            CategoriaController catController = ((CategoriaController) res);
-            catController.filtrarCategorias();
-        }
-    }
 
-    public void actualizaArbolDeCategoria(EventListener event) {
-//        //System.out.println("actualizaArbolDeCategoria");
-        Object res = JsfUtil.getManagedBean("categoriaController");
-        if (res != null) {
-            CategoriaController catController = ((CategoriaController) res);
-            catController.filtrarCategorias();
-        }
-    }
 
     public void onNodeItemSelect(NodeSelectEvent event) {
         Item item = (Item) event.getTreeNode().getData();
@@ -784,16 +763,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //            //System.out.println("categoria " + catSelected + " seleccionada");
 //            current.setIdItem(itemSelected);
             current.setIdItem(itemSelected);
-        }
-    }
-
-    public void onNodeSelect(NodeSelectEvent event) {
-        Object res = JsfUtil.getManagedBean("categoriaController");
-        if (res != null) {
-            CategoriaController catController = ((CategoriaController) res);
-            Categoria catSelected = (Categoria) catController.getCategoria().getData();
-//            //System.out.println("categoria " + catSelected + " seleccionada");
-            current.setIdCategoria(catSelected);
         }
     }
 
@@ -1197,7 +1166,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public String crearCasoColab(Caso casoTmp) {
         try {
             current = new Caso();
-            current.setIdCategoria(null);
             current.setRevisarActualizacion(false);
             current.setIdCasoPadre(casoTmp);
             Usuario usr = casoTmp.getOwner();
@@ -1245,7 +1213,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public String prepareCreateCasoPreentrega() {
         try {
             current = new Caso();
-            current.setIdCategoria(null);
             current.setRevisarActualizacion(true);
             current.setIdPrioridad(null);
             current.setFechaCreacion(Calendar.getInstance().getTime());
@@ -1317,7 +1284,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public String prepareCreate() {
         try {
             current = new Caso();
-            current.setIdCategoria(null);
             current.setRevisarActualizacion(true);
             current.setIdPrioridad(null);
             current.setFechaCreacion(Calendar.getInstance().getTime());
@@ -1361,7 +1327,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private String prepareCopy(Caso origin, boolean assignme) {
         try {
             Caso copy = new Caso();
-            copy.setIdCategoria(origin.getIdCategoria());
             copy.setDescripcion(origin.getDescripcion());
             copy.setDescripcionTxt(origin.getDescripcionTxt());
             copy.setEmailCliente(origin.getEmailCliente());
@@ -1612,7 +1577,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //        return dir;
 //    }
     public String filterList() {
-        categoria = null;
         recreateModel();
         recreatePagination();
         return "inbox";
@@ -1717,8 +1681,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
         try {
             vistaController.create(getFilterHelper().getVista());
-
             JsfUtil.addSuccessMessage("La Vista guardada exitosamente. Revisar el panel de Vistas.");
+            executeInClient("PF('saveViewDialog').hide()");
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -1848,32 +1812,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         return "inbox";
     }
 
-    public void filterCatCarpetas() {
-//        //System.out.println("filterCatCarpetas");
-        Vista vista1 = new Vista(Caso.class);
-        vista1.setIdUsuarioCreadaPor(userSessionBean.getCurrent());
-        vista1.setNombre("Casos de la Categoria " + getCategorySelected().getNombre());
-
-        FiltroVista filtroEstado = new FiltroVista();
-        filtroEstado.setIdCampo(Caso_.ESTADO_FIELD_NAME);
-        filtroEstado.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
-        filtroEstado.setValor(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
-        filtroEstado.setIdVista(vista1);
-
-        vista1.getFiltrosVistaList().add(filtroEstado);
-
-        FiltroVista filtroCategoria = new FiltroVista();
-        filtroCategoria.setIdCampo(Caso_.CATEGORIA_FIELD_NAME);
-        filtroCategoria.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
-        filtroCategoria.setValor(getCategorySelected().getIdCategoria().toString());
-        filtroCategoria.setIdVista(vista1);
-
-        vista1.getFiltrosVistaList().add(filtroCategoria);
-
-        getFilterHelper().setVista(vista1);
-        recreateModel();
-        recreatePagination();
-    }
+    
 
     public void refresh() {
         recreateModel();
@@ -3167,7 +3106,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 Logger.getLogger(CasoController.class
                         .getName()).log(Level.SEVERE, "unscheduleTask", ex);
             }
-            actualizaArbolDeCategoria();
             current = null;
             recreateModel();
             recreatePagination();
@@ -3204,6 +3142,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 recreateModel();
                 recreatePagination();
             }
+            
+            executeInClient("PF('deleteSelectedCasos').hide()");
 
         } catch (Exception e) {
             addErrorMessage(e.getLocalizedMessage());
@@ -3261,16 +3201,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         this.usuarioSeleccionadoTransfer = null;
     }
 
-    public TreeNode getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(TreeNode categoria) {
-        if (categoria != null) {
-            categorySelected = (Categoria) categoria.getData();
-        }
-        this.categoria = categoria;
-    }
+    
 
     public SelectItem[] getClippingsItemsAvailableSelectOne() {
         return JsfUtil.getSelectItems(getJpaController().getClippingJpaController().findClippingEntities(), true);
@@ -3469,13 +3400,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      */
     public void setVisibilityOption(Integer visibilityOption) {
         this.visibilityOption = visibilityOption;
-    }
-
-    /**
-     * @return the categorySelected
-     */
-    public Categoria getCategorySelected() {
-        return categorySelected;
     }
 
     /**

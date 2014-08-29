@@ -94,7 +94,7 @@
                             <h:outputText value=" "/>                         
 
                             <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog"  immediate="true"
-                                             oncomplete="confirmation.show()" rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarVistas() and (item.idUsuarioCreadaPor eq UserSessionBean.current or filtroAcceso.administradorDelSistema)}" icon="ui-icon ui-icon-trash">
+                                             oncomplete="PF('confirmation').show()" rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarVistas() and (item.idUsuarioCreadaPor eq UserSessionBean.current or filtroAcceso.administradorDelSistema)}" icon="ui-icon ui-icon-trash">
                                 <f:setPropertyActionListener value="#{item}" target="#{vistaController.selected}" />
                             </p:commandButton>
                         </p:column>
@@ -139,7 +139,7 @@
                     <f:facet name="footer">
                         <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{vistaController.destroy()}" 
                                          ajax="false"/>
-                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
                     </f:facet>
 
                 </p:dialog>

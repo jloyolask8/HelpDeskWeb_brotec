@@ -493,9 +493,6 @@ public class RulesEngine implements CasoChangeListener {
 
     private void executeAction(Accion accion, Caso caso) {
         try {
-//            if (accion.getIdNombreAccion().equals(EnumNombreAccion.CAMBIO_CAT.getNombreAccion())) {
-//                cambiarCategoria(accion, caso);
-//            } else 
             if (accion.getIdNombreAccion().equals(EnumNombreAccion.ASIGNAR_A_GRUPO.getNombreAccion())) {
                 asignarCasoAGrupo(accion, caso);
             } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.ASIGNAR_A_AREA.getNombreAccion())) {

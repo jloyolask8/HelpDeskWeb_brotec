@@ -91,9 +91,7 @@ public class FiltroAcceso implements Serializable {
         return verificaAccesoAFuncion(EnumFunciones.ELIMINAR_CASO);
     }
 
-    public boolean verificarAccesoAFuncionCambiarCategoriaCaso() {
-        return verificaAccesoAFuncion(EnumFunciones.CAMBIAR_CATEGORIA_CASO);
-    }
+   
 
     public boolean verificarAccesoAFuncionAsignarTransferirCaso() {
         return verificaAccesoAFuncion(EnumFunciones.ASIGNAR_TRANSFERIR_CASO);

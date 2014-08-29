@@ -203,6 +203,7 @@
 
                         <h:form id="formAgendarEvento">
                             <p:schedule id="myschedule" value="#{globalScheduleController.lazyScheduleEventsModel}" 
+                                        aspectRatio="2"
                                         firstHour="8" widgetVar="myschedule">
                                 <p:ajax event="dateSelect" listener="#{globalScheduleController.onDateSelect}" 
                                         update=":createEventForm:eventDetails" oncomplete="PF('createEventDialog').show()" />  

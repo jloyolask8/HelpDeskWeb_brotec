@@ -54,7 +54,7 @@
                         
                          <p:column headerText="Acción">
                             <p:commandButton id="editBtn" ajax="false" action="#{tipoCasoController.prepareEdit(item)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" title="Editar" icon="ui-icon ui-icon-pencil"/>
-                            <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" action="#{tipoCasoController.setSelected(item)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" oncomplete="confirmation.show()" icon="ui-icon ui-icon-trash"/>
+                            <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" action="#{tipoCasoController.setSelected(item)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" oncomplete="PF('confirmation').show()" icon="ui-icon ui-icon-trash"/>
                         </p:column>
 
 
@@ -105,7 +105,7 @@
                     <f:facet name="footer">
                         <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{tipoCasoController.destroy() }" 
                                          ajax="false" rendered="#{countCasosByTipo eq 0}"/>
-                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
                     </f:facet>
 
                 </p:dialog>

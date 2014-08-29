@@ -461,12 +461,12 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
 
     public void crearItem(ActionEvent actionEvent) {
         try {
-            Item categoriaPadre = null;
+            Item itemPadre = null;
             if (itemNode != null && itemNode.getData() != null) {
-                categoriaPadre = (Item) itemNode.getData();
-                current.setIdArea(categoriaPadre.getIdArea());
+                itemPadre = (Item) itemNode.getData();
+                current.setIdArea(itemPadre.getIdArea());
             }
-            current.setIdItemPadre(categoriaPadre);
+            current.setIdItemPadre(itemPadre);
             current.setOrden(ordenMayor + 1);
             current.setEditable(true);
             getJpaController().persistItem(current);
@@ -622,11 +622,11 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
 
     public void prepareCreateAjax(ActionEvent actionEvent) {
         current = new Item();
-        Item categoriaPadre = null;
+        Item itemPadre = null;
         if (itemNode != null && itemNode.getData() != null) {
-            categoriaPadre = (Item) itemNode.getData();
-            current.setIdArea(categoriaPadre.getIdArea());
-            current.setIdItemPadre(categoriaPadre);
+            itemPadre = (Item) itemNode.getData();
+            current.setIdArea(itemPadre.getIdArea());
+            current.setIdItemPadre(itemPadre);
         }
         selectedItemIndex = -1;
     }
@@ -689,13 +689,12 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
     }
 
     public void onNodeSelect(NodeSelectEvent event) {
-        //System.out.println("categoria " + ((Item) categoria.getData()).getNombre() + " seleccionada");
         filtrarItems();
     }
 
-    public void setItem(TreeNode categoria) {
+    public void setItem(TreeNode itemTreeNode) {
         //System.out.println(getNombreItemSeleccionada());
-        this.itemNode = categoria;
+        this.itemNode = itemTreeNode;
     }
 
     public void filtrarItems() {
@@ -787,13 +786,13 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
     /**
      * Crea el arbol de categoria desde un Padre bastardo.
      *
-     * @param categoria Item Padre
+     * @param item Item Padre
      * @param subItems TreeNode Padre
      * @return
      */
-    private void setItems(Item categoria, TreeNode subItems) {
+    private void setItems(Item item, TreeNode subItems) {
 
-        List<Item> cats = (List) categoria.getItemList();
+        List<Item> cats = (List) item.getItemList();
         if (cats != null) {
             Collections.sort(cats, new Comparator<Item>() {
                 @Override
@@ -815,8 +814,8 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
         }
     }
 
-    public void setItems(TreeNode categorias) {
-        this.itemsTree = categorias;
+    public void setItems(TreeNode items) {
+        this.itemsTree = items;
     }
 
     public TreeNode getSelectedNode() {

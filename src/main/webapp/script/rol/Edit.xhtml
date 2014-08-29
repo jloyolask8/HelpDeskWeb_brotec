@@ -48,7 +48,7 @@
 
                             <p:toolbarGroup align="right">   
                                 <p:separator/>
-                                <p:commandButton id="showDialogButton" value="#{bundle.ViewRolDestroyLink}" onclick="confirmation.show()" disabled="#{not rolController.puedeEditar(rolController.selected)}"  icon="ui-icon ui-icon-trash" />         
+                                <p:commandButton id="showDialogButton" value="#{bundle.ViewRolDestroyLink}" onclick="PF('confirmation').show()" disabled="#{not rolController.puedeEditar(rolController.selected)}"  icon="ui-icon ui-icon-trash" />         
                             </p:toolbarGroup>  
 
                         </p:toolbar>
@@ -67,8 +67,8 @@
 
                             <f:facet name="footer">
                                 <p:commandButton id="confirm" value="Yes Sure" action="#{rolController.destroy}" 
-                                                 update="form" oncomplete="confirmation.hide()"/>
-                                <p:commandButton id="decline" value="Not Yet" onclick="confirmation.hide()" type="button" /> 
+                                                 update="form" oncomplete="PF('confirmation').hide()"/>
+                                <p:commandButton id="decline" value="Not Yet" onclick="PF('confirmation').hide()" type="button" /> 
                             </f:facet>
 
                         </p:dialog>

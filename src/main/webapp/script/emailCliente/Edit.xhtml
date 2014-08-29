@@ -84,7 +84,7 @@
                                 <p:commandButton id="showAddBtn" actionListener="#{emailClienteController.prepareCreateProductoContratado()}"
                                                  value="Asociar un #{applicationBean.productSubComponentDescription} al Cliente" update=":formaddProductoContratadoDialog" immediate="true"
                                                  icon="ui-icon ui-icon-plus" style="float: right;"
-                                                 oncomplete="addPCDialog.show()" />
+                                                 oncomplete="PF('addPCDialog').show()" />
 
                                 <p:dataTable id="dataList" rendered="#{emailClienteController.selected ne null and emailClienteController.selected.cliente ne null}" 
                                              value="#{emailClienteController.selected.cliente.productoContratadoList}" var="item" emptyMessage="El Cliente no tiene #{applicationBean.productDescription} asociado.">
@@ -134,7 +134,7 @@
                                             <h:outputText value="&nbsp;"/>
                                         </f:facet>
 
-                                        <p:commandButton actionListener="#{emailClienteController.prepareEditProductoContratado(item)}" oncomplete="addPCDialog.show()" update=":formaddProductoContratadoDialog" 
+                                        <p:commandButton actionListener="#{emailClienteController.prepareEditProductoContratado(item)}" oncomplete="PF('addPCDialog').show()" update=":formaddProductoContratadoDialog" 
                                                          rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
                                                          icon="ui-icon ui-icon-pencil" title="Editar"/>
 
@@ -222,7 +222,7 @@
                         <p:commandButton id="addCompyesEdit" value="Guardar" actionListener="#{emailClienteController.handleEditProductoContratado()}" 
                                          rendered="#{emailClienteController.currentProductoContratado.productoContratadoPK ne null }"
                                          update=":form:tabs:dataList :formaddProductoContratadoDialog" />
-                        <p:commandButton id="addCompno" value="Cerrar" onclick="addPCDialog.hide()" type="button" /> 
+                        <p:commandButton id="addCompno" value="Cerrar" onclick="PF('addPCDialog').hide()" type="button" /> 
                     </h:panelGrid>
 
 
