@@ -2631,27 +2631,29 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         boolean sended = false;
 
         StringBuilder listIdAtt = new StringBuilder();
-        String texto = nota.getTexto() != null ? nota.getTexto() : "";
+//        String texto = (nota != null && nota.getTexto() != null) ? nota.getTexto() : "";
 
         if (selectedAttachmensForMail != null) {
-            StringBuilder attachmentsNames = new StringBuilder();
+//            StringBuilder attachmentsNames = new StringBuilder();
 //            attachments = new ArrayList<EmailAttachment>(selectedAttachmensForMail.size());
             Iterator iteradorAttachments = selectedAttachmensForMail.iterator();
-            int indexAtt = 0;
+//            int indexAtt = 0;
             while (iteradorAttachments.hasNext()) {
                 Long idatt = new Long((String) iteradorAttachments.next());
                 listIdAtt.append(idatt);
                 listIdAtt.append(';');
-                Attachment att = getJpaController().getAttachmentFindByIdAttachment(idatt);
-                attachmentsNames.append(att.getNombreArchivo()).append("<br/>");
-                indexAtt++;
-                progresoEnvioRespuesta = (int) (((50f / (float) selectedAttachmensForMail.size())) * indexAtt);
+//                Attachment att = getJpaController().getAttachmentFindByIdAttachment(idatt);
+//                attachmentsNames.append(att.getNombreArchivo()).append("<br/>");
+//                indexAtt++;
+//                progresoEnvioRespuesta = (int) (((50f / (float) selectedAttachmensForMail.size())) * indexAtt);
             }
         }
 
         if (incluirHistoria) {
-            StringBuilder nuevoTextoNota = new StringBuilder(texto);
-            nuevoTextoNota.append("<br/><b>Se ha agregado historia del caso</b><br/>");
+//            StringBuilder nuevoTextoNota = new StringBuilder(texto);
+//            nuevoTextoNota.append("<br/><b>Se ha agregado historia del caso</b><br/>");
+
+            mensaje = mensaje != null ? mensaje : "";
 
             StringBuilder textoMensaje = new StringBuilder(mensaje);
             textoMensaje.append(obtenerHistorial());
