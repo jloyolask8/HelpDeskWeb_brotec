@@ -3,7 +3,6 @@ package com.itcs.helpdesk.jsfcontrollers;
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.Area;
-import com.itcs.helpdesk.persistence.entities.Categoria;
 import com.itcs.helpdesk.persistence.entities.Grupo;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.quartz.DownloadEmailJob;
