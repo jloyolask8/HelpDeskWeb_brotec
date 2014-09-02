@@ -537,7 +537,8 @@
                             <p:commandButton rendered="#{casoController.verificarTomarCaso()}" ajax="true" value="Asignármelo" onclick="tomarCaso.show()" />
 
                             <p:commandButton id="panelBotonesResp0" disabled="#{(not casoController.verificarCrearActividad()) and 
-                                                                                (not casoController.verificarResponderCaso())}"
+                                                                                (not casoController.verificarResponderCaso()) }"
+                                             rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.PREVENTIVO.getTipoCaso()}"
                                              value="Crear Actividad" type="button" style="width: 100%"/>
 
                             <p:menu overlay="true" trigger="panelBotonesResp0" my="left top" at="left bottom" style="width:250px !important;">

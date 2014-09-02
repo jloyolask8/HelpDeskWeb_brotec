@@ -1488,6 +1488,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         } else {
             if (current != null) {
                 current = getJpaController().getCasoFindByIdCaso(current.getIdCaso());
+        
+                textoNota = current.getRespuesta();
 //                System.out.println("FOUND CASO:" + current);
                 setActiveIndexdescOrComment(0);
                 setActiveIndexCasoSections(0);
@@ -2235,9 +2237,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         //List<AuditLog> changeLog = new ArrayList<AuditLog>();
         try {
             current.setRespuesta(textoNota);
-            //current.setFechaModif(Calendar.getInstance().getTime());
-            //changeLog.add(ManagerCasos.createLogReg(current, "Borrador", "Se crea borrador de respuesta", ""));
-            //getJpaController().mergeCaso(current, changeLog);
+            current.setFechaModif(Calendar.getInstance().getTime());
+            getJpaController().mergeCaso(current, ManagerCasos.createLogReg(current, "Borrador", "Se crea borrador de respuesta", ""));
             JsfUtil.addSuccessMessage("Borrador guardado");
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
