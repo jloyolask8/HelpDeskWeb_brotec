@@ -69,6 +69,11 @@
         <converter-class>com.itcs.helpdesk.jsfcontrollers.GrupoController$GrupoControllerConverter</converter-class>
     </converter>
     
+    <converter>
+        <converter-id>EmailConverter</converter-id>
+        <converter-class>com.itcs.helpdesk.jsfcontrollers.EmailClienteController$EmailClienteControllerConverter</converter-class>
+    </converter>
+    
     <navigation-rule>
         <navigation-case>
             <from-outcome>viewExpired</from-outcome>
