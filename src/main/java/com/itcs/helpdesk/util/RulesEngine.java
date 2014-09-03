@@ -164,7 +164,7 @@ public class RulesEngine implements CasoChangeListener {
     public void applyRuleOnThisCasos(ReglaTrigger reglaTrigger, List<Caso> selectedCasos) {
 
         for (Caso caso : selectedCasos) {
-            if (reglaTrigger.getReglaActiva()) {
+//            if (reglaTrigger.getReglaActiva()) {
                 boolean aplica = evalConditions(reglaTrigger, caso);
                 if (aplica) {
                     Log.createLogger(this.getClass().getName()).logInfo("regla " + reglaTrigger.getIdTrigger() + " APLICA_AL_CASO " + caso.toString());
@@ -172,7 +172,7 @@ public class RulesEngine implements CasoChangeListener {
                         executeAction(accion, caso);
                     }
                 }
-            }
+//            }
         }
     }
 
