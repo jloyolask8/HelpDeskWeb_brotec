@@ -2,16 +2,20 @@ package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
+import com.itcs.helpdesk.persistence.entities.Area;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.TipoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso;
 import com.itcs.jpautils.EasyCriteriaQuery;
 import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.ResourceBundle;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
+import javax.faces.model.SelectItem;
 
 @ManagedBean(name = "tipoCasoController")
 @SessionScoped
@@ -98,6 +102,15 @@ public class TipoCasoController extends AbstractManagedBean<TipoCaso> implements
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
             return null;
         }
+    }
+    
+    public SelectItem[] getStringItemsAvailableSelectOne() {
+        List<TipoCaso> lista = (List<TipoCaso>) getJpaController().findAll(TipoCaso.class);
+        List<String> ids = new LinkedList<String>();
+        for (TipoCaso tipoCaso : lista) {
+            ids.add(tipoCaso.getIdTipoCaso());
+        }
+        return JsfUtil.getSelectItems(ids, true);
     }
 
     public String destroy() {

@@ -1,16 +1,12 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
-import com.itcs.helpdesk.persistence.entities.Categoria;
 import com.itcs.helpdesk.persistence.entities.Grupo;
 import com.itcs.helpdesk.persistence.entities.Producto;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.util.Log;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,10 +20,8 @@ import javax.faces.convert.FacesConverter;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
-import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.DualListModel;
 import org.primefaces.model.SelectableDataModel;
-import org.primefaces.model.TreeNode;
 
 
 @ManagedBean(name = "grupoController")
@@ -39,9 +33,9 @@ public class GrupoController extends AbstractManagedBean<Grupo> implements Seria
 //    private transient PaginationHelper pagination;
     private int selectedItemIndex;
     //private DualListModel<Categoria> categoriasDualListModel;
-    private transient TreeNode[] selectedCategoriasNodes;
-    private transient TreeNode treeNodeCategorias;
-    private int categoriaOrdenMayor;
+//    private transient TreeNode[] selectedCategoriasNodes;
+//    private transient TreeNode treeNodeCategorias;
+//    private int categoriaOrdenMayor;
     private DualListModel<Usuario> usuariosDualListModel = new DualListModel<Usuario>();
     private DualListModel<Producto> productoDualListModel = new DualListModel<Producto>();
 
@@ -65,17 +59,17 @@ public class GrupoController extends AbstractManagedBean<Grupo> implements Seria
 //        updateCurrent();
 //    }
 
-    public TreeNode[] getSelectedCategoriasNodes() {
-        if (this.selectedCategoriasNodes == null) {
-            return null;
-        } else {
-            return this.selectedCategoriasNodes.clone();
-        }
-    }
-
-    public void setSelectedCategoriasNodes(TreeNode[] selectedNodes) {
-        this.selectedCategoriasNodes = selectedNodes.clone();
-    }
+//    public TreeNode[] getSelectedCategoriasNodes() {
+//        if (this.selectedCategoriasNodes == null) {
+//            return null;
+//        } else {
+//            return this.selectedCategoriasNodes.clone();
+//        }
+//    }
+//
+//    public void setSelectedCategoriasNodes(TreeNode[] selectedNodes) {
+//        this.selectedCategoriasNodes = selectedNodes.clone();
+//    }
 
 //    private void updateCurrent() {
 //        if (current != null) {
@@ -83,23 +77,23 @@ public class GrupoController extends AbstractManagedBean<Grupo> implements Seria
 //        }
 //    }
 
-    @Override
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(getPaginationPageSize()) {
-                @Override
-                public int getItemsCount() {
-                    return getJpaController().count(Grupo.class).intValue();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getJpaController().queryByRange(Grupo.class, getPageSize(), getPageFirstItem()));
-                }
-            };
-        }
-        return pagination;
-    }
+//    @Override
+//    public PaginationHelper getPagination() {
+//        if (pagination == null) {
+//            pagination = new PaginationHelper(getPaginationPageSize()) {
+//                @Override
+//                public int getItemsCount() {
+//                    return getJpaController().count(Grupo.class).intValue();
+//                }
+//
+//                @Override
+//                public DataModel createPageDataModel() {
+//                    return new ListDataModel(getJpaController().queryByRange(Grupo.class, getPageSize(), getPageFirstItem()));
+//                }
+//            };
+//        }
+//        return pagination;
+//    }
 
     public String prepareList() {
         recreateModel();
@@ -137,11 +131,11 @@ public class GrupoController extends AbstractManagedBean<Grupo> implements Seria
 //            Area area = ((UserSessionBean) JsfUtil.getManagedBean("UserSessionBean")).getCurrent().getIdGrupo().getIdArea();
 //            current.setIdArea(area);
             current.setEditable(true);
-            List<Categoria> catsSelected = new ArrayList<Categoria>(getSelectedCategoriasNodes().length);
-            for (TreeNode treeNode : getSelectedCategoriasNodes()) {
-                catsSelected.add((Categoria) treeNode.getData());
-            }
-            current.setCategoriaList(catsSelected);
+//            List<Categoria> catsSelected = new ArrayList<Categoria>(getSelectedCategoriasNodes().length);
+//            for (TreeNode treeNode : getSelectedCategoriasNodes()) {
+//                catsSelected.add((Categoria) treeNode.getData());
+//            }
+//            current.setCategoriaList(catsSelected);
 
             current.setUsuarioList(getUsuariosDualListModel().getTarget());
             current.setProductoList(getProductoDualListModel().getTarget());
@@ -236,129 +230,129 @@ public class GrupoController extends AbstractManagedBean<Grupo> implements Seria
 //        return arreglo;
 //    }
 
-    private void generarCatTreeNodesSeleccionados(List<Categoria> categorias, TreeNode nodo, List<TreeNode> lista) {
-        if (nodo != null) {      
-            if (nodo.getData() instanceof Categoria) {
-                if (categorias.contains((Categoria) nodo.getData())) {
-                    lista.add(nodo);
-                }
-            }
-            for (TreeNode treeNode : nodo.getChildren()) {
-                generarCatTreeNodesSeleccionados(categorias, treeNode, lista);
-            }
-        }
-    }
-
-    public TreeNode getTreeNodeCategorias() {
-
-//        if (treeNodeCategorias != null) {
-//            return treeNodeCategorias;
+//    private void generarCatTreeNodesSeleccionados(List<Categoria> categorias, TreeNode nodo, List<TreeNode> lista) {
+//        if (nodo != null) {      
+//            if (nodo.getData() instanceof Categoria) {
+//                if (categorias.contains((Categoria) nodo.getData())) {
+//                    lista.add(nodo);
+//                }
+//            }
+//            for (TreeNode treeNode : nodo.getChildren()) {
+//                generarCatTreeNodesSeleccionados(categorias, treeNode, lista);
+//            }
 //        }
-        CategoriaDataModel categoriaDataModel = createCategoriasDataModel();
+//    }
 
-        if (categoriaDataModel != null) {
-            //System.out.println("se reconstruye el arbol");
-            Iterator it = categoriaDataModel.iterator();
-            treeNodeCategorias = new DefaultTreeNode("Categoria", null);
-            treeNodeCategorias.setExpanded(true);
-            while (it.hasNext()) {
-                Categoria cat = (Categoria) it.next();
-                verificaSiCatEsOrdenMayor(cat.getOrden());
-                if (cat.getIdCategoriaPadre() == null) {
-                    if (cat.getCategoriaList().isEmpty()) {
-                        TreeNode subCategorias = new DefaultTreeNode(cat, treeNodeCategorias);
-                        subCategorias.setExpanded(true);
-                        if (current.getCategoriaList() != null) {
-                            subCategorias.setSelected(current.getCategoriaList().contains(cat));
-                        }
-                    } else {
-                        TreeNode subCategorias = new DefaultTreeNode(cat, treeNodeCategorias);
-                        subCategorias.setExpanded(true);
-                        if (current.getCategoriaList() != null) {
-                            subCategorias.setSelected(current.getCategoriaList().contains(cat));
-                        }
-                        crearArbol(cat, subCategorias);
-                    }
-                }
-            }
-        } else {
-            treeNodeCategorias = new DefaultTreeNode("Categoria", null);
-        }
+//    public TreeNode getTreeNodeCategorias() {
+//
+////        if (treeNodeCategorias != null) {
+////            return treeNodeCategorias;
+////        }
+//        CategoriaDataModel categoriaDataModel = createCategoriasDataModel();
+//
+//        if (categoriaDataModel != null) {
+//            //System.out.println("se reconstruye el arbol");
+//            Iterator it = categoriaDataModel.iterator();
+//            treeNodeCategorias = new DefaultTreeNode("Categoria", null);
+//            treeNodeCategorias.setExpanded(true);
+//            while (it.hasNext()) {
+//                Categoria cat = (Categoria) it.next();
+//                verificaSiCatEsOrdenMayor(cat.getOrden());
+//                if (cat.getIdCategoriaPadre() == null) {
+//                    if (cat.getCategoriaList().isEmpty()) {
+//                        TreeNode subCategorias = new DefaultTreeNode(cat, treeNodeCategorias);
+//                        subCategorias.setExpanded(true);
+//                        if (current.getCategoriaList() != null) {
+//                            subCategorias.setSelected(current.getCategoriaList().contains(cat));
+//                        }
+//                    } else {
+//                        TreeNode subCategorias = new DefaultTreeNode(cat, treeNodeCategorias);
+//                        subCategorias.setExpanded(true);
+//                        if (current.getCategoriaList() != null) {
+//                            subCategorias.setSelected(current.getCategoriaList().contains(cat));
+//                        }
+//                        crearArbol(cat, subCategorias);
+//                    }
+//                }
+//            }
+//        } else {
+//            treeNodeCategorias = new DefaultTreeNode("Categoria", null);
+//        }
+//
+//        return treeNodeCategorias;
+//    }
 
-        return treeNodeCategorias;
-    }
+//    /**
+//     * Crea el arbol de categoria desde un Padre bastardo.
+//     *
+//     * @param categoria Categoria Padre
+//     * @param subCategorias TreeNode Padre
+//     * @return
+//     */
+//    private void crearArbol(Categoria categoria, TreeNode subCategorias) {
+//
+//        List<Categoria> cats = (List) categoria.getCategoriaList();
+//        Collections.sort(cats, new Comparator<Categoria>() {
+//            @Override
+//            public int compare(Categoria o1, Categoria o2) {
+//                return o1.getOrden() - o2.getOrden();
+//            }
+//        });
+//        Iterator it = cats.iterator();
+//        while (it.hasNext()) {
+//            Categoria cat = (Categoria) it.next();
+//            verificaSiCatEsOrdenMayor(cat.getOrden());
+//            if (cat.getCategoriaList().isEmpty()) {
+//                TreeNode cate = new DefaultTreeNode(cat, subCategorias);
+//                cate.setExpanded(true);
+//                if (current.getCategoriaList() != null) {
+//                    cate.setSelected(current.getCategoriaList().contains(cat));
+//                }
+//            } else {
+//                TreeNode cate = new DefaultTreeNode(cat, subCategorias);
+//                cate.setExpanded(true);
+//                if (current.getCategoriaList() != null) {
+//                    cate.setSelected(current.getCategoriaList().contains(cat));
+//                }
+//                crearArbol(cat, cate);
+//            }
+//
+//        }
+//    }
 
-    /**
-     * Crea el arbol de categoria desde un Padre bastardo.
-     *
-     * @param categoria Categoria Padre
-     * @param subCategorias TreeNode Padre
-     * @return
-     */
-    private void crearArbol(Categoria categoria, TreeNode subCategorias) {
+//    private void verificaSiCatEsOrdenMayor(int orden) {
+//        if (orden > categoriaOrdenMayor) {
+//            categoriaOrdenMayor = orden;
+//        }
+//    }
 
-        List<Categoria> cats = (List) categoria.getCategoriaList();
-        Collections.sort(cats, new Comparator<Categoria>() {
-            @Override
-            public int compare(Categoria o1, Categoria o2) {
-                return o1.getOrden() - o2.getOrden();
-            }
-        });
-        Iterator it = cats.iterator();
-        while (it.hasNext()) {
-            Categoria cat = (Categoria) it.next();
-            verificaSiCatEsOrdenMayor(cat.getOrden());
-            if (cat.getCategoriaList().isEmpty()) {
-                TreeNode cate = new DefaultTreeNode(cat, subCategorias);
-                cate.setExpanded(true);
-                if (current.getCategoriaList() != null) {
-                    cate.setSelected(current.getCategoriaList().contains(cat));
-                }
-            } else {
-                TreeNode cate = new DefaultTreeNode(cat, subCategorias);
-                cate.setExpanded(true);
-                if (current.getCategoriaList() != null) {
-                    cate.setSelected(current.getCategoriaList().contains(cat));
-                }
-                crearArbol(cat, cate);
-            }
-
-        }
-    }
-
-    private void verificaSiCatEsOrdenMayor(int orden) {
-        if (orden > categoriaOrdenMayor) {
-            categoriaOrdenMayor = orden;
-        }
-    }
-
-    private CategoriaDataModel createCategoriasDataModel() {
-        List<Categoria> lista = null;
-        lista = getJpaController().getCategoriaFindAll();
-        ListDataModel categoriasListDataModel = new ListDataModel(lista);
-
-        Iterator iter = categoriasListDataModel.iterator();
-        List<Categoria> listOfCategoria = new ArrayList<Categoria>();
-        while (iter.hasNext()) {
-            listOfCategoria.add((Categoria) iter.next());
-        }
-        Collections.sort(listOfCategoria, new Comparator<Categoria>() {
-            @Override
-            public int compare(Categoria o1, Categoria o2) {
-                return o1.getOrden() - o2.getOrden();
-            }
-        });
-
-        return new CategoriaDataModel(listOfCategoria);
-    }
+//    private CategoriaDataModel createCategoriasDataModel() {
+//        List<Categoria> lista = null;
+//        lista = getJpaController().getCategoriaFindAll();
+//        ListDataModel categoriasListDataModel = new ListDataModel(lista);
+//
+//        Iterator iter = categoriasListDataModel.iterator();
+//        List<Categoria> listOfCategoria = new ArrayList<Categoria>();
+//        while (iter.hasNext()) {
+//            listOfCategoria.add((Categoria) iter.next());
+//        }
+//        Collections.sort(listOfCategoria, new Comparator<Categoria>() {
+//            @Override
+//            public int compare(Categoria o1, Categoria o2) {
+//                return o1.getOrden() - o2.getOrden();
+//            }
+//        });
+//
+//        return new CategoriaDataModel(listOfCategoria);
+//    }
 
     public String update() {
         try {
-            List<Categoria> catsSelected = new ArrayList<Categoria>(getSelectedCategoriasNodes().length);
-            for (TreeNode treeNode : getSelectedCategoriasNodes()) {
-                catsSelected.add((Categoria) treeNode.getData());
-            }
-            current.setCategoriaList(catsSelected);
+//            List<Categoria> catsSelected = new ArrayList<Categoria>(getSelectedCategoriasNodes().length);
+//            for (TreeNode treeNode : getSelectedCategoriasNodes()) {
+//                catsSelected.add((Categoria) treeNode.getData());
+//            }
+//            current.setCategoriaList(catsSelected);
             current.setUsuarioList(getUsuariosDualListModel().getTarget());
             current.setProductoList(getProductoDualListModel().getTarget());
 

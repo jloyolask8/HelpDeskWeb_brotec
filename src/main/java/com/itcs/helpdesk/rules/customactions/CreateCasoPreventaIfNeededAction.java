@@ -67,7 +67,6 @@ public class CreateCasoPreventaIfNeededAction extends Action{
                 padre.setIdProducto(casoOrigen.getIdProducto());
                 padre.setIdModelo(casoOrigen.getIdModelo());
                 padre.setEstadoAlerta(casoOrigen.getEstadoAlerta());
-                padre.setIdCategoria(casoOrigen.getIdCategoria());
                 padre.setTipoCaso(EnumTipoCaso.PREVENTA.getTipoCaso());
                 padre.setIdArea(casoOrigen.getIdArea());
                 padre.setIdPrioridad(casoOrigen.getIdPrioridad());
@@ -83,7 +82,6 @@ public class CreateCasoPreventaIfNeededAction extends Action{
                 padre.setIdModelo(casoOrigen.getIdModelo());
                 padre.setIdComponente(casoOrigen.getIdComponente());
                 padre.setIdSubComponente(casoOrigen.getIdSubComponente());
-                padre.setIdCategoria(casoOrigen.getIdCategoria());
                 padre.setIdPrioridad(casoOrigen.getIdPrioridad());
                 if(padre.getIdCliente() == null)
                 {

@@ -738,24 +738,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         //return null;
     }
 
-    public void actualizaArbolDeCategoria() {
-//        //System.out.println("actualizaArbolDeCategoria");
-        Object res = JsfUtil.getManagedBean("categoriaController");
-        if (res != null) {
-            CategoriaController catController = ((CategoriaController) res);
-            catController.filtrarCategorias();
-        }
-    }
-
-    public void actualizaArbolDeCategoria(EventListener event) {
-//        //System.out.println("actualizaArbolDeCategoria");
-        Object res = JsfUtil.getManagedBean("categoriaController");
-        if (res != null) {
-            CategoriaController catController = ((CategoriaController) res);
-            catController.filtrarCategorias();
-        }
-    }
-
     public void onNodeItemSelect(NodeSelectEvent event) {
         Item item = (Item) event.getTreeNode().getData();
         current.getCasosHijosList().get(current.getCasosHijosList().size() - 1).setIdItem(item);
@@ -1593,7 +1575,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //        return dir;
 //    }
     public String filterList() {
-        categoria = null;
         recreateModel();
         recreatePagination();
         return "inbox";
@@ -1698,7 +1679,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
         try {
             vistaController.create(getFilterHelper().getVista());
-
             JsfUtil.addSuccessMessage("La Vista guardada exitosamente. Revisar el panel de Vistas.");
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
@@ -3105,7 +3085,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 Logger.getLogger(CasoController.class
                         .getName()).log(Level.SEVERE, "unscheduleTask", ex);
             }
-            actualizaArbolDeCategoria();
             current = null;
             recreateModel();
             recreatePagination();

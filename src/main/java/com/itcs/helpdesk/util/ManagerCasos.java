@@ -13,7 +13,6 @@ import com.itcs.helpdesk.persistence.entities.AuditLog;
 import com.itcs.helpdesk.persistence.entities.Canal;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Caso_;
-import com.itcs.helpdesk.persistence.entities.Categoria;
 import com.itcs.helpdesk.persistence.entities.Cliente;
 import com.itcs.helpdesk.persistence.entities.EmailCliente;
 import com.itcs.helpdesk.persistence.entities.FiltroVista;
@@ -448,7 +447,6 @@ public class ManagerCasos implements Serializable {
             caso.setFechaEstimadaCompra(datos.getFechaEstimadaCompra());
             caso.setCreditoPreAprobado(datos.isCredito());
 
-            
             if (fechaCreacion == null) {
                 persistCaso(caso, createLogReg(caso, "Crear", "se crea caso desde " + canal.getNombre(), ""));
             } else {
@@ -521,7 +519,6 @@ public class ManagerCasos implements Serializable {
         caso.setIdEstado(EnumEstadoCaso.ABIERTO.getEstado());
         caso.setFechaCreacion(fechaCreacion);
         caso.setFechaModif(caso.getFechaCreacion());
-//        caso.setIdCategoria(null);
         caso.setRevisarActualizacion(true);
 
         if (caso.getTipoCaso() == null) {

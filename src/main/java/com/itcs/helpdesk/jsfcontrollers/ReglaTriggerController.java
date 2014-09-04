@@ -6,7 +6,6 @@ import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.Accion;
 import com.itcs.helpdesk.persistence.entities.Area;
 import com.itcs.helpdesk.persistence.entities.Caso;
-import com.itcs.helpdesk.persistence.entities.Categoria;
 import com.itcs.helpdesk.persistence.entities.Condicion;
 import com.itcs.helpdesk.persistence.entities.FieldType;
 import com.itcs.helpdesk.persistence.entities.Grupo;
@@ -214,23 +213,23 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         return pagination;
     }
 
-    /**
-     * @deprecated @param node
-     */
-    public void setCatNodeSelected(TreeNode node) {
-        Categoria cat = ((Categoria) node.getData());
-        System.out.println("setCatNodeSelected: " + cat.getNombre());
-        accionTemp.setParametros(cat.getNombre() + " ID[" + cat.getIdCategoria() + "]");
-//        condicionTemp.setValor(  cat.getNombre() + " ID[" + cat.getIdCategoria() + "]");
-        this.catNodeSelected = node;
-    }
+//    /**
+//     * @deprecated @param node
+//     */
+//    public void setCatNodeSelected(TreeNode node) {
+//        Categoria cat = ((Categoria) node.getData());
+//        System.out.println("setCatNodeSelected: " + cat.getNombre());
+//        accionTemp.setParametros(cat.getNombre() + " ID[" + cat.getIdCategoria() + "]");
+////        condicionTemp.setValor(  cat.getNombre() + " ID[" + cat.getIdCategoria() + "]");
+//        this.catNodeSelected = node;
+//    }
 
-    /**
-     * @deprecated @return
-     */
-    public TreeNode getCatNodeSelected() {
-        return catNodeSelected;
-    }
+//    /**
+//     * @deprecated @return
+//     */
+//    public TreeNode getCatNodeSelected() {
+//        return catNodeSelected;
+//    }
 
     public void valueChangeListener(ValueChangeEvent e) {
         System.out.println(" valueChangeListener() event:" + e);
