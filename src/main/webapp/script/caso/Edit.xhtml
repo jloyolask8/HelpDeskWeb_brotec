@@ -83,10 +83,25 @@
 
                             <p:row>
                                 <p:column>
-                                    <p:outputLabel value="Area:" for="area_" style="font-weight:bold"/>
+                                    <p:outputLabel value="Area:" style="font-weight:bold"/>
                                 </p:column>
                                 <p:column>
-                                    <h:outputText id="area_" value="#{casoController.selected.idArea.nombre}"/>
+                                    <p:inplace  editor="true" emptyLabel="sin area" saveLabel="Guardar">
+                                        <p:ajax event="save" update=":westPanel:formint1 :formCerrarCaso" />
+                                        <f:facet name="output">
+                                            <h:outputText value="#{casoController.selected.idArea}" />
+                                            <i class="fa fa-search"></i>                                           
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:selectOneMenu disabled="#{casoController.selected.closed}" id="idAreaCaso" style="width: 220px;"
+                                                             required="true" requiredMessage="El area es requerida."
+                                                             filter="true" filterMatchMode="contains"
+                                                             value="#{casoController.selected.idArea}" >
+                                                <f:selectItem itemLabel="" itemValue=""/>
+                                                <f:selectItems value="#{applicationBean.areasAvailableList}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
+                                            </p:selectOneMenu>
+                                        </f:facet>
+                                    </p:inplace>
                                 </p:column>
 
                             </p:row>

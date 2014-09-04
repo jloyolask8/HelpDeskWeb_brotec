@@ -6,6 +6,7 @@ package com.itcs.helpdesk.jsfcontrollers.util;
 
 import com.itcs.helpdesk.jsfcontrollers.AbstractManagedBean;
 import com.itcs.helpdesk.persistence.entities.Archivo;
+import com.itcs.helpdesk.persistence.entities.Area;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Caso_;
 import com.itcs.helpdesk.persistence.entities.Etiqueta;
@@ -289,6 +290,11 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
     public List<TipoCaso> getTipoCasoAvailableList() {
         System.out.println("*** getTipoCasoAvailableList()");
         return (List<TipoCaso>) getJpaController().findAll(TipoCaso.class);
+    }
+    
+    public List<Area> getAreasAvailableList() {
+        System.out.println("*** getAreasAvailableList()");
+        return (List<Area>) getJpaController().findAll(Area.class);
     }
 
     public List<Prioridad> getPrioridadItemsAvailableList() {

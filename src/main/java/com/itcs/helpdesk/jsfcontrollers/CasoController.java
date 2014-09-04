@@ -3056,6 +3056,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public void update(Caso casoToUpdate) throws IllegalOrphanException, NonexistentEntityException, RollbackFailureException, Exception {
 
+        boolean cambiaArea = false;
+        
         if ((null != casoToUpdate.getIdCliente().getRut()) && (!casoToUpdate.getIdCliente().getRut().isEmpty())) {
             if (!UtilesRut.validar(casoToUpdate.getIdCliente().getRut())) {
                 JsfUtil.addErrorMessage("Rut invalido");
@@ -3078,19 +3080,28 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
             r.setIdRecinto(casoToUpdate.getIdRecinto());
             r.setNombre(casoToUpdate.getIdRecinto());
-            getJpaController()
-                    .persist(r);
+            getJpaController().persist(r);
         }
-
-        getJpaController().mergeCaso(casoToUpdate, lista);
 
         //re-schedule alerts
         if (lista != null) {
             for (AuditLog auditLog : lista) {
                 if (auditLog.getCampo().equalsIgnoreCase(Caso_.nextResponseDue.getName())) {
                     getManagerCasos().evaluarEstadoDelCaso(casoToUpdate);
-                }
+                }else if (auditLog.getCampo().equalsIgnoreCase("idArea")) {
+                    cambiaArea = true;
+                } 
             }
+        }
+        
+        if(cambiaArea)
+        {
+            casoToUpdate.setOwner(null);
+            getJpaController().mergeCasoWithoutNotify(casoToUpdate, lista);
+            getJpaController().notifyCasoEventListeners(casoToUpdate, true, lista);
+        }else
+        {
+            getJpaController().mergeCaso(casoToUpdate, lista);
         }
 
         JsfUtil.addSuccessMessage(resourceBundle.getString("CasoUpdated"));
