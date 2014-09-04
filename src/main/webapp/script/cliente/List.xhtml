@@ -37,7 +37,7 @@
                     <br/>
 
                     <p:toolbar style="border: none;">
-                        <p:toolbarGroup align="right">
+                        <f:facet name="right">
 
                             <p:outputLabel value="Páginas de "/>
 
@@ -61,7 +61,7 @@
                             <p:commandButton ajax="false" action="#{clienteController.prepareCreate}" value="Crear cliente" icon="ui-icon ui-icon-plus" />
 
                           
-                        </p:toolbarGroup>
+                        </f:facet>
                     </p:toolbar>
 
 
@@ -101,15 +101,15 @@
 
                 <p:toolbar style="border: none;">
                     
-                    <p:toolbarGroup align="left">
+                    <f:facet name="left">
                            <p:commandButton ajax="false" action="#{clienteController.prepareCreateMasivo()}" value="Importación masiva de clientes" icon="ui-icon ui-icon-arrowstop-1-n" />
                         <p:commandButton ajax="false" action="cargarClienteProducto" value="Importar Relación Cliente/#{applicationBean.productSubComponentDescription}" icon="ui-icon ui-icon-arrowstop-1-n" />
 
-                    </p:toolbarGroup>
+                    </f:facet>
                     
                     
                         
-                    <p:toolbarGroup align="right">
+                    <f:facet name="right">
 
                         <p:outputLabel value="Páginas de "/>
 
@@ -133,7 +133,7 @@
                         <p:commandButton ajax="false" action="#{clienteController.prepareCreate}" value="Crear cliente" icon="ui-icon ui-icon-plus" />
 
                      
-                    </p:toolbarGroup>
+                    </f:facet>
                 </p:toolbar>
 
 

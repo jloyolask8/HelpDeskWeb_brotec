@@ -67,17 +67,17 @@
                     <f:facet name="footer">       
 
                         <p:toolbar>  
-                            <p:toolbarGroup align="left">   
+                            <f:facet name="left">   
                                 <p:commandButton ajax="false" action="#{grupoController.prepareEdit(grupoController.selected)}" value="#{bundle.ViewGrupoEditLink}" icon="ui-icon ui-icon-pencil" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
                                 <p:separator/>
 
                                 <p:commandButton ajax="false" action="#{grupoController.prepareList}" value="#{bundle.EditGrupoShowAllLink}" immediate="true" icon="ui-icon-folder-open"/>
-                            </p:toolbarGroup>  
+                            </f:facet>  
 
-                            <p:toolbarGroup align="right">   
+                            <f:facet name="right">   
                                 <p:separator/>
                                 <p:commandButton id="showDialogButton" value="#{bundle.destroy}" onclick="PF('confirmation').show()" icon="ui-icon ui-icon-trash" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>         
-                            </p:toolbarGroup>  
+                            </f:facet>  
 
                         </p:toolbar>
 

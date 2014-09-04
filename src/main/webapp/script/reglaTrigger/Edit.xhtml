@@ -105,7 +105,7 @@
                                              filter="true" filterMatchMode="startsWith"
                                              required="true" requiredMessage="Favor Seleccione Operador." styleClass="full-width">
                                 <f:selectItem itemLabel="Operador..." itemValue="" noSelectionOption="true"/>
-                                <f:selectItems value="#{reglaTriggerController.filterHelperForConditions.findTipoComparacionesAvailable(filtro.idCampo)}" var="tipoComparador" itemValue="#{tipoComparador}" itemLabel="#{tipoComparador.nombre}" itemDescription="#{tipoComparador.descripcion}"/>
+                                <f:selectItems value="#{reglaTriggerController.filterHelperForConditions.findTipoComparacionesAvailable(filtro.idCampo, true)}" var="tipoComparador" itemValue="#{tipoComparador}" itemLabel="#{tipoComparador.nombre}" itemDescription="#{tipoComparador.descripcion}"/>
                                 <p:ajax update=":form:messages :form:filtrosCondicionReglas" listener="#{reglaTriggerController.handleAnyChangeEvent()}"/>
                             </p:selectOneMenu>
 

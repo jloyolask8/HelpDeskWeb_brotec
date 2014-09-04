@@ -48,18 +48,12 @@
                         </h:panelGrid> 
                         <f:facet name="footer">
                             <p:commandButton id="saveButton" update=":changePassForm" value="Cambiar" action="#{loginController.changePass()}"
-                                             onstart="blockUIWidget1.block()" oncomplete="blockUIWidget1.unblock()"/>  
+                                             />  
                         </f:facet>
                     </p:panel>
                 </h:panelGroup>
 
-                <pe:blockUI target="panelGroup" widgetVar="blockUIWidget1">  
-                    <h:panelGrid columns="2">  
-                        <p:graphicImage value="/images/ajax-loader1.gif" 
-                                        style="margin-right: 12px; vertical-align: middle;"/>  
-                        <h:outputText value="Cargando..." style="white-space: nowrap;"/>  
-                    </h:panelGrid>  
-                </pe:blockUI> 
+               
 
                 <h:panelGrid id="blockUIContent" columns="2" style="display:none;">  
                     <h:graphicImage library="images" name="ajax-loader1.gif"  

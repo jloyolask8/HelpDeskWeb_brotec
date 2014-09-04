@@ -112,7 +112,38 @@
                 };
             </script>
 
+
             <script type="text/javascript">
+                //<![CDATA[
+                var Notification = window.Notification || window.mozNotification || window.webkitNotification;
+
+                Notification.requestPermission(function(permission) {
+                    // console.log(permission);
+                });
+
+                function showNotification(body) {
+                    window.setTimeout(function() {
+                        var instance = new Notification(
+                                "Notificación", {
+                                    body: body
+                                }
+                        );
+
+                        instance.onclick = function() {
+                            // Something to do
+                        };
+                        instance.onerror = function() {
+                            // Something to do
+                        };
+                        instance.onshow = function() {
+                            // Something to do
+                        };
+                        instance.onclose = function() {
+                            // Something to do
+                        };
+                    }, 1000);
+                }
+
                 function start() {
                     PF('statusDialog').show();
                 }
@@ -121,11 +152,13 @@
                     PF('statusDialog').hide();
                 }
 
-                function handleFacesMessage(facesmessage) {
-                    facesmessage.severity = 'info';
-                    PF('growl').show([facesmessage]);
+                function handleNotificationMessage(message) {
+                    var text = (message.user) ? message.user + ':' + message.text : message.text;
+                    showNotification(text);
                 }
+                //]]>
             </script>
+
             <h:outputScript name="jsf.js" library="javax.faces"/>
 
             <ui:insert name="head"></ui:insert>
@@ -134,8 +167,8 @@
 
         <h:body id="mainbody">
 
-            <p:socket onMessage="handleFacesMessage" 
-                      channel="#{UserSessionBean.channel}" />
+            <p:socket onMessage="handleNotificationMessage" widgetVar="socketMessages" autoConnect="true"
+                      channel="/{room}#{UserSessionBean.channel}" />
 
             <f:event type="preRenderView" listener="#{casoController.initializeData}" />
             <pe:ajaxErrorHandler /> 
@@ -169,6 +202,21 @@
                                             ajax="false" value="Inbox" icon="fa fa-inbox">
                                     <p:resetInput target="@form" />
                                 </p:menuitem>
+
+                                <p:submenu label="Ver" icon="fa fa-eye">
+                                    <p:menuitem value="Clientes" action="#{clienteController.prepareList}" ajax="false" icon="fa fa-group">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+                                    <p:menuitem value="#{applicationBean.productDescription}(s)" action="#{productoController.prepareList}"
+                                                ajax="false" icon="fa fa-building-o">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+
+                                    <p:menuitem value="Agenda" action="#{globalScheduleController.prepareList}" ajax="false" icon="fa fa-calendar">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+                                </p:submenu>
+
                                 <p:submenu label="Casos" icon="fa fa-ticket">
                                     <p:menuitem value="Crear Nuevo Caso" action="#{casoController.prepareCreate}" ajax="false" icon="fa fa-plus">
                                         <p:resetInput target="@form" />
@@ -179,26 +227,14 @@
                                     </p:menuitem>
                                 </p:submenu>
 
-                                <p:menuitem value="Clientes" action="#{clienteController.prepareList}" ajax="false" icon="fa fa-group">
-                                    <p:resetInput target="@form" />
-                                </p:menuitem>
-                                <p:menuitem value="#{applicationBean.productDescription}(s)" action="#{productoController.prepareList}"
-                                            ajax="false" icon="fa fa-building-o">
-                                    <p:resetInput target="@form" />
-                                </p:menuitem>
-
-                                <p:menuitem value="Agenda" action="#{globalScheduleController.prepareList}" ajax="false" icon="fa fa-calendar">
-                                    <p:resetInput target="@form" />
-                                </p:menuitem>
-
-                                <p:submenu label="Supervision" icon="fa fa-eye" rendered="#{filtroAcceso.verificarAccesoAFuncionSupervision()}">
+                                <p:submenu label="Reportes" icon="fa fa-bar-chart-o" rendered="#{filtroAcceso.verificarAccesoAFuncionSupervision()}">
                                     <p:menuitem value="Alertas" action="#{auditLogController.alertList()}" ajax="false" icon="fa fa-exclamation-triangle">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
                                     <p:menuitem value="Logs de Casos" ajax="false" action="#{auditLogController.prepareList}" icon="fa fa-info-circle">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
-                                    <p:menuitem value="Reportes" ajax="false" action="/script/report_graphs/reports" icon="fa fa-bar-chart-o ">
+                                    <p:menuitem value="Reportes Gráficos" ajax="false" action="/script/report_graphs/reports" icon="fa fa-bar-chart-o">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
                                 </p:submenu>

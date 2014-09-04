@@ -46,29 +46,41 @@ public class ChatResource {
     @PathParam("user")
     private String username;
 
-    @Inject
-    private ServletContext ctx;
+//    @Inject
+//    private ServletContext ctx;
+    
+    
 
     @OnOpen
     public void onOpen(RemoteEndpoint r, EventBus eventBus) {
-        System.out.println("onOpen");
+        System.out.println("onOpen - path:" + r.path() + " transport:" + r.transport() + " body:" + r.body());
         logger.info("OnOpen {}", r);
+        final String msg = String.format("%s has entered the room '%s'", username, room);
+        System.out.println(msg);
 
-        eventBus.publish(room + "/*", new Message(String.format("%s has entered the room '%s'", username, room), true));
+//        ApplicationBean applicationBean = (ApplicationBean) ctx.getAttribute("applicationBean");
+//        UserSessionBean userSessionBean = (UserSessionBean) ctx.getAttribute("UserSessionBean");
+//        String channel = "/" + UUID.randomUUID().toString();
+//        userSessionBean.setChannel(channel);
+//        applicationBean.addChannel(username, channel);
+
+//        eventBus.publish(room, new Message(msg, true));
+        eventBus.publish(room + "/*", new Message(msg, true));
+//        eventBus.publish("/*", new Message(msg, true));
     }
 
     @OnClose
     public void onClose(RemoteEndpoint r, EventBus eventBus) {
-        System.out.println("onClose");
-        ChatUsers users = (ChatUsers) ctx.getAttribute("chatUsers");
-        users.remove(username);
+          System.out.println("onClose - path:" + r.path() + " transport:" + r.transport() + " body:" + r.body());
+//        ApplicationBean applicationBean = (ApplicationBean) ctx.getAttribute("applicationBean");
+//        applicationBean.removeChannel(username);
 
         eventBus.publish(room + "/*", new Message(String.format("%s has left the room", username), true));
     }
 
     @OnMessage(decoders = {MessageDecoder.class}, encoders = {MessageEncoder.class})
     public Message onMessage(Message message) {
-        System.out.println("onMessage:" + message);
+        System.out.println("onMessage:" + message.getText() + " user:" + message.getUser());
         return message;
     }
 

@@ -95,7 +95,7 @@
 
                         <f:facet name="footer">
                             <p:toolbar style="border: none;">
-                                <p:toolbarGroup align="center">
+                                <f:facet name="left">
 
                                     <p:outputLabel value="Páginas de "/>
                                     <p:selectOneMenu id="cant" value="#{auditLogController.paginationPageSize}" style="top: 7px">
@@ -113,7 +113,7 @@
 
                                     <p:commandButton ajax="false" action="#{auditLogController.last}" disabled="#{not auditLogController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{auditLogController.pagination.itemsCount > 0}"/>
 
-                                </p:toolbarGroup>
+                                </f:facet>
                             </p:toolbar>
                         </f:facet>
 

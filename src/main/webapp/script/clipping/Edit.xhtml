@@ -103,11 +103,11 @@
 
 
                 <p:toolbar>  
-                    <p:toolbarGroup align="left">   
+                    <f:facet name="left">   
                         <p:commandButton action="#{clippingController.update}" update=":form" value="#{bundle.EditClippingSaveLink}" icon="ui-icon-disk" />
                         <p:separator/>
                         <p:commandButton ajax="false" action="#{clippingController.prepareList}" value="Volver" immediate="true" icon="ui-icon-arrowreturnthick-1-w"/>
-                    </p:toolbarGroup>
+                    </f:facet>
                 </p:toolbar>
             </h:form>
         </ui:define>

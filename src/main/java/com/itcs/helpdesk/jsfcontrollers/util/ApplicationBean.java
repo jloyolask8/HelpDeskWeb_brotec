@@ -4,6 +4,7 @@
  */
 package com.itcs.helpdesk.jsfcontrollers.util;
 
+import com.itcs.helpdesk.ejb.notifications.NotificationData;
 import com.itcs.helpdesk.jsfcontrollers.AbstractManagedBean;
 import com.itcs.helpdesk.persistence.entities.Archivo;
 import com.itcs.helpdesk.persistence.entities.Caso;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import javax.enterprise.event.Observes;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
@@ -43,6 +45,8 @@ import javax.faces.model.SelectItem;
 import org.primefaces.context.RequestContext;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
+import org.primefaces.push.EventBus;
+import org.primefaces.push.EventBusFactory;
 import org.primefaces.push.PushContext;
 import org.primefaces.push.PushContextFactory;
 
@@ -187,33 +191,34 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
     }
 
     public boolean containsChannel(String user) {
-         System.out.println("containsChannel("+user+")");
+        System.out.println("containsChannel(" + user + ")");
         return channels.containsKey(user);
     }
 
     public void removeChannel(String user) {
         if (channels.containsKey(user)) {
             channels.remove(user);
+            RequestContext.getCurrentInstance().update("accionesaccordion1:usersLoggedIn");
         }
     }
 
     public String getChannel(String user) {
-        System.out.println("getChannel("+user+")");
+        System.out.println("getChannel(" + user + ")");
         return channels.get(user);
     }
 
-    public void sendFacesMessageNotification(String idUsuario, String m) {
+    public void listenToNotificationEvent(@Observes NotificationData event) {
+        System.out.println("listenToNotificationEvent: " + event);
+        final String channel = "/{room}";
+        final EventBus eventBus = EventBusFactory.getDefault().eventBus();
 
-        PushContext pushContext = PushContextFactory.getDefault().getPushContext();
-        final String channel = getChannel(idUsuario);
-
-        if (channel != null) {
-            System.out.println("SENT NOTIFICATION TO " + channel);
-            pushContext.push(channel, new FacesMessage(m));
+        if (event.getIdUsuario() != null) {
+            if (containsChannel(event.getIdUsuario())) {
+                eventBus.publish(channel + getChannel(event.getIdUsuario()), event.toString());
+            }//else do nothing
         } else {
-            System.out.println("CHANNEL NOT OPPENED, COULD NOT SEND NOTIFICATION TO " + idUsuario);
+            eventBus.publish(channel + "/*", event.toString());
         }
-
     }
 
     public Date getNow() {

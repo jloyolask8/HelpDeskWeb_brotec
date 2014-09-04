@@ -91,7 +91,7 @@
                 </p:tabView>
 
                 <p:toolbar>  
-                    <p:toolbarGroup align="left">   
+                    <f:facet name="left">   
                         <p:commandButton ajax="false" action="#{areaController.update}" value="#{bundle.SaveLink}" icon="ui-icon-disk"/>
 
                         <p:separator/>
@@ -100,7 +100,7 @@
 
                         <p:separator/>
                         <p:commandButton id="showDialogButton" value="#{bundle.DestroyLink} Area" onclick="PF('confirmation').show()" icon="ui-icon ui-icon-trash" />                                
-                    </p:toolbarGroup>
+                    </f:facet>
                 </p:toolbar>
 
                 <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 

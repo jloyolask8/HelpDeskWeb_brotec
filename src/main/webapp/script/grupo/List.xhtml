@@ -62,7 +62,7 @@
 
                         <f:facet name="footer">
                             <p:toolbar style="border: none;">
-                                <p:toolbarGroup align="center">
+                                <f:facet name="left">
                                     
                                        <p:outputLabel value="Páginas de "/>
 
@@ -84,7 +84,7 @@
                                      <p:separator/>
                                     <p:commandButton ajax="false" action="#{grupoController.prepareCreate}" value="Crear grupo" icon="ui-icon ui-icon-plus" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
 
-                                </p:toolbarGroup>
+                                </f:facet>
                             </p:toolbar>
                         </f:facet>
 

@@ -80,14 +80,14 @@
                     <f:facet name="footer">
 
                         <p:toolbar>  
-                            <p:toolbarGroup align="left">   
+                            <f:facet name="left">   
                                 <p:commandButton ajax="false" action="#{grupoController.update}" value="#{bundle.EditGrupoSaveLink}" icon="ui-icon-disk" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
                                 <p:separator/>
                                 <p:commandButton ajax="false" action="#{grupoController.prepareView()}" value="Ver" icon="ui-icon-document"/>
                                 <p:commandButton ajax="false" action="#{grupoController.prepareList}" value="#{bundle.EditGrupoShowAllLink}" immediate="true" icon="ui-icon-folder-open"/>
                                 <p:separator/>
                                 <p:commandButton id="showDialogButton" value="#{bundle.destroy}" onclick="PF('confirmation').show()" icon="ui-icon ui-icon-trash" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>         
-                            </p:toolbarGroup>  
+                            </f:facet>  
 
                         </p:toolbar>
 

@@ -22,27 +22,27 @@
         <Node id="script/estado_caso/List.xhtml" x="2650" y="150" zoom="true"/>
         <Node id="script/sub_estado_caso/Edit.xhtml" x="400" y="900" zoom="true"/>
         <Node id="script/usuario/Create.xhtml" x="2900" y="600" zoom="true"/>
-        <Node id="script/emailCliente/Create.xhtml" x="650" y="1350" zoom="true"/>
         <Node id="script/caso/ViewHtml.xhtml" x="2150" y="1050" zoom="true"/>
-        <Node id="script/audit_log/Alert.xhtml" x="1650" y="1050" zoom="true"/>
+        <Node id="script/emailCliente/Create.xhtml" x="650" y="1350" zoom="true"/>
         <Node id="script/cliente/Create.xhtml" x="3150" y="150" zoom="true"/>
+        <Node id="script/audit_log/Alert.xhtml" x="1650" y="1050" zoom="true"/>
         <Node id="mobile/caso.xhtml" x="650" y="300" zoom="true"/>
         <Node id="script/audit_log/View.xhtml" x="150" y="450" zoom="true"/>
         <Node id="script/usuario/Edit.xhtml" x="900" y="300" zoom="true"/>
-        <Node id="script/tipoCaso/Edit.xhtml" x="400" y="1350" zoom="true"/>
         <Node id="script/canal/Create.xhtml" x="1650" y="150" zoom="true"/>
+        <Node id="script/tipoCaso/Edit.xhtml" x="400" y="1350" zoom="true"/>
         <Node id="script/prioridad/Edit.xhtml" x="900" y="150" zoom="true"/>
         <Node id="script/appSetting/config.xhtml" x="400" y="1800" zoom="true"/>
         <Node id="script/login.xhtml" x="900" y="750" zoom="true"/>
-        <Node id="script/tipoCaso/Create.xhtml" x="1400" y="1200" zoom="true"/>
         <Node id="script/usuario/myAccount.xhtml" x="3150" y="300" zoom="true"/>
+        <Node id="script/tipoCaso/Create.xhtml" x="1400" y="1200" zoom="true"/>
         <Node id="script/area/Create.xhtml" x="900" y="1200" zoom="true"/>
         <Node id="script/clipping/List.xhtml" x="650" y="1200" zoom="true"/>
-        <Node id="script/funcion/List.xhtml" x="1150" y="900" zoom="true"/>
         <Node id="script/cliente/Edit.xhtml" x="400" y="1950" zoom="true"/>
+        <Node id="script/funcion/List.xhtml" x="1150" y="900" zoom="true"/>
         <Node id="script/tipoNota/Edit.xhtml" x="150" y="900" zoom="true"/>
-        <Node id="script/emailCliente/Edit.xhtml" x="900" y="1800" zoom="true"/>
         <Node id="script/reglaTrigger/Edit.xhtml" x="1150" y="1050" zoom="true"/>
+        <Node id="script/emailCliente/Edit.xhtml" x="900" y="1800" zoom="true"/>
         <Node id="script/sub_estado_caso/View.xhtml" x="400" y="450" zoom="true"/>
         <Node id="resources/jquery-ui-1.10.3.custom/index.html" x="650" y="450" zoom="true"/>
         <Node id="script/prioridad/Create.xhtml" x="1400" y="600" zoom="true"/>
@@ -53,8 +53,8 @@
         <Node id="resources/components/filterView/filterView.xhtml" x="2650" y="300" zoom="true"/>
         <Node id="script/emailCliente/List.xhtml" x="1900" y="150" zoom="true"/>
         <Node id="script/emailCliente/View.xhtml" x="1400" y="1350" zoom="true"/>
-        <Node id="script/producto/Create.xhtml" x="650" y="1050" zoom="true"/>
         <Node id="script/audit_log/List.xhtml" x="150" y="2100" zoom="true"/>
+        <Node id="script/producto/Create.xhtml" x="650" y="1050" zoom="true"/>
         <Node id="script/appSetting/Create.xhtml" x="900" y="1350" zoom="true"/>
         <Node id="script/usuario/View.xhtml" x="1650" y="600" zoom="true"/>
         <Node id="script/estado_caso/Edit.xhtml" x="650" y="1500" zoom="true"/>
@@ -76,12 +76,12 @@
         <Node id="script/tipoNota/View.xhtml" x="400" y="750" zoom="true"/>
         <Node id="script/tipoNota/List.xhtml" x="650" y="150" zoom="true"/>
         <Node id="script/sub_estado_caso/List.xhtml" x="2650" y="600" zoom="true"/>
-        <Node id="script/index.xhtml" x="150" y="1050" zoom="true"/>
         <Node id="script/caso/Edit.xhtml" x="150" y="750" zoom="true"/>
+        <Node id="script/index.xhtml" x="150" y="1050" zoom="true"/>
         <Node id="script/usuario/changePass.xhtml" x="400" y="300" zoom="true"/>
         <Node id="script/tipoCaso/View.xhtml" x="1400" y="1500" zoom="true"/>
-        <Node id="script/audit_log/Create.xhtml" x="1650" y="750" zoom="true"/>
         <Node id="script/estado_caso/Create.xhtml" x="3650" y="150" zoom="true"/>
+        <Node id="script/audit_log/Create.xhtml" x="1650" y="750" zoom="true"/>
         <Node id="script/emailCliente/cargarClienteProducto.xhtml" x="900" y="1650" zoom="true"/>
         <Node id="script/rol/Create.xhtml" x="1650" y="1350" zoom="true"/>
         <Node id="script/appSetting/List.xhtml" x="2400" y="600" zoom="true"/>
@@ -95,8 +95,8 @@
         <Node id="script/tipoNota/Create.xhtml" x="1900" y="1200" zoom="true"/>
         <Node id="script/vista/Edit.xhtml" x="150" y="1650" zoom="true"/>
         <Node id="script/report_graphs/reports.xhtml" x="1150" y="1200" zoom="true"/>
-        <Node id="script/rol/View.xhtml" x="3400" y="300" zoom="true"/>
         <Node id="script/rol/List.xhtml" x="400" y="150" zoom="true"/>
+        <Node id="script/rol/View.xhtml" x="3400" y="300" zoom="true"/>
         <Node id="script/vista/View.xhtml" x="1400" y="1050" zoom="true"/>
         <Node id="mobile/login.xhtml" x="1650" y="450" zoom="true"/>
         <Node id="script/tipoCaso/List.xhtml" x="900" y="1050" zoom="true"/>

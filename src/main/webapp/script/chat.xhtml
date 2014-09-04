@@ -53,7 +53,7 @@
             function handleMessage(message) {
                 var chatContent = $(PrimeFaces.escapeClientId('form:public')),
                         text = (message.user) ? message.user + ':' + message.text : message.text;
-
+                
                 chatContent.append(text + '<br />');
 
                 //keep scroll
@@ -65,9 +65,18 @@
             }
             //]]>
         </script>
+
+
+        
+
+      
+
     </ui:define>
 
     <ui:define name="body">
+
+        <p:socket onMessage="handleMessage"  channel="/{room}#{UserSessionBean.channel}"
+                  autoConnect="true" widgetVar="subscriber" />
 
         <h1 class="title ui-widget-header ui-corner-all">PrimePush - Chat</h1>
         <div class="entry">
@@ -83,11 +92,11 @@
 
                 <p:fieldset id="container" legend="PrimeChat" toggleable="true">
 
-                    <h:panelGroup rendered="#{chatView.loggedIn}">
+                    <h:panelGroup>
                         <h:panelGrid columns="2" columnClasses="publicColumn,usersColumn" style="width:100%">
                             <p:outputPanel id="public" layout="block" styleClass="ui-corner-all ui-widget-content chatlogs"/>
 
-                            <p:dataList id="users" var="user" value="#{chatUsers.users}" styleClass="usersList">
+                            <p:dataList id="users" var="user" value="#{applicationBean.usersLoggedIn}" styleClass="usersList">
                                 <f:facet name="header">
                                     Users
                                 </f:facet>
@@ -108,20 +117,13 @@
                         <p:commandButton value="Disconnect" actionListener="#{chatView.disconnect}" global="false" update="container" />
                     </h:panelGroup>
 
-                    <h:panelGroup rendered="#{not chatView.loggedIn}" >
-                        Username: <p:inputText value="#{chatView.username}" />
 
-                        <p:spacer width="5" />
-                        <p:commandButton value="Login" actionListener="#{chatView.login}" update="container" 
-                                         icon="ui-icon-person" />
-                    </h:panelGroup>
 
                 </p:fieldset>
 
 
 
             </h:form>
-            <p:socket onMessage="handleMessage" channel="/{room}" autoConnect="false" widgetVar="subscriber" />
 
 
         </div>

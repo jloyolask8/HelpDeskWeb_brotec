@@ -202,7 +202,7 @@
 
                     <f:facet name="footer">    
                         <p:toolbar>  
-                            <p:toolbarGroup align="left">   
+                            <f:facet name="left">   
                                 <p:commandButton action="#{emailClienteController.prepareCreate}" ajax="false"
                                                  value="#{bundle.createNew}" icon="ui-icon ui-icon-plus" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>        
                                 <p:separator/>
@@ -216,7 +216,7 @@
                                 <p:commandButton id="showDialogButton" value="#{bundle.destroy}" onclick="PF('confirmation').show()" 
                                                  rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" 
                                                  icon="ui-icon ui-icon-trash" disabled="#{not emailClienteController.puedeEliminar(emailClienteController.selected)}"/> 
-                            </p:toolbarGroup>  
+                            </f:facet>  
                         </p:toolbar>
 
 

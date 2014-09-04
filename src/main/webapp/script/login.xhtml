@@ -24,9 +24,6 @@
 
 
 
-        <p:dialog  closable="false" style="margin-bottom: 500px" draggable="false"
-                   visible="true" id="parent" widgetVar="logindiag" resizable="false"
-                   header="Bienvenido a #{applicationBean.helpdeskTitle}" modal="false" appendTo="@(body)" height="140" width="458">
             <h:form id="formlogin">
                 <p:growl id="messages" showDetail="true" sticky="false" /> 
                 <div class="formSeparator">
@@ -51,9 +48,8 @@
                             </p:column>
                             <p:column>
                                 <div align="right">
-                                    <p:commandButton type="submit" action="#{loginController.loginAction}"
+                                    <p:commandButton type="submit" ajax="false" action="#{loginController.loginAction}"
                                                      value="#{bundle.LoginUsuario}" update=":formlogin"
-                                                     onstart="blockUIWidget1.block()" oncomplete="blockUIWidget1.unblock()"
                                                      icon="ui-icon-check"/>
                                 </div>
                             </p:column>
@@ -61,15 +57,8 @@
                     </p:panelGrid>
                 </p:panelGrid>
             </h:form>
-        </p:dialog>
 
-        <pe:blockUI target="parent" widgetVar="blockUIWidget1">  
-            <h:panelGrid columns="2">  
-                <p:graphicImage value="/images/ajax-loader1.gif" 
-                                style="margin-right: 12px; vertical-align: middle;"/>  
-                <h:outputText value="Cargando..." style="white-space: nowrap;"/>  
-            </h:panelGrid>  
-        </pe:blockUI> 
+      
 
     </h:body>
 </html>

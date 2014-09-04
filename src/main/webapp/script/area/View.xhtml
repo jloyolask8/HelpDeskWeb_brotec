@@ -77,7 +77,7 @@
 
                     <f:facet name="footer">    
                         <p:toolbar>  
-                            <p:toolbarGroup align="left">   
+                            <f:facet name="left">   
                                 <p:commandButton ajax="false" action="#{areaController.prepareCreate}" value="#{bundle.createNew}" icon="ui-icon ui-icon-plus" />
                                 <p:separator/>
                                 <p:commandButton ajax="false" action="Edit" value="#{bundle.edit}" icon="ui-icon ui-icon-pencil"/>
@@ -85,7 +85,7 @@
 
                                 <p:separator/>
                                 <p:commandButton id="showDialogButton" value="#{bundle.destroy}" onclick="PF('confirmation').show()" icon="ui-icon ui-icon-trash" /> 
-                            </p:toolbarGroup>  
+                            </f:facet>  
                         </p:toolbar>
 
 

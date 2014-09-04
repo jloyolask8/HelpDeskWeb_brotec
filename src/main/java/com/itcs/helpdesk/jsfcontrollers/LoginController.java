@@ -19,6 +19,7 @@ import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
 import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
+import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "loginController")
 @RequestScoped
@@ -26,7 +27,7 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
 
     @ManagedProperty(value = "#{applicationBean}")
     private ApplicationBean applicationBean;
-    
+
     //private LengthValidator passwordLengthValidator = new LengthValidator();
     private String username;
     private String password;
@@ -77,7 +78,7 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
         return null;
     }
 
-    public void loginAction() {
+    public String loginAction() {
 
         if (!getUserSessionBean().isValidatedSession()) {
             try {
@@ -95,16 +96,17 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
                         String channel = "/" + UUID.randomUUID().toString();
                         getUserSessionBean().setChannel(channel);
                         getApplicationBean().addChannel(usuario.getIdUsuario(), channel);
+//                        RequestContext requestContext = RequestContext.getCurrentInstance();
+//                        requestContext.execute("PF('socketMessages').connect('/" + channel + "')");
 
-                        ConfigurableNavigationHandler nav = (ConfigurableNavigationHandler) FacesContext.getCurrentInstance().getApplication().getNavigationHandler();
-
-                        JsfUtil.addSuccessMessage("Bienvenido, " + usuario.getCapitalName());
-
+//                        ConfigurableNavigationHandler nav = (ConfigurableNavigationHandler) FacesContext.getCurrentInstance().getApplication().getNavigationHandler();
+//                        JsfUtil.addSuccessMessage("Bienvenido, " + usuario.getCapitalName());
                         if (isThisRequestCommingFromAMobileDevice(JsfUtil.getRequest())) {
-                            nav.performNavigation("inboxMobile");//DeskTop Version
-
+//                            nav.performNavigation("inboxMobile");//DeskTop Version
+                            return "/mobile/index.xhtml";
                         } else {
-                            nav.performNavigation("inbox");//DeskTop Version
+//                            nav.performNavigation("inbox");//DeskTop Version
+                            return "/script/index.xhtml";
 
                         }
 
@@ -131,21 +133,31 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
         } else {
             HttpServletRequest request = (HttpServletRequest) JsfUtil.getRequest();
             request.getSession().invalidate();
-            loginAction();
+//            loginAction();
+            if (isThisRequestCommingFromAMobileDevice(JsfUtil.getRequest())) {
+//                            nav.performNavigation("inboxMobile");//DeskTop Version
+                return "/mobile/login.xhtml";
+            } else {
+//                            nav.performNavigation("inbox");//DeskTop Version
+                return "/script/login.xhtml";
+
+            }
         }
+
+        return null;
+
     }
 
     public String logout_action() {
         HttpServletRequest request = (HttpServletRequest) JsfUtil.getRequest();
         getApplicationBean().removeChannel(getUserSessionBean().getCurrent().getIdUsuario());
         request.getSession().invalidate();
-        return "/faces/script/login.xhtml?faces-redirect=true";
+        return "/script/login.xhtml";
     }
 
 //    protected UserSessionBean getUserSessionBean() {
 //        return (UserSessionBean) JsfUtil.getManagedBean("UserSessionBean");
 //    }
-
     public String getPassword() {
         return password;
     }

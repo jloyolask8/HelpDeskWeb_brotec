@@ -22,13 +22,13 @@
             <ui:include src="View_1.xhtml" />
             <h:form>
                 <p:toolbar>  
-                    <p:toolbarGroup align="left">   
+                    <f:facet name="left">   
                         <p:commandButton ajax="false" action="#{usuarioController.prepareCreate}" value="#{bundle.ViewUsuarioCreateLink}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" />
                         <p:separator/>     
                         <p:commandButton ajax="false" action="#{usuarioController.prepareList}" value="#{bundle.ViewUsuarioShowAllLink}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" icon="ui-icon-folder-open"/>
                         <p:separator/>                              
 
-                    </p:toolbarGroup>  
+                    </f:facet>  
                 </p:toolbar>
             </h:form>
 

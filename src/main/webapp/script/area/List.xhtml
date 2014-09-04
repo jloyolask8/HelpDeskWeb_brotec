@@ -103,7 +103,7 @@
 
                                 <f:facet name="footer">
                                     <p:toolbar style="border: none;">
-                                        <p:toolbarGroup align="center">
+                                        <f:facet name="left">
 
                                             <p:outputLabel value="Páginas de "/>
                                             <p:selectOneMenu id="cant" value="#{areaController.paginationPageSize}" style="top: 7px">
@@ -124,7 +124,7 @@
                                             <p:separator/>
                                             <p:commandButton ajax="false" action="#{areaController.prepareCreate}" value="#{bundle.ListAreaCreateLink}" icon="ui-icon ui-icon-plus" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
 
-                                        </p:toolbarGroup>
+                                        </f:facet>
                                     </p:toolbar>
                                 </f:facet>
 

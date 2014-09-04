@@ -68,7 +68,7 @@
 
                         <f:facet name="footer">
                             <p:toolbar style="border: none;">
-                                <p:toolbarGroup align="center">
+                                <f:facet name="left">
 
                                     <p:outputLabel value="Páginas de "/>
                                     <p:selectOneMenu id="cant" value="#{productoController.paginationPageSize}" style="top: 7px">
@@ -92,7 +92,7 @@
                                     <p:commandButton ajax="false" action="#{productoController.prepareCreateMasivo()}" value="Carga masiva" icon="ui-icon ui-icon-arrowstop-1-n" style="float: right" />
 
 
-                                </p:toolbarGroup>
+                                </f:facet>
                             </p:toolbar>
 
                         </f:facet>

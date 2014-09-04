@@ -67,9 +67,9 @@
                     </p:tagCloud> 
                 </p:tab>
 
-                <p:tab title="Usuarios Conectados">
+                <p:tab title="Usuarios Conectados" id="tabUsers">
 
-                    <p:dataTable value="#{applicationBean.usersLoggedIn}" var="userLoggedIn" 
+                    <p:dataTable id="usersLoggedIn" value="#{applicationBean.usersLoggedIn}" var="userLoggedIn" 
                                  styleClass="hide-column-names"
                                  emptyMessage="Muy raro que no haya un usuario aqui =(" 
                                  scrollRows="22" scrollable="true" liveScroll="true" scrollHeight="250">  
@@ -107,7 +107,7 @@
 
 
                     <p:toolbar id="toolbar1">  
-                        <p:toolbarGroup align="left">
+                        <f:facet name="left">
                             <p:commandButton id="updateList" title="Actualizar" icon="fa fa-refresh" style="width: 40px;" 
                                              actionListener="#{casoController.refresh()}" update=":form0:panelG1" />
 
@@ -170,9 +170,9 @@
                             </p:overlayPanel>  
 
                             <p:separator />  
-                        </p:toolbarGroup>  
+                        </f:facet>  
 
-                        <p:toolbarGroup align="right">  
+                        <f:facet name="right">  
 
                             <p:selectOneMenu id="cant" value="#{casoController.paginationPageSize}" style="top: 7px" >
                                 <p:ajax event="change" listener="#{casoController.filterList}" update=":form0:panelG1"/>
@@ -189,7 +189,7 @@
                             <p:commandButton action="#{casoController.next}" update=":form0:panelG1" disabled="#{not casoController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{casoController.pagination.itemsCount > 0}"/>
                             <p:commandButton action="#{casoController.last}" update=":form0:panelG1" disabled="#{not casoController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{casoController.pagination.itemsCount > 0}"/>
 
-                        </p:toolbarGroup>  
+                        </f:facet>  
 
                     </p:toolbar>
                     

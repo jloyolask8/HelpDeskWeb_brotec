@@ -24,8 +24,9 @@ import org.primefaces.push.Decoder;
  */
 public class MessageDecoder implements Decoder<String, Message> {
 
-//    @Override
+    @Override
     public Message decode(String s) {
+        System.out.println("decode: " + s);
         String[] userAndMessage = s.split(":");
         if (userAndMessage.length >= 2) {
             return new Message().setUser(userAndMessage[0]).setText(userAndMessage[1]);

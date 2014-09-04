@@ -62,7 +62,7 @@
 
                         <f:facet name="footer">
                             <p:toolbar style="border: none;">
-                                <p:toolbarGroup align="center">
+                                <f:facet name="left">
 
                                     <p:outputLabel value="Páginas de "/>
                                     <p:selectOneMenu id="cant" value="#{subEstadoCasoController.paginationPageSize}" style="top: 7px">
@@ -83,7 +83,7 @@
                                     <p:separator/>
                                     <p:commandButton ajax="false" action="#{subEstadoCasoController.prepareCreate}" value="Crear SubEstado" icon="ui-icon ui-icon-plus" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
 
-                                </p:toolbarGroup>
+                                </f:facet>
                             </p:toolbar>
                         </f:facet>
                     </p:dataTable>

@@ -53,7 +53,7 @@
 
                         <f:facet name="footer">
                             <p:toolbar style="border: none;">
-                                <p:toolbarGroup align="center">
+                                <f:facet name="left">
 
                                     <p:outputLabel value="Páginas de "/>
 
@@ -77,7 +77,7 @@
                                     <p:commandButton action="#{blackListController.prepareCreate()}" oncomplete="PF('addEditDialog').show();" 
                                                       update=":formAddEdit"
                                                      value="Agregar Dirección a Lista Negra"  icon="ui-icon ui-icon-plus" /> 
-                                </p:toolbarGroup>
+                                </f:facet>
                             </p:toolbar>
 
                         </f:facet> 

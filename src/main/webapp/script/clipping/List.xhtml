@@ -92,7 +92,7 @@
 
                             <f:facet name="footer">
                                 <p:toolbar style="border: none;">
-                                    <p:toolbarGroup align="center">
+                                    <f:facet name="left">
 
                                         <p:outputLabel value="Páginas de "/>
                                         <p:selectOneMenu id="cant" value="#{clippingController.paginationPageSize}" style="top: 7px">
@@ -115,7 +115,7 @@
                                         <p:commandButton actionListener="#{clippingController.prepareCreate}" oncomplete="editCreateDialog.show();" update=":createEditform"
                                                          value="#{bundle.ListClippingCreateLink}" icon="ui-icon ui-icon-plus"/>
 
-                                    </p:toolbarGroup>
+                                    </f:facet>
                                 </p:toolbar>
                             </f:facet>
 

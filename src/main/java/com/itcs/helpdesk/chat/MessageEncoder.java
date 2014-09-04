@@ -24,7 +24,7 @@ import org.primefaces.push.Encoder;
  */
 public final class MessageEncoder implements Encoder<Message, String> {
 
-//    @Override
+    @Override
     public String encode(Message s) {
         return new JSONObject(s).toString();
     }

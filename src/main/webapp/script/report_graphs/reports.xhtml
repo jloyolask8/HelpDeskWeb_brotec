@@ -89,7 +89,7 @@
                             <p:selectOneMenu value="#{reporteController.campoCompCasoEjeXSeriesEntity.idComparador}" 
                                              rendered="#{reporteController.campoCompCasoEjeXSeriesEntity ne null and reporteController.campoCompCasoEjeXSeriesEntity.idCampo ne null and (reporteController.filterHelper.getComparableField(reporteController.campoCompCasoEjeXSeriesEntity.idCampo).fieldTypeId.fieldTypeId eq 'SELECTONE_ENTITY')}"
                                              required="true" requiredMessage="Favor Seleccione Operador.">
-                                <f:selectItems value="#{reporteController.filterHelper.findTipoComparacionesAvailable(reporteController.campoCompCasoEjeXSeriesEntity.idCampo)}"/>
+                                <f:selectItems value="#{reporteController.filterHelper.findTipoComparacionesAvailable(reporteController.campoCompCasoEjeXSeriesEntity.idCampo, false)}"/>
                                 <p:ajax update=":mainform:messages :advancedReportForm:accordion1" listener="#{vistaController.handleAnyChangeEvent()}"/>
                             </p:selectOneMenu>
 

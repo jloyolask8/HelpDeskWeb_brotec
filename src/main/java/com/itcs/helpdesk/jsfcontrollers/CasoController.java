@@ -417,6 +417,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             rulesEngine.applyRuleOnThisCasos(reglaTriggerSelected, casosToSend);
             addInfoMessage("Regla " + reglaTriggerSelected + " ejecutada en " + casosToSend.size() + " casos.");
             recreateModel();
+            //TODO update table data
         } else {
             addWarnMessage("No se ha Seleccionado ningun caso para ejecutar la regla de negocio.");
         }
@@ -737,8 +738,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
         //return null;
     }
-
-
 
     public void onNodeItemSelect(NodeSelectEvent event) {
         Item item = (Item) event.getTreeNode().getData();
@@ -1146,7 +1145,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //        }
 //        return pagination;
 //    }
-
     public String prepareList() {
         recreateModel();
 //        recreatePagination();
@@ -1402,7 +1400,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     /**
      * DUPLICATE: createAndView()
-     * @return 
+     *
+     * @return
      */
     public String createPreentregaAndView() {
         try {
@@ -1811,8 +1810,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         recreateModel();
         return "inbox";
     }
-
-    
 
     public void refresh() {
         recreateModel();
@@ -2372,8 +2369,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     /**
      * TODO deprecate this code
+     *
      * @param caso
-     * @return 
+     * @return
      */
     public String evaluarStyle(Caso caso) {
         if (caso != null) {
@@ -2616,44 +2614,26 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         StringBuilder listIdAtt = new StringBuilder();
 
-        if (selectedAttachmensForMail != null) {
-            StringBuilder attachmentsNames = new StringBuilder();
-//            attachments = new ArrayList<EmailAttachment>(selectedAttachmensForMail.size());
-            Iterator iteradorAttachments = selectedAttachmensForMail.iterator();
-            int indexAtt = 0;
-            while (iteradorAttachments.hasNext()) {
-                Long idatt = new Long((String) iteradorAttachments.next());
-                listIdAtt.append(idatt);
-                listIdAtt.append(';');
-                Attachment att = getJpaController().getAttachmentFindByIdAttachment(idatt);
-                attachmentsNames.append(att.getNombreArchivo()).append("<br/>");
-                indexAtt++;
-                progresoEnvioRespuesta = (int) (((50f / (float) selectedAttachmensForMail.size())) * indexAtt);
-            }
-            if (!(attachmentsNames.toString().isEmpty())) {
-                StringBuilder nuevoTextoNota = new StringBuilder(textoNota);
-                nuevoTextoNota.append("<br/><b>Archivos adjuntos:</b><br/>");
-                nuevoTextoNota.append(attachmentsNames);
-                textoNota = nuevoTextoNota.toString();
-            }
-        }
-
-        if (incluirHistoria) {
-            StringBuilder nuevoTextoNota = new StringBuilder(textoNota);
-            nuevoTextoNota.append("<br/><b>Se ha agregado historia del caso</b><br/>");
-            textoNota = nuevoTextoNota.toString();
-
-            StringBuilder textoMensaje = new StringBuilder(mensaje);
-            textoMensaje.append(obtenerHistorial());
-            mensaje = textoMensaje.toString();
-            incluirHistoria = false;
-        }
-
         try {
+            if (selectedAttachmensForMail != null) {
+                Iterator iteradorAttachments = selectedAttachmensForMail.iterator();
+                while (iteradorAttachments.hasNext()) {
+                    Long idatt = new Long((String) iteradorAttachments.next());
+                    listIdAtt.append(idatt);
+                    listIdAtt.append(';');
+                }
+            }
+
+            if (incluirHistoria) {
+                StringBuilder textoMensaje = new StringBuilder(mensaje != null ? mensaje : "");
+                textoMensaje.append(obtenerHistorial());
+                mensaje = textoMensaje.toString();
+            }
+
             Canal canal = MailNotifier.chooseDefaultCanalToSendMail(current);
             HelpDeskScheluder.scheduleSendMailNota(canal.getIdCanal(), mensaje, emailCliente, subject, current.getIdCaso(), nota.getIdNota(), listIdAtt.toString());
             sended = true;
-            textoNota = null;
+            incluirHistoria = false;
         } catch (Exception ex) {
             sended = false;
             Log.createLogger(CasoController.class.getName()).log(Level.SEVERE, "enviarCorreo", ex);
@@ -2792,7 +2772,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     /**
      * Brotec icafal specific
-     * @return 
+     *
+     * @return
      */
     public StreamedContent generarActaPreEntrega() {
         try {
@@ -3142,7 +3123,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 recreateModel();
                 recreatePagination();
             }
-            
+
             executeInClient("PF('deleteSelectedCasos').hide()");
 
         } catch (Exception e) {
@@ -3200,8 +3181,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         this.emailClienteSeleccionadoTransfer = null;
         this.usuarioSeleccionadoTransfer = null;
     }
-
-    
 
     public SelectItem[] getClippingsItemsAvailableSelectOne() {
         return JsfUtil.getSelectItems(getJpaController().getClippingJpaController().findClippingEntities(), true);

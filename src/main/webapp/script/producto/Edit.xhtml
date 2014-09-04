@@ -200,7 +200,7 @@
 
                     <f:facet name="footer">
                         <p:toolbar>  
-                            <p:toolbarGroup align="left">   
+                            <f:facet name="left">   
                                 <p:commandButton ajax="false" action="#{productoController.update}" value="#{bundle.SaveLink}" icon="ui-icon-disk"/>
 
                                 <p:separator/>
@@ -209,7 +209,7 @@
 
                                 <p:separator/>
                                 <p:commandButton id="showDialogButton" value="#{bundle.DestroyLink}" onclick="PF('confirmation').show()" icon="ui-icon ui-icon-trash" />                                
-                            </p:toolbarGroup>
+                            </f:facet>
                         </p:toolbar>
 
                     </f:facet>

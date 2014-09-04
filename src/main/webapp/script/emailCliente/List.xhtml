@@ -69,7 +69,7 @@
 
 
                             <p:toolbar style="border: none;">
-                                <p:toolbarGroup align="center">
+                                <f:facet name="left">
 
                                     <p:outputLabel value="Páginas de "/>
 
@@ -96,7 +96,7 @@
                                     <p:commandButton ajax="false" action="#{emailClienteController.prepareCreateMasivo()}" value="Importación masiva de clientes" icon="ui-icon ui-icon-arrowstop-1-n" />
                                     <p:commandButton ajax="false" action="cargarClienteProducto" value="Importar Relación Cliente/#{applicationBean.productSubComponentDescription}" icon="ui-icon ui-icon-arrowstop-1-n" />
 
-                                </p:toolbarGroup>
+                                </f:facet>
                             </p:toolbar>
 
                         </f:facet> 
