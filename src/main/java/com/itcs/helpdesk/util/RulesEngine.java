@@ -15,6 +15,7 @@ import com.itcs.helpdesk.persistence.entities.FieldType;
 import com.itcs.helpdesk.persistence.entities.Grupo;
 import com.itcs.helpdesk.persistence.entities.Prioridad;
 import com.itcs.helpdesk.persistence.entities.ReglaTrigger;
+import com.itcs.helpdesk.persistence.entities.TipoCaso;
 import com.itcs.helpdesk.persistence.entities.TipoComparacion;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entityenums.EnumFieldType;
@@ -127,7 +128,7 @@ public class RulesEngine implements CasoChangeListener {
             }
         } while (lista.size() > listaSup.size());
     }
-    
+
     private boolean evalConditions(ReglaTrigger reglaTrigger, Caso caso) {
         return evalConditions(reglaTrigger, caso, null);
     }
@@ -165,13 +166,13 @@ public class RulesEngine implements CasoChangeListener {
 
         for (Caso caso : selectedCasos) {
 //            if (reglaTrigger.getReglaActiva()) {
-                boolean aplica = evalConditions(reglaTrigger, caso);
-                if (aplica) {
-                    Log.createLogger(this.getClass().getName()).logInfo("regla " + reglaTrigger.getIdTrigger() + " APLICA_AL_CASO " + caso.toString());
-                    for (Accion accion : reglaTrigger.getAccionList()) {
-                        executeAction(accion, caso);
-                    }
+            boolean aplica = evalConditions(reglaTrigger, caso);
+            if (aplica) {
+                Log.createLogger(this.getClass().getName()).logInfo("regla " + reglaTrigger.getIdTrigger() + " APLICA_AL_CASO " + caso.toString());
+                for (Accion accion : reglaTrigger.getAccionList()) {
+                    executeAction(accion, caso);
                 }
+            }
 //            }
         }
     }
@@ -500,6 +501,8 @@ public class RulesEngine implements CasoChangeListener {
                 asignarCasoAGrupo(accion, caso);
             } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.ASIGNAR_A_AREA.getNombreAccion())) {
                 asignarCasoArea(accion, caso);
+            } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.DEFINIR_TIPO.getNombreAccion())) {
+                definirTipoCaso(accion, caso);
             } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.CUSTOM.getNombreAccion())) {
                 executeCustomAction(accion, caso);
             } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.ASIGNAR_A_USUARIO.getNombreAccion())) {
@@ -583,6 +586,16 @@ public class RulesEngine implements CasoChangeListener {
             getJpaController().mergeCasoWithoutNotify(caso);
         } catch (Exception ex) {
             Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "asignarCasoArea", ex);
+        }
+    }
+    
+    private void definirTipoCaso(Accion accion, Caso caso) {
+        try {
+            TipoCaso area = getJpaController().find(TipoCaso.class, accion.getParametros());
+            caso.setTipoCaso(area);
+            getJpaController().mergeCasoWithoutNotify(caso);
+        } catch (Exception ex) {
+            Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "definirTipoCaso", ex);
         }
     }
 

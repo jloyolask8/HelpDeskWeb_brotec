@@ -20,7 +20,7 @@
             </p:accordionPanel>
         </ui:define>
         <ui:define name="body">
-
+            <pe:importEnum type="com.itcs.helpdesk.persistence.entityenums.EnumNombreAccion" var="EnumNombreAccion" allSuffix="ALL_ENUM_VALUES" />
             <h:form id="form">
 
                 <h1>Nueva Regla de Negocio</h1>
@@ -197,7 +197,7 @@
 
                     <br/>
                     <br/>
-                    <p:outputLabel value="Realizar las siguientes condiciones acciones:" />
+                    <p:outputLabel value="Realizar las siguientes acciones:" />
                     <br/>             
                     <p:dataTable id="accionesTable" value="#{reglaTriggerController.selected.accionList}" var="accion" resizableColumns="true"
                                  styleClass="hide-column-names" style="width: 800px; table-layout: fixed;"> 
@@ -221,6 +221,14 @@
                                              styleClass="full-width">
                                 <p:ajax update=":form:accionesTable"/>
                                 <f:selectItems value="#{areaController.stringItemsAvailableSelectOne}"/>
+                            </p:selectOneMenu>
+                            
+                            <p:selectOneMenu value="#{accion.parametros}" 
+                                             rendered="#{reglaTriggerController.esAccion(accion, EnumNombreAccion.DEFINIR_TIPO)}"
+                                             required="true" requiredMessage="Se requiere que seleccione una Accion."
+                                             styleClass="full-width">
+                                <p:ajax update=":form:accionesTable"/>
+                                <f:selectItems value="#{tipoCasoController.stringItemsAvailableSelectOne}"/>
                             </p:selectOneMenu>
 
                             <p:selectOneMenu id="idAccionCustom" label="Action Class" filter="true" filterMatchMode="contains"

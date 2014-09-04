@@ -749,7 +749,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         this.emailTemp = emailTemp;
     }
 
-    private boolean esAccion(Accion accion, EnumNombreAccion enumAccion) {
+    public boolean esAccion(Accion accion, EnumNombreAccion enumAccion) {
         if ((accion == null) || (accion.getIdNombreAccion() == null)) {
             return false;
         }
