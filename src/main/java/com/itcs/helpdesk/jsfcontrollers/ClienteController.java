@@ -33,6 +33,7 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
     private String searchPattern;
     private EmailCliente emailToAdd;
     private boolean canCreate = false;
+    private boolean canEdit;
 
     public ClienteController() {
         super(Cliente.class);
@@ -76,7 +77,7 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
                     if (searchPattern != null && !searchPattern.trim().isEmpty()) {
                         return new ClienteDataModel(getJpaController().getClienteJpaController().searchEntities(searchPattern, false, getPageSize(), getPageFirstItem()));
                     } else {
-                        return new ClienteDataModel(getJpaController().queryByRange(Cliente.class, getPageSize(), getPageFirstItem()));
+                        return new ClienteDataModel((List<Cliente>) getJpaController().findEntities(Cliente.class, false, getPageSize(), getPageFirstItem(),"nombres","apellidos"));
                     }
                 }
             };
@@ -131,6 +132,7 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
                 }
                 else
                 {
+                    oldEmailCliente.getCliente().getEmailClienteList().remove(oldEmailCliente);
                     oldEmailCliente.setCliente(current);
                     getJpaController().merge(oldEmailCliente);
                 }
@@ -300,11 +302,12 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
 
         Cliente c = getJpaController().getClienteJpaController().findByRut(rutFormateado);
         if (c != null) {//this client exists
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "El rut " + rutFormateado + " pertenece a un cliente existente, favor verificar que el cliente ya exista.", null);
-            FacesContext.getCurrentInstance().addMessage("form:rut", message);
+            setSelected(c);
             setCanCreate(false);
+            setCanEdit(false);
         } else {
             setCanCreate(true);
+            setCanEdit(true);
         }
     }
 
@@ -331,6 +334,17 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
      */
     public void setEmailToAdd(EmailCliente emailToAdd) {
         this.emailToAdd = emailToAdd;
+    }
+
+    private void setCanEdit(boolean b) {
+        this.canEdit = b;
+    }
+
+    /**
+     * @return the canEdit
+     */
+    public boolean isCanEdit() {
+        return canEdit;
     }
 
     @FacesConverter(forClass = Cliente.class)

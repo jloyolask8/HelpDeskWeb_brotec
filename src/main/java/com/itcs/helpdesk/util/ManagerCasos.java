@@ -13,7 +13,6 @@ import com.itcs.helpdesk.persistence.entities.AuditLog;
 import com.itcs.helpdesk.persistence.entities.Canal;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Caso_;
-import com.itcs.helpdesk.persistence.entities.Categoria;
 import com.itcs.helpdesk.persistence.entities.Cliente;
 import com.itcs.helpdesk.persistence.entities.EmailCliente;
 import com.itcs.helpdesk.persistence.entities.FiltroVista;
@@ -38,7 +37,6 @@ import com.itcs.helpdesk.persistence.entityenums.EnumTipoNota;
 import com.itcs.helpdesk.persistence.entityenums.EnumUsuariosBase;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.quartz.HelpDeskScheluder;
-import com.itcs.helpdesk.quartz.TicketAlertStateChangeJob;
 import com.itcs.helpdesk.webservices.DatosCaso;
 import java.io.File;
 import java.io.Serializable;
@@ -76,9 +74,6 @@ public class ManagerCasos implements Serializable {
     public static final Pattern patternIdCasoLegacy = Pattern.compile(PATTERN_ID_CASO_LEGACY, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     public static final float PORCENTAJE_POR_VENCER = 0.9f;
     private JPAServiceFacade jpaController;
-//    private final ResourceBundle resourceBundle;
-//    private long currentTask = 0;
-    private EmailCliente emailClient;
 
     public static String removeAccents(String text) {
         return text == null ? null : Normalizer.normalize(text, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
@@ -237,30 +232,29 @@ public class ManagerCasos implements Serializable {
         }
     }
 
-    private Cliente creaNuevoCliente(DatosCaso datos) throws Exception {
-        Cliente persistent = null;
-        if (datos.getRut() != null && !StringUtils.isEmpty(datos.getRut())) {
-            persistent = getJpaController().getClienteJpaController().findByRut(UtilesRut.formatear(datos.getRut()));
+    private Cliente createOrUpdateCliente(DatosCaso datos) throws Exception {
+        Cliente cliente = null;
+        if (!StringUtils.isEmpty(datos.getRut())) {
+            cliente = getJpaController().getClienteJpaController().findByRut(UtilesRut.formatear(datos.getRut()));
         }
 
-        if (persistent == null) {
-            Cliente new_cliente_record = new Cliente();
-            new_cliente_record.setNombres(datos.getNombre());
-            new_cliente_record.setApellidos(datos.getApellidos());
+        if (cliente == null) {
+            Cliente newClientRecord = new Cliente();
+            newClientRecord.setNombres(datos.getNombre());
+            newClientRecord.setApellidos(datos.getApellidos());
 
-            if (datos.getRut() != null && !StringUtils.isEmpty(datos.getRut())) {
-                new_cliente_record.setRut(UtilesRut.formatear(datos.getRut()));
+            if (!StringUtils.isEmpty(datos.getRut())) {
+                newClientRecord.setRut(UtilesRut.formatear(datos.getRut()));
             } else {
-                new_cliente_record.setRut(null);
+                newClientRecord.setRut(null);
             }
-            new_cliente_record.setFono1(datos.getTelefono());
-            new_cliente_record.setFono2(datos.getTelefono2());
-            new_cliente_record.setDirParticular(datos.getComuna());
-            getJpaController().persistCliente(new_cliente_record);
-            persistent = new_cliente_record;
+            newClientRecord.setFono1(datos.getTelefono());
+            newClientRecord.setFono2(datos.getTelefono2());
+            newClientRecord.setDirParticular(datos.getComuna());
+            getJpaController().persistCliente(newClientRecord);
+            cliente = newClientRecord;
         }
-        return persistent;
-
+        return cliente;
     }
 
     private boolean complyWithMinimalDataRequirements(DatosCaso datos) {
@@ -294,35 +288,10 @@ public class ManagerCasos implements Serializable {
         if (complyWithMinimalDataRequirements(datos)) {
             Caso caso = new Caso();
 
-            String address = datos.getEmail().toLowerCase().trim();
-
-            if (address != null) {
-                EmailCliente email_cliente = getJpaController().getEmailClienteFindByEmail(address);
-
-                if (email_cliente != null) {
-                    if (email_cliente.getCliente() == null) {
-                        Cliente cliente_record = creaNuevoCliente(datos);
-                        email_cliente.setCliente(cliente_record);
-                        caso.setIdCliente(cliente_record);
-                        getJpaController().persistEmailCliente(email_cliente);
-                    } else {
-                        if (datos.getTelefono() != null && !datos.getTelefono().isEmpty()) {
-                            email_cliente.getCliente().setFono1(datos.getTelefono());
-                        }
-
-                        getJpaController().merge(email_cliente.getCliente());
-                    }
-                    caso.setEmailCliente(email_cliente);
-                    caso.setIdCliente(email_cliente.getCliente());
-                } else {
-                    EmailCliente new_email_cliente = new EmailCliente(address);
-                    Cliente cliente_record = creaNuevoCliente(datos);
-                    caso.setIdCliente(cliente_record);
-                    new_email_cliente.setCliente(cliente_record);
-                    getJpaController().persistEmailCliente(new_email_cliente);
-                    caso.setEmailCliente(new_email_cliente);
-                    caso.setIdCliente(cliente_record);
-                }
+            if (!StringUtils.isEmpty(datos.getEmail())) {
+                EmailCliente emailCliente = createOrUpdateEmailCliente(datos);
+                caso.setEmailCliente(emailCliente);
+                caso.setIdCliente(emailCliente.getCliente());
             }
 
             caso.setIdCanal(canal);
@@ -464,6 +433,44 @@ public class ManagerCasos implements Serializable {
         }
 
         return createdCaso;
+    }
+
+    public EmailCliente createOrUpdateEmailCliente(DatosCaso datos) throws NoResultException, Exception {
+        String address = datos.getEmail().toLowerCase().trim();
+        //Se busca el email del cliente
+        EmailCliente existentEmailClient = getJpaController().getEmailClienteFindByEmail(address);
+        
+        EmailCliente emailClient;
+        
+        //Si emailCliente no existe
+        if (existentEmailClient == null)
+        {
+            EmailCliente newEmailCliente = new EmailCliente(address);
+            Cliente cliente = createOrUpdateCliente(datos);
+            newEmailCliente.setCliente(cliente);
+            getJpaController().persistEmailCliente(newEmailCliente);
+            emailClient = newEmailCliente;
+        }
+        else //Si emailCliente ya existe
+        {
+            if (existentEmailClient.getCliente() == null) //Email no está asociado a un cliente
+            {
+                Cliente cliente = createOrUpdateCliente(datos);
+                existentEmailClient.setCliente(cliente);
+//                caso.setIdCliente(cliente_record);
+                getJpaController().mergeEmailCliente(existentEmailClient);
+            }
+            //Se setea nuevamente en el caso el emailClient
+            emailClient = existentEmailClient;
+        }
+        
+        if (!StringUtils.isEmpty(datos.getTelefono()))//Se actualiza el telefono
+        {
+            emailClient.getCliente().setFono1(datos.getTelefono().trim());
+        }
+        getJpaController().merge(emailClient.getCliente()); //Se realiza el merge del cliente
+        
+        return emailClient;
     }
 
     public boolean crearCasoDesdeEmail(Canal canal, EmailMessage item) {
@@ -665,39 +672,6 @@ public class ManagerCasos implements Serializable {
 
     }
 
-//    private void setCustomFieldValuesIfAny(DatosCaso datos, Caso current_caso) {
-//        if (datos == null || current_caso == null || datos.getCustomFields() == null || current_caso.getCasoCustomFieldList() == null) {
-//            return;
-//        }
-//        try {
-//
-//            for (DatosCaso.CustomField customField : datos.getCustomFields()) {
-//                for (CasoCustomField casoCustomField : current_caso.getCasoCustomFieldList()) {
-//                    if (casoCustomField.getFieldKey().equalsIgnoreCase(customField.getFieldKey())) {
-//                        casoCustomField.setValor(customField.getFieldValue());
-//                    }
-//                }
-//            }
-//
-//        } catch (Exception ex) {
-//            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "setCustomFieldValuesIfAny", ex);
-//        }
-//    }
-//    private void prepareCustomFields(Caso selectedCaso) {
-//        final List<CustomField> casoCustomFields = getJpaController().getCustomFieldsForCaso();
-//
-//        if (selectedCaso.getCasoCustomFieldList() == null || selectedCaso.getCasoCustomFieldList().isEmpty()) {
-//            //values do not exists yet, we must create them empty.
-//            List<CasoCustomField> ccfs = new ArrayList<CasoCustomField>();
-//            if (casoCustomFields != null) {
-//                for (CustomField customField : casoCustomFields) {
-//                    CasoCustomField newCasoCustomField = new CasoCustomField(customField.getCustomFieldPK().getFieldKey(), customField.getCustomFieldPK().getEntity(), selectedCaso);
-//                    ccfs.add(newCasoCustomField);
-//                }
-//                selectedCaso.setCasoCustomFieldList(ccfs);
-//            }
-//        }
-//    }
     public boolean crearNotaDesdeEmail(Caso caso, Canal canal, EmailMessage item) throws Exception {
         boolean retorno = false;
         boolean respuestaCliente = true;
