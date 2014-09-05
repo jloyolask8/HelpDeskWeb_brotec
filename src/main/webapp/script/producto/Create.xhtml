@@ -41,11 +41,11 @@
                     </h:panelGrid>
                     <f:facet name="footer">
                         <p:toolbar> 
-                            <f:facet name="left">   
+                             <p:toolbarGroup align="left">   
                                 <p:commandButton action="#{productoController.create}" value="#{bundle.SaveLink}" ajax="false" icon="ui-icon-disk"/>        
                                  <p:separator/>   
                                 <p:commandButton action="#{productoController.prepareList}" value="#{bundle.ShowAllLink}" immediate="true" ajax="false" icon="ui-icon-folder-open"/>
-                            </f:facet>
+                             </p:toolbarGroup>
                         </p:toolbar>
                     </f:facet> 
                 </p:panel>
