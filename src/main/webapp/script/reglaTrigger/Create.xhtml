@@ -106,7 +106,7 @@
                                              filter="true" filterMatchMode="startsWith"
                                              required="true" requiredMessage="Favor Seleccione Operador." styleClass="full-width">
                                 <f:selectItem itemLabel="Operador..." itemValue="" noSelectionOption="true"/>
-                                <f:selectItems value="#{reglaTriggerController.filterHelperForConditions.findTipoComparacionesAvailable(filtro.idCampo)}" var="tipoComparador" itemValue="#{tipoComparador}" itemLabel="#{tipoComparador.nombre}" itemDescription="#{tipoComparador.descripcion}"/>
+                                <f:selectItems value="#{reglaTriggerController.filterHelperForConditions.findTipoComparacionesAvailable(filtro.idCampo, true)}" var="tipoComparador" itemValue="#{tipoComparador}" itemLabel="#{tipoComparador.nombre}" itemDescription="#{tipoComparador.descripcion}"/>
                                 <p:ajax update=":form:messages :form:filtrosCondicionReglas" listener="#{reglaTriggerController.handleAnyChangeEvent()}"/>
                             </p:selectOneMenu>
 
@@ -305,9 +305,9 @@
 
 
                         <p:commandButton id="btn_add_action" value="Agregar Acción" update=":form:accionesTable :form:messages :formrespuesta" 
-                                         action="#{reglaTriggerController.prepareCreateAccionEmail()}" ajax="true" oncomplete="mailComposerWidget.hide()"/>
+                                         action="#{reglaTriggerController.prepareCreateAccionEmail()}" ajax="true" oncomplete="PF('mailComposerWidget').hide()"/>
 
-                        <p:commandButton value="Cerrar" ajax="true" onclick="mailComposerWidget.hide()"   />
+                        <p:commandButton value="Cerrar" ajax="true" onclick="PF('mailComposerWidget').hide()"   />
                     </h:panelGrid>
 
 

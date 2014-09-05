@@ -328,7 +328,6 @@ public class SchedulerBean extends AbstractManagedBean<Object> implements Serial
 
     private void verificarTipoCanal(JPAServiceFacade jpaController) {
         for (EnumTipoCanal enumTipoCanal : EnumTipoCanal.values()) {
-            System.out.println("verificando tipo de canal");
             try {
                 TipoCanal tipoCanal = jpaController.find(TipoCanal.class, enumTipoCanal.getTipoCanal().getIdTipo());
                 if (null == tipoCanal) {

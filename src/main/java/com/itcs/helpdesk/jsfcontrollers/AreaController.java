@@ -3,11 +3,14 @@ package com.itcs.helpdesk.jsfcontrollers;
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.Area;
+import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Grupo;
 import com.itcs.helpdesk.persistence.entities.Usuario;
+import com.itcs.helpdesk.persistence.entityenums.EnumEstadoCaso;
 import com.itcs.helpdesk.quartz.DownloadEmailJob;
 import com.itcs.helpdesk.quartz.HelpDeskScheluder;
 import com.itcs.helpdesk.util.Log;
+import com.itcs.jpautils.EasyCriteriaQuery;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -86,7 +89,7 @@ public class AreaController extends AbstractManagedBean<Area> implements Seriali
         editActiveIndex = 0;
         return "/script/area/View";
     }
-    
+
     public SelectItem[] getStringItemsAvailableSelectOne() {
         List<Area> lista = (List<Area>) getJpaController().findAll(Area.class);
         List<String> ids = new LinkedList<String>();
@@ -150,8 +153,7 @@ public class AreaController extends AbstractManagedBean<Area> implements Seriali
         }
 //        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         performDestroy();
-        recreateModel();
-        return "/script/area/List";
+        return prepareList();
     }
 
     public void destroySelected(ActionEvent actionEvent) {
@@ -219,7 +221,7 @@ public class AreaController extends AbstractManagedBean<Area> implements Seriali
         setExpanded(!isExpanded());
         toggleChildNodes(root, isExpanded());
     }
-    
+
     public void refreshTree() {
         this.root = null;
     }
@@ -255,13 +257,9 @@ public class AreaController extends AbstractManagedBean<Area> implements Seriali
                         TreeNode agentNode = new DefaultTreeNode("agentes", usuario, grupoNode);
                     }
                 }
-
-//                for (Categoria cat : area.getCategoriaList()) {
-//                    TreeNode catNode = new DefaultTreeNode("categorias", cat, catsNode);
-//                }
             }
-            
-             toggleChildNodes(root, isExpanded());
+
+            toggleChildNodes(root, isExpanded());
         }
 
         return root;
@@ -319,6 +317,20 @@ public class AreaController extends AbstractManagedBean<Area> implements Seriali
      */
     public void setExpanded(boolean expanded) {
         this.expanded = expanded;
+    }
+
+    public Long countCasosAbiertos(Area area) {
+        EasyCriteriaQuery<Caso> c = new EasyCriteriaQuery<Caso>(emf, Caso.class);
+        c.addEqualPredicate("idArea", area);
+        c.addEqualPredicate("idEstado", EnumEstadoCaso.ABIERTO.getEstado());
+        return c.count();
+    }
+
+    public Long countCasosCerrados(Area area) {
+        EasyCriteriaQuery<Caso> c = new EasyCriteriaQuery<Caso>(emf, Caso.class);
+        c.addEqualPredicate("idArea", area);
+        c.addEqualPredicate("idEstado", EnumEstadoCaso.CERRADO.getEstado());
+        return c.count();
     }
 
     @FacesConverter(forClass = Area.class)

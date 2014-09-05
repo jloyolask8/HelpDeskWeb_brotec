@@ -213,24 +213,6 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         return pagination;
     }
 
-//    /**
-//     * @deprecated @param node
-//     */
-//    public void setCatNodeSelected(TreeNode node) {
-//        Categoria cat = ((Categoria) node.getData());
-//        System.out.println("setCatNodeSelected: " + cat.getNombre());
-//        accionTemp.setParametros(cat.getNombre() + " ID[" + cat.getIdCategoria() + "]");
-////        condicionTemp.setValor(  cat.getNombre() + " ID[" + cat.getIdCategoria() + "]");
-//        this.catNodeSelected = node;
-//    }
-
-//    /**
-//     * @deprecated @return
-//     */
-//    public TreeNode getCatNodeSelected() {
-//        return catNodeSelected;
-//    }
-
     public void valueChangeListener(ValueChangeEvent e) {
         System.out.println(" valueChangeListener() event:" + e);
         Map<String, String> reqParams = FacesContext.getCurrentInstance()
@@ -420,6 +402,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 
     public String prepareList() {
         recreateModel();
+        recreatePagination();//search pattern needs this, but double check it
         return "/script/reglaTrigger/List";
     }
 

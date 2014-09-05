@@ -18,7 +18,6 @@ import java.util.ResourceBundle;
 import java.util.TreeMap;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -32,8 +31,8 @@ import org.apache.commons.lang3.StringUtils;
 @SessionScoped
 public class UserSessionBean extends AbstractManagedBean<Usuario> implements Serializable {
 
-    @ManagedProperty(value = "#{applicationBean}")
-    private ApplicationBean applicationBean;
+//    @ManagedProperty(value = "#{applicationBean}")
+//    private ApplicationBean applicationBean;
     private String DEFAULT_THEME = "itcs-theme2";
     private Usuario sessionUser;
     private String channel;
@@ -102,7 +101,7 @@ public class UserSessionBean extends AbstractManagedBean<Usuario> implements Ser
     public void setCurrent(Usuario current) {
         if((sessionUser == null) && (current != null))
         {
-            applicationBean.init();
+//            applicationBean.init();
         }
         this.sessionUser = current;
     }
@@ -181,7 +180,7 @@ public class UserSessionBean extends AbstractManagedBean<Usuario> implements Ser
      * @param applicationBean the applicationBean to set
      */
     public void setApplicationBean(ApplicationBean applicationBean) {
-        this.applicationBean = applicationBean;
+//        this.applicationBean = applicationBean;
     }
 
     /**

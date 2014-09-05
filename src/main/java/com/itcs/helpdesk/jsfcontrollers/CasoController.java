@@ -156,7 +156,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     /*
      * Objetos para filtro
      */
-    private transient TreeNode categoria;
+//    private transient TreeNode categoria;
     private String idCasoStr;
     /*
      * Objetos para attachments
@@ -417,6 +417,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             rulesEngine.applyRuleOnThisCasos(reglaTriggerSelected, casosToSend);
             addInfoMessage("Regla " + reglaTriggerSelected + " ejecutada en " + casosToSend.size() + " casos.");
             recreateModel();
+            //TODO update table data
         } else {
             addWarnMessage("No se ha Seleccionado ningun caso para ejecutar la regla de negocio.");
         }
@@ -1680,6 +1681,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         try {
             vistaController.create(getFilterHelper().getVista());
             JsfUtil.addSuccessMessage("La Vista guardada exitosamente. Revisar el panel de Vistas.");
+            executeInClient("PF('saveViewDialog').hide()");
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -3121,6 +3123,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 recreateModel();
                 recreatePagination();
             }
+
+            executeInClient("PF('deleteSelectedCasos').hide()");
 
         } catch (Exception e) {
             addErrorMessage(e.getLocalizedMessage());

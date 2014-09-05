@@ -39,17 +39,17 @@
                     <f:facet name="footer">
                         
                           <p:toolbar>  
-                            <p:toolbarGroup align="left">   
+                           <p:toolbarGroup align="left">   
                                 <p:commandButton ajax="false" action="#{rolController.update}" value="#{bundle.EditRolSaveLink}" icon="ui-icon-disk" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
                                 <p:separator/>
                                 <p:commandButton ajax="false" action="View" value="#{bundle.EditRolViewLink}" immediate="true" icon="ui-icon-document"/>
                                  <p:commandButton ajax="false" action="#{rolController.prepareList}" value="#{bundle.EditRolShowAllLink}" immediate="true" icon="ui-icon-folder-open"/>
-                            </p:toolbarGroup>  
+                           </p:toolbarGroup>
 
                             <p:toolbarGroup align="right">   
                                 <p:separator/>
-                                <p:commandButton id="showDialogButton" value="#{bundle.ViewRolDestroyLink}" onclick="confirmation.show()" disabled="#{not rolController.puedeEditar(rolController.selected)}"  icon="ui-icon ui-icon-trash" />         
-                            </p:toolbarGroup>  
+                                <p:commandButton id="showDialogButton" value="#{bundle.ViewRolDestroyLink}" onclick="PF('confirmation').show()" disabled="#{not rolController.puedeEditar(rolController.selected)}"  icon="ui-icon ui-icon-trash" />         
+                            </p:toolbarGroup>
 
                         </p:toolbar>
                         
@@ -67,8 +67,8 @@
 
                             <f:facet name="footer">
                                 <p:commandButton id="confirm" value="Yes Sure" action="#{rolController.destroy}" 
-                                                 update="form" oncomplete="confirmation.hide()"/>
-                                <p:commandButton id="decline" value="Not Yet" onclick="confirmation.hide()" type="button" /> 
+                                                 update="form" oncomplete="PF('confirmation').hide()"/>
+                                <p:commandButton id="decline" value="Not Yet" onclick="PF('confirmation').hide()" type="button" /> 
                             </f:facet>
 
                         </p:dialog>

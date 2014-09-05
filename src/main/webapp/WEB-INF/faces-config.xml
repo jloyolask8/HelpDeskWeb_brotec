@@ -12,7 +12,7 @@
             org.primefaces.extensions.component.ajaxerrorhandler.AjaxExceptionHandlerFactory
         </exception-handler-factory>
     </factory>
-
+  
   
     <application>
         <locale-config>
@@ -57,11 +57,6 @@
     <converter>
         <converter-id>UsuarioConverter</converter-id>
         <converter-class>com.itcs.helpdesk.jsfcontrollers.UsuarioController$UsuarioControllerConverter</converter-class>
-    </converter>
-    
-    <converter>
-        <converter-id>CategoriaConverter</converter-id>
-        <converter-class>com.itcs.helpdesk.jsfcontrollers.CategoriaController$CategoriaControllerConverter</converter-class>
     </converter>
     
     <converter>

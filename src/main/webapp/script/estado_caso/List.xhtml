@@ -60,7 +60,7 @@
                             <h:outputText value=" "/>
                             <p:commandButton ajax="false" action="#{estadoCasoController.destroySelected()}" value="#{bundle.ListEstadoCasoDestroyLink}" icon="ui-icon ui-icon-close" />
                             <h:outputText value=" "/>
-                            <p:commandButton value="Eliminar (not working yet)" icon="ui-icon ui-icon-close" onclick="delete_EstadoCaso_confirmation.show()" type="button"/>                        
+                            <p:commandButton value="Eliminar (not working yet)" icon="ui-icon ui-icon-close" onclick="PF('delete_EstadoCaso_confirmation').show()" type="button"/>                        
                         </f:facet> 
                     </p:dataTable>
                 </h:panelGroup>
@@ -72,9 +72,9 @@
                 <p:confirmDialog message="Esta Seguro de eliminar estos registros ?" appendTo="@(body)"
                                  header="Iniciando proceso de eliminacion" severity="alert" widgetVar="delete_EstadoCaso_confirmation">
 
-                    <p:commandButton value="Si" update=":mainform:messages" oncomplete="delete_EstadoCaso_confirmation.hide()"
+                    <p:commandButton value="Si" update=":mainform:messages" oncomplete="PF('delete_EstadoCaso_confirmation').hide()"
                                      action="Expression usuarioController is undefined on line 95, column 48 in unknown." ajax="false" />
-                    <p:commandButton value="Eliminar" onclick="delete_EstadoCaso_confirmation.hide()" type="button" /> 
+                    <p:commandButton value="Eliminar" onclick="PF('delete_EstadoCaso_confirmation').hide()" type="button" /> 
 
                 </p:confirmDialog>
 

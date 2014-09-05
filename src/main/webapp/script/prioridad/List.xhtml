@@ -90,7 +90,7 @@
                                              rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
 
                             <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" 
-                                             action="#{prioridadController.setSelected(item)}" oncomplete="confirmation.show()" icon="ui-icon ui-icon-trash" 
+                                             action="#{prioridadController.setSelected(item)}" oncomplete="PF('confirmation').show()" icon="ui-icon ui-icon-trash" 
                                              rendered="#{prioridadController.puedeEliminar(item) and filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
                         </p:column>
 
@@ -122,7 +122,7 @@
                                     <p:separator/>
                                     <p:commandButton ajax="false" action="#{prioridadController.prepareCreate}" value="#{bundle.ListPrioridadCreateLink}" icon="ui-icon ui-icon-plus" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
 
-                                </p:toolbarGroup>
+                                </f:facet>
                             </p:toolbar>
                         </f:facet>
 
@@ -138,7 +138,7 @@
                     <f:facet name="footer">
                         <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{prioridadController.destroy()}" 
                                          ajax="false"/>
-                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
                     </f:facet>
 
                 </p:dialog>

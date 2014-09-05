@@ -3,22 +3,19 @@ package com.itcs.helpdesk.jsfcontrollers;
 import com.itcs.helpdesk.jsfcontrollers.util.ApplicationBean;
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
-import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.UtilSecurity;
-import com.itcs.helpdesk.webapputils.UAgentInfo;
 import java.io.Serializable;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.application.ConfigurableNavigationHandler;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
-import javax.faces.context.FacesContext;
 import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
+import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "loginController")
 @RequestScoped
@@ -26,7 +23,7 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
 
     @ManagedProperty(value = "#{applicationBean}")
     private ApplicationBean applicationBean;
-    
+
     //private LengthValidator passwordLengthValidator = new LengthValidator();
     private String username;
     private String password;
@@ -77,7 +74,7 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
         return null;
     }
 
-    public void loginAction() {
+    public String loginAction() {
 
         if (!getUserSessionBean().isValidatedSession()) {
             try {
@@ -95,27 +92,27 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
                         String channel = "/" + UUID.randomUUID().toString();
                         getUserSessionBean().setChannel(channel);
                         getApplicationBean().addChannel(usuario.getIdUsuario(), channel);
+                        final String sessionId = JsfUtil.getRequest().getSession().getId();
+                        System.out.println("sessionId:"+sessionId);
+                        getApplicationBean().getSessionIdMappings().put(sessionId, usuario.getIdUsuario());
+                        RequestContext requestContext = RequestContext.getCurrentInstance();
+                        requestContext.execute("PF('socketMessages').connect('/" + usuario.getIdUsuario() + "')");
 
-                        ConfigurableNavigationHandler nav = (ConfigurableNavigationHandler) FacesContext.getCurrentInstance().getApplication().getNavigationHandler();
-
-                        JsfUtil.addSuccessMessage("Bienvenido, " + usuario.getCapitalName());
-
+//                        ConfigurableNavigationHandler nav = (ConfigurableNavigationHandler) FacesContext.getCurrentInstance().getApplication().getNavigationHandler();
+//                        JsfUtil.addSuccessMessage("Bienvenido, " + usuario.getCapitalName());
                         if (isThisRequestCommingFromAMobileDevice(JsfUtil.getRequest())) {
-                            nav.performNavigation("inboxMobile");//DeskTop Version
-
+//                            nav.performNavigation("inboxMobile");//DeskTop Version
+                            return "/mobile/index.xhtml";
                         } else {
-                            nav.performNavigation("inbox");//DeskTop Version
-
+//                            nav.performNavigation("inbox");//DeskTop Version
+                            return "/script/index.xhtml";
                         }
-
-//                        return ResourceBundle.getBundle("/Bundle").getString("inbox");
                     } else {
                         JsfUtil.addErrorMessage("El nombre de usuario o la contraseña son incorrectos. Por favor intenténtelo nuevamente.");
 //                        return null;
                     }
                 } else {
                     JsfUtil.addErrorMessage("Ud. No tiene activada su contraseña, favor comuniquese con administración para solicitar una.");
-//                    return ResourceBundle.getBundle("/Bundle").getString("inbox");
                 }
             } catch (NoResultException ex) {
                 Log.createLogger(this.getClass().getName()).logSevere(ex);
@@ -125,27 +122,37 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
                 ex.printStackTrace();
                 Log.createLogger(this.getClass().getName()).logSevere(ex);
                 JsfUtil.addErrorMessage("No podemos atenderlo en este momento, por favor intentelo mas tarde.");
-//                return null;
+//              return null;
             }
 
         } else {
             HttpServletRequest request = (HttpServletRequest) JsfUtil.getRequest();
             request.getSession().invalidate();
-            loginAction();
+//            loginAction();
+            if (isThisRequestCommingFromAMobileDevice(JsfUtil.getRequest())) {
+//                            nav.performNavigation("inboxMobile");//DeskTop Version
+                return "/mobile/login.xhtml";
+            } else {
+//                            nav.performNavigation("inbox");//DeskTop Version
+                return "/script/login.xhtml";
+
+            }
         }
+
+        return null;
+
     }
 
     public String logout_action() {
         HttpServletRequest request = (HttpServletRequest) JsfUtil.getRequest();
-        getApplicationBean().removeChannel(getUserSessionBean().getCurrent().getIdUsuario());
+//        getApplicationBean().removeChannel(getUserSessionBean().getCurrent().getIdUsuario());
         request.getSession().invalidate();
-        return "/faces/script/login.xhtml?faces-redirect=true";
+        return "/script/login.xhtml";
     }
 
 //    protected UserSessionBean getUserSessionBean() {
 //        return (UserSessionBean) JsfUtil.getManagedBean("UserSessionBean");
 //    }
-
     public String getPassword() {
         return password;
     }

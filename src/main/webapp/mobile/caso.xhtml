@@ -53,9 +53,7 @@
                                 <h:outputText id="owner" value="#{casoController.selected.owner.capitalName}"  style="float: right;"/>    
                             </p:outputLabel>
 
-                            <p:outputLabel for="idCategoria" value="#{filtroAcceso.verificarAccesoAFuncionCambiarCategoriaCaso() ? bundle.EditCasoLabel_idCategoria:bundle.EditCasoLabel_idCategoria}" style="font-weight: bold">
-                                <h:outputText id="idCategoria" value="#{(casoController.selected.idCategoria eq null) ? bundle.sinClasificacion:casoController.selected.idCategoria.toString()}" style="float: right;"/>
-                            </p:outputLabel>
+                          
 
                             <p:outputLabel value="#{bundle.EditCasoLabel_idCasoPadre}" for="idCasoPadre" style="font-weight: bold" rendered="#{casoController.selected.idCasoPadre ne null}">
                                 <h:outputText id="idCasoPadre" value="#{casoController.selected.idCasoPadre}" title="#{bundle.EditCasoTitle_idCasoPadre}" style="float: right;"/>
