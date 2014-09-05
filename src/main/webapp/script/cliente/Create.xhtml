@@ -32,41 +32,41 @@
                         <p:message id="rutMsg" display="both" for="rut"/>
 
                         <p:outputLabel value="#{bundle.CreateClienteLabel_nombres}" for="nombres" style="font-weight:bold"/>
-                        <p:inputText id="nombres" value="#{clienteController.selected.nombres}" title="#{bundle.CreateClienteTitle_nombres}" required="true" requiredMessage="El Nombre es un dato requerido."/>
+                        <p:inputText disabled="#{not clienteController.canEdit}" id="nombres" value="#{clienteController.selected.nombres}" title="#{bundle.CreateClienteTitle_nombres}" required="true" requiredMessage="El Nombre es un dato requerido."/>
                         <p:message display="both" for="nombres"/>
 
                         <p:outputLabel value="#{bundle.CreateClienteLabel_apellidos}" for="apellidos" style="font-weight:bold"/>
-                        <p:inputText id="apellidos" value="#{clienteController.selected.apellidos}" title="#{bundle.CreateClienteTitle_apellidos}" required="true" requiredMessage="Los Apellidos son un dato requerido."/>
+                        <p:inputText disabled="#{not clienteController.canEdit}" id="apellidos" value="#{clienteController.selected.apellidos}" title="#{bundle.CreateClienteTitle_apellidos}" required="true" requiredMessage="Los Apellidos son un dato requerido."/>
                         <p:message display="both" for="apellidos"/>
 
                         <p:outputLabel value="Sexo:" for="sexo" style="font-weight:bold"/>
-                        <p:selectOneButton id="sexo" value="#{clienteController.selected.sexo}" required="true" requiredMessage="Seleccione un sexo.">  
+                        <p:selectOneButton disabled="#{not clienteController.canEdit}" id="sexo" value="#{clienteController.selected.sexo}" required="true" requiredMessage="Seleccione un sexo.">  
                             <f:selectItem itemLabel="Hombre" itemValue="Hombre" />  
                             <f:selectItem itemLabel="Mujer" itemValue="Mujer" />  
                         </p:selectOneButton> 
                         <p:message display="both" for="sexo"/>
 
                         <p:outputLabel value="#{bundle.CreateClienteLabel_fono1}" for="fono1" style="font-weight:bold"/>
-                        <p:inputText id="fono1" value="#{clienteController.selected.fono1}" title="#{bundle.CreateClienteTitle_fono1}" />
+                        <p:inputText disabled="#{not clienteController.canEdit}" id="fono1" value="#{clienteController.selected.fono1}" title="#{bundle.CreateClienteTitle_fono1}" />
                         <p:message display="both" for="fono1"/>
                         <p:outputLabel value="#{bundle.CreateClienteLabel_fono2}" for="fono2" style="font-weight:bold"/>
-                        <p:inputText id="fono2" value="#{clienteController.selected.fono2}" title="#{bundle.CreateClienteTitle_fono2}" />
+                        <p:inputText disabled="#{not clienteController.canEdit}" id="fono2" value="#{clienteController.selected.fono2}" title="#{bundle.CreateClienteTitle_fono2}" />
                         <p:message display="both" for="fono2"/>
                         <p:outputLabel value="#{bundle.CreateClienteLabel_dirParticular}" for="dirParticular" style="font-weight:bold"/>
-                        <p:inputText id="dirParticular" size="60" value="#{clienteController.selected.dirParticular}" title="#{bundle.CreateClienteTitle_dirParticular}" />
+                        <p:inputText disabled="#{not clienteController.canEdit}" id="dirParticular" size="60" value="#{clienteController.selected.dirParticular}" title="#{bundle.CreateClienteTitle_dirParticular}" />
                         <p:message display="both" for="dirParticular"/>
                         <p:outputLabel value="#{bundle.CreateClienteLabel_dirComercial}" for="dirComercial" style="font-weight:bold"/>
-                        <p:inputText id="dirComercial" size="60" value="#{clienteController.selected.dirComercial}" title="#{bundle.CreateClienteTitle_dirComercial}" />
+                        <p:inputText disabled="#{not clienteController.canEdit}" id="dirComercial" size="60" value="#{clienteController.selected.dirComercial}" title="#{bundle.CreateClienteTitle_dirComercial}" />
                         <p:message display="both" for="dirComercial"/>
                     </h:panelGrid>
 
-                    <p:panel header="Agregar e-mail" style="margin-bottom:20px">
+                    <p:panel header="Agregar e-mail" style="margin-bottom:20px" >
                         <h:panelGrid columns="2" cellpadding="5">
                             <h:outputLabel value="e-mail" for="txt_title"></h:outputLabel>
-                            <p:inputText id="txt_title" value="#{clienteController.emailToAdd.emailCliente}" required="true"/>
+                            <p:inputText id="txt_title" disabled="#{not clienteController.canEdit}"  value="#{clienteController.emailToAdd.emailCliente}" required="true"/>
 
-                            <p:commandButton id="btn_reset" value="Reset" type="reset"/>
-                            <p:commandButton id="btn_add" value="Agregar" update="books @parent" action="#{clienteController.reinit()}" >
+                            <p:commandButton id="btn_reset" disabled="#{not clienteController.canEdit}"  value="Reset" type="reset"/>
+                            <p:commandButton id="btn_add" disabled="#{not clienteController.canEdit}"  value="Agregar" update="books @parent" action="#{clienteController.reinit()}" >
                                 <p:collector value="#{clienteController.emailToAdd}" addTo="#{clienteController.selected.emailClienteList}" unique="true"/>
                             </p:commandButton>
                         </h:panelGrid>
