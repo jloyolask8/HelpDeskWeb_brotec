@@ -83,13 +83,13 @@
                         </p:column>
                         <p:column>
                             <h:panelGrid columns="1">                       
-                                <h2>Métricas</h2>
+                                <h2>Casos del Agente</h2>
                                 <p:separator/>
 
                                 <h:panelGrid >
 
-                                    <p:meterGaugeChart id="meterGaugeModel" value="#{usuarioController.meterGaugeModel}" showTickLabels="true" 
-                                                       seriesColors="cc6666, E7E658, 93b75f, 66cc66" style="width:400px;height:250px" title="Casos del Agente" label="Casos"/>  
+                                    <p:chart type="metergauge" model="#{usuarioController.meterGaugeModel}" 
+                                                       style="width:400px;height:250px" />  
 
 
                                 </h:panelGrid>

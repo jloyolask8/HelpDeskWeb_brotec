@@ -58,9 +58,9 @@
                 <p:confirmDialog message="Esta Seguro de eliminar estos registros ?" appendTo="@(body)"
                                  header="Iniciando proceso de eliminacion" severity="alert" widgetVar="delete_Funcion_confirmation">
 
-                    <p:commandButton value="Si" update=":mainform:messages" oncomplete="delete_Funcion_confirmation.hide()"
+                    <p:commandButton value="Si" update=":mainform:messages" oncomplete="PF('delete_Funcion_confirmation').hide()"
                                      action="Expression usuarioController is undefined on line 95, column 48 in unknown." ajax="false" />
-                    <p:commandButton value="Eliminar" onclick="delete_Funcion_confirmation.hide()" type="button" /> 
+                    <p:commandButton value="Eliminar" onclick="PF('delete_Funcion_confirmation').hide()" type="button" /> 
 
                 </p:confirmDialog>
 

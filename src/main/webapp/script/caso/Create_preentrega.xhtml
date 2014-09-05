@@ -213,7 +213,7 @@
                                         </p:column>
 
                                         <p:column headerText="Item" width="15%">
-                                            <p:commandButton id="idCategoria" immediate="true" style="width: 100%;"
+                                            <p:commandButton immediate="true" style="width: 100%;"
                                                              value="#{(subcaso.idItem eq null) ? 'Elegir item':subcaso.idItem}" 
                                                              update=":formArbol:arbol :form:filtrosVista" oncomplete="#{p:widgetVar('idDialogArbol')}.show()"/>
                                         </p:column>
@@ -296,9 +296,9 @@
                     <br></br>
                     <div style="text-align: right">                       
                         <p:commandButton value="Si" update=":mainform:messages :form:listaadjuntos"
-                                         actionListener="#{casoController.removeAttachment(casoController.idFileRemove)}" oncomplete="borrarAttachment.hide()"/>
+                                         actionListener="#{casoController.removeAttachment(casoController.idFileRemove)}" oncomplete="PF('borrarAttachment').hide()"/>
 
-                        <p:commandButton value="No" onclick="borrarAttachment.hide()" type="button" />
+                        <p:commandButton value="No" onclick="PF('borrarAttachment').hide()" type="button" />
                     </div>
                 </h:form>
             </p:dialog>
@@ -314,7 +314,7 @@
                         <p:tree id="arbol" value="#{itemController.tree}" var="node" dynamic="true" cache="false"
                                 selectionMode="single" selection="#{itemController.item}"
                                 style="border-color: window;">
-                            <p:ajax event="select" listener="#{casoController.onNodeItemSelect}" update=":form:filtrosVista" oncomplete="selCat.hide()"/>
+                            <p:ajax event="select" listener="#{casoController.onNodeItemSelect}" update=":form:filtrosVista" oncomplete="PF('selCat').hide()"/>
                             <p:treeNode expandedIcon="myfoldericon16"
                                         collapsedIcon="myfoldericon16">
                                 <h:outputText value="#{node.nombre}" />

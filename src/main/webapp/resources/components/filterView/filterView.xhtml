@@ -35,7 +35,7 @@
                                          panelStyle="width:130px" style="width:110px"  filter="true" filterMatchMode="startsWith"
                                          required="true" requiredMessage="Favor Seleccione Operador.">
                             <f:selectItem itemLabel="Operador..." itemValue="" noSelectionOption="true"/>
-                            <f:selectItems value="#{cc.attrs.filterHelper.findTipoComparacionesAvailable(filtro.idCampo)}" var="tipoComparador" itemValue="#{tipoComparador}" itemLabel="#{tipoComparador.nombre}" itemDescription="#{tipoComparador.descripcion}"/>
+                            <f:selectItems value="#{cc.attrs.filterHelper.findTipoComparacionesAvailable(filtro.idCampo, false)}" var="tipoComparador" itemValue="#{tipoComparador}" itemLabel="#{tipoComparador.nombre}" itemDescription="#{tipoComparador.descripcion}"/>
                             <p:ajax update="#{cc.attrs.update}" listener="#{cc.attrs.filterHelper.handleOperadorChangeEvent(filtro)}"/>
                         </p:selectOneMenu>
                     </h:column>

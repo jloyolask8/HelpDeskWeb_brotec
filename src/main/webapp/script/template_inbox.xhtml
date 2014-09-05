@@ -160,6 +160,21 @@
                                             ajax="false" value="Inbox" icon="fa fa-inbox">
                                     <p:resetInput target="@form" />
                                 </p:menuitem>
+
+                                <p:submenu label="Ver" icon="fa fa-eye">
+                                    <p:menuitem value="Clientes" action="#{clienteController.prepareList}" ajax="false" icon="fa fa-group">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+                                    <p:menuitem value="#{applicationBean.productDescription}(s)" action="#{productoController.prepareList}"
+                                                ajax="false" icon="fa fa-building-o">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+
+                                    <p:menuitem value="Agenda" action="#{globalScheduleController.prepareList}" ajax="false" icon="fa fa-calendar">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+                                </p:submenu>
+
                                 <p:submenu label="Casos" icon="fa fa-ticket">
                                     <p:menuitem value="Crear Nuevo Caso" action="#{casoController.prepareCreate}" ajax="false" icon="fa fa-plus">
                                         <p:resetInput target="@form" />
@@ -170,26 +185,14 @@
                                     </p:menuitem>
                                 </p:submenu>
 
-                                <p:menuitem value="Clientes" action="#{clienteController.prepareList}" ajax="false" icon="fa fa-group">
-                                    <p:resetInput target="@form" />
-                                </p:menuitem>
-                                <p:menuitem value="#{applicationBean.productDescription}(s)" action="#{productoController.prepareList}"
-                                            ajax="false" icon="fa fa-building-o">
-                                    <p:resetInput target="@form" />
-                                </p:menuitem>
-
-                                <p:menuitem value="Agenda" action="#{globalScheduleController.prepareList}" ajax="false" icon="fa fa-calendar">
-                                    <p:resetInput target="@form" />
-                                </p:menuitem>
-
-                                <p:submenu label="Supervision" icon="fa fa-eye" rendered="#{filtroAcceso.verificarAccesoAFuncionSupervision()}">
+                                <p:submenu label="Reportes" icon="fa fa-bar-chart-o" rendered="#{filtroAcceso.verificarAccesoAFuncionSupervision()}">
                                     <p:menuitem value="Alertas" action="#{auditLogController.alertList()}" ajax="false" icon="fa fa-exclamation-triangle">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
                                     <p:menuitem value="Logs de Casos" ajax="false" action="#{auditLogController.prepareList}" icon="fa fa-info-circle">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
-                                    <p:menuitem value="Reportes" ajax="false" action="/script/report_graphs/reports" icon="fa fa-bar-chart-o ">
+                                    <p:menuitem value="Reportes Gráficos" ajax="false" action="/script/report_graphs/reports" icon="fa fa-bar-chart-o">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
                                 </p:submenu>
@@ -217,9 +220,7 @@
                                                 disabled="#{not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
-                                    <p:menuitem value="Categorías" action="#{categoriaController.prepareList}" ajax="false" icon="fa fa-folder">
-                                        <p:resetInput target="@form" />
-                                    </p:menuitem>
+
                                     <p:menuitem value="Sub Estados de Casos" action="#{subEstadoCasoController.prepareList}" ajax="false" icon="fa fa-bookmark">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
@@ -261,14 +262,14 @@
                                     </p:menuitem>
                                 </p:submenu>    
 
-                                <p:submenu label="Mi Cuenta" icon="fa fa-user">                                
+                                <p:submenu label="#{UserSessionBean.current.capitalName}" icon="fa fa-user">                                
                                     <p:menuitem value="Mis Datos" action="myAccount" ajax="false" icon="fa fa-user">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
                                     <p:menuitem value="Respuestas Predefinidas" action="#{clippingController.prepareList()}" ajax="false" icon="fa fa-comment-o">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
-                                    <p:menuitem value="Cambiar Contraseña" onclick="panelChangePass.show()" icon="fa fa-key">
+                                    <p:menuitem value="Cambiar Contraseña" onclick="PF('panelChangePass').show()" icon="fa fa-key">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
                                     <p:menuitem action="#{loginController.logout_action}" ajax="false" value="Cerrar Sesión" icon="fa fa-power-off">
@@ -327,19 +328,11 @@
 
                             </p:menubar>
 
-                            <p:tooltip for=":formTopMenu:casosActualizados" value="Casos con actualizaciones no revisadas" showEffect="fade" hideEffect="fade" />
-                            <p:tooltip for=":formTopMenu:casosPendientes" value="Casos pendientes de resolver" showEffect="fade" hideEffect="fade" />
-                            <p:tooltip for=":formTopMenu:casosPorVencer" value="Casos por vencer" showEffect="fade" hideEffect="fade" />
-                            <p:tooltip for=":formTopMenu:casosVencidos" value="Casos vencidos" showEffect="fade" hideEffect="fade" />
+                            <p:tooltip for=":formTopMenu:casosActualizados" value="Casos con actualizaciones no revisadas"/>
+                            <p:tooltip for=":formTopMenu:casosPendientes" value="Casos pendientes de resolver"/>
+                            <p:tooltip for=":formTopMenu:casosPorVencer" value="Casos por vencer"/>
+                            <p:tooltip for=":formTopMenu:casosVencidos" value="Casos vencidos"/>
                         </h:form>
-
-
-
-
-
-
-
-
 
                     </ui:insert>  
                 </pe:layoutPane>  
@@ -357,9 +350,6 @@
                       transient="true" draggable="false" closable="false" resizable="false" closeOnEscape="true">  
                 <p:graphicImage library="images" name="ajaxloadingbar.gif" />
             </p:dialog>
-
-
-
 
 
             <p:dialog id="panelChangePassId" appendTo="@(body)" closeOnEscape="true" widgetVar="panelChangePass" header="Cambiar Contraseña" modal="true">

@@ -70,8 +70,8 @@ public abstract class JPAFilterHelper implements Serializable {
         return comparableFieldsOfType;
 //         return JsfUtil.getSelectItems(Collections.EMPTY_LIST, true);
     }
-    
-     public List<ComparableField> getEntityComparableFields() throws ClassNotFoundException {
+
+    public List<ComparableField> getEntityComparableFields() throws ClassNotFoundException {
         List<ComparableField> comparableFieldsOfType = new ArrayList<ComparableField>();
         if (comparableFields == null) {
             comparableFields = getJpaService().getAnnotatedComparableFieldsByClass(Class.forName(vista.getBaseEntityType()));
@@ -185,12 +185,17 @@ public abstract class JPAFilterHelper implements Serializable {
         return findPosibleOptionsFor(idCampo, false, true, true, who);
     }
 
-    public List<TipoComparacion> findTipoComparacionesAvailable(String idCampo) {
+    /**
+     * TODO add a param to identify if this should show the CHANGE TO operator option
+     * @param idCampo
+     * @return 
+     */
+    public List<TipoComparacion> findTipoComparacionesAvailable(String idCampo, boolean changeOps) {
 //        System.out.println("findTipoComparacionesAvailable(idCampo=" + idCampo + ")");
         try {
             final ComparableField comparableField = getComparableField(idCampo);
             if (comparableField != null) {
-                return getTipoComparacionesAvailable(comparableField);
+                return getTipoComparacionesAvailable(comparableField, changeOps);
             }
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(JPAFilterHelper.class.getName()).log(Level.SEVERE, "findTipoComparacionesAvailable", ex);
@@ -205,6 +210,10 @@ public abstract class JPAFilterHelper implements Serializable {
         return comparableField;
     }
 
+    private List<TipoComparacion> getTipoComparacionesAvailable(ComparableField comparable) throws Exception {
+        return getTipoComparacionesAvailable(comparable, false);
+    }
+
     /**
      * maybe this should be better to have cached in a map as application
      * variable.
@@ -212,7 +221,7 @@ public abstract class JPAFilterHelper implements Serializable {
      * @param fieldType
      * @return
      */
-    private List<TipoComparacion> getTipoComparacionesAvailable(ComparableField comparable) throws Exception {
+    private List<TipoComparacion> getTipoComparacionesAvailable(ComparableField comparable, boolean changeOps) throws Exception {
         ArrayList<TipoComparacion> lista = null;
         try {
             FieldType fieldType = comparable.getFieldTypeId();
@@ -221,6 +230,9 @@ public abstract class JPAFilterHelper implements Serializable {
                 lista.add(EnumTipoComparacion.EQ.getTipoComparacion());
                 lista.add(EnumTipoComparacion.NE.getTipoComparacion());
                 lista.add(EnumTipoComparacion.CO.getTipoComparacion());
+                if (changeOps) {
+                    lista.add(EnumTipoComparacion.CT.getTipoComparacion());
+                }
             } else if (fieldType.equals(EnumFieldType.CALENDAR.getFieldType())) {
                 //El valor es de tipo Fecha, usar el String parseado a una fecha
                 lista = new ArrayList<TipoComparacion>();
@@ -235,6 +247,9 @@ public abstract class JPAFilterHelper implements Serializable {
                 lista = new ArrayList<TipoComparacion>(2);
                 lista.add(EnumTipoComparacion.EQ.getTipoComparacion());
                 lista.add(EnumTipoComparacion.NE.getTipoComparacion());
+                if (changeOps) {
+                    lista.add(EnumTipoComparacion.CT.getTipoComparacion());
+                }
             } else if (fieldType.equals(EnumFieldType.SELECTONE_ENTITY.getFieldType())) {
                 if (comparable.getTipo().equals(List.class)) {
                     lista = new ArrayList<TipoComparacion>(1);
@@ -244,12 +259,18 @@ public abstract class JPAFilterHelper implements Serializable {
                     lista.add(EnumTipoComparacion.EQ.getTipoComparacion());
                     lista.add(EnumTipoComparacion.NE.getTipoComparacion());
                     lista.add(EnumTipoComparacion.SC.getTipoComparacion());
+                    if (changeOps) {
+                        lista.add(EnumTipoComparacion.CT.getTipoComparacion());
+                    }
                 }
 
             } else if (fieldType.equals(EnumFieldType.SELECTONE_PLACE_HOLDER.getFieldType())) {
                 lista = new ArrayList<TipoComparacion>(2);
                 lista.add(EnumTipoComparacion.EQ.getTipoComparacion());
                 lista.add(EnumTipoComparacion.NE.getTipoComparacion());
+                if (changeOps) {
+                    lista.add(EnumTipoComparacion.CT.getTipoComparacion());
+                }
             } else if (fieldType.equals(EnumFieldType.COMMA_SEPARATED_VALUELIST.getFieldType())) {
                 lista = new ArrayList<TipoComparacion>(1);
                 lista.add(EnumTipoComparacion.IM.getTipoComparacion());

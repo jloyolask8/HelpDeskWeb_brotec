@@ -29,20 +29,13 @@
 
                 <h:panelGroup >
 
-                    <p:dataTable widgetVar="CategoriaTable" var="item" value="#{productoController.items}"
+                    <p:dataTable var="item" value="#{productoController.items}"
                                  selectionMode="single"
-                                 emptyMessage="#{bundle.ListCategoriaEmpty}">
+                                 emptyMessage="#{bundle.ListProductoContratadoEmpty}">
 
                         <f:facet name="header">
-                            <h:outputText value="Listado de #{applicationBean.productDescription}(s) (#{productoController.pagination.pageFirstItem + 1} - #{productoController.pagination.pageLastItem + 1} de #{productoController.pagination.itemsCount}) " rendered="#{productoController.items.rowCount > 0}"></h:outputText>
-                            <h:outputText value="Listado de #{applicationBean.productDescription}(s)  #{bundle.ListCategoriaEmpty} " rendered="#{productoController.items.rowCount == 0}"></h:outputText>
-                            <h:commandLink action="#{productoController.previous}" value="Anteriores #{productoController.pagination.pageSize}" rendered="#{productoController.pagination.hasPreviousPage}"/>&nbsp;
-                            <h:commandLink action="#{productoController.next}" value="Siguientes #{productoController.pagination.pageSize}" rendered="#{productoController.pagination.hasNextPage}"/>&nbsp;
-
+                            <h:outputText value="Listado de #{applicationBean.productDescription}(s)"></h:outputText>
                         </f:facet>
-
-
-
                         <p:column headerText="#{bundle.ProductoTitle_idProducto}">
                             <h:outputText value="#{item.idProducto}"/>
                         </p:column>
@@ -70,12 +63,12 @@
 
                         <p:column headerText="Acción">
                             <p:commandButton id="editBtn" ajax="false" action="#{productoController.prepareEdit(item)}" title="Editar #{applicationBean.productDescription}" icon="ui-icon ui-icon-pencil"/>
-                            <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" action="#{productoController.setSelected(item)}" oncomplete="confirmation.show()" icon="ui-icon ui-icon-trash"/>
+                            <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" action="#{productoController.setSelected(item)}" oncomplete="PF('confirmation').show()" icon="ui-icon ui-icon-trash"/>
                         </p:column>
 
                         <f:facet name="footer">
                             <p:toolbar style="border: none;">
-                                <p:toolbarGroup align="center">
+                               <p:toolbarGroup align="left">
 
                                     <p:outputLabel value="Páginas de "/>
                                     <p:selectOneMenu id="cant" value="#{productoController.paginationPageSize}" style="top: 7px">
@@ -99,7 +92,7 @@
                                     <p:commandButton ajax="false" action="#{productoController.prepareCreateMasivo()}" value="Carga masiva" icon="ui-icon ui-icon-arrowstop-1-n" style="float: right" />
 
 
-                                </p:toolbarGroup>
+                               </p:toolbarGroup>
                             </p:toolbar>
 
                         </f:facet>
@@ -120,7 +113,7 @@
                     <f:facet name="footer">
                         <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{productoController.destroy()}" 
                                          ajax="false"/>
-                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
                     </f:facet>
 
                 </p:dialog>

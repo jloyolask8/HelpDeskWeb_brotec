@@ -13,6 +13,7 @@ import com.itcs.helpdesk.persistence.entities.AuditLog;
 import com.itcs.helpdesk.persistence.entities.Canal;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Caso_;
+import com.itcs.helpdesk.persistence.entities.Categoria;
 import com.itcs.helpdesk.persistence.entities.Cliente;
 import com.itcs.helpdesk.persistence.entities.EmailCliente;
 import com.itcs.helpdesk.persistence.entities.FiltroVista;
@@ -37,6 +38,7 @@ import com.itcs.helpdesk.persistence.entityenums.EnumTipoNota;
 import com.itcs.helpdesk.persistence.entityenums.EnumUsuariosBase;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.quartz.HelpDeskScheluder;
+import com.itcs.helpdesk.quartz.TicketAlertStateChangeJob;
 import com.itcs.helpdesk.webservices.DatosCaso;
 import java.io.File;
 import java.io.Serializable;
@@ -74,6 +76,9 @@ public class ManagerCasos implements Serializable {
     public static final Pattern patternIdCasoLegacy = Pattern.compile(PATTERN_ID_CASO_LEGACY, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     public static final float PORCENTAJE_POR_VENCER = 0.9f;
     private JPAServiceFacade jpaController;
+//    private final ResourceBundle resourceBundle;
+//    private long currentTask = 0;
+    private EmailCliente emailClient;
 
     public static String removeAccents(String text) {
         return text == null ? null : Normalizer.normalize(text, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
@@ -292,7 +297,7 @@ public class ManagerCasos implements Serializable {
                 EmailCliente emailCliente = createOrUpdateEmailCliente(datos);
                 caso.setEmailCliente(emailCliente);
                 caso.setIdCliente(emailCliente.getCliente());
-            }
+                        }
 
             caso.setIdCanal(canal);
 
@@ -672,6 +677,39 @@ public class ManagerCasos implements Serializable {
 
     }
 
+//    private void setCustomFieldValuesIfAny(DatosCaso datos, Caso current_caso) {
+//        if (datos == null || current_caso == null || datos.getCustomFields() == null || current_caso.getCasoCustomFieldList() == null) {
+//            return;
+//        }
+//        try {
+//
+//            for (DatosCaso.CustomField customField : datos.getCustomFields()) {
+//                for (CasoCustomField casoCustomField : current_caso.getCasoCustomFieldList()) {
+//                    if (casoCustomField.getFieldKey().equalsIgnoreCase(customField.getFieldKey())) {
+//                        casoCustomField.setValor(customField.getFieldValue());
+//                    }
+//                }
+//            }
+//
+//        } catch (Exception ex) {
+//            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "setCustomFieldValuesIfAny", ex);
+//        }
+//    }
+//    private void prepareCustomFields(Caso selectedCaso) {
+//        final List<CustomField> casoCustomFields = getJpaController().getCustomFieldsForCaso();
+//
+//        if (selectedCaso.getCasoCustomFieldList() == null || selectedCaso.getCasoCustomFieldList().isEmpty()) {
+//            //values do not exists yet, we must create them empty.
+//            List<CasoCustomField> ccfs = new ArrayList<CasoCustomField>();
+//            if (casoCustomFields != null) {
+//                for (CustomField customField : casoCustomFields) {
+//                    CasoCustomField newCasoCustomField = new CasoCustomField(customField.getCustomFieldPK().getFieldKey(), customField.getCustomFieldPK().getEntity(), selectedCaso);
+//                    ccfs.add(newCasoCustomField);
+//                }
+//                selectedCaso.setCasoCustomFieldList(ccfs);
+//            }
+//        }
+//    }
     public boolean crearNotaDesdeEmail(Caso caso, Canal canal, EmailMessage item) throws Exception {
         boolean retorno = false;
         boolean respuestaCliente = true;

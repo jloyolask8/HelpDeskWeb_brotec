@@ -14,8 +14,6 @@
             <p:accordionPanel multiple="true" cache="true" id="accionesaccordion1">
                 <p:tab title="Items" id="accionestab1">
                     <h:outputText value="Los items representan partes de un edificio. Estos se agrupan pueden ser agrupados y visualizados en forma de arbol"/>
-
-                    <h:outputLabel escape="false" value="#{bundle.ayudaCategorias}"/>
                 </p:tab>
             </p:accordionPanel>
         </ui:define>
@@ -90,7 +88,7 @@
                         </h:panelGrid>
 
                         <f:facet name="footer">
-                            <p:commandButton onclick="crearItemsDialog.hide()" value="Cancelar"/>
+                            <p:commandButton onclick="PF('crearItemsDialog').hide()" value="Cancelar"/>
                         </f:facet>
                     </p:panel>
                 </h:form>
@@ -112,8 +110,8 @@
 
                         <f:facet name="footer">
                             <p:commandButton actionListener="#{itemController.crearItem}" value="Guardar"
-                                             update=":formadmincat:arbol :formadmincat:menucat :mainform:messages" oncomplete="crearDialog.hide()"/>
-                            <p:commandButton onclick="crearDialog.hide()" value="Cancelar"/>
+                                             update=":formadmincat:arbol :formadmincat:menucat :mainform:messages" oncomplete="PF('crearDialog').hide()"/>
+                            <p:commandButton onclick="PF('crearDialog').hide()" value="Cancelar"/>
                         </f:facet>
                     </p:panel>
                 </h:form>
@@ -125,8 +123,8 @@
                     <br/><br/>
                     <h:panelGrid columns="2">
                         <p:commandButton actionListener="#{itemController.eliminaItem}" value="Borrar"
-                                         update=":formadmincat:arbol :formadmincat:menucat :mainform:messages" oncomplete="borrarDialog.hide()"/>
-                        <p:commandButton onclick="borrarDialog.hide()" value="Cancelar"/>
+                                         update=":formadmincat:arbol :formadmincat:menucat :mainform:messages" oncomplete="PF('borrarDialog').hide()"/>
+                        <p:commandButton onclick="PF('borrarDialog').hide()" value="Cancelar"/>
                     </h:panelGrid>
                 </h:form>
             </p:dialog>
@@ -141,8 +139,8 @@
 
                         <f:facet name="footer">
                             <p:commandButton actionListener="#{itemController.renombrar(actionEvent)}" value="Aceptar"
-                                             update=":formadmincat:arbol :formadmincat:menucat :mainform:messages" oncomplete="renombrarDialog.hide()"/>
-                            <p:commandButton onclick="renombrarDialog.hide()" value="Cancelar"/>
+                                             update=":formadmincat:arbol :formadmincat:menucat :mainform:messages" oncomplete="PF('renombrarDialog').hide()"/>
+                            <p:commandButton onclick="PF('renombrarDialog').hide()" value="Cancelar"/>
                         </f:facet>
                     </p:panel>
                 </h:form>

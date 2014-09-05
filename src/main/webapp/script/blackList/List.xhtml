@@ -42,18 +42,18 @@
                         <p:column headerText="Acción">                           
                             <p:commandButton id="editBtn" action="#{blackListController.prepareEdit(item)}" 
                                              update=":formEdit"
-                                             oncomplete="editDialog.show()"
+                                             oncomplete="PF('editDialog').show()"
                                              title="Editar" icon="ui-icon ui-icon-pencil" 
                                              rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
                             
                             <p:commandButton id="showDialogButton" title="Eliminar" update=":formDelete" 
-                                             action="#{blackListController.prepareEdit(item)}" oncomplete="confirmation.show()" icon="ui-icon ui-icon-trash" 
+                                             action="#{blackListController.prepareEdit(item)}" oncomplete="PF('confirmation').show()" icon="ui-icon ui-icon-trash" 
                                              rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
                         </p:column>
 
                         <f:facet name="footer">
                             <p:toolbar style="border: none;">
-                                <p:toolbarGroup align="center">
+                                <p:toolbarGroup align="left">
 
                                     <p:outputLabel value="Páginas de "/>
 
@@ -74,7 +74,7 @@
 
                                     <p:separator/>
 
-                                    <p:commandButton action="#{blackListController.prepareCreate()}" oncomplete="addEditDialog.show();" 
+                                    <p:commandButton action="#{blackListController.prepareCreate()}" oncomplete="PF('addEditDialog').show();" 
                                                       update=":formAddEdit"
                                                      value="Agregar Dirección a Lista Negra"  icon="ui-icon ui-icon-plus" /> 
                                 </p:toolbarGroup>
@@ -96,8 +96,8 @@
 
                     <f:facet name="footer">
                         <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{blackListController.destroySelected()}" 
-                                         update=":form" oncomplete="confirmation.hide()"/>
-                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
+                                         update=":form" oncomplete="PF('confirmation').hide()"/>
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
                     </f:facet>
 
                 </p:dialog>
@@ -123,9 +123,9 @@
 
                     <f:facet name="footer">                       
                         <p:commandButton action="#{blackListController.create()}" value="Guardar" update=":formAddEdit :form"
-                                         oncomplete="addEditDialog.hide()" />                               
+                                         oncomplete="PF('addEditDialog').hide()" />                               
 
-                        <p:commandButton id="canncel" value="Cancelar" onclick="addEditDialog.hide()" type="button" /> 
+                        <p:commandButton id="canncel" value="Cancelar" onclick="PF('addEditDialog').hide()" type="button" /> 
                     </f:facet>
 
                 </p:dialog>
@@ -151,9 +151,9 @@
                     <f:facet name="footer">                       
                     
                         <p:commandButton action="#{blackListController.update()}" value="Actualizar" update=":formAddEdit :form"
-                                         oncomplete="addEditDialog.hide()" />            
+                                         oncomplete="PF('addEditDialog').hide()" />            
 
-                        <p:commandButton id="canncel" value="Cancelar" onclick="addEditDialog.hide()" type="button" /> 
+                        <p:commandButton id="canncel" value="Cancelar" onclick="PF('addEditDialog').hide()" type="button" /> 
                     </f:facet>
 
                 </p:dialog>

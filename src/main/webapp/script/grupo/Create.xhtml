@@ -43,20 +43,7 @@
                         </h:panelGrid>
                     </p:fieldset>
                     <br/>
-                    <p:fieldset legend="Categorías asociadas">
-                        <h:outputLabel value="Que Categorías puede ver" for="checkboxTree" style="font-weight: bold"/>
-                        <p:tree value="#{grupoController.treeNodeCategorias}" var="node" id="checkboxTree"  
-                                selectionMode="checkbox"  
-                                selection="#{grupoController.selectedCategoriasNodes}"
-                                style="border: none; width: 388px !important;">  
-
-                            <p:treeNode expandedIcon="myfolderopenicon"
-                                        collapsedIcon="myfoldericon">  
-                                <h:outputText value="#{node}" />  
-                            </p:treeNode>  
-                        </p:tree>
-                    </p:fieldset>
-                     <br/>
+                  
                     <p:fieldset legend=" Usuarios del Grupo">
                         <p:pickList id="pojoPickList"  value="#{grupoController.usuariosDualListModel}" var="u" effect="slide" 
                                         itemValue="#{u}" itemLabel="#{u.capitalName} (#{u.idUsuario})" converter="UsuarioConverter"
@@ -81,7 +68,7 @@
                                 <p:commandButton action="#{grupoController.create}" value="#{bundle.CreateGrupoSaveLink}" ajax="false" icon="ui-icon-disk" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>  
                                 <p:separator/>                         
                                 <p:commandButton action="#{grupoController.prepareList}" value="#{bundle.showAll}" immediate="true" ajax="false" icon="ui-icon-folder-open"/>
-                            </p:toolbarGroup>  
+                            </p:toolbarGroup>
 
                         </p:toolbar>
 

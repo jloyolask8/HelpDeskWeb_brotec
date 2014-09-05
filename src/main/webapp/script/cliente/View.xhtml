@@ -213,10 +213,11 @@
 
 
                                 <p:separator/>
-                                <p:commandButton id="showDialogButton" value="#{bundle.destroy}" onclick="confirmation.show()" 
+                                <p:commandButton id="showDialogButton" value="#{bundle.destroy}" onclick="PF('confirmation').show()" 
                                                  rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" 
                                                  icon="ui-icon ui-icon-trash" disabled="#{not clienteController.puedeEliminar(clienteController.selected)}"/> 
-                            </p:toolbarGroup>  
+                            </p:toolbarGroup>
+                            
                         </p:toolbar>
 
 
@@ -233,8 +234,8 @@
 
                                 <f:facet name="footer">
                                     <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{clienteController.destroySelected}" 
-                                                     update=":form" oncomplete="confirmation.hide()"/>
-                                    <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
+                                                     update=":form" oncomplete="PF('confirmation').hide()"/>
+                                    <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
                                 </f:facet>
 
                             </p:dialog>

@@ -21,21 +21,22 @@
             <h:form id="form">
                 <h:panelGroup >
 
-                    <p:dataTable id="tablaGrupos" widgetVar="CategoriaTable" var="item" value="#{grupoController.items}" selectionMode="single"
-                                 emptyMessage="#{bundle.ListCategoriaEmpty}">
+                    <p:dataTable id="tablaGrupos" widgetVar="ListGrupos" var="item" value="#{grupoController.items}" selectionMode="single"
+                                 emptyMessage="#{bundle.ListGrupoEmpty}">
 
                         <f:facet name="header">
-                            <h:outputText value="Lista de Grupos (#{grupoController.pagination.pageFirstItem + 1} - #{grupoController.pagination.pageLastItem + 1} de #{grupoController.pagination.itemsCount}) " rendered="#{grupoController.items.rowCount > 0}"></h:outputText>
-                            <h:outputText value="Lista de Grupos #{bundle.ListCategoriaEmpty} " rendered="#{grupoController.items.rowCount == 0}"></h:outputText>
+                            <h:outputText value="Lista de Grupos (#{grupoController.pagination.pageFirstItem + 1} - #{grupoController.pagination.pageLastItem + 1} de #{grupoController.pagination.itemsCount})"></h:outputText>
                         </f:facet>
 
-                        <p:column headerText="#{bundle.ListGrupoTitle_idGrupo}">
-                            <h:outputText value="#{item.idGrupo}"/>
-                        </p:column>
+                       
                         <p:column headerText="#{bundle.ListGrupoTitle_nombre}">
-
-                            <h:outputText value="#{item.nombre}"/>
+                            <h:outputText value="#{item.nombre}" title="Id:#{item.idGrupo}"/>
                         </p:column>
+                        
+                        <p:column headerText="#{bundle.ListGrupoTitle_idArea}">
+                            <h:outputText value="#{item.idArea.nombre}"/>
+                        </p:column>
+                        
                         <p:column headerText="#{bundle.ListGrupoTitle_descripcion}">
                             <h:outputText value="#{item.descripcion}"/>
                         </p:column>
@@ -45,10 +46,15 @@
                             <p:tooltip value="#{item.usuarioList}" for="ejecutivos"/>
                         </p:column>
                         
+                        <p:column headerText="#{applicationBean.productDescription}">
+                             <h:outputText id="productoList" value="#{item.productoList.size()}" />
+                            <p:tooltip value="#{item.productoList}" for="productoList"/>
+                        </p:column>
+                        
                          <p:column headerText="Acción">
                             <p:commandButton id="viewBtn" ajax="false" action="#{grupoController.prepareView(item)}" disabled="#{not grupoController.puedeEditar(item)}" title="Ver" icon="ui-icon ui-icon-search" />
                             <p:commandButton id="editBtn" ajax="false" action="#{grupoController.prepareEdit(item)}" disabled="#{not grupoController.puedeEditar(item)}" title="Editar" icon="ui-icon ui-icon-pencil" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
-                            <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" action="#{grupoController.setSelected(item)}" oncomplete="confirmation.show()" disabled="#{not grupoController.puedeEditar(item)}" icon="ui-icon ui-icon-trash" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
+                            <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" action="#{grupoController.setSelected(item)}" oncomplete="PF('confirmation').show()" disabled="#{not grupoController.puedeEditar(item)}" icon="ui-icon ui-icon-trash" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
                         </p:column>
 
 
@@ -56,7 +62,7 @@
 
                         <f:facet name="footer">
                             <p:toolbar style="border: none;">
-                                <p:toolbarGroup align="center">
+                               <p:toolbarGroup align="left">
                                     
                                        <p:outputLabel value="Páginas de "/>
 
@@ -78,7 +84,7 @@
                                      <p:separator/>
                                     <p:commandButton ajax="false" action="#{grupoController.prepareCreate}" value="Crear grupo" icon="ui-icon ui-icon-plus" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
 
-                                </p:toolbarGroup>
+                               </p:toolbarGroup>
                             </p:toolbar>
                         </f:facet>
 
@@ -97,7 +103,7 @@
                     <f:facet name="footer">
                         <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{grupoController.destroy()}" 
                                          update=":form"/>
-                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
                     </f:facet>
 
                 </p:dialog>

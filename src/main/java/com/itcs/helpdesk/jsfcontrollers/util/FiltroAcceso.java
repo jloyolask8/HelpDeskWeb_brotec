@@ -41,7 +41,7 @@ public class FiltroAcceso implements Serializable {
 
     public boolean verificaAccesoAFuncion(EnumFunciones funcion) {
         Usuario user = userSessionBean.getCurrent();
-        if (user.getRolList() != null) {
+        if (user != null && user.getRolList() != null) {
             for (Rol rol : user.getRolList()) {
                 if (rol.getFuncionList().contains(funcion.getFuncion())) {
                     return true;
@@ -91,9 +91,7 @@ public class FiltroAcceso implements Serializable {
         return verificaAccesoAFuncion(EnumFunciones.ELIMINAR_CASO);
     }
 
-    public boolean verificarAccesoAFuncionCambiarCategoriaCaso() {
-        return verificaAccesoAFuncion(EnumFunciones.CAMBIAR_CATEGORIA_CASO);
-    }
+   
 
     public boolean verificarAccesoAFuncionAsignarTransferirCaso() {
         return verificaAccesoAFuncion(EnumFunciones.ASIGNAR_TRANSFERIR_CASO);

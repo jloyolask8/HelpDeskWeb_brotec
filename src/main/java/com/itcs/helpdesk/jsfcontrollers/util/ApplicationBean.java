@@ -25,6 +25,7 @@ import com.itcs.helpdesk.rules.Action;
 import com.itcs.helpdesk.rules.actionsimpl.NotifyGroupCasoReceivedAction;
 import com.itcs.helpdesk.rules.actionsimpl.SendCaseByEmailAction;
 import com.itcs.helpdesk.util.ApplicationConfig;
+import com.itcs.helpdesk.webapputils.UserSessionListener;
 import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
@@ -44,8 +45,6 @@ import javax.faces.model.SelectItem;
 import org.primefaces.context.RequestContext;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
-import org.primefaces.push.PushContext;
-import org.primefaces.push.PushContextFactory;
 
 /**
  *
@@ -58,6 +57,7 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
 //    private String defaultContactEmail = null;
     //  Map<String, String> loggedInUsers = new HashMap<String, String>();
     private Map<String, String> channels = new HashMap<String, String>();
+    private Map<String, String> sessionIdMappings = new HashMap<String, String>();
     //--pre created Vistas
     private final transient Map<Integer, Vista> predefinedVistas = new HashMap<Integer, Vista>();
     private Vista vistaRevisarActualizacion;
@@ -75,9 +75,13 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
     }
 
     public List<String> getUsersLoggedIn() {
-        List<String> users = new ArrayList<String>(channels.size());
-        users.addAll(channels.keySet());
+        List<String> users = new ArrayList<String>(getChannels().size());
+        users.addAll(getChannels().keySet());
         return users;
+    }
+
+    public Integer getTotalActiveSession() {
+        return UserSessionListener.getTotalActiveSession();
     }
 
 //    @PostConstruct
@@ -184,31 +188,27 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
     }
 
     public void addChannel(String user, String channel) {
-        channels.put(user, channel);
+        getChannels().put(user, channel);
+        System.out.println("addChannel(). channels:" + getChannels());
+    }
+
+    public boolean containsChannel(String user) {
+        System.out.println("containsChannel(" + user + ")");
+        return getChannels().containsKey(user);
     }
 
     public void removeChannel(String user) {
-        if (channels.containsKey(user)) {
-            channels.remove(user);
+        System.out.println("removeChannel " + user);
+        if (getChannels().containsKey(user)) {
+            getChannels().remove(user);
+            RequestContext.getCurrentInstance().update("accionesaccordion1:usersLoggedIn");
+            System.out.println(user + " removed OK from applicationBean");
         }
     }
 
     public String getChannel(String user) {
-        return channels.get(user);
-    }
-
-    public void sendFacesMessageNotification(String idUsuario, String m) {
-
-        PushContext pushContext = PushContextFactory.getDefault().getPushContext();
-        final String channel = getChannel(idUsuario);
-        
-        if (channel != null) {
-            System.out.println("SENT NOTIFICATION TO " + channel);
-            pushContext.push(channel, new FacesMessage(m));
-        } else {
-            System.out.println("CHANNEL NOT OPPENED, COULD NOT SEND NOTIFICATION TO " + idUsuario);
-        }
-
+        System.out.println("getChannel(" + user + ")");
+        return getChannels().get(user);
     }
 
     public Date getNow() {
@@ -377,5 +377,26 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
                 + Integer.toHexString(blue);
 
         return color;
+    }
+
+    /**
+     * @return the channels
+     */
+    public Map<String, String> getChannels() {
+        return channels;
+    }
+
+    /**
+     * @return the sessionIdMappings
+     */
+    public Map<String, String> getSessionIdMappings() {
+        return sessionIdMappings;
+    }
+
+    /**
+     * @param sessionIdMappings the sessionIdMappings to set
+     */
+    public void setSessionIdMappings(Map<String, String> sessionIdMappings) {
+        this.sessionIdMappings = sessionIdMappings;
     }
 }

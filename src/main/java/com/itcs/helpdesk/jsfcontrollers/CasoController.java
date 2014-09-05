@@ -156,7 +156,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     /*
      * Objetos para filtro
      */
-    private transient TreeNode categoria;
+//    private transient TreeNode categoria;
     private String idCasoStr;
     /*
      * Objetos para attachments
@@ -417,6 +417,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             rulesEngine.applyRuleOnThisCasos(reglaTriggerSelected, casosToSend);
             addInfoMessage("Regla " + reglaTriggerSelected + " ejecutada en " + casosToSend.size() + " casos.");
             recreateModel();
+            //TODO update table data
         } else {
             addWarnMessage("No se ha Seleccionado ningun caso para ejecutar la regla de negocio.");
         }
@@ -736,24 +737,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             }
         }
         //return null;
-    }
-
-    public void actualizaArbolDeCategoria() {
-//        //System.out.println("actualizaArbolDeCategoria");
-        Object res = JsfUtil.getManagedBean("categoriaController");
-        if (res != null) {
-            CategoriaController catController = ((CategoriaController) res);
-            catController.filtrarCategorias();
-        }
-    }
-
-    public void actualizaArbolDeCategoria(EventListener event) {
-//        //System.out.println("actualizaArbolDeCategoria");
-        Object res = JsfUtil.getManagedBean("categoriaController");
-        if (res != null) {
-            CategoriaController catController = ((CategoriaController) res);
-            catController.filtrarCategorias();
-        }
     }
 
     public void onNodeItemSelect(NodeSelectEvent event) {
@@ -1595,7 +1578,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //        return dir;
 //    }
     public String filterList() {
-        categoria = null;
         recreateModel();
         recreatePagination();
         return "inbox";
@@ -1700,8 +1682,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
         try {
             vistaController.create(getFilterHelper().getVista());
-
             JsfUtil.addSuccessMessage("La Vista guardada exitosamente. Revisar el panel de Vistas.");
+            executeInClient("PF('saveViewDialog').hide()");
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -2632,40 +2614,27 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         boolean sended = false;
 
         StringBuilder listIdAtt = new StringBuilder();
-//        String texto = (nota != null && nota.getTexto() != null) ? nota.getTexto() : "";
-
-        if (selectedAttachmensForMail != null) {
-//            StringBuilder attachmentsNames = new StringBuilder();
-//            attachments = new ArrayList<EmailAttachment>(selectedAttachmensForMail.size());
-            Iterator iteradorAttachments = selectedAttachmensForMail.iterator();
-//            int indexAtt = 0;
-            while (iteradorAttachments.hasNext()) {
-                Long idatt = new Long((String) iteradorAttachments.next());
-                listIdAtt.append(idatt);
-                listIdAtt.append(';');
-//                Attachment att = getJpaController().getAttachmentFindByIdAttachment(idatt);
-//                attachmentsNames.append(att.getNombreArchivo()).append("<br/>");
-//                indexAtt++;
-//                progresoEnvioRespuesta = (int) (((50f / (float) selectedAttachmensForMail.size())) * indexAtt);
-            }
-        }
-
-        if (incluirHistoria) {
-//            StringBuilder nuevoTextoNota = new StringBuilder(texto);
-//            nuevoTextoNota.append("<br/><b>Se ha agregado historia del caso</b><br/>");
-
-            mensaje = mensaje != null ? mensaje : "";
-
-            StringBuilder textoMensaje = new StringBuilder(mensaje);
-            textoMensaje.append(obtenerHistorial());
-            mensaje = textoMensaje.toString();
-            incluirHistoria = false;
-        }
 
         try {
+            if (selectedAttachmensForMail != null) {
+                Iterator iteradorAttachments = selectedAttachmensForMail.iterator();
+                while (iteradorAttachments.hasNext()) {
+                    Long idatt = new Long((String) iteradorAttachments.next());
+                    listIdAtt.append(idatt);
+                    listIdAtt.append(';');
+                }
+            }
+
+            if (incluirHistoria) {
+                StringBuilder textoMensaje = new StringBuilder(mensaje != null ? mensaje : "");
+                textoMensaje.append(obtenerHistorial());
+                mensaje = textoMensaje.toString();
+            }
+
             Canal canal = MailNotifier.chooseDefaultCanalToSendMail(current);
             HelpDeskScheluder.scheduleSendMailNota(canal.getIdCanal(), mensaje, emailCliente, subject, current.getIdCaso(), nota.getIdNota(), listIdAtt.toString());
             sended = true;
+            incluirHistoria = false;
         } catch (Exception ex) {
             sended = false;
             Log.createLogger(CasoController.class.getName()).log(Level.SEVERE, "enviarCorreo", ex);
@@ -3130,7 +3099,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 Logger.getLogger(CasoController.class
                         .getName()).log(Level.SEVERE, "unscheduleTask", ex);
             }
-            actualizaArbolDeCategoria();
             current = null;
             recreateModel();
             recreatePagination();
@@ -3167,6 +3135,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 recreateModel();
                 recreatePagination();
             }
+
+            executeInClient("PF('deleteSelectedCasos').hide()");
 
         } catch (Exception e) {
             addErrorMessage(e.getLocalizedMessage());

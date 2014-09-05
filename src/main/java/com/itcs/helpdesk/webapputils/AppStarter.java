@@ -23,6 +23,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.servlet.annotation.WebListener;
 import javax.transaction.UserTransaction;
 import org.quartz.SchedulerException;
 
@@ -30,6 +31,7 @@ import org.quartz.SchedulerException;
  *
  * @author jorge
  */
+@WebListener
 public class AppStarter implements ServletContextListener {
 
     @Resource
@@ -50,15 +52,15 @@ public class AppStarter implements ServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         try {
+            Log.createLogger(this.getClass().getName()).logInfo("stopping HelpDesk Scheluder");
             HelpDeskScheluder.stop();
-            Log.createLogger(this.getClass().getName()).logInfo("stopped HelpDesk Scheluder");
         } catch (SchedulerException ex) {
             Logger.getLogger(AppStarter.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     private void inicializar() throws SchedulerException {
-        Log.createLogger(this.getClass().getName()).logInfo("Inicializando");
+        Log.createLogger(this.getClass().getName()).logInfo("Inicializando GoDesk");
 
         AutomaticOpsExecutor autoOpsExec = new AutomaticOpsExecutor(utx, emf);
         autoOpsExec.verificaDatosBase();
@@ -87,7 +89,7 @@ public class AppStarter implements ServletContextListener {
         List<Canal> canales = canalJpaController.findCanalTipoEmail();
 //        AreaJpaController areaJpaController = new AreaJpaController(utx, emf);
 //        List<Area> areas = areaJpaController.findAreaEntities();
-        if (canales!= null && !canales.isEmpty()) {
+        if (canales != null && !canales.isEmpty()) {
             for (Canal canal : canales) {
                 if (canal.getEnabled() != null && canal.getEnabled()) {
                     try {
@@ -108,7 +110,6 @@ public class AppStarter implements ServletContextListener {
         //Done!
 
 //        autoOpsExec.agendarAlertasForAllCasos();
-
 //        autoOpsExec.agendarAgendarAlertas();
     }
 }

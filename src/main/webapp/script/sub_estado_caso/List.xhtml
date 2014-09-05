@@ -57,12 +57,12 @@
 
                         <p:column headerText="Acción">
                             <p:commandButton id="editBtn" ajax="false" action="#{subEstadoCasoController.prepareEdit(item)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" title="Editar" icon="ui-icon ui-icon-pencil"/>
-                            <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" action="#{subEstadoCasoController.setSelected(item)}" oncomplete="confirmation.show()" disabled="#{not subEstadoCasoController.puedeEditar(item)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" icon="ui-icon ui-icon-trash"/>
+                            <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" action="#{subEstadoCasoController.setSelected(item)}" oncomplete="PF('confirmation').show()" disabled="#{not subEstadoCasoController.puedeEditar(item)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" icon="ui-icon ui-icon-trash"/>
                         </p:column>
 
                         <f:facet name="footer">
                             <p:toolbar style="border: none;">
-                                <p:toolbarGroup align="center">
+                                <p:toolbarGroup align="left">
 
                                     <p:outputLabel value="Páginas de "/>
                                     <p:selectOneMenu id="cant" value="#{subEstadoCasoController.paginationPageSize}" style="top: 7px">
@@ -99,7 +99,7 @@
                     <f:facet name="footer">
                         <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{subEstadoCasoController.destroySelected()}" 
                                          ajax="false"/>
-                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
                     </f:facet>
 
                 </p:dialog>

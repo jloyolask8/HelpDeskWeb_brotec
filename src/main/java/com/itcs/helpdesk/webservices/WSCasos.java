@@ -117,7 +117,6 @@ public class WSCasos {
             ec.setIdEstado(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
 
             Caso caso = new Caso();
-            caso.setIdCategoria(null);
             caso.setRevisarActualizacion(true);
             caso.setIdEstado(ec);
 

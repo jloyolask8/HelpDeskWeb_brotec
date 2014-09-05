@@ -80,7 +80,7 @@
                                     <h:outputText value="&nbsp;"/>
                                 </f:facet>
 
-                                <p:commandButton id="editBtn" actionListener="#{clippingController.selectItem}" oncomplete="editCreateDialog.show()" update=":form :createEditDialog"
+                                <p:commandButton id="editBtn" actionListener="#{clippingController.selectItem}" oncomplete="PF('editCreateDialog').show()" update=":form :createEditDialog"
                                                  icon="ui-icon ui-icon-pencil" rendered="#{item.idUsuarioCreadaPor eq UserSessionBean.current}"/>
                             
                                 <p:commandButton icon="ui-icon ui-icon-trash" actionListener="#{clippingController.destroy()}" update=":form :mainform:messages">
@@ -92,7 +92,7 @@
 
                             <f:facet name="footer">
                                 <p:toolbar style="border: none;">
-                                    <p:toolbarGroup align="center">
+                                    <p:toolbarGroup align="left">
 
                                         <p:outputLabel value="Páginas de "/>
                                         <p:selectOneMenu id="cant" value="#{clippingController.paginationPageSize}" style="top: 7px">
@@ -141,8 +141,8 @@
                 <h:form id="formDelete">
                     <h:outputText value="Está seguro de eliminar la respuesta predefinida  #{clippingController.selected.nombre}?"/>
                     <p:commandButton id="confirm" value="Si, Eliminar" actionListener="#{clippingController.destroySelected()}" action="/script/pagina"
-                                     update=":form" oncomplete="confirmation.hide()"/>
-                    <p:commandButton id="decline" value="No, Cancelar" onclick="confirmation.hide()" type="button" /> 
+                                     update=":form" oncomplete="PF('confirmation').hide()"/>
+                    <p:commandButton id="decline" value="No, Cancelar" onclick="PF('confirmation').hide()" type="button" /> 
 
                 </h:form>
             </p:dialog>
@@ -239,7 +239,7 @@
 
                     <p:separator/>
 
-                    <p:commandButton value="Cerrar" oncomplete="editCreateDialog.hide()" update=":createEditform" process="@this" icon="ui-icon-arrowreturnthick-1-w"  >
+                    <p:commandButton value="Cerrar" oncomplete="PF('editCreateDialog').hide()" update=":createEditform" process="@this" icon="ui-icon-arrowreturnthick-1-w"  >
                         <p:resetInput target="@form" />
                     </p:commandButton>
 

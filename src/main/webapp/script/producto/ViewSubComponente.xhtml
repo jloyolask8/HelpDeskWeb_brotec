@@ -29,7 +29,7 @@
 
                     <h:panelGrid columns="2">
                         <p:outputLabel value="Acta de Entrega:" style="font-weight: bold;"/>
-                        <p:commandLink value="adjuntar archivo" onclick="uploadDialogidArchivoActaEntrega.show()"
+                        <p:commandLink value="adjuntar archivo" onclick="PF('uploadDialogidArchivoActaEntrega').show()"
                                        rendered="#{productoController.currentSubComponente.idArchivoActaEntrega eq null}"/>
 
                         <h:panelGrid columns="3"  rendered="#{productoController.currentSubComponente.idArchivoActaEntrega ne null}">
@@ -47,7 +47,7 @@
                         </h:panelGrid>
 
                         <p:outputLabel value="Acta de Pre-Entrega:" style="font-weight: bold;"/>
-                        <p:commandLink value="adjuntar archivo" onclick="uploadDialogidArchivoActaPreEntrega.show()"
+                        <p:commandLink value="adjuntar archivo" onclick="PF('uploadDialogidArchivoActaPreEntrega').show()"
                                        rendered="#{productoController.currentSubComponente.idArchivoActaPreEntrega eq null}"/>
 
                         <h:panelGrid columns="3"  rendered="#{productoController.currentSubComponente.idArchivoActaPreEntrega ne null}">
@@ -66,7 +66,7 @@
 
 
                         <p:outputLabel value="Carta de Entrega:" style="font-weight: bold;"/>
-                        <p:commandLink value="adjuntar archivo" onclick="uploadDialogidArchivoCartaEntrega.show()"
+                        <p:commandLink value="adjuntar archivo" onclick="PF('uploadDialogidArchivoCartaEntrega').show()"
                                        rendered="#{productoController.currentSubComponente.idArchivoCartaEntrega eq null}"/>
 
                         <h:panelGrid columns="3"  rendered="#{productoController.currentSubComponente.idArchivoCartaEntrega ne null}">
@@ -176,7 +176,7 @@
                         <p:commandButton value="Si" update=":mainform:messages :documentosForm :uploadFormidArchivoActaEntrega"
                                          actionListener="#{productoController.deleteArchivoActaEntrega(actionEvent)}" />
 
-                        <p:commandButton value="No" onclick="borrarArchivoActaEntrega.hide()" type="button" />
+                        <p:commandButton value="No" onclick="PF('borrarArchivoActaEntrega').hide()" type="button" />
                     </div>
                 </h:form>
             </p:dialog>
@@ -190,7 +190,7 @@
                         <p:commandButton value="Si" update=":mainform:messages :documentosForm :uploadFormidArchivoActaPreEntrega"
                                          actionListener="#{productoController.deleteArchivoActaPreEntrega(actionEvent)}" />
 
-                        <p:commandButton value="No" onclick="borrarArchivoActaPreEntrega.hide()" type="button" />
+                        <p:commandButton value="No" onclick="PF('borrarArchivoActaPreEntrega').hide()" type="button" />
                     </div>
                 </h:form>
             </p:dialog>
@@ -204,7 +204,7 @@
                         <p:commandButton value="Si" update=":mainform:messages :documentosForm :uploadFormidArchivoCartaEntrega"
                                          actionListener="#{productoController.deleteArchivoCartaEntrega(actionEvent)}" />
 
-                        <p:commandButton value="No" onclick="borrarArchivoCartaEntrega.hide()" type="button" />
+                        <p:commandButton value="No" onclick="PF('borrarArchivoCartaEntrega').hide()" type="button" />
                     </div>
                 </h:form>
             </p:dialog>

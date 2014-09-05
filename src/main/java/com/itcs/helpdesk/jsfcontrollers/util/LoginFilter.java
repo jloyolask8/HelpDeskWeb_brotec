@@ -1,6 +1,5 @@
 package com.itcs.helpdesk.jsfcontrollers.util;
 
-import com.itcs.helpdesk.rules.actionsimpl.CrearCasoVisitaRepSellosAction;
 import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,11 +37,14 @@ public class LoginFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
+        
+//      System.out.println("\n****** LoginFilter.doFilter ****** \n");
 
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
         HttpSession session = req.getSession();
-        String requestedPage = req.getPathTranslated();
+//        String requestedPage = req.getPathTranslated();//java.lang.NullPointerException in WLS
+         String requestedPage = req.getRequestURI();
         UserSessionBean userSessionBean = (UserSessionBean) session.getAttribute("UserSessionBean");
 
 //        System.out.println("LoginFilter.doFilter:" + requestedPage);
@@ -56,18 +58,19 @@ public class LoginFilter implements Filter {
                 if (requestedPage.endsWith("login.xhtml")) {
                     if (userSessionBean != null) {
                         if (userSessionBean.isValidatedSession()) {
-                            System.out.println("LoginFilter.sendRedirect:" + "/script/index.xhtml");
+                            System.out.println("LoginFilter.sendRedirect:/script/index.xhtml");
                             res.sendRedirect(req.getContextPath() + req.getServletPath() + "/script/index.xhtml");
                             return;
                         }
                     }
                 } else {
                     if (userSessionBean == null) {
-                        System.out.println("userSessionBean == null LoginFilter.sendRedirect:" + "/script/login.xhtml");
+                        System.out.println("userSessionBean == null LoginFilter.sendRedirect:/script/login.xhtml");
                         if (isAjax(req)) {
                             res.getWriter().print(xmlPartialRedirectToPage(req, "/script/login.xhtml"));
                             res.flushBuffer();
                         } else {
+                            System.out.println("redirecting... LoginFilter.sendRedirect:/script/login.xhtml");
                             res.sendRedirect(req.getContextPath() + req.getServletPath() + "/script/login.xhtml");
                         }
 
@@ -87,7 +90,7 @@ public class LoginFilter implements Filter {
                 }
             }
         } catch (Exception e) {
-            Logger.getLogger(CrearCasoVisitaRepSellosAction.class.getName()).log(Level.SEVERE, "LoginFilter.doFilter", e);
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "LoginFilter.doFilter", e);
             if (isAjax(req)) {
                 res.getWriter().print(xmlPartialRedirectToPage(req, "/script/login.xhtml"));
                 res.flushBuffer();
