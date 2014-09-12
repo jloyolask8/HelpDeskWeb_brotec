@@ -10,6 +10,7 @@ import com.itcs.helpdesk.persistence.entities.Attachment;
 import com.itcs.helpdesk.persistence.entities.Nota;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.util.MailClientFactory;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -104,14 +105,16 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
                             attachments.add(emailAttachment);
                         }
                     }
+                    final String[] split = emails_to.split(",");
 
-                    MailClientFactory.getInstance(idCanal).sendHTML(emails_to.split(","), subject, email_text, attachments);
+                    MailClientFactory.getInstance(idCanal).sendHTML(split, subject, email_text, attachments);
 
                     try {
                         //if sent ok, then forget about it
                         Nota nota = jpaController.getReference(Nota.class, Integer.valueOf(idNota));
                         nota.setFechaEnvio(new Date());
                         nota.setEnviado(Boolean.TRUE);
+                        nota.setEnviadoA(Arrays.toString(split));
                         jpaController.getNotaJpaController().edit(nota);
                         unschedule(formatJobId);
                     } catch (SchedulerException ex) {

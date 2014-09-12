@@ -14,7 +14,7 @@ import javax.servlet.http.HttpSessionListener;
  *
  * @author jonathan
  */
-@WebListener
+//@WebListener
 public class UserSessionListener implements HttpSessionListener {
 
     private static int totalActiveSessions;

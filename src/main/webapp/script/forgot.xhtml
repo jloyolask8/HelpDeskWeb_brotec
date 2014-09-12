@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"    
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <f:facet name="first">
+            <meta charset="utf-8"/>
+            <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+            <meta name="viewport" content="width=device-width, initial-scale=1"/>
+            <meta name="description" content=""/>
+            <meta name="author" content="ITCS"/>
+            <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+            <title><ui:insert name="title">#{applicationBean.helpdeskTitle}</ui:insert></title>     
+        </f:facet>
+
+        <link href="#{facesContext.externalContext.requestContextPath}/resources/css/loginCss.css" rel="stylesheet" type="text/css"/>
+
+        <link rel="dns-prefetch" href="//cdn.api.twitter.com" />
+        <link rel="dns-prefetch" href="//netdna.bootstrapcdn.com" />            
+
+
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"/>
+
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css"/>
+
+    </h:head>
+
+    <h:body>
+
+
+
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-6 col-md-5 col-md-offset-3 col-sm-offset-3">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <span class="glyphicon glyphicon-lock"></span> #{bundle.LoginTitleForgot} </div>
+                        <div class="panel-body">
+
+                            <h:form id="form-signin" styleClass="form-horizontal" role="form">
+
+
+
+
+                                <div class="form-group">
+                                    <label for="usuario" class="col-sm-3 control-label">
+                                        Usuario</label>
+                                    <div class="col-sm-9">
+                                        <h:inputText id="usuario" required="true" requiredMessage="Introduce tu nombre de usuario."
+                                                     styleClass="form-control"  
+                                                     value="#{loginController.username}" title="#{bundle.EditUsuarioTitle_idUsuario}"/>
+                                        <p:watermark for="usuario" value="Nombre de Usuario"/>
+                                        <h:message for="usuario" errorClass="text-danger"/>
+
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <label for="Captcha">Confirmenos que usted es un ser humano, Favor ingrese el texto que se visualiza en la imagen</label>
+                                        <p:captcha id="Captcha" label="Captcha" language="es" required="true" requiredMessage="Favor ingrese el texto que se visualiza en la imagen." />  
+                                        <h:message for="Captcha" errorClass="text-danger" />
+                                    </div>
+
+                                </div>
+
+                                <div class="form-group last">
+                                    <div class="col-sm-12">
+                                        <p:commandButton ajax="false" action="#{loginController.resetPassAction()}" 
+                                                         styleClass="btn btn-sm btn-warning btn-block"
+                                                         value="#{bundle.LoginUsuarioForgotBtn}" 
+                                                         onclick="jQuery(this).addClass('ui-state-disabled')"/>
+                                    </div>
+                                </div>
+
+
+                                <p:messages globalOnly="true" closable="true" />
+
+
+                            </h:form>
+                        </div>
+                        <div class="panel-footer">
+                            <p>#{bundle.ForgotMsg}</p>
+                            <h:form>
+                                <p:commandLink action="login" ajax="false" immediate="true"
+                                               value="Volver">
+                                </p:commandLink>
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div id="footer">
+            <div class="container">
+                <p class="text-muted" align="center">Powered by GoDesk Chile. <a href="http://www.godesk.cl">www.godesk.cl</a>.</p>
+            </div>
+        </div>
+
+
+    </h:body>
+</html>

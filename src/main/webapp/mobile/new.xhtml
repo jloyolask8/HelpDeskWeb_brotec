@@ -198,7 +198,8 @@
 
                         <pm:field>
                             <p:outputLabel for="idTipoCaso" value="Tipo:" style="font-weight: bold"/>
-                            <h:selectOneMenu   id="idTipoCaso" value="#{casoController.selected.tipoCaso}" required="true">
+                            <h:selectOneMenu   id="idTipoCaso" value="#{casoController.selected.tipoCaso}" converter="TipoCasoControllerConverter"
+                                               required="true">
                                 <f:selectItems value="#{applicationBean.tipoCasoAvailableList}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
                             </h:selectOneMenu>
                         </pm:field>

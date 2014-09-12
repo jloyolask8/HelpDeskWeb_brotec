@@ -22,6 +22,8 @@ import org.quartz.impl.StdSchedulerFactory;
 
 public class HelpDeskScheluder {
 
+    public static final int DEFAULT_CHECK_EMAIL_INTERVAL = 300;// 5 MINUTES
+    
     /**
      * Once you obtain a scheduler using
      * StdSchedulerFactory.getDefaultScheduler(), your application will not

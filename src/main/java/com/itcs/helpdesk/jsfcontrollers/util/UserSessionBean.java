@@ -217,6 +217,7 @@ public class UserSessionBean extends AbstractManagedBean<Usuario> implements Ser
         advancedThemes = new ArrayList<Theme>();
         advancedThemes.add(new Theme("itcs-theme", ""));
         advancedThemes.add(new Theme("itcs-theme2", ""));
+        advancedThemes.add(new Theme("godesk-theme1", ""));
         advancedThemes.add(new Theme("afterdark", "afterdark.png"));
         advancedThemes.add(new Theme("afternoon", "afternoon.png"));
         advancedThemes.add(new Theme("afterwork", "afterwork.png"));

@@ -55,7 +55,7 @@ public class LoginFilter implements Filter {
 
         try {
             if (requestedPage.endsWith(".xhtml")) {
-                if (requestedPage.endsWith("login.xhtml")) {
+                if (requestedPage.endsWith("login.xhtml") || requestedPage.endsWith("forgot.xhtml")) {
                     if (userSessionBean != null) {
                         if (userSessionBean.isValidatedSession()) {
                             System.out.println("LoginFilter.sendRedirect:/script/index.xhtml");

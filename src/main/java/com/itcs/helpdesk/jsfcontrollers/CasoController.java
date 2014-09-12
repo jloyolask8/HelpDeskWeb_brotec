@@ -10,9 +10,11 @@ import com.itcs.helpdesk.persistence.entities.AuditLog;
 import com.itcs.helpdesk.persistence.entities.BlackListEmail;
 import com.itcs.helpdesk.persistence.entities.Canal;
 import com.itcs.helpdesk.persistence.entities.Caso;
+import com.itcs.helpdesk.persistence.entities.CasoCustomField;
 import com.itcs.helpdesk.persistence.entities.Caso_;
 import com.itcs.helpdesk.persistence.entities.Cliente;
 import com.itcs.helpdesk.persistence.entities.Clipping;
+import com.itcs.helpdesk.persistence.entities.CustomField;
 import com.itcs.helpdesk.persistence.entities.EmailCliente;
 import com.itcs.helpdesk.persistence.entities.EstadoCaso;
 import com.itcs.helpdesk.persistence.entities.Etiqueta;
@@ -58,6 +60,7 @@ import com.itcs.helpdesk.util.HtmlUtils;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.MailNotifier;
 import com.itcs.helpdesk.util.ManagerCasos;
+import com.itcs.helpdesk.util.NoOutChannelException;
 import com.itcs.helpdesk.util.RulesEngine;
 import com.itcs.helpdesk.util.UtilesRut;
 import com.lowagie.text.BadElementException;
@@ -111,7 +114,6 @@ import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.SelectableDataModel;
 import org.primefaces.model.StreamedContent;
-import org.primefaces.model.TreeNode;
 import org.primefaces.model.UploadedFile;
 import org.primefaces.model.tagcloud.DefaultTagCloudItem;
 import org.primefaces.model.tagcloud.DefaultTagCloudModel;
@@ -170,7 +172,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private static transient ResourceBundle resourceBundle = ResourceBundle.getBundle("Bundle");
 //    private List<Nota> listaActividadesOrdenada = null;
     private boolean incluirHistoria;
-    private Integer progresoEnvioRespuesta;
+//    private Integer progresoEnvioRespuesta;
     private ReglaTrigger reglaTriggerSelected;
     private String emailCliente_wizard;
     private String rutCliente_wizard;
@@ -205,6 +207,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private Integer casosPorVencer;
     private Integer casosVencidos;
     private Integer casosRevisarActualizacion;
+    private Integer casosPrioritarios;
+    private Integer casosCerrados;
     //reply-mode
     private boolean replyMode = false;
     private boolean filterViewToggle = false;
@@ -1008,12 +1012,21 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         casosPendientes = getJpaController().getCasoCount(userSessionBean.getCurrent(), EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta());
         casosPorVencer = getJpaController().getCasoCount(userSessionBean.getCurrent(), EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta());
         casosVencidos = getJpaController().getCasoCount(userSessionBean.getCurrent(), EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta());
+        casosPrioritarios = getJpaController().getCasoCountPrioritarieOpen(userSessionBean.getCurrent());
+        casosCerrados = getJpaController().getCasoCountClosed(userSessionBean.getCurrent());
         casosRevisarActualizacion = getJpaController().getCasoCountActualizados(userSessionBean.getCurrent());
 
     }
 
+    public Integer getCasosPrioritarios() {
+        return casosPrioritarios;
+    }
+
+    public Integer getCasosCerrados() {
+        return casosCerrados;
+    }
+
     public Integer getCasosPendientes() {
-//        System.out.println("casoController.getCasosPendientes()" + JsfUtil.getRequest().getRequestURI() +"????"+ JsfUtil.getRequest().getQueryString());
         return casosPendientes;
     }
 
@@ -1022,24 +1035,11 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public Integer getCasosVencidos() {
-//        System.out.println("casoController.getCasosVencido()"+ JsfUtil.getRequest().getRequestURI());
         return casosVencidos;
     }
 
     public Integer getCountCasosRevisarActualizacion() {
-//        System.out.println("casoController.getCountCasosRevisarActualizacion()"+ JsfUtil.getRequest().getRequestURI());
         return casosRevisarActualizacion;
-    }
-
-    public Integer getProgresoEnvioRespuesta() {
-        if (progresoEnvioRespuesta == null) {
-            progresoEnvioRespuesta = 0;
-        }
-        int resp = progresoEnvioRespuesta;
-        if (progresoEnvioRespuesta == 100) {
-            progresoEnvioRespuesta = 0;
-        }
-        return resp;
     }
 
     public int getCantidadDeNotas() {
@@ -1464,31 +1464,73 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //        recreateModel();
     }
 
-    public String prepareEdit() throws Exception {
-        if (current == null) {
-            JsfUtil.addSuccessMessage("Se requiere que seleccione una fila para editar.");
-            return null;
+    private void prepareEditIndex(Integer index) throws Exception {
+        if (index != null) {
+            selectedItemIndex = index;
+            getItems().setRowIndex(index);
+            current = (Caso) getItems().getRowData();
         } else {
-            if (current != null) {
-                current = getJpaController().getCasoFindByIdCaso(current.getIdCaso());
-        
-                textoNota = current.getRespuesta();
-//                System.out.println("FOUND CASO:" + current);
-                setActiveIndexdescOrComment(0);
-                setActiveIndexCasoSections(0);
-                if (current != null && (current.getOwner() != null) && (current.getOwner().equals(userSessionBean.getCurrent()))) {
-                    if (current.getRevisarActualizacion()) {
-                        current.setRevisarActualizacion(false);
-                        List<AuditLog> changeList = getManagerCasos().verificaCambios(current);
-                        getJpaController().mergeCaso(current, changeList);
-                    }
-                }
+            current = (Caso) getItems().getRowData();
+            selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
+        }
+
+        setActiveIndexdescOrComment(0);
+        setActiveIndexCasoSections(0);
+        if (current != null && (current.getOwner() != null) && (current.getOwner().equals(userSessionBean.getCurrent()))) {
+            if (current.getRevisarActualizacion()) {
+                current.setRevisarActualizacion(false);
+//                        List<AuditLog> changeList = getManagerCasos().verificaCambios(current);
+                List<AuditLog> changeLog = new ArrayList<AuditLog>();
+                changeLog.add(ManagerCasos.createLogComment(current, "Agente propietario del caso revisa caso pendiente de revisión."));
+                getJpaController().mergeCaso(current, changeLog);
             }
         }
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
+
         if (current.getNotaList() != null) {
             Collections.sort(current.getNotaList());
         }
+
+//        prepareDynamicCaseData(current);
+    }
+
+    public String prepareEditPreviusItem() throws Exception {
+
+        if (selectedItemIndex > pagination.getPageFirstItem()) {
+            prepareEditIndex(--selectedItemIndex);
+        } else {
+            prepareEditIndex(pagination.getPageFirstItem());
+        }
+
+        return null;
+    }
+
+    public String prepareEditNextItem() throws Exception {
+
+        if (selectedItemIndex < pagination.getPageLastItem()) {
+            prepareEditIndex(++selectedItemIndex);
+        } else {
+            prepareEditIndex(pagination.getPageFirstItem());
+        }
+
+        return null;
+    }
+
+    public String prepareEdit() throws Exception {
+        prepareEditIndex(null);
+//        if (current == null) {
+//            JsfUtil.addSuccessMessage("Se requiere que seleccione una fila para editar.");
+//            return null;
+//        } else {
+//            if (current != null) {
+//                current = getJpaController().getCasoFindByIdCaso(current.getIdCaso());
+//
+//                textoNota = current.getRespuesta();
+////                System.out.println("FOUND CASO:" + current);
+//
+//            }
+//        }
+//        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
+
         return "/script/caso/Edit";
     }
 
@@ -1777,6 +1819,77 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         return "inbox";
     }
 
+    /**
+     * Porfavor refactorizar este codigo. HAcer un factory de vistas, donde la
+     * vista se cree una vez y se use para contar o listar de tal manera que se
+     * llame al metodo applyView siempre que se quiera filtrar los casos.
+     *
+     * @return
+     */
+    public String filtraCasosCerrados() {
+//        //System.out.println("filtraRevisarActualizaciones");
+        Vista vista1 = new Vista(Caso.class);
+        vista1.setIdUsuarioCreadaPor(userSessionBean.getCurrent());
+        vista1.setNombre("Casos cerrados");
+
+        FiltroVista filtroOwner = new FiltroVista();
+        filtroOwner.setIdCampo(Caso_.OWNER_FIELD_NAME);
+        filtroOwner.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+        filtroOwner.setValor(CasoJPACustomController.PLACE_HOLDER_CURRENT_USER);
+        filtroOwner.setIdVista(vista1);
+
+        vista1.getFiltrosVistaList().add(filtroOwner);
+
+        FiltroVista filtroEstado = new FiltroVista();
+        filtroEstado.setIdCampo(Caso_.ESTADO_FIELD_NAME);
+        filtroEstado.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+        filtroEstado.setValor(EnumEstadoCaso.CERRADO.getEstado().getIdEstado());
+        filtroEstado.setIdVista(vista1);
+
+        vista1.getFiltrosVistaList().add(filtroEstado);
+
+        getFilterHelper().setVista(vista1);
+        recreatePagination();
+        recreateModel();
+        return "inbox";
+    }
+
+    public String filtrarPrioritarios() {
+//        //System.out.println("filtraPorAlerta");
+        Vista vista1 = new Vista(Caso.class);
+        vista1.setIdUsuarioCreadaPor(userSessionBean.getCurrent());
+        vista1.setNombre("Mis Casos prioritarios");
+
+        FiltroVista filtroOwner = new FiltroVista();
+        filtroOwner.setIdCampo(Caso_.OWNER_FIELD_NAME);
+        filtroOwner.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+        filtroOwner.setValor(CasoJPACustomController.PLACE_HOLDER_CURRENT_USER);
+        filtroOwner.setIdVista(vista1);
+
+        vista1.getFiltrosVistaList().add(filtroOwner);
+
+        FiltroVista filtroEstado = new FiltroVista();
+        filtroEstado.setIdCampo(Caso_.ESTADO_FIELD_NAME);
+        filtroEstado.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+        filtroEstado.setValor(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
+        filtroEstado.setIdVista(vista1);
+
+        vista1.getFiltrosVistaList().add(filtroEstado);
+
+        FiltroVista fprio = new FiltroVista();
+        fprio.setIdCampo(Caso_.ES_PRIORITARIO_FIELD_NAME);
+        fprio.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+        fprio.setValor(Boolean.TRUE.toString());
+        fprio.setIdVista(vista1);
+
+        vista1.getFiltrosVistaList().add(fprio);
+
+        getFilterHelper().setVista(vista1);
+        recreatePagination();
+        recreateModel();
+        return "inbox";
+    }
+
     public String filtraPorAlerta(TipoAlerta alerta) {
 //        //System.out.println("filtraPorAlerta");
         Vista vista1 = new Vista(Caso.class);
@@ -2040,12 +2153,64 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     //visita preventiva
     private void persistProgramarVisitaPreventivaEvent() {
 
+        saveVisitaInspectivaEvent();
+
+    }
+
+//    public void prepareProgramarVisitaPreventiva(ActionEvent actionEvent) {
+////        //System.out.println("prepareCreateRespuesta");
+//        try {
+//
+//            if (!validarSiPuedeProgramarVP(current)) {
+//                return;
+//            }
+//
+//            updateFechasVisitaPreventiva();
+//
+//            //reset items
+//            setVisitaPreventivaItemsAReparar(null);
+//            setVisitaPreventivaSubject("Generar Caso de postventa (programado) - reparación de sellos");
+//            setVisitaPreventivaAsignarAGrupo(null);
+//
+//            executeInClient("ProgramarVisitaPreventiva.show()");
+//
+//            //can be created/scheduled
+//            //show the creation dialog
+//        } catch (Exception e) {
+//            Log.createLogger(this.getClass().getName()).logSevere("Error al preparar la creacion de la actividad del caso.");
+//        }
+//    }
+//    private boolean validarSiPuedeProgramarVP(Caso caso) {
+//        //validation
+//        if (caso.getIdSubComponente() == null) {
+//            addWarnMessage("Para poder programar la visita preventiva, este caso debe estar asociado a un producto, favor seleccione el producto.");
+//            return false;
+//        }
+//        if (caso.getIdSubComponente().getFechaEntrega() == null) {
+//            addWarnMessage("Para poder programar la visita preventiva, el producto " + caso.getIdSubComponente()
+//                    + " debe tener fecha de entrega, favor modifique el producto e ingrese dicha fecha.");
+//            return false;
+//        }
+//        if (caso.hasOpenSubCasos()) {
+//            addWarnMessage("Para poder programar la visita preventiva, este caso no debe tener sub casos abiertos pendientes de resolución.");
+//            return false;
+//        }
+//        if (caso.getEmailCliente() == null) {
+//            addWarnMessage("Para poder programar la visita preventiva, este caso debe estar asociado a un cliente con el cúal se coordina la visita.");
+//            return false;
+//        }
+//        return true;
+//    }
+    /**
+     * brotec icafal specifics!!
+     */
+    private void saveVisitaInspectivaEvent() {
         String visitaPreventivaSubject = "Coordinar Visita preventiva con el cliente";
         String visitaPreventivaTextoDesc = "Caso creado a partir de una visita preventiva otorgada por la inmobiliaria, favor coordinar la fecha de visita definitiva con el cliente.";
 
         try {
 
-            Date futureDate = getFechaVisitaPreventiva(current);
+            Date futureDate = ManagerCasos.getFechaVisitaPreventiva(current);
 
             Calendar cal = Calendar.getInstance();
             cal.setTime(futureDate);
@@ -2053,10 +2218,10 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             Date eventDate = cal.getTime();
 
             ScheduleEvent entityEvent = new ScheduleEvent(null, visitaPreventivaSubject, eventDate, applicationBean.getNow());
+            entityEvent.setIdCaso(current);
             entityEvent.setAllDay(true);
             entityEvent.setDescripcion(visitaPreventivaTextoDesc);
             entityEvent.setEndDate(eventDate);
-            entityEvent.setIdCaso(current);
             entityEvent.setIdUsuario(userSessionBean.getCurrent());
             entityEvent.setLugar("dentro del sistema");
             entityEvent.setPublicEvent(true);
@@ -2108,59 +2273,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         } catch (Exception ex) {
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, "persistProgramarVisitaPreventivaEvent", ex);
         }
-
-    }
-
-//    public void prepareProgramarVisitaPreventiva(ActionEvent actionEvent) {
-////        //System.out.println("prepareCreateRespuesta");
-//        try {
-//
-//            if (!validarSiPuedeProgramarVP(current)) {
-//                return;
-//            }
-//
-//            updateFechasVisitaPreventiva();
-//
-//            //reset items
-//            setVisitaPreventivaItemsAReparar(null);
-//            setVisitaPreventivaSubject("Generar Caso de postventa (programado) - reparación de sellos");
-//            setVisitaPreventivaAsignarAGrupo(null);
-//
-//            executeInClient("ProgramarVisitaPreventiva.show()");
-//
-//            //can be created/scheduled
-//            //show the creation dialog
-//        } catch (Exception e) {
-//            Log.createLogger(this.getClass().getName()).logSevere("Error al preparar la creacion de la actividad del caso.");
-//        }
-//    }
-//    private boolean validarSiPuedeProgramarVP(Caso caso) {
-//        //validation
-//        if (caso.getIdSubComponente() == null) {
-//            addWarnMessage("Para poder programar la visita preventiva, este caso debe estar asociado a un producto, favor seleccione el producto.");
-//            return false;
-//        }
-//        if (caso.getIdSubComponente().getFechaEntrega() == null) {
-//            addWarnMessage("Para poder programar la visita preventiva, el producto " + caso.getIdSubComponente()
-//                    + " debe tener fecha de entrega, favor modifique el producto e ingrese dicha fecha.");
-//            return false;
-//        }
-//        if (caso.hasOpenSubCasos()) {
-//            addWarnMessage("Para poder programar la visita preventiva, este caso no debe tener sub casos abiertos pendientes de resolución.");
-//            return false;
-//        }
-//        if (caso.getEmailCliente() == null) {
-//            addWarnMessage("Para poder programar la visita preventiva, este caso debe estar asociado a un cliente con el cúal se coordina la visita.");
-//            return false;
-//        }
-//        return true;
-//    }
-    private Date getFechaVisitaPreventiva(Caso caso) {
-        Date fechaEntrega = caso.getIdSubComponente().getFechaEntrega();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(fechaEntrega);
-        cal.add(Calendar.MONTH, 6);
-        return cal.getTime();
     }
 
     public void generarPDFVisitaPreventivaPostventa() {
@@ -2174,7 +2286,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             }
 
             if (!itemsAReparar.isEmpty()) {
-                byte[] bytearray = ReportsManager.createVisitaPreventivaPostventa(getSelected(), getFechaVisitaPreventiva(current), getFechaVisitaPreventiva(current), itemsAReparar);
+                byte[] bytearray = ReportsManager.createVisitaPreventivaPostventa(getSelected(), ManagerCasos.getFechaVisitaPreventiva(current), ManagerCasos.getFechaVisitaPreventiva(current), itemsAReparar);
 
                 final String nombre = "VisitaPreventiva_Postventa_" + getSelected().getIdCaso() + ".pdf";
                 Attachment attach = getManagerCasos().crearAdjunto(bytearray, null, this.current, nombre, "application/pdf", (long) bytearray.length);
@@ -2446,6 +2558,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             current.setNotaList(notas);
         }
         notas.add(nota);
+        Collections.sort(notas);//fix when you add a nota and shows in last position
         current.setFechaModif(Calendar.getInstance().getTime());
 
         JsfUtil.addSuccessMessage(resourceBundle.getString("NotaCreated"));
@@ -2463,6 +2576,12 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         try {
             Nota nota = this.armarNota(current, textoNotaVisibilidadPublica, textoNota, EnumTipoNota.NOTA.getTipoNota());
+            //evaluar estado de alerta del caso
+            if (current.getNextResponseDue().after(Calendar.getInstance().getTime())) {
+                current.setEstadoAlerta(EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta());
+                //re-schedule alert
+                HelpDeskScheluder.scheduleAlertaPorVencer(current.getIdCaso(), ManagerCasos.calculaCuandoPasaAPorVencer(current));
+            }
             getJpaController().mergeCaso(current, ManagerCasos.createLogReg(current, "Agente agrega nota", "Agente agrega una actividad tipo " + nota.getTipoNota().getNombre(), ""));
             if (notifyClient) {
                 notifyClient();
@@ -2556,96 +2675,107 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     private boolean createEmailComment() {
+
+        if (StringUtils.isEmpty(textoNota)) {
+            addErrorMessage("La respuesta no tiene texto, verifíque e intente nuevamente");
+            return false;
+        }
+
+        if (current.getEmailCliente() == null || StringUtils.isEmpty(current.getEmailCliente().getEmailCliente())) {
+            addErrorMessage("No se puede envíar la respuesta.", "El caso no tiene email del cliente!");
+            return false;
+        }
+
         List<AuditLog> changeLog = new ArrayList<AuditLog>();
-        boolean correoAgendado = false;
+        Canal canal;
+
         try {
-            progresoEnvioRespuesta = 0;
+            canal = MailNotifier.chooseDefaultCanalToSendMail(current);
+        } catch (NoOutChannelException no) {
+            addErrorMessage("No se puede enviar la respuesta.", "Favor asignar un " + ApplicationConfig.getProductDescription() + "o Área al caso para poder determinar el canal de salida para enviar el correo.");
+            return false;
+        }
+        try {
 
-            String bodyTxt = textoNota.trim();
-
-            if (bodyTxt.isEmpty()) {
-                JsfUtil.addErrorMessage("La respuesta no tiene texto, verifíque e intente nuevamente");
-                progresoEnvioRespuesta = 100;
-                return false;
+            //evaluar estado de alerta del caso
+            if (current.getNextResponseDue().after(Calendar.getInstance().getTime())) {
+                current.setEstadoAlerta(EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta());
+                //re-schedule alert
+                HelpDeskScheluder.scheduleAlertaPorVencer(current.getIdCaso(), ManagerCasos.calculaCuandoPasaAPorVencer(current));
             }
+
+            String mensaje = textoNota;
+
             //TODO: create an Object Builder factory
-            Nota nuevaNota = this.armarNota(current, true, textoNota.trim(), EnumTipoNota.RESPUESTA_A_CLIENTE.getTipoNota());
+            Nota nuevaNota = this.armarNota(current, true, textoNota.trim(),
+                    EnumTipoNota.REG_ENVIO_CORREO.getTipoNota());
             if (nuevaNota != null) {
 
-//                changeLog.add(ManagerCasos.createLogReg(current, "Se crea Respuesta Caso", EnumTipoNota.RESPUESTA_A_CLIENTE.getTipoNota().getNombre(), ""));
-                //TODO Change it
-                String subject = "Re: " + ManagerCasos.formatIdCaso(current.getIdCaso()) + " " + current.getTema() + " - " + resourceBundle.getString("email.tituloNotas");
-                correoAgendado = enviarCorreo(current.getEmailCliente().getEmailCliente(), subject, bodyTxt, nuevaNota);
+                String subject = "Re: " + ManagerCasos.formatIdCaso(current.getIdCaso()) + " "
+                        + current.getTema();
+//                correoAgendado = enviarCorreo(current.getEmailCliente().getEmailCliente(), 
+//                        subject, mensaje, nuevaNota);
 
-                if (correoAgendado) {
+                StringBuilder listIdAtt = new StringBuilder();
+
+                if (adjuntarArchivosARespuesta && selectedAttachmensForMail != null) {
+                    Iterator iteradorAttachments = selectedAttachmensForMail.iterator();
+                    while (iteradorAttachments.hasNext()) {
+                        Long idatt = new Long((String) iteradorAttachments.next());
+                        listIdAtt.append(idatt);
+                        listIdAtt.append(';');
+                    }
+                }
+
+                if (incluirHistoria) {
+                    StringBuilder textoMensaje = new StringBuilder(mensaje);
+                    textoMensaje.append(obtenerHistorial());
+                    mensaje = textoMensaje.toString();
+                }
+
+                HelpDeskScheluder.scheduleSendMailNota(canal.getIdCanal(), mensaje,
+                        current.getEmailCliente().getEmailCliente(), subject,
+                        current.getIdCaso(), nuevaNota.getIdNota(), listIdAtt.toString());
+
+                changeLog.add(ManagerCasos.createLogReg(current, "Envío de Correo de Respuesta agendado ok", userSessionBean.getCurrent().getIdUsuario() + " envía correo de respuesta.", ""));
+
+                getJpaController().mergeCaso(current, changeLog);//todo: is this needed?
+
+                selectedClipping = null;//reset clipping
+                incluirHistoria = false;//reset incluir historia
+                adjuntarArchivosARespuesta = false;//reset attach files checkbox
 //                    current.setRespuesta(null);
 //                    current.setFechaModif(Calendar.getInstance().getTime());
 //                    current.setFechaRespuesta(Calendar.getInstance().getTime());
-                    getPrimefacesRequestContext().scrollTo("inputPanel:formact:panelActividades");
-                    changeLog.add(ManagerCasos.createLogReg(current, "Envio de Correo de Respuesta enviado ok", userSessionBean.getCurrent().getIdUsuario() + " envía correo de respuesta.", ""));
+//                    getPrimefacesRequestContext().scrollTo("inputPanel:formact:panelActividades");
 
-                } else {
-                    changeLog.add(ManagerCasos.createLogReg(current, "Envio de Correo de Respuesta falló", "Envio de Correo de Respuesta falló", ""));
-                }
+                return true;
 
-            } else {
-                changeLog.add(ManagerCasos.createLogReg(current, "Respuesta fallida", "Envío de correo de Respuesta falló.", ""));
             }
+//                else {
+//                changeLog.add(ManagerCasos.createLogReg(current, "Creación de Respuesta fallida", "Creación de la nota de respuesta falló.", ""));
+//            }
 
-            getJpaController().mergeCaso(current, changeLog);
-
-//            JsfUtil.addSuccessMessage("Respuesta enviada exitósamente.");
-//            listaActividadesOrdenada = null;
-            selectedClipping = null;//
-            adjuntarArchivosARespuesta = false;
-
-        } catch (Exception e) {
+        } catch (SchedulerException e) {
+            changeLog.add(ManagerCasos.createLogReg(current, "Envio de Correo de Respuesta falló", "Agendar Envío de Correo de Respuesta falló", ""));
             Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "mail send exception in createEmailComment", e);
-            JsfUtil.addErrorMessage(e, resourceBundle.getString("respuestaCasoNOOK"));
-            return false;
-        } finally {
-            progresoEnvioRespuesta = 100;
-        }
+            JsfUtil.addErrorMessage(e, "Agendar Envío de Correo de Respuesta falló");
 
-        return correoAgendado;
-    }
-
-    private boolean enviarCorreo(final String emailCliente, final String subject, String mensaje, Nota nota) throws NumberFormatException {
-        boolean sended = false;
-
-        StringBuilder listIdAtt = new StringBuilder();
-
-        try {
-            if (selectedAttachmensForMail != null) {
-                Iterator iteradorAttachments = selectedAttachmensForMail.iterator();
-                while (iteradorAttachments.hasNext()) {
-                    Long idatt = new Long((String) iteradorAttachments.next());
-                    listIdAtt.append(idatt);
-                    listIdAtt.append(';');
-                }
-            }
-
-            if (incluirHistoria) {
-                StringBuilder textoMensaje = new StringBuilder(mensaje != null ? mensaje : "");
-                textoMensaje.append(obtenerHistorial());
-                mensaje = textoMensaje.toString();
-            }
-
-            Canal canal = MailNotifier.chooseDefaultCanalToSendMail(current);
-            HelpDeskScheluder.scheduleSendMailNota(canal.getIdCanal(), mensaje, emailCliente, subject, current.getIdCaso(), nota.getIdNota(), listIdAtt.toString());
-            sended = true;
-            incluirHistoria = false;
+        } catch (NonexistentEntityException ex) {
+            Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, "NonexistentEntityException", ex);
+        } catch (RollbackFailureException ex) {
+            Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, "RollbackFailureException", ex);
         } catch (Exception ex) {
-            sended = false;
-            Log.createLogger(CasoController.class.getName()).log(Level.SEVERE, "enviarCorreo", ex);
-        } finally {
-            if (!sended) {
-                JsfUtil.addErrorMessage(resourceBundle.getString("respuestaCasoNOOK"));
-            }
+            Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, "Exception", ex);
         }
-        return sended;
+
+        return false;
     }
 
+//    private boolean enviarCorreo(final String emailCliente, final String subject, String mensaje, Nota nota) throws SchedulerException, NoOutChannelException {
+//
+//        
+//    }
     public String upload() {
 //        //System.out.println("upload()");
         if (uploadFile != null) {
@@ -3026,24 +3156,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public void update(Caso casoToUpdate) throws IllegalOrphanException, NonexistentEntityException, RollbackFailureException, Exception {
 
         boolean cambiaArea = false;
-        
-        if ((null != casoToUpdate.getIdCliente().getRut()) && (!casoToUpdate.getIdCliente().getRut().isEmpty())) {
-            if (!UtilesRut.validar(casoToUpdate.getIdCliente().getRut())) {
-                JsfUtil.addErrorMessage("Rut invalido");
-                return;
-            }
-        }
-//////            if (casoToUpdate.getOwner() != null) {
-//////                Usuario actualUser = userSessionBean.getCurrent();
-//////                if (!casoToUpdate.getOwner().equals(actualUser)) {
-//////                    //RequestContext.getCurrentInstance().push(current.getOwner().getIdUsuario(), "Se ha actualizado el caso: "+current.getIdCaso());
-//////                    ////System.out.println("\n\n\npushed!!\n\n\n");
-//////                }
-//////            }
 
-        casoToUpdate.setFechaModif(Calendar.getInstance().getTime());
-        List<AuditLog> lista = getManagerCasos().verificaCambios(casoToUpdate);
-
+        //Recintos brotec-icafal specifics
         if (casoToUpdate.getIdRecinto() != null && null == getJpaController().find(Recinto.class, casoToUpdate.getIdRecinto())) {
             Recinto r = new Recinto();
 
@@ -3052,24 +3166,41 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             getJpaController().persist(r);
         }
 
-        //re-schedule alerts
+//        if ((null != casoToUpdate.getIdCliente().getRut()) && (!casoToUpdate.getIdCliente().getRut().isEmpty())) {
+//            if (!UtilesRut.validar(casoToUpdate.getIdCliente().getRut())) {
+//                JsfUtil.addErrorMessage("Rut invalido");
+//                return;
+//            }
+//        }
+//////            if (casoToUpdate.getOwner() != null) {
+//////                Usuario actualUser = userSessionBean.getCurrent();
+//////                if (!casoToUpdate.getOwner().equals(actualUser)) {
+//////                    //RequestContext.getCurrentInstance().push(current.getOwner().getIdUsuario(), "Se ha actualizado el caso: "+current.getIdCaso());
+//////                    ////System.out.println("\n\n\npushed!!\n\n\n");
+//////                }
+//////            }
+        List<AuditLog> lista = getManagerCasos().verificaCambios(casoToUpdate);
+
         if (lista != null) {
             for (AuditLog auditLog : lista) {
                 if (auditLog.getCampo().equalsIgnoreCase(Caso_.nextResponseDue.getName())) {
-                    getManagerCasos().evaluarEstadoDelCaso(casoToUpdate);
-                }else if (auditLog.getCampo().equalsIgnoreCase("idArea")) {
+                    //evaluar estado de alerta del caso
+                    if (casoToUpdate.getNextResponseDue().after(Calendar.getInstance().getTime())) {
+                        casoToUpdate.setEstadoAlerta(EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta());
+                        //re-schedule alert
+                        HelpDeskScheluder.scheduleAlertaPorVencer(casoToUpdate.getIdCaso(), ManagerCasos.calculaCuandoPasaAPorVencer(casoToUpdate));
+                    }
+                } else if (auditLog.getCampo().equalsIgnoreCase(Caso_.AREA_FIELD_NAME)) {
                     cambiaArea = true;
-                } 
+                }
             }
         }
-        
-        if(cambiaArea)
-        {
+
+        if (cambiaArea) {
             casoToUpdate.setOwner(null);
             getJpaController().mergeCasoWithoutNotify(casoToUpdate, lista);
             getJpaController().notifyCasoEventListeners(casoToUpdate, true, lista);
-        }else
-        {
+        } else {
             getJpaController().mergeCaso(casoToUpdate, lista);
         }
 
@@ -3166,6 +3297,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public void onRowSelect(SelectEvent event) {
         try {
             Caso caso = (Caso) event.getObject();
+            selectedItemIndex = ((List<Caso>) getItems().getWrappedData()).indexOf(caso);
+//            selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
             if (caso != null) {
                 current = caso;
                 redirect("/script/caso/Edit.xhtml");
@@ -3642,6 +3775,13 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     /**
+     * @return the selectedItemIndex
+     */
+    public int getSelectedItemIndex() {
+        return selectedItemIndex;
+    }
+
+    /**
      * @return the adjuntarArchivosARespuesta
      */
     public boolean isAdjuntarArchivosARespuesta() {
@@ -3668,6 +3808,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public void setActiveIndexCasoSections(int activeIndexCasoSections) {
         this.activeIndexCasoSections = activeIndexCasoSections;
     }
+    
+    
 
     @FacesConverter(forClass = Caso.class)
     public static class CasoControllerConverter implements Converter, Serializable {

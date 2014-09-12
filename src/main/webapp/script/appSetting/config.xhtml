@@ -51,7 +51,8 @@
                             <p:commandLink id="overlayBtn" value="Marcadores" />
 
                             <p:overlayPanel id="MarcadoresPanel" for="overlayBtn" hideEffect="fade" dynamic="true"> 
-                                <p:dataTable value="#{clippingController.availablePlaceHolders}" var="holder" emptyMessage="No hay placeholders disponibles.">
+                                <p:dataTable value="#{clippingController.availablePlaceHolders}" var="holder" 
+                                             emptyMessage="No hay placeholders disponibles.">
                                     <p:column headerText="Marcadores de posición">
                                         <h:outputText value="\${#{holder}}"/>
                                     </p:column>

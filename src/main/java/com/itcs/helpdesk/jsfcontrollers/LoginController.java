@@ -5,6 +5,7 @@ import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.util.Log;
+import com.itcs.helpdesk.util.MailNotifier;
 import com.itcs.helpdesk.util.UtilSecurity;
 import java.io.Serializable;
 import java.util.UUID;
@@ -15,6 +16,7 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
 import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "loginController")
@@ -74,6 +76,41 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
         return null;
     }
 
+    /**
+     * RESET PASS
+     *
+     * @return
+     */
+    public String resetPassAction() {
+        if (!getUserSessionBean().isValidatedSession()) {
+            try {
+                usuario = getJpaController().find(Usuario.class, username);
+                if (usuario == null) {
+                    throw new NoResultException();
+                } else if (usuario.getPass() != null) {
+                    String randomPass = RandomStringUtils.randomAlphanumeric(8);
+                    usuario.setPass(UtilSecurity.getMD5(randomPass));//encript the password
+                    getJpaController().merge(usuario);
+                    MailNotifier.sendEmailRecoverPassword(usuario, randomPass);
+                    JsfUtil.addSuccessMessage("Revise su casilla de correo. La contraseña será enviada a su dirección " + usuario.getEmail());
+                    return null;
+                } else {
+                    JsfUtil.addErrorMessage("Ud. No tiene activada su contraseña, favor comuniquese con administración para solicitar una.");
+                }
+            } catch (NoResultException ex) {
+                Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "loginAction", ex);
+                JsfUtil.addErrorMessage("El nombre de usuario ingresado no está registrado en el sistema.");
+            } catch (Exception ex) {
+                Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
+                JsfUtil.addErrorMessage("Ocurrió un error inesperado, favor intentelo más tarde.");
+            }
+        } else {
+            HttpServletRequest request = (HttpServletRequest) JsfUtil.getRequest();
+            request.getSession().invalidate();
+        }
+        return null;
+    }
+
     public String loginAction() {
 
         if (!getUserSessionBean().isValidatedSession()) {
@@ -93,7 +130,7 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
                         getUserSessionBean().setChannel(channel);
                         getApplicationBean().addChannel(usuario.getIdUsuario(), channel);
                         final String sessionId = JsfUtil.getRequest().getSession().getId();
-                        System.out.println("sessionId:"+sessionId);
+                        System.out.println("sessionId:" + sessionId);
                         getApplicationBean().getSessionIdMappings().put(sessionId, usuario.getIdUsuario());
                         RequestContext requestContext = RequestContext.getCurrentInstance();
                         requestContext.execute("PF('socketMessages').connect('/" + usuario.getIdUsuario() + "')");
@@ -102,10 +139,10 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
 //                        JsfUtil.addSuccessMessage("Bienvenido, " + usuario.getCapitalName());
                         if (isThisRequestCommingFromAMobileDevice(JsfUtil.getRequest())) {
 //                            nav.performNavigation("inboxMobile");//DeskTop Version
-                            return "/mobile/index.xhtml";
+                            return "/mobile/index.xhtml?faces-redirect=true";
                         } else {
 //                            nav.performNavigation("inbox");//DeskTop Version
-                            return "/script/index.xhtml";
+                            return "/script/index.xhtml?faces-redirect=true";
                         }
                     } else {
                         JsfUtil.addErrorMessage("El nombre de usuario o la contraseña son incorrectos. Por favor intenténtelo nuevamente.");
@@ -131,10 +168,10 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
 //            loginAction();
             if (isThisRequestCommingFromAMobileDevice(JsfUtil.getRequest())) {
 //                            nav.performNavigation("inboxMobile");//DeskTop Version
-                return "/mobile/login.xhtml";
+                return "/mobile/login.xhtml?faces-redirect=true";
             } else {
 //                            nav.performNavigation("inbox");//DeskTop Version
-                return "/script/login.xhtml";
+                return "/script/login.xhtml?faces-redirect=true";
 
             }
         }
@@ -147,7 +184,7 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
         HttpServletRequest request = (HttpServletRequest) JsfUtil.getRequest();
 //        getApplicationBean().removeChannel(getUserSessionBean().getCurrent().getIdUsuario());
         request.getSession().invalidate();
-        return "/script/login.xhtml";
+        return "/script/login.xhtml?faces-redirect=true";
     }
 
 //    protected UserSessionBean getUserSessionBean() {

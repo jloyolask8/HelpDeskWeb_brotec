@@ -837,31 +837,7 @@ public class ManagerCasos implements Serializable {
         return null;
     }
 
-    public void evaluarEstadoDelCaso(Caso current) {
-        try {
-            if (current.getNextResponseDue().after(Calendar.getInstance().getTime())) {
-                current.setEstadoAlerta(EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta());
-                getJpaController().mergeCaso(current, verificaCambios(current));
-                HelpDeskScheluder.scheduleAlertaPorVencer(current.getIdCaso(), calculaCuandoPasaAPorVencer(current));
-
-            }
-//                else {
-//                current.setEstadoAlerta(EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta());
-//                getJpaController().mergeCaso(current, verificaCambios(current));
-//
-//                final String jobId = TicketAlertStateChangeJob.formatJobId(current.getIdCaso(),
-//                        EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta().getIdalerta());
-//                TicketAlertStateChangeJob.unschedule(jobId);
-//
-//                final String jobId2 = TicketAlertStateChangeJob.formatJobId(current.getIdCaso(),
-//                        EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta().getIdalerta());
-//                TicketAlertStateChangeJob.unschedule(jobId2);
-//            }
-        } catch (Exception ex) {
-            Log.createLogger(ManagerCasos.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }
+    
 
     /**
      * Crear un registro en la tabla de log
@@ -916,6 +892,10 @@ public class ManagerCasos implements Serializable {
         return null;
     }
 
+    public static AuditLog createLogComment(Caso caso, String comment) {
+        return createLogReg(caso, "", comment, "");
+    }
+    
     public synchronized List<AuditLog> verificaCambios(Caso caso) {
         List<AuditLog> changeList = new LinkedList<AuditLog>();
         Caso casoOld = getJpaController().getCasoFindByIdCaso(caso.getIdCaso());
@@ -1060,5 +1040,13 @@ public class ManagerCasos implements Serializable {
             caso.setDescripcionTxt(HtmlUtils.stripInvalidMarkup(textoNota.toString()));
             mergeCaso(caso, createLogReg(caso, "Adjunto", "se agregan adjuntos al caso", ""));
         }
+    }
+    
+    public static Date getFechaVisitaPreventiva(Caso caso) {
+        Date fechaEntrega = caso.getIdSubComponente().getFechaEntrega();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(fechaEntrega);
+        cal.add(Calendar.MONTH, 6);
+        return cal.getTime();
     }
 }

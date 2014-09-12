@@ -295,7 +295,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
                 getJpaController().mergeCanal(current);
                 //hay que agregar al agendamiento este nuevo canal email
                 MailClientFactory.createInstance(current);
-                HelpDeskScheluder.scheduleRevisarCorreo(current.getIdCanal(), 300);
+                HelpDeskScheluder.scheduleRevisarCorreo(current.getIdCanal(), HelpDeskScheluder.DEFAULT_CHECK_EMAIL_INTERVAL);
             }
             items = null;
         } catch (Exception e) {

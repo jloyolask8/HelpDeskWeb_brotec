@@ -119,7 +119,7 @@ public class JsfUtil {
     public static void addErrorMessage(Exception ex, String defaultMsg) {
         String msg = ex.getLocalizedMessage();
         if (msg != null && msg.length() > 0) {
-            addErrorMessage(msg);
+            addErrorMessage(defaultMsg, msg);
         } else {
             addErrorMessage(defaultMsg);
         }
@@ -133,6 +133,11 @@ public class JsfUtil {
 
     public static void addErrorMessage(String msg) {
         FacesMessage facesMsg = new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, msg);
+        FacesContext.getCurrentInstance().addMessage(null, facesMsg);
+    }
+    
+    public static void addErrorMessage(String msg, String detail) {
+        FacesMessage facesMsg = new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, detail);
         FacesContext.getCurrentInstance().addMessage(null, facesMsg);
     }
 
@@ -184,5 +189,9 @@ public class JsfUtil {
 
     public static UserSessionBean getUserSessionBean() {
         return (UserSessionBean) FacesContext.getCurrentInstance().getApplication().getELResolver().getValue(FacesContext.getCurrentInstance().getELContext(), null, "UserSessionBean");
+    }
+    
+    public static boolean isValidationFailed() {
+        return FacesContext.getCurrentInstance().isValidationFailed();
     }
 }

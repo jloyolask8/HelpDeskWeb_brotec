@@ -206,7 +206,8 @@
 
                         <p:column style="width: 300px;">
                             <p:selectOneMenu id="idNombreAccion" value="#{accion.idNombreAccion}" 
-                                             required="true" styleClass="full-width">
+                                             required="true" styleClass="full-width"
+                                             filter="true" filterMatchMode="contains">
                                 <p:ajax update=":form:accionesTable" listener="#{reglaTriggerController.resetTempVars()}"/>
                                 <f:selectItems value="#{nombreAccionController.itemsAvailableSelectOne}"/>
                             </p:selectOneMenu>
@@ -217,6 +218,7 @@
                             <p:selectOneMenu value="#{accion.parametros}" 
                                              rendered="#{reglaTriggerController.esAccionAsignarArea(accion)}"
                                              required="true" requiredMessage="Se requiere que seleccione una Accion."
+                                             filter="true" filterMatchMode="contains"
                                              styleClass="full-width">
                                 <p:ajax update=":form:accionesTable"/>
                                 <f:selectItems value="#{areaController.stringItemsAvailableSelectOne}"/>
@@ -234,6 +236,7 @@
 
                             <p:selectOneMenu value="#{accion.parametros}" 
                                              rendered="#{reglaTriggerController.esAccionAsignarAGrupo(accion)}"
+                                             filter="true" filterMatchMode="contains"
                                              styleClass="full-width">
                                 <p:ajax update=":form:accionesTable"/>
                                 <f:selectItems value="#{grupoController.stringItemsAvailableSelectOne}"/>
@@ -241,6 +244,7 @@
 
                             <p:selectOneMenu value="#{accion.parametros}" 
                                              rendered="#{reglaTriggerController.esAccionAsignarAUsuario(accion)}"
+                                             filter="true" filterMatchMode="contains"
                                              styleClass="full-width">
                                 <p:ajax update=":form:accionesTable"/>
                                 <f:selectItems value="#{usuarioController.stringItemsAvailableSelectOneNoSystem}"/>
@@ -248,6 +252,7 @@
 
                             <p:selectOneMenu value="#{accion.parametros}" 
                                              rendered="#{reglaTriggerController.esAccionCambiarPrioridad(accion)}"
+                                             filter="true" filterMatchMode="contains"
                                              styleClass="full-width">
                                 <p:ajax update=":form:accionesTable"/>
                                 <f:selectItems value="#{prioridadController.stringItemsAvailableSelectOne}"/>

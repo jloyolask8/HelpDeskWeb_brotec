@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:f="http://java.sun.com/jsf/core">
+    
+    
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        
+        <ui:define name="head">
+             <link rel="dns-prefetch" href="//netdna.bootstrapcdn.com" />            
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"/>
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css"/>
+        </ui:define>
+
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ListCustomFieldTitle}"></h:outputText>
+        </ui:define>
+
+
+        <ui:define name="west">
+
+                <p><h:outputText escape="false" value="#{bundle.ayudaCustomFields}"/></p>
+                
+        </ui:define>
+
+        <ui:define name="body">
+
+            <div class="page-header">
+                <h1 class="col-xs-12 text-left-sm">
+                    <i class="fa fa-puzzle-piece page-header-icon"></i>&nbsp;&nbsp;#{bundle.ListCustomFieldTitle}</h1>
+            </div> <!-- / .page-header -->
+
+            <div class="row">
+                
+
+                <div class="col-md-9 col-lg-10">
+
+                    <h:form id="CustomFieldListForm">
+
+                        <p:dataTable id="datalist" value="#{customFieldController.items}" var="item"                                    
+                                     emptyMessage="No hay custom fields"                                 
+                                     draggableColumns="true">
+
+                            <p:column headerText="#{bundle.CustomField_customFieldPK_fieldKey}">
+                                <h:outputText value="#{item.customFieldPK.fieldKey}"/>
+                            </p:column>
+
+                            <p:column headerText="#{bundle.CustomField_label}">
+                                <h:outputText value="#{item.label}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{bundle.CustomField_fieldType}"/>
+                                </f:facet>
+                                <h:outputText value="#{item.fieldTypeId.name}"/>
+                            </p:column>
+                            <p:column headerText="#{bundle.CustomField_required}">
+                                <p:selectBooleanCheckbox value="#{item.required}" disabled="true"/>
+                            </p:column>
+
+                            <p:column headerText="#{bundle.CustomField_visibleToCustomers}">
+                                <p:selectBooleanCheckbox value="#{item.visibleToCustomers}" disabled="true"/>
+                            </p:column>
+
+                            <p:column headerText="Acción">
+                                <p:commandButton id="viewBtn" action="#{customFieldController.setSelected(item)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" title="#{bundle.View}" icon="ui-icon ui-icon-document" update=":CustomFieldViewForm" oncomplete="PF('CustomFieldViewDialog').show()"/>
+                                <p:commandButton id="editBtn" action="#{customFieldController.setSelected(item)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" title="#{bundle.Edit}" icon="ui-icon ui-icon-pencil" update=":CustomFieldEditForm" oncomplete="PF('CustomFieldEditDialog').show()"/>
+                                <p:commandButton id="showDialogButton" title="#{bundle.Delete}" update=":deleteForm" action="#{customFieldController.setSelected(item)}" oncomplete="confirmation.show()" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" icon="ui-icon ui-icon-trash"/>
+                            </p:column>
+
+                            <f:facet name="footer">
+                                <p:toolbar style="border: none;">
+                                    <p:toolbarGroup align="center">
+
+                                        <p:outputLabel value="Páginas de "/>
+                                        <p:selectOneMenu id="cant" value="#{customFieldController.paginationPageSize}" style="top: 7px">
+                                            <p:ajax event="change" listener="#{customFieldController.resetPageSize()}" update=":CustomFieldListForm"/>
+                                            <f:selectItems value="#{customFieldController.pagination.pageSizesAvailable}"/>
+                                        </p:selectOneMenu>
+
+                                        <p:separator/>
+
+                                        <p:commandButton ajax="false" action="#{customFieldController.first}" disabled="#{not customFieldController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{customFieldController.pagination.itemsCount > 0}"/>
+
+                                        <p:commandButton ajax="false" action="#{customFieldController.previous}" disabled="#{not customFieldController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{customFieldController.pagination.itemsCount > 0}"/>
+
+                                        <p:commandButton ajax="false" action="#{customFieldController.next}" disabled="#{not customFieldController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{customFieldController.pagination.itemsCount > 0}"/>
+
+                                        <p:commandButton ajax="false" action="#{customFieldController.last}" disabled="#{not customFieldController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{customFieldController.pagination.itemsCount > 0}"/>
+                                        <p:separator/>
+                                        <p:commandButton id="createButton" icon="ui-icon ui-icon-plus"   value="#{bundle.CreateCustomFieldTitle}" actionListener="#{customFieldController.prepareCreate}" 
+                                                         rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" update=":CustomFieldCreateForm" oncomplete="PF('CustomFieldCreateDialog').show()"/>
+
+                                    </p:toolbarGroup>
+                                </p:toolbar>
+
+                            </f:facet> 
+
+
+                        </p:dataTable>
+
+                    </h:form>
+
+                </div>
+            </div>
+
+
+
+        </ui:define>
+
+        <ui:define name="dialogs">
+
+
+            <h:form id="addOptionForm">
+                <p:dialog id="addOptionFormDialog" showEffect="fade" hideEffect="fade" 
+                          header="Agregar Opcion" widgetVar="addOptionFormDialog">
+
+                    <p:inputText value="#{customFieldController.currentOption}" style="width: 100%"
+                                 required="true" requiredMessage="Favor ingrese un valor para la opcion"/>
+
+                    <f:facet name="footer">
+                        <p:commandButton id="confirm" value="Agregar" action="#{customFieldController.addOption()}" 
+                                         update=":CustomFieldCreateForm :CustomFieldEditForm"/>
+                        <p:commandButton id="decline" value="Cancelar" onclick="PF('addOptionFormDialog').hide()" type="button" /> 
+                    </f:facet>
+
+                </p:dialog>
+            </h:form>
+
+            <h:form id="deleteForm">
+                <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
+                          header="Iniciando proceso de eliminación" widgetVar="confirmation">
+
+                    <h:outputText value="Está seguro de eliminar el campo personalizado #{customFieldController.selected.label}?"/>
+                    <br/>
+                    <h:outputText value="Atención: Esta acción borrará todo valor asignado a este campo para todos los casos. No se puede deshacer."/>
+
+                    <f:facet name="footer">
+
+                        <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{customFieldController.destroy()}" 
+                                         ajax="false"/>
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
+                    </f:facet>
+
+                </p:dialog>
+            </h:form>
+
+            <p:dialog id="CustomFieldCreateDlg" widgetVar="CustomFieldCreateDialog" modal="true" 
+                      resizable="true" appendTo="@(body)" header="#{bundle.CreateCustomFieldTitle}">
+
+                <h:form id="CustomFieldCreateForm" styleClass="panel form-horizontal">
+                    <div class="panel-body">
+                      
+                        <div class="row form-group">
+                            <label class="col-xs-12 col-sm-4 control-label text-slim">#{bundle.CustomField_customFieldPK_fieldKey}</label>
+                            <div class="col-xs-12 col-sm-8">
+                                <h:inputText id="customFieldPK_fieldKey" value="#{customFieldController.selected.customFieldPK.fieldKey}" styleClass="form-control"
+                                             readonly="false" required="true" requiredMessage="#{bundle.CustomFieldRequiredMessage_customFieldPK_fieldKey}"/>
+
+                                <p:watermark for="customFieldPK_fieldKey" value="#{bundle.CustomField_watermark_customFieldPK_fieldKey}"/>
+                                <p:message for="customFieldPK_fieldKey"/>
+                            </div>
+                        </div>
+                          <div class="row form-group">
+                            <label class="col-xs-12 col-sm-4 control-label">#{bundle.CustomField_label}</label>
+                            <div class="col-xs-12 col-sm-8">
+                                <h:inputText id="label" value="#{customFieldController.selected.label}" styleClass="form-control"
+                                             title="#{bundle.CustomField_label}" required="true" requiredMessage="#{bundle.CustomFieldRequiredMessage_label}"/>
+                                <p:watermark for="label" value="#{bundle.CustomField_watermark_label}"/>
+                                <p:message for="label"/>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <label class="col-xs-12 col-sm-4 control-label">#{bundle.CustomField_fieldType}</label>
+                            <div class="col-xs-12 col-sm-8">
+                                <h:selectOneMenu  id="fieldTypeId" styleClass="form-control"
+                                                  required="true" requiredMessage="#{bundle.CustomFieldRequiredMessage_fieldType}"
+                                                  value="#{customFieldController.selected.fieldTypeId}" >
+                                    <f:selectItem itemLabel="" itemValue=""/>
+                                    <f:selectItems value="#{applicationBean.allFieldTypes}" var="fieldType" itemLabel="#{fieldType.name}" itemValue="#{fieldType}" itemDescription="#{fieldType.description}"/>
+                                    <p:ajax update=":CustomFieldCreateForm" process="@form"/>
+                                </h:selectOneMenu>
+
+                                <p:message for="fieldTypeId"/>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <h:outputLabel value="#{bundle.CustomField_ListFieldType_options}" styleClass="col-xs-12 col-sm-4 control-label"
+                                           rendered="#{customFieldController.selected.fieldTypeId.fieldTypeId eq 'SELECTONE' or customFieldController.selected.fieldTypeId.fieldTypeId eq 'SELECTMANY'}"
+                                           for="CustomField_ListFieldType_options" />
+                            <div class="col-xs-12 col-sm-8">
+                                <p:panelGrid columns="2" rendered="#{customFieldController.selected.fieldTypeId.fieldTypeId eq 'SELECTONE' or customFieldController.selected.fieldTypeId.fieldTypeId eq 'SELECTMANY'}">
+                                    <p:orderList id="CustomField_ListFieldType_options" value="#{customFieldController.selected.fieldOptionsList}" 
+                                                 var="fieldOption"  
+                                                 itemLabel="#{fieldOption}"  itemValue="#{fieldOption}" controlsLocation="right">  
+                                        <f:facet name="caption">Agregar Opciones</f:facet>  
+                                        <p:column>  
+                                            #{fieldOption}  
+                                        </p:column>  
+                                    </p:orderList> 
+                                    <p:commandButton iconPos="notext" icon="ui-icon ui-icon-plus" onclick="PF('addOptionFormDialog').show()" update=":addOptionForm" type="button" /> 
+                                </p:panelGrid>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <label class="col-xs-12 col-sm-4 control-label">#{bundle.CustomField_tipoCaso}</label>
+                            <div class="col-xs-12 col-sm-8">
+                                <p:selectCheckboxMenu id="tipoCaso" label="#{bundle.CustomField_tipoCaso}" converter="TipoCasoControllerConverter"
+                                                      rendered="#{customFieldController.selected ne null}"
+                                                      value="#{customFieldController.selected.tipoCasoList}" 
+                                                      filter="true" filterMatchMode="contains">
+                                    <f:selectItems value="#{applicationBean.tipoCasoAvailableList}" var="tipo" 
+                                                   itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
+                                </p:selectCheckboxMenu>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <label class="col-xs-12 col-sm-4 control-label">#{bundle.CustomField_required}</label>
+                            <div class="col-xs-12 col-sm-8">
+                                <p:selectBooleanCheckbox id="required" value="#{customFieldController.selected.required}" required="true" requiredMessage="#{bundle.CustomFieldRequiredMessage_required}"/>
+                                <p:message for="required"/>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <label class="col-xs-12 col-sm-4 control-label">#{bundle.CustomField_visibleToCustomers}</label>
+                            <div class="col-xs-12 col-sm-8">
+                                <p:selectBooleanCheckbox id="visibleToCustomers" value="#{customFieldController.selected.visibleToCustomers}" required="true" requiredMessage="#{bundle.CustomFieldRequiredMessage_visibleToCustomers}"/>
+                                <p:message for="visibleToCustomers"/>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="panel-footer text-right">
+
+                        <p:commandLink type="button" onclick="CustomFieldCreateDialog.hide()">
+                            <i class=""></i>#{bundle.Cancel}
+                        </p:commandLink>
+                        &nbsp;
+                        <p:commandLink actionListener="#{customFieldController.create}"  styleClass="btn btn-primary"
+                                       update=":CustomFieldCreateForm :CustomFieldListForm :mainform:messages">
+                            <i class="fa fa-disk"></i> #{bundle.Save}
+                        </p:commandLink>        
+                    </div>
+
+                    <pe:keyFilter for="customFieldPK_fieldKey" preventPaste="true" mask="alphanum"/>
+                    <p:tooltip for="label" value="#{bundle.CustomField_tooltip_label}"/>
+                    <p:tooltip for="customFieldPK_fieldKey" value="#{bundle.CustomField_tooltip_customFieldPK_fieldKey}"/>
+                </h:form>
+
+
+              
+            </p:dialog>
+
+            <p:dialog id="CustomFieldEditDlg" widgetVar="CustomFieldEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.EditCustomFieldTitle}">
+                
+                <h:form id="CustomFieldEditForm" styleClass="panel form-horizontal">
+                    
+                     <div class="panel-heading">
+                            <span class="panel-title">#{customFieldController.selected.customFieldPK.fieldKey}</span>
+                        </div>
+                    
+                    
+                    <div class="panel-body">
+                        <div class="row form-group">
+                            <label class="col-xs-12 col-sm-4 control-label">#{bundle.CustomField_label}</label>
+                            <div class="col-xs-12 col-sm-8">
+                                <h:inputText id="label" value="#{customFieldController.selected.label}" styleClass="form-control"
+                                             title="#{bundle.CustomField_label}" required="true" requiredMessage="#{bundle.CustomFieldRequiredMessage_label}"/>
+                                <p:watermark for="label" value="#{bundle.CustomField_watermark_label}"/>
+                                <p:message for="label"/>
+                            </div>
+                        </div>
+                    
+                        <div class="row form-group">
+                            <label class="col-xs-12 col-sm-4 control-label">#{bundle.CustomField_fieldType}</label>
+                            <div class="col-xs-12 col-sm-8">
+                                <h:selectOneMenu  id="fieldTypeId" styleClass="form-control"
+                                                  required="true" requiredMessage="#{bundle.CustomFieldRequiredMessage_fieldType}"
+                                                  value="#{customFieldController.selected.fieldTypeId}" >
+                                    <f:selectItem itemLabel="" itemValue=""/>
+                                    <f:selectItems value="#{applicationBean.allFieldTypes}" var="fieldType" 
+                                                   itemLabel="#{fieldType.name}" itemValue="#{fieldType}" itemDescription="#{fieldType.description}"/>
+                                    <p:ajax update=":CustomFieldCreateForm" process="@form"/>
+                                </h:selectOneMenu>
+
+                                <p:message for="fieldTypeId"/>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <h:outputLabel value="#{bundle.CustomField_ListFieldType_options}" styleClass="col-xs-12 col-sm-4 control-label"
+                                           rendered="#{customFieldController.selected.fieldTypeId.fieldTypeId eq 'SELECTONE' or customFieldController.selected.fieldTypeId.fieldTypeId eq 'SELECTMANY'}"
+                                           for="CustomField_ListFieldType_options" />
+                            <div class="col-xs-12 col-sm-8">
+                                <p:panelGrid columns="2" rendered="#{customFieldController.selected.fieldTypeId.fieldTypeId eq 'SELECTONE' or customFieldController.selected.fieldTypeId.fieldTypeId eq 'SELECTMANY'}">
+                                    <p:orderList id="CustomField_ListFieldType_options" value="#{customFieldController.selected.fieldOptionsList}" 
+                                                 var="fieldOption"  
+                                                 itemLabel="#{fieldOption}"  itemValue="#{fieldOption}" controlsLocation="right">  
+                                        <f:facet name="caption">Agregar Opciones</f:facet>  
+                                        <p:column>  
+                                            #{fieldOption}  
+                                        </p:column>  
+                                    </p:orderList> 
+                                    <p:commandButton iconPos="notext" icon="ui-icon ui-icon-plus" onclick="PF('addOptionFormDialog').show()" update=":addOptionForm" type="button" /> 
+                                </p:panelGrid>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <label class="col-xs-12 col-sm-4 control-label">#{bundle.CustomField_tipoCaso}</label>
+                            <div class="col-xs-12 col-sm-8">
+                                <p:selectCheckboxMenu id="tipoCaso" label="#{bundle.CustomField_tipoCaso}" converter="TipoCasoControllerConverter"
+                                                      rendered="#{customFieldController.selected ne null}"
+                                                      value="#{customFieldController.selected.tipoCasoList}" 
+                                                      filter="true" filterMatchMode="contains">
+                                    <f:selectItems value="#{applicationBean.tipoCasoAvailableList}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
+                                </p:selectCheckboxMenu>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <label class="col-xs-12 col-sm-4 control-label">#{bundle.CustomField_required}</label>
+                            <div class="col-xs-12 col-sm-8">
+                                <p:selectBooleanCheckbox id="required" value="#{customFieldController.selected.required}" required="true" requiredMessage="#{bundle.CustomFieldRequiredMessage_required}"/>
+                                <p:message for="required"/>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <label class="col-xs-12 col-sm-4 control-label">#{bundle.CustomField_visibleToCustomers}</label>
+                            <div class="col-xs-12 col-sm-8">
+                                <p:selectBooleanCheckbox id="visibleToCustomers" value="#{customFieldController.selected.visibleToCustomers}" required="true" requiredMessage="#{bundle.CustomFieldRequiredMessage_visibleToCustomers}"/>
+                                <p:message for="visibleToCustomers"/>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="panel-footer text-right">
+
+                        <p:commandLink type="button" onclick="CustomFieldEditDialog.hide()">
+                            <i class=""></i>#{bundle.Cancel}
+                        </p:commandLink>
+                        &nbsp;
+                        <p:commandLink actionListener="#{customFieldController.update}"  styleClass="btn btn-primary"
+                                      update=":CustomFieldEditForm :CustomFieldListForm :mainform:messages">
+                            <i class="fa fa-disk"></i> #{bundle.Save}
+                        </p:commandLink>     
+                        
+                        
+                    </div>
+
+                    <p:tooltip for="label" value="#{bundle.CustomField_tooltip_label}"/>
+                </h:form>
+                
+                
+            </p:dialog>
+
+            <p:dialog id="CustomFieldViewDlg" widgetVar="CustomFieldViewDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ViewCustomFieldTitle}">
+                <h:form id="CustomFieldViewForm">
+                    <h:panelGroup id="display">
+                        <p:panelGrid columns="2" rendered="#{customFieldController.selected != null}" styleClass="filtersGrid">
+                            <h:outputText value="#{bundle.CustomField_customFieldPK_fieldKey}" style="font-weight: bold;"/>
+                            <h:outputText value="#{customFieldController.selected.customFieldPK.fieldKey}"/>
+                            <h:outputText value="#{bundle.CustomField_customFieldPK_entity}" style="font-weight: bold;"/>
+                            <h:outputText value="#{customFieldController.selected.customFieldPK.entity}" />
+                            <h:outputText value="#{bundle.CustomField_label}" style="font-weight: bold;"/>
+                            <h:outputText value="#{customFieldController.selected.label}" />
+                            <h:outputText value="#{bundle.CustomField_required}" style="font-weight: bold;"/>
+                            <p:selectBooleanCheckbox value="#{customFieldController.selected.required}" disabled="true"/>
+
+                            <h:outputText value="#{bundle.CustomField_visibleToCustomers}" style="font-weight: bold;"/>
+                            <p:selectBooleanCheckbox value="#{customFieldController.selected.visibleToCustomers}" disabled="true"/>
+
+                        </p:panelGrid>
+                        <p:commandButton value="#{bundle.Close}" onclick="CustomFieldViewDialog.hide()"/>
+                    </h:panelGroup>
+                </h:form>
+            </p:dialog>
+
+        </ui:define>
+    </ui:composition>
+
+</html>

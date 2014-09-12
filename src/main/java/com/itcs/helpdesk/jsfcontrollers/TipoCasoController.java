@@ -1,21 +1,14 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
-import com.itcs.helpdesk.persistence.entities.Area;
-import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.TipoCaso;
-import com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso;
-import com.itcs.jpautils.EasyCriteriaQuery;
 import java.io.Serializable;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
-import javax.faces.model.SelectItem;
+import org.primefaces.model.SelectableDataModel;
 
 @ManagedBean(name = "tipoCasoController")
 @SessionScoped
@@ -30,24 +23,6 @@ public class TipoCasoController extends AbstractManagedBean<TipoCaso> implements
         super(TipoCaso.class);
     }
 
-    @Override
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(getPaginationPageSize()) {
-                @Override
-                public int getItemsCount() {
-                    return getJpaController().count(TipoCaso.class).intValue();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getJpaController().queryByRange(TipoCaso.class, getPageSize(), getPageFirstItem()));//.findRange(new int[]{getPageFirstItem(), getPageFirstItem() + getPageSize()}));
-                }
-            };
-        }
-        return pagination;
-    }
-
     public String prepareList() {
         recreateModel();
         return "/script/tipoCaso/List";
@@ -57,12 +32,6 @@ public class TipoCasoController extends AbstractManagedBean<TipoCaso> implements
         current = (TipoCaso) getItems().getRowData();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         return "/script/tipoCaso/View";
-    }
-
-  public Long countCasosByTipo(TipoCaso tipo) {
-        EasyCriteriaQuery<Caso> c = new EasyCriteriaQuery<Caso>(emf, Caso.class);
-        c.addEqualPredicate("tipoCaso", tipo);
-        return c.count();
     }
 
     public String prepareEdit(TipoCaso item) {
@@ -103,15 +72,6 @@ public class TipoCasoController extends AbstractManagedBean<TipoCaso> implements
             return null;
         }
     }
-    
-    public SelectItem[] getStringItemsAvailableSelectOne() {
-        List<TipoCaso> lista = (List<TipoCaso>) getJpaController().findAll(TipoCaso.class);
-        List<String> ids = new LinkedList<String>();
-        for (TipoCaso tipoCaso : lista) {
-            ids.add(tipoCaso.getIdTipoCaso());
-        }
-        return JsfUtil.getSelectItems(ids, true);
-    }
 
     public String destroy() {
         if (current == null) {
@@ -119,62 +79,57 @@ public class TipoCasoController extends AbstractManagedBean<TipoCaso> implements
         }
         //  current = (TipoCaso) getItems().getRowData();
 //        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        performDestroy();
-        recreatePagination();
-        recreateModel();
+        if (performDestroy()) {
+            recreateModel();
+        }
+
         return "/script/tipoCaso/List";
     }
 
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "/script/tipoCaso/List";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "/script/tipoCaso/List";
-        }
-    }
-
-    private void performDestroy() {
+    private boolean performDestroy() {
         try {
-            getJpaController().remove(TipoCaso.class, current);
+            getJpaController().remove(TipoCaso.class, current.getIdTipoCaso());
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("TipoCasoDeleted"));
+            return true;
         } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
-            JsfUtil.addErrorMessage(e, e.getLocalizedMessage());
+            JsfUtil.addErrorMessage("No se pudo eliminar el Tipo de Caso, Favor verifique que no tiene datos asociados (Casos, Sub estados o Campos personalizados)");
+//            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
+//            JsfUtil.addErrorMessage(e, e.getLocalizedMessage());
         }
+        return false;
     }
-
-    private void updateCurrentItem() {
-        int count = getJpaController().count(TipoCaso.class).intValue();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = (TipoCaso) getJpaController().queryByRange(TipoCaso.class, pagination.getPageSize(), pagination.getPageFirstItem()).get(0);
-        }
-    }
-
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
-
 
     @Override
     public Class getDataModelImplementationClass() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return TipoCasoDataModel.class;
+    }
+}
+
+class TipoCasoDataModel extends ListDataModel<TipoCaso> implements SelectableDataModel<TipoCaso> {
+
+    public TipoCasoDataModel() {
+        //nothing
     }
 
-  
+    public TipoCasoDataModel(List<TipoCaso> data) {
+        super(data);
+    }
+
+    @Override
+    public TipoCaso getRowData(String rowKey) {
+        List<TipoCaso> listOfTipoCaso = (List<TipoCaso>) getWrappedData();
+
+        for (TipoCaso obj : listOfTipoCaso) {
+            if (obj.getIdTipoCaso().equals(rowKey)) {
+                return obj;
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public Object getRowKey(TipoCaso classname) {
+        return classname.getIdTipoCaso();
+    }
 }

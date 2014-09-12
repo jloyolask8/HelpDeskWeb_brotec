@@ -23,7 +23,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.servlet.annotation.WebListener;
 import javax.transaction.UserTransaction;
 import org.quartz.SchedulerException;
 
@@ -31,7 +30,7 @@ import org.quartz.SchedulerException;
  *
  * @author jorge
  */
-@WebListener
+//@WebListener
 public class AppStarter implements ServletContextListener {
 
     @Resource
@@ -97,7 +96,7 @@ public class AppStarter implements ServletContextListener {
 //                            AutomaticMailScheduler mailExec = new AutomaticMailScheduler(a, new JPAServiceFacade(utx, emf, schema));
 //                            mailExec.agendarRevisarCorreo();
                         MailClientFactory.createInstance(canal);
-                        HelpDeskScheluder.scheduleRevisarCorreo(canal.getIdCanal(), 300);//5 minutes fixed
+                        HelpDeskScheluder.scheduleRevisarCorreo(canal.getIdCanal(), HelpDeskScheluder.DEFAULT_CHECK_EMAIL_INTERVAL);//5 minutes fixed
 
                     } catch (SchedulerException ex) {
                         Logger.getLogger(AppStarter.class.getName()).log(Level.SEVERE, "No se pudo inicializar La revision del canal " + canal.getIdCanal(), ex);

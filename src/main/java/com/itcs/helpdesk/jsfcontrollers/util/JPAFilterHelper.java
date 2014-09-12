@@ -13,6 +13,7 @@ import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.persistence.utils.ComparableField;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -52,6 +53,7 @@ public abstract class JPAFilterHelper implements Serializable {
     public List<ComparableField> getComparableFields() throws ClassNotFoundException {
         if (comparableFields == null) {
             comparableFields = getJpaService().getAnnotatedComparableFieldsByClass(Class.forName(vista.getBaseEntityType()));
+            Collections.sort(comparableFields);
         }
         return comparableFields;
     }

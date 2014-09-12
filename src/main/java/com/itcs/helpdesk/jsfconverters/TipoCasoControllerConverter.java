@@ -15,9 +15,10 @@ import javax.faces.convert.FacesConverter;
  *
  * @author jonathan
  */
-@FacesConverter(forClass = TipoCaso.class)
+@FacesConverter(forClass = TipoCaso.class, value="TipoCasoControllerConverter")
 public class TipoCasoControllerConverter implements Converter {
 
+    @Override
     public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
         if (value == null || value.length() == 0) {
             return null;
@@ -39,6 +40,7 @@ public class TipoCasoControllerConverter implements Converter {
         return sb.toString();
     }
 
+    @Override
     public String getAsString(FacesContext facesContext, UIComponent component, Object object) {
         if (object == null) {
             return null;

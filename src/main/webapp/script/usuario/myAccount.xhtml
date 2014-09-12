@@ -121,8 +121,6 @@
 
                             <h:panelGrid columns="3" cellpadding="6">
                                 <h:outputLabel value="Tema de colores:" for="statefulSwitcher"/> 
-
-
                                 <p:themeSwitcher value="#{UserSessionBean.current.theme}" style="width:200px" effect="fade" id="statefulSwitcher" 
                                                  required="true" requiredMessage="Debe seleccionar un Tema" var="t">
                                     <f:selectItem itemLabel="Seleccione un Tema" itemValue="" />
@@ -137,8 +135,84 @@
                                     <p:ajax listener="#{UserSessionBean.saveTheme}" />
                                 </p:themeSwitcher>
                                 <p:message for="statefulSwitcher" />
+                                
+                                
+                                
                             </h:panelGrid>
 
+
+
+                        </p:tab>
+                        
+                        <p:tab title="Notificaciones"> 
+                            <div class="panel panel-transparent form-horizontal">
+                                <div class="panel-body">
+
+                                    <h6 class="text-light-gray text-semibold text-xs" style="margin:20px 0 10px 0;">Habilitar</h6>
+
+                                    <div class="row form-group">
+
+                                        <div class="col-sm-12">
+                                            <h:selectBooleanCheckbox id="emailNotificationsEnabled"
+                                                                     value="#{UserSessionBean.current.emailNotificationsEnabled}" >
+                                            </h:selectBooleanCheckbox>
+                                            <label class="control-label">
+                                                <p:outputLabel for="emailNotificationsEnabled" value="Notificaciones por email"/>
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="col-sm-12">
+                                            <h:selectBooleanCheckbox id="desktopNotificationsEnabled"
+                                                                     value="#{UserSessionBean.current.desktopNotificationsEnabled}" >
+                                            </h:selectBooleanCheckbox>
+                                            <label class="control-label">
+                                                <p:outputLabel for="desktopNotificationsEnabled" value="Notificaciones en el escritorio"/>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <hr class="panel-wide"></hr>
+                                    <h6 class="text-light-gray text-semibold text-xs" style="margin:20px 0 10px 0;">Notificarme cuando</h6>
+
+                                    <div class="row form-group">
+
+                                        <div class="col-sm-12">
+                                            <h:selectBooleanCheckbox id="notifyWhenTicketAssigned"
+                                                                     value="#{UserSessionBean.current.notifyWhenTicketAssigned}" >
+                                            </h:selectBooleanCheckbox>
+                                            <label class="control-label">
+                                                <p:outputLabel for="notifyWhenTicketAssigned" value="se me asigne un caso"/>
+                                            </label>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <h:selectBooleanCheckbox id="notifyWhenNewTicketInGroup"
+                                                                     value="#{UserSessionBean.current.notifyWhenNewTicketInGroup}" >
+                                            </h:selectBooleanCheckbox>
+                                            <label class="control-label">
+                                                <p:outputLabel for="notifyWhenNewTicketInGroup" value="llegue un caso a mis grupos"/>
+                                            </label>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <h:selectBooleanCheckbox id="notifyWhenTicketIsUpdated"
+                                                                     value="#{UserSessionBean.current.notifyWhenTicketIsUpdated}" >
+                                            </h:selectBooleanCheckbox>
+                                            <label class="control-label">
+                                                <p:outputLabel for="notifyWhenTicketIsUpdated" value="un caso sea actualizado"/>
+                                            </label>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <h:selectBooleanCheckbox id="notifyWhenTicketAlert"
+                                                                     value="#{UserSessionBean.current.notifyWhenTicketAlert}" >
+                                            </h:selectBooleanCheckbox>
+                                            <label class="control-label">
+                                                <p:outputLabel for="notifyWhenTicketAlert" value="un caso cambie estado de alerta"/>
+                                            </label>
+
+                                        </div>
+                                        
+                                    </div>
+
+                                </div>
+                            </div>
 
 
                         </p:tab>

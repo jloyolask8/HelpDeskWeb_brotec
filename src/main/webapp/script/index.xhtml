@@ -6,8 +6,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:pe="http://primefaces.org/ui/extensions"
-      xmlns:pm="http://primefaces.org/mobile"
-      xmlns:itcs="http://java.sun.com/jsf/composite/components/filterView">
+      xmlns:go="http://java.sun.com/jsf/composite/components/filterView">
 
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
@@ -145,7 +144,7 @@
                                              icon="excelicon">  
                                 <p:fileDownload value="#{casoController.exportAllItems()}" />
                             </p:commandButton>
-                              <p:tooltip for="exportAllItems" value="Exportar a excel #{casoController.pagination.itemsCount} casos."/>
+                            <p:tooltip for="exportAllItems" value="Exportar a excel #{casoController.pagination.itemsCount} casos."/>
 
                             <p:overlayPanel id="TagPanel" widgetVar="TagPanel" for="TagAsBtn" hideEffect="fade" dynamic="true">                                     
 
@@ -190,10 +189,10 @@
                             <p:commandButton action="#{casoController.next}" update=":form0:panelG1" disabled="#{not casoController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{casoController.pagination.itemsCount > 0}"/>
                             <p:commandButton action="#{casoController.last}" update=":form0:panelG1" disabled="#{not casoController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{casoController.pagination.itemsCount > 0}"/>
 
-                       </p:toolbarGroup>  
+                        </p:toolbarGroup>  
 
                     </p:toolbar>
-                    
+
                     <!--p:sticky target="toolbar1"  /-->
 
                     <p:dataTable id="ID_TABLA" value="#{casoController.items}" var="item"                                     
@@ -214,9 +213,9 @@
                         <p:column selectionMode="multiple"   />  
 
                         <p:column headerText="" exportable="false"  >
-                            <h:commandLink id="prio">
+                            <h:commandLink id="prio" disabled="#{not item.open}">
                                 <p:graphicImage library="images" name="#{item.esPrioritario ? 'star-enabled.png':'star-disabled.png'}" title="Prioritario"/>
-                                <p:ajax id="aj2" listener="#{casoController.changePriority(item, item.esPrioritario)}" update="prio"/>
+                                <p:ajax id="aj2" listener="#{casoController.changePriority(item, item.esPrioritario)}" update="prio :formTopMenu"/>
                             </h:commandLink>
                         </p:column>
 
@@ -232,29 +231,14 @@
 
                         </p:column>
 
-                        <p:column headerText="" exportable="false" >
-
-
-                            <h:graphicImage id="warningim" value="/images/dialog-warning-3.png" 
-                                            title="Vence #{casoController.prettyDate(item.nextResponseDue)} (#{casoController.formatDate(item.nextResponseDue)})" 
-                                            rendered="#{item.estadoAlerta eq EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta() and item.isOpen()}"/>
-
-                            <h:graphicImage id="urgentim" value="/images/software-update-urgent-2.png" 
-                                            title="Venció #{casoController.prettyDate(item.nextResponseDue)} (#{casoController.formatDate(item.nextResponseDue)})" 
-                                            rendered="#{item.estadoAlerta eq EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta() and item.isOpen()}"/>
-
-                            <h:graphicImage value="/images/locked.png" 
-                                            title="Caso cerrado" 
-                                            rendered="#{item.isClosed()}"/>
-
-                        </p:column>
+                        
 
                         <p:column sortBy="#{item.tema}" headerText="Asunto"> 
                             <h:panelGroup layout="block" >  
 
                                 <h:outputText styleClass="ticket-status" style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};" value="#{item.idSubEstado.nombre}"/>
 
-                                <p:commandLink id="temalink" action="#{casoController.prepareEdit(item)}" 
+                                <p:commandLink id="temalink" action="#{casoController.prepareEdit()}" 
                                                ajax="false" style="color: #000" immediate="true">
                                     #{item.tipoCaso.nombre} \##{item.idCaso} #{item.tema}
                                 </p:commandLink>
@@ -285,7 +269,42 @@
                             <h:outputText id="fechaModif" value="#{casoController.formatShortDate(item.fechaModif)}" />
                             <p:tooltip for="fechaModif" value="Modificado: #{casoController.formatDate(item.fechaModif)} (#{casoController.prettyDate(item.fechaModif)})"  />
                         </p:column>
+                        
+                        <p:column headerText="SLA">   
 
+                            <pe:switch id="switchTicketAlertState" value="#{item.isOpen().toString()}">  
+                                <pe:case value="true">  
+                                    <pe:switch id="switchTicketAlertStateOpen" value="#{item.estadoAlerta}">  
+                                        <pe:case value="#{EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta()}">  
+                                            <h:panelGroup id="nextResponseDue" style="color: #5cb85c;"><i class="fa fa-fw fa-clock-o"></i> 
+                                                #{casoController.formatShortDate(item.nextResponseDue)}
+                                            </h:panelGroup>
+                                            <p:tooltip for="nextResponseDue" value="Acuerdo de respuesta #{casoController.prettyDate(item.nextResponseDue)} - #{casoController.formatDate(item.nextResponseDue)}"/>
+                                        </pe:case>
+                                        <pe:case value="#{EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta()}">  
+                                            <h:panelGroup id="nextResponseDue" style="color: #f0ad4e;"><i class="fa fa-fw fa-warning"></i> 
+                                                #{casoController.formatShortDate(item.nextResponseDue)}
+                                            </h:panelGroup>
+                                            <p:tooltip for="nextResponseDue" value="Vence #{casoController.prettyDate(item.nextResponseDue)} - #{casoController.formatDate(item.nextResponseDue)}"/>
+                                        </pe:case>
+                                        <pe:case value="#{EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta()}">  
+                                            <h:panelGroup id="nextResponseDue" style="color: #c9302c;"><i class="fa fa-fw fa-exclamation"></i> 
+                                                #{casoController.formatShortDate(item.nextResponseDue)}
+                                            </h:panelGroup>
+                                            <p:tooltip for="nextResponseDue" value="Vencido #{casoController.prettyDate(item.nextResponseDue)} - #{casoController.formatDate(item.nextResponseDue)}"/>
+                                        </pe:case>  
+                                    </pe:switch>  
+                                </pe:case>
+
+                                <pe:case value="false">  
+                                    <h:panelGroup id="cerrado" style="color: #000;">
+                                        <i class="fa fa-fw fa-lock"></i> #{casoController.formatShortDate(item.fechaCierre)}
+                                    </h:panelGroup>
+                                    <p:tooltip for="cerrado" value="Cerrado #{casoController.prettyDate(item.fechaCierre)} - #{casoController.formatDate(item.fechaCierre)}"/>
+                                </pe:case>  
+                            </pe:switch>
+                        </p:column>
+                        
                     </p:dataTable>
 
                     <br/>
@@ -357,7 +376,7 @@
                       dynamic="true"  modal="true" appendTo="@(body)">
                 <h:form id="formfilter">
 
-                    <itcs:filterView id="panelFilter0" controllerMBean="#{casoController}" filterHelper="#{casoController.filterHelper}" canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
+                    <go:filterView id="panelFilter0" controllerMBean="#{casoController}" filterHelper="#{casoController.filterHelper}" canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
                                      update=":mainform:messages :formfilter:panelFilter0:panelFilter :form0:panelG1"/>
 
 

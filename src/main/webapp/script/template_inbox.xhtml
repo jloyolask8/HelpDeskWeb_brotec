@@ -144,7 +144,7 @@
             </p:idleMonitor>
 
             <h:form id="mainform" style="height: 100%">
-                <p:growl id="messages" life="10000" autoUpdate="true"  globalOnly="true" widgetVar="messages"
+                <p:growl id="messages" life="10000" autoUpdate="true"  globalOnly="false" widgetVar="messages"
                          showDetail="false">
                 </p:growl>
             </h:form>
@@ -243,6 +243,12 @@
                                     <p:menuitem value="Lista negra (Correos)" action="#{blackListController.prepareList}" ajax="false" icon="fa fa-ban" >
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
+                                    
+                                     <p:menuitem value="Campos personalizados (Casos)" 
+                                                action="/script/customField/List.xhtml" ajax="false" icon="fa fa-puzzle-piece" >
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+                                    
                                     <p:menuitem value="Configuración" action="#{appSettingController.goToConfigPage}" ajax="false" icon="fa fa-wrench" >
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
@@ -278,30 +284,54 @@
                                 </p:submenu>
 
 
-
+                                <p:menuitem id="casosPrioritarios" value="#{casoController.casosPrioritarios.toString()}"
+                                            style="color: #ffcc33;"
+                                            title="Mis casos prioritarios"
+                                            disabled="#{casoController.casosPrioritarios le 0}"  ajax="false"
+                                            action="#{casoController.filtrarPrioritarios}" update="formfilter:filtros  formfilter:panelG1"
+                                            icon="fa fa-star">
+                                    <p:resetInput target="@form" />
+                                </p:menuitem>
 
                                 <p:menuitem id="casosPendientes" value="#{casoController.casosPendientes.toString()}"
+                                            style="color: #5cb85c;"
+                                            title="Mis casos pendientes"
                                             disabled="#{casoController.casosPendientes le 0}"  ajax="false"
                                             action="#{casoController.filtraPorAlertaPendiente}" update="formfilter:filtros  formfilter:panelG1"
-                                            icon="pendienteicon">
+                                            icon="fa fa-clock-o">
                                     <p:resetInput target="@form" />
                                 </p:menuitem>
                                 <p:menuitem id="casosPorVencer" value="#{casoController.casosPorVencer.toString()}"
+                                            style="color: #f0ad4e;"
+                                            title="Mis casos que están por vencer"
                                             disabled="#{casoController.casosPorVencer le 0}" ajax="false"
                                             action="#{casoController.filtraPorAlertaPorVencer}" update="formfilter:filtros  formfilter:panelG1"
-                                            icon="porvencericon">
+                                            icon="fa fa-warning">
                                     <p:resetInput target="@form" />
                                 </p:menuitem>
                                 <p:menuitem id="casosVencidos" value="#{casoController.casosVencidos.toString()}"
+                                            style="color: #c9302c;"
+                                            title="Mis casos ya vencidos"
                                             disabled="#{casoController.casosVencidos le 0}" ajax="false"
                                             action="#{casoController.filtraPorAlertaVencido}" update="formfilter:filtros  formfilter:panelG1"
-                                            icon="vencidoicon">
+                                            icon="fa fa-exclamation">
                                     <p:resetInput target="@form" />
                                 </p:menuitem>
                                 <p:menuitem id="casosActualizados" value="#{casoController.countCasosRevisarActualizacion.toString()}"
+                                            style="color: #31b0d5;"
+                                            title="Mis casos que han sido actualizados por otros."
                                             disabled="#{casoController.countCasosRevisarActualizacion le 0}" ajax="false"
                                             action="#{casoController.filtraRevisarActualizaciones}" update="formfilter:filtros  formfilter:panelG1"
-                                            icon="actualizadoicon">
+                                            icon="fa fa-bolt">
+                                    <p:resetInput target="@form" />
+                                </p:menuitem>
+
+                                <p:menuitem id="casosCerrados" value="#{casoController.casosCerrados.toString()}"
+                                            style="color: #000;"
+                                            title="Mis casos cerrados"
+                                            disabled="#{casoController.casosCerrados le 0}"  ajax="false"
+                                            action="#{casoController.filtraCasosCerrados}" update="formfilter:filtros  formfilter:panelG1"
+                                            icon="fa fa-lock">
                                     <p:resetInput target="@form" />
                                 </p:menuitem>
 

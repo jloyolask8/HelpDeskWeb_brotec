@@ -1,68 +1,112 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"    
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:pe="http://primefaces.org/ui/extensions"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
     <h:head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title>Bienvenido a #{applicationBean.helpdeskTitle}</title>
-        <h:outputStylesheet library="css" name="loginCss.css"/>
-        <h:outputStylesheet library="css" name="jsfcrud.css"/>
+        <f:facet name="first">
+            <meta charset="utf-8"/>
+            <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+            <meta name="viewport" content="width=device-width, initial-scale=1"/>
+            <meta name="description" content=""/>
+            <meta name="author" content="ITCS"/>
+            <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+            <title><ui:insert name="title">#{applicationBean.helpdeskTitle}</ui:insert></title>     
+        </f:facet>
+        
+        <link href="#{facesContext.externalContext.requestContextPath}/resources/css/loginCss.css" rel="stylesheet" type="text/css"/>
+
+        <link rel="dns-prefetch" href="//netdna.bootstrapcdn.com" />            
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"/>
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css"/>
+
     </h:head>
 
     <h:body>
 
 
 
-        <div id="header">
-            <div id="divItcs" align="left" style="position: absolute"><div class="logo-img"/></div>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-6 col-md-4 col-md-offset-4 col-sm-offset-3">
+                    
+                     <div align="center">
+                        <p:graphicImage  
+                            value="#{applicationBean.getLogo()}"  
+                            cache="false" rendered="#{applicationBean.showCompanyLogo}"/>  
+                    </div>
+                    
+                    <h1 class="text-center login-title">#{bundle.LoginTitle}</h1>
+                    <div class="account-wall">
+                        <p:graphicImage styleClass="profile-img" library="images" name="avatar_2x.png" />
+
+                        <!--div align="center">
+                            <p:graphicImage library="images" name="ITCSHelpdesk105x105.png" width="100" height="100"/>
+                        </div-->
+
+                        <h:form id="form-signin" styleClass="form-signin">
+
+                            <br/>
+                            <h:inputText id="usuario" required="true" requiredMessage="Introduce tu nombre de usuario."
+                                         styleClass="form-control"  
+                                         value="#{loginController.username}" title="#{bundle.EditUsuarioTitle_idUsuario}"/>
+                            <p:watermark for="usuario" value="Usuario"/>
+
+                            <h:inputSecret id="pass" required="true" requiredMessage="Introduce tu contraseña."
+                                           value="#{loginController.password}"   label="Password" styleClass="form-control"/> 
+                            <p:watermark for="pass" value="Contraseña"/>
+
+
+                            <h:message for="usuario" errorClass="text-danger"/>
+                            <h:message for="pass" errorClass="text-danger" infoClass="text-info"/>
+
+
+                              <p:commandButton type="submit" action="#{loginController.loginAction}" 
+                                                         update=":form-signin"
+                                                         styleClass="btn btn-sm btn-warning btn-block"
+                                                         value="#{bundle.LoginUsuario}" 
+                                                         onclick="jQuery(this).addClass('ui-state-disabled')"/>
+                              
+                         
+
+                            <label class="checkbox pull-left">
+                                <input type="checkbox" value="remember-me"/>
+                                    Recordarme
+                            </label>
+                            <p:commandLink action="forgot" styleClass="pull-right need-help" ajax="false" immediate="true"
+                                           value="Olvidó su Contraseña?">
+                                <span class="clearfix"></span>
+                            </p:commandLink>
+                                           
+                                
+
+                            <h:messages globalOnly="true" errorClass="text-danger"/>
+
+                            <br/>
+
+                        </h:form>
+                        
+                       
+
+
+                    </div>
+                </div>
+            </div>
         </div>
 
 
+        <div id="footer">
+            <div class="container">
+                <p class="text-muted" align="center">Powered by GoDesk Chile. <a href="http://www.godesk.cl">www.godesk.cl</a>.</p>
+            </div>
+        </div>
 
-        <p:dialog  closable="false" style="margin-bottom: 500px" draggable="false"
-                   visible="true" id="parent" widgetVar="logindiag" resizable="false"
-                   header="Bienvenido a #{applicationBean.helpdeskTitle}" modal="false" appendTo="@(body)" height="140" width="458">
-            <h:form id="formlogin">
-                <p:growl id="messages" showDetail="true" sticky="false" /> 
-                <div class="formSeparator">
-                                    <h2>Autentificación de usuario</h2>
-                                </div>
-                <p:panelGrid styleClass="logInGrid" columns="1">
-                    <p:inputText id="usuario" value="#{loginController.username}" title="#{bundle.EditUsuarioTitle_idUsuario}" style="margin-left: 5px; width: 380px;" />  
-                    <p:watermark for="usuario" value="Usuario"/>
-                    <p:password id="pass" value="#{loginController.password}"  required="true" label="Password" style="margin-left: 5px; width: 380px;"/> 
-                    <p:watermark for="pass" value="Contraseña"/>
-                    <p:panelGrid style="width: 412px; margin-top: -10px">
-                        <p:row>
-                            <p:column>
-                                
-                                <div align="left">
-                                    <div class="checkbox-remember">
-                                        <h:selectBooleanCheckbox id="check" value="1"/>
-                                        <h:outputLabel for="check">Remember?</h:outputLabel>
-                                    </div>
-                                    <div class="remember">Recordar contraseña.</div>
-                                </div>
-                            </p:column>
-                            <p:column>
-                                <div align="right">
-                                    <p:commandButton ajax="false" action="#{loginController.loginAction}"
-                                                     value="#{bundle.LoginUsuario}" update=":formlogin"
-                                                     icon="ui-icon-check"/>
-                                </div>
-                            </p:column>
-                        </p:row>
-                    </p:panelGrid>
-                </p:panelGrid>
-            </h:form>
-        </p:dialog>
 
-       
-      
     </h:body>
 </html>
+
+   

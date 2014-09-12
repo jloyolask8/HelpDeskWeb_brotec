@@ -53,7 +53,7 @@
                                 <h:outputText id="owner" value="#{casoController.selected.owner.capitalName}"  style="float: right;"/>    
                             </p:outputLabel>
 
-                          
+
 
                             <p:outputLabel value="#{bundle.EditCasoLabel_idCasoPadre}" for="idCasoPadre" style="font-weight: bold" rendered="#{casoController.selected.idCasoPadre ne null}">
                                 <h:outputText id="idCasoPadre" value="#{casoController.selected.idCasoPadre}" title="#{bundle.EditCasoTitle_idCasoPadre}" style="float: right;"/>
@@ -268,8 +268,9 @@
                     <p:panel header="Propiedades del Caso">
                         <pm:field>
                             <p:outputLabel for="idTipoCaso" value="Tipo:" style="font-weight: bold"/>
-                            <h:selectOneMenu  disabled="#{casoController.selected.closed}" id="idTipoCaso" value="#{casoController.selected.tipoCaso}" required="true">
-                                <f:selectItem itemLabel="" itemValue=""/>
+                            <h:selectOneMenu  id="idTipoCaso" disabled="#{casoController.selected.closed}"  converter="TipoCasoControllerConverter"
+                                              value="#{casoController.selected.tipoCaso}" 
+                                              required="true">
                                 <f:selectItems value="#{applicationBean.tipoCasoAvailableList}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
                             </h:selectOneMenu>
                             <p:message for="idTipoCaso" />
@@ -325,27 +326,27 @@
                         </pm:field>
 
                         <pm:field>
-                            
-                                <script type="text/javascript">
-                                $(function() { 
-                    
-                                    var tagApi =  jQuery(".tm-input").tagsManager({
+
+                            <script type="text/javascript">
+                                $(function() {
+
+                                    var tagApi = jQuery(".tm-input").tagsManager({
                                         prefilled: '#{casoController.selected.etiquetas}',
                                         CapitalizeFirstLetter: true
                                     });
-                    
+
                                     jQuery(".tm-input").typeahead({
                                         name: 'etiquetas',
                                         remote: '#{facesContext.externalContext.requestContextPath}/TagListServlet?q=%QUERY&amp;u=#{UserSessionBean.current.idUsuario}',
-                                        limit: 10  
-                                    }).on('typeahead:selected', function (e, d) {
- 
-                                        tagApi.tagsManager("pushTag", d.value);
- 
-                                    });
-                                });
+                                                    limit: 10
+                                                }).on('typeahead:selected', function(e, d) {
+
+                                                    tagApi.tagsManager("pushTag", d.value);
+
+                                                });
+                                            });
                             </script>
-                            
+
                             <p:outputLabel value="Etiquetas:" for="tags" style="font-weight: bold"/>
                             <h:inputText disabled="#{casoController.selected.closed}" id="tags" class="tm-input" value="#{casoController.selected.etiquetas}"/>
                         </pm:field>

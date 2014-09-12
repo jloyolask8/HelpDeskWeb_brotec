@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:composite="http://java.sun.com/jsf/composite"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <composite:interface>
+        <composite:attribute name="casoCustomFieldValue" required="true" />
+        <composite:attribute name="casoOpen" default="true" />
+    </composite:interface>
+
+    <composite:implementation>
+
+        <h:panelGroup styleClass="#{not empty facesContext.getMessageList(''.concat(cc.clientId).concat(':valortext')) ? 'form-group has-error' : 'form-group'}"
+                      rendered="#{cc.attrs.casoCustomFieldValue.customField.fieldTypeId.fieldTypeId eq 'TEXT'}" >
+            <p:inputText id="valortext" value="#{cc.attrs.casoCustomFieldValue.valor}" styleClass="form-control input-sm"
+                         required="#{cc.attrs.casoCustomFieldValue.customField.required}" requiredMessage="Se necesita un valor." disabled="#{not cc.attrs.casoOpen}"/>
+            <h:panelGroup rendered="#{not empty facesContext.getMessageList(''.concat(cc.clientId).concat(':valortext'))}" styleClass="help-block">
+                <h:message for="valortext" />
+            </h:panelGroup>
+        </h:panelGroup>
+
+        <h:panelGroup styleClass="#{not empty facesContext.getMessageList(''.concat(cc.clientId).concat(':valortextarea')) ? 'form-group has-error' : 'form-group'}"
+                      rendered="#{cc.attrs.casoCustomFieldValue.customField.fieldTypeId.fieldTypeId eq 'TEXTAREA'}"  >
+            <p:inputTextarea id="valortextarea" value="#{cc.attrs.casoCustomFieldValue.valor}" styleClass="form-control input-sm"
+                             required="#{cc.attrs.casoCustomFieldValue.customField.required}" requiredMessage="Se necesita un valor." disabled="#{not cc.attrs.casoOpen}"/>
+            <h:panelGroup rendered="#{not empty facesContext.getMessageList(''.concat(cc.clientId).concat(':valortextarea'))}" styleClass="help-block">
+                <h:message for="valortextarea" />
+            </h:panelGroup>
+        </h:panelGroup>
+
+
+        <h:panelGroup styleClass="#{not empty facesContext.getMessageList(''.concat(cc.clientId).concat(':valorentity1')) ? 'form-group has-error' : 'form-group'}"
+                      rendered="#{cc.attrs.casoCustomFieldValue.customField.fieldTypeId.fieldTypeId eq 'SELECTONE'}" >
+            <h:selectOneMenu id="valorentity1" value="#{cc.attrs.casoCustomFieldValue.valor}" styleClass="form-control input-sm"
+                             disabled="#{not cc.attrs.casoOpen}"
+                             required="#{cc.attrs.casoCustomFieldValue.customField.required}" requiredMessage="Se necesita un valor.">
+                <f:selectItem itemLabel="" itemValue=""/>
+                <f:selectItems value="#{cc.attrs.casoCustomFieldValue.customField.fieldOptionsList}" var="option" 
+                               itemLabel="#{option}" itemValue="#{option}" />
+            </h:selectOneMenu>
+            <h:panelGroup rendered="#{not empty facesContext.getMessageList(''.concat(cc.clientId).concat(':valorentity1'))}" styleClass="help-block">
+                <h:message for="valorentity1" />
+            </h:panelGroup>
+        </h:panelGroup>
+
+
+        <h:panelGroup styleClass="#{not empty facesContext.getMessageList(''.concat(cc.clientId).concat(':valorentity2')) ? 'form-group has-error' : 'form-group'}"
+                      rendered="#{cc.attrs.casoCustomFieldValue.customField.fieldTypeId.fieldTypeId eq 'SELECTMANY'}" >
+            <p:selectCheckboxMenu id="valorentity2" label="Selección múltiple"  disabled="#{not cc.attrs.casoOpen}" 
+                                  value="#{cc.attrs.casoCustomFieldValue.valoresList}" filter="true" filterMatchMode="contains"
+                                  required="#{cc.attrs.casoCustomFieldValue.customField.required}" requiredMessage="Se necesita un valor.">
+                <f:selectItems value="#{cc.attrs.casoCustomFieldValue.customField.fieldOptionsList}" var="option" 
+                               itemLabel="#{option}" itemValue="#{option}" />
+            </p:selectCheckboxMenu>
+            <h:panelGroup rendered="#{not empty facesContext.getMessageList(''.concat(cc.clientId).concat(':valorentity2'))}" styleClass="help-block">
+                <h:message for="valorentity2" />
+            </h:panelGroup>
+        </h:panelGroup>
+
+
+        <h:panelGroup styleClass="#{not empty facesContext.getMessageList(''.concat(cc.clientId).concat(':valorcheckboolean')) ? 'form-group has-error' : 'form-group'}"
+                      rendered="#{cc.attrs.casoCustomFieldValue.customField.fieldTypeId.fieldTypeId eq 'CHECKBOX'}" >
+            <h:selectOneMenu id="valorcheckboolean" value="#{cc.attrs.casoCustomFieldValue.valor}" styleClass="form-control input-sm"
+                             required="#{cc.attrs.casoCustomFieldValue.customField.required}" requiredMessage="Se necesita un valor."
+                             disabled="#{not cc.attrs.casoOpen}" >
+                <f:selectItem itemLabel="Falso" itemValue="false" />
+                <f:selectItem itemLabel="Verdadero" itemValue="true" />
+
+            </h:selectOneMenu>
+            <h:panelGroup rendered="#{not empty facesContext.getMessageList(''.concat(cc.clientId).concat(':valorcheckboolean'))}" styleClass="help-block">
+                <h:message for="valorcheckboolean" />
+            </h:panelGroup>
+        </h:panelGroup>
+
+
+
+        <h:panelGroup styleClass="#{not empty facesContext.getMessageList(''.concat(cc.clientId).concat(':valorcalendar1')) ? 'form-group has-error' : 'form-group'}"
+                      rendered="#{cc.attrs.casoCustomFieldValue.customField.fieldTypeId.fieldTypeId eq 'CALENDAR'}">
+            <script type="text/javascript">
+                $('.form_datetime').datetimepicker({
+                    language: 'es',
+                    autoclose: true,
+                    format: 'dd/mm/yyyy hh:ii',
+                    viewformat: 'dd/mm/yyyy hh:ii',
+                    todayBtn: true,
+                    todayHighlight: true,
+                    weekStart: 1,
+                    forceParse: true
+                });
+            </script>
+            <p:inputText id="valorcalendar1" styleClass="form-control form_datetime input-sm" 
+                         disabled="#{not cc.attrs.casoOpen}" value="#{cc.attrs.casoCustomFieldValue.valor}"
+                         required="#{cc.attrs.casoCustomFieldValue.customField.required}" requiredMessage="Se necesita un valor."/>
+            <h:panelGroup rendered="#{not empty facesContext.getMessageList(''.concat(cc.clientId).concat(':valorcalendar1'))}" styleClass="help-block">
+                <h:message for="valorcalendar1" />
+            </h:panelGroup>
+        </h:panelGroup>
+
+
+
+
+
+    </composite:implementation>
+</html>
+
+
+
+

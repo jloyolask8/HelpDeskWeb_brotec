@@ -164,7 +164,7 @@
 
 
                                     <p:outputLabel value="Tipo:" style="font-weight:bold"/>
-                                    <p:selectOneMenu id="idTipoCaso" style="width: 300px;"
+                                    <p:selectOneMenu id="idTipoCaso" style="width: 300px;" converter="TipoCasoControllerConverter"
                                                      required="true" requiredMessage="El tipo de caso es requerido."
                                                      filter="true" filterMatchMode="contains"
                                                      value="#{casoController.selected.tipoCaso}" >                                  

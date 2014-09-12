@@ -1,6 +1,7 @@
 package com.itcs.helpdesk.util;
 
 import com.itcs.commons.email.EmailClient;
+import com.itcs.commons.email.impl.NoReplySystemMailSender;
 import com.itcs.helpdesk.persistence.entities.Canal;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Grupo;
@@ -106,6 +107,25 @@ public class MailNotifier {
             }
         }
         return null;
+    }
+    
+    public static void sendEmailRecoverPassword(Usuario usuario, String newPassword) {
+        if (usuario == null) {
+            throw new IllegalStateException("usuario no puede ser null");
+        }
+        try {
+//            String passMD5 = UtilSecurity.getMD5(usuario.getPass());//TODO fix, unencrypt the pass.
+            String subject_ = "Recuperación de contraseña";
+            StringBuilder sb = new StringBuilder();
+            String mensaje_ = sb.append("Estimad@ ").append(usuario.getCapitalName()).append(",").append("<br/>")
+                    .append("Se ha solicido reestablecer su contraseña de acceso a GoDesk, Su contraseña temporal es:")
+                    .append(newPassword)
+                    .append("<br/>Se recomienda cambiar esta contraseña.").toString();
+            NoReplySystemMailSender.sendHTML(usuario.getEmail(), subject_, mensaje_, null);
+            Logger.getLogger(MailNotifier.class.getName()).log(Level.INFO, "sendEmailRecoverPassword succeeded:{0}", usuario.getEmail());
+        } catch (EmailException ex) {
+            Logger.getLogger(MailNotifier.class.getName()).log(Level.SEVERE, "sendEmailRecoverPassword", ex);
+        }
     }
 
     public static void notifyClientCasoReceived(Caso caso) throws NoOutChannelException, SchedulerException {

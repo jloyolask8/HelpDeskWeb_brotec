@@ -60,7 +60,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     public AbstractManagedBean(Class<E> entityClass) {
         this.entityClass = entityClass;
         Logger.getLogger(this.getClass().getName()).log(Level.INFO, "{0} for {1} created", new Object[]{this.getClass().getSimpleName(), entityClass.getSimpleName()});
-}
+    }
 
     public void showMessageInDialog(FacesMessage.Severity severity, String msg, String detail) {
         FacesMessage message = new FacesMessage(severity, msg, detail);
@@ -73,8 +73,8 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     }
 
     public abstract Class getDataModelImplementationClass();
-    
-    public OrderBy getDefaultOrderBy(){
+
+    public OrderBy getDefaultOrderBy() {
         return null;
     }
 
@@ -135,7 +135,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
         }
         return items;
     }
-    
+
     protected void recreateModel() {
         items = null;
     }
@@ -249,6 +249,11 @@ public abstract class AbstractManagedBean<E> implements Serializable {
 
     public void addErrorMessage(String sumary) {
         FacesMessage facesMsg = new FacesMessage(FacesMessage.SEVERITY_ERROR, sumary, null);
+        FacesContext.getCurrentInstance().addMessage(null, facesMsg);
+    }
+
+    public void addErrorMessage(String sumary, String detail) {
+        FacesMessage facesMsg = new FacesMessage(FacesMessage.SEVERITY_ERROR, sumary, detail);
         FacesContext.getCurrentInstance().addMessage(null, facesMsg);
     }
 
