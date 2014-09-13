@@ -148,7 +148,7 @@
 
                                             <h:outputText styleClass="ticket-status" style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};" value="#{item.idSubEstado.nombre}"/>
 
-                                            <p:commandLink id="temalink" action="#{casoController.prepareEdit(item)}" 
+                                            <p:commandLink id="temalink" action="#{casoController.prepareEditCaso(item.idCaso.toString())}" 
                                                            ajax="false" style="color: #000" immediate="true">
                                                 #{item.tipoCaso.nombre} \##{item.idCaso} #{item.tema}
                                             </p:commandLink>

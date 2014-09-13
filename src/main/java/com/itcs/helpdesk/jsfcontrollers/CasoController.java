@@ -1567,13 +1567,17 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public String prepareEditCaso() {
-        if (idCasoStr == null) {
+        return prepareEditCaso(idCasoStr);
+    }
+
+    public String prepareEditCaso(String idCasoString) {
+        if (idCasoString == null) {
             JsfUtil.addErrorMessage("Debe poner un numero de caso para ir");
             return "";
         } else {
             long idCaso = -1;
             try {
-                idCaso = Long.parseLong(idCasoStr);
+                idCaso = Long.parseLong(idCasoString);
             } catch (NumberFormatException ex) {
                 JsfUtil.addErrorMessage("Debe poner un numero de caso para ir");
                 return "";
@@ -3808,8 +3812,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public void setActiveIndexCasoSections(int activeIndexCasoSections) {
         this.activeIndexCasoSections = activeIndexCasoSections;
     }
-    
-    
 
     @FacesConverter(forClass = Caso.class)
     public static class CasoControllerConverter implements Converter, Serializable {
