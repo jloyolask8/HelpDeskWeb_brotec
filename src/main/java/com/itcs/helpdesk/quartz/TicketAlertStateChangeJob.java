@@ -5,8 +5,6 @@
  */
 package com.itcs.helpdesk.quartz;
 
-import com.itcs.helpdesk.ejb.notifications.EventNotifier;
-import com.itcs.helpdesk.ejb.notifications.NotificationData;
 import com.itcs.helpdesk.persistence.entities.AuditLog;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.TipoAlerta;
@@ -39,7 +37,7 @@ import org.quartz.ee.jta.UserTransactionHelper;
 //@ExecuteInJTATransaction
 public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job {
 
-    EventNotifier eventNotifier = lookupEventNotifierBean();
+//    EventNotifier eventNotifier = lookupEventNotifierBean();
 
     public static final String ID_ESTADO_ALERTA = "idalerta";
 
@@ -109,9 +107,9 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
                                         HelpDeskScheluder.scheduleAlertaVencido(valueOfIdCaso, caso.getNextResponseDue());
                                     }
 
-                                    eventNotifier.fire(new NotificationData("Estado de Alerta Caso", 
-                                            "Estado de alerta del caso " + caso.getIdCaso() + 
-                                                    " pasa a " + caso.getEstadoAlerta().getNombre(), audit.getOwner()));
+//                                    eventNotifier.fire(new NotificationData("Estado de Alerta Caso", 
+//                                            "Estado de alerta del caso " + caso.getIdCaso() + 
+//                                                    " pasa a " + caso.getEstadoAlerta().getNombre(), audit.getOwner()));
 
                                     utx.commit();
 
@@ -167,15 +165,15 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
         HelpDeskScheluder.unschedule(jobKey);
     }
 
-    private EventNotifier lookupEventNotifierBean() {
-        try {
-            Context c = new InitialContext();
-//            INFO: EJB5181:Portable JNDI names for EJB EventNotifier: [java:global/HelpDeskWeb_brotec/EventNotifier!com.itcs.helpdesk.ejb.notifications.EventNotifier, java:global/HelpDeskWeb_brotec/EventNotifier]
-            return (EventNotifier) c.lookup("java:global/HelpDeskWeb_brotec/EventNotifier");
-        } catch (NamingException ne) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
-            throw new RuntimeException(ne);
-        }
-    }
+//    private EventNotifier lookupEventNotifierBean() {
+//        try {
+//            Context c = new InitialContext();
+////            INFO: EJB5181:Portable JNDI names for EJB EventNotifier: [java:global/HelpDeskWeb_brotec/EventNotifier!com.itcs.helpdesk.ejb.notifications.EventNotifier, java:global/HelpDeskWeb_brotec/EventNotifier]
+//            return (EventNotifier) c.lookup("java:global/HelpDeskWeb_brotec/EventNotifier");
+//        } catch (NamingException ne) {
+//            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+//            throw new RuntimeException(ne);
+//        }
+//    }
 
 }
