@@ -356,6 +356,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
         addEvent();
         casoController.setActiveIndexCasoSections(8);//tabEditarEvento
         executeInClient("PF('viewEventDialog').hide();PF('createEventDialog').hide();");
+        updateComponentInClient("inputPanel");
     }
 
     public void addEvent() {

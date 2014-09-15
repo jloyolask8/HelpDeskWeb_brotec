@@ -15,7 +15,7 @@
             <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
             <title><ui:insert name="title">#{applicationBean.helpdeskTitle}</ui:insert></title>     
         </f:facet>
-        
+
         <link href="#{facesContext.externalContext.requestContextPath}/resources/css/loginCss.css" rel="stylesheet" type="text/css"/>
 
         <link rel="dns-prefetch" href="//netdna.bootstrapcdn.com" />            
@@ -33,16 +33,15 @@
         <div class="container">
             <div class="row">
                 <div class="col-sm-6 col-md-4 col-md-offset-4 col-sm-offset-3">
-                    
-                     <div align="center">
+
+                    <div align="center">
                         <p:graphicImage  
                             value="#{applicationBean.getLogo()}"  
                             cache="false" rendered="#{applicationBean.showCompanyLogo}"/>  
                     </div>
-                    
+
                     <h1 class="text-center login-title">#{bundle.LoginTitle}</h1>
                     <div class="account-wall">
-                        <p:graphicImage styleClass="profile-img" library="images" name="avatar_2x.png" />
 
                         <!--div align="center">
                             <p:graphicImage library="images" name="ITCSHelpdesk105x105.png" width="100" height="100"/>
@@ -61,36 +60,36 @@
                             <p:watermark for="pass" value="Contraseña"/>
 
 
-                            <h:message for="usuario" errorClass="text-danger"/>
-                            <h:message for="pass" errorClass="text-danger" infoClass="text-info"/>
+                            <p:messages />
 
 
-                              <p:commandButton type="submit" action="#{loginController.loginAction}" 
-                                                         update=":form-signin"
-                                                         styleClass="btn btn-sm btn-warning btn-block"
-                                                         value="#{bundle.LoginUsuario}" 
-                                                         onclick="jQuery(this).addClass('ui-state-disabled')"/>
-                              
-                         
+
+                            <p:commandButton type="submit" action="#{loginController.loginAction}" 
+                                             update=":form-signin"
+                                             styleClass="btn btn-sm btn-primary btn-block"
+                                             value="#{bundle.LoginUsuario}" 
+                                             onclick="jQuery(this).addClass('ui-state-disabled')"/>
+
+
 
                             <label class="checkbox pull-left">
                                 <input type="checkbox" value="remember-me"/>
-                                    Recordarme
+                                Recordarme
                             </label>
                             <p:commandLink action="forgot" styleClass="pull-right need-help" ajax="false" immediate="true"
                                            value="Olvidó su Contraseña?">
                                 <span class="clearfix"></span>
                             </p:commandLink>
-                                           
-                                
 
-                            <h:messages globalOnly="true" errorClass="text-danger"/>
+
+
+
 
                             <br/>
 
                         </h:form>
-                        
-                       
+
+
 
 
                     </div>
@@ -109,4 +108,3 @@
     </h:body>
 </html>
 
-   

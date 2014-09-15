@@ -48,22 +48,10 @@
                                     <p:outputLabel value="Nombre:" for="clienteNotNull" style="font-weight:bold"/>
                                 </p:column>
                                 <p:column>
-                                    <p:commandLink id="clienteNotNull" value="#{casoController.selected.idCliente ne null ? casoController.selected.idCliente.capitalName:''}" style="color: #4183C4 !important;"
+                                    <p:commandLink id="clienteNotNull" value="#{casoController.selected.clientName}" style="color: #4183C4 !important;"
                                                    update=":formDatosCliente" onclick="PF('dialogClient').show()" />
                                 </p:column>
                             </p:row>
-                            <p:row>
-                                <p:column>
-                                    <p:outputLabel value="Email:" for="emailNotNull" style="font-weight:bold"/>
-                                </p:column>
-                                <p:column>
-                                    <p:commandLink id="emailNotNull" value="#{casoController.selected.emailCliente ne null ? casoController.selected.emailCliente.emailCliente:''}" style="color: #4183C4 !important;"
-                                                   update=":formDatosCliente" onclick="PF('dialogClient').show()" />
-                                </p:column>
-                            </p:row>
-
-
-
 
 
                             <p:row>
@@ -213,14 +201,7 @@
                                 </p:column>
                             </p:row>
 
-                            <p:row rendered="#{casoController.selected.idCasoPadre ne null}">
-                                <p:column>
-                                    <p:outputLabel value="#{bundle.EditCasoLabel_idCasoPadre}"  style="font-weight:bold"/>
-                                </p:column>
-                                <p:column>
-                                    <h:commandLink id="idCasoPadre" action="#{casoController.filterByIdCaso(casoController.selected.idCasoPadre.idCaso)}" value="${casoController.selected.idCasoPadre.tipoCaso.nombre} N°${casoController.selected.idCasoPadre.idCaso} - ${casoController.selected.idCasoPadre.tema}"/>
-                                </p:column>
-                            </p:row>
+                           
 
                             <p:row>
                                 <p:column>
@@ -255,6 +236,15 @@
                                     </p:inplace>
                                 </p:column>
 
+                            </p:row>
+                            
+                             <p:row rendered="#{casoController.selected.idCasoPadre ne null}">
+                                <p:column>
+                                    <p:outputLabel value="#{bundle.EditCasoLabel_idCasoPadre}"  style="font-weight:bold"/>
+                                </p:column>
+                                <p:column>
+                                    <h:commandLink id="idCasoPadre" action="#{casoController.filterByIdCaso(casoController.selected.idCasoPadre.idCaso)}" value="${casoController.selected.idCasoPadre.tipoCaso.nombre} N°${casoController.selected.idCasoPadre.idCaso} - ${casoController.selected.idCasoPadre.tema}"/>
+                                </p:column>
                             </p:row>
 
 
@@ -2058,7 +2048,7 @@
                     &nbsp;
                     <p:commandLink id="editButton" value="Editar evento »" 
                                    style="font-weight: bold;float: right;color: #15c;text-decoration: underline;cursor: pointer;white-space: nowrap;"
-                                   actionListener="#{casoScheduleController.goEditEvent()}" update=":inputPanel"/>
+                                   actionListener="#{casoScheduleController.goEditEvent()}" update=":createEventForm:eventDetails"/>
                 </h:form>
             </p:dialog>
 

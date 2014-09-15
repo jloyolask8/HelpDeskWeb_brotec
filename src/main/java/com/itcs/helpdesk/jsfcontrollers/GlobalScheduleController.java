@@ -202,6 +202,10 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
     public String prepareList() {
         recreateModel();
         recreatePagination();
+        if(this.filtrosUsuario == null || this.filtrosUsuario.isEmpty()){
+            filtrosUsuario = new LinkedList<Usuario>();
+            addUsuarioToTheList(userSessionBean.getCurrent());
+        }
         return "/script/agenda";
     }
 
@@ -512,29 +516,33 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
             }
 
             final Usuario usuario = (Usuario) item;
-            if (!filtrosUsuario.contains(usuario)) {
-                if (StringUtils.isEmpty(usuario.getRandomColor())) {
-                    final String color = Colors.getNextColor();
-                    if (color != null) {
-                        usuario.setRandomColor(color);
-                        filtrosUsuario.add(usuario);
-                    } else {
-                        addInfoMessage("No puede agregar más usuarios, favor quitar algunos que no necesite ver, para agregar más!");
-                    }
-
-                }
-
-                selectedUserToAddInvited = null;//reset selection
-
-            } else {
-                addInfoMessage("Este usuario ya existe en la lista!");
-            }
+            addUsuarioToTheList(usuario);
 
         } catch (Exception ex) {
             addInfoMessage("No se pudo Agregar " + item);
             Log.createLogger(CasoController.class.getName()).log(Level.SEVERE, "usuarioFilterItemSelectEvent", ex);
         }
 
+    }
+
+    private void addUsuarioToTheList(final Usuario usuario) {
+        if (!filtrosUsuario.contains(usuario)) {
+            if (StringUtils.isEmpty(usuario.getRandomColor())) {
+                final String color = Colors.getNextColor();
+                if (color != null) {
+                    usuario.setRandomColor(color);
+                    filtrosUsuario.add(usuario);
+                } else {
+                    addInfoMessage("No puede agregar más usuarios, favor quitar algunos que no necesite ver, para agregar más!");
+                }
+                
+            }
+            
+            selectedUserToAddInvited = null;//reset selection
+            
+        } else {
+            addInfoMessage("Este usuario ya existe en la lista!");
+        }
     }
 
     public void usuarioInvitedItemSelectEvent(SelectEvent event) {
