@@ -67,7 +67,7 @@ public class InscripcionEventosSessionBean extends AbstractManagedBean<Caso> imp
         HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String idCaso = req.getParameter("id");
         if (!StringUtils.isEmpty(idCaso)) {
-            Caso caso = getJpaController().find(Caso.class, Long.valueOf(idCaso));
+            Caso caso = getJpaController().find(Caso.class, Long.valueOf(idCaso), true);
             if (caso != null) {
                 setSelected(caso);
                 //handle events
@@ -196,7 +196,7 @@ public class InscripcionEventosSessionBean extends AbstractManagedBean<Caso> imp
                     for (ScheduleEventClient scheduleEventClientInscritos : scheduleEvent.getScheduleEventClientList()) {
                         if (scheduleEventClientInscritos.getCliente().equals(clienteEntity)) {
                             inscrito = true;
-                            addWarnMessage("Ud. ya está inscrito al evento " + scheduleEventClientInscritos.getScheduleEvent().toDateString());
+                            addWarnMessage("Ud. ya está inscrito al evento " + formatDateRange(scheduleEventClientInscritos.getScheduleEvent().getStartDate(), scheduleEventClientInscritos.getScheduleEvent().getEndDate()));
                             return;
                         }
                     }
@@ -230,7 +230,7 @@ public class InscripcionEventosSessionBean extends AbstractManagedBean<Caso> imp
                             nota.setIdCaso(caso);
                             nota.setTipoNota(EnumTipoNota.RESPUESTA_DE_CLIENTE.getTipoNota());
                             nota.setVisible(false);
-                            nota.setTexto("[Inscripción] Bloque/Evento: " + event.toDateString()+ "<br/>Email Cliente:" + datos.getEmail() + ", Rut: " + clienteEntity.getRut());
+                            nota.setTexto("[Inscripción] Bloque/Evento: " + formatDateRange(event.getStartDate(), event.getEndDate()) + "<br/>Email Cliente:" + datos.getEmail() + ", Rut: " + clienteEntity.getRut());
                                     
                             getSelected().getNotaList().add(nota);
                             getJpaController().merge(getSelected());
@@ -253,6 +253,8 @@ public class InscripcionEventosSessionBean extends AbstractManagedBean<Caso> imp
             }
         }
     }
+    
+    
 
     /**
      * @return the datos

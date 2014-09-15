@@ -80,8 +80,6 @@
 
         <f:event type="preRenderView" listener="#{inscripcionEventosSessionBean.initializeData}" />
 
-
-
         <p:dialog id="messagesDialogId" visible="#{not empty facesContext.messageList}" 
                   header="Mensajes" modal="true" closeOnEscape="true"
                   widgetVar="messagesDialog"  appendTo="@(body)">
@@ -91,7 +89,6 @@
                 </h:panelGrid>
                 <div align="right">
                     <p:commandButton immediate="true" 
-                                     
                                      onclick="PF('messagesDialog').hide();" update=":mainForm"
                                      type="button" value="OK"/>
                 </div>  
@@ -140,7 +137,7 @@
                                       disabled="#{empty inscripcionEventosSessionBean.selected.scheduleEventList}">
                         <f:selectItem itemLabel="Seleccione el horario en que desea participar" itemValue=""/>
                         <f:selectItems value="#{inscripcionEventosSessionBean.selected.scheduleEventList}" var="scheduleEvent" 
-                                       itemLabel="#{scheduleEvent.toDateString()} (#{scheduleEvent.maxClientesInscritos - scheduleEvent.scheduleEventClientList.size()} cupos disp.)" itemValue="#{scheduleEvent.eventId}" 
+                                       itemLabel="#{inscripcionEventosSessionBean.formatDateRange(scheduleEvent.startDate, scheduleEvent.endDate)} (#{scheduleEvent.maxClientesInscritos - scheduleEvent.scheduleEventClientList.size()} cupos disp.)" itemValue="#{scheduleEvent.eventId}" 
                                        itemDisabled="#{not (scheduleEvent.scheduleEventClientList.size() lt scheduleEvent.maxClientesInscritos)}"/>
                     </h:selectOneMenu>
 

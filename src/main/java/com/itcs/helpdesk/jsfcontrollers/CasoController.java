@@ -10,11 +10,9 @@ import com.itcs.helpdesk.persistence.entities.AuditLog;
 import com.itcs.helpdesk.persistence.entities.BlackListEmail;
 import com.itcs.helpdesk.persistence.entities.Canal;
 import com.itcs.helpdesk.persistence.entities.Caso;
-import com.itcs.helpdesk.persistence.entities.CasoCustomField;
 import com.itcs.helpdesk.persistence.entities.Caso_;
 import com.itcs.helpdesk.persistence.entities.Cliente;
 import com.itcs.helpdesk.persistence.entities.Clipping;
-import com.itcs.helpdesk.persistence.entities.CustomField;
 import com.itcs.helpdesk.persistence.entities.EmailCliente;
 import com.itcs.helpdesk.persistence.entities.EstadoCaso;
 import com.itcs.helpdesk.persistence.entities.Etiqueta;
@@ -103,7 +101,6 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
-import org.ocpsoft.prettytime.PrettyTime;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.FlowEvent;
@@ -125,11 +122,7 @@ import org.quartz.SchedulerException;
 @SessionScoped
 public class CasoController extends AbstractManagedBean<Caso> implements Serializable {
 
-    private static final Locale LOCALE_ES_CL = new Locale("es", "CL");
-    private static final SimpleDateFormat fullDateFormat = new SimpleDateFormat("EEE, dd 'de' MMMM 'de' yyyy HH:mm", LOCALE_ES_CL);
-    private static final SimpleDateFormat dayDateFormat = new SimpleDateFormat("HH:mm");
-    private static final SimpleDateFormat monthDateFormat = new SimpleDateFormat("dd MMM", LOCALE_ES_CL);
-    private static final SimpleDateFormat yearDateFormat = new SimpleDateFormat("dd/MM/yy", LOCALE_ES_CL);
+   
     //  other bean references
     @ManagedProperty(value = "#{applicationBean}")
     private ApplicationBean applicationBean;
@@ -1264,39 +1257,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         return "/script/caso/Create_preentrega";
     }
 
-    public String prettyDate(Date date) {
+    
 
-        if (date != null) {
-            PrettyTime p = new PrettyTime(new Locale("es"));
-            return p.format(date);
-//            return PrettyDate.format(date);
-        } else {
-            return "";
-        }
-    }
-
-    public String formatShortDate(Date date) {
-        if (date != null) {
-
-            if (DateUtils.isToday(date)) {
-                return dayDateFormat.format(date);
-            } else if (DateUtils.isThisYear(date)) {
-                return monthDateFormat.format(date);
-            } else {
-                return yearDateFormat.format(date);
-            }
-        } else {
-            return "";
-        }
-    }
-
-    public String formatDate(Date date) {
-        if (date != null) {
-            return fullDateFormat.format(date);
-        } else {
-            return "";
-        }
-    }
+    
 
     public String prepareCreate() {
         try {
