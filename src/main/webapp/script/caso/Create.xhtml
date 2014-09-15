@@ -124,14 +124,14 @@
                                 <h:panelGrid columns="3">
 
                                     <p:outputLabel value="#{applicationBean.productDescription}" for="idProducto" style="font-weight:bold"/>
-                                    <p:selectOneMenu id="idProducto" value="#{casoController.selected.idProducto}">
+                                    <p:selectOneMenu id="idProducto" value="#{casoController.selected.idProducto}" filter="true" filterMatchMode="contains">
                                         <f:selectItems value="#{productoController.itemsAvailableSelectOne}"/>
                                         <p:ajax update="idComponente"  listener="#{casoController.handleProductChange}" />
                                     </p:selectOneMenu>
                                     <p:message for="idProducto"/>
 
                                     <h:outputLabel value="#{applicationBean.productComponentDescription}:" for="idComponente" style="font-weight: bold"/>
-                                    <p:selectOneMenu id="idComponente" value="#{casoController.selected.idComponente}" required="true" requiredMessage="Requerido."
+                                    <p:selectOneMenu id="idComponente" value="#{casoController.selected.idComponente}" required="true" requiredMessage="Requerido." filter="true" filterMatchMode="contains"
                                                      disabled="#{casoController.selected.idProducto eq null}">
                                         <f:selectItem itemLabel="---" itemValue=""/>
                                         <f:selectItems value="#{casoController.selected.idProducto.componenteList}" var="comp" itemLabel="#{comp.nombre}" itemValue="#{comp}"/>
@@ -140,7 +140,7 @@
                                     <p:message for="idComponente"/>
 
                                     <h:outputLabel value="#{applicationBean.productSubComponentDescription}:" for="idSubComponente" style="font-weight: bold"/>
-                                    <p:selectOneMenu id="idSubComponente" value="#{casoController.selected.idSubComponente}" 
+                                    <p:selectOneMenu id="idSubComponente" value="#{casoController.selected.idSubComponente}" filter="true" filterMatchMode="contains"
                                                      disabled="#{casoController.selected.idComponente eq null}">
                                         <f:selectItem itemLabel="---" itemValue=""/>
                                         <f:selectItems value="#{casoController.selected.idComponente.subComponenteList}" var="subc" itemLabel="#{subc.nombre}" itemValue="#{subc}"/>

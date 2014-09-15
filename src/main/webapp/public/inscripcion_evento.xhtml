@@ -3,8 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui"
-      >
+      xmlns:p="http://primefaces.org/ui">
     <h:head>
         <title>Inscripción - HelpDesk Brotec-Icafal</title>
         <style type="text/css">
@@ -72,7 +71,7 @@
     </h:head>
     <h:body>
 
-        <f:event type="preRenderView" listener="#{inscripcionSessionBean.initializeData}" />
+        <f:event type="preRenderView" listener="#{inscripcionEventosSessionBean.initializeData}" />
 
 
 
@@ -83,7 +82,7 @@
                     <h:messages />  
                 </h:panelGrid>
                 <div align="right">
-                    <p:commandButton immediate="true" onclick="messagesDialog.hide();" update=":mainForm"
+                    <p:commandButton immediate="true" onclick="PF('messagesDialog').hide();" update=":mainForm"
                                      type="button" value="OK"/>
                 </div>  
 
@@ -93,48 +92,55 @@
 
 
 
-        <h:form id="form_" enctype="multipart/form-data">
+        <h:form id="form_">
 
             <div class="contact-form-postventa" id="contact-form-proyect" >
 
                 <div class="field">
-                    <p:inputText id="Rut" value="#{inscripcionSessionBean.datos.rut}" title="Ejemplo: 15.040.452-5"
+                    <p:inputText id="Rut" value="#{inscripcionEventosSessionBean.datos.rut}" title="Ej: 12.345.678-9"
                                  validator="#{inputValidationBean.validarRut}" 
                                  required="true" requiredMessage="Ingresa tu rut."> 
-                        <p:ajax event="blur" listener="#{inscripcionSessionBean.formateaRutFiltro3}" partialSubmit="true" process="Rut" update=":messagesDialogId :form_"/>
+                        <p:ajax event="blur" listener="#{inscripcionEventosSessionBean.formateaRutFiltro3}" partialSubmit="true" process="Rut" update=":messagesDialogId :form_"/>
                     </p:inputText>
-                    <p:watermark for="Rut" value="Rut (Ej: 15.040.452-5)"/>
+                    <p:watermark for="Rut" value="Ej: 12.345.678-9"/>
                 </div>
 
                 <div class="field">
-                    <p:inputText id="Email" type="email" value="#{inscripcionSessionBean.datos.email}" disabled="#{empty cuposHorarioBean.entries}"
+                    <p:inputText id="Email" type="email" value="#{inscripcionEventosSessionBean.datos.email}" disabled="#{empty cuposHorarioBean.entries}"
                                  validator="#{inputValidationBean.validarEmail}"
                                  required="true" requiredMessage="Debes escribir tu email correctamente."/>
                     <p:watermark for="Email" value="Email"/>
                 </div>
 
                 <div class="field">
-                    <p:inputText id="Telefono" value="#{inscripcionSessionBean.datos.telefono}" disabled="#{empty cuposHorarioBean.entries}" 
+                    <p:inputText id="Telefono" value="#{inscripcionEventosSessionBean.datos.telefono}" disabled="#{empty cuposHorarioBean.entries}" 
                                  validator="#{inputValidationBean.validatePhoneNumber}" />
-                    <p:watermark for="Telefono" value="Teléfono EJ: 02-12345678 o 02 12345678"/>
+                    <p:watermark for="Telefono" value="Ej: fijo 2 2 1234567 o movil 9 12345678"/>
                 </div>
 
                 <div class="field">
                     <label for="name">Seleccione el horario en que desea participar:</label>
 
-                    <p:selectOneMenu id="horario" value="#{inscripcionSessionBean.datos.horario}" style="width: 100%" disabled="#{empty cuposHorarioBean.entries}">
-                        <f:selectItems value="#{cuposHorarioBean.entries}" var="item" itemLabel="#{item.toString()}" itemValue="#{item.horario}" itemDisabled="#{item.cuposs le 0}"/>
+                    <p:selectOneMenu id="horario" value="#{inscripcionEventosSessionBean.datos.scheduleEventId}" 
+                                     required="true" requiredMessage="Favor Seleccione el horario en que desea participar"
+                                     style="width: 100%" disabled="#{empty inscripcionEventosSessionBean.selected.scheduleEventList}">
+                        <f:selectItem itemLabel="Seleccione..." itemValue=""/>
+                        <f:selectItems value="#{inscripcionEventosSessionBean.selected.scheduleEventList}" var="scheduleEvent" 
+                                       itemLabel="#{scheduleEvent.toDateString()} (#{scheduleEvent.maxClientesInscritos - scheduleEvent.scheduleEventClientList.size()} cupos disp.)" itemValue="#{scheduleEvent.eventId}" 
+                                       itemDisabled="#{not (scheduleEvent.scheduleEventClientList.size() lt scheduleEvent.maxClientesInscritos)}"/>
                     </p:selectOneMenu>
 
                 </div>
 
 
                 <div class="field">
-                    <p:commandButton id="inp" actionListener="#{inscripcionSessionBean.enviarInscripcion(e)}" disabled="#{empty cuposHorarioBean.entries}"
-                                     update=":messagesDialogId :form_"  
-                                     value="#{empty cuposHorarioBean.entries ? 'Lo sentimos, no hay cupos disponibles':'Enviar'}" style="float: right;"/>
+                    <p:commandButton id="inp" actionListener="#{inscripcionEventosSessionBean.enviarInscripcion()}" 
+                                     disabled="#{empty inscripcionEventosSessionBean.selected.scheduleEventList}"
+                                     update=":messagesDialogId :form_"
+                                     value="#{empty inscripcionEventosSessionBean.selected.scheduleEventList ? 'Lo sentimos, no hay cupos disponibles':'Enviar'}" 
+                                     style="float: right;"/>
 
-                    <p:ajaxStatus style="width:16px;height:16px;" id="ajaxStatusPanel" >  
+                    <p:ajaxStatus style="width:16px;height:16px;" id="ajaxStatusPanel">  
                         <f:facet name="start">  
                             <h:graphicImage value="../../images/loading.gif" /> 
                         </f:facet>  

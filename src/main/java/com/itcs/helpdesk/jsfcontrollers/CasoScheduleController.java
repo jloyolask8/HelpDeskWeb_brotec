@@ -218,7 +218,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
        
         this.event = scheduleEvent;
         com.itcs.helpdesk.persistence.entities.ScheduleEvent scheduleEvent1 = (com.itcs.helpdesk.persistence.entities.ScheduleEvent)scheduleEvent.getData();
-        casoController.setActiveIndexCasoSections(6);
+        casoController.setActiveIndexCasoSections(8);//tabEditarEvento
         return casoController.filterByIdCaso(scheduleEvent1.getIdCaso().getIdCaso());
         
     }
@@ -332,7 +332,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
                 lazyScheduleEventsModel.updateEvent(event);
                 executeInClient("PF('myschedule').update();");
                 addInfoMessage("Evento actualizado exitósamente.");
-                casoController.setActiveIndexCasoSections(6);
+                casoController.setActiveIndexCasoSections(4);//tabAgendarEvento
                 this.event = null;
             }
 
@@ -345,6 +345,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     public void onTabClose(TabCloseEvent event) {
         //update=":inputPanel"
+        System.out.println("TabCloseEvent:"+event.getTab());
         FacesMessage msg = new FacesMessage("Tab Closed", "Closed tab: " + event.getTab().getTitle());
         FacesContext.getCurrentInstance().addMessage(null, msg);
         this.event = null;
@@ -352,7 +353,8 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     public void goEditEvent() {
         //casoController.onChangeActiveIndexdescOrComment(event);
-        casoController.setActiveIndexCasoSections(6);
+        addEvent();
+        casoController.setActiveIndexCasoSections(8);//tabEditarEvento
         executeInClient("PF('viewEventDialog').hide();PF('createEventDialog').hide();");
     }
 

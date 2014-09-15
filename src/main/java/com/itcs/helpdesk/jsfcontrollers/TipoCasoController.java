@@ -1,7 +1,9 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
+import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.TipoCaso;
+import com.itcs.jpautils.EasyCriteriaQuery;
 import java.io.Serializable;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -49,7 +51,7 @@ public class TipoCasoController extends AbstractManagedBean<TipoCaso> implements
         try {
             getJpaController().persist(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("TipoCasoCreated"));
-            return prepareCreate();
+            return prepareList();
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
             return null;
@@ -102,6 +104,12 @@ public class TipoCasoController extends AbstractManagedBean<TipoCaso> implements
     @Override
     public Class getDataModelImplementationClass() {
         return TipoCasoDataModel.class;
+    }
+
+    public Long countCasosByTipo(TipoCaso tipo) {
+        EasyCriteriaQuery<Caso> c = new EasyCriteriaQuery<Caso>(emf, Caso.class);
+        c.addEqualPredicate("tipoCaso", tipo);
+        return c.count();
     }
 }
 

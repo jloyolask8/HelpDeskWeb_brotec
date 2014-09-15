@@ -63,8 +63,8 @@
                 </h:form>
                 <br/>
                 <h:panelGrid>
-                    <p:panel rendered="#{not empty productoController.bulkLoadedProductos}" collapsed="true" header="Modificación de Código/Nombre de #{applicationBean.productDescription}(s)"
-                             toggleable="true" >
+                    <p:panel rendered="#{not empty productoController.bulkLoadedProductos}" collapsed="true" toggleable="true"
+                             header="Modificación de Código/Nombre de #{applicationBean.productDescription}(s)">
 
                         <h:form id="formP">
 
@@ -112,17 +112,16 @@
                                                  update=":form"/>
                             </f:facet>
 
+                               <p:column headerText="Código #{applicationBean.productSubComponentDescription}" sortBy="#{SubComponent.idSubComponente}">
+                                <h:outputText value="#{SubComponent.idSubComponente}"/>
+                            </p:column>
 
                             <p:column headerText="#{applicationBean.productDescription}" sortBy="#{SubComponent.idComponente.idProducto.nombre}">
-                                <h:outputText value="(#{SubComponent.idComponente.idProducto.idProducto})#{SubComponent.idComponente.idProducto.nombre}"/>
+                                <h:outputText value="(#{SubComponent.idComponente.idProducto.idProducto}) #{SubComponent.idComponente.idProducto.nombre}"/>
                             </p:column>
 
                             <p:column headerText="#{applicationBean.productComponentDescription}" sortBy="#{SubComponent.idComponente.nombre}">
                                 <h:outputText value="#{SubComponent.idComponente.nombre}"/>
-                            </p:column>
-
-                            <p:column headerText="Código #{applicationBean.productSubComponentDescription}" sortBy="#{SubComponent.idSubComponente}">
-                                <h:outputText value="#{SubComponent.idSubComponente}"/>
                             </p:column>
 
                             <p:column headerText="Nombre #{applicationBean.productSubComponentDescription}" sortBy="#{SubComponent.nombre}">

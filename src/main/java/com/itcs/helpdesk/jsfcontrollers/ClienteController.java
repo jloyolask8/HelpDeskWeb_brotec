@@ -20,6 +20,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
+import javax.resource.NotSupportedException;
 import org.primefaces.model.SelectableDataModel;
 
 @ManagedBean(name = "clienteController")
@@ -59,7 +60,8 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
                             if (searchPattern != null && !searchPattern.trim().isEmpty()) {
                                 count = getJpaController().getClienteJpaController().countSearchEntities(searchPattern).intValue();
                             } else {
-                                count = getJpaController().getClienteJpaController().getClienteCount();
+//                                count = getJpaController().getClienteJpaController().getClienteCount();
+                                count = getJpaController().countEntities(getFilterHelper().getVista(), getDefaultUserWho()).intValue();
                             }
                         }
 
@@ -76,8 +78,21 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
                     if (searchPattern != null && !searchPattern.trim().isEmpty()) {
                         return new ClienteDataModel(getJpaController().getClienteJpaController().searchEntities(searchPattern, false, getPageSize(), getPageFirstItem()));
                     } else {
-                        return new ClienteDataModel((List<Cliente>) getJpaController().findEntities(Cliente.class, false, getPageSize(), getPageFirstItem(),"nombres","apellidos"));
+//                        return new ClienteDataModel((List<Cliente>) getJpaController().findEntities(Cliente.class, false, getPageSize(), getPageFirstItem(),"nombres","apellidos"));
+                        try {
+                            ClienteDataModel dataModel = new ClienteDataModel();
+                            dataModel.setWrappedData(getJpaController().findEntities(Cliente.class, getFilterHelper().getVista(), getPageSize(), getPageFirstItem(), getDefaultOrderBy(), getDefaultUserWho()));
+                            return dataModel;
+                        } catch (IllegalStateException ex) {//error en el filtro
+                            JsfUtil.addErrorMessage(ex, "Existe un problema con el filtro. Favor corregir e intentar nuevamente.");
+                        } catch (ClassNotFoundException ex) {
+                            JsfUtil.addErrorMessage(ex, "Lo sentimos, ocurrió un error inesperado. Favor contactar a soporte.");
+                            Logger.getLogger(AbstractManagedBean.class.getName()).log(Level.SEVERE, "ClassNotFoundException createPageDataModel", ex);
+                        } catch (NotSupportedException ex) {
+                            addWarnMessage("Lo sentimos, ocurrió un error inesperado. La acción que desea realizar aún no esta soportada por el sistema.");
+                        }
                     }
+                    return null;
                 }
             };
         }
@@ -124,13 +139,10 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
             getJpaController().persistCliente(current);
             for (EmailCliente emailCliente : listaEmails) {
                 EmailCliente oldEmailCliente = getJpaController().find(EmailCliente.class, emailCliente.getEmailCliente());
-                if(null == oldEmailCliente)
-                {
+                if (null == oldEmailCliente) {
                     emailCliente.setCliente(current);
                     getJpaController().persist(emailCliente);
-                }
-                else
-                {
+                } else {
                     oldEmailCliente.getCliente().getEmailClienteList().remove(oldEmailCliente);
                     oldEmailCliente.setCliente(current);
                     getJpaController().merge(oldEmailCliente);
@@ -171,8 +183,7 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
     }
 
     public boolean puedeEliminar(Cliente item) {
-        if(item != null && item.getCasoList() != null)
-        {
+        if (item != null && item.getCasoList() != null) {
             return item.getCasoList().isEmpty();
         }
         return false;

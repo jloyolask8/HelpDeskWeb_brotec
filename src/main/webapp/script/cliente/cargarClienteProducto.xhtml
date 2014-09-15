@@ -45,8 +45,24 @@
                             </p:inputText>                           
                         </h:panelGrid>
 
+                        <h:panelGrid columns="2">
 
-                       <br/>
+                            <p:outputLabel value="Tipo de Relación entre el Cliente y el producto"/>
+
+                            <p:selectOneMenu id="bulkLoadedProductoContratadoTipoAsoc" filter="true" filterMatchMode="contains"
+                                             value="#{emailClienteController.bulkLoadedProductoContratadoTipoAsoc}" 
+                                             required="true" requiredMessage="Favor indiquenos el tipo de relación entre el Cliente y el producto">
+                                <f:selectItem itemLabel="Propietario" itemValue="Propietario"/>
+                                <f:selectItem itemLabel="Familiar del Propietario" itemValue="Familiar del Propietario"/>
+                                <f:selectItem itemLabel="Cotizante" itemValue="Cotizante"/>
+                            </p:selectOneMenu>
+
+
+
+                        </h:panelGrid>
+
+
+                        <br/>
 
                         <p:fileUpload value="#{emailClienteController.fileClients}" mode="simple" allowTypes="/(\.|\/)(xls|xlsx)$/" update=":form"/>  
 
@@ -79,8 +95,8 @@
                             </f:facet>
 
 
-                              <p:column headerText="Id Cliente">
-                                  <h:outputText value="#{item.cliente.idCliente}"/>
+                            <p:column headerText="Id Cliente">
+                                <h:outputText value="#{item.cliente.idCliente}"/>
                             </p:column>
 
                             <p:column headerText="Cliente">
@@ -97,6 +113,10 @@
 
                             <p:column headerText="Código #{applicationBean.productSubComponentDescription}" sortBy="#{SubComponent.idSubComponente}">
                                 <h:outputText value="#{item.productoContratadoPK.idSubComponente}"/>
+                            </p:column>
+                            
+                             <p:column headerText="Tipo Relación">
+                                 <h:outputText value="#{item.tipoAsociacion}"/>
                             </p:column>
 
                         </p:dataTable>

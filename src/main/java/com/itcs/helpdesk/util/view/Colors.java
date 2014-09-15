@@ -5,14 +5,16 @@
  */
 package com.itcs.helpdesk.util.view;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  *
  * @author jonathan
  */
 public class Colors {
 
-    
-    public static final String COLOR1 = "d06c64";//never used =)
     public static final String COLOR2 = "f83b22";
     public static final String COLOR3 = "ff7637";//rgb(255, 117, 55)
     public static final String COLOR4 = "ffac46";//rgb(255, 173, 70)";
@@ -35,19 +37,34 @@ public class Colors {
     public static final String COLOR21 = "cd74e6";//rgb(205, 116, 230)";
     public static final String COLOR22 = "a47ae2";//rgb(164, 122, 226)";
 
-    private static String[] colors = new String[]{
-        COLOR1, COLOR2, COLOR3, COLOR4, COLOR5, COLOR6,
+    private static final String[] availableColors = new String[]{
+        COLOR2,  COLOR5, COLOR6, COLOR3, COLOR4,
         COLOR7, COLOR8, COLOR9, COLOR10, COLOR11, COLOR12,
         COLOR13, COLOR14, COLOR15, COLOR16, COLOR17, COLOR18,
         COLOR19, COLOR20, COLOR21, COLOR22
     };
 
-    public static String getColor(int index) {
-        if (index >= 0 && index < 22) {
-            return colors[index];
+    private static List<String> colorsInUse = null;
+
+    /**
+     * circular color provider
+     *
+     * @return
+     */
+    public static String getNextColor() {
+        if (colorsInUse == null) {
+            colorsInUse = new LinkedList<String>();
+            colorsInUse.addAll(Arrays.asList(availableColors));
+        }
+        if (!colorsInUse.isEmpty()) {
+            String color = colorsInUse.get(0);
+            colorsInUse.remove(0);
+            return color;
         } else {
-            return null;
+            colorsInUse.addAll(Arrays.asList(availableColors));
+            String color = colorsInUse.get(0);
+            colorsInUse.remove(0);
+            return color;
         }
     }
-
 }

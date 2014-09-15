@@ -198,7 +198,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     private String accionToRunSelected;
     private String accionToRunParametros;
-    private int activeIndexdescOrComment;
+//    private int activeIndexdescOrComment;
     private int activeIndexCasoSections;
     //visitas preventivas
     private static final int visitaPreventivaCrearCasoDiasAntes = 10;
@@ -250,35 +250,44 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         executeInClient("selectItemsWidget.hide()");
     }
 
-    public void onChangeActiveIndexdescOrComment(TabChangeEvent event) {
-        //THIS CUERO PIC PULGA ES A RAIZ DE UN BUG DE PRIMEFACES, ME ENVIA EL ACTIVE INDEX SIEMPRE EN CER0.
-        final String idtab = event.getTab().getId();
-        if (idtab.contains("tabDesc")) {
-            setActiveIndexdescOrComment(0);
-        } else if (idtab.contains("tabComments")) {
-            setActiveIndexdescOrComment(1);
-        } else {
-            setActiveIndexdescOrComment(0);
-        }
-    }
-
+    /**
+     * will remove
+     *
+     * @param event
+     */
+//    public void onChangeActiveIndexdescOrComment(TabChangeEvent event) {
+//        //THIS CUERO PIC PULGA ES A RAIZ DE UN BUG DE PRIMEFACES, ME ENVIA EL ACTIVE INDEX SIEMPRE EN CER0.
+//        final String idtab = event.getTab().getId();
+//        if (idtab.contains("tabDesc")) {
+//            setActiveIndexdescOrComment(0);
+//        } else if (idtab.contains("tabComments")) {
+//            setActiveIndexdescOrComment(1);
+//        } else {
+//            setActiveIndexdescOrComment(0);
+//        }
+//    }
     public void onChangeActiveIndexCasoSections(TabChangeEvent event) {
         //THIS CUERO PIC PULGA ES A RAIZ DE UN BUG DE PRIMEFACES, ME ENVIA EL ACTIVE INDEX SIEMPRE EN CER0.
         final String idtab = event.getTab().getId();
-        if (idtab.contains("tab-actividades")) {
-            setActiveIndexCasoSections(0);
+
+        if (idtab.contains("tabDesc")) {
+            setActiveIndexCasoSections(0);//tabDesc
+        } else if (idtab.contains("tab-actividades")) {
+            setActiveIndexCasoSections(1);//tab-actividades
+        } else if (idtab.contains("tabComments")) {
+            setActiveIndexCasoSections(2);//tabComments
         } else if (idtab.contains("tab-timeline")) {
-            setActiveIndexCasoSections(1);
+            setActiveIndexCasoSections(3);//tab-timeline
         } else if (idtab.contains("tabAgendarEvento")) {
-            setActiveIndexCasoSections(2);
+            setActiveIndexCasoSections(4);//tabAgendarEvento
         } else if (idtab.contains("tabArchivos")) {
-            setActiveIndexCasoSections(3);
+            setActiveIndexCasoSections(5);//tabArchivos
         } else if (idtab.contains("tabCasosRelacionados")) {
-            setActiveIndexCasoSections(4);
+            setActiveIndexCasoSections(6);//tabCasosRelacionados
         } else if (idtab.contains("tabSubCasos")) {
-            setActiveIndexCasoSections(5);
+            setActiveIndexCasoSections(7);//tabSubCasos
         } else if (idtab.contains("tabEditarEvento")) {
-            setActiveIndexCasoSections(6);
+            setActiveIndexCasoSections(8);//tabEditarEvento
         } else {
             setActiveIndexCasoSections(0);
         }
@@ -853,7 +862,17 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 }
                 return sbuilder.toString();
             }
-            return nota.getTipoNota().getNombre() + " - creada por " + nota.getCreadaPor().getIdUsuario() + " - " + format.format(nota.getFechaCreacion());
+
+            String text = nota.getTipoNota().getNombre();
+            if (nota.getCreadaPor() != null) {
+                text = text + " - creado por " + nota.getCreadaPor().getIdUsuario();
+            }
+
+            if (nota.getFechaCreacion() != null) {
+                text = text + " - " + format.format(nota.getFechaCreacion());
+            }
+
+            return text;
 
         }
 
@@ -1474,8 +1493,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         }
 
-        setActiveIndexdescOrComment(0);
-        setActiveIndexCasoSections(0);
+//        setActiveIndexdescOrComment(0);
         if (current != null && (current.getOwner() != null) && (current.getOwner().equals(userSessionBean.getCurrent()))) {
             if (current.getRevisarActualizacion()) {
                 current.setRevisarActualizacion(false);
@@ -1490,6 +1508,13 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             Collections.sort(current.getNotaList());
         }
 
+//        if (current.getNotaList() != null && !current.getNotaList().isEmpty()) {
+//            setActiveIndexCasoSections(1);//actividades
+//
+//        } else {
+        setActiveIndexCasoSections(0);//descripcion
+
+//        }
 //        prepareDynamicCaseData(current);
     }
 
@@ -3763,21 +3788,20 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         this.applicationBean = applicationBean;
     }
 
-    /**
-     * @return the activeIndexdescOrComment
-     */
-    public int getActiveIndexdescOrComment() {
-        return activeIndexdescOrComment;
-    }
-
-    /**
-     * @param activeIndexdescOrComment the activeIndexdescOrComment to set
-     */
-    public void setActiveIndexdescOrComment(int activeIndexdescOrComment) {
-        this.activeIndexdescOrComment = activeIndexdescOrComment;
-
-    }
-
+//    /**
+//     * @return the activeIndexdescOrComment
+//     */
+//    public int getActiveIndexdescOrComment() {
+//        return activeIndexdescOrComment;
+//    }
+//
+//    /**
+//     * @param activeIndexdescOrComment the activeIndexdescOrComment to set
+//     */
+//    public void setActiveIndexdescOrComment(int activeIndexdescOrComment) {
+//        this.activeIndexdescOrComment = activeIndexdescOrComment;
+//
+//    }
     /**
      * @return the selectedItemIndex
      */

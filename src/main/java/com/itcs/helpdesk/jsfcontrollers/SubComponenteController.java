@@ -1,9 +1,11 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
+import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.SubComponente;
 import java.io.Serializable;
 import java.util.List;
+import java.util.ResourceBundle;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
@@ -21,6 +23,15 @@ public class SubComponenteController extends AbstractManagedBean<SubComponente> 
 
     public SubComponenteController() {
         super(SubComponente.class);
+    }
+    
+    public void destroy(SubComponente item) {
+        try {
+            getJpaController().remove(SubComponente.class, item);
+            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("SubComponenteDeleted"));
+        } catch (Exception e) {
+            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
+        }
     }
 
     @Override

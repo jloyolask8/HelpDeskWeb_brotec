@@ -21,6 +21,7 @@ public class FormCaso implements Serializable{
     private String producto;
     private String tipoCaso;
     private String horario;
+    private Integer scheduleEventId;//
 //    private String tipoConsulta;
 
     /**
@@ -147,6 +148,20 @@ public class FormCaso implements Serializable{
      */
     public void setTipoCaso(String tipoCaso) {
         this.tipoCaso = tipoCaso;
+    }
+
+    /**
+     * @return the scheduleEventId
+     */
+    public Integer getScheduleEventId() {
+        return scheduleEventId;
+    }
+
+    /**
+     * @param scheduleEventId the scheduleEventId to set
+     */
+    public void setScheduleEventId(Integer scheduleEventId) {
+        this.scheduleEventId = scheduleEventId;
     }
     
     

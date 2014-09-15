@@ -24,6 +24,111 @@
                 <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
             </h:panelGroup>
 
+
+
+            <h:form>
+
+                <p:panel header="Detalles de #{applicationBean.productSubComponentDescription}">
+
+                    <h:panelGrid columns="2">
+
+                        <p:outputLabel value="#{applicationBean.productDescription}:" for="proyecto" style="font-weight: bold;"/>
+                        <p:outputLabel id="proyecto" value="#{productoController.currentSubComponente.idComponente.idProducto.nombre}" />
+
+                        <p:outputLabel value="#{applicationBean.productSubComponentDescription}:" for="idSubComponente" style="font-weight: bold;"/>
+                        <p:outputLabel id="idSubComponente" value="#{productoController.currentSubComponente.idSubComponente}" />
+
+                        <p:outputLabel value="#{bundle.EditSubComponenteLabel_nombre}" for="nombre" style="font-weight: bold;"/>
+                        <p:inputText id="nombre" value="#{productoController.currentSubComponente.nombre}" title="#{bundle.EditSubComponenteTitle_nombre}" />
+
+                        <p:outputLabel value="#{applicationBean.productComponentDescription}" for="idComponente" style="font-weight: bold;"/>
+                        <p:selectOneMenu id="idComponente" filter="true" filterMatchMode="contains"
+                                         value="#{productoController.currentSubComponente.idComponente}" 
+                                         required="true" requiredMessage="#{bundle.EditSubComponenteRequiredMessage_idComponente}">
+                            <f:selectItems value="#{componenteController.itemsAvailableSelectOne}"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel value="#{bundle.EditSubComponenteLabel_modeloProducto}" for="modeloProducto" style="font-weight: bold;"/>
+
+                        <p:selectOneMenu id="modeloProducto" value="#{productoController.currentSubComponente.modelo}" editable="false">
+                            <f:selectItems value="#{modeloProductoController.getItemsAvailableSelectOneByProduct(productoController.currentSubComponente.idComponente.idProducto.idProducto)}" />
+                        </p:selectOneMenu>
+
+                        <p:outputLabel value="#{bundle.EditSubComponenteLabel_direccionMunicipal}" for="direccionMunicipal" style="font-weight: bold;"/>
+                        <p:inputTextarea id="direccionMunicipal" cols="50"
+                                         value="#{productoController.currentSubComponente.direccionMunicipal}" title="#{bundle.EditSubComponenteTitle_direccionMunicipal}" />
+
+                        <p:outputLabel value="#{bundle.EditSubComponenteLabel_descripcion}" for="descripcion" style="font-weight: bold;"/>
+                        <p:inputTextarea id="descripcion" cols="50"
+                                         value="#{productoController.currentSubComponente.descripcion}" title="#{bundle.EditSubComponenteTitle_descripcion}" />
+                        <p:outputLabel value="#{bundle.EditSubComponenteLabel_fechaReserva}" for="fechaReserva" style="font-weight: bold;"/>
+                        <p:calendar id="fechaReserva" value="#{productoController.currentSubComponente.fechaReserva}" pattern="dd/MM/yyyy"
+                                    title="#{bundle.EditSubComponenteTitle_fechaReserva}" >
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </p:calendar>
+                        <p:outputLabel value="#{bundle.EditSubComponenteLabel_fechaPromesa}" for="fechaPromesa" style="font-weight: bold;"/>
+                        <p:calendar id="fechaPromesa" value="#{productoController.currentSubComponente.fechaPromesa}" pattern="dd/MM/yyyy"
+                                    title="#{bundle.EditSubComponenteTitle_fechaPromesa}" >
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </p:calendar>
+                        <p:outputLabel value="#{bundle.EditSubComponenteLabel_fechaEscritura}" for="fechaEscritura" style="font-weight: bold;"/>
+                        <p:calendar id="fechaEscritura" value="#{productoController.currentSubComponente.fechaEscritura}" pattern="dd/MM/yyyy"
+                                    title="#{bundle.EditSubComponenteTitle_fechaEscritura}" >
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </p:calendar>
+                        <p:outputLabel value="#{bundle.EditSubComponenteLabel_fechaDesistimiento}" for="fechaDesistimiento" style="font-weight: bold;"/>
+                        <p:calendar id="fechaDesistimiento" value="#{productoController.currentSubComponente.fechaDesistimiento}" pattern="dd/MM/yyyy"
+                                    title="#{bundle.EditSubComponenteTitle_fechaDesistimiento}" >
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </p:calendar>
+                        <p:outputLabel value="#{bundle.EditSubComponenteLabel_fechaEntrega}" for="fechaEntrega" style="font-weight: bold;"/>
+                        <p:calendar id="fechaEntrega" value="#{productoController.currentSubComponente.fechaEntrega}" pattern="dd/MM/yyyy"
+                                    title="#{bundle.EditSubComponenteTitle_fechaEntrega}" >
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </p:calendar>
+
+
+                    </h:panelGrid>
+
+                    <f:facet name="footer">
+                        <p:commandButton ajax="false" action="#{productoController.updateCurrentSubComponente}" value="#{bundle.EditSubComponenteSaveLink}"/>
+
+                        <p:commandButton ajax="false" action="#{productoController.getCurrentSubComponenteBackOutcome()}" value="Volver atrás"/>
+                    </f:facet>
+
+                </p:panel>
+
+            </h:form>
+
+            <br/>
+
+            <h:form id="productoContratadoForm">
+                <p:panel header="Relación con Cliente">
+
+                    <p:dataTable var="item" value="#{productoController.currentSubComponente.productoContratadoList}"
+                                 emptyMessage="#{bundle.ListProductoContratadoEmpty}">
+
+
+                        <p:column headerText="Cliente">
+
+                            <p:commandLink  
+                                action="#{clienteController.prepareView(item.cliente)}" 
+                                ajax="false" value="#{item.cliente.capitalName}"
+                                immediate="true"/>
+                        </p:column>
+
+                        <p:column headerText="Relación">
+                            <h:outputText value="#{item.tipoAsociacion}"/>
+                        </p:column>
+
+                    </p:dataTable>
+
+                </p:panel>
+
+            </h:form>
+
+            <br/>
+
             <h:form id="documentosForm">
                 <p:panel header="Documentos del Producto #{productoController.currentSubComponente.idSubComponente}">
 
@@ -89,79 +194,6 @@
             </h:form>
             <br/>
 
-            <h:form>
-
-                <p:panel header="Detalles de #{applicationBean.productSubComponentDescription}">
-
-                    <h:panelGrid columns="2">
-                        
-                        <p:outputLabel value="#{applicationBean.productDescription}:" for="proyecto" style="font-weight: bold;"/>
-                        <p:outputLabel id="proyecto" value="#{productoController.currentSubComponente.idComponente.idProducto.nombre}" />
-                        
-                        <p:outputLabel value="#{applicationBean.productSubComponentDescription}:" for="idSubComponente" style="font-weight: bold;"/>
-                        <p:outputLabel id="idSubComponente" value="#{productoController.currentSubComponente.idSubComponente}" />
-                        
-                        <p:outputLabel value="#{bundle.EditSubComponenteLabel_nombre}" for="nombre" style="font-weight: bold;"/>
-                        <p:inputText id="nombre" value="#{productoController.currentSubComponente.nombre}" title="#{bundle.EditSubComponenteTitle_nombre}" />
-
-                        <p:outputLabel value="#{applicationBean.productComponentDescription}" for="idComponente" style="font-weight: bold;"/>
-                        <p:selectOneMenu id="idComponente" filter="true" filterMatchMode="contains"
-                                         value="#{productoController.currentSubComponente.idComponente}" 
-                                         required="true" requiredMessage="#{bundle.EditSubComponenteRequiredMessage_idComponente}">
-                            <f:selectItems value="#{componenteController.itemsAvailableSelectOne}"/>
-                        </p:selectOneMenu>
-
-                        <p:outputLabel value="#{bundle.EditSubComponenteLabel_modeloProducto}" for="modeloProducto" style="font-weight: bold;"/>
-
-                        <p:selectOneMenu id="modeloProducto" value="#{productoController.currentSubComponente.modelo}" editable="false">
-                            <f:selectItems value="#{modeloProductoController.getItemsAvailableSelectOneByProduct(productoController.currentSubComponente.idComponente.idProducto.idProducto)}" />
-                        </p:selectOneMenu>
-
-                        <p:outputLabel value="#{bundle.EditSubComponenteLabel_direccionMunicipal}" for="direccionMunicipal" style="font-weight: bold;"/>
-                        <p:inputTextarea id="direccionMunicipal" cols="50"
-                                         value="#{productoController.currentSubComponente.direccionMunicipal}" title="#{bundle.EditSubComponenteTitle_direccionMunicipal}" />
-
-                        <p:outputLabel value="#{bundle.EditSubComponenteLabel_descripcion}" for="descripcion" style="font-weight: bold;"/>
-                        <p:inputTextarea id="descripcion" cols="50"
-                                         value="#{productoController.currentSubComponente.descripcion}" title="#{bundle.EditSubComponenteTitle_descripcion}" />
-                        <p:outputLabel value="#{bundle.EditSubComponenteLabel_fechaReserva}" for="fechaReserva" style="font-weight: bold;"/>
-                        <p:calendar id="fechaReserva" value="#{productoController.currentSubComponente.fechaReserva}" pattern="dd/MM/yyyy"
-                                    title="#{bundle.EditSubComponenteTitle_fechaReserva}" >
-                            <f:convertDateTime pattern="dd/MM/yyyy" />
-                        </p:calendar>
-                        <p:outputLabel value="#{bundle.EditSubComponenteLabel_fechaPromesa}" for="fechaPromesa" style="font-weight: bold;"/>
-                        <p:calendar id="fechaPromesa" value="#{productoController.currentSubComponente.fechaPromesa}" pattern="dd/MM/yyyy"
-                                    title="#{bundle.EditSubComponenteTitle_fechaPromesa}" >
-                            <f:convertDateTime pattern="dd/MM/yyyy" />
-                        </p:calendar>
-                        <p:outputLabel value="#{bundle.EditSubComponenteLabel_fechaEscritura}" for="fechaEscritura" style="font-weight: bold;"/>
-                        <p:calendar id="fechaEscritura" value="#{productoController.currentSubComponente.fechaEscritura}" pattern="dd/MM/yyyy"
-                                    title="#{bundle.EditSubComponenteTitle_fechaEscritura}" >
-                            <f:convertDateTime pattern="dd/MM/yyyy" />
-                        </p:calendar>
-                        <p:outputLabel value="#{bundle.EditSubComponenteLabel_fechaDesistimiento}" for="fechaDesistimiento" style="font-weight: bold;"/>
-                        <p:calendar id="fechaDesistimiento" value="#{productoController.currentSubComponente.fechaDesistimiento}" pattern="dd/MM/yyyy"
-                                    title="#{bundle.EditSubComponenteTitle_fechaDesistimiento}" >
-                            <f:convertDateTime pattern="dd/MM/yyyy" />
-                        </p:calendar>
-                        <p:outputLabel value="#{bundle.EditSubComponenteLabel_fechaEntrega}" for="fechaEntrega" style="font-weight: bold;"/>
-                        <p:calendar id="fechaEntrega" value="#{productoController.currentSubComponente.fechaEntrega}" pattern="dd/MM/yyyy"
-                                    title="#{bundle.EditSubComponenteTitle_fechaEntrega}" >
-                            <f:convertDateTime pattern="dd/MM/yyyy" />
-                        </p:calendar>
-
-
-                    </h:panelGrid>
-
-                    <f:facet name="footer">
-                        <p:commandButton ajax="false" action="#{productoController.updateCurrentSubComponente}" value="#{bundle.EditSubComponenteSaveLink}"/>
-
-                        <p:commandButton ajax="false" action="#{productoController.getCurrentSubComponenteBackOutcome()}" value="Volver atrás"/>
-                    </f:facet>
-
-                </p:panel>
-
-            </h:form>
 
 
 

@@ -5,6 +5,7 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:pe="http://primefaces.org/ui/extensions">
     <f:view contentType="text/html" encoding="UTF-8">
         <h:head>
@@ -18,7 +19,18 @@
             <h:outputStylesheet library="awesome" name="css/font-awesome.css"/>
 
             <ui:insert name="head"></ui:insert>
+            
+            
             <style type="text/css">
+
+               <c:if test="#{UserSessionBean.theme eq 'bootstrap'}" var="bootstrapTheme">
+                 .ui-state-error, .ui-widget-content .ui-state-error, .ui-widget-header .ui-state-error {
+                    border: 1px solid #cd0a0a;
+                    background: #fff url("") 50% 50% repeat-x;
+                    color: #cd0a0a;
+                }
+            </c:if>
+               
 
                 .ui-layout-north {
                     z-index:20 !important;
@@ -243,12 +255,12 @@
                                     <p:menuitem value="Lista negra (Correos)" action="#{blackListController.prepareList}" ajax="false" icon="fa fa-ban" >
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
-                                    
-                                     <p:menuitem value="Campos personalizados (Casos)" 
+
+                                    <p:menuitem value="Campos personalizados (Casos)" 
                                                 action="/script/customField/List.xhtml" ajax="false" icon="fa fa-puzzle-piece" >
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
-                                    
+
                                     <p:menuitem value="Configuración" action="#{appSettingController.goToConfigPage}" ajax="false" icon="fa fa-wrench" >
                                         <p:resetInput target="@form" />
                                     </p:menuitem>

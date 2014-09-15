@@ -8,7 +8,9 @@ import com.itcs.helpdesk.persistence.entities.Attachment;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Componente;
 import com.itcs.helpdesk.persistence.entities.SubComponente;
+import com.itcs.helpdesk.persistence.jpa.ComponenteJpaController;
 import com.itcs.helpdesk.persistence.jpa.ProductoJpaController;
+import com.itcs.helpdesk.persistence.jpa.SubComponenteJpaController;
 import com.itcs.helpdesk.persistence.jpa.exceptions.RollbackFailureException;
 import java.io.Serializable;
 import java.util.List;
@@ -114,7 +116,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
             return "";
         }
     }
-    
+
     public StreamedContent getLogo() {
 
         FacesContext context = FacesContext.getCurrentInstance();
@@ -131,20 +133,24 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
             }
         }
     }
-    
+
     public void deleteLogoProducto(ActionEvent actionEvent) {
         try {
 
             Archivo archivo = getJpaController().getArchivoFindByIdAttachment(idFileDelete);
-            getJpaController().removeArchivo(archivo);
-            getSelected().setIdLogo(null);
-
-            JsfUtil.addSuccessMessage("Archivo " + archivo.getFileName() + " borrado correctamente.");
-
-            executeInClient("borrarLogo.hide()");
+            if (archivo != null) {
+                getJpaController().remove(Archivo.class, archivo);
+                getSelected().setIdLogo(null);
+                JsfUtil.addSuccessMessage("Archivo " + archivo.getFileName() + " borrado correctamente.");
+                executeInClient("borrarLogo.hide()");
+            } else {
+                getSelected().setIdLogo(null);
+                addErrorMessage("El archivo ya no existe");
+                executeInClient("borrarLogo.hide()");
+            }
 
         } catch (Exception e) {
-            JsfUtil.addSuccessMessage("Error, No se ha podido borrar el archivo");
+            addErrorMessage("Error, No se ha podido borrar el archivo", e.getMessage());
             Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "No se ha podido borrar el archivo", e);
         }
     }
@@ -252,7 +258,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
             JsfUtil.addErrorMessage("Ocurrio un error al subir el archivo, favor intente nuevamente.");
         }
     }
-    
+
     public void uploadActaEntrega(FileUploadEvent event) {
         try {
             Archivo archivo = persistArchivo(event);
@@ -269,7 +275,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
             JsfUtil.addErrorMessage("Ocurrio un error al subir el archivo, favor intente nuevamente.");
         }
     }
-    
+
     public void uploadActaPreEntrega(FileUploadEvent event) {
         try {
             Archivo archivo = persistArchivo(event);
@@ -286,7 +292,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
             JsfUtil.addErrorMessage("Ocurrio un error al subir el archivo, favor intente nuevamente.");
         }
     }
-    
+
     public void uploadCartaEntrega(FileUploadEvent event) {
         try {
             Archivo archivo = persistArchivo(event);
@@ -347,6 +353,9 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
                             if (!persistentProductsMap.containsKey(producto.getIdProducto())) {
                                 persistentProductsMap.put(producto.getIdProducto(), producto);
                             }
+                        } else {
+                            producto = new Producto(nombreProducto);
+                            producto.setNombre(nombreProducto);
                         }
                     } catch (NoResultException nr) {
                         producto = new Producto(nombreProducto);
@@ -475,6 +484,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
     }
 
     public String saveBulkImport() {
+        System.out.println("saveBulkImport");
 //        Map<String, Producto> bulkLoadedProductoErrorMap = new HashMap<String, Producto>();
 //        Map<String, Componente> bulkLoadedComponenteErrorMap = new HashMap<String, Componente>();
 //        Map<String, SubComponente> bulkLoadedSubComponenteErrorMap = new HashMap<String, SubComponente>();
@@ -502,43 +512,52 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
             JsfUtil.addSuccessMessage(bulkLoadedProductosWithErrors.size() + " " + ApplicationConfig.getProductDescription() + "(s) tienen error" + bulkLoadedProductos.size());
         }
 
-        //--------
-        //        bulkLoadedComponentesWithErrors = new ArrayList<Componente>();
-        //
-        //        int counterComponente = 0;
-        //
-        //        final ComponenteJpaController cJpaController = getJpaController().getComponenteJpaController();
-        //
-        //        for (Componente componente : bulkLoadedComponentes) {
-        //            try {
-        //                cJpaController.create(componente);
-        //                counterComponente++;
-        //            } catch (Exception e) {
-        //                bulkLoadedComponentesWithErrors.add(componente);
-        //                e.printStackTrace();
-        //            }
-        //        }
-        //
-        //        JsfUtil.addSuccessMessage(counterComponente + " " + ApplicationConfig.getProductComponentDescription() + "(s) fueron guardados de un total de " + bulkLoadedComponentes.size());
-        //--------
-        //        bulkLoadedSubComponenteWithErrors = new ArrayList<SubComponente>();
-        //
-        //        int counterSubComponente = 0;
-        //
-        //        final SubComponenteJpaController scJpaController = getJpaController().getSubComponenteJpaController();
-        //
-        //        for (SubComponente subComponente : bulkLoadedSubComponentes) {
-        //            try {
-        //                scJpaController.create(subComponente);
-        //                counterSubComponente++;
-        //            } catch (Exception e) {
-        //                bulkLoadedSubComponenteWithErrors.add(subComponente);
-        //                e.printStackTrace();
-        //            }
-        //        }
-        //
-        //        JsfUtil.addSuccessMessage(counterComponente + " " + ApplicationConfig.getProductComponentDescription() + "(s) fueron guardados de un total de " + bulkLoadedComponentes.size());
-        //--------
+//        --------
+        bulkLoadedComponentesWithErrors = new ArrayList<Componente>();
+
+        int counterComponente = 0;
+
+        final ComponenteJpaController cJpaController = getJpaController().getComponenteJpaController();
+
+        for (Componente componente : bulkLoadedComponentes) {
+            try {
+                final Componente find = getJpaController().find(Componente.class, componente.getIdComponente());
+                if (find == null) {
+                    cJpaController.create(componente);
+                    counterComponente++;
+                }
+
+            } catch (Exception e) {
+                bulkLoadedComponentesWithErrors.add(componente);
+                e.printStackTrace();
+            }
+        }
+
+        JsfUtil.addSuccessMessage(counterComponente + " " + ApplicationConfig.getProductComponentDescription() + "(s) fueron guardados de un total de " + bulkLoadedComponentes.size());
+//        --------
+        bulkLoadedSubComponenteWithErrors = new ArrayList<SubComponente>();
+
+        int counterSubComponente = 0;
+
+        final SubComponenteJpaController scJpaController = getJpaController().getSubComponenteJpaController();
+
+        for (SubComponente subComponente : bulkLoadedSubComponentes) {
+            try {
+                final SubComponente find = scJpaController.findSubComponente(subComponente.getIdSubComponente());
+
+                if (find == null) {
+                    scJpaController.create(subComponente);
+                    counterSubComponente++;
+                }
+
+            } catch (Exception e) {
+                bulkLoadedSubComponenteWithErrors.add(subComponente);
+                e.printStackTrace();
+            }
+        }
+
+        JsfUtil.addSuccessMessage(counterSubComponente + " " + ApplicationConfig.getProductSubComponentDescription() + "(s) fueron guardados de un total de " + bulkLoadedSubComponentes.size());
+//        --------
         try {
             prepareList();
             FacesContext.getCurrentInstance().getExternalContext().redirect("List.xhtml");
@@ -567,7 +586,6 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
 //        }
 //        return pagination;
 //    }
-
     public int getTotalItemsCount() {
         return getJpaController().count(Producto.class).intValue();
     }
@@ -628,7 +646,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
     }
 
     public String prepareViewSubComponente(SubComponente item, String backOutcome) {
-        if(item == null){
+        if (item == null) {
             addWarnMessage("debe especificar un Producto");
             return null;
         }
@@ -687,7 +705,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
             return null;
         }
     }
-    
+
     public String updateCurrentSubComponente() {
         try {
             getJpaController().merge(currentSubComponente);
@@ -974,7 +992,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
 
     @Override
     public Class getDataModelImplementationClass() {
-       return ProductoDataModel.class;
+        return ProductoDataModel.class;
     }
 
     /**
@@ -999,7 +1017,8 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
     }
 
     /**
-     * @param currentSubComponenteBackOutcome the currentSubComponenteBackOutcome to set
+     * @param currentSubComponenteBackOutcome the
+     * currentSubComponenteBackOutcome to set
      */
     public void setCurrentSubComponenteBackOutcome(String currentSubComponenteBackOutcome) {
         this.currentSubComponenteBackOutcome = currentSubComponenteBackOutcome;

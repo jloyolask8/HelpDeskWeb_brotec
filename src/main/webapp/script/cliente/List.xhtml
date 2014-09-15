@@ -4,7 +4,8 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:go="http://java.sun.com/jsf/composite/components/filterView">
 
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
@@ -32,7 +33,12 @@
                             <p:commandButton actionListener="#{clienteController.prepareList()}" icon="ui-icon-search" update=":form"/>
                             <p:watermark for="searchRut" value="Nombre o Apellido o email o rut o dirección municipal..."/>
                         </h:panelGrid>
+                        
+                       
                     </p:panel>
+                    
+                     
+
 
                     <br/>
 
@@ -84,6 +90,10 @@
                             <p:dataList value="#{item.emailClienteList}" var="r" style="border: none" rendered="#{not empty item.emailClienteList}">
                                 #{r.emailCliente}
                             </p:dataList>
+                        </p:column>
+                        
+                         <p:column headerText="TPC" >
+                            <h:outputText value="#{not empty item.productoContratadoList ? 'Si':'No'}"/>
                         </p:column>
 
                         <p:column headerText="Acción">

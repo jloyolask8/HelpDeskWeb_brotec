@@ -167,6 +167,14 @@
                                         </f:facet>
                                         <h:outputText value="#{item.subComponenteList ne null ? item.subComponenteList.size():'0'}" />
                                     </p:column>
+                                    
+                                      <p:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Total de #{applicationBean.productSubComponentDescription}(s) asociados"/>
+                                        </f:facet>
+                                          <h:outputText value="#{not empty item.productoContratadoList ? item.productoContratadoList.size():'0'}" />
+                                    </p:column>
+                                    
                                     <p:column>
                                         <f:facet name="header">
                                             <h:outputText value="&nbsp;"/>
@@ -302,6 +310,14 @@
                             </f:facet>
                             <h:outputText value="#{subitem.modelo.nombre}"/>
                         </p:column>
+                        
+                         <p:column >
+                            <f:facet name="header">
+                                <h:outputText value="Relación Cliente(s)"/>
+                            </f:facet>
+                             <h:outputText rendered="#{not empty subitem.productoContratadoList}" value="#{subitem.productoContratadoList}"/>
+                        </p:column>
+                        
                         <p:column>
                             <f:facet name="header">
                                 <h:outputText value="&nbsp;"/>

@@ -20,7 +20,7 @@
         <ui:define name="body">     
             <h:form id="form">
                 <p:messages globalOnly="true"/>
-                <p:panel header="Ingresar Nuevo Cliente">
+                <p:panel header="Editar Cliente">
 
                     <h:panelGrid id="datosDelCliente" columns="3">
                         <p:outputLabel id="rutLbl" value="#{bundle.CreateClienteLabel_rut}" for="rut" style="font-weight:bold"/>
@@ -60,30 +60,77 @@
                         <p:message display="both" for="dirComercial"/>
                     </h:panelGrid>
 
-                    <p:panel header="Agregar e-mail" style="margin-bottom:20px">
-                        <h:panelGrid columns="2" cellpadding="5">
-                            <h:outputLabel value="e-mail" for="txt_title"></h:outputLabel>
-                            <p:inputText id="txt_title" value="#{clienteController.emailToAdd.emailCliente}" required="true"/>
+                  
+                       <div class="formSeparator">
+                                        <h2>Emails</h2>
+                                    </div>
 
-                            <p:commandButton id="btn_reset" value="Reset" type="reset"/>
-                            <p:commandButton id="btn_add" value="Agregar" update="books @parent" action="#{clienteController.reinit()}" >
-                                <p:collector value="#{clienteController.emailToAdd}" addTo="#{clienteController.selected.emailClienteList}" unique="true"/>
-                            </p:commandButton>
-                        </h:panelGrid>
-                    </p:panel>
-
-                    <p:outputPanel id="books">
-                        <p:dataTable value="#{clienteController.selected.emailClienteList}" var="email" id="booksTable">
+                    <p:outputPanel id="emails">
+                        <p:dataTable value="#{clienteController.selected.emailClienteList}" var="email" id="emailsTable">
 
                             <p:column headerText="e-mail">
                                 <h:outputText value="#{email.emailCliente}" />
                             </p:column>
 
                             <p:column headerText="Accion">
-                                <p:commandLink value="Eliminar" update=":form:books" process=":form:books">
+                                <p:commandLink value="Eliminar" update=":form:emails" process=":form:emails">
                                     <p:collector value="#{email}" removeFrom="#{clienteController.selected.emailClienteList}" unique="true"/>
                                 </p:commandLink>
                             </p:column>
+
+                        </p:dataTable>
+                    </p:outputPanel>
+                    
+                    <p:commandButton type="button" onclick="PF('addEmail').show()" style="float: right"
+                                      value="Agregar email"/>
+                    
+                    
+                    
+                    <br/>
+                     <div class="formSeparator">
+                                        <h2>Productos Contratados</h2>
+                                    </div>
+
+                    <p:outputPanel id="productos">
+                        <p:dataTable id="dataList" rendered="#{clienteController.selected ne null and clienteController.selected ne null}" 
+                                     value="#{clienteController.selected.productoContratadoList}" var="prod_cont" 
+                                     emptyMessage="El Cliente no tiene #{applicationBean.productSubComponentDescription} asociado.">
+
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{applicationBean.productDescription}"/>
+                                </f:facet>
+                                <h:outputText id="prod" value="#{prod_cont.producto.nombre}"/>
+                                <p:tooltip for="prod" value="#{prod_cont.observaciones}"/>
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{applicationBean.productComponentDescription}"/>
+                                </f:facet>
+                                <h:outputText value="#{prod_cont.componente.nombre}"/>
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{applicationBean.productSubComponentDescription}"/>
+                                </f:facet>
+                                <h:outputText value="#{prod_cont.subComponente.nombre}"/>
+                            </p:column>
+                            
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Relación"/>
+                                </f:facet>
+                                <h:outputText value="#{prod_cont.tipoAsociacion}"/>
+                            </p:column>
+                            
+                              <p:column headerText="Accion">
+                                <p:commandLink value="Eliminar" update=":form:productos" process=":form:productos">
+                                    <p:collector value="#{prod_cont}" removeFrom="#{clienteController.selected.productoContratadoList}" unique="true"/>
+                                </p:commandLink>
+                            </p:column>
+
 
                         </p:dataTable>
                     </p:outputPanel>
@@ -96,6 +143,27 @@
                 </p:panel>
             </h:form>
         </ui:define>
+        
+        
+        
+          <ui:define name="dialogs">
+            <p:dialog header="Agregar e-mail" widgetVar="addEmail" modal="true" dynamic="true" closeOnEscape="true" closable="true">
+                <h:form>
+                        <h:panelGrid columns="2" cellpadding="5">
+                            <h:outputLabel value="e-mail" for="txt_title"></h:outputLabel>
+                            <p:inputText id="txt_title" value="#{clienteController.emailToAdd.emailCliente}" required="true"/>
+
+                            <p:commandButton type="button" onclick="PF('addEmail').hide()" value="Cerrar"/>
+                            <p:commandButton id="btn_add" value="Agregar" update=":form:emails @parent" action="#{clienteController.reinit()}" >
+                                <p:collector value="#{clienteController.emailToAdd}" 
+                                             addTo="#{clienteController.selected.emailClienteList}" unique="true"/>
+                            </p:commandButton>
+                        </h:panelGrid>
+                </h:form>
+            </p:dialog>
+              
+          </ui:define>
+        
     </ui:composition>
 
 </html>

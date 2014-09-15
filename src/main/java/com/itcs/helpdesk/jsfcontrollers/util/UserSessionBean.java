@@ -33,7 +33,7 @@ public class UserSessionBean extends AbstractManagedBean<Usuario> implements Ser
 
 //    @ManagedProperty(value = "#{applicationBean}")
 //    private ApplicationBean applicationBean;
-    private String DEFAULT_THEME = "itcs-theme2";
+    private final String DEFAULT_THEME = "redmond";
     private Usuario sessionUser;
     private String channel;
     private int activeIndexOfMyAccount = 0;

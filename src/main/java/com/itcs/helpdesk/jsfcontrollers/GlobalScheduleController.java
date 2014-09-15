@@ -95,7 +95,8 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
             @Override
             public void loadEvents(Date start, Date end) {
                 try {
-                    getFilterHelper().getVista().setFiltrosVistaList(new ArrayList<FiltroVista>(2));
+//                    getFilterHelper().getVista().setFiltrosVistaList(new ArrayList<FiltroVista>(2));
+
                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
 //                    if (filtrosUsuario != null && !filtrosUsuario.isEmpty()) {
@@ -123,38 +124,29 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
 
                         for (Usuario usuario : filtrosUsuario) {
 
+                            List<FiltroVista> filtrosVistaList = new ArrayList<FiltroVista>(2);
+
                             //add date filter
-                            FiltroVista f1 = new FiltroVista();
-                            f1.setIdFiltro(1);//otherwise i dont know what to remove dude.
-                            f1.setIdCampo("startDate");
-                            f1.setIdComparador(EnumTipoComparacion.BW.getTipoComparacion());
-                            f1.setValor(sdf.format(start));
-                            f1.setValor2(sdf.format(end));
+                            FiltroVista filtroFechaDesdeHasta = new FiltroVista();
+                            filtroFechaDesdeHasta.setIdFiltro(1);//otherwise i dont know what to remove dude.
+                            filtroFechaDesdeHasta.setIdCampo("startDate");
+                            filtroFechaDesdeHasta.setIdComparador(EnumTipoComparacion.BW.getTipoComparacion());
+                            filtroFechaDesdeHasta.setValor(sdf.format(start));//desde
+                            filtroFechaDesdeHasta.setValor2(sdf.format(end));//hasta
+                            filtroFechaDesdeHasta.setIdVista(getFilterHelper().getVista());
+                            filtrosVistaList.add(filtroFechaDesdeHasta);
 
-                            f1.setIdVista(getFilterHelper().getVista());
+                            //usuariosInvitedList filter
+                            FiltroVista filtroUsuariosInvitedList = new FiltroVista();
+                            filtroUsuariosInvitedList.setIdFiltro(2);//otherwise i dont know what to remove dude.
+                            filtroUsuariosInvitedList.setIdCampo("usuariosInvitedList");
+                            filtroUsuariosInvitedList.setIdComparador(EnumTipoComparacion.IM.getTipoComparacion());
+                            filtroUsuariosInvitedList.setValor(usuario.getIdUsuario());
+                            filtroUsuariosInvitedList.setIdVista(getFilterHelper().getVista());
+                            filtrosVistaList.add(filtroUsuariosInvitedList);
 
-                            getFilterHelper().getVista().getFiltrosVistaList().add(f1);
-                        //end date filter
-
-                            //add current caso filter
-                            FiltroVista f4 = new FiltroVista();
-                            f4.setIdFiltro(4);//otherwise i dont know what to remove dude.
-                            f4.setIdCampo("usuariosInvitedList");
-                            f4.setIdComparador(EnumTipoComparacion.IM.getTipoComparacion());
-//                            String commaSeparatedIdOfUsuariosFilter = "";
-//                            boolean first = true;
-//                            for (Usuario usuario : filtrosUsuario) {
-//                                if (first) {
-//                                    commaSeparatedIdOfUsuariosFilter += usuario.getIdUsuario();
-//                                    first = false;
-//                                } else {
-//                                    commaSeparatedIdOfUsuariosFilter += ("," + usuario.getIdUsuario());
-//                                }
-//                            }
-
-                            f4.setValor(usuario.getIdUsuario());
-                            f4.setIdVista(getFilterHelper().getVista());
-                            getFilterHelper().getVista().getFiltrosVistaList().add(f4);
+                            //set filters to vista
+                            getFilterHelper().getVista().setFiltrosVistaList(filtrosVistaList);
 
                             final List<com.itcs.helpdesk.persistence.entities.ScheduleEvent> findEntities
                                     = (List<com.itcs.helpdesk.persistence.entities.ScheduleEvent>) getJpaController().findAllEntities(getEntityClass(), getFilterHelper().getVista(), new OrderBy("startDate", OrderBy.OrderType.DESC), null);
@@ -220,7 +212,7 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
     public void setEvent(DefaultScheduleEvent event) {
         this.event = event;
     }
-    
+
     public void removeAllUsuariosFilters() {
         this.filtrosUsuario = new LinkedList<Usuario>();
     }
@@ -522,16 +514,16 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
             final Usuario usuario = (Usuario) item;
             if (!filtrosUsuario.contains(usuario)) {
                 if (StringUtils.isEmpty(usuario.getRandomColor())) {
-                    final String color = Colors.getColor(filtrosUsuario.size()+1);
-                    if(color != null){
+                    final String color = Colors.getNextColor();
+                    if (color != null) {
                         usuario.setRandomColor(color);
                         filtrosUsuario.add(usuario);
-                    }else{
-                         addInfoMessage("No puede agregar más usuarios, favor quitar algunos que no necesite ver, para agregar más!");
+                    } else {
+                        addInfoMessage("No puede agregar más usuarios, favor quitar algunos que no necesite ver, para agregar más!");
                     }
-                    
+
                 }
-                
+
                 selectedUserToAddInvited = null;//reset selection
 
             } else {

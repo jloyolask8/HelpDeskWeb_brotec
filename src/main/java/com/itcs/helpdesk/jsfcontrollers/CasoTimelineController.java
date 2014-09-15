@@ -29,6 +29,7 @@ import org.primefaces.event.ScheduleEntryMoveEvent;
 import org.primefaces.event.ScheduleEntryResizeEvent;
 import org.primefaces.extensions.component.timeline.TimelineUpdater;
 import org.primefaces.extensions.event.timeline.TimelineModificationEvent;
+import org.primefaces.extensions.event.timeline.TimelineSelectEvent;
 import org.primefaces.extensions.model.timeline.TimelineEvent;
 import org.primefaces.extensions.model.timeline.TimelineModel;
 
@@ -140,6 +141,12 @@ public class CasoTimelineController extends AbstractManagedBean<ScheduleEvent> i
         System.out.println("new CasoTimelineController()");
 
     }
+    
+    public void onSelect(TimelineSelectEvent e) {  
+        event = e.getTimelineEvent();
+        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Selected event:", event.getData().toString());  
+        FacesContext.getCurrentInstance().addMessage(null, msg);  
+    } 
 
     public void onChange(TimelineModificationEvent e) {
         // get clone of the TimelineEvent to be changed with new start / end dates  

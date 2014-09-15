@@ -54,6 +54,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
     private String cellPositionSexo = "J";
     private String cellPositionDireccion1 = "K";
     private List<ProductoContratado> bulkLoadedProductoContratado;
+    private String bulkLoadedProductoContratadoTipoAsoc;
     private List<Cliente> bulkLoadedClients;
     private List<Cliente> bulkLoadedClientsErrors;
     private String searchPattern;
@@ -133,7 +134,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
         if (!this.getSelected().getCliente().getProductoContratadoList().contains(currentProductoContratado)) {
             this.getSelected().getCliente().getProductoContratadoList().add(currentProductoContratado);
             this.currentProductoContratado = new ProductoContratado();
-            executeInClient("addPCDialog.hide()");
+            executeInClient("PF('addPCDialog').hide()");
 
         } else {
             JsfUtil.addWarningMessage("No se puede asociar, ya existe en la lista.");
@@ -177,6 +178,8 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
     }
 
     public void handleFileUploadClienteProd(FileUploadEvent event) {
+        
+        System.out.println("bulkLoadedProductoContratadoTipoAsoc:"+bulkLoadedProductoContratadoTipoAsoc);
 
 //        String email_regexp = "[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?";
         if (event != null) {
@@ -303,6 +306,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
 //                        System.out.println("PUT");
                             pc = new ProductoContratado(productoContratadoPK);
                             pc.setCliente(c);
+                             pc.setTipoAsociacion(bulkLoadedProductoContratadoTipoAsoc);
 //                        pc.setProducto(subComponent.getIdComponente().getIdProducto());
 //                        pc.setComponente(subComponent.getIdComponente());
 //                        pc.setSubComponente(subComponent);
@@ -965,6 +969,20 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
     @Override
     public Class getDataModelImplementationClass() {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    /**
+     * @return the bulkLoadedProductoContratadoTipoAsoc
+     */
+    public String getBulkLoadedProductoContratadoTipoAsoc() {
+        return bulkLoadedProductoContratadoTipoAsoc;
+    }
+
+    /**
+     * @param bulkLoadedProductoContratadoTipoAsoc the bulkLoadedProductoContratadoTipoAsoc to set
+     */
+    public void setBulkLoadedProductoContratadoTipoAsoc(String bulkLoadedProductoContratadoTipoAsoc) {
+        this.bulkLoadedProductoContratadoTipoAsoc = bulkLoadedProductoContratadoTipoAsoc;
     }
 
     @FacesConverter(forClass = EmailCliente.class)
