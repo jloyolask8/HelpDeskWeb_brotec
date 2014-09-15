@@ -36,11 +36,15 @@
                         <f:facet name="header">
                             <h:outputText value="Listado de #{applicationBean.productDescription}(s)"></h:outputText>
                         </f:facet>
-                        <p:column headerText="#{bundle.ProductoTitle_idProducto}">
-                            <h:outputText value="#{item.idProducto}"/>
+                        
+                        
+                        <p:column>
+                            <p:graphicImage value="#{productoController.findLogoStreamedContent(item.idLogo)}" cache="false" width="60"/>
                         </p:column>
                         <p:column headerText="#{bundle.ProductoTitle_nombre}" filterBy="nombre" filterMatchMode="contains">
 
+                             <h:outputText value="#{item.idLogo}"/>
+                             
                             <h:outputText value="#{item.nombre}"/>
                         </p:column>
                      

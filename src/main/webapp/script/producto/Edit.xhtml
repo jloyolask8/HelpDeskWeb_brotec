@@ -50,7 +50,7 @@
                                 <h:panelGrid columns="4"  rendered="#{productoController.selected.idLogo ne null}">
 
                                     <p:graphicImage id="imageLogoPreview0" 
-                                                    value="#{productoController.logo}" cache="false" width="200"/>
+                                                    value="#{productoController.logo}" cache="false"/>
 
                                     <p:commandButton ajax="false" icon="ui-icon-circle-arrow-s">
                                         <p:fileDownload value="#{productoController.downloadArchivo(productoController.selected.idLogo)}" />

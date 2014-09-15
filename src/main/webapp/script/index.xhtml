@@ -67,7 +67,7 @@
                     </p:tagCloud> 
                 </p:tab>
 
-                <p:tab title="Usuarios Conectados (#{applicationBean.totalActiveSession})" id="tabUsers">
+                <p:tab title="Usuarios Conectados (#{applicationBean.usersLoggedIn.size()})" titletip="TotalActiveSessions: #{applicationBean.totalActiveSession}" id="tabUsers">
 
                     <p:dataTable id="usersLoggedIn" value="#{applicationBean.usersLoggedIn}" var="userLoggedIn" 
                                  styleClass="hide-column-names"

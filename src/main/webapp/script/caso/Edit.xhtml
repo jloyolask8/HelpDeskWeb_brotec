@@ -201,7 +201,7 @@
                                 </p:column>
                             </p:row>
 
-                           
+
 
                             <p:row>
                                 <p:column>
@@ -237,8 +237,8 @@
                                 </p:column>
 
                             </p:row>
-                            
-                             <p:row rendered="#{casoController.selected.idCasoPadre ne null}">
+
+                            <p:row rendered="#{casoController.selected.idCasoPadre ne null}">
                                 <p:column>
                                     <p:outputLabel value="#{bundle.EditCasoLabel_idCasoPadre}"  style="font-weight:bold"/>
                                 </p:column>
@@ -714,31 +714,11 @@
 
 
 
-
+                    <p:separator />
 
                 </pe:layoutPane>
 
                 <pe:layoutPane id="layout1_1" position="center">
-
-
-                    <h:form id="formint2">
-                        <p:panelGrid style="margin-bottom:10px;" styleClass="filtersGrid" id="panelGridDatos" >
-                            <p:row rendered="#{casoController.casoTipoReparacion}">
-                                <p:column>
-                                    <h:outputLabel value="Item:" for="item" style="font-weight: bold"/>
-                                </p:column>
-                            </p:row>
-                            <p:row rendered="#{casoController.casoTipoReparacion}">
-                                <p:column>
-                                    <p:commandButton id="item" immediate="true" style="width: 100%;"
-                                                     value="#{(casoController.selected.idItem eq null) ? 'Elegir item':casoController.selected.idItem}" 
-                                                     update=":formArbolItem:arbol" oncomplete="#{p:widgetVar('idDialogArbolItem')}.show()"/>                                  
-                                </p:column>
-                            </p:row>
-                        </p:panelGrid>
-                    </h:form>
-
-                    <p:separator />
 
                     <p:tabView id="inputPanel" dynamic="true" cache="false"  activeIndex="#{casoController.activeIndexCasoSections}">
                         <p:ajax event="tabChange" listener="#{casoController.onChangeActiveIndexCasoSections}" />
@@ -769,6 +749,23 @@
 
                                     </p:row>
                                 </p:panelGrid>
+
+                                <h:form id="formint2">
+                                    <p:panelGrid style="margin-bottom:10px;" styleClass="filtersGrid" id="panelGridDatos" >
+                                        <p:row rendered="#{casoController.casoTipoReparacion}">
+                                            <p:column>
+                                                <h:outputLabel value="Item:" for="item" style="font-weight: bold"/>
+                                            </p:column>
+                                        </p:row>
+                                        <p:row rendered="#{casoController.casoTipoReparacion}">
+                                            <p:column>
+                                                <p:commandButton id="item" immediate="true" style="width: 100%;"
+                                                                 value="#{(casoController.selected.idItem eq null) ? 'Elegir item':casoController.selected.idItem}" 
+                                                                 update=":formArbolItem:arbol" oncomplete="PF('idDialogArbolItem').show()"/>                                  
+                                            </p:column>
+                                        </p:row>
+                                    </p:panelGrid>
+                                </h:form>
 
                             </h:panelGrid>  
 
@@ -843,7 +840,7 @@
                         </p:tab>
 
                         <p:tab id="tabComments" title="Responder o comentar" 
-                               disabled="#{((not casoController.verificarCrearActividad()) and (not casoController.verificarResponderCaso())) or (not filtroAcceso.verificarAccesoAFuncionResponderCualquierCaso())}">  
+                               disabled="#{((not casoController.verificarCrearActividad()) and (not casoController.verificarResponderCaso()))}">  
 
                             <h:form id="formCreateNota">
 
@@ -1051,7 +1048,7 @@
 
                                     </h:panelGrid> 
 
-                                   
+
                                 </pe:timeline>  
                             </h:form>
                         </p:tab>  
@@ -1843,7 +1840,8 @@
                         <p:tree id="arbol" value="#{itemController.tree}" var="node" dynamic="true" cache="false"
                                 selectionMode="single" selection="#{itemController.item}"
                                 style="border-color: window;">
-                            <p:ajax event="select" listener="#{casoController.onNodeItemSelectedInSelectedCaso}" update=":westPanel:formint1" oncomplete="PF('idDialogArbolItem').hide()"/>
+                            <p:ajax event="select" listener="#{casoController.onNodeItemSelectedInSelectedCaso}" 
+                                    update=":inputPanel:formint2" oncomplete="PF('idDialogArbolItem').hide()"/>
                             <p:treeNode expandedIcon="myfoldericon16" collapsedIcon="myfoldericon16">
                                 <h:outputText value="#{node.nombre}" />
                             </p:treeNode>
@@ -2092,7 +2090,7 @@
                                 <p:message for="desc"/>
                             </p:column>
                         </p:row>
-                       
+
                         <p:row>
                             <p:column>
                                 <div class="formSeparator">
@@ -2177,14 +2175,14 @@
                         </p:row>
 
 
-                          <p:row rendered="#{not empty casoScheduleController.event.data.usuariosInvitedList}">
+                        <p:row rendered="#{not empty casoScheduleController.event.data.usuariosInvitedList}">
                             <p:column>
                                 <div class="formSeparator">
                                     <h2>Usuarios Invitados</h2>
                                 </div>  
                             </p:column>
                         </p:row>
-                        
+
                         <p:row rendered="#{not empty casoScheduleController.event.data.usuariosInvitedList}">
 
                             <p:column>
@@ -2194,7 +2192,7 @@
                             </p:column>
                         </p:row>
 
-                          <p:row rendered="#{not empty casoScheduleController.event.data.scheduleEventClientList}">
+                        <p:row rendered="#{not empty casoScheduleController.event.data.scheduleEventClientList}">
                             <p:column>
                                 <div class="formSeparator">
                                     <h2>Clientes Invitados/inscritos</h2>

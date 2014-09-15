@@ -2045,15 +2045,15 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public boolean verificarCrearColaborativo() {
-        return (current.hasAnOwner() && puedeModificar() && current.isOpen());
+        return (puedeModificar() && current.isOpen());
     }
 
     public boolean verificarCrearActividad() {
-        return (current.hasAnOwner() && puedeModificar() && current.isOpen());
+        return (puedeModificar() && current.isOpen());
     }
 
     public boolean verificarResponderCaso() {
-        return (current.hasAnOwner() && current.isOpen() && puedeResponder() && current.getEmailCliente() != null);
+        return (current.isOpen() && puedeResponder() && current.getEmailCliente() != null);
     }
 
     public boolean verificarGrabarCaso() {

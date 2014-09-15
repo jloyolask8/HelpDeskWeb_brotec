@@ -117,21 +117,26 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
         }
     }
 
-    public StreamedContent getLogo() {
+    public StreamedContent findLogoStreamedContent(Long idLogo) {
 
+        System.out.println("idLogo:"+idLogo);
         FacesContext context = FacesContext.getCurrentInstance();
         if (context.getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
             // So, we're rendering the view. Return a stub StreamedContent so that it will generate right URL.
             return new DefaultStreamedContent();
         } else {
-            Archivo archivo = getJpaController().getArchivoFindByIdAttachment(getSelected().getIdLogo());
+            Archivo archivo = getJpaController().getArchivoFindByIdAttachment(idLogo);
             if (archivo != null) {
                 return new DefaultStreamedContent(
-                        new ByteArrayInputStream(archivo.getArchivo()), archivo.getContentType(), "logo");
+                        new ByteArrayInputStream(archivo.getArchivo()), archivo.getContentType(), archivo.getFileName() + "/"+ archivo.getContentType());
             } else {
                 return new DefaultStreamedContent();
             }
         }
+    }
+
+    public StreamedContent getLogo() {
+        return findLogoStreamedContent(getSelected().getIdLogo());
     }
 
     public void deleteLogoProducto(ActionEvent actionEvent) {
@@ -775,12 +780,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
         }
     }
 
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
+    
 
     /**
      * @param componenteController the componenteController to set
