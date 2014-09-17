@@ -20,7 +20,11 @@
                     width: 100% !important;
                 }
                 .ui-panelgrid-odd{
-                    background: none repeat scroll 0 0 #F2F5F9;
+                    //background: none repeat scroll 0 0 #F2F5F9;
+                }
+                
+                 .ui-panelgrid-even{
+                    //background: none repeat scroll 0 0 #F2F5F9;
                 }
             </style>
 
@@ -1150,12 +1154,12 @@
                                rendered="#{casoScheduleController.event ne null}">
 
                             <h:form id="editEventForm">
-                                <h:panelGrid columns="2">
+                                <p:messages globalOnly="true"/>
+                                
+                                <h:panelGrid columns="2" styleClass="filtersGrid">
 
-                                    <p:panelGrid id="eventDetails" columns="" 
+                                    <p:panelGrid id="eventDetails" 
                                                  style="margin-bottom:10px;" styleClass="filtersGrid" >
-
-                                        <p:messages globalOnly="true"/>
 
                                         <p:row>
                                             <p:column>
@@ -1189,7 +1193,7 @@
                                                 <p:message for="desc"/>
                                             </p:column>
                                         </p:row>
-                                        <p:separator/>
+                                        
                                         <p:row>
 
                                             <p:column>
@@ -1228,10 +1232,6 @@
 
                                         </p:row>
 
-                                        <p:separator/>
-
-
-                                        <p:separator/>
                                         <p:row>
                                             <p:column>
                                                 <h:outputLabel for="resources" value="Recursos:" style="font-weight: bold;"/>  
@@ -1290,7 +1290,6 @@
 
                                             </p:column>
                                         </p:row>
-                                        <p:separator/>
                                         <p:row>
                                             <p:column>
                                                 <h:outputLabel for="recordatorios" value="Recordatorios:" style="font-weight: bold;"/>  
@@ -1522,8 +1521,7 @@
                                                 <p:column>
                                                     <h:outputLabel for="clientesinvitados" value="Clientes Invitados (inscritos)" style="font-weight: bold;"/>
 
-
-                                                    <ez:panelClientesInvitados/>
+                                                    <ez:panelClientesInvitados id="panelClientesInvitados2"/>
 
                                                 </p:column>
                                             </p:row>
@@ -1562,7 +1560,10 @@
         <ui:define name="dialogs">
 
 
-
+            <p:confirmDialog closeOnEscape="true" global="true" showEffect="fade" hideEffect="explode" >
+                <p:commandButton value="Si" type="button" styleClass="btn btn-danger ui-confirmdialog-yes" icon="ui-icon-check"/>
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/> 	
+            </p:confirmDialog>
 
             <p:dialog header="Asignarme el Caso" widgetVar="tomarCaso" modal="true" dynamic="true" closeOnEscape="true" closable="false">
                 <h:form>
@@ -2012,7 +2013,7 @@
                     <p:panelGrid columns="2" styleClass="filtersGrid">
 
                         <p:panelGrid id="eventDetails" columns="1" 
-                                     style="margin-bottom:10px;" styleClass="filtersGrid" >
+                                     style="margin-bottom:10px;float: top" styleClass="filtersGrid" >
 
                             <p:messages globalOnly="true"/>
 
@@ -2092,23 +2093,15 @@
                                 </p:column>
                             </p:row>
 
-
-
-
                             <p:row>
                                 <p:column>
-                                    <div class="formSeparator">
-                                        <h2>Organizador</h2>
-                                    </div>  
+                                    <h:outputLabel value="Organizador:" style="font-weight: bold;"/>  
                                 </p:column>
-                            </p:row>
 
-                            <p:row>
                                 <p:column>
                                     <p:outputLabel value="#{casoScheduleController.event.data.idUsuario.capitalName}"/>
                                 </p:column>
                             </p:row>
-
 
                             <p:row rendered="#{not empty casoScheduleController.event.data.usuariosInvitedList}">
                                 <p:column>
@@ -2155,15 +2148,17 @@
 
 
                     <p:separator/>
-                  
-                     <h:commandButton id="delButton" value="Eliminar evento" styleClass="btn btn-danger"
-                                     actionListener="#{casoScheduleController.deleteSelectedEvent()}"/>
-                     
+
+                    <p:commandButton id="delButton" value="Eliminar evento" styleClass="btn btn-danger"
+                                     actionListener="#{casoScheduleController.deleteSelectedEvent()}">
+                        <p:confirm header="Confirmación" message="Esta seguro de eliminar el evento ?" icon="ui-icon-alert"/>
+                    </p:commandButton>
+
                     &nbsp;
-                      <p:commandButton value="Cerrar" oncomplete="PF('viewEventDialog').hide();" update=":viewEventForm:eventDetails" process="@this">
+                    <p:commandButton value="Cerrar" oncomplete="PF('viewEventDialog').hide();" update=":viewEventForm:eventDetails" process="@this">
                         <p:resetInput target="@form" />
                     </p:commandButton>
-                   
+
 
                     &nbsp;
 
