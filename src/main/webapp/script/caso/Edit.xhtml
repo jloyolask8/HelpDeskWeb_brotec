@@ -7,7 +7,8 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:pe="http://primefaces.org/ui/extensions"
-      xmlns:itcs2="http://java.sun.com/jsf/composite/components/customField">
+      xmlns:itcs2="http://java.sun.com/jsf/composite/components/customField"
+      xmlns:ez="http://java.sun.com/jsf/composite/ezcomp">
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
             <h:outputText value="Caso #{casoController.selected.idCaso}: #{casoController.selected.tema}"></h:outputText>
@@ -1018,7 +1019,7 @@
 
                                     <p:ajax event="eventSelect" listener="#{casoScheduleController.onEventSelect}" 
                                             disabled="#{(not casoController.verificarCrearActividad()) and (not casoController.verificarResponderCaso())}"
-                                            update=":viewEventForm:eventDetails" oncomplete="PF('viewEventDialog').show();PF('createEventDialog').hide();" />  
+                                            update=":viewEventForm :viewEventForm:panelClientesInvitados:panelclientesinvitados" oncomplete="PF('viewEventDialog').show();PF('createEventDialog').hide();" />  
 
                                     <p:ajax event="eventMove" listener="#{casoScheduleController.onEventMove}" 
                                             disabled="#{(not casoController.verificarCrearActividad()) and (not casoController.verificarResponderCaso())}"
@@ -1197,7 +1198,7 @@
 
                                             <p:column>
                                                 <p:panelGrid columns="6">
-                                                    <h:outputLabel for="from" value="Desde:" style="font-weight: bold;"/>  
+
                                                     <p:calendar id="from" value="#{casoScheduleController.event.startDate}" size="14"
                                                                 pattern="dd/MM/yyyy HH:mm"
                                                                 required="true" requiredMessage="Favor ingrese fecha y hora de comienzo.">  
@@ -1522,55 +1523,8 @@
                                                     <h:outputLabel for="clientesinvitados" value="Clientes Invitados (inscritos)" style="font-weight: bold;"/>
 
 
-                                                    <p:panel id="panelclientesinvitados">
+                                                    <ez:panelClientesInvitados/>
 
-
-                                                        <p:autoComplete id="clientesinvitados" value="#{casoScheduleController.selectedClientToAddInvited}" 
-                                                                        autocomplete="false" dropdown="true" queryDelay="800" forceSelection="true"
-                                                                        minQueryLength="3"
-                                                                        completeMethod="#{casoScheduleController.autoCompleteCliente}"  
-                                                                        var="c"  itemValue="#{c}" itemLabel="#{c.capitalName}">  
-
-                                                            <p:ajax  event="itemSelect"  process="@this"
-                                                                     listener="#{casoScheduleController.clienteInvitedItemSelectEvent}"  
-                                                                     update=":inputPanel:editEventForm:panelclientesinvitados"  />
-
-                                                            <f:facet name="itemtip">
-                                                                <h:panelGrid  columns="2" cellpadding="5">  
-                                                                    <f:facet name="header">  
-                                                                        <h:outputText value="#{c.capitalName}" />  
-                                                                    </f:facet>  
-
-                                                                    <h:outputText value="Nombre: " />  
-                                                                    <h:outputText value="#{c.capitalName}" />  
-
-                                                                    <h:outputText value="Email: " />  
-                                                                    <h:outputText value="#{c.emailClienteList}" /> 
-
-
-                                                                </h:panelGrid>  
-                                                            </f:facet>  
-
-                                                        </p:autoComplete> 
-
-                                                        <p:dataList id="clientesInvitadosList" value="#{casoScheduleController.event.data.scheduleEventClientList}" var="clientInvited"
-                                                                    type="unordered" itemType="none" paginator="true" rows="10" styleClass="paginated"
-                                                                    emptyMessage="No invitar clientes"
-                                                                    paginatorAlwaysVisible="false"
-                                                                    paginatorPosition="bottom">
-
-                                                            <p:commandLink update=":inputPanel:editEventForm:panelclientesinvitados" style="display:inline-block"
-                                                                           title="Remover Cliente" styleClass="ui-icon ui-icon-close" >
-                                                                <p:collector unique="true" value="#{clientInvited}" 
-                                                                             removeFrom="#{casoScheduleController.event.data.scheduleEventClientList}"/>
-                                                            </p:commandLink>  <h:outputText value="#{clientInvited.cliente.capitalName}" style="display:inline-block"/>
-
-                                                        </p:dataList>
-
-                                                    </p:panel>
-
-
-                                                    <p:watermark for="clientesinvitados" value="Añadir cliente..."/>
                                                 </p:column>
                                             </p:row>
 
@@ -1606,6 +1560,10 @@
 
 
         <ui:define name="dialogs">
+
+
+
+
             <p:dialog header="Asignarme el Caso" widgetVar="tomarCaso" modal="true" dynamic="true" closeOnEscape="true" closable="false">
                 <h:form>
                     <h:outputLabel value="¿Está seguro de auto-asignarse el Caso y todos sus Sub-Casos?" /><br></br>
@@ -1627,7 +1585,7 @@
                         <p:message display="both" for="email"/>
                         <p:outputLabel value="#{bundle.CreateClienteLabel_rut}" for="rut" style="font-weight:bold"/>                        
                         <p:inputText id="rut" value="#{casoController.selected.emailCliente.cliente.rut}" 
-                                     title="#{bundle.CreateClienteTitle_rut}" validator="#{inputValidationBean.validarRut}"> 
+                                     title="#{bundle.CreateClienteTitle_rut}" validator="#{inputValidationBean.validarRut}">
 
                             <p:ajax event="blur" listener="#{casoController.formateaRut()}" update="rut,datosDelCliente"/>
                         </p:inputText>
@@ -1673,7 +1631,6 @@
                                          title="#{bundle.CreateClienteTitle_dirComercial}" cols="40"/>
 
                         <p:message display="both" for="dirComercial"/>
-
 
                     </h:panelGrid>
                     <p:separator/>
@@ -1737,8 +1694,6 @@
                     <p:commandButton value="Guardar" ajax="false" update=":westPanel:formint1 :formCreateNota :inputPanel:formlistaadjuntos" actionListener="#{casoController.editNota(false)}"/>
                     <p:commandButton value="Guardar y notificar al cliente" ajax="false" update=":westPanel:formint1 :formCreateNota :inputPanel:formlistaadjuntos" actionListener="#{casoController.editNota(true)}"/>
                     <p:commandButton value="Cerrar" ajax="true"  onclick="PF('Nota').hide()"  update=":westPanel:formint1" />
-
-
 
 
                 </h:form>
@@ -2054,174 +2009,167 @@
                       showEffect="fade" hideEffect="fade" closeOnEscape="true" closable="false">  
                 <h:form id="viewEventForm">
 
-                    <p:panelGrid id="eventDetails" columns="1" 
-                                 style="margin-bottom:10px;" styleClass="filtersGrid" >
+                    <p:panelGrid columns="2" styleClass="filtersGrid">
 
-                        <p:messages globalOnly="true"/>
+                        <p:panelGrid id="eventDetails" columns="1" 
+                                     style="margin-bottom:10px;" styleClass="filtersGrid" >
 
-                        <p:row>
-                            <p:column>
-                                <p:inplace editor="true">
-                                    <f:facet name="output">
-                                        <p:outputLabel value="#{casoScheduleController.event.title}" style="font-weight: bold;"/>
-                                    </f:facet>
-                                    <f:facet name="input">
-                                        <p:inputText id="title" value="#{casoScheduleController.event.title}" style="width: 100%;"
-                                                     required="true" requiredMessage="Favor ingrese un titulo para el evento."/> 
-                                        <p:watermark for="title" value="Titulo del evento"/>
-                                    </f:facet>
-                                </p:inplace>
+                            <p:messages globalOnly="true"/>
 
-                                <p:message for="title"/>
-                            </p:column>
-                        </p:row>
-                        <p:row>
-                            <p:column>
-                                <p:inplace editor="true">
-                                    <f:facet name="output">
-                                        <h:outputText value="#{not empty casoScheduleController.event.data.descripcion ? casoScheduleController.event.data.descripcion:'Haz click para añadir una descripción'}" />
-                                    </f:facet>
-                                    <f:facet name="input">
-                                        <p:inputTextarea id="desc" value="#{casoScheduleController.event.data.descripcion}" style="width: 100%;"/> 
-                                        <p:watermark for="desc" value="Descripción del evento"/>
-                                    </f:facet>
-                                </p:inplace>
-
-                                <p:message for="desc"/>
-                            </p:column>
-                        </p:row>
-
-                        <p:row>
-                            <p:column>
-                                <div class="formSeparator">
-                                    <h2>Fecha</h2>
-                                </div>  
-                            </p:column>
-                        </p:row>
-                        <p:row>
-
-
-                            <p:column>
-                                <p:panelGrid columns="6">
-                                    <h:outputLabel for="from" value="Desde:" style="font-weight: bold;"/>  
+                            <p:row>
+                                <p:column>
                                     <p:inplace editor="true">
                                         <f:facet name="output">
-                                            <h:outputText value="#{casoController.formatDate(casoScheduleController.event.startDate)}" />
+                                            <p:outputLabel value="#{casoScheduleController.event.title}" title="#{casoScheduleController.event.data.eventId}" style="font-weight: bold;"/>
                                         </f:facet>
                                         <f:facet name="input">
-                                            <p:calendar id="from" value="#{casoScheduleController.event.startDate}" size="14"
-                                                        pattern="dd/MM/yyyy HH:mm"
-                                                        required="true" requiredMessage="Favor ingrese fecha y hora de comienzo.">  
-                                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />  
-                                                <p:ajax event="dateSelect" update="endDate" />
-                                            </p:calendar>  
+                                            <p:inputText id="title" value="#{casoScheduleController.event.title}" style="width: 100%;"
+                                                         required="true" requiredMessage="Favor ingrese un titulo para el evento."/> 
+                                            <p:watermark for="title" value="Titulo del evento"/>
                                         </f:facet>
                                     </p:inplace>
 
+                                    <p:message for="title"/>
+                                </p:column>
+                            </p:row>
 
-                                    <h:outputLabel for="endDate" value="Hasta:" style="font-weight: bold;"/>  
+                            <p:row>
+                                <p:column>
+                                    <p:panelGrid columns="6">
 
+                                        <p:inplace editor="true">
+                                            <f:facet name="output">
+                                                <h:outputText value="#{casoController.formatDateRange(casoScheduleController.event.startDate, casoScheduleController.event.endDate)}" />
+                                                <h:outputText value="#{casoScheduleController.event.allDay eq true ? ' Todo el dia':''}" />
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:calendar id="from" value="#{casoScheduleController.event.startDate}" size="14"
+                                                            pattern="dd/MM/yyyy HH:mm"
+                                                            required="true" requiredMessage="Favor ingrese fecha y hora de comienzo.">  
+                                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />  
+                                                    <p:ajax event="dateSelect" update="endDate" />
+                                                </p:calendar>  
+                                                <h:outputLabel for="endDate" value="Hasta:" style="font-weight: bold;"/> 
+                                                <p:calendar id="endDate" mindate="#{casoScheduleController.event.startDate}" value="#{casoScheduleController.event.endDate}" size="14"
+                                                            pattern="dd/MM/yyyy HH:mm"
+                                                            required="true" requiredMessage="Favor ingrese fecha y hora de término.">  
+                                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />  
+                                                    <f:attribute name="startDate" value="#{casoScheduleController.event.startDate}" />
+                                                    <f:validator validatorId="primeDateRangeValidator" />
+                                                </p:calendar>
+
+                                                <h:selectBooleanCheckbox id="allDay" value="#{casoScheduleController.event.allDay}"
+                                                                         label="Todo el dia"/>  
+                                                <h:outputLabel for="allDay" value="Todo el día" style="font-weight: bold;"/> 
+                                            </f:facet>
+                                        </p:inplace>
+
+                                    </p:panelGrid>
+
+                                    <p:message for="from"/>
+                                    <p:message for="endDate"/>
+                                    <p:message for="allDay"/>
+
+
+                                </p:column>
+
+
+                            </p:row>
+
+                            <p:row>
+                                <p:column>
                                     <p:inplace editor="true">
                                         <f:facet name="output">
-                                            <h:outputText value="#{casoController.formatDate(casoScheduleController.event.endDate)}" />
+                                            <h:outputText value="#{not empty casoScheduleController.event.data.descripcion ? casoScheduleController.event.data.descripcion:'Haz click para añadir una descripción'}" />
                                         </f:facet>
                                         <f:facet name="input">
-                                            <p:calendar id="endDate" mindate="#{casoScheduleController.event.startDate}" value="#{casoScheduleController.event.endDate}" size="14"
-                                                        pattern="dd/MM/yyyy HH:mm"
-                                                        required="true" requiredMessage="Favor ingrese fecha y hora de término.">  
-                                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />  
-                                                <f:attribute name="startDate" value="#{casoScheduleController.event.startDate}" />
-                                                <f:validator validatorId="primeDateRangeValidator" />
-                                            </p:calendar>
+                                            <p:inputTextarea id="desc" value="#{casoScheduleController.event.data.descripcion}" style="width: 100%;"/> 
+                                            <p:watermark for="desc" value="Descripción del evento"/>
                                         </f:facet>
                                     </p:inplace>
 
-                                    <p:inplace editor="true">
-                                        <f:facet name="output">
-                                            <h:outputText value="#{casoScheduleController.event.allDay eq true ? 'Todo el dia':''}" />
-                                        </f:facet>
-                                        <f:facet name="input">
-                                            <h:selectBooleanCheckbox id="allDay" value="#{casoScheduleController.event.allDay}"
-                                                                     label="Todo el dia"/>  
-                                            <h:outputLabel for="allDay" value="Todo el día" style="font-weight: bold;"/> 
-                                        </f:facet>
-                                    </p:inplace>
+                                    <p:message for="desc"/>
+                                </p:column>
+                            </p:row>
 
 
-                                </p:panelGrid>
-
-                                <p:message for="from"/>
-                                <p:message for="endDate"/>
-                                <p:message for="allDay"/>
 
 
-                            </p:column>
+                            <p:row>
+                                <p:column>
+                                    <div class="formSeparator">
+                                        <h2>Organizador</h2>
+                                    </div>  
+                                </p:column>
+                            </p:row>
+
+                            <p:row>
+                                <p:column>
+                                    <p:outputLabel value="#{casoScheduleController.event.data.idUsuario.capitalName}"/>
+                                </p:column>
+                            </p:row>
 
 
-                        </p:row>
+                            <p:row rendered="#{not empty casoScheduleController.event.data.usuariosInvitedList}">
+                                <p:column>
+                                    <div class="formSeparator">
+                                        <h2>Usuarios Invitados</h2>
+                                    </div>  
+                                </p:column>
+                            </p:row>
 
-                        <p:row>
-                            <p:column>
-                                <div class="formSeparator">
-                                    <h2>Organizador</h2>
-                                </div>  
-                            </p:column>
-                        </p:row>
+                            <p:row rendered="#{not empty casoScheduleController.event.data.usuariosInvitedList}">
 
-                        <p:row>
-                            <p:column>
-                                <p:outputLabel value="#{casoScheduleController.event.data.idUsuario.capitalName}"/>
-                            </p:column>
-                        </p:row>
+                                <p:column>
+                                    <ui:repeat value="#{casoScheduleController.event.data.usuariosInvitedList}" var="usuariosInvited">
+                                        <p:outputLabel value="#{usuariosInvited.capitalName},"/>
+                                    </ui:repeat>
+                                </p:column>
+                            </p:row>
 
 
-                        <p:row rendered="#{not empty casoScheduleController.event.data.usuariosInvitedList}">
-                            <p:column>
-                                <div class="formSeparator">
-                                    <h2>Usuarios Invitados</h2>
-                                </div>  
-                            </p:column>
-                        </p:row>
 
-                        <p:row rendered="#{not empty casoScheduleController.event.data.usuariosInvitedList}">
+                        </p:panelGrid>  
 
-                            <p:column>
-                                <ui:repeat value="#{casoScheduleController.event.data.usuariosInvitedList}" var="usuariosInvited">
-                                    <p:outputLabel value="#{usuariosInvited.capitalName},"/>
-                                </ui:repeat>
-                            </p:column>
-                        </p:row>
+                        <p:panelGrid columns="1" rendered="#{not empty casoScheduleController.event.data.scheduleEventClientList}"
+                                     style="margin-bottom:10px;" styleClass="filtersGrid" >
 
-                        <p:row rendered="#{not empty casoScheduleController.event.data.scheduleEventClientList}">
-                            <p:column>
-                                <div class="formSeparator">
-                                    <h2>Clientes Invitados/inscritos</h2>
-                                </div>  
-                            </p:column>
-                        </p:row>
+                            <p:row>
+                                <p:column>
+                                    <div class="formSeparator">
+                                        <h2>Clientes Invitados/inscritos</h2>
+                                    </div>  
+                                </p:column>
+                            </p:row>
 
-                        <p:row rendered="#{not empty casoScheduleController.event.data.scheduleEventClientList}">
-                            <p:column>
-                                <ui:repeat value="#{casoScheduleController.event.data.scheduleEventClientList}" var="scheduleEventClient">
-                                    <p:outputLabel value="#{scheduleEventClient.cliente.capitalName},"/>
-                                </ui:repeat>
-                            </p:column>
-                        </p:row>
+                            <p:row>
+                                <p:column>
+                                    <ez:panelClientesInvitados id="panelClientesInvitados"/>
+                                </p:column>
+                            </p:row>
 
-                    </p:panelGrid>  
+                        </p:panelGrid> 
+
+                    </p:panelGrid>
+
+
 
                     <p:separator/>
-                    <p:commandButton value="Cerrar" oncomplete="PF('viewEventDialog').hide();" update=":viewEventForm:eventDetails" process="@this">
+                  
+                     <h:commandButton id="delButton" value="Eliminar evento" styleClass="btn btn-danger"
+                                     actionListener="#{casoScheduleController.deleteSelectedEvent()}"/>
+                     
+                    &nbsp;
+                      <p:commandButton value="Cerrar" oncomplete="PF('viewEventDialog').hide();" update=":viewEventForm:eventDetails" process="@this">
                         <p:resetInput target="@form" />
                     </p:commandButton>
-                    &nbsp;
-                    <p:commandButton id="addButton" value="Guardar" 
-                                     actionListener="#{casoScheduleController.quickSaveEvent()}"
-                                     update=":viewEventForm:eventDetails" />
+                   
 
                     &nbsp;
-                    <p:commandButton id="delButton" value="Eliminar" 
-                                     actionListener="#{casoScheduleController.deleteSelectedEvent()}"/>
+
+                    <p:commandButton id="addButton" value="Guardar"
+                                     actionListener="#{casoScheduleController.quickSaveEvent()}"
+                                     update=":viewEventForm:eventDetails" />
                     &nbsp;
                     <p:commandLink id="editButton" value="Editar evento »" style="font-weight: bold;float: right;color: #15c;text-decoration: underline;cursor: pointer;white-space: nowrap;"
                                    actionListener="#{casoScheduleController.goEditEvent()}" update=":inputPanel"/>

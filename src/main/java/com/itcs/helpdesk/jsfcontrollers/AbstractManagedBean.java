@@ -55,7 +55,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     protected static final SimpleDateFormat monthDateFormat = new SimpleDateFormat("dd MMM", LOCALE_ES_CL);
     protected static final SimpleDateFormat yearDateFormat = new SimpleDateFormat("dd/MM/yy", LOCALE_ES_CL);
     
-     protected static final SimpleDateFormat monthDateFormatWTime = new SimpleDateFormat("dd MMM HH:mm", LOCALE_ES_CL);
+     protected static final SimpleDateFormat monthDateFormatWTime = new SimpleDateFormat("EEE, dd MMM HH:mm", LOCALE_ES_CL);
     protected static final SimpleDateFormat yearDateFormatWTime = new SimpleDateFormat("dd/MM/yy HH:mm", LOCALE_ES_CL);
 
     private final Class<E> entityClass;
