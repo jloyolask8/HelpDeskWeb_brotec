@@ -93,12 +93,13 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
             for (EmailCliente emailCliente : emailClientes) {
                 results.add(emailCliente.getEmailCliente());
             }
-        } else {
-//            emailCliente_wizard_existeEmail = false;
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "No existe el email:" + query, "No existe el Cliente con email:" + query);
-            FacesContext.getCurrentInstance().addMessage(null, message);
-            System.out.println("No existe el Cliente con email" + query);
-        }
+        } 
+//        else {
+////            emailCliente_wizard_existeEmail = false;
+//            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "No existe el email:" + query, "No existe el Cliente con email:" + query);
+//            FacesContext.getCurrentInstance().addMessage(null, message);
+//            System.out.println("No existe el Cliente con email" + query);
+//        }
 
         if (InputValidationBean.isValidEmail(query) && !results.contains(query)) {
             results.add(query);

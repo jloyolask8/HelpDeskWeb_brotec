@@ -725,7 +725,7 @@ public class ManagerCasos implements Serializable {
             //we need to check if the sender is an agent or a client
             //doing a quick check on the caso.owner may improve response time
             if (caso.getOwner() != null && caso.getOwner().getEmail().equalsIgnoreCase(emailSender)) {
-                //bingo its an agent
+                //bingo its the owner
                 nota.setCreadaPor(caso.getOwner());
                 nota.setTipoNota(EnumTipoNota.RESPUESTA_A_CLIENTE.getTipoNota());
                 nota.setEnviado(false);
@@ -739,7 +739,6 @@ public class ManagerCasos implements Serializable {
                 respuestaCliente = true;
                 senderName = (caso.getEmailCliente().getCliente() != null
                         && !StringUtils.isEmpty(caso.getEmailCliente().getCliente().getCapitalName())) ? caso.getEmailCliente().getCliente().getCapitalName() : emailSender;
-
             }
 
             String textoBody = item.getText();
