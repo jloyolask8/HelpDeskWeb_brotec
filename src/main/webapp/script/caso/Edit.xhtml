@@ -19,7 +19,6 @@
                 .ui-autocomplete-multiple-container{
                     width: 100% !important;
                 }
-                
                 .ui-panelgrid-odd{
                     //background: none repeat scroll 0 0 #F2F5F9;
                 }
@@ -931,7 +930,7 @@
                                             </p:column>
                                         </p:row>
                                     </p:panelGrid>
-
+                                    
                                     <pe:ckEditor id="textonota" value="#{casoController.textoNota}" language="es"
                                                  toolbar="#{applicationBean.ckEditorToolbar}"
                                                  required="true"  width="100%" />
@@ -2054,43 +2053,8 @@
 
                             <p:messages globalOnly="true"/>
 
-<<<<<<< HEAD
-                                <p:message for="title"/>
-                            </p:column>
-                        </p:row>
-                        <p:row>
-                            <p:column>
-                                <p:inplace editor="true">
-                                    <f:facet name="output">
-                                        <h:outputText value="#{not empty casoScheduleController.event.data.descripcion ? casoScheduleController.event.data.descripcion:'Haz click para añadir una descripción'}" />
-                                    </f:facet>
-                                    <f:facet name="input">
-                                        <p:inputTextarea id="desc" value="#{casoScheduleController.event.data.descripcion}" style="width: 100%;"/> 
-                                        <p:watermark for="desc" value="Descripción del evento"/>
-                                    </f:facet>
-                                </p:inplace>
-
-                                <p:message for="desc"/>
-                            </p:column>
-                        </p:row>
-
-                        <p:row>
-                            <p:column>
-                                <div class="formSeparator">
-                                    <h2>Fecha</h2>
-                                </div>  
-                            </p:column>
-                        </p:row>
-                        <p:row>
-
-
-                            <p:column>
-                                <p:panelGrid columns="6">
-                                    <h:outputLabel for="from" value="Desde:" style="font-weight: bold;"/>  
-=======
                             <p:row>
                                 <p:column>
->>>>>>> FETCH_HEAD
                                     <p:inplace editor="true">
                                         <f:facet name="output">
                                             <p:outputLabel value="#{casoScheduleController.event.title}" title="#{casoScheduleController.event.data.eventId}" style="font-weight: bold;"/>
@@ -2199,17 +2163,6 @@
                         <p:panelGrid columns="1" rendered="#{not empty casoScheduleController.event.data.scheduleEventClientList}"
                                      style="margin-bottom:10px;" styleClass="filtersGrid" >
 
-<<<<<<< HEAD
-                        <p:row rendered="#{not empty casoScheduleController.event.data.usuariosInvitedList}">
-                            <p:column>
-                                <div class="formSeparator">
-                                    <h2>Usuarios Invitados</h2>
-                                </div>  
-                            </p:column>
-                        </p:row>
-
-                        <p:row rendered="#{not empty casoScheduleController.event.data.usuariosInvitedList}">
-=======
                             <p:row>
                                 <p:column>
                                     <div class="formSeparator">
@@ -2217,7 +2170,6 @@
                                     </div>  
                                 </p:column>
                             </p:row>
->>>>>>> FETCH_HEAD
 
                             <p:row>
                                 <p:column>
@@ -2225,19 +2177,9 @@
                                 </p:column>
                             </p:row>
 
-<<<<<<< HEAD
-                        <p:row rendered="#{not empty casoScheduleController.event.data.scheduleEventClientList}">
-                            <p:column>
-                                <div class="formSeparator">
-                                    <h2>Clientes Invitados/inscritos</h2>
-                                </div>  
-                            </p:column>
-                        </p:row>
-=======
                         </p:panelGrid> 
 
                     </p:panelGrid>
->>>>>>> FETCH_HEAD
 
 
 
