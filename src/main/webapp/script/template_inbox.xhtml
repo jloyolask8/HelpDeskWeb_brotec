@@ -19,18 +19,35 @@
             <h:outputStylesheet library="awesome" name="css/font-awesome.css"/>
 
             <ui:insert name="head"></ui:insert>
-            
-            
+
+
             <style type="text/css">
 
-               <c:if test="#{UserSessionBean.theme eq 'bootstrap'}" var="bootstrapTheme">
-                 .ui-state-error, .ui-widget-content .ui-state-error, .ui-widget-header .ui-state-error {
+                .btn-danger.ui-button, .btn-danger {
+                    color: #fff;
+                    background-color: #d9534f;
+                    border-color: #d43f3a;
+                }
+
+                .btn.ui-button, btn{
+                    cursor: pointer;
+                    -webkit-user-select: none;
+                    -moz-user-select: none;
+                    -ms-user-select: none;
+                    user-select: none;
+                    background-image: none;
+                    border: 1px solid transparent;
+                    border-radius: 4px;
+                }
+
+                <c:if test="#{UserSessionBean.theme eq 'bootstrap'}" var="bootstrapTheme">
+                .ui-state-error, .ui-widget-content .ui-state-error, .ui-widget-header .ui-state-error {
                     border: 1px solid #cd0a0a;
                     background: #fff url("") 50% 50% repeat-x;
                     color: #cd0a0a;
                 }
-            </c:if>
-               
+                </c:if>
+
 
                 .ui-layout-north {
                     z-index:20 !important;

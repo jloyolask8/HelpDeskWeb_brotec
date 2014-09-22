@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://java.sun.com/jsf/composite"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name="update" default=":mainform:messages" />
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <p:panel id="panelclientesinvitados">
+
+
+            <p:autoComplete id="clientesinvitados" value="#{casoScheduleController.selectedClientToAddInvited}" 
+                            autocomplete="false" dropdown="true" queryDelay="800" forceSelection="true"
+                            minQueryLength="3"
+                            completeMethod="#{casoScheduleController.autoCompleteCliente}"  
+                            var="c"  itemValue="#{c}" itemLabel="#{c.capitalName}">  
+
+                <p:ajax  event="itemSelect"  process="@this"
+                         listener="#{casoScheduleController.clienteInvitedItemSelectEvent}"  
+                         update="panelclientesinvitados"  />
+
+                <f:facet name="itemtip">
+                    <h:panelGrid  columns="2" cellpadding="5">  
+                        <f:facet name="header">  
+                            <h:outputText value="#{c.capitalName}" />  
+                        </f:facet>  
+
+                        <h:outputText value="Nombre: " />  
+                        <h:outputText value="#{c.capitalName}" />  
+
+                        <h:outputText value="Email: " />  
+                        <h:outputText value="#{c.emailClienteList}" /> 
+
+                        <h:outputText value="Télefono: " />  
+                        <h:outputText value="#{c.fono1}" /> 
+                    </h:panelGrid>  
+                </f:facet>  
+
+            </p:autoComplete> <p:watermark for="clientesinvitados" value="Añadir cliente..."/>
+
+            <p:dataTable id="clientesInvitadosList" value="#{casoScheduleController.event.data.scheduleEventClientList}" var="clientInvited"
+                         paginator="true" rows="10" styleClass="paginated hide-column-names"
+                         emptyMessage="No invitar clientes"
+                         paginatorAlwaysVisible="false"
+                         paginatorPosition="bottom">
+
+                <p:column exportable="false">
+                    <i class="fa fa-user"></i>
+                </p:column>
+                <p:column headerText="Nombre">
+                    <h:outputText id="userLink" value="#{clientInvited.cliente.capitalName}" />  
+                    <p:tooltip for="userLink" >
+                        <h:panelGrid  columns="2" cellpadding="5">  
+                            <f:facet name="header">  
+                                <h:outputText value="#{clientInvited.cliente.capitalName}" />  
+                                <p:separator/>
+                            </f:facet>  
+                            <h:outputText value="Rut: " style="font-weight: bold;"/>  
+                            <h:outputText value="#{clientInvited.cliente.rut}" />  
+
+                            <h:outputText value="Email: " style="font-weight: bold;"/>  
+                            <h:outputText value="#{clientInvited.cliente.emailClienteList}" /> 
+
+                            <h:outputText value="Télefono: " style="font-weight: bold;"/>  
+                            <h:panelGroup>
+                                <h:outputText value="#{clientInvited.cliente.fono1}" /> 
+                                <h:outputText value=" / #{clientInvited.cliente.fono2}" rendered="#{clientInvited.cliente.fono2 ne null}"/> 
+                            </h:panelGroup>
+
+
+                        </h:panelGrid>  
+                    </p:tooltip>
+                </p:column>
+                <p:column headerText="Asistencia">
+                    <pe:triStateCheckbox value="#{clientInvited.willAssist}"
+                                         stateOneTitle="Pendiente"
+                                         stateTwoIcon="ui-icon-check" stateTwoTitle="Asistencia confirmada"
+                                         stateThreeIcon="ui-icon-close" stateThreeTitle="No asistirá"/>  
+                </p:column>
+                <p:column exportable="false">
+                    <p:commandLink update="clientesInvitadosList" 
+                                   title="Remover Cliente" styleClass="fa fa-times" style="color: #ff0000;">
+                        <p:collector unique="true" value="#{clientInvited}" 
+                                     removeFrom="#{casoScheduleController.event.data.scheduleEventClientList}"/>
+                    </p:commandLink> 
+                </p:column>
+            </p:dataTable>
+            <p:separator/>
+                <p:outputPanel rendered="#{not empty casoScheduleController.event.data.scheduleEventClientList}">
+                     <h:commandLink id="xls">
+                        <p:graphicImage value="/resources/file_extension_icons/file_extension_xlsx.png" />
+                        <p:dataExporter type="xls" target="clientesInvitadosList" fileName="clientesInvitadosList" />
+                    </h:commandLink>
+                    <p:tooltip for="xls" value="exportar a excel. Nota Pendiente=0, Asiste=1, No asiste=2"/>
+                    &nbsp;
+                    <h:commandLink id="csv">
+                        <p:graphicImage value="/resources/file_extension_icons/file_extension_csv.png" />
+                        <p:dataExporter type="csv" target="clientesInvitadosList" fileName="clientesInvitadosList" />
+                    </h:commandLink>
+                    <p:tooltip for="csv" value="exportar a csv. Nota Pendiente=0, Asiste=1, No asiste=2"/>
+                    &nbsp;
+                    <h:commandLink id="xml">
+                        <p:graphicImage value="/resources/file_extension_icons/file_extension_xml.png" />
+                        <p:dataExporter type="xml" target="clientesInvitadosList" fileName="clientesInvitadosList" />
+                    </h:commandLink>
+                    <p:tooltip for="xml" value="exportar a Xml. Nota Pendiente=0, Asiste=1, No asiste=2"/>
+                </p:outputPanel> 
+               
+        </p:panel>
+    </cc:implementation>
+</html>

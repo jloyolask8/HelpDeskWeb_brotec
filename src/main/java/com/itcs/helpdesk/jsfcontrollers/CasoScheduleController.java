@@ -69,6 +69,9 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
     private Usuario selectedUserToAddInvited;
     private Resource selectedResourceToAddInvited;
     private Cliente selectedClientToAddInvited;
+    
+    //selected client
+    private ScheduleEventClient selectedScheduleEventClient;
 
     public CasoScheduleController() {
 
@@ -222,6 +225,12 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
         return casoController.filterByIdCaso(scheduleEvent1.getIdCaso().getIdCaso());
         
     }
+    
+     public void updateAsistencia() {
+       
+         executeInClient("PF('selectedScheduleEventClientDialog').hide()");
+        
+    }
 
     public DefaultScheduleEvent getEvent() {
         return event;
@@ -236,11 +245,12 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
             com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) event.getData();
 
             if (event.getId() == null) {
-                addInfoMessage("El evento no se puede eliminar por que no existe.");
+                addWarnMessage("El evento no se puede eliminar por que no existe.");
             } else {
                 Logger.getLogger(CasoScheduleController.class.getName()).log(Level.SEVERE, "deleteSelectedEvent entityEvent::{0}", entityEvent);
                 lazyScheduleEventsModel.deleteEvent(event);
-                getJpaController().remove(com.itcs.helpdesk.persistence.entities.ScheduleEvent.class, entityEvent);                
+                getJpaController().remove(com.itcs.helpdesk.persistence.entities.ScheduleEvent.class, entityEvent);      
+                addInfoMessage("Evento eliminado exitósamente.");
                 executeInClient("PF('myschedule').update();PF('viewEventDialog').hide();");
             }
 
@@ -276,6 +286,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
                 Logger.getLogger(CasoScheduleController.class.getName()).log(Level.SEVERE, "merging entityEvent::{0}", entityEvent);
                 getJpaController().merge(entityEvent);
                 lazyScheduleEventsModel.updateEvent(event);
+                 addInfoMessage("Evento actualizado exitósamente.");
                 executeInClient("PF('myschedule').update();PF('viewEventDialog').hide();");
             }
 
@@ -343,10 +354,10 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     }
 
-    public void onTabClose(TabCloseEvent event) {
+    public void onTabClose(TabCloseEvent closeEvent) {
         //update=":inputPanel"
-        System.out.println("TabCloseEvent:"+event.getTab());
-        FacesMessage msg = new FacesMessage("Tab Closed", "Closed tab: " + event.getTab().getTitle());
+        System.out.println("TabCloseEvent:"+closeEvent.getTab());
+        FacesMessage msg = new FacesMessage("Tab Closed", "Closed tab: " + closeEvent.getTab().getTitle());
         FacesContext.getCurrentInstance().addMessage(null, msg);
         this.event = null;
     }
@@ -495,7 +506,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
     public void removeScheduleEventReminder(ScheduleEventReminder r) {
         System.out.println("removeScheduleEventReminder...");
         if (this.event != null) {
-            com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) event.getData();
+            com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) this.event.getData();
 
             List<ScheduleEventReminder> scheduleEventReminderList = entityEvent.getScheduleEventReminderList();
             if (scheduleEventReminderList != null) {
@@ -523,7 +534,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
     }
 
     public void onEventSelect(SelectEvent selectEvent) {
-        event = (DefaultScheduleEvent) selectEvent.getObject();
+        this.event = (DefaultScheduleEvent) selectEvent.getObject();
     }
 
     public void onDateSelect(SelectEvent selectEvent) {
@@ -538,15 +549,15 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
         entityEvent.setIdUsuario(userSessionBean.getCurrent());
 
         entityEvent.setUsuariosInvitedList(fUsuario);
-        event = new DefaultScheduleEvent("", (Date) selectEvent.getObject(), (Date) selectEvent.getObject());
-        event.setData(entityEvent);
+        this.event = new DefaultScheduleEvent("", (Date) selectEvent.getObject(), (Date) selectEvent.getObject());
+        this.event.setData(entityEvent);
     }
 
-    public void onEventMove(ScheduleEntryMoveEvent event) {
+    public void onEventMove(ScheduleEntryMoveEvent entryMoveEvent) {
 
         System.out.println("onEventMove");
 
-        com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) event.getScheduleEvent().getData();
+        com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) entryMoveEvent.getScheduleEvent().getData();
 
         try {
 
@@ -567,7 +578,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
             Logger.getLogger(CasoScheduleController.class.getName()).log(Level.SEVERE, "onEventMove merge entityEvent error", ex);
         }
 
-        addInfoMessage("Event moved, Day delta:" + event.getDayDelta() + ", Minute delta:" + event.getMinuteDelta());
+        addInfoMessage("Event moved, Day delta:" + entryMoveEvent.getDayDelta() + ", Minute delta:" + entryMoveEvent.getMinuteDelta());
     }
 
     public void onEventResize(ScheduleEntryResizeEvent event) {
@@ -678,8 +689,8 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     }
 
-    public void clienteInvitedItemSelectEvent(SelectEvent event) {
-        Object item = event.getObject();
+    public void clienteInvitedItemSelectEvent(SelectEvent selectEvent) {
+        Object item = selectEvent.getObject();
 
         try {
 
@@ -703,8 +714,8 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     }
 
-    public void usuarioInvitedItemSelectEvent(SelectEvent event) {
-        Object item = event.getObject();
+    public void usuarioInvitedItemSelectEvent(SelectEvent selectEvent) {
+        Object item = selectEvent.getObject();
         System.out.println("item:" + item);
 
         try {
@@ -742,8 +753,8 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     }
 
-    public void resourceInvitedItemSelectEvent(SelectEvent event) {
-        Object item = event.getObject();
+    public void resourceInvitedItemSelectEvent(SelectEvent selectEvent) {
+        Object item = selectEvent.getObject();
         System.out.println("item:" + item);
 
         try {
@@ -763,8 +774,8 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     }
 
-    public void resourceFilterItemSelectEvent(SelectEvent event) {
-        Object item = event.getObject();
+    public void resourceFilterItemSelectEvent(SelectEvent selectEvent) {
+        Object item = selectEvent.getObject();
         try {
 
             if (this.filtrosRecurso == null) {
@@ -864,5 +875,19 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
      */
     public void setSelectedClientToAddInvited(Cliente selectedClientToAddInvited) {
         this.selectedClientToAddInvited = selectedClientToAddInvited;
+    }
+
+    /**
+     * @return the selectedScheduleEventClient
+     */
+    public ScheduleEventClient getSelectedScheduleEventClient() {
+        return selectedScheduleEventClient;
+    }
+
+    /**
+     * @param selectedScheduleEventClient the selectedScheduleEventClient to set
+     */
+    public void setSelectedScheduleEventClient(ScheduleEventClient selectedScheduleEventClient) {
+        this.selectedScheduleEventClient = selectedScheduleEventClient;
     }
 }

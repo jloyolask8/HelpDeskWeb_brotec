@@ -54,7 +54,7 @@ public class CasoTimelineController extends AbstractManagedBean<ScheduleEvent> i
     private Date start;
     private Date end;
 
-    private TimeZone timeZone = TimeZone.getDefault();
+    private TimeZone timeZone = TimeZone.getTimeZone("GMT");
 
     public CasoTimelineController() {
 

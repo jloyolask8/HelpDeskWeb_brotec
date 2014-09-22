@@ -42,6 +42,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.model.DataModel;
 import javax.resource.NotSupportedException;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -67,7 +68,7 @@ public class InscripcionEventosSessionBean extends AbstractManagedBean<Caso> imp
         HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String idCaso = req.getParameter("id");
         if (!StringUtils.isEmpty(idCaso)) {
-            Caso caso = getJpaController().find(Caso.class, Long.valueOf(idCaso));
+            Caso caso = getJpaController().find(Caso.class, Long.valueOf(idCaso), true);
             if (caso != null) {
                 setSelected(caso);
                 //handle events
@@ -196,7 +197,7 @@ public class InscripcionEventosSessionBean extends AbstractManagedBean<Caso> imp
                     for (ScheduleEventClient scheduleEventClientInscritos : scheduleEvent.getScheduleEventClientList()) {
                         if (scheduleEventClientInscritos.getCliente().equals(clienteEntity)) {
                             inscrito = true;
-                            addWarnMessage("Ud. ya está inscrito al evento " + scheduleEventClientInscritos.getScheduleEvent().toDateString());
+                            addWarnMessage("Ud. ya está inscrito al evento " + formatDateRange(scheduleEventClientInscritos.getScheduleEvent().getStartDate(), scheduleEventClientInscritos.getScheduleEvent().getEndDate()));
                             return;
                         }
                     }
@@ -218,23 +219,39 @@ public class InscripcionEventosSessionBean extends AbstractManagedBean<Caso> imp
                             event.getScheduleEventClientList().add(scheduleEventClient);
                             getJpaController().persist(scheduleEventClient);
                             getJpaController().merge(event);
-                            if(getSelected().getNotaList() == null){
+                            if (getSelected().getNotaList() == null) {
                                 getSelected().setNotaList(new LinkedList<Nota>());
                             }
                             
+                            if(!StringUtils.isEmpty( clienteEntity.getFono1() )){
+                                clienteEntity.setFono1(datos.getTelefono());
+                            }
+                            
+                            EmailCliente emailCliente = new EmailCliente(datos.getEmail().trim());
+                            
+                            if(!clienteEntity.getEmailClienteList().contains(emailCliente) ){
+                                clienteEntity.getEmailClienteList().add(emailCliente);
+                            }
+                            
+                            getJpaController().merge(clienteEntity);
+
                             Nota nota = new Nota();
 //                            nota.setCreadaPor(EnumUsuariosBase.SISTEMA.getUsuario());
                             nota.setEnviadoPor(datos.getEmail());
                             nota.setFechaCreacion(new Date());
                             nota.setFechaModificacion(nota.getFechaCreacion());
                             nota.setIdCaso(caso);
-                            nota.setTipoNota(EnumTipoNota.RESPUESTA_DE_CLIENTE.getTipoNota());
+                            nota.setTipoNota(EnumTipoNota.SUSCRIPCION_EVENTO.getTipoNota());
                             nota.setVisible(false);
-                            nota.setTexto("[Inscripción] Bloque/Evento: " + event.toDateString()+ "<br/>Email Cliente:" + datos.getEmail() + ", Rut: " + clienteEntity.getRut());
-                                    
+                            nota.setTexto("Evento: " + event.getTitle()
+                                    + "<br/><b>Horario:</b>" + formatDateRange(event.getStartDate(), event.getEndDate())
+                                    + "<br/><b>Rut:</b> " + clienteEntity.getRut()
+                                    + "<br/><b>Email:</b>" + datos.getEmail()
+                                    + "<br/><b>Teléfono:</b> " + datos.getTelefono());
+
                             getSelected().getNotaList().add(nota);
                             getJpaController().merge(getSelected());
-                            
+
                             addInfoMessage("Su inscripción fué enviada exitósamente. Revisaremos sus datos y le contactarémos luego!");
                             setDatos(new FormCaso());
                         } catch (Exception ex) {

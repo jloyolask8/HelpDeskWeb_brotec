@@ -12,12 +12,16 @@ import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.persistence.utils.OrderBy;
+import com.itcs.helpdesk.util.DateUtils;
 import com.itcs.helpdesk.util.ManagerCasos;
 import com.itcs.helpdesk.webapputils.UAgentInfo;
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
@@ -34,6 +38,8 @@ import javax.persistence.PersistenceUnit;
 import javax.resource.NotSupportedException;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.UserTransaction;
+import org.joda.time.DateTime;
+import org.ocpsoft.prettytime.PrettyTime;
 import org.primefaces.context.RequestContext;
 
 /**
@@ -42,6 +48,15 @@ import org.primefaces.context.RequestContext;
  * @param <E>
  */
 public abstract class AbstractManagedBean<E> implements Serializable {
+
+    protected static final Locale LOCALE_ES_CL = new Locale("es", "CL");
+    protected static final SimpleDateFormat fullDateFormat = new SimpleDateFormat("EEE, dd 'de' MMMM 'de' yyyy HH:mm", LOCALE_ES_CL);
+    protected static final SimpleDateFormat dayDateFormat = new SimpleDateFormat("HH:mm");
+    protected static final SimpleDateFormat monthDateFormat = new SimpleDateFormat("dd MMM", LOCALE_ES_CL);
+    protected static final SimpleDateFormat yearDateFormat = new SimpleDateFormat("dd/MM/yy", LOCALE_ES_CL);
+    
+     protected static final SimpleDateFormat monthDateFormatWTime = new SimpleDateFormat("EEE, dd MMM HH:mm", LOCALE_ES_CL);
+    protected static final SimpleDateFormat yearDateFormatWTime = new SimpleDateFormat("dd/MM/yy HH:mm", LOCALE_ES_CL);
 
     private final Class<E> entityClass;
     @Resource
@@ -412,5 +427,79 @@ public abstract class AbstractManagedBean<E> implements Serializable {
             throw new FacesException(ioe);
         }
         return null;
+    }
+
+    public String prettyDate(Date date) {
+
+        if (date != null) {
+            PrettyTime p = new PrettyTime(new Locale("es"));
+            return p.format(date);
+//            return PrettyDate.format(date);
+        } else {
+            return "";
+        }
+    }
+
+    public String formatShortDate(Date date) {
+        if (date != null) {
+
+            if (DateUtils.isToday(date)) {
+                return dayDateFormat.format(date);
+            } else if (DateUtils.isThisYear(date)) {
+                return monthDateFormat.format(date);
+            } else {
+                return yearDateFormat.format(date);
+            }
+        } else {
+            return "";
+        }
+    }
+
+    public String formatDate(Date date) {
+        if (date != null) {
+            return fullDateFormat.format(date);
+        } else {
+            return "";
+        }
+    }
+    
+    public String formatShortDateTime(Date date) {
+        if (date != null) {
+
+            if (DateUtils.isToday(date)) {
+                return dayDateFormat.format(date);
+            } else if (DateUtils.isThisYear(date)) {
+                return monthDateFormatWTime.format(date);
+            } else {
+                return yearDateFormatWTime.format(date);
+            }
+        } else {
+            return "";
+        }
+    }
+
+    public String formatDateRange(Date start, Date end) {
+
+         SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm", LOCALE_ES_CL);
+         
+        DateTime dtStart = new DateTime(start);
+        DateTime dtEnd = new DateTime(end);
+
+        String formattedDate = "";
+
+        if (start != null) {
+            if (dtStart.isAfter(dtEnd) || end == null) {
+                //illegal!!
+                formattedDate = formatShortDateTime(start);
+            } else {
+                if (dtStart.withTimeAtStartOfDay().isEqual(dtEnd.withTimeAtStartOfDay())) {//same day?
+                    formattedDate = formatShortDateTime(start) + " - " + sdf2.format(end);
+                }else{
+                    formattedDate = formatShortDateTime(start) + " - " + formatShortDateTime(end);
+                }
+            }
+        }
+        
+        return formattedDate;
     }
 }
