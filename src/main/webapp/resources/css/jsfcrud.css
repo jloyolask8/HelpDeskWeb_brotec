@@ -644,6 +644,14 @@ img.right {
     vertical-align: top;
 }
 
+.filtersGridParaOtroEmail td {
+    border-style: hidden !important;
+}
+
+.filtersGridParaOtroEmail td:nth-child(1) {
+    width: 20px;
+}
+
 .ui-accordion-content {
     padding: 6px 1px !important;
 }

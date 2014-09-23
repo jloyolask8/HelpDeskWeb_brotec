@@ -850,40 +850,65 @@
 
                                 <h:panelGrid width="100%">
 
-                                    <h:panelGrid columns="2">
+                                    <p:panelGrid styleClass="filtersGrid" style="width: 100%;">
 
-                                        <h:panelGrid columns="2">
-                                            <p:outputLabel for="clipping" value="#{bundle.textoPredefinido}" style="font-weight:bold"/>
-                                            <p:selectOneMenu id="clipping" value="#{casoController.selectedClipping}" filter="true" filterMatchMode="contains">
-                                                <f:selectItems value="#{casoController.clippingsItemsAvailableSelectOne}"/>
-                                                <p:ajax update="textonota" process="@parent" listener="#{casoController.handleClippingSelectChangeEvent}" />
-                                            </p:selectOneMenu>
-                                        </h:panelGrid>
-                                        <h:panelGrid columns="2">  
-                                            <p:outputLabel for="textoNotaVisibilidadPublica" value="#{bundle.visibleAlCliente}" style="font-weight:bold"/>
-                                            <p:selectBooleanCheckbox id="textoNotaVisibilidadPublica" value="#{casoController.textoNotaVisibilidadPublica}" />
-                                        </h:panelGrid>
-                                        <h:panelGrid columns="2">  
-                                            <p:outputLabel for="nextResponseDue1" value="#{bundle.cambiarSLA}" style="font-weight:bold"/>
-                                            <p:calendar locale="es" navigator="true" id="nextResponseDue1" showButtonPanel="true"
-                                                        mindate="#{applicationBean.now}" 
-                                                        value="#{casoController.selected.nextResponseDue}" 
-                                                        required="true" requiredMessage="Favor ingrese un valor para el sla."
-                                                        title="Next Follow Up Due" pattern="dd/MM/yyyy HH:mm" label="SLA:"/>
+                                        <p:row>
+                                            <p:column>
+                                                <h:panelGrid columns="2">
+                                                    <p:outputLabel for="clipping" value="#{bundle.textoPredefinido}" style="font-weight:bold"/>
+                                                    <p:selectOneMenu id="clipping" value="#{casoController.selectedClipping}" filter="true" filterMatchMode="contains">
+                                                        <f:selectItems value="#{casoController.clippingsItemsAvailableSelectOne}"/>
+                                                        <p:ajax update="textonota" process="@parent" listener="#{casoController.handleClippingSelectChangeEvent}" />
+                                                    </p:selectOneMenu>
+                                                </h:panelGrid>
+                                            </p:column>
+                                            <p:column>
+                                                <h:panelGrid columns="2">
+                                                    <p:outputLabel for="textoNotaVisibilidadPublica" value="#{bundle.visibleAlCliente}" style="font-weight:bold"/>
+                                                    <p:selectBooleanCheckbox id="textoNotaVisibilidadPublica" value="#{casoController.textoNotaVisibilidadPublica}" />
+                                                </h:panelGrid>
+                                            </p:column>
+                                            <p:column colspan="2">
+                                                <p:panelGrid styleClass="filtersGrid" id="panelOtroEmail">
+                                                    <p:row>
+                                                        <p:column>
+                                                            <p:outputLabel for="checkResponderAOtro" value="#{bundle.responderAOtroCorreo}" style="font-weight:bold"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:selectBooleanCheckbox id="checkResponderAOtro" value="#{casoController.responderAOtroEmail}" >
+                                                                <p:ajax update=":inputPanel:formCreateNota"/>
+                                                            </p:selectBooleanCheckbox>
+                                                        </p:column>
+                                                    </p:row>
+                                                </p:panelGrid>
+                                            </p:column>
+                                        </p:row>
+                                        <p:row>
+                                            <p:column colspan="2">
+                                                <h:panelGrid columns="2">  
+                                                    <p:outputLabel for="nextResponseDue1" value="#{bundle.cambiarSLA}" style="font-weight:bold"/>
+                                                    <p:calendar locale="es" navigator="true" id="nextResponseDue1" showButtonPanel="true"
+                                                                mindate="#{applicationBean.now}" 
+                                                                value="#{casoController.selected.nextResponseDue}" 
+                                                                required="true" requiredMessage="Favor ingrese un valor para el sla."
+                                                                title="Next Follow Up Due" pattern="dd/MM/yyyy HH:mm" label="SLA:"/>
 
-                                        </h:panelGrid>
-                                        <h:panelGrid columns="2">  
-                                            <p:outputLabel value="#{bundle.cambiarSubEstado}:" for="idSubEstadox" style="font-weight:bold"/>
-                                            <p:selectOneMenu rendered="#{not casoController.selected.closed}" id="idSubEstadox" value="#{casoController.selected.idSubEstado}" >
-                                                <f:selectItems value="#{casoController.itemsSubEstadoCasoAvailableSelectOneCasoAbierto}"/>
-                                            </p:selectOneMenu>
+                                                </h:panelGrid>
+                                            </p:column>
+                                            <p:column colspan="2">
+                                                <h:panelGrid columns="2">  
+                                                    <p:outputLabel value="#{bundle.cambiarSubEstado}:" for="idSubEstadox" style="font-weight:bold"/>
+                                                    <p:selectOneMenu rendered="#{not casoController.selected.closed}" id="idSubEstadox" value="#{casoController.selected.idSubEstado}" >
+                                                        <f:selectItems value="#{casoController.itemsSubEstadoCasoAvailableSelectOneCasoAbierto}"/>
+                                                    </p:selectOneMenu>
 
-                                            <p:selectOneMenu rendered="#{casoController.selected.closed}" id="idSubEstado2" value="#{casoController.selected.idSubEstado}" >
-                                                <f:selectItems value="#{casoController.itemsSubEstadoCasoAvailableSelectOneCasoCerrado}"/>
-                                            </p:selectOneMenu>
-                                        </h:panelGrid>
-
-                                    </h:panelGrid>
+                                                    <p:selectOneMenu rendered="#{casoController.selected.closed}" id="idSubEstado2" value="#{casoController.selected.idSubEstado}" >
+                                                        <f:selectItems value="#{casoController.itemsSubEstadoCasoAvailableSelectOneCasoCerrado}"/>
+                                                    </p:selectOneMenu>
+                                                </h:panelGrid>
+                                            </p:column>
+                                        </p:row>
+                                    </p:panelGrid>
 
                                     <h:panelGrid columns="4">
                                         <p:message for="nextResponseDue1"/>
@@ -891,9 +916,20 @@
                                         <p:message for="textonota"/>
                                     </h:panelGrid>
 
-
-
-
+                                    <p:panelGrid styleClass="filtersGridParaOtroEmail" id="panelParaOtroEmail" style="width: 100%;" rendered="#{casoController.responderAOtroEmail}">
+                                        <p:row>
+                                            <p:column colspan="1">
+                                                <p:outputLabel value="#{bundle.etiquetaDestinatarioRespuestaCaso}:" for="otroEmail" />
+                                            </p:column >
+                                            <p:column colspan="10">
+                                                <p:autoComplete style="width: 100%;" id="otroEmail" multiple="true" value="#{casoController.otroEmail}" completeMethod="#{emailClienteController.completeEmailClienteString}"
+                                                                var="email"  itemValue="#{email}" itemLabel="#{email}"  forceSelection="false">
+                                                </p:autoComplete>
+                                                <p:watermark for="otroEmail" value="email destino"/>
+                                            </p:column>
+                                        </p:row>
+                                    </p:panelGrid>
+                                    
                                     <pe:ckEditor id="textonota" value="#{casoController.textoNota}" language="es"
                                                  toolbar="#{applicationBean.ckEditorToolbar}"
                                                  required="true"  width="100%" />

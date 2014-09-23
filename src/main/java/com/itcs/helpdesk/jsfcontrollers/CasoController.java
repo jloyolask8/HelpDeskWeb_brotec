@@ -143,6 +143,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     //Notas
     private String textoNota = null;
     private boolean textoNotaVisibilidadPublica = false;
+    private boolean responderAOtroEmail = false;
+    private List<String> otroEmail;
 //    private TipoNota tipoNota;
 //    private float laborTime = 0;
     private List<String> tipoNotas;
@@ -2673,7 +2675,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             return false;
         }
 
-        if (current.getEmailCliente() == null || StringUtils.isEmpty(current.getEmailCliente().getEmailCliente())) {
+        if (isResponderAOtroEmail() && otroEmail.isEmpty()) {
+            addErrorMessage("No se puede envíar la respuesta.", "No se han incluido destinatarios");
+        } else if (current.getEmailCliente() == null || StringUtils.isEmpty(current.getEmailCliente().getEmailCliente())) {
             addErrorMessage("No se puede envíar la respuesta.", "El caso no tiene email del cliente!");
             return false;
         }
@@ -2725,10 +2729,22 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     mensaje = textoMensaje.toString();
                 }
 
+                StringBuilder sbuilder = new StringBuilder();
+                String destinatario;
+                if (isResponderAOtroEmail() && !otroEmail.isEmpty()) {
+                    for (String string : otroEmail) {
+                        if(sbuilder.length() > 0){
+                            sbuilder.append(',');
+                        }
+                        sbuilder.append(string);
+                    }
+                    destinatario = sbuilder.toString();
+                } else {
+                    destinatario = current.getEmailCliente().getEmailCliente();
+                }
                 HelpDeskScheluder.scheduleSendMailNota(canal.getIdCanal(), mensaje,
-                        current.getEmailCliente().getEmailCliente(), subject,
-                        current.getIdCaso(), nuevaNota.getIdNota(), listIdAtt.toString());
-
+                            destinatario, subject,
+                            current.getIdCaso(), nuevaNota.getIdNota(), listIdAtt.toString());
                 changeLog.add(ManagerCasos.createLogReg(current, "Envío de Correo de Respuesta agendado ok", userSessionBean.getCurrent().getIdUsuario() + " envía correo de respuesta.", ""));
 
                 getJpaController().mergeCaso(current, changeLog);//todo: is this needed?
@@ -3798,6 +3814,34 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      */
     public void setActiveIndexCasoSections(int activeIndexCasoSections) {
         this.activeIndexCasoSections = activeIndexCasoSections;
+    }
+
+    /**
+     * @return the responderAOtroEmail
+     */
+    public boolean isResponderAOtroEmail() {
+        return responderAOtroEmail;
+    }
+
+    /**
+     * @param responderAOtroEmail the responderAOtroEmail to set
+     */
+    public void setResponderAOtroEmail(boolean responderAOtroEmail) {
+        this.responderAOtroEmail = responderAOtroEmail;
+    }
+
+    /**
+     * @return the otroEmail
+     */
+    public List<String> getOtroEmail() {
+        return otroEmail;
+    }
+
+    /**
+     * @param otroEmail the otroEmail to set
+     */
+    public void setOtroEmail(List<String> otroEmail) {
+        this.otroEmail = otroEmail;
     }
 
     @FacesConverter(forClass = Caso.class)
