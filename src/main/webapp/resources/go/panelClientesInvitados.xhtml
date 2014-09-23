@@ -23,7 +23,7 @@
                             completeMethod="#{casoScheduleController.autoCompleteCliente}"  
                             var="c"  itemValue="#{c}" itemLabel="#{c.capitalName}">  
 
-                <p:ajax  event="itemSelect"  process="@this"
+                <p:ajax  event="itemSelect"  process="@form"
                          listener="#{casoScheduleController.clienteInvitedItemSelectEvent}"  
                          update="panelclientesinvitados"  />
 
@@ -55,8 +55,19 @@
                 <p:column exportable="false">
                     <i class="fa fa-user"></i>
                 </p:column>
-                <p:column headerText="Nombre">
-                    <h:outputText id="userLink" value="#{clientInvited.cliente.capitalName}" />  
+
+                <p:column exportable="true" style="display: none;">
+                    <f:facet name="header">Rut</f:facet>
+                    <h:outputText value="#{clientInvited.cliente.rut}" />
+                </p:column>
+
+                <p:column>
+                    <f:facet name="header">Nombre</f:facet>
+                    <p:commandLink id="userLink" value="#{clientInvited.cliente.capitalName}" 
+                                   action="#{clienteController.prepareView(clientInvited.cliente, '/script/caso/Edit.xhtml')}" 
+                                   ajax="false" 
+                                   immediate="true"/>
+
                     <p:tooltip for="userLink" >
                         <h:panelGrid  columns="2" cellpadding="5">  
                             <f:facet name="header">  
@@ -72,14 +83,25 @@
                             <h:outputText value="Télefono: " style="font-weight: bold;"/>  
                             <h:panelGroup>
                                 <h:outputText value="#{clientInvited.cliente.fono1}" /> 
-                                <h:outputText value=" / #{clientInvited.cliente.fono2}" rendered="#{clientInvited.cliente.fono2 ne null}"/> 
+                                <h:outputText value=" / #{clientInvited.cliente.fono2}" rendered="#{not empty clientInvited.cliente.fono2}"/> 
                             </h:panelGroup>
 
 
                         </h:panelGrid>  
                     </p:tooltip>
                 </p:column>
-                <p:column headerText="Asistencia">
+                <p:column exportable="true" style="display: none;">
+                    <f:facet name="header">Teléfono</f:facet>
+                    <h:outputText value="#{clientInvited.cliente.fono1}" /> 
+                    <h:outputText value=" / #{clientInvited.cliente.fono2}" rendered="#{not empty clientInvited.cliente.fono2}"/> 
+                </p:column>
+
+                <p:column exportable="true" style="display: none;">
+                    <f:facet name="header">Asistencia</f:facet>
+                    <h:outputText value="#{clientInvited.willAssistString}"/>
+                </p:column>
+
+                <p:column headerText="Asistencia" exportable="false">
                     <pe:triStateCheckbox value="#{clientInvited.willAssist}"
                                          stateOneTitle="Pendiente"
                                          stateTwoIcon="ui-icon-check" stateTwoTitle="Asistencia confirmada"
@@ -94,26 +116,26 @@
                 </p:column>
             </p:dataTable>
             <p:separator/>
-                <p:outputPanel rendered="#{not empty casoScheduleController.event.data.scheduleEventClientList}">
-                     <h:commandLink id="xls">
-                        <p:graphicImage value="/resources/file_extension_icons/file_extension_xlsx.png" />
-                        <p:dataExporter type="xls" target="clientesInvitadosList" fileName="clientesInvitadosList" />
-                    </h:commandLink>
-                    <p:tooltip for="xls" value="exportar a excel. Nota Pendiente=0, Asiste=1, No asiste=2"/>
-                    &nbsp;
-                    <h:commandLink id="csv">
-                        <p:graphicImage value="/resources/file_extension_icons/file_extension_csv.png" />
-                        <p:dataExporter type="csv" target="clientesInvitadosList" fileName="clientesInvitadosList" />
-                    </h:commandLink>
-                    <p:tooltip for="csv" value="exportar a csv. Nota Pendiente=0, Asiste=1, No asiste=2"/>
-                    &nbsp;
-                    <h:commandLink id="xml">
-                        <p:graphicImage value="/resources/file_extension_icons/file_extension_xml.png" />
-                        <p:dataExporter type="xml" target="clientesInvitadosList" fileName="clientesInvitadosList" />
-                    </h:commandLink>
-                    <p:tooltip for="xml" value="exportar a Xml. Nota Pendiente=0, Asiste=1, No asiste=2"/>
-                </p:outputPanel> 
-               
+            <p:outputPanel rendered="#{not empty casoScheduleController.event.data.scheduleEventClientList}">
+                <h:commandLink id="xls">
+                    <p:graphicImage value="/resources/file_extension_icons/file_extension_xlsx.png" />
+                    <p:dataExporter type="xls" target="clientesInvitadosList" fileName="clientesInvitadosList" />
+                </h:commandLink>
+                <p:tooltip for="xls" value="exportar a excel. Nota Pendiente=0, Asiste=1, No asiste=2"/>
+                &nbsp;
+                <h:commandLink id="csv">
+                    <p:graphicImage value="/resources/file_extension_icons/file_extension_csv.png" />
+                    <p:dataExporter type="csv" target="clientesInvitadosList" fileName="clientesInvitadosList" />
+                </h:commandLink>
+                <p:tooltip for="csv" value="exportar a csv. Nota Pendiente=0, Asiste=1, No asiste=2"/>
+                &nbsp;
+                <h:commandLink id="xml">
+                    <p:graphicImage value="/resources/file_extension_icons/file_extension_xml.png" />
+                    <p:dataExporter type="xml" target="clientesInvitadosList" fileName="clientesInvitadosList" />
+                </h:commandLink>
+                <p:tooltip for="xml" value="exportar a Xml. Nota Pendiente=0, Asiste=1, No asiste=2"/>
+            </p:outputPanel> 
+
         </p:panel>
     </cc:implementation>
 </html>

@@ -35,6 +35,8 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
     private boolean canCreate = false;
     private boolean canEdit;
 
+    protected String backOutcome;
+
     public ClienteController() {
         super(Cliente.class);
     }
@@ -105,6 +107,14 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
         return "/script/cliente/List";
     }
 
+    public String goBack() {
+        if (this.backOutcome == null) {
+            return prepareList();
+        } else {
+            return this.backOutcome;
+        }
+    }
+
 //    public String prepareView() {
 //        if (getSelectedItems().length != 1) {
 //            JsfUtil.addSuccessMessage("Es requerido que seleccione una fila para visualizar.");
@@ -162,6 +172,13 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
 
     public String prepareView(Cliente c) {
         current = c;
+        this.backOutcome = null;
+        return "/script/cliente/View";
+    }
+
+    public String prepareView(Cliente c, String backOutcome) {
+        current = c;
+        this.backOutcome = backOutcome;
         return "/script/cliente/View";
     }
 

@@ -225,7 +225,7 @@
 
                         <p:column sortBy="#{item.clientName}" headerText="Solicitante">                                
                             <p:commandLink  
-                                action="#{clienteController.prepareView(item.idCliente)}" 
+                                action="#{clienteController.prepareView(item.idCliente, 'inbox')}" 
                                 ajax="false" value="#{item.clientName}" title="#{item.emailCliente.emailCliente}"
                                 immediate="true"/>
 

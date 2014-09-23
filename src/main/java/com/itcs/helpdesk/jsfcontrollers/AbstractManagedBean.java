@@ -48,6 +48,9 @@ import org.primefaces.context.RequestContext;
  * @param <E>
  */
 public abstract class AbstractManagedBean<E> implements Serializable {
+    
+    //go back button
+//    private String backOutcome;
 
     protected static final Locale LOCALE_ES_CL = new Locale("es", "CL");
     protected static final SimpleDateFormat fullDateFormat = new SimpleDateFormat("EEE, dd 'de' MMMM 'de' yyyy HH:mm", LOCALE_ES_CL);

@@ -112,7 +112,7 @@
                         <p:column headerText="Cliente">
 
                             <p:commandLink  
-                                action="#{clienteController.prepareView(item.cliente)}" 
+                                action="#{clienteController.prepareView(item.cliente, '/script/producto/ViewSubComponente')}" 
                                 ajax="false" value="#{item.cliente.capitalName}"
                                 immediate="true"/>
                         </p:column>

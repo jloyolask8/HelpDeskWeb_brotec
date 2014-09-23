@@ -106,7 +106,7 @@
                                         </f:facet>
                                         <h:outputText value="#{prod_cont.tipoAsociacion}"/>
                                     </p:column>
-                                   
+
 
                                 </p:dataTable>
 
@@ -140,7 +140,7 @@
                                     </p:column>
 
                                     <p:column sortBy="#{item.clientName}" headerText="Solicitante">                                
-                                       #{item.clientName}
+                                        #{item.clientName}
                                     </p:column>
 
                                     <p:column sortBy="#{item.tema}" headerText="Asunto"> 
@@ -236,20 +236,21 @@
                     <f:facet name="footer">    
                         <p:toolbar>  
                             <p:toolbarGroup align="left">   
-                                <p:commandButton action="#{clienteController.prepareCreate}" ajax="false"
-                                                 value="#{bundle.createNew}" icon="ui-icon ui-icon-plus" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>        
+                                <p:commandButton action="#{clienteController.goBack}" value="#{bundle.goBack}" icon="ui-icon-folder-open" ajax="false"/>
                                 <p:separator/>
                                 <p:commandButton action="#{clienteController.prepareEdit(clienteController.selected)}" ajax="false"
                                                  value="#{bundle.edit}" icon="ui-icon ui-icon-pencil" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/> 
-                                <p:commandButton action="#{clienteController.prepareList}" value="#{bundle.showAll}" icon="ui-icon-folder-open" ajax="false"/>
-
-
-
                                 <p:separator/>
                                 <p:commandButton id="showDialogButton" value="#{bundle.destroy}" onclick="PF('confirmation').show()" 
                                                  rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" 
                                                  icon="ui-icon ui-icon-trash" disabled="#{not clienteController.puedeEliminar(clienteController.selected)}"/> 
                             </p:toolbarGroup>
+
+                            <p:toolbarGroup align="right">   
+                                <p:commandButton action="#{clienteController.prepareCreate}" ajax="false"
+                                                 value="#{bundle.createNew}" icon="ui-icon ui-icon-plus" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>  
+                            </p:toolbarGroup>
+
 
                         </p:toolbar>
 

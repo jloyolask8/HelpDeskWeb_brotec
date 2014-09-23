@@ -44,7 +44,7 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
     private int selectedItemIndex;
     //------------------------------------
     private List<AppSetting> settings;
-    private transient UploadedFile logoUploadFile;
+    private transient UploadedFile logoUploadFile = null;
 //    private StreamedContent currentLogoStreamedContent;
     private transient StreamedContent newLogoStreamedContent;
 //    private CroppedImage croppedImage;
@@ -72,7 +72,6 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
 
 //        String email_regexp = "[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?";
 //        Pattern p = Pattern.compile(email_regexp);
-
         if (event != null) {
             logoUploadFile = event.getFile();
         }
@@ -82,7 +81,6 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
                 try {
                     final String contentType = "image/png";
                     final String format = "png";
-
 
                     BufferedImage originalImage = ImageIO.read(logoUploadFile.getInputstream());
                     BufferedImage resizedImage = Scalr.resize(originalImage, ApplicationConfig.getCompanyLogoSize());
@@ -97,8 +95,6 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
 
                     addMessage(FacesMessage.SEVERITY_INFO, "Archivo recibido exitosamente. tamaño: " + imageInByte.length);
 
-                    logoUploadFile = null;
-
                 } catch (Exception ex) {
                     Logger.getLogger(AppSettingController.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -106,8 +102,8 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
                 JsfUtil.addErrorMessage("El archivo enviado debe ser una imagen. Tipo " + logoUploadFile.getContentType() + " no esta soportado.");
             }
 
-
         }
+        logoUploadFile = null;
 //        JsfUtil.addSuccessMessage("upload finished.");
     }
 
@@ -134,7 +130,6 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
                 try {
                     final String contentType = "image/png";
                     final String format = "png";
-
 
                     BufferedImage originalImage = ImageIO.read(logoUploadFile.getInputstream());
                     BufferedImage resizedImage = Scalr.resize(originalImage, ApplicationConfig.getCompanyLogoSize());
@@ -167,9 +162,10 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
                     Logger.getLogger(AppSettingController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else {
-                JsfUtil.addErrorMessage("El archivo enviado debe ser una imagen. Tipo " + logoUploadFile.getContentType() + " no esta soportado.");
+                if (logoUploadFile.getSize() > 0) {
+                    JsfUtil.addErrorMessage("El archivo enviado debe ser una imagen. Tipo " + logoUploadFile.getContentType() + " no esta soportado. " + logoUploadFile.getSize());
+                }
             }
-
 
         }
 
@@ -247,7 +243,6 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
 //            JsfUtil.addErrorMessage("Debe seleccionar una imagen.");
 //            hasErrors = true;
 //        }
-
         if (!hasErrors) {
             addMessage(FacesMessage.SEVERITY_INFO, "Configuración guardada exitosamente.");
 
@@ -263,7 +258,6 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
 //        }
 //        return current;
 //    }
-
     @Override
     public PaginationHelper getPagination() {
         if (pagination == null) {
@@ -385,7 +379,6 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
         return items;
     }
 
-
 //    public SelectItem[] getItemsAvailableSelectMany() {
 //        return JsfUtil.getSelectItems(getJpaController().getAppSettingJpaController().findAppSettingEntities(), false);
 //    }
@@ -393,7 +386,6 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
 //    public SelectItem[] getItemsAvailableSelectOne() {
 //        return JsfUtil.getSelectItems(getJpaController().getAppSettingJpaController().findAppSettingEntities(), true);
 //    }
-
     public SelectItem[] getSettingsItemsAvailableSelectOne() {
         return JsfUtil.getSelectItems(EnumSettingsBase.values(), true);
     }
@@ -420,7 +412,7 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
      * @param logoUploadFile0 the logoUploadFile to set
      */
     public void setLogoUploadFile(UploadedFile logoUploadFile0) {
-            this.logoUploadFile = logoUploadFile0;
+        this.logoUploadFile = logoUploadFile0;
     }
 
 //    /**

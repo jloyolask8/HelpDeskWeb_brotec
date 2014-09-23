@@ -670,17 +670,23 @@
                         </h:panelGrid>
 
                         <h:panelGroup id="tituloCaso">
-                            <p:panelGrid styleClass="filtersGrid" id="panelGridDatos">
 
+
+
+                            <p:panelGrid styleClass="filtersGrid" id="panelGridDatos">
                                 <p:row>
                                     <p:column>
-
-                                        <p:outputLabel style="font-size: 18px !important;"
-                                                       value="#{casoController.selected.tipoCaso ne null ? casoController.selected.tipoCaso.nombre:'Caso' } N°#{casoController.selected.idCaso}: #{casoController.selected.tema}"/>
-
+                                        <p:inplace editor="true">
+                                            <f:facet name="output">
+                                                <p:outputLabel style="font-size: 18px !important;"
+                                                               value="#{casoController.selected.tipoCaso ne null ? casoController.selected.tipoCaso.nombre:'Caso' } N°#{casoController.selected.idCaso}: #{casoController.selected.tema}"/>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:inputText id="ticketTema" value="#{casoController.selected.tema}"/> 
+                                                <p:watermark for="ticketTema" value="Asunto del caso"/>
+                                            </f:facet>
+                                        </p:inplace>
                                     </p:column>
-
-
 
                                     <p:column>
                                         <h:commandLink id="prio" disabled="#{casoController.selected.closed}" >
@@ -699,7 +705,6 @@
                                         <h:outputText id="idSubEstado" styleClass="ticket-status" 
                                                       style="background: \##{casoController.selected.idSubEstado.backgroundColor}; color: \##{casoController.selected.idSubEstado.fontColor};" 
                                                       value="#{casoController.selected.idSubEstado.nombre}"/>
-
                                     </p:column>
 
                                     <p:column>
@@ -708,11 +713,14 @@
                                         </h:panelGroup>
                                         <h:panelGroup rendered="#{casoController.selected.hasAttachments}">
                                             <i class="fa fa-paperclip"></i>    
-                                        </h:panelGroup> 
+                                        </h:panelGroup>
                                     </p:column>
                                 </p:row>
-
                             </p:panelGrid>
+
+
+
+
                         </h:panelGroup>
                     </h:form>
 
@@ -729,32 +737,47 @@
                         <p:ajax event="tabClose" listener="#{casoScheduleController.onTabClose}" />
 
                         <p:tab id="tabDesc" title="#{bundle.CreateCasoTitle_descripcion}" >  
-                            <h:panelGrid cellpadding="10">  
-                                <h:outputText value="#{(casoController.selected.descripcionTxt eq null) ? casoController.parseHtmlToText(casoController.selected.descripcion):casoController.selected.descripcionTxt}" escape="false"/>
-                                <p:separator/>
-                                <p:panelGrid id="link" styleClass="filtersGrid" style="width: 100%;">
-                                    <p:row>
-                                        <p:column >
-                                            <i class="fa fa-picture-o" style="float: right;"></i>
-                                        </p:column>
-                                        <p:column >
-                                            <div align="left" style="font-size: x-small;">
-                                                <i>La descripci&oacute;n del caso se muestra en texto plano por seguridad, para ver versi&oacute;n original haz click en 
-                                                </i>
-                                            </div>
-                                        </p:column>
-                                        <p:column>
-                                            <h:form>
+
+                            <h:form id="formDesc">
+
+                                <h:panelGrid cellpadding="10">  
+
+                                    <p:inplace editor="true">
+                                        <f:facet name="output">
+                                            <h:outputText value="#{(casoController.selected.descripcionTxt eq null) ? casoController.parseHtmlToText(casoController.selected.descripcion):casoController.selected.descripcionTxt}" escape="false"/>
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <pe:ckEditor id="ticketDesc" value="#{casoController.selected.descripcionTxt}" 
+                                                         language="es"
+                                                 toolbar="#{applicationBean.ckEditorToolbar}"
+                                                 required="true"  width="100%" /> 
+                                            <p:watermark for="ticketDesc" value="Descripción del caso"/>
+                                        </f:facet>
+                                    </p:inplace>
+
+
+                                    <p:separator/>
+                                    <p:panelGrid id="link" styleClass="filtersGrid" style="width: 100%;">
+                                        <p:row>
+                                            <p:column >
+                                                <i class="fa fa-picture-o" style="float: right;"></i>
+                                            </p:column>
+                                            <p:column >
+                                                <div align="left" style="font-size: x-small;">
+                                                    <i>Oprima sobre la descripción si desea editar. La descripci&oacute;n del caso se muestra en texto plano por seguridad, para ver versi&oacute;n original haz click en 
+                                                    </i>
+                                                </div>
+                                            </p:column>
+                                            <p:column>
                                                 <p:commandLink actionListener="#{casoController.prepareViewHtml(casoController.selected.descripcion)}" 
                                                                style="color: #15c;font-size: x-small;"
                                                                value="ver mensaje HTML" />
-                                            </h:form>
-                                        </p:column>
+                                            </p:column>
 
-                                    </p:row>
-                                </p:panelGrid>
+                                        </p:row>
+                                    </p:panelGrid>
 
-                                <h:form id="formint2">
+
                                     <p:panelGrid style="margin-bottom:10px;" styleClass="filtersGrid" id="panelGridDatos" >
                                         <p:row rendered="#{casoController.casoTipoReparacion}">
                                             <p:column>
@@ -769,9 +792,10 @@
                                             </p:column>
                                         </p:row>
                                     </p:panelGrid>
-                                </h:form>
 
-                            </h:panelGrid>  
+
+                                </h:panelGrid>  
+                            </h:form>
 
                         </p:tab>  
 
@@ -929,7 +953,7 @@
                                             </p:column>
                                         </p:row>
                                     </p:panelGrid>
-                                    
+
                                     <pe:ckEditor id="textonota" value="#{casoController.textoNota}" language="es"
                                                  toolbar="#{applicationBean.ckEditorToolbar}"
                                                  required="true"  width="100%" />
@@ -1619,7 +1643,7 @@
                     <p:separator/>
                     <p:commandButton action="#{casoController.mergeCliente}" disabled="#{not (casoController.verificarGrabarCaso())}"
                                      value="Guardar" ajax="true" update=":formDatosCliente" icon="ui-icon-disk"/>  
-                    <p:commandButton action="#{clienteController.prepareView(casoController.selected.idCliente)}"
+                    <p:commandButton action="#{clienteController.prepareView(casoController.selected.idCliente, '/script/caso/Edit')}"
                                      value="Ver detalle" immediate="true" ajax="false" icon="ui-icon-circle-zoomin"/> 
                     <p:commandButton action="#{clienteController.prepareList}" value="Lista de clientes" immediate="true" ajax="false" icon="ui-icon-folder-open"/>          
                     <p:commandButton value="Cerrar" onclick="PF('dialogClient').hide()" icon="ui-icon-close" type="button"/>
@@ -1779,7 +1803,7 @@
                                 selectionMode="single" selection="#{itemController.item}"
                                 style="border-color: window;">
                             <p:ajax event="select" listener="#{casoController.onNodeItemSelectedInSelectedCaso}" 
-                                    update=":inputPanel:formint2" oncomplete="PF('idDialogArbolItem').hide()"/>
+                                    update=":inputPanel:formDesc" oncomplete="PF('idDialogArbolItem').hide()"/>
                             <p:treeNode expandedIcon="myfoldericon16" collapsedIcon="myfoldericon16">
                                 <h:outputText value="#{node.nombre}" />
                             </p:treeNode>
@@ -1989,7 +2013,7 @@
             </p:dialog>
 
             <p:dialog id="viewEventDialog" widgetVar="viewEventDialog" header="Evento" dynamic="true"
-                      showEffect="fade" hideEffect="fade" closeOnEscape="true" closable="false">  
+                      showEffect="fade" hideEffect="fade" closeOnEscape="true" closable="true" modal="true">  
                 <h:form id="viewEventForm">
 
                     <p:messages globalOnly="true"/>
@@ -1997,134 +2021,131 @@
 
                     <p:panelGrid columns="1" styleClass="filtersGrid">
 
-                        
+                        <p:row>
+                            <p:column colspan="2">
+                                <p:inplace editor="true">
+                                    <f:facet name="output">
+                                        <p:outputLabel value="#{casoScheduleController.event.title}" title="#{casoScheduleController.event.data.eventId}" style="font-weight: bold;"/>
+                                    </f:facet>
+                                    <f:facet name="input">
+                                        <p:inputText id="title" value="#{casoScheduleController.event.title}" style="width: 100%;"
+                                                     required="true" requiredMessage="Favor ingrese un titulo para el evento."/> 
+                                        <p:watermark for="title" value="Titulo del evento"/>
+                                    </f:facet>
+                                </p:inplace>
 
+                                <p:message for="title"/>
+                            </p:column>
+                        </p:row>
 
-                            <p:row>
-                                <p:column colspan="2">
+                        <p:row>
+                            <p:column colspan="2">
+                                <p:panelGrid columns="6">
+
                                     <p:inplace editor="true">
                                         <f:facet name="output">
-                                            <p:outputLabel value="#{casoScheduleController.event.title}" title="#{casoScheduleController.event.data.eventId}" style="font-weight: bold;"/>
+                                            <h:outputText value="#{casoController.formatDateRange(casoScheduleController.event.startDate, casoScheduleController.event.endDate)}" />
+                                            <h:outputText value="#{casoScheduleController.event.allDay eq true ? ' Todo el dia':''}" />
                                         </f:facet>
                                         <f:facet name="input">
-                                            <p:inputText id="title" value="#{casoScheduleController.event.title}" style="width: 100%;"
-                                                         required="true" requiredMessage="Favor ingrese un titulo para el evento."/> 
-                                            <p:watermark for="title" value="Titulo del evento"/>
+                                            <p:calendar id="from" value="#{casoScheduleController.event.startDate}" size="14"
+                                                        pattern="dd/MM/yyyy HH:mm"
+                                                        required="true" requiredMessage="Favor ingrese fecha y hora de comienzo.">  
+                                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />  
+                                                <p:ajax event="dateSelect" update="endDate" />
+                                            </p:calendar>  
+                                            <h:outputLabel for="endDate" value="Hasta:" style="font-weight: bold;"/> 
+                                            <p:calendar id="endDate" mindate="#{casoScheduleController.event.startDate}" value="#{casoScheduleController.event.endDate}" size="14"
+                                                        pattern="dd/MM/yyyy HH:mm"
+                                                        required="true" requiredMessage="Favor ingrese fecha y hora de término.">  
+                                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />  
+                                                <f:attribute name="startDate" value="#{casoScheduleController.event.startDate}" />
+                                                <f:validator validatorId="primeDateRangeValidator" />
+                                            </p:calendar>
+
+                                            <h:selectBooleanCheckbox id="allDay" value="#{casoScheduleController.event.allDay}"
+                                                                     label="Todo el dia"/>  
+                                            <h:outputLabel for="allDay" value="Todo el día" style="font-weight: bold;"/> 
                                         </f:facet>
                                     </p:inplace>
 
-                                    <p:message for="title"/>
-                                </p:column>
-                            </p:row>
+                                </p:panelGrid>
 
-                            <p:row>
-                                <p:column colspan="2">
-                                    <p:panelGrid columns="6">
+                                <p:message for="from"/>
+                                <p:message for="endDate"/>
+                                <p:message for="allDay"/>
 
-                                        <p:inplace editor="true">
-                                            <f:facet name="output">
-                                                <h:outputText value="#{casoController.formatDateRange(casoScheduleController.event.startDate, casoScheduleController.event.endDate)}" />
-                                                <h:outputText value="#{casoScheduleController.event.allDay eq true ? ' Todo el dia':''}" />
-                                            </f:facet>
-                                            <f:facet name="input">
-                                                <p:calendar id="from" value="#{casoScheduleController.event.startDate}" size="14"
-                                                            pattern="dd/MM/yyyy HH:mm"
-                                                            required="true" requiredMessage="Favor ingrese fecha y hora de comienzo.">  
-                                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />  
-                                                    <p:ajax event="dateSelect" update="endDate" />
-                                                </p:calendar>  
-                                                <h:outputLabel for="endDate" value="Hasta:" style="font-weight: bold;"/> 
-                                                <p:calendar id="endDate" mindate="#{casoScheduleController.event.startDate}" value="#{casoScheduleController.event.endDate}" size="14"
-                                                            pattern="dd/MM/yyyy HH:mm"
-                                                            required="true" requiredMessage="Favor ingrese fecha y hora de término.">  
-                                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />  
-                                                    <f:attribute name="startDate" value="#{casoScheduleController.event.startDate}" />
-                                                    <f:validator validatorId="primeDateRangeValidator" />
-                                                </p:calendar>
+                            </p:column>
 
-                                                <h:selectBooleanCheckbox id="allDay" value="#{casoScheduleController.event.allDay}"
-                                                                         label="Todo el dia"/>  
-                                                <h:outputLabel for="allDay" value="Todo el día" style="font-weight: bold;"/> 
-                                            </f:facet>
-                                        </p:inplace>
 
+                        </p:row>
+
+                        <p:row>
+                            <p:column colspan="2">
+                                <p:inplace editor="true">
+                                    <f:facet name="output">
+                                        <h:outputText value="#{not empty casoScheduleController.event.data.descripcion ? casoScheduleController.event.data.descripcion:'Haz click para añadir una descripción'}" />
+                                    </f:facet>
+                                    <f:facet name="input">
+                                        <p:inputTextarea id="desc" value="#{casoScheduleController.event.data.descripcion}" style="width: 100%;"/> 
+                                        <p:watermark for="desc" value="Descripción del evento"/>
+                                    </f:facet>
+                                </p:inplace>
+
+                                <p:message for="desc"/>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <h:outputLabel value="Organizador:" style="font-weight: bold;"/>  
+                            </p:column>
+
+                            <p:column>
+                                <p:outputLabel value="#{casoScheduleController.event.data.idUsuario.capitalName}"/>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:panelGrid columns="2" styleClass="filtersGrid" >
+
+                                    <p:panelGrid columns="1" rendered="#{not empty casoScheduleController.event.data.usuariosInvitedList}"
+                                                 style="margin-bottom:10px;" styleClass="filtersGrid" >
+                                        <p:row>
+                                            <p:column>
+                                                <div class="formSeparator">
+                                                    <h2>Usuarios Invitados</h2>
+                                                </div>  
+                                            </p:column>
+                                        </p:row>
+                                        <p:row>
+                                            <p:column>
+                                                <go:panelUsuariosInvitados id="panelUsuariosInvitados"/>
+                                            </p:column>
+                                        </p:row>
                                     </p:panelGrid>
 
-                                    <p:message for="from"/>
-                                    <p:message for="endDate"/>
-                                    <p:message for="allDay"/>
+                                    <p:panelGrid columns="1" rendered="#{not empty casoScheduleController.event.data.scheduleEventClientList}"
+                                                 style="margin-bottom:10px;" styleClass="filtersGrid" >
+                                        <p:row>
+                                            <p:column>
+                                                <div class="formSeparator">
+                                                    <h2>Clientes Invitados/inscritos</h2>
+                                                </div>  
+                                            </p:column>
+                                        </p:row>
+                                        <p:row>
+                                            <p:column>
+                                                <go:panelClientesInvitados id="panelClientesInvitados"/>
+                                            </p:column>
+                                        </p:row>
+                                    </p:panelGrid>
 
-                                </p:column>
+                                </p:panelGrid>
+                            </p:column>
+                        </p:row>
 
-
-                            </p:row>
-
-                            <p:row>
-                                <p:column colspan="2">
-                                    <p:inplace editor="true">
-                                        <f:facet name="output">
-                                            <h:outputText value="#{not empty casoScheduleController.event.data.descripcion ? casoScheduleController.event.data.descripcion:'Haz click para añadir una descripción'}" />
-                                        </f:facet>
-                                        <f:facet name="input">
-                                            <p:inputTextarea id="desc" value="#{casoScheduleController.event.data.descripcion}" style="width: 100%;"/> 
-                                            <p:watermark for="desc" value="Descripción del evento"/>
-                                        </f:facet>
-                                    </p:inplace>
-
-                                    <p:message for="desc"/>
-                                </p:column>
-                            </p:row>
-
-                            <p:row>
-                                <p:column>
-                                    <h:outputLabel value="Organizador:" style="font-weight: bold;"/>  
-                                </p:column>
-
-                                <p:column>
-                                    <p:outputLabel value="#{casoScheduleController.event.data.idUsuario.capitalName}"/>
-                                </p:column>
-                            </p:row>
-
- <p:row>
-     <p:column>
-           <p:panelGrid columns="2" styleClass="filtersGrid" >
-
-                            <p:panelGrid columns="1" rendered="#{not empty casoScheduleController.event.data.usuariosInvitedList}"
-                                         style="margin-bottom:10px;" styleClass="filtersGrid" >
-                                <p:row>
-                                    <p:column>
-                                        <div class="formSeparator">
-                                            <h2>Usuarios Invitados</h2>
-                                        </div>  
-                                    </p:column>
-                                </p:row>
-                                <p:row>
-                                    <p:column>
-                                        <go:panelUsuariosInvitados id="panelUsuariosInvitados"/>
-                                    </p:column>
-                                </p:row>
-                            </p:panelGrid>
-
-                            <p:panelGrid columns="1" rendered="#{not empty casoScheduleController.event.data.scheduleEventClientList}"
-                                         style="margin-bottom:10px;" styleClass="filtersGrid" >
-                                <p:row>
-                                    <p:column>
-                                        <div class="formSeparator">
-                                            <h2>Clientes Invitados/inscritos</h2>
-                                        </div>  
-                                    </p:column>
-                                </p:row>
-                                <p:row>
-                                    <p:column>
-                                        <go:panelClientesInvitados id="panelClientesInvitados"/>
-                                    </p:column>
-                                </p:row>
-                            </p:panelGrid>
-
-                        </p:panelGrid>
-     </p:column>
- </p:row>
-                      
 
                     </p:panelGrid>
 
