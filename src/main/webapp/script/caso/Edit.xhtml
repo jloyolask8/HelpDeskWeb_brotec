@@ -7,8 +7,7 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:pe="http://primefaces.org/ui/extensions"
-      xmlns:itcs2="http://java.sun.com/jsf/composite/components/customField"
-      xmlns:ez="http://java.sun.com/jsf/composite/ezcomp">
+      xmlns:go="http://java.sun.com/jsf/composite/go">
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
             <h:outputText value="Caso #{casoController.selected.idCaso}: #{casoController.selected.tema}"></h:outputText>
@@ -22,8 +21,8 @@
                 .ui-panelgrid-odd{
                     //background: none repeat scroll 0 0 #F2F5F9;
                 }
-                
-                 .ui-panelgrid-even{
+
+                .ui-panelgrid-even{
                     //background: none repeat scroll 0 0 #F2F5F9;
                 }
             </style>
@@ -556,9 +555,9 @@
                                         <h:panelGrid columns="2">
                                             <h:outputLabel value="#{customField.customField.label}:" for="customFieldI"  style="font-weight: bold"/>
 
-                                            <itcs2:customField id="customFieldI0" rendered="#{customField.customField.required eq true and empty customField.valor}"
-                                                               casoCustomFieldValue="#{customField}" 
-                                                               casoOpen="#{casoController.selected.isOpen()}"/>
+                                            <go:customField id="customFieldI0" rendered="#{customField.customField.required eq true and empty customField.valor}"
+                                                            casoCustomFieldValue="#{customField}" 
+                                                            casoOpen="#{casoController.selected.isOpen()}"/>
 
                                             <p:inplace  editor="true" rendered="#{customField.customField.required eq false or not empty customField.valor}"
                                                         emptyLabel="vacío" saveLabel="Guardar">
@@ -567,7 +566,7 @@
                                                     <i class="fa fa-search"></i>                                           
                                                 </f:facet>
                                                 <f:facet name="input">
-                                                    <itcs2:customField id="customFieldI" casoCustomFieldValue="#{customField}" casoOpen="#{casoController.selected.isOpen()}"/>
+                                                    <go:customField id="customFieldI" casoCustomFieldValue="#{customField}" casoOpen="#{casoController.selected.isOpen()}"/>
                                                 </f:facet>
                                             </p:inplace>
 
@@ -1155,7 +1154,7 @@
 
                             <h:form id="editEventForm">
                                 <p:messages globalOnly="true"/>
-                                
+
                                 <h:panelGrid columns="2" styleClass="filtersGrid">
 
                                     <p:panelGrid id="eventDetails" 
@@ -1193,7 +1192,7 @@
                                                 <p:message for="desc"/>
                                             </p:column>
                                         </p:row>
-                                        
+
                                         <p:row>
 
                                             <p:column>
@@ -1450,64 +1449,10 @@
                                     <h:panelGroup>
 
                                         <p:panelGrid>
-
                                             <p:row>
-
-
                                                 <p:column>
-                                                    <h:outputLabel for="invitados" value="Agentes Invitados:" style="font-weight: bold;"/>
-
-
-                                                    <p:panel id="panelUsuarios">
-
-                                                        <p:autoComplete id="invitados" value="#{casoScheduleController.selectedUserToAddInvited}" 
-                                                                        autocomplete="false" dropdown="true" queryDelay="800" forceSelection="true"
-                                                                        minQueryLength="3"
-                                                                        completeMethod="#{casoScheduleController.autoCompleteUsuario}"  
-                                                                        var="u"  itemValue="#{u}" itemLabel="#{u.capitalName}">  
-
-                                                            <p:ajax  event="itemSelect"  process="@this"
-                                                                     listener="#{casoScheduleController.usuarioInvitedItemSelectEvent}"  
-                                                                     update=":inputPanel:editEventForm:panelUsuarios"  />
-
-                                                            <f:facet name="itemtip">
-                                                                <h:panelGrid  columns="2" cellpadding="5">  
-                                                                    <f:facet name="header">  
-                                                                        <h:outputText value="#{u.capitalName}" />  
-                                                                    </f:facet>  
-
-                                                                    <h:outputText value="Nombre: " />  
-                                                                    <h:outputText value="#{u.capitalName}" />  
-
-                                                                    <h:outputText value="Email: " />  
-                                                                    <h:outputText value="#{u.email}" /> 
-
-
-                                                                </h:panelGrid>  
-                                                            </f:facet>  
-
-                                                        </p:autoComplete> 
-
-
-                                                        <p:dataList id="invitadosList" value="#{casoScheduleController.event.data.usuariosInvitedList}" var="userSelected"
-                                                                    style="width: 220px; text-align:left;"
-                                                                    type="unordered" itemType="none" paginator="true" rows="10" styleClass="paginated"
-                                                                    emptyMessage="no se han añadido usuarios"
-                                                                    paginatorAlwaysVisible="false"
-                                                                    paginatorPosition="bottom">
-
-                                                            <p:commandLink update=":inputPanel:editEventForm:panelUsuarios" style="display:inline-block"
-                                                                           title="Remover Usuario" styleClass="ui-icon ui-icon-close" >
-                                                                <p:collector unique="true" value="#{userSelected}" 
-                                                                             removeFrom="#{casoScheduleController.event.data.usuariosInvitedList}"/>
-                                                            </p:commandLink>  <h:outputText value="#{userSelected.capitalName} (#{userSelected.idUsuario})" style="display:inline-block"/>
-
-                                                        </p:dataList>
-
-                                                    </p:panel>
-
-
-                                                    <p:watermark for="invitados" value="Añadir usuario..."/>
+                                                    <h:outputLabel for="panelUsuariosInvitados" value="Usuarios Invitados:" style="font-weight: bold;"/>
+                                                    <go:panelUsuariosInvitados id="panelUsuariosInvitados"/>
                                                 </p:column>
                                             </p:row>
 
@@ -1519,10 +1464,8 @@
 
 
                                                 <p:column>
-                                                    <h:outputLabel for="clientesinvitados" value="Clientes Invitados (inscritos)" style="font-weight: bold;"/>
-
-                                                    <ez:panelClientesInvitados id="panelClientesInvitados2"/>
-
+                                                    <h:outputLabel for="panelClientesInvitados2" value="Clientes Invitados (inscritos)" style="font-weight: bold;"/>
+                                                    <go:panelClientesInvitados id="panelClientesInvitados2"/>
                                                 </p:column>
                                             </p:row>
 
@@ -1530,12 +1473,15 @@
 
                                     </h:panelGroup>  
 
+
+
                                 </h:panelGrid>
                                 <p:separator/>
 
                                 <p:commandButton id="addButton" value="Guardar Evento" style="float: right;"
                                                  actionListener="#{casoScheduleController.saveEvent()}" 
                                                  update=":inputPanel"/>  
+                                <br/>
                             </h:form>
 
                         </p:tab>
@@ -2010,15 +1956,16 @@
                       showEffect="fade" hideEffect="fade" closeOnEscape="true" closable="false">  
                 <h:form id="viewEventForm">
 
-                    <p:panelGrid columns="2" styleClass="filtersGrid">
+                    <p:messages globalOnly="true"/>
 
-                        <p:panelGrid id="eventDetails" columns="1" 
-                                     style="margin-bottom:10px;float: top" styleClass="filtersGrid" >
 
-                            <p:messages globalOnly="true"/>
+                    <p:panelGrid columns="1" styleClass="filtersGrid">
+
+                        
+
 
                             <p:row>
-                                <p:column>
+                                <p:column colspan="2">
                                     <p:inplace editor="true">
                                         <f:facet name="output">
                                             <p:outputLabel value="#{casoScheduleController.event.title}" title="#{casoScheduleController.event.data.eventId}" style="font-weight: bold;"/>
@@ -2035,7 +1982,7 @@
                             </p:row>
 
                             <p:row>
-                                <p:column>
+                                <p:column colspan="2">
                                     <p:panelGrid columns="6">
 
                                         <p:inplace editor="true">
@@ -2078,7 +2025,7 @@
                             </p:row>
 
                             <p:row>
-                                <p:column>
+                                <p:column colspan="2">
                                     <p:inplace editor="true">
                                         <f:facet name="output">
                                             <h:outputText value="#{not empty casoScheduleController.event.data.descripcion ? casoScheduleController.event.data.descripcion:'Haz click para añadir una descripción'}" />
@@ -2103,49 +2050,48 @@
                                 </p:column>
                             </p:row>
 
-                            <p:row rendered="#{not empty casoScheduleController.event.data.usuariosInvitedList}">
-                                <p:column>
-                                    <div class="formSeparator">
-                                        <h2>Usuarios Invitados</h2>
-                                    </div>  
-                                </p:column>
-                            </p:row>
+ <p:row>
+     <p:column>
+           <p:panelGrid columns="2" styleClass="filtersGrid" >
 
-                            <p:row rendered="#{not empty casoScheduleController.event.data.usuariosInvitedList}">
+                            <p:panelGrid columns="1" rendered="#{not empty casoScheduleController.event.data.usuariosInvitedList}"
+                                         style="margin-bottom:10px;" styleClass="filtersGrid" >
+                                <p:row>
+                                    <p:column>
+                                        <div class="formSeparator">
+                                            <h2>Usuarios Invitados</h2>
+                                        </div>  
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column>
+                                        <go:panelUsuariosInvitados id="panelUsuariosInvitados"/>
+                                    </p:column>
+                                </p:row>
+                            </p:panelGrid>
 
-                                <p:column>
-                                    <ui:repeat value="#{casoScheduleController.event.data.usuariosInvitedList}" var="usuariosInvited">
-                                        <p:outputLabel value="#{usuariosInvited.capitalName},"/>
-                                    </ui:repeat>
-                                </p:column>
-                            </p:row>
+                            <p:panelGrid columns="1" rendered="#{not empty casoScheduleController.event.data.scheduleEventClientList}"
+                                         style="margin-bottom:10px;" styleClass="filtersGrid" >
+                                <p:row>
+                                    <p:column>
+                                        <div class="formSeparator">
+                                            <h2>Clientes Invitados/inscritos</h2>
+                                        </div>  
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column>
+                                        <go:panelClientesInvitados id="panelClientesInvitados"/>
+                                    </p:column>
+                                </p:row>
+                            </p:panelGrid>
 
-
-
-                        </p:panelGrid>  
-
-                        <p:panelGrid columns="1" rendered="#{not empty casoScheduleController.event.data.scheduleEventClientList}"
-                                     style="margin-bottom:10px;" styleClass="filtersGrid" >
-
-                            <p:row>
-                                <p:column>
-                                    <div class="formSeparator">
-                                        <h2>Clientes Invitados/inscritos</h2>
-                                    </div>  
-                                </p:column>
-                            </p:row>
-
-                            <p:row>
-                                <p:column>
-                                    <ez:panelClientesInvitados id="panelClientesInvitados"/>
-                                </p:column>
-                            </p:row>
-
-                        </p:panelGrid> 
+                        </p:panelGrid>
+     </p:column>
+ </p:row>
+                      
 
                     </p:panelGrid>
-
-
 
                     <p:separator/>
 
@@ -2155,7 +2101,7 @@
                     </p:commandButton>
 
                     &nbsp;
-                    <p:commandButton value="Cerrar" oncomplete="PF('viewEventDialog').hide();" update=":viewEventForm:eventDetails" process="@this">
+                    <p:commandButton value="Cerrar" oncomplete="PF('viewEventDialog').hide();" update=":viewEventForm" process="@this">
                         <p:resetInput target="@form" />
                     </p:commandButton>
 
@@ -2164,7 +2110,7 @@
 
                     <p:commandButton id="addButton" value="Guardar"
                                      actionListener="#{casoScheduleController.quickSaveEvent()}"
-                                     update=":viewEventForm:eventDetails" />
+                                     update=":viewEventForm" />
                     &nbsp;
                     <p:commandLink id="editButton" value="Editar evento »" style="font-weight: bold;float: right;color: #15c;text-decoration: underline;cursor: pointer;white-space: nowrap;"
                                    actionListener="#{casoScheduleController.goEditEvent()}" update=":inputPanel"/>

@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://java.sun.com/jsf/composite"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <p:panel id="panelUsuarios">
+
+            <p:autoComplete id="invitados" value="#{casoScheduleController.selectedUserToAddInvited}" 
+                            autocomplete="false" dropdown="true" queryDelay="800" forceSelection="true"
+                            minQueryLength="3"
+                            completeMethod="#{casoScheduleController.autoCompleteUsuario}"  
+                            var="u"  itemValue="#{u}" itemLabel="#{u.capitalName}">  
+
+                <p:ajax  event="itemSelect"  process="@this"
+                         listener="#{casoScheduleController.usuarioInvitedItemSelectEvent}"  
+                         update="panelUsuarios"  />
+
+                <f:facet name="itemtip">
+                    <h:panelGrid  columns="2" cellpadding="5">  
+                        <f:facet name="header">  
+                            <h:outputText value="#{u.capitalName}" />  
+                        </f:facet>  
+
+                        <h:outputText value="Nombre: " />  
+                        <h:outputText value="#{u.capitalName}" />  
+
+                        <h:outputText value="Email: " />  
+                        <h:outputText value="#{u.email}" /> 
+
+
+                    </h:panelGrid>  
+                </f:facet>  
+
+            </p:autoComplete> <p:watermark for="invitados" value="Añadir usuario..."/>
+
+
+          
+            
+            <p:dataTable id="invitadosList" value="#{casoScheduleController.event.data.usuariosInvitedList}" 
+                         var="userSelected"
+                         paginator="true" rows="10" styleClass="paginated hide-column-names"
+                         emptyMessage="Sin usuarios invitados"
+                         paginatorAlwaysVisible="false"
+                         paginatorPosition="bottom">
+
+                <p:column exportable="false">
+                    <i class="fa fa-user"></i>
+                </p:column>
+                <p:column headerText="Nombre">
+                    <h:outputText id="userLink" value="#{userSelected.capitalName}" />  
+                    <p:tooltip for="userLink" >
+                        <h:panelGrid  columns="2" cellpadding="5">  
+                            <f:facet name="header">  
+                                <h:outputText value="#{userSelected.capitalName}" />  
+                                <p:separator/>
+                            </f:facet>  
+
+                            <h:outputText value="Email: " style="font-weight: bold;"/>  
+                            <h:outputText value="#{userSelected.email}" /> 
+
+                            <h:outputText value="Télefono: " style="font-weight: bold;"/>  
+                            <h:panelGroup>
+                                <h:outputText value="#{userSelected.telFijo}" /> 
+                                <h:outputText value=" / #{userSelected.telMovil}" rendered="#{userSelected.telMovil ne null}"/> 
+                            </h:panelGroup>
+
+
+                        </h:panelGrid>  
+                    </p:tooltip>
+                </p:column>
+               
+                <p:column exportable="false">
+                    <p:commandLink update="invitadosList" 
+                                   title="Remover" styleClass="fa fa-times" style="color: #ff0000;">
+                        <p:collector unique="true" value="#{userSelected}" 
+                                     removeFrom="#{casoScheduleController.event.data.usuariosInvitedList}"/>
+                    </p:commandLink> 
+                </p:column>
+            </p:dataTable>
+
+        </p:panel>
+    </cc:implementation>
+</html>

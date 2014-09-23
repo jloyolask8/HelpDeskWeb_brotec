@@ -69,7 +69,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
     private Usuario selectedUserToAddInvited;
     private Resource selectedResourceToAddInvited;
     private Cliente selectedClientToAddInvited;
-    
+
     //selected client
     private ScheduleEventClient selectedScheduleEventClient;
 
@@ -218,18 +218,18 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
     }
 
     public String selectCasoByEvento(DefaultScheduleEvent scheduleEvent) {
-       
+
         this.event = scheduleEvent;
-        com.itcs.helpdesk.persistence.entities.ScheduleEvent scheduleEvent1 = (com.itcs.helpdesk.persistence.entities.ScheduleEvent)scheduleEvent.getData();
+        com.itcs.helpdesk.persistence.entities.ScheduleEvent scheduleEvent1 = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) scheduleEvent.getData();
         casoController.setActiveIndexCasoSections(8);//tabEditarEvento
         return casoController.filterByIdCaso(scheduleEvent1.getIdCaso().getIdCaso());
-        
+
     }
-    
-     public void updateAsistencia() {
-       
-         executeInClient("PF('selectedScheduleEventClientDialog').hide()");
-        
+
+    public void updateAsistencia() {
+
+        executeInClient("PF('selectedScheduleEventClientDialog').hide()");
+
     }
 
     public DefaultScheduleEvent getEvent() {
@@ -239,7 +239,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
     public void setEvent(DefaultScheduleEvent event) {
         this.event = event;
     }
-    
+
     public void deleteSelectedEvent() {
         try {
             com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) event.getData();
@@ -248,8 +248,16 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
                 addWarnMessage("El evento no se puede eliminar por que no existe.");
             } else {
                 Logger.getLogger(CasoScheduleController.class.getName()).log(Level.SEVERE, "deleteSelectedEvent entityEvent::{0}", entityEvent);
+
+                try {
+                    unscheduleQuartzEvent(entityEvent);
+                    unscheduleQuartzReminders(entityEvent);
+                } catch (Exception ex) {
+                    Logger.getLogger(CasoScheduleController.class.getName()).log(Level.SEVERE, "onEventMove unschedule error", ex);
+                }
+
                 lazyScheduleEventsModel.deleteEvent(event);
-                getJpaController().remove(com.itcs.helpdesk.persistence.entities.ScheduleEvent.class, entityEvent);      
+                getJpaController().remove(com.itcs.helpdesk.persistence.entities.ScheduleEvent.class, entityEvent);
                 addInfoMessage("Evento eliminado exitósamente.");
                 executeInClient("PF('myschedule').update();PF('viewEventDialog').hide();");
             }
@@ -284,9 +292,9 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
                 executeInClient("PF('myschedule').update();");
             } else {
                 Logger.getLogger(CasoScheduleController.class.getName()).log(Level.SEVERE, "merging entityEvent::{0}", entityEvent);
-                getJpaController().merge(entityEvent);
+                moveEventQuartzTriggers(entityEvent);
                 lazyScheduleEventsModel.updateEvent(event);
-                 addInfoMessage("Evento actualizado exitósamente.");
+                addInfoMessage("Evento actualizado exitósamente.");
                 executeInClient("PF('myschedule').update();PF('viewEventDialog').hide();");
             }
 
@@ -310,7 +318,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
             entityEvent.setAllDay(event.isAllDay());
 
             if (event.getId() == null) {
-               //                showMessageInDialog(FacesMessage.SEVERITY_WARN, "Esta opción no esta disponible.", "Esta opción no esta disponible.");
+                //                showMessageInDialog(FacesMessage.SEVERITY_WARN, "Esta opción no esta disponible.", "Esta opción no esta disponible.");
                 Logger.getLogger(CasoScheduleController.class.getName()).log(Level.SEVERE, "persisting entityEvent::{0}", entityEvent);
                 persistAndScheduleEvent(entityEvent);
 
@@ -321,30 +329,13 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
             } else {
                 Logger.getLogger(CasoScheduleController.class.getName()).log(Level.SEVERE, "merging entityEvent::{0}", entityEvent);
 
-                try {
-
-                    unscheduleQuartzEvent(entityEvent);
-                    unscheduleQuartzReminders(entityEvent);
-
-                } catch (Exception ex) {
-                    Logger.getLogger(CasoScheduleController.class.getName()).log(Level.SEVERE, "Event edit unschedule error", ex);
-                }
-
-                try {
-
-                    scheduleQuartzEvent(entityEvent);
-                    scheduleQuartzReminders(entityEvent);
-
-                    getJpaController().merge(entityEvent);
-                } catch (Exception ex) {
-                    Logger.getLogger(CasoScheduleController.class.getName()).log(Level.SEVERE, "Event edit merge entityEvent error", ex);
-                }
+                moveEventQuartzTriggers(entityEvent);
 
                 lazyScheduleEventsModel.updateEvent(event);
-                executeInClient("PF('myschedule').update();");
-                addInfoMessage("Evento actualizado exitósamente.");
                 casoController.setActiveIndexCasoSections(4);//tabAgendarEvento
                 this.event = null;
+                addInfoMessage("Evento actualizado exitósamente.");
+                executeInClient("PF('myschedule').update();");
             }
 
         } catch (Exception ex) {
@@ -356,7 +347,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     public void onTabClose(TabCloseEvent closeEvent) {
         //update=":inputPanel"
-        System.out.println("TabCloseEvent:"+closeEvent.getTab());
+        System.out.println("TabCloseEvent:" + closeEvent.getTab());
         FacesMessage msg = new FacesMessage("Tab Closed", "Closed tab: " + closeEvent.getTab().getTitle());
         FacesContext.getCurrentInstance().addMessage(null, msg);
         this.event = null;
@@ -471,7 +462,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
         }
     }
 
-    private void unscheduleQuartzReminders(com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent)  {
+    private void unscheduleQuartzReminders(com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent) {
         if (entityEvent.getScheduleEventReminderList() != null && !entityEvent.getScheduleEventReminderList().isEmpty()) {
             //we need to schedule event reminders
 
@@ -559,6 +550,12 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
         com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) entryMoveEvent.getScheduleEvent().getData();
 
+        moveEventQuartzTriggers(entityEvent);
+
+        addInfoMessage("Event moved, Day delta:" + entryMoveEvent.getDayDelta() + ", Minute delta:" + entryMoveEvent.getMinuteDelta());
+    }
+
+    private void moveEventQuartzTriggers(com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent) {
         try {
 
             unscheduleQuartzEvent(entityEvent);
@@ -577,8 +574,6 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
         } catch (Exception ex) {
             Logger.getLogger(CasoScheduleController.class.getName()).log(Level.SEVERE, "onEventMove merge entityEvent error", ex);
         }
-
-        addInfoMessage("Event moved, Day delta:" + entryMoveEvent.getDayDelta() + ", Minute delta:" + entryMoveEvent.getMinuteDelta());
     }
 
     public void onEventResize(ScheduleEntryResizeEvent event) {
@@ -703,7 +698,15 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
             scheduleEventClient.setCliente(cliente);
             scheduleEventClient.setScheduleEvent(entityEvent);
 
-            entityEvent.getScheduleEventClientList().add(scheduleEventClient);
+            if (entityEvent.getScheduleEventClientList() == null) {
+                entityEvent.setScheduleEventClientList(new LinkedList<ScheduleEventClient>());
+            }
+
+            if (!entityEvent.getScheduleEventClientList().contains(scheduleEventClient)) {
+                entityEvent.getScheduleEventClientList().add(scheduleEventClient);
+            }else{
+                addInfoMessage("El cliente ya existe en la lista.");
+            }
 
             selectedClientToAddInvited = null;//reset selection
 
@@ -719,15 +722,18 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
         System.out.println("item:" + item);
 
         try {
-
             com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) this.event.getData();
             if (entityEvent.getUsuariosInvitedList() == null) {
                 entityEvent.setUsuariosInvitedList(new LinkedList<Usuario>());
             }
-            entityEvent.getUsuariosInvitedList().add((Usuario) item);
-            selectedUserToAddInvited = null;//reset selection
+            final Usuario user = (Usuario) item;
 
-//            addInfoMessage("Agregada OK!");
+            if (!entityEvent.getUsuariosInvitedList().contains(user)) {
+                entityEvent.getUsuariosInvitedList().add(user);
+            } else {
+                addInfoMessage("El usuario ya existe.");
+            }
+            selectedUserToAddInvited = null;//reset selection
         } catch (Exception ex) {
             addInfoMessage("No se pudo Agregar " + item);
             Log.createLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
