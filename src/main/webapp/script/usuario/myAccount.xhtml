@@ -20,7 +20,7 @@
         </ui:define>
         <ui:define name="body">
 
-            <h:form>
+            <h:form id="myAccountForm">
                 <p:panel header="#{bundle.EditUsuarioTitle}"> 
 
                     <p:messages showDetail="true"/>
@@ -82,10 +82,14 @@
 
 
                                 <h:outputLabel value="#{bundle.EditUsuarioLabel_activo}" for="activo" style="font-weight:bold"/>
-                                <h:outputText id="activo" value="#{UserSessionBean.current.activo?'yes':'no'}"/>
+
+                                <p:selectOneMenu id="activo" value="#{UserSessionBean.current.activo}" required="true" requiredMessage="Estado Activo no puede ser null.">
+                                    <f:selectItem itemLabel="Si" itemValue="true"/>
+                                    <f:selectItem itemLabel="No" itemValue="false"/>
+                                </p:selectOneMenu>
 
                                 <h:outputLabel value="#{bundle.EditUsuarioLabel_supervisor}" for="supervisor" style="font-weight:bold"/>
-                                <h:outputText id="supervisor" value="#{UserSessionBean.current.supervisor}"/>
+                                <h:outputText id="supervisor" value="#{empty UserSessionBean.current.supervisor ? 'no tiene':UserSessionBean.current.supervisor}"/>
 
                                 <h:outputLabel value="Grupos:" for="idGrupo" style="font-weight:bold"/>
                                 <p:dataTable id="idGrupo" var="g" value="#{UserSessionBean.current.grupoList}"                               
@@ -105,10 +109,8 @@
                                 <p:dataTable id="idRol" var="rol" value="#{UserSessionBean.current.rolList}"                               
                                              emptyMessage="El agente no tiene roles asignados." >                             
 
-                                    <f:facet name="header">
-                                        <h:outputText value="Roles Asignados"/>
-                                    </f:facet>
-                                    <p:column>
+
+                                    <p:column headerText="Roles Asignados"> 
                                         <p:outputLabel value="#{rol.nombre}" />
                                     </p:column>
 
@@ -135,20 +137,33 @@
                                     <p:ajax listener="#{UserSessionBean.saveTheme}" />
                                 </p:themeSwitcher>
                                 <p:message for="statefulSwitcher" />
-                                
-                                
-                                
+
+                                <h:panelGrid columns="2">
+                                    <h:selectBooleanCheckbox id="firmaEnabled" value="#{UserSessionBean.current.firmaEnabled}">
+                                        <p:ajax update=":myAccountForm:tabView:firma" process="@this"/>
+                                    </h:selectBooleanCheckbox>
+                                    <h:outputLabel for="firmaEnabled" value="Habilitar firma" />  
+                                </h:panelGrid>
+
+                                <p:panel id="firma" visible="#{UserSessionBean.current.firmaEnabled}" style="border: 0px;">
+                                                <pe:ckEditor value="#{UserSessionBean.current.firma}" required="true" language="es"
+                                                             toolbar="#{applicationBean.ckEditorToolbar}"
+                                                             id="textofirma" width="100%" />
+                                </p:panel>
+
+                                <p:message for="textofirma"/>
+
                             </h:panelGrid>
 
 
 
                         </p:tab>
-                        
+
                         <p:tab title="Notificaciones"> 
                             <div class="panel panel-transparent form-horizontal">
                                 <div class="panel-body">
 
-                                    <h6 class="text-light-gray text-semibold text-xs" style="margin:20px 0 10px 0;">Habilitar</h6>
+                                    <h3 class="text-light-gray text-semibold text-xs" style="margin:20px 0 10px 0;">Habilitar</h3>
 
                                     <div class="row form-group">
 
@@ -160,7 +175,7 @@
                                                 <p:outputLabel for="emailNotificationsEnabled" value="Notificaciones por email"/>
                                             </label>
                                         </div>
-                                        
+
                                         <div class="col-sm-12">
                                             <h:selectBooleanCheckbox id="desktopNotificationsEnabled"
                                                                      value="#{UserSessionBean.current.desktopNotificationsEnabled}" >
@@ -171,7 +186,7 @@
                                         </div>
                                     </div>
                                     <hr class="panel-wide"></hr>
-                                    <h6 class="text-light-gray text-semibold text-xs" style="margin:20px 0 10px 0;">Notificarme cuando</h6>
+                                    <h3 class="text-light-gray text-semibold text-xs" style="margin:20px 0 10px 0;">Notificarme cuando</h3>
 
                                     <div class="row form-group">
 
@@ -208,7 +223,7 @@
                                             </label>
 
                                         </div>
-                                        
+
                                     </div>
 
                                 </div>

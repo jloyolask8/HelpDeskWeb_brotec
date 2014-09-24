@@ -28,12 +28,14 @@
                             <p:inputText id="idUsuario" value="#{usuarioController.selected.idUsuario}" disabled="true" title="#{bundle.EditUsuarioTitle_idUsuario}" required="true" requiredMessage="#{bundle.EditUsuarioRequiredMessage_idUsuario}"/>
                             <h:outputLabel value="Contraseña" for="Pass" style="font-weight:bold"/>
                             <p:password id="Pass" value="#{usuarioController.selected.pass}" title="Contraseña" required="false" feedback="false" />
-                            <p:watermark for="Pass" value="(sin cambios)"/>
+                           
                             <h:outputLabel value="#{bundle.EditUsuarioLabel_activo}" for="activo" style="font-weight:bold"/>
                             <p:selectOneMenu id="activo" value="#{usuarioController.selected.activo}">
                                 <f:selectItem itemLabel="Si" itemValue="true"/>
                                 <f:selectItem itemLabel="No" itemValue="false"/>
                             </p:selectOneMenu>
+                            
+                             <p:watermark for="Pass" value="(sin cambios)"/>
                         </h:panelGrid>
                     </p:fieldset>
                     <br/>

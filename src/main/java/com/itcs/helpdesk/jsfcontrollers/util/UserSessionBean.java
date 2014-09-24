@@ -89,7 +89,6 @@ public class UserSessionBean extends AbstractManagedBean<Usuario> implements Ser
 //            }
 //        }
 //    }
-
     public String getChannel() {
         return channel;
     }
@@ -99,8 +98,7 @@ public class UserSessionBean extends AbstractManagedBean<Usuario> implements Ser
     }
 
     public void setCurrent(Usuario current) {
-        if((sessionUser == null) && (current != null))
-        {
+        if ((sessionUser == null) && (current != null)) {
 //            applicationBean.init();
         }
         this.sessionUser = current;
@@ -142,15 +140,15 @@ public class UserSessionBean extends AbstractManagedBean<Usuario> implements Ser
 
             String rutFormateado = UtilesRut.formatear(sessionUser.getRut());
             sessionUser.setRut(rutFormateado);
-
-            getJpaController().mergeUsuarioLight(sessionUser);
+            getJpaController().merge(sessionUser);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("UsuarioUpdated"));
-            return null;
+
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
-            return null;
         }
+
+        return null;
     }
 
     public List<Theme> getAdvancedThemes() {

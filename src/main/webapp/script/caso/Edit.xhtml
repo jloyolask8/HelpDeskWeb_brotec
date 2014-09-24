@@ -676,7 +676,7 @@
                             <p:panelGrid styleClass="filtersGrid" id="panelGridDatos">
                                 <p:row>
                                     <p:column>
-                                        <p:inplace editor="true">
+                                        <p:inplace editor="true" disabled="#{casoController.selected.closed}">
                                             <f:facet name="output">
                                                 <p:outputLabel style="font-size: 18px !important;"
                                                                value="#{casoController.selected.tipoCaso ne null ? casoController.selected.tipoCaso.nombre:'Caso' } N°#{casoController.selected.idCaso}: #{casoController.selected.tema}"/>
@@ -742,15 +742,15 @@
 
                                 <h:panelGrid cellpadding="10">  
 
-                                    <p:inplace editor="true">
+                                    <p:inplace editor="true" disabled="#{casoController.selected.closed}">
                                         <f:facet name="output">
                                             <h:outputText value="#{(casoController.selected.descripcionTxt eq null) ? casoController.parseHtmlToText(casoController.selected.descripcion):casoController.selected.descripcionTxt}" escape="false"/>
                                         </f:facet>
                                         <f:facet name="input">
                                             <pe:ckEditor id="ticketDesc" value="#{casoController.selected.descripcionTxt}" 
                                                          language="es"
-                                                 toolbar="#{applicationBean.ckEditorToolbar}"
-                                                 required="true"  width="100%" /> 
+                                                         toolbar="#{applicationBean.ckEditorToolbar}"
+                                                         required="true"  width="100%" /> 
                                             <p:watermark for="ticketDesc" value="Descripción del caso"/>
                                         </f:facet>
                                     </p:inplace>
@@ -900,7 +900,7 @@
                                                         </p:column>
                                                         <p:column>
                                                             <p:selectBooleanCheckbox id="checkResponderAOtro" value="#{casoController.responderAOtroEmail}" >
-                                                                <p:ajax update=":inputPanel:formCreateNota"/>
+                                                                <p:ajax update=":inputPanel:formCreateNota:responderAOtroEmail" process="@this"/>
                                                             </p:selectBooleanCheckbox>
                                                         </p:column>
                                                     </p:row>
@@ -934,26 +934,31 @@
                                         </p:row>
                                     </p:panelGrid>
 
-                                    
+
                                     <h:panelGrid columns="4">
                                         <p:message for="nextResponseDue1"/>
                                         <p:message for="idSubEstadox"/>
                                         <p:message for="textonota"/>
                                     </h:panelGrid>
 
-                                    <p:panelGrid styleClass="filtersGridParaOtroEmail" id="panelParaOtroEmail" style="width: 100%;" rendered="#{casoController.responderAOtroEmail}">
-                                        <p:row>
-                                            <p:column colspan="1">
-                                                <p:outputLabel value="#{bundle.etiquetaDestinatarioRespuestaCaso}:" for="otroEmail" />
-                                            </p:column >
-                                            <p:column colspan="10">
-                                                <p:autoComplete style="width: 100%;" id="otroEmail" multiple="true" value="#{casoController.otroEmail}" completeMethod="#{emailClienteController.completeEmailClienteString}"
-                                                                var="email"  itemValue="#{email}" itemLabel="#{email}"  forceSelection="false">
-                                                </p:autoComplete>
-                                                <p:watermark for="otroEmail" value="email destino"/>
-                                            </p:column>
-                                        </p:row>
-                                    </p:panelGrid>
+                                    <p:panel id="responderAOtroEmail" visible="#{casoController.responderAOtroEmail}" style="border: 0px;">
+
+                                        <p:panelGrid styleClass="filtersGridParaOtroEmail" id="panelParaOtroEmail" style="width: 100%;" >
+                                            <p:row>
+                                                <p:column colspan="1">
+                                                    <p:outputLabel value="#{bundle.etiquetaDestinatarioRespuestaCaso}:" for="otroEmail" />
+                                                </p:column >
+                                                <p:column colspan="10">
+                                                    <p:autoComplete style="width: 100%;" id="otroEmail" multiple="true" value="#{casoController.otroEmail}" completeMethod="#{emailClienteController.completeEmailClienteString}"
+                                                                    var="email"  itemValue="#{email}" itemLabel="#{email}"  forceSelection="false">
+                                                    </p:autoComplete>
+                                                    <p:watermark for="otroEmail" value="email destino"/>
+                                                </p:column>
+                                            </p:row>
+                                        </p:panelGrid>
+
+                                    </p:panel>
+
 
                                     <pe:ckEditor id="textonota" value="#{casoController.textoNota}" language="es"
                                                  toolbar="#{applicationBean.ckEditorToolbar}"
