@@ -25,6 +25,26 @@
                 .ui-panelgrid-even{
                     //background: none repeat scroll 0 0 #F2F5F9;
                 }
+
+                .filtersGridParaOtroEmail td:nth-child(1) {
+                    width: 70px;
+                    padding-left: 0px;
+                }
+                .filtersGridParaOtroEmail td:nth-child(2) {
+                    padding-right: 0px;
+                    margin-right: 100px;
+
+                }
+
+                .ui-panel .ui-panel-content {
+                    border: 0px;
+                    padding: 0px !important;
+                }
+
+                #menucc_button{
+                    background: transparent !important;
+                }
+
             </style>
 
         </ui:define>
@@ -892,23 +912,10 @@
                                                     <p:selectBooleanCheckbox id="textoNotaVisibilidadPublica" value="#{casoController.textoNotaVisibilidadPublica}" />
                                                 </h:panelGrid>
                                             </p:column>
-                                            <p:column colspan="2">
-                                                <p:panelGrid styleClass="filtersGrid" id="panelOtroEmail">
-                                                    <p:row>
-                                                        <p:column>
-                                                            <p:outputLabel for="checkResponderAOtro" value="#{bundle.responderAOtroCorreo}" style="font-weight:bold"/>
-                                                        </p:column>
-                                                        <p:column>
-                                                            <p:selectBooleanCheckbox id="checkResponderAOtro" value="#{casoController.responderAOtroEmail}" >
-                                                                <p:ajax update=":inputPanel:formCreateNota:responderAOtroEmail" process="@this"/>
-                                                            </p:selectBooleanCheckbox>
-                                                        </p:column>
-                                                    </p:row>
-                                                </p:panelGrid>
-                                            </p:column>
+
                                         </p:row>
                                         <p:row>
-                                            <p:column colspan="2">
+                                            <p:column >
                                                 <h:panelGrid columns="2">  
                                                     <p:outputLabel for="nextResponseDue1" value="#{bundle.cambiarSLA}" style="font-weight:bold"/>
                                                     <p:calendar locale="es" navigator="true" id="nextResponseDue1" showButtonPanel="true"
@@ -919,7 +926,7 @@
 
                                                 </h:panelGrid>
                                             </p:column>
-                                            <p:column colspan="2">
+                                            <p:column >
                                                 <h:panelGrid columns="2">  
                                                     <p:outputLabel value="#{bundle.cambiarSubEstado}:" for="idSubEstadox" style="font-weight:bold"/>
                                                     <p:selectOneMenu rendered="#{not casoController.selected.closed}" id="idSubEstadox" value="#{casoController.selected.idSubEstado}" >
@@ -941,12 +948,28 @@
                                         <p:message for="textonota"/>
                                     </h:panelGrid>
 
-                                    <p:panel id="responderAOtroEmail" visible="#{casoController.responderAOtroEmail}" style="border: 0px;">
+                                    <h:panelGrid columns="2">
+                                        <p:outputLabel for="enviarPorEmail" value="enviar por email" style="font-weight:bold"/>
+                                        <p:selectBooleanCheckbox id="enviarPorEmail" value="#{casoController.replyByEmail}">
+                                            <p:ajax process="@this"
+                                                update=":inputPanel:formCreateNota:paneldest :inputPanel:formCreateNota:panelcc :inputPanel:formCreateNota:panelcco :inputPanel:formCreateNota:panelbuttons"/>  
+                                        </p:selectBooleanCheckbox>
+                                    </h:panelGrid>
+                                    <p:tooltip for="enviarPorEmail" value="¿Responder o comentar?"/>
 
-                                        <p:panelGrid styleClass="filtersGridParaOtroEmail" id="panelParaOtroEmail" style="width: 100%;" >
+                                    <p:panel id="paneldest" style="border: 0px; padding: 0px;" visible="#{casoController.replyByEmail}">
+                                        <p:panelGrid styleClass="filtersGridParaOtroEmail" id="panelParaOtroEmail" style="width: 100%; border: 2px;" >
                                             <p:row>
+
                                                 <p:column colspan="1">
-                                                    <p:outputLabel value="#{bundle.etiquetaDestinatarioRespuestaCaso}:" for="otroEmail" />
+                                                    <p:column>
+                                                        <p:menuButton value="para:" id="menucc" style="background: transparent;">
+
+                                                            <p:menuitem id="menuitemcc" update=":inputPanel:formCreateNota:menucc :inputPanel:formCreateNota:panelcc" value="CC" actionListener="#{casoController.changeCCO(true)}" process="@this" icon="#{casoController.cc ? 'fa fa-check-square-o':'fa fa-square-o'}"/>
+                                                            <p:menuitem id="menuitemcco" update=":inputPanel:formCreateNota:menucc :inputPanel:formCreateNota:panelcco" value="CCO" actionListener="#{casoController.changeCCO(false)}" process="@this" icon="#{casoController.cco ? 'fa fa-check-square-o':'fa fa-square-o'}"/>
+
+                                                        </p:menuButton>
+                                                    </p:column>
                                                 </p:column >
                                                 <p:column colspan="10">
                                                     <p:autoComplete style="width: 100%;" id="otroEmail" multiple="true" value="#{casoController.otroEmail}" completeMethod="#{emailClienteController.completeEmailClienteString}"
@@ -956,7 +979,37 @@
                                                 </p:column>
                                             </p:row>
                                         </p:panelGrid>
+                                    </p:panel>
+                                    <p:panel id="panelcc" visible="#{casoController.replyByEmail and casoController.cc}" style="border: 0px; padding: 0px;">
+                                        <p:panelGrid styleClass="filtersGridParaOtroEmail" style="width: 100%; " >
+                                            <p:row>
 
+                                                <p:column colspan="1">
+                                                    <p:outputLabel value="cc:" for="otroEmailcc"/>
+                                                </p:column >
+                                                <p:column colspan="10">
+                                                    <p:autoComplete style="width: 100%;" id="otroEmailcc" multiple="true" value="#{casoController.ccEmail}" completeMethod="#{emailClienteController.completeEmailClienteString}"
+                                                                    var="email"  itemValue="#{email}" itemLabel="#{email}"  forceSelection="false">
+                                                    </p:autoComplete>
+                                                    <p:watermark for="otroEmail" value="email destino"/>
+                                                </p:column>
+                                            </p:row>
+                                        </p:panelGrid>
+                                    </p:panel>
+                                    <p:panel id="panelcco" visible="#{casoController.replyByEmail and casoController.cco}" style="border: 0px; padding: 0px;">
+                                        <p:panelGrid styleClass="filtersGridParaOtroEmail" style="width: 100%; " >
+                                            <p:row>
+                                                <p:column colspan="1">
+                                                    <p:outputLabel value="cco:" for="otroEmailcco"/>
+                                                </p:column >
+                                                <p:column colspan="10">
+                                                    <p:autoComplete style="width: 100%;" id="otroEmailcco" multiple="true" value="#{casoController.ccoEmail}" completeMethod="#{emailClienteController.completeEmailClienteString}"
+                                                                    var="email"  itemValue="#{email}" itemLabel="#{email}"  forceSelection="false">
+                                                    </p:autoComplete>
+                                                    <p:watermark for="otroEmail" value="email destino"/>
+                                                </p:column>
+                                            </p:row>
+                                        </p:panelGrid>
                                     </p:panel>
 
 
@@ -991,29 +1044,49 @@
                                     </p:panel>
 
                                     <br/>
-                                    <h:panelGrid style="float: right">
-                                        <p:splitButton value="Guardar como comentario" actionListener="#{casoController.crearNota(false)}" 
-                                                       update=":mainform:messages :westPanel:formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso :formTopMenu"  icon="ui-icon-disk" >  
-                                            <p:menuitem value="Guardar y notificar al cliente" actionListener="#{casoController.crearNota(true)}" 
-                                                        update=":mainform:messages :westPanel:formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso :formTopMenu"  icon="ui-icon-disk"/>  
-                                            <p:menuitem value="Enviar como respuesta por correo" actionListener="#{casoController.responder()}" 
-                                                        update=":mainform:messages :westPanel:formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso"
-                                                        icon="ui-icon-mail-closed"/>  
-                                            <p:separator />  
+                                    <p:panel id="panelbuttons" style="border: 0px; padding: 0px;">
+                                        <h:panelGrid style="float: right">
+                                            <p:splitButton id="sendCommentButton" value="Enviar" actionListener="#{casoController.responder()}" 
+                                                           update=":mainform:messages :westPanel:formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso"
+                                                           icon="ui-icon-mail-closed"
+                                                           rendered="#{casoController.replyByEmail}">
 
-                                            <p:menuitem value="Descartar borrador" actionListener="#{casoController.descartarBorrador()}"
-                                                        update=":mainform:messages :inputPanel:formCreateNota"
-                                                        icon="ui-icon-mail-closed"
-                                                        rendered="#{casoController.selected.respuesta ne null}"/>
+                                                <p:menuitem value="Descartar borrador" actionListener="#{casoController.descartarBorrador()}"
+                                                            update=":mainform:messages :inputPanel:formCreateNota"
+                                                            icon="ui-icon-trash"
+                                                            rendered="#{casoController.selected.respuesta ne null}"/>
 
-                                            <p:menuitem value="Guardar borrador" actionListener="#{casoController.guardarBorrador()}"
-                                                        update=":mainform:messages :inputPanel:formCreateNota"
-                                                        icon="ui-icon-disk"/>
+                                                <p:menuitem value="Guardar borrador" actionListener="#{casoController.guardarBorrador()}"
+                                                            update=":mainform:messages :inputPanel:formCreateNota"
+                                                            icon="ui-icon-disk"/>
 
 
-                                        </p:splitButton>  
+                                            </p:splitButton> 
 
-                                    </h:panelGrid> 
+                                            <p:splitButton id="saveCommentButton" value="Guardar como comentario" actionListener="#{casoController.crearNota(false)}" 
+                                                           update=":mainform:messages :westPanel:formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso :formTopMenu" 
+                                                           icon="fa fa-pencil-square-o" rendered="#{not casoController.replyByEmail}">  
+                                                <p:menuitem value="Guardar y notificar al cliente" actionListener="#{casoController.crearNota(true)}" 
+                                                            update=":mainform:messages :westPanel:formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso :formTopMenu"  icon="ui-icon-disk"/>  
+                                                <p:menuitem value="Enviar como respuesta por correo" actionListener="#{casoController.responder()}" 
+                                                            update=":mainform:messages :westPanel:formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso"
+                                                            icon="ui-icon-mail-closed"/>  
+                                                <p:separator />  
+
+                                                <p:menuitem value="Descartar borrador" actionListener="#{casoController.descartarBorrador()}"
+                                                            update=":mainform:messages :inputPanel:formCreateNota"
+                                                            icon="ui-icon-trash"
+                                                            rendered="#{casoController.selected.respuesta ne null}"/>
+
+                                                <p:menuitem value="Guardar borrador" actionListener="#{casoController.guardarBorrador()}"
+                                                            update=":mainform:messages :inputPanel:formCreateNota"
+                                                            icon="ui-icon-disk"/>
+
+
+                                            </p:splitButton>  
+
+                                        </h:panelGrid>
+                                    </p:panel>
 
                                 </h:panelGrid>  
 

@@ -263,6 +263,11 @@ public class HelpDeskScheluder {
 
         HelpDeskScheluder.scheduleToRunNowWithInterval(job, 600);
     }
+    
+    public static void scheduleSendMailNota(final String idCanal, final String mensajeFinal,
+            final String to, final String subject, final Long idCaso, final Integer idNota, final String attachIds) throws SchedulerException {
+        scheduleSendMailNota(idCanal, mensajeFinal, to, null, null, subject, idCaso, idNota, attachIds);
+    }
 
     /**
      * Agendar el envio del correo de respuesta al caso cuando a partir de una
@@ -278,7 +283,7 @@ public class HelpDeskScheluder {
      * @throws SchedulerException
      */
     public static void scheduleSendMailNota(final String idCanal, final String mensajeFinal,
-            final String to, final String subject, final Long idCaso, final Integer idNota, final String attachIds) throws SchedulerException {
+            final String to, final String cc, final String bcc, final String subject, final Long idCaso, final Integer idNota, final String attachIds) throws SchedulerException {
 
         System.out.println("scheduleSendMail()");
         final String valueOfIdCaso = String.valueOf(idCaso);
@@ -295,6 +300,8 @@ public class HelpDeskScheluder {
         job.getJobDataMap().put(CaseResponseByMailJob.ID_CASO, valueOfIdCaso);
         job.getJobDataMap().put(CaseResponseByMailJob.ID_NOTA, valueOfIdNota);
         job.getJobDataMap().put(CaseResponseByMailJob.EMAILS_TO, to);
+        job.getJobDataMap().put(CaseResponseByMailJob.EMAILS_CC, cc);
+        job.getJobDataMap().put(CaseResponseByMailJob.EMAILS_BCC, bcc);
         job.getJobDataMap().put(CaseResponseByMailJob.EMAIL_SUBJECT, subject);
         job.getJobDataMap().put(CaseResponseByMailJob.EMAIL_TEXT, mensajeFinal);
         job.getJobDataMap().put(CaseResponseByMailJob.EMAIL_ATTACHMENTS, attachIds);
