@@ -38,7 +38,9 @@ import javax.persistence.PersistenceUnit;
 import javax.resource.NotSupportedException;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.UserTransaction;
+import javax.ws.rs.core.HttpHeaders;
 import org.joda.time.DateTime;
+import org.joda.time.Interval;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.primefaces.context.RequestContext;
 
@@ -48,17 +50,16 @@ import org.primefaces.context.RequestContext;
  * @param <E>
  */
 public abstract class AbstractManagedBean<E> implements Serializable {
-    
+
     //go back button
 //    private String backOutcome;
-
     protected static final Locale LOCALE_ES_CL = new Locale("es", "CL");
     protected static final SimpleDateFormat fullDateFormat = new SimpleDateFormat("EEE, dd 'de' MMMM 'de' yyyy HH:mm", LOCALE_ES_CL);
     protected static final SimpleDateFormat dayDateFormat = new SimpleDateFormat("HH:mm");
     protected static final SimpleDateFormat monthDateFormat = new SimpleDateFormat("dd MMM", LOCALE_ES_CL);
     protected static final SimpleDateFormat yearDateFormat = new SimpleDateFormat("dd/MM/yy", LOCALE_ES_CL);
-    
-     protected static final SimpleDateFormat monthDateFormatWTime = new SimpleDateFormat("EEE, dd MMM HH:mm", LOCALE_ES_CL);
+
+    protected static final SimpleDateFormat monthDateFormatWTime = new SimpleDateFormat("EEE, dd MMM HH:mm", LOCALE_ES_CL);
     protected static final SimpleDateFormat yearDateFormatWTime = new SimpleDateFormat("dd/MM/yy HH:mm", LOCALE_ES_CL);
 
     private final Class<E> entityClass;
@@ -90,7 +91,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
         return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
     }
 
-    public abstract Class getDataModelImplementationClass();
+    protected abstract Class getDataModelImplementationClass();
 
     public OrderBy getDefaultOrderBy() {
         return null;
@@ -368,8 +369,8 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     protected boolean isThisRequestCommingFromAMobileDevice(HttpServletRequest request) {
 
         // http://www.hand-interactive.com/m/resources/detect-mobile-java.htm
-        String userAgent = request.getHeader("User-Agent");
-        String httpAccept = request.getHeader("Accept");
+        String userAgent = request.getHeader(HttpHeaders.USER_AGENT);
+        String httpAccept = request.getHeader(HttpHeaders.ACCEPT);
 
         UAgentInfo detector = new UAgentInfo(userAgent, httpAccept);
 
@@ -382,6 +383,17 @@ public abstract class AbstractManagedBean<E> implements Serializable {
         }
 
         return false;
+    }
+
+    protected UAgentInfo getUAgentInfo(HttpServletRequest request) {
+
+        // http://www.hand-interactive.com/m/resources/detect-mobile-java.htm
+        String userAgent = request.getHeader(HttpHeaders.USER_AGENT);
+        String httpAccept = request.getHeader(HttpHeaders.ACCEPT);
+
+        UAgentInfo detector = new UAgentInfo(userAgent, httpAccept);
+        return detector;
+
     }
 
     /**
@@ -465,7 +477,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
             return "";
         }
     }
-    
+
     public String formatShortDateTime(Date date) {
         if (date != null) {
 
@@ -483,8 +495,8 @@ public abstract class AbstractManagedBean<E> implements Serializable {
 
     public String formatDateRange(Date start, Date end) {
 
-         SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm", LOCALE_ES_CL);
-         
+        SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm", LOCALE_ES_CL);
+
         DateTime dtStart = new DateTime(start);
         DateTime dtEnd = new DateTime(end);
 
@@ -497,12 +509,35 @@ public abstract class AbstractManagedBean<E> implements Serializable {
             } else {
                 if (dtStart.withTimeAtStartOfDay().isEqual(dtEnd.withTimeAtStartOfDay())) {//same day?
                     formattedDate = formatShortDateTime(start) + " - " + sdf2.format(end);
-                }else{
+                } else {
                     formattedDate = formatShortDateTime(start) + " - " + formatShortDateTime(end);
                 }
             }
         }
-        
+
         return formattedDate;
+    }
+
+    public String formatDurationRange(Date start, Date end) {
+        if(start == null || end == null){
+            return "";
+        }
+        Interval interval = new Interval(new DateTime(start), new DateTime(end));
+        return interval.toDuration().toString();
+    }
+
+    public String prepareList() {
+        recreateModel();
+        return getListPage();
+    }
+
+    /**
+     * When done with experiment this method should be abstract
+     *
+     * @return the list page to outcome
+     */
+//    protected abstract String getListPage();
+    protected String getListPage() {
+        return null;
     }
 }

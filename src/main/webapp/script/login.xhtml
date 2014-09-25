@@ -16,6 +16,15 @@
             <title><ui:insert name="title">#{applicationBean.helpdeskTitle}</ui:insert></title>     
         </f:facet>
 
+        <h:outputText escape="false" value="&lt;style&gt; body { 
+                      background: url('#{applicationBean.companyLoginBackground}') no-repeat center center fixed; 
+                      -webkit-background-size: cover;
+                      -moz-background-size: cover;
+                      -o-background-size: cover;
+                      background-size: cover;
+                      }&lt;/style&gt;"
+                      rendered="#{not empty applicationBean.companyLoginBackground}"/>
+
         <link href="#{facesContext.externalContext.requestContextPath}/resources/css/loginCss.css" rel="stylesheet" type="text/css"/>
 
         <link rel="dns-prefetch" href="//netdna.bootstrapcdn.com" />            

@@ -16,6 +16,13 @@
     <cc:implementation>
         <p:panel id="panelclientesinvitados">
 
+            <div class="formSeparator">
+                <h2>Clientes Invitados
+                    <h:outputText value=" (Inscritos:#{casoScheduleController.event.data.scheduleEventClientList.size()}/#{casoScheduleController.event.data.maxClientesInscritos})"
+                                  rendered="#{casoScheduleController.event.data.publicEvent and not empty casoScheduleController.event.data.maxClientesInscritos}"/>
+                </h2>
+            </div>  
+
 
             <p:autoComplete id="clientesinvitados" value="#{casoScheduleController.selectedClientToAddInvited}" 
                             autocomplete="false" dropdown="true" queryDelay="800" forceSelection="true"

@@ -1,18 +1,14 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Clipping;
-import com.itcs.helpdesk.persistence.utils.OrderBy;
 import com.itcs.helpdesk.util.ClippingsPlaceHolders;
 import com.itcs.helpdesk.util.Constants;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
@@ -20,9 +16,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
-import javax.resource.NotSupportedException;
 
 @ManagedBean(name = "clippingController")
 @SessionScoped
@@ -63,34 +57,34 @@ public class ClippingController extends AbstractManagedBean<Clipping> implements
     }
  
 
-    @Override
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(getPaginationPageSize()) {
-                @Override
-                public int getItemsCount() {
-                    return getJpaController().count(Clipping.class).intValue();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    if (getFilterHelper().getVista().getFiltrosVistaList() != null && !getFilterHelper().getVista().getFiltrosVistaList().isEmpty()) {
-                        try {
-                            return new ListDataModel(getJpaController().findEntities(Clipping.class, getFilterHelper().getVista(), getPageSize(), getPageFirstItem(), new OrderBy("idClipping", OrderBy.OrderType.DESC), userSessionBean.getCurrent()));
-                        } catch (NotSupportedException ex) {
-                            JsfUtil.addErrorMessage(ex, "Error on findClippingEntities");
-                            Logger.getLogger(ClippingController.class.getName()).log(Level.SEVERE, null, ex);
-                        } catch (ClassNotFoundException ex) {
-                            JsfUtil.addErrorMessage(ex, "Error on findClippingEntities");
-                            Logger.getLogger(ClippingController.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-                    return new ListDataModel(getJpaController().queryByRange(Clipping.class, getPageSize(), getPageFirstItem()));
-                }
-            };
-        }
-        return pagination;
-    }
+//    @Override
+//    public PaginationHelper getPagination() {
+//        if (pagination == null) {
+//            pagination = new PaginationHelper(getPaginationPageSize()) {
+//                @Override
+//                public int getItemsCount() {
+//                    return getJpaController().count(Clipping.class).intValue();
+//                }
+//
+//                @Override
+//                public DataModel createPageDataModel() {
+//                    if (getFilterHelper().getVista().getFiltrosVistaList() != null && !getFilterHelper().getVista().getFiltrosVistaList().isEmpty()) {
+//                        try {
+//                            return new ListDataModel(getJpaController().findEntities(Clipping.class, getFilterHelper().getVista(), getPageSize(), getPageFirstItem(), new OrderBy("idClipping", OrderBy.OrderType.DESC), userSessionBean.getCurrent()));
+//                        } catch (NotSupportedException ex) {
+//                            JsfUtil.addErrorMessage(ex, "Error on findClippingEntities");
+//                            Logger.getLogger(ClippingController.class.getName()).log(Level.SEVERE, null, ex);
+//                        } catch (ClassNotFoundException ex) {
+//                            JsfUtil.addErrorMessage(ex, "Error on findClippingEntities");
+//                            Logger.getLogger(ClippingController.class.getName()).log(Level.SEVERE, null, ex);
+//                        }
+//                    }
+//                    return new ListDataModel(getJpaController().queryByRange(Clipping.class, getPageSize(), getPageFirstItem()));
+//                }
+//            };
+//        }
+//        return pagination;
+//    }
 
     //-- this will be util in primefaces 4.0
 //////////    public MenuModel getClippingsMenuModel() {
@@ -157,15 +151,16 @@ public class ClippingController extends AbstractManagedBean<Clipping> implements
 //////////        }
 //////////    }
     //--
+    @Override
     public String prepareList() {
         recreateModel();
         return "/script/clipping/List";
     }
 
-    public void prepareCreate() {
+    public String prepareCreate() {
         current = new Clipping();
 //        selectedItemIndex = -1;
-//        return "/script/clipping/Create";
+        return "/script/clipping/Create";
     }
 
     public Integer determineVisibility(Clipping clipping) {
@@ -251,7 +246,7 @@ public class ClippingController extends AbstractManagedBean<Clipping> implements
             addInfoMessage(ResourceBundle.getBundle("/Bundle").getString("ClippingUpdated"));
             getPrimefacesRequestContext().execute("editCreateDialog.hide()");
             getPrimefacesRequestContext().update("form:panelG1");
-            return null;
+            return prepareList();
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
             return null;
@@ -302,15 +297,15 @@ public class ClippingController extends AbstractManagedBean<Clipping> implements
 //            current = getJpaController().findRange(new int[]{selectedItemIndex, selectedItemIndex + 1}).get(0);
 //        }
 //    }
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
+//    public DataModel getItems() {
+//        if (items == null) {
+//            items = getPagination().createPageDataModel();
+//        }
+//        return items;
+//    }
 
     public List<Object> getAvailablePlaceHolders() {
-        final ArrayList<Object> arrayList = new ArrayList<Object>(ClippingsPlaceHolders.getAvailablePlaceHolders());
+        final ArrayList<Object> arrayList = new ArrayList(ClippingsPlaceHolders.getAvailablePlaceHolders());
         arrayList.add(ClippingsPlaceHolders.SALUDO_CLIENTE);
         return arrayList;
     }
@@ -331,7 +326,7 @@ public class ClippingController extends AbstractManagedBean<Clipping> implements
 
     @Override
     public Class getDataModelImplementationClass() {
-        throw new UnsupportedOperationException("getDataModelImplementationClass Not supported yet.");
+        return ListDataModel.class;
     }
 
     @FacesConverter(forClass = Clipping.class)

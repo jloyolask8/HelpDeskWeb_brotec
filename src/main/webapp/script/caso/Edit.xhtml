@@ -1517,7 +1517,6 @@
                                         <p:panelGrid>
                                             <p:row>
                                                 <p:column>
-                                                    <h:outputLabel for="panelUsuariosInvitados" value="Usuarios Invitados:" style="font-weight: bold;"/>
                                                     <go:panelUsuariosInvitados id="panelUsuariosInvitados"/>
                                                 </p:column>
                                             </p:row>
@@ -1527,10 +1526,7 @@
                                         <p:panelGrid>
 
                                             <p:row>
-
-
                                                 <p:column>
-                                                    <h:outputLabel for="panelClientesInvitados2" value="Clientes Invitados (inscritos)" style="font-weight: bold;"/>
                                                     <go:panelClientesInvitados id="panelClientesInvitados2"/>
                                                 </p:column>
                                             </p:row>
@@ -2118,13 +2114,7 @@
 
                                     <p:panelGrid columns="1" rendered="#{not empty casoScheduleController.event.data.usuariosInvitedList}"
                                                  style="margin-bottom:10px;" styleClass="filtersGrid" >
-                                        <p:row>
-                                            <p:column>
-                                                <div class="formSeparator">
-                                                    <h2>Usuarios Invitados</h2>
-                                                </div>  
-                                            </p:column>
-                                        </p:row>
+                                       
                                         <p:row>
                                             <p:column>
                                                 <go:panelUsuariosInvitados id="panelUsuariosInvitados"/>
@@ -2134,13 +2124,6 @@
 
                                     <p:panelGrid columns="1" rendered="#{not empty casoScheduleController.event.data.scheduleEventClientList}"
                                                  style="margin-bottom:10px;" styleClass="filtersGrid" >
-                                        <p:row>
-                                            <p:column>
-                                                <div class="formSeparator">
-                                                    <h2>Clientes Invitados/inscritos</h2>
-                                                </div>  
-                                            </p:column>
-                                        </p:row>
                                         <p:row>
                                             <p:column>
                                                 <go:panelClientesInvitados id="panelClientesInvitados"/>
