@@ -122,7 +122,6 @@ import org.quartz.SchedulerException;
 @SessionScoped
 public class CasoController extends AbstractManagedBean<Caso> implements Serializable {
 
-   
     //  other bean references
     @ManagedProperty(value = "#{applicationBean}")
     private ApplicationBean applicationBean;
@@ -144,7 +143,11 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private String textoNota = null;
     private boolean textoNotaVisibilidadPublica = false;
     private boolean responderAOtroEmail = false;
+    private boolean cc = false;
+    private boolean cco = false;
     private List<String> otroEmail;
+    private List<String> ccEmail;
+    private List<String> ccoEmail;
 //    private TipoNota tipoNota;
 //    private float laborTime = 0;
     private List<String> tipoNotas;
@@ -204,9 +207,11 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private Integer casosRevisarActualizacion;
     private Integer casosPrioritarios;
     private Integer casosCerrados;
+    
     //reply-mode
     private boolean replyMode = false;
     private boolean filterViewToggle = false;
+    private boolean replyByEmail = false;
 
     //respuesta
     private boolean adjuntarArchivosARespuesta = false;
@@ -991,6 +996,14 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         RequestContext.getCurrentInstance().openDialog("/script/caso/ViewHtml", options, null);
     }
 
+    public void changeCCO(boolean cc) {
+        if (cc) {
+            setCc(!isCc());
+        } else {
+            setCco(!isCco());
+        }
+    }
+
 //    public String prepareViewHtml(String html) {
 //        htmlToView = replaceEmbeddedImages(html);
 //        return "/script/caso/ViewHtml";
@@ -1259,10 +1272,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         return "/script/caso/Create_preentrega";
     }
 
-    
-
-    
-
     public String prepareCreate() {
         try {
             current = new Caso();
@@ -1471,6 +1480,17 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         if (current.getNotaList() != null) {
             Collections.sort(current.getNotaList());
+        }
+        
+        setOtroEmail(new LinkedList<String>());
+        setCcEmail(new LinkedList<String>());
+        setCcoEmail(new LinkedList<String>());
+        setReplyByEmail(false);
+        
+        setCc(false);
+        setCco(false);
+        if (current.getEmailCliente() != null && current.getEmailCliente().getEmailCliente() != null && !getOtroEmail().contains(current.getEmailCliente().getEmailCliente())) {
+            getOtroEmail().add(current.getEmailCliente().getEmailCliente());
         }
 
 //        if (current.getNotaList() != null && !current.getNotaList().isEmpty()) {
@@ -2675,7 +2695,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             return false;
         }
 
-        if (isResponderAOtroEmail() && otroEmail.isEmpty()) {
+        if (otroEmail.isEmpty()) {
             addErrorMessage("No se puede envíar la respuesta.", "No se han incluido destinatarios");
         } else if (current.getEmailCliente() == null || StringUtils.isEmpty(current.getEmailCliente().getEmailCliente())) {
             addErrorMessage("No se puede envíar la respuesta.", "El caso no tiene email del cliente!");
@@ -2731,9 +2751,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
                 StringBuilder sbuilder = new StringBuilder();
                 String destinatario;
-                if (isResponderAOtroEmail() && !otroEmail.isEmpty()) {
+                if (!otroEmail.isEmpty()) {
                     for (String string : otroEmail) {
-                        if(sbuilder.length() > 0){
+                        if (sbuilder.length() > 0) {
                             sbuilder.append(',');
                         }
                         sbuilder.append(string);
@@ -2742,9 +2762,31 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 } else {
                     destinatario = current.getEmailCliente().getEmailCliente();
                 }
+                String ccEmails = null;
+                if (isCc() && !ccEmail.isEmpty()) {
+                    sbuilder = new StringBuilder();
+                    for (String string : ccEmail) {
+                        if (sbuilder.length() > 0) {
+                            sbuilder.append(',');
+                        }
+                        sbuilder.append(string);
+                    }
+                    ccEmails = sbuilder.toString();
+                }
+                String ccoEmails = null;
+                if (isCco() && !ccoEmail.isEmpty()) {
+                    sbuilder = new StringBuilder();
+                    for (String string : ccoEmail) {
+                        if (sbuilder.length() > 0) {
+                            sbuilder.append(',');
+                        }
+                        sbuilder.append(string);
+                    }
+                    ccoEmails = sbuilder.toString();
+                }
                 HelpDeskScheluder.scheduleSendMailNota(canal.getIdCanal(), mensaje,
-                            destinatario, subject,
-                            current.getIdCaso(), nuevaNota.getIdNota(), listIdAtt.toString());
+                        destinatario, ccEmails, ccoEmails, subject,
+                        current.getIdCaso(), nuevaNota.getIdNota(), listIdAtt.toString());
                 changeLog.add(ManagerCasos.createLogReg(current, "Envío de Correo de Respuesta agendado ok", userSessionBean.getCurrent().getIdUsuario() + " envía correo de respuesta.", ""));
 
                 getJpaController().mergeCaso(current, changeLog);//todo: is this needed?
@@ -3842,6 +3884,76 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      */
     public void setOtroEmail(List<String> otroEmail) {
         this.otroEmail = otroEmail;
+    }
+
+    /**
+     * @return the cc
+     */
+    public boolean isCc() {
+        return cc;
+    }
+
+    /**
+     * @param cc the cc to set
+     */
+    public void setCc(boolean cc) {
+        this.cc = cc;
+    }
+
+    /**
+     * @return the cco
+     */
+    public boolean isCco() {
+        return cco;
+    }
+
+    /**
+     * @param cco the cco to set
+     */
+    public void setCco(boolean cco) {
+        this.cco = cco;
+    }
+
+    /**
+     * @return the ccEmail
+     */
+    public List<String> getCcEmail() {
+        return ccEmail;
+    }
+
+    /**
+     * @param ccEmail the ccEmail to set
+     */
+    public void setCcEmail(List<String> ccEmail) {
+        this.ccEmail = ccEmail;
+    }
+
+    /**
+     * @return the ccoEmail
+     */
+    public List<String> getCcoEmail() {
+        return ccoEmail;
+    }
+
+    /**
+     * @param ccoEmail the ccoEmail to set
+     */
+    public void setCcoEmail(List<String> ccoEmail) {
+        this.ccoEmail = ccoEmail;
+    }
+
+    /**
+     * @return the replyByEmail
+     */
+    public boolean isReplyByEmail() {
+        return replyByEmail;
+    }
+
+    /**
+     * @param replyByEmail the replyByEmail to set
+     */
+    public void setReplyByEmail(boolean replyByEmail) {
+        this.replyByEmail = replyByEmail;
     }
 
     @FacesConverter(forClass = Caso.class)

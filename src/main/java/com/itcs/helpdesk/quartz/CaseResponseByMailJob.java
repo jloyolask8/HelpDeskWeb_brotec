@@ -37,6 +37,8 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
 
     public static final String ID_NOTA = "idNota";
     public static final String EMAILS_TO = "to";
+    public static final String EMAILS_CC = "cc";
+    public static final String EMAILS_BCC = "bcc";
     public static final String EMAIL_SUBJECT = "subject";
     public static final String EMAIL_TEXT = "email_text";
     public static final String EMAIL_ATTACHMENTS = "email_atts";
@@ -63,6 +65,8 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
             String idCaso = (String) map.get(ID_CASO);
             String idNota = (String) map.get(ID_NOTA);
             String emails_to = (String) map.get(EMAILS_TO);
+            String emails_cc = (String) map.get(EMAILS_CC);
+            String emails_bcc = (String) map.get(EMAILS_BCC);
             //---
             String subject = (String) map.get(EMAIL_SUBJECT);
             String email_text = (String) map.get(EMAIL_TEXT);
@@ -106,15 +110,28 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
                         }
                     }
                     final String[] split = emails_to.split(",");
-
-                    MailClientFactory.getInstance(idCanal).sendHTML(split, subject, email_text, attachments);
+                    String[] splitcc = null;
+                    String[] splitbcc = null;
+                    if(!StringUtils.isEmpty(emails_cc))
+                    {
+                        splitcc = emails_cc.split(","); 
+                    }
+                    if(!StringUtils.isEmpty(emails_bcc))
+                    {
+                        splitbcc = emails_bcc.split(",");
+                    }
+                    final String[] ccEmails = splitcc;
+                    final String[] bccEmails = splitbcc;
+                    MailClientFactory.getInstance(idCanal).sendHTML(split, ccEmails, bccEmails, subject, email_text, attachments);
 
                     try {
                         //if sent ok, then forget about it
                         Nota nota = jpaController.getReference(Nota.class, Integer.valueOf(idNota));
                         nota.setFechaEnvio(new Date());
                         nota.setEnviado(Boolean.TRUE);
-                        nota.setEnviadoA(Arrays.toString(split));
+                        nota.setEnviadoA("to:"+Arrays.toString(split) 
+                                + (ccEmails == null?"":" cc:"+Arrays.toString(ccEmails))
+                                + (bccEmails == null?"":" bcc:"+Arrays.toString(bccEmails)));
                         jpaController.getNotaJpaController().edit(nota);
                         unschedule(formatJobId);
                     } catch (SchedulerException ex) {
