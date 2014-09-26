@@ -222,17 +222,21 @@ public class InscripcionEventosSessionBean extends AbstractManagedBean<Caso> imp
                             if (getSelected().getNotaList() == null) {
                                 getSelected().setNotaList(new LinkedList<Nota>());
                             }
-                            
-                            if(StringUtils.isEmpty( clienteEntity.getFono1() )){
+
+                            if (StringUtils.isEmpty(clienteEntity.getFono1())) {
                                 clienteEntity.setFono1(datos.getTelefono());
+                            } else {
+                                if (StringUtils.isEmpty(clienteEntity.getFono2())) {
+                                    clienteEntity.setFono2(datos.getTelefono());
+                                }
                             }
-                            
+
                             EmailCliente emailCliente = new EmailCliente(datos.getEmail().trim());
-                            
-                            if(!clienteEntity.getEmailClienteList().contains(emailCliente) ){
+
+                            if (!clienteEntity.getEmailClienteList().contains(emailCliente)) {
                                 clienteEntity.getEmailClienteList().add(emailCliente);
                             }
-                            
+
                             getJpaController().merge(clienteEntity);
 
                             Nota nota = new Nota();
