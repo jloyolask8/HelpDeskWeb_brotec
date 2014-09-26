@@ -697,6 +697,8 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
             final ScheduleEventClient scheduleEventClient = new ScheduleEventClient(new ScheduleEventClientPK(entityEvent.getEventId(), cliente.getIdCliente()));
             scheduleEventClient.setCliente(cliente);
             scheduleEventClient.setScheduleEvent(entityEvent);
+            scheduleEventClient.setTimestampCreacion(new Date());
+            //TODO add created_by column
 
             if (entityEvent.getScheduleEventClientList() == null) {
                 entityEvent.setScheduleEventClientList(new LinkedList<ScheduleEventClient>());

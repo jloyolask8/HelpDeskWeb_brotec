@@ -53,7 +53,6 @@ import com.itcs.helpdesk.rules.ActionExecutionException;
 import com.itcs.helpdesk.rules.actionsimpl.CrearCasoVisitaRepSellosAction;
 import com.itcs.helpdesk.util.ApplicationConfig;
 import com.itcs.helpdesk.util.ClippingsPlaceHolders;
-import com.itcs.helpdesk.util.DateUtils;
 import com.itcs.helpdesk.util.HtmlUtils;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.MailNotifier;

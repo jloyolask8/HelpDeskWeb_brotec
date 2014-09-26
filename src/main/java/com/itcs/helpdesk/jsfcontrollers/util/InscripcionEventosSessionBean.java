@@ -2,10 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.itcs.helpdesk.jsfcontrollers.util.delete;
+package com.itcs.helpdesk.jsfcontrollers.util;
 
 import com.itcs.helpdesk.jsfcontrollers.AbstractManagedBean;
-import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Cliente;
 import com.itcs.helpdesk.persistence.entities.Componente;
@@ -219,6 +218,7 @@ public class InscripcionEventosSessionBean extends AbstractManagedBean<Caso> imp
                     ScheduleEventClient scheduleEventClient = new ScheduleEventClient(event.getEventId(), clienteEntity.getIdCliente());
                     scheduleEventClient.setCliente(clienteEntity);
                     scheduleEventClient.setScheduleEvent(event);
+                    scheduleEventClient.setTimestampCreacion(new Date());
                     try {
                         if (event.getScheduleEventClientList() == null) {
                             event.setScheduleEventClientList(new ArrayList<ScheduleEventClient>());

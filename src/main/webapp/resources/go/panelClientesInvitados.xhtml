@@ -92,6 +92,9 @@
                                 <h:outputText value="#{clientInvited.cliente.fono1}" /> 
                                 <h:outputText value=" / #{clientInvited.cliente.fono2}" rendered="#{not empty clientInvited.cliente.fono2}"/> 
                             </h:panelGroup>
+                            
+                            <h:outputText value="Fecha incripción: " style="font-weight: bold;" rendered="#{not empty clientInvited.timestampCreacion}"/>  
+                            <h:outputText value="#{casoController.formatShortDate(clientInvited.timestampCreacion)}" rendered="#{not empty clientInvited.timestampCreacion}"/>
 
 
                         </h:panelGrid>  
