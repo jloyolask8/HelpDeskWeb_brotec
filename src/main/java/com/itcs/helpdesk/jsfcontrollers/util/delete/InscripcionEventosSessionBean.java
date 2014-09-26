@@ -223,7 +223,7 @@ public class InscripcionEventosSessionBean extends AbstractManagedBean<Caso> imp
                                 getSelected().setNotaList(new LinkedList<Nota>());
                             }
                             
-                            if(!StringUtils.isEmpty( clienteEntity.getFono1() )){
+                            if(StringUtils.isEmpty( clienteEntity.getFono1() )){
                                 clienteEntity.setFono1(datos.getTelefono());
                             }
                             
