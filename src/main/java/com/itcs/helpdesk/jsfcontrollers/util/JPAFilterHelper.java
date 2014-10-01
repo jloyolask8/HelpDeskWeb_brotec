@@ -1,5 +1,6 @@
 package com.itcs.helpdesk.jsfcontrollers.util;
 
+import com.itcs.helpdesk.persistence.entities.EmailCliente;
 import com.itcs.helpdesk.persistence.entities.FieldType;
 import com.itcs.helpdesk.persistence.entities.FiltroVista;
 import com.itcs.helpdesk.persistence.entities.TipoComparacion;
@@ -12,15 +13,21 @@ import com.itcs.helpdesk.persistence.jpa.custom.CasoJPACustomController;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.persistence.utils.ComparableField;
 import java.io.Serializable;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.persistence.EntityManagerFactory;
 import javax.resource.NotSupportedException;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Managed Beans that allow filtering of the data displayed should use/implement
@@ -59,7 +66,7 @@ public abstract class JPAFilterHelper implements Serializable {
     }
 
     public List<ComparableField> getEntityOrCalendarComparableFields() throws ClassNotFoundException {
-        List<ComparableField> comparableFieldsOfType = new ArrayList<ComparableField>();
+        List<ComparableField> comparableFieldsOfType = new ArrayList<>();
         if (comparableFields == null) {
             comparableFields = getJpaService().getAnnotatedComparableFieldsByClass(Class.forName(vista.getBaseEntityType()));
         }
@@ -74,7 +81,7 @@ public abstract class JPAFilterHelper implements Serializable {
     }
 
     public List<ComparableField> getEntityComparableFields() throws ClassNotFoundException {
-        List<ComparableField> comparableFieldsOfType = new ArrayList<ComparableField>();
+        List<ComparableField> comparableFieldsOfType = new ArrayList<>();
         if (comparableFields == null) {
             comparableFields = getJpaService().getAnnotatedComparableFieldsByClass(Class.forName(vista.getBaseEntityType()));
         }
@@ -85,6 +92,93 @@ public abstract class JPAFilterHelper implements Serializable {
         }
         return comparableFieldsOfType;
 //         return JsfUtil.getSelectItems(Collections.EMPTY_LIST, true);
+    }
+
+    //TODO use the query param to do the search!
+    public List<SelectItem> autoCompleteFindPosibleOptionsIncludingAllPlaceHolders(String query/*String idCampo, Usuario who*/) throws Exception {
+
+        FacesContext context = FacesContext.getCurrentInstance();
+
+        FiltroVista filterObject = (FiltroVista) UIComponent.getCurrentComponent(context).getAttributes().get("filtro");
+        UserSessionBean userSessionBean = context.getApplication().evaluateExpressionGet(context, "#{UserSessionBean}", UserSessionBean.class);
+//        FiltroVista filterObject = context.getApplication().evaluateExpressionGet(context, "#{filtro}", FiltroVista.class);
+
+        return findEntitiesByAutocompleteQuery(query, filterObject.getIdCampo(), true, true, true, userSessionBean.getCurrent());
+    }
+
+//    public SelectItem[] autoCompleteFindPosibleOptionsFor(String query) {
+//        System.out.println(query);
+//        //List<EmailCliente> results = new ArrayList<EmailCliente>();
+//        List<EmailCliente> emailClientes = getJpaController().getEmailClienteFindByEmailLike(query, 10);
+////        System.out.println(emailClientes);
+//        if (emailClientes != null && !emailClientes.isEmpty()) {
+//            return emailClientes;
+//        } else {
+////            emailCliente_wizard_existeEmail = false;
+//            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "No existe el email:" + query, "No existe el Cliente con email:" + query + ". Se creará automáticamente.");
+//            FacesContext.getCurrentInstance().addMessage(null, message);
+//            emailClientes = new ArrayList<>();
+//            emailClientes.add(new EmailCliente(query));
+//            System.out.println("No existe el Cliente con email" + query);
+//            return emailClientes;
+//        }
+//
+//    }
+    private List<SelectItem> findEntitiesByAutocompleteQuery(String query, String idCampo, boolean includeAny, boolean includeNull, boolean includeCurrentUser, Usuario who) {
+        ComparableField comparableField = comparableFieldsMap.get(idCampo);
+
+        if (comparableField == null) {
+            return null;
+        }
+
+        if (comparableField.getFieldTypeId() == null) {
+            return null;
+        }
+
+        if (comparableField.getFieldTypeId().equals(EnumFieldType.SELECTONE_ENTITY.getFieldType())) {
+            //El valor es el id de un entity, que tipo de Entity?= comparableField.tipo
+
+            List<?> entities = getJpaService().findEntitiesBySearchQuery(query, comparableFieldsMap.get(idCampo), who);
+            
+            List<SelectItem> selectItems = new LinkedList<>();
+                    
+            if(StringUtils.isEmpty(query)){
+                selectItems.addAll( getPlaceHolderItems(includeAny, includeNull, includeCurrentUser, comparableField) );
+            }
+            
+
+            for (Object o : entities) {
+                selectItems.add(new SelectItem(emf.getPersistenceUnitUtil().getIdentifier(o), o.toString()));
+            }
+
+            return (selectItems);
+
+        } else if (comparableField.getFieldTypeId().equals(EnumFieldType.CHECKBOX.getFieldType())) {
+            //Boolean comparation
+            //El valor es de tipo boolean, usar el String parseado a un boolean
+            //two values, true or false.
+            List<SelectItem> selectItems = new ArrayList<>();
+            selectItems.add(new SelectItem("true", "Si"));
+            selectItems.add(new SelectItem("false", "No"));
+            return (selectItems);
+
+        } else {
+            return null;
+        }
+    }
+
+    private List<SelectItem> getPlaceHolderItems(boolean includeAny, boolean includeNull, boolean includeCurrentUser, ComparableField comparableField) {
+        List<SelectItem> selectItems = new ArrayList<>();
+        if (includeAny) {
+            selectItems.add(new SelectItem(CasoJPACustomController.PLACE_HOLDER_ANY, PLACE_HOLDER_ANY_LABEL));
+        }
+        if (includeNull) {
+            selectItems.add(new SelectItem(CasoJPACustomController.PLACE_HOLDER_NULL, PLACE_HOLDER_NULL_LABEL));
+        }
+        if (includeCurrentUser && comparableField.getTipo().equals(Usuario.class)) {
+            selectItems.add(new SelectItem(CasoJPACustomController.PLACE_HOLDER_CURRENT_USER, PLACE_HOLDER_CURRENT_USER_LABEL));
+        }
+        return selectItems;
     }
 
     private SelectItem[] findPosibleOptionsFor(String idCampo, boolean includeAny, boolean includeNull, boolean includeCurrentUser, Usuario who) {
@@ -102,18 +196,7 @@ public abstract class JPAFilterHelper implements Serializable {
             //El valor es el id de un entity, que tipo de Entity?= comparableField.tipo
 
             List<?> entities = getJpaService().findPosibleDBOptionsFor(comparableFieldsMap.get(idCampo), who);
-            List<SelectItem> selectItems = new ArrayList<SelectItem>();
-
-            if (includeAny) {
-                selectItems.add(new SelectItem(CasoJPACustomController.PLACE_HOLDER_ANY, PLACE_HOLDER_ANY_LABEL));
-            }
-            if (includeNull) {
-                selectItems.add(new SelectItem(CasoJPACustomController.PLACE_HOLDER_NULL, PLACE_HOLDER_NULL_LABEL));
-            }
-
-            if (includeCurrentUser && comparableField.getTipo().equals(Usuario.class)) {
-                selectItems.add(new SelectItem(CasoJPACustomController.PLACE_HOLDER_CURRENT_USER, PLACE_HOLDER_CURRENT_USER_LABEL));
-            }
+            List<SelectItem> selectItems = getPlaceHolderItems(includeAny, includeNull, includeCurrentUser, comparableField);
 
             for (Object o : entities) {
                 selectItems.add(new SelectItem(emf.getPersistenceUnitUtil().getIdentifier(o), o.toString()));
@@ -126,7 +209,7 @@ public abstract class JPAFilterHelper implements Serializable {
             //Boolean comparation
             //El valor es de tipo boolean, usar el String parseado a un boolean
             //two values, true or false.
-            List<SelectItem> selectItems = new ArrayList<SelectItem>();
+            List<SelectItem> selectItems = new ArrayList<>();
             selectItems.add(new SelectItem("true", "Si"));
             selectItems.add(new SelectItem("false", "No"));
             SelectItem[] selectArray = new SelectItem[selectItems.size()];
@@ -144,8 +227,10 @@ public abstract class JPAFilterHelper implements Serializable {
      * findall, sino que hay que filtrar el resultado a solamente lo que puede
      * ver. Tarea pa la casa, ojala alguna dia alguien se aplique.
      *
-     * @param filtro
-     * @return
+     * @param idCampo
+     * @param who
+     * @return SelectItem[]
+     * @throws java.lang.Exception
      */
     public SelectItem[] findPosibleOptions(String idCampo, Usuario who) throws Exception {
         return findPosibleOptionsFor(idCampo, false, false, false, who);
@@ -168,7 +253,7 @@ public abstract class JPAFilterHelper implements Serializable {
 
         if (comparableField.getFieldTypeId().equals(EnumFieldType.SELECTONE_PLACE_HOLDER.getFieldType())) {
             //El valor es el id de un entity, que tipo de Entity?= comparableField.tipo
-            List<SelectItem> selectItems = new ArrayList<SelectItem>(2);
+            List<SelectItem> selectItems = new ArrayList<>(2);
             selectItems.add(new SelectItem(CasoJPACustomController.PLACE_HOLDER_ANY, PLACE_HOLDER_ANY_LABEL));
             selectItems.add(new SelectItem(CasoJPACustomController.PLACE_HOLDER_NULL, PLACE_HOLDER_NULL_LABEL));
             SelectItem[] selectArray = new SelectItem[selectItems.size()];
@@ -188,9 +273,13 @@ public abstract class JPAFilterHelper implements Serializable {
     }
 
     /**
-     * TODO add a param to identify if this should show the CHANGE TO operator option
+     * TODO add a param to identify if this should show the CHANGE TO operator
+     * option
+     *
      * @param idCampo
-     * @return 
+     * @param changeOps flag indicating that we want to display the CT Change To
+     * operator in the operator list.
+     * @return
      */
     public List<TipoComparacion> findTipoComparacionesAvailable(String idCampo, boolean changeOps) {
 //        System.out.println("findTipoComparacionesAvailable(idCampo=" + idCampo + ")");
@@ -228,7 +317,7 @@ public abstract class JPAFilterHelper implements Serializable {
         try {
             FieldType fieldType = comparable.getFieldTypeId();
             if (fieldType.equals(EnumFieldType.TEXT.getFieldType()) || fieldType.equals(EnumFieldType.TEXTAREA.getFieldType())) {
-                lista = new ArrayList<TipoComparacion>();
+                lista = new ArrayList<>();
                 lista.add(EnumTipoComparacion.EQ.getTipoComparacion());
                 lista.add(EnumTipoComparacion.NE.getTipoComparacion());
                 lista.add(EnumTipoComparacion.CO.getTipoComparacion());
@@ -237,7 +326,7 @@ public abstract class JPAFilterHelper implements Serializable {
                 }
             } else if (fieldType.equals(EnumFieldType.CALENDAR.getFieldType())) {
                 //El valor es de tipo Fecha, usar el String parseado a una fecha
-                lista = new ArrayList<TipoComparacion>();
+                lista = new ArrayList<>();
                 lista.add(EnumTipoComparacion.EQ.getTipoComparacion());
                 lista.add(EnumTipoComparacion.NE.getTipoComparacion());
                 lista.add(EnumTipoComparacion.LE.getTipoComparacion());
@@ -246,7 +335,7 @@ public abstract class JPAFilterHelper implements Serializable {
                 lista.add(EnumTipoComparacion.GT.getTipoComparacion());
                 lista.add(EnumTipoComparacion.BW.getTipoComparacion());
             } else if (fieldType.equals(EnumFieldType.CHECKBOX.getFieldType())) {
-                lista = new ArrayList<TipoComparacion>(2);
+                lista = new ArrayList<>(2);
                 lista.add(EnumTipoComparacion.EQ.getTipoComparacion());
                 lista.add(EnumTipoComparacion.NE.getTipoComparacion());
                 if (changeOps) {
@@ -254,10 +343,10 @@ public abstract class JPAFilterHelper implements Serializable {
                 }
             } else if (fieldType.equals(EnumFieldType.SELECTONE_ENTITY.getFieldType())) {
                 if (comparable.getTipo().equals(List.class)) {
-                    lista = new ArrayList<TipoComparacion>(1);
+                    lista = new ArrayList<>(1);
                     lista.add(EnumTipoComparacion.SC.getTipoComparacion());
                 } else {
-                    lista = new ArrayList<TipoComparacion>(3);
+                    lista = new ArrayList<>(3);
                     lista.add(EnumTipoComparacion.EQ.getTipoComparacion());
                     lista.add(EnumTipoComparacion.NE.getTipoComparacion());
                     lista.add(EnumTipoComparacion.SC.getTipoComparacion());
@@ -267,14 +356,14 @@ public abstract class JPAFilterHelper implements Serializable {
                 }
 
             } else if (fieldType.equals(EnumFieldType.SELECTONE_PLACE_HOLDER.getFieldType())) {
-                lista = new ArrayList<TipoComparacion>(2);
+                lista = new ArrayList<>(2);
                 lista.add(EnumTipoComparacion.EQ.getTipoComparacion());
                 lista.add(EnumTipoComparacion.NE.getTipoComparacion());
                 if (changeOps) {
                     lista.add(EnumTipoComparacion.CT.getTipoComparacion());
                 }
             } else if (fieldType.equals(EnumFieldType.COMMA_SEPARATED_VALUELIST.getFieldType())) {
-                lista = new ArrayList<TipoComparacion>(1);
+                lista = new ArrayList<>(1);
                 lista.add(EnumTipoComparacion.IM.getTipoComparacion());
             } else {
                 throw new NotSupportedException("fieldType " + fieldType.getFieldTypeId() + " is not supported yet!!");
@@ -290,6 +379,8 @@ public abstract class JPAFilterHelper implements Serializable {
      * Aplies the list of Filters to the logic that query the datasource. it
      * should be used inside the createPageDataModel implementation specific to
      * the controller.
+     *
+     * @param filtro FiltroVista object
      */
 //    public abstract void filter();
     public void handleIdCampoChangeEvent(FiltroVista filtro) {
@@ -319,6 +410,7 @@ public abstract class JPAFilterHelper implements Serializable {
 
     /**
      * @return the comparableFieldsMap
+     * @throws java.lang.ClassNotFoundException
      */
     public Map<String, ComparableField> getComparableFieldsMap() throws ClassNotFoundException {
         if (comparableFieldsMap == null) {

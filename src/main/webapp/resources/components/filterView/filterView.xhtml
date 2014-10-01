@@ -40,13 +40,39 @@
                         </p:selectOneMenu>
                     </h:column>
                     <h:column>
+
+                        <p:selectCheckboxMenu id="valorentity2" label="Selección..."  disabled="#{not cc.attrs.canChangeFilters}" 
+                                              value="#{filtro.valoresList}" filter="true" filterMatchMode="contains"
+                                              panelStyle="width:300px" style="width:180px"
+                                              required="true" requiredMessage="Se necesita un valor para comparar."
+                                              rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and 
+                                                          cc.attrs.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'SELECTONE_ENTITY' and 
+                                                          filtro.idComparador.idComparador eq 'SC'}">
+                            <f:selectItems value="#{cc.attrs.filterHelper.findPosibleOptionsSelectManyIncludeNullAndUserInSessionFor(filtro.idCampo, UserSessionBean.current)}" />
+                        </p:selectCheckboxMenu>
+
+                        <p:autoComplete id="valorentity1" dropdown="true" emptyMessage="no hay objetos que mostrar"
+                                        placeholder="buscar..." forceSelection="true"
+                                        converterMessage="convertion failed" converter="entityConverter"
+                                        value="#{filtro.valorAsSelectItem}" disabled="#{not cc.attrs.canChangeFilters}"
+                                        completeMethod="#{cc.attrs.filterHelper.autoCompleteFindPosibleOptionsIncludingAllPlaceHolders}"  
+                                        var="selectItem" itemValue="#{selectItem}" itemLabel="#{selectItem.label}"
+                                        required="true" requiredMessage="Debe Seleccionar un #{cc.attrs.filterHelper.getComparableField(filtro.idCampo).label}."
+                                        rendered="#{filtro.idCampo ne null and filtro.idComparador ne null 
+                                                    and cc.attrs.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'SELECTONE_ENTITY' 
+                                                    and filtro.idComparador.idComparador ne 'SC'}">  
+                            <f:attribute name="filtro" value="#{filtro}" />
+                        </p:autoComplete>    
+
                         <p:inputText id="valortext" value="#{filtro.valor}" rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'TEXT'}" 
                                      required="true" requiredMessage="Se necesita un valor para comparar." disabled="#{not cc.attrs.canChangeFilters}"/>
 
-                        <p:autoComplete value="#{filtro.valoresList}" forceSelection="true"  disabled="#{not cc.attrs.canChangeFilters}"
+                        <p:autoComplete value="#{filtro.valoresList}" forceSelection="true"  
+                                        disabled="#{not cc.attrs.canChangeFilters}"
                                         required="true" requiredMessage="Se necesita un valor para comparar."
                                         completeMethod="#{applicationBean.findEtiquetasByPattern}" multiple="true"
-                                        rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'COMMA_SEPARATED_VALUELIST'}"/> 
+                                        rendered="#{filtro.idCampo ne null and filtro.idComparador ne null 
+                                                    and cc.attrs.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'COMMA_SEPARATED_VALUELIST'}"/> 
 
                         <p:selectOneRadio id="valorradio" value="#{filtro.valor}" disabled="#{not cc.attrs.canChangeFilters}" 
                                           required="true" requiredMessage="Se necesita un valor para comparar."
@@ -54,52 +80,22 @@
                             <f:selectItems value="#{cc.attrs.filterHelper.findPosibleOptionsIncludingAllPlaceHolders(filtro.idCampo, UserSessionBean.current)}" />
                         </p:selectOneRadio>
 
-                        <p:autoComplete value="#{filtro.valor}" disabled="#{not cc.attrs.canChangeFilters}"
-                                        id="valorentity11" completeMethod="#{emailClienteController.completeEmailCliente}"  
-                                        var="email"  itemValue="#{email.emailCliente}" itemLabel="#{email}"
-                                        required="true" requiredMessage="Debe Seleccionar un email."
-                                        rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'SELECTONE_ENTITY' and filtro.idComparador.idComparador ne 'SC' and filtro.idCampo eq 'emailCliente'}">  
 
-                            <f:facet name="itemtip">  
-                                <h:panelGrid  columns="2" cellpadding="5">  
-                                    <f:facet name="header">  
-                                        <h:outputText value="#{email.emailCliente}" />  
-                                    </f:facet>  
 
-                                    <h:outputText value="Nombre: " />  
-                                    <h:outputText value="#{email.cliente.nombres}" />  
 
-                                    <h:outputText value="Apellidos: " />  
-                                    <h:outputText value="#{email.cliente.apellidos}" /> 
 
-                                    <h:outputText value="Rut: " />  
-                                    <h:outputText value="#{email.cliente.rut}" /> 
-                                </h:panelGrid>  
-                            </f:facet>  
 
-                        </p:autoComplete>                   
-
-                          <p:selectOneMenu id="placeHolder1" value="#{filtro.valor}" disabled="#{not cc.attrs.canChangeFilters}" 
-                                           panelStyle="width:300px" style="width:180px"
-                                           required="true" requiredMessage="Se necesita un valor para comparar."
-                                         rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'SELECTONE_PLACE_HOLDER'}">
+                        <p:selectOneMenu id="placeHolder1" value="#{filtro.valor}" disabled="#{not cc.attrs.canChangeFilters}" 
+                                         panelStyle="width:300px" style="width:180px"
+                                         required="true" requiredMessage="Se necesita un valor para comparar."
+                                         rendered="#{filtro.idCampo ne null and filtro.idComparador ne null 
+                                                     and cc.attrs.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'SELECTONE_PLACE_HOLDER'}">
                             <f:selectItems value="#{cc.attrs.filterHelper.findPosibleOptionsGenericEntityPlaceHolders(filtro.idCampo)}" />
                         </p:selectOneMenu>
-                        
-                        <p:selectOneMenu id="valorentity1" value="#{filtro.valor}" disabled="#{not cc.attrs.canChangeFilters}"
-                                         panelStyle="width:300px" style="width:180px"  filter="true" filterMatchMode="contains"
-                                         required="true" requiredMessage="Se necesita un valor para comparar."
-                                         rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'SELECTONE_ENTITY' and filtro.idComparador.idComparador ne 'SC' and filtro.idCampo ne 'emailCliente'}">
-                            <f:selectItems value="#{cc.attrs.filterHelper.findPosibleOptionsIncludingAllPlaceHolders(filtro.idCampo, UserSessionBean.current)}" />
-                        </p:selectOneMenu>
 
-                        <p:selectCheckboxMenu id="valorentity2" label="Selección..."  disabled="#{not cc.attrs.canChangeFilters}" 
-                                              value="#{filtro.valoresList}" filter="true" filterMatchMode="contains"
-                                              panelStyle="width:300px" style="width:180px"
-                                              required="true" requiredMessage="Se necesita un valor para comparar."
-                                              rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'SELECTONE_ENTITY' and filtro.idComparador.idComparador eq 'SC'}">
-                            <f:selectItems value="#{cc.attrs.filterHelper.findPosibleOptionsSelectManyIncludeNullAndUserInSessionFor(filtro.idCampo, UserSessionBean.current)}" />
-                        </p:selectCheckboxMenu>
+
+
+
 
                         <p:selectOneMenu id="valorcheckboolean" value="#{filtro.valor}" disabled="#{not cc.attrs.canChangeFilters}" 
                                          required="true" requiredMessage="Se necesita un valor para comparar."
@@ -108,7 +104,7 @@
                         </p:selectOneMenu>
                         <script>
                             $(function() {
-                                $( ".datepicker" ).datepicker({
+                                $(".datepicker").datepicker({
                                     dateFormat: "dd/mm/yy"
                                 });
                             });

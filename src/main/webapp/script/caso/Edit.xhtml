@@ -368,7 +368,8 @@
                                 <p:column style="padding-left: 0px !important;">
 
 
-                                    <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar" disabled="#{casoController.selected.closed or casoController.selected.idComponente eq null or casoController.casoTipoReparacion}">
+                                    <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar" 
+                                                disabled="#{casoController.selected.closed}">
                                         <f:facet name="output">
 
                                             <h:panelGrid style="width: 220px;">
@@ -382,7 +383,7 @@
                                                         <p:commandButton action="#{productoController.prepareViewSubComponente(casoController.selected.idSubComponente, '/script/caso/Edit')}" 
                                                                          ajax="false" value="Editar"
                                                                          icon="fa fa-external-link"
-                                                                         rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes() and not(casoController.selected.closed or casoController.selected.idComponente eq null or casoController.casoTipoReparacion)}"
+                                                                         rendered="#{casoController.selected.open and casoController.selected.idSubComponente ne null}"
                                                                          title="Modificar datos de #{casoController.selected.idSubComponente.nombre}"/>
                                                     </p:column>
                                                 </p:row>
