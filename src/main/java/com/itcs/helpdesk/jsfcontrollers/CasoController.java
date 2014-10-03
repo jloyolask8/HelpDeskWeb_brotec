@@ -192,6 +192,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private EmailCliente emailClienteSeleccionadoTransfer;
     private Long idFileRemove;
     private Integer justCreadedNotaId;
+    private Integer selectedViewId;//Vista seleccionada
 
     private String accionToRunSelected;
     private String accionToRunParametros;
@@ -206,7 +207,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private Integer casosRevisarActualizacion;
     private Integer casosPrioritarios;
     private Integer casosCerrados;
-    
+
     //reply-mode
     private boolean replyMode = false;
     private boolean filterViewToggle = false;
@@ -1480,12 +1481,12 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         if (current.getNotaList() != null) {
             Collections.sort(current.getNotaList());
         }
-        
+
         setOtroEmail(new LinkedList<String>());
         setCcEmail(new LinkedList<String>());
         setCcoEmail(new LinkedList<String>());
         setReplyByEmail(false);
-        
+
         setCc(false);
         setCco(false);
         if (current.getEmailCliente() != null && current.getEmailCliente().getEmailCliente() != null && !getOtroEmail().contains(current.getEmailCliente().getEmailCliente())) {
@@ -1706,7 +1707,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     fCopy.setIdCampo(f.getIdCampo());
                     fCopy.setIdComparador(f.getIdComparador());
                     fCopy.setValor(f.getValor());
+                    fCopy.setValorLabel(f.getValorLabel());
                     fCopy.setValor2(f.getValor2());
+                    fCopy.setValor2Label(f.getValor2Label());
                     fCopy.setIdVista(copy);
                     copy.getFiltrosVistaList().add(fCopy);
                     //System.out.println("added filtro " + fCopy);
@@ -3953,6 +3956,20 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      */
     public void setReplyByEmail(boolean replyByEmail) {
         this.replyByEmail = replyByEmail;
+    }
+
+    /**
+     * @return the selectedViewId
+     */
+    public Integer getSelectedViewId() {
+        return selectedViewId;
+    }
+
+    /**
+     * @param selectedViewId the selectedViewId to set
+     */
+    public void setSelectedViewId(Integer selectedViewId) {
+        this.selectedViewId = selectedViewId;
     }
 
     @FacesConverter(forClass = Caso.class)

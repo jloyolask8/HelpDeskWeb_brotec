@@ -25,14 +25,14 @@ public class EntityConverter implements Converter {
 
     private Map<String, SelectItem> getViewMap(FacesContext context) {
         Map<String, Object> viewMap = context.getViewRoot().getViewMap();
-        System.out.println("*********** viewMap:" + viewMap);
+//        System.out.println("*********** viewMap:" + viewMap);
 //        @SuppressWarnings({"unchecked", "rawtypes"})
         Map<String, SelectItem> idMap = (Map) viewMap.get(converterKey);
         if (idMap == null) {
             idMap = new HashMap<>();
             viewMap.put(converterKey, idMap);
         }
-        System.out.println("*********** idMap:" + idMap);
+//        System.out.println("*********** idMap:" + idMap);
         return idMap;
     }
 
@@ -61,19 +61,22 @@ public class EntityConverter implements Converter {
 
     @Override
     public String getAsString(FacesContext context, UIComponent c, Object value) {
+
+        System.out.println("\n\n\nEntityConverter.getAsString:" + value);
         if (value == null) {
             return empty;
         }
 
         try {
             final SelectItem selectItem = (SelectItem) value;
-//            final String key = selectItem.getValue().toString();
+            final String key = selectItem.getValue().toString();
             final String label = selectItem.getLabel();
-
+            System.out.println(key + "#" + label);
 //            System.out.println("\n\n\nEntityConverter.getAsString:" + key + " of class " + value.getClass().getName() + " = " + label);
-
-            getViewMap(context).put(label, selectItem);
-            return selectItem.getLabel();
+            if (label != null) {
+                getViewMap(context).put(label, selectItem);
+            }
+            return label;
         } catch (Exception e) {
             e.printStackTrace();
             return "ERROR";

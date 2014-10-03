@@ -15,8 +15,9 @@
     </composite:interface>
 
     <composite:implementation>
-        <p:fieldset legend="Filtros">
-            <h:panelGroup id="panelFilter"  style="border: none;">
+        <p:panel id="panelFilter"  style="border: none;">
+            <p:fieldset legend="Filtros">
+
                 <h:dataTable id="filtrosVista" value="#{cc.attrs.filterHelper.vista.filtrosVistaList}" var="filtro" style="border: none;">     
 
                     <composite:renderFacet id="header" name="header" />
@@ -41,18 +42,23 @@
                     </h:column>
                     <h:column>
 
-                        <p:selectCheckboxMenu id="valorentity2" label="Selección..."  disabled="#{not cc.attrs.canChangeFilters}" 
-                                              value="#{filtro.valoresList}" filter="true" filterMatchMode="contains"
-                                              panelStyle="width:300px" style="width:180px"
-                                              required="true" requiredMessage="Se necesita un valor para comparar."
-                                              rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and 
-                                                          cc.attrs.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'SELECTONE_ENTITY' and 
-                                                          filtro.idComparador.idComparador eq 'SC'}">
-                            <f:selectItems value="#{cc.attrs.filterHelper.findPosibleOptionsSelectManyIncludeNullAndUserInSessionFor(filtro.idCampo, UserSessionBean.current)}" />
-                        </p:selectCheckboxMenu>
+
+
+                        <p:autoComplete id="MultipleValueEntity" multiple="true" emptyMessage="no hay objetos que mostrar"
+                                        placeholder="buscar..." forceSelection="true" 
+                                        converterMessage="convertion failed" converter="entityConverter"
+                                        value="#{filtro.valoresAsSelectItemList}" disabled="#{not cc.attrs.canChangeFilters}"
+                                        completeMethod="#{cc.attrs.filterHelper.autoCompleteFindPosibleOptionsIncludingAllPlaceHolders}"  
+                                        var="selectItem" itemValue="#{selectItem}" itemLabel="#{selectItem.label}"
+                                        required="true" requiredMessage="Debe Seleccionar al menos un #{cc.attrs.filterHelper.getComparableField(filtro.idCampo).label}."
+                                        rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and 
+                                                    cc.attrs.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'SELECTONE_ENTITY' and 
+                                                    filtro.idComparador.idComparador eq 'SC'}">  
+                            <f:attribute name="filtro" value="#{filtro}" />
+                        </p:autoComplete>   
 
                         <p:autoComplete id="valorentity1" dropdown="true" emptyMessage="no hay objetos que mostrar"
-                                        placeholder="buscar..." forceSelection="true"
+                                        placeholder="buscar..." forceSelection="true" 
                                         converterMessage="convertion failed" converter="entityConverter"
                                         value="#{filtro.valorAsSelectItem}" disabled="#{not cc.attrs.canChangeFilters}"
                                         completeMethod="#{cc.attrs.filterHelper.autoCompleteFindPosibleOptionsIncludingAllPlaceHolders}"  
@@ -142,8 +148,9 @@
                     <composite:renderFacet id="rendersaveView" name="saveView" />
 
                 </h:dataTable>
-            </h:panelGroup>
-        </p:fieldset>
+            </p:fieldset>
+
+        </p:panel>
         <br/>
     </composite:implementation>
 </html>
