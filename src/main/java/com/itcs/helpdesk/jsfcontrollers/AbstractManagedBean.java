@@ -378,7 +378,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
         }
 
         if (detector.detectTierTablet()) {
-            return true;
+            return false;
         }
 
         return false;

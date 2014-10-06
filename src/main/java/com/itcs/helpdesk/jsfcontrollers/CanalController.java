@@ -274,6 +274,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
                     it.remove(); // avoids a ConcurrentModificationException
                 }
                 getJpaController().mergeCanal(current);
+                MailClientFactory.createInstance(current);
             } else {
                 current.setIdCanal(tmpEmailCorreoElectronico);
                 current.setIdTipoCanal(EnumTipoCanal.EMAIL.getTipoCanal());
