@@ -84,9 +84,14 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
 
     }
 
+    /**
+     * devuelve la lista de emails de clientes como lista<strings>
+     * @param query
+     * @return 
+     */
     public List<String> completeEmailClienteString(String query) {
         System.out.println(query);
-        List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
         List<EmailCliente> emailClientes = getJpaController().getEmailClienteFindByEmailLike(query, 10);
 //        System.out.println(emailClientes);
         if (emailClientes != null && !emailClientes.isEmpty()) {

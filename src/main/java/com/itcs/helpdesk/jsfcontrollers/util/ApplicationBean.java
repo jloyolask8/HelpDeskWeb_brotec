@@ -262,6 +262,10 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
     public String getCompanyLogo() {
         return ApplicationConfig.getCompanyLogo();
     }
+    
+     public String getCompanyLoginBackground() {
+        return ApplicationConfig.getCompanyLoginBackground();
+    }
 
 //    public String getCompanyDefaultContactEmail() {
 ////        if (defaultContactEmail == null) {

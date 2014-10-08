@@ -7,6 +7,7 @@ package com.itcs.helpdesk.jsfcontrollers.util;
 import com.itcs.helpdesk.jsfcontrollers.AbstractManagedBean;
 import com.itcs.helpdesk.persistence.entities.EmailCliente;
 import com.itcs.helpdesk.persistence.entities.Usuario;
+import com.itcs.helpdesk.persistence.entities.UsuarioSessionLog;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.UtilesRut;
 import com.itcs.helpdesk.webapputils.Theme;
@@ -35,6 +36,7 @@ public class UserSessionBean extends AbstractManagedBean<Usuario> implements Ser
 //    private ApplicationBean applicationBean;
     private final String DEFAULT_THEME = "redmond";
     private Usuario sessionUser;
+    private UsuarioSessionLog currentSessionLog;//intended to save all user session data
     private String channel;
     private int activeIndexOfMyAccount = 0;
     private Map<String, String> themes;
@@ -293,5 +295,19 @@ public class UserSessionBean extends AbstractManagedBean<Usuario> implements Ser
         themes.put("UI-Darkness", "ui-darkness");
         themes.put("UI-Lightness", "ui-lightness");
         themes.put("Vader", "vader");
+    }
+
+    /**
+     * @return the currentSessionLog
+     */
+    public UsuarioSessionLog getCurrentSessionLog() {
+        return currentSessionLog;
+    }
+
+    /**
+     * @param currentSessionLog the currentSessionLog to set
+     */
+    public void setCurrentSessionLog(UsuarioSessionLog currentSessionLog) {
+        this.currentSessionLog = currentSessionLog;
     }
 }

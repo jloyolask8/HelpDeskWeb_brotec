@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.itcs.helpdesk.jsfcontrollers.util.delete;
+package com.itcs.helpdesk.jsfcontrollers.util;
 
 import java.io.Serializable;
 

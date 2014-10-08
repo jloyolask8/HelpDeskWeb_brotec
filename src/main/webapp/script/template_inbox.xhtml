@@ -152,7 +152,7 @@
         </h:head>
 
         <h:body id="mainbody">
-
+            
             <f:event type="preRenderView" listener="#{casoController.initializeData}" />
 
             <pe:ajaxErrorHandler /> 
@@ -218,6 +218,9 @@
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
                                     <p:menuitem value="Logs de Casos" ajax="false" action="#{auditLogController.prepareList}" icon="fa fa-info-circle">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+                                    <p:menuitem value="#{bundle.SessionsTitle}" ajax="false" action="#{usuarioSessionLogController.prepareList}" icon="fa fa-info-circle">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
                                     <p:menuitem value="Reportes Gráficos" ajax="false" action="/script/report_graphs/reports" icon="fa fa-bar-chart-o">

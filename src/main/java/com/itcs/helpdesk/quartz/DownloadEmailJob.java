@@ -25,7 +25,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.mail.MessagingException;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.NoResultException;
 import javax.transaction.UserTransaction;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.Job;
@@ -114,70 +113,81 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
             }
 
             if (mailClient != null) {
-                mailClient.connectStore();
-                mailClient.openFolder("inbox");
-                List<EmailMessage> messages = mailClient.getUnreadMessages();
-                //List<EmailMessage> messages = mailClient.getAllMessages();
-                List<BlackListEmail> blackList = (List<BlackListEmail>) jpaController.findAll(BlackListEmail.class);//findAll(BlackListEmail.class);
-                HashMap<String, BlackListEmail> mapBlackList = new HashMap<String, BlackListEmail>();
-                for (BlackListEmail blackListEmail : blackList) {
-                    mapBlackList.put(blackListEmail.getEmailAddress(), blackListEmail);
-                }
 
-                if (ApplicationConfig.isAppDebugEnabled()) {
-                    Log.createLogger(this.getClass().getName()).logDebug("Debug Email BlackList:" + mapBlackList);
-                }
+                try {
+                    mailClient.connectStore();
+                    mailClient.openFolder("inbox");
+                    List<EmailMessage> messages = mailClient.getUnreadMessages();
+                    //List<EmailMessage> messages = mailClient.getAllMessages();
+                    List<BlackListEmail> blackList = (List<BlackListEmail>) jpaController.findAll(BlackListEmail.class);//findAll(BlackListEmail.class);
+                    HashMap<String, BlackListEmail> mapBlackList = new HashMap<>();
+                    for (BlackListEmail blackListEmail : blackList) {
+                        mapBlackList.put(blackListEmail.getEmailAddress(), blackListEmail);
+                    }
 
-                for (EmailMessage emailMessage : messages) {
-                    try {
+                    if (ApplicationConfig.isAppDebugEnabled()) {
+                        Log.createLogger(this.getClass().getName()).logDebug("Debug Email BlackList:" + mapBlackList);
+                    }
 
-                        if (!mapBlackList.containsKey(emailMessage.getFromEmail()) && (!emailMessage.getFromEmail().equalsIgnoreCase(emailSender))
-                                && (!emailMessage.getFromEmail().equalsIgnoreCase(emailReceiver))) {
+                    for (EmailMessage emailMessage : messages) {
+                        try {
 
-                            String subject = emailMessage.getSubject();
-                            Long idCaso = ManagerCasos.extractIdCaso(subject);
+                            if (!mapBlackList.containsKey(emailMessage.getFromEmail()) && (!emailMessage.getFromEmail().equalsIgnoreCase(emailSender))
+                                    && (!emailMessage.getFromEmail().equalsIgnoreCase(emailReceiver))) {
 
-                            if (idCaso != null) {
-                                Caso caso = jpaController.getCasoFindByIdCaso(idCaso);
-                                if (caso != null) {
-                                    managerCasos.crearNotaDesdeEmail(caso, canal, emailMessage);
-                                }
+                                String subject = emailMessage.getSubject();
+                                Long idCaso = ManagerCasos.extractIdCaso(subject);
 
-                            } else {
-                                //block messages that do not ref# to a case comming from an FromEmail configured as a agent's email addresss.
-                                //NEW TICKET?
-                                List<Usuario> users = jpaController.getUsuarioFindByEmail(emailMessage.getFromEmail());
-                                if (users != null && !users.isEmpty()) {
-                                    //ignore emails from users of the system !!
-                                    //let them know that this is now allowed!!
-                                    System.out.println("ignoring email from user  of the system :" + users);
+                                if (idCaso != null) {
+                                    Caso caso = jpaController.getCasoFindByIdCaso(idCaso);
+                                    if (caso != null) {
+                                        managerCasos.crearNotaDesdeEmail(caso, canal, emailMessage);
+                                    }
+
                                 } else {
-                                    final boolean casoIsCreated = managerCasos.crearCasoDesdeEmail(canal, emailMessage);
-                                    if (casoIsCreated) {
-                                        mailClient.markReadMessage(emailMessage);
+                                    //block messages that do not ref# to a case comming from an FromEmail configured as a agent's email addresss.
+                                    //NEW TICKET?
+                                    List<Usuario> users = jpaController.getUsuarioFindByEmail(emailMessage.getFromEmail());
+                                    if (users != null && !users.isEmpty()) {
+                                        //ignore emails from users of the system !!
+                                        //let them know that this is now allowed!!
+                                        System.out.println("ignoring email from user  of the system :" + users);
+                                    } else {
+                                        final boolean casoIsCreated = managerCasos.crearCasoDesdeEmail(canal, emailMessage);
+                                        if (casoIsCreated) {
+                                            mailClient.markReadMessage(emailMessage);
 //                                      mailClient.deleteMessage(emailMessage);//TODO add a config, deleteMessagesAfterSuccessRead?
+                                        }
                                     }
                                 }
+                            } else {
+                                if (ApplicationConfig.isAppDebugEnabled()) {
+                                    Log.createLogger(this.getClass().getName()).logDebug("BLOCKED EMAIL FROM:" + emailMessage.getFromEmail());
+                                }
                             }
-                        } else {
-                            if (ApplicationConfig.isAppDebugEnabled()) {
-                                Log.createLogger(this.getClass().getName()).logDebug("BLOCKED EMAIL FROM:" + emailMessage.getFromEmail());
-                            }
+                        } catch (MessagingException e) {
+                            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "MessagingException Error: No se pudo crear el caso. email subject: " + emailMessage.getSubject(), e);
+                        } finally {
+                            mailClient.markReadMessage(emailMessage);
+                            //  mailClient.deleteMessage(emailMessage);
                         }
-                    } catch (MessagingException e) {
-                        Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "MessagingException Error: No se pudo crear el caso. email subject: " + emailMessage.getSubject(), e);
-                    } finally {
-                        mailClient.markReadMessage(emailMessage);
-                        //  mailClient.deleteMessage(emailMessage);
                     }
-                }
 
-                mailClient.closeFolder();
-                mailClient.disconnectStore();
-                UserTransactionHelper.returnUserTransaction(utx);
+                    if (ApplicationConfig.isAppDebugEnabled()) {
+                        Log.createLogger(this.getClass().getName()).logDebug("Revisión de correo " + canal + "exitósa: " + messages.size() + " mensajes leídos. Intancia: brotec-icafal");
+                    }
 
-                if (ApplicationConfig.isAppDebugEnabled()) {
-                    Log.createLogger(this.getClass().getName()).logDebug("Revisión de correo " + canal + "exitósa: " + messages.size() + " mensajes leídos. Intancia: brotec-icafal");
+                } finally {
+                    try {
+
+                        UserTransactionHelper.returnUserTransaction(utx);
+                        mailClient.closeFolder();
+                        mailClient.disconnectStore();
+                        
+                       
+                    } catch (Exception ex2) {
+                        Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "error al cerrar folder/store o returnUserTransaction", ex2);
+                    }
                 }
             } else {
                 throw new MailClientFactory.MailNotConfiguredException("No se puede descargar correos del canal " + idCanal + ", favor comunicarse con el administrador para que configure la cuenta de correo.");

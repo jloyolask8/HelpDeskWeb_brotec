@@ -44,10 +44,10 @@
                         <p:dataList paginator="true" paginatorAlwaysVisible="false" type="ordered" rows="10" style="width: 100%;border: 0px;"
                                     value="#{vistaController.allVistasItems}" var="vista1" >
                             <p:column>
-                                <p:commandLink id="link1" ajax="true" update=":accionesaccordion1:vistasForm :mainform:messages :formfilter:panelFilter0:panelFilter :form0:panelG1" 
+                                <p:commandLink id="vistalink1" ajax="true" update=":accionesaccordion1:vistasForm :mainform:messages :formfilter:panelFilter0:panelFilter :form0:panelG1" 
                                                action="#{casoController.applyViewFilter(vista1)}" 
                                                value="#{vista1.nombre}" style="font-weight: bold" styleClass="ui-state-default" />
-                                <p:tooltip for="link1" value="#{vista1.descripcion}" />  
+                                <p:tooltip for="vistalink1" value="#{vista1.descripcion}" />  
 
                             </p:column>
                             <p:column>

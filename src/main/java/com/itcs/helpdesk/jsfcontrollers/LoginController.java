@@ -4,10 +4,12 @@ import com.itcs.helpdesk.jsfcontrollers.util.ApplicationBean;
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.Usuario;
+import com.itcs.helpdesk.persistence.entities.UsuarioSessionLog;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.MailNotifier;
 import com.itcs.helpdesk.util.UtilSecurity;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,6 +18,7 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
 import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.HttpHeaders;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.primefaces.context.RequestContext;
 
@@ -123,8 +126,20 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
                     String passMD5 = UtilSecurity.getMD5(password);
 //                    System.out.println("pass: "+password+" en MD5:"+passMD5);
 //                    System.out.println("usuario pass: "+usuario.getPass());
-                    if (usuario.getPass().equals(passMD5)) {
+                    if (usuario.getPass().equals(passMD5)) {//compare encrypted pass
+
+                        HttpServletRequest request = (HttpServletRequest) JsfUtil.getRequest();
+
+                        UsuarioSessionLog sessionLog = new UsuarioSessionLog();
+                        sessionLog.setIdUsuario(usuario);
+                        sessionLog.setIp(request.getRemoteAddr());
+                        sessionLog.setTimestampLogin(new Date());
+                        sessionLog.setUserAgent(request.getHeader(HttpHeaders.USER_AGENT));
+                        sessionLog.setLanguages(request.getHeader(HttpHeaders.ACCEPT_LANGUAGE));
+                        getJpaController().persist(sessionLog);
+                        usuario.addUsuarioSessionLog(sessionLog);
                         getUserSessionBean().setCurrent(usuario);
+                        getUserSessionBean().setCurrentSessionLog(sessionLog);
 
                         String channel = "/" + UUID.randomUUID().toString();
                         getUserSessionBean().setChannel(channel);
@@ -183,6 +198,13 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
     public String logout_action() {
         HttpServletRequest request = (HttpServletRequest) JsfUtil.getRequest();
 //        getApplicationBean().removeChannel(getUserSessionBean().getCurrent().getIdUsuario());
+        final UsuarioSessionLog currentSessionLog = getUserSessionBean().getCurrentSessionLog();
+        currentSessionLog.setTimestampLogout(new Date());
+        try {
+            getJpaController().merge(currentSessionLog);
+        } catch (Exception ex) {
+            Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
+        }
         request.getSession().invalidate();
         return "/script/login.xhtml?faces-redirect=true";
     }
