@@ -30,7 +30,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import org.primefaces.model.SelectableDataModel;
 
@@ -283,7 +282,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
     }
 
     public List<Vista> getVistasCustomersItems() {
-        List<Vista> lista = new ArrayList<Vista>();
+        List<Vista> lista = new ArrayList<>();
 
         if (userSessionBean.getEmailCliente() != null) {
             Vista miscasosAbiertos = new Vista(Caso.class);
@@ -342,7 +341,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
     public List<Vista> getAllVistasItems() {
 
         if (allMyVistas == null) {
-            List<Vista> lista = new ArrayList<Vista>();
+            List<Vista> lista = new ArrayList<>();
             final List<Vista> visibleForAllItems = getVisibleForAllItems();
             final List<Vista> visibleForMeOnlyItems = getVisibleForMeOnlyItems();
             final List<Vista> visibleForMyGroupsItems = getVisibleForMyGroupsItems();

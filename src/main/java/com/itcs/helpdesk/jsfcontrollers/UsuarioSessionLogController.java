@@ -6,6 +6,7 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.persistence.entities.UsuarioSessionLog;
+import com.itcs.helpdesk.persistence.utils.OrderBy;
 import java.io.Serializable;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -30,8 +31,11 @@ public class UsuarioSessionLogController extends AbstractManagedBean<UsuarioSess
     public UsuarioSessionLogController() {
         super(UsuarioSessionLog.class);
     }
-    
-    
+
+    @Override
+    public OrderBy getDefaultOrderBy() {
+        return new OrderBy("timestampLogin", OrderBy.OrderType.DESC);
+    }
 
     @Override
     public Class getDataModelImplementationClass() {
