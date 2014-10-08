@@ -56,6 +56,8 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
     private String tmpEmailOutgoingSsl;
     private String tmpEmailUsuario;
     private String tmpEmailInfo;
+    private String tmpFreq;
+    private boolean tmpEmailDebugEnabled;
     private boolean tmpEmailFinalizeReady;
     private boolean tmpEmailFirstStepReady;
 
@@ -109,6 +111,9 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         settings.put(EnumEmailSettingKeys.INBOUND_PASS.getKey(), tmpEmailContrasena);
         settings.put(EnumEmailSettingKeys.SERVER_TYPE.getKey(), "popimap");
         settings.put(EnumEmailSettingKeys.STORE_PROTOCOL.getKey(), tmpEmailIncommingType.equals("imap") ? "imaps" : "pop3s");
+        
+        settings.put(EnumEmailSettingKeys.CHECK_FREQUENCY.getKey(), (tmpFreq == null) ? String.valueOf(HelpDeskScheluder.DEFAULT_CHECK_EMAIL_INTERVAL) : tmpFreq);
+        settings.put(EnumEmailSettingKeys.MAIL_DEBUG.getKey(), tmpEmailDebugEnabled ? "true" : "false");
 
         settings.put(EnumEmailSettingKeys.MAIL_SERVER_TYPE_SALIDA.getKey(), "SMTP");
         settings.put(EnumEmailSettingKeys.SMTP_SERVER.getKey(), tmpEmailOutgoingHost);
@@ -163,6 +168,8 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
                 tmpEmailOutgoingHost = null;
                 tmpEmailOutgoingPort = null;
                 tmpEmailOutgoingSsl = null;
+                setTmpFreq(null);
+                tmpEmailDebugEnabled = false;
             }
         } else {
             tmpEmailInfo = "Correo no es válido";
@@ -203,6 +210,8 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         tmpEmailOutgoingPort = null;
         tmpEmailOutgoingSsl = null;
         tmpEmailUsuario = null;
+        setTmpFreq(null);
+        tmpEmailDebugEnabled = false;
         tmpEmailInfo = null;
         tmpEmailFinalizeReady = false;
         tmpEmailFirstStepReady = false;
@@ -251,6 +260,8 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         tmpEmailOutgoingPort = current.getSetting(EnumEmailSettingKeys.SMTP_PORT.getKey());
         tmpEmailOutgoingSsl = current.getSetting(EnumEmailSettingKeys.SMTP_SSL_ENABLED.getKey()).equals("true") ? "SSL/TLS" : "NINGUNO";
         tmpEmailUsuario = current.getSetting(EnumEmailSettingKeys.SMTP_FROM.getKey());
+        tmpFreq = current.getSetting(EnumEmailSettingKeys.CHECK_FREQUENCY.getKey());
+        tmpEmailDebugEnabled = (current.getSetting(EnumEmailSettingKeys.MAIL_DEBUG.getKey()) == null) ? false : current.getSetting(EnumEmailSettingKeys.MAIL_DEBUG.getKey()).equals("true");
         tmpEmailInfo = null;
         tmpEmailFinalizeReady = false;
         tmpEmailFirstStepReady = true;
@@ -293,10 +304,15 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
                     it.remove(); // avoids a ConcurrentModificationException
                 }
                 getJpaController().mergeCanal(current);
-                //hay que agregar al agendamiento este nuevo canal email
-                MailClientFactory.createInstance(current);
-                HelpDeskScheluder.scheduleRevisarCorreo(current.getIdCanal(), HelpDeskScheluder.DEFAULT_CHECK_EMAIL_INTERVAL);
             }
+            MailClientFactory.createInstance(current);
+            String freqStr = current.getSetting(EnumEmailSettingKeys.CHECK_FREQUENCY.getKey());
+            int freq = HelpDeskScheluder.DEFAULT_CHECK_EMAIL_INTERVAL;
+            try{
+                freq = Integer.parseInt(freqStr);
+            }catch(NumberFormatException ex){/*probably a weird value*/}
+
+            HelpDeskScheluder.scheduleRevisarCorreo(current.getIdCanal(), freq);
             items = null;
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
@@ -616,6 +632,34 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
      */
     public void setTmpEmailFirstStepReady(boolean tmpEmailFirstStepReady) {
         this.tmpEmailFirstStepReady = tmpEmailFirstStepReady;
+    }
+
+    /**
+     * @return the tmpFreq
+     */
+    public String getTmpFreq() {
+        return tmpFreq;
+    }
+
+    /**
+     * @param tmpFreq the tmpFreq to set
+     */
+    public void setTmpFreq(String tmpFreq) {
+        this.tmpFreq = tmpFreq;
+    }
+
+    /**
+     * @return the tmpEmailDebugEnabled
+     */
+    public boolean isTmpEmailDebugEnabled() {
+        return tmpEmailDebugEnabled;
+    }
+
+    /**
+     * @param tmpEmailDebugEnabled the tmpEmailDebugEnabled to set
+     */
+    public void setTmpEmailDebugEnabled(boolean tmpEmailDebugEnabled) {
+        this.tmpEmailDebugEnabled = tmpEmailDebugEnabled;
     }
 
     @FacesConverter(forClass = Canal.class)
