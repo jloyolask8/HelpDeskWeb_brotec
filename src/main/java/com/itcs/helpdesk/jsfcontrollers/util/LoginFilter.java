@@ -43,8 +43,8 @@ public class LoginFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
         HttpSession session = req.getSession();
-//        String requestedPage = req.getPathTranslated();//java.lang.NullPointerException in WLS
-         String requestedPage = req.getRequestURI();
+        String requestedPage = req.getPathTranslated();//java.lang.NullPointerException in WLS
+//         String requestedPage = req.getRequestURI();//Bug in login filter in GF
         UserSessionBean userSessionBean = (UserSessionBean) session.getAttribute("UserSessionBean");
 
 //        System.out.println("LoginFilter.doFilter:" + requestedPage);

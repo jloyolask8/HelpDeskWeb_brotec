@@ -109,7 +109,7 @@
         <location>/faces/script/login.xhtml</location>
     </error-page>
     <welcome-file-list>
-        <welcome-file>faces/script/login.xhtml</welcome-file>
+        <welcome-file>faces/script/index.xhtml</welcome-file>
     </welcome-file-list>
     <context-param>
         <param-name>com.sun.faces.enableRestoreView11Compatibility</param-name>
