@@ -271,6 +271,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
     public void createCanalEmail() {
         try {
             if (mode.equals("Edit")) {
+                current.reloadSettings();
                 current.setNombre(tmpEmailCorreoElectronico);
                 current.setDescripcion("Canal email, para la cuenta " + tmpEmailCorreoElectronico);
                 getJpaController().mergeCanal(current);
