@@ -4,6 +4,7 @@
  */
 package com.itcs.helpdesk.webapputils;
 
+import com.itcs.commons.email.EnumEmailSettingKeys;
 import com.itcs.helpdesk.persistence.entities.AppSetting;
 import com.itcs.helpdesk.persistence.entities.Canal;
 import com.itcs.helpdesk.persistence.jpa.AppSettingJpaController;
@@ -96,7 +97,13 @@ public class AppStarter implements ServletContextListener {
 //                            AutomaticMailScheduler mailExec = new AutomaticMailScheduler(a, new JPAServiceFacade(utx, emf, schema));
 //                            mailExec.agendarRevisarCorreo();
                         MailClientFactory.createInstance(canal);
-                        HelpDeskScheluder.scheduleRevisarCorreo(canal.getIdCanal(), HelpDeskScheluder.DEFAULT_CHECK_EMAIL_INTERVAL);//5 minutes fixed
+                        String freqStr = canal.getSetting(EnumEmailSettingKeys.CHECK_FREQUENCY.getKey());
+                        int freq = HelpDeskScheluder.DEFAULT_CHECK_EMAIL_INTERVAL;
+                        try{
+                            freq = Integer.parseInt(freqStr);
+                        }catch(NumberFormatException ex){/*probably a weird value*/}
+                        
+                        HelpDeskScheluder.scheduleRevisarCorreo(canal.getIdCanal(), freq);//5 minutes fixed
 
                     } catch (SchedulerException ex) {
                         Logger.getLogger(AppStarter.class.getName()).log(Level.SEVERE, "No se pudo inicializar La revision del canal " + canal.getIdCanal(), ex);

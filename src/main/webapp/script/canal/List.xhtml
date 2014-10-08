@@ -137,7 +137,7 @@
 
             <p:dialog id="addEditEmailDialog" showEffect="fade" hideEffect="fade" appendTo="@(body)" modal="true"
                       header="Detalles de correo electr&oacute;nico" widgetVar="addEditEmailDialogWidget" resizable="false" closable="false"
-                      style="width: 706px; height: 360px;" width="706px" height="360px">
+                      style="width: 706px; height: 374px;" width="706px" height="374px">
                 <h:form id="formAddEditEmail">
                     <!-- panel de configuracion basico-->
                     <p:panelGrid columns="2" style="margin-bottom:10px;" styleClass="filtersGrid">
@@ -273,6 +273,36 @@
                             </p:row>
                         </p:panelGrid>
                     </h:panelGroup>
+                    
+                    <!-- panel de configuracion avanzado-->
+                    <h:panelGroup rendered="#{canalController.tmpEmailFirstStepReady and filtroAcceso.administradorDelSistema}">
+                        <p:separator/>
+                        <p:panelGrid  style="margin-bottom:10px;" styleClass="filtersGrid">
+                            <p:row>
+                                <p:column>
+                                    <h:outputLabel value="Frecuencia de sincronizaci&oacute;n" style="font-size: smaller; color: #8C8989;"/>
+                                </p:column>
+                                <p:column width="70">
+                                    <p:selectOneMenu style="width: 70px;"
+                                                     required="true"
+                                                     value="#{canalController.tmpFreq}" >
+                                        <f:selectItem itemLabel="1 min" itemValue="60"/>
+                                        <f:selectItem itemLabel="5 min" itemValue="300"/>
+                                        <f:selectItem itemLabel="10 min" itemValue="600"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+                                <p:column width="80">
+                                    &nbsp;
+                                </p:column>
+                                <p:column>
+                                    <h:outputLabel value="Habilitar debug" style="font-size: smaller; color: #8C8989;"/>
+                                </p:column>
+                                <p:column width="70">
+                                    <p:selectBooleanCheckbox value="#{canalController.tmpEmailDebugEnabled}" />
+                                </p:column>
+                            </p:row>
+                        </p:panelGrid>
+                    </h:panelGroup>
 
                     <!-- panel de botones de panel basico-->
                     <h:panelGroup rendered="#{not canalController.tmpEmailFirstStepReady}" style="width: 97%; position: absolute; bottom: 15px;">
@@ -330,7 +360,7 @@
                             <p:commandButton id="canncel" value="Cancelar" onclick="PF('addEditDialog').hide()" process="@this">
                                 <p:resetInput target="@form" />
                             </p:commandButton>
-                            
+
                             <p:commandButton action="#{canalController.create()}" value="#{bundle.CreateCanalSaveLink}" update=":formAddEdit :form"
                                              rendered="#{canalController.mode eq 'Create'}"/>
 
