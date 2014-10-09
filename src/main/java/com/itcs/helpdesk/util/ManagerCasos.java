@@ -973,6 +973,10 @@ public class ManagerCasos implements Serializable {
 //        }
 //    }
     private String getReadableFileSize(Long fileSize) {
+        if(fileSize == null)
+        {
+            return "0";
+        }
         if (fileSize <= 0) {
             return "0";
         }
@@ -986,21 +990,25 @@ public class ManagerCasos implements Serializable {
         System.out.println("crearAdjunto()");
 
         String fileName = nombre.trim().replace(" ", "_");
-        Archivo archivo = new Archivo();
-        archivo.setArchivo(bytearray);
-        archivo.setContentType(mimeType);
-        archivo.setFileSize(size);
-        archivo.setFileName(fileName);
-        try {
-            archivo.setFormat(fileName.substring(fileName.lastIndexOf(".") + 1));
-        } catch (Exception e) {
+        Archivo archivo = null;
+        if(bytearray != null)
+        {
+            archivo = new Archivo();
+            archivo.setArchivo(bytearray);
+            archivo.setContentType(mimeType);
+            archivo.setFileSize(size);
+            archivo.setFileName(fileName);
+            try {
+                archivo.setFormat(fileName.substring(fileName.lastIndexOf(".") + 1));
+            } catch (Exception e) {
+            }
         }
 
         List col = caso.getAttachmentList();
 
         Attachment attach = new Attachment();
         attach.setIdCaso(caso);
-        attach.setFileExtension(archivo.getFormat());
+        attach.setFileExtension(fileName.substring(fileName.lastIndexOf(".") + 1));
         attach.setNombreArchivoOriginal(nombre);
         attach.setNombreArchivo(fileName);
         attach.setFileSizeHuman(getReadableFileSize(size));
@@ -1010,10 +1018,12 @@ public class ManagerCasos implements Serializable {
         getJpaController().persistAttachment(attach);
         col.add(attach);
         caso.setAttachmentList(col);
-        archivo.setIdAttachment(attach.getIdAttachment());
-        getJpaController().persistArchivo(archivo);
-        getJpaController().persistAuditLog(createLogReg(caso, "Archivo subido", "archivo atachado: " + fileName, ""));
-        
+        if(archivo != null)
+        {
+            archivo.setIdAttachment(attach.getIdAttachment());
+            getJpaController().persistArchivo(archivo);
+            getJpaController().persistAuditLog(createLogReg(caso, "Archivo subido", "archivo atachado: " + fileName, ""));
+        }
         return attach;
     }
 

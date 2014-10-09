@@ -2433,6 +2433,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     String idUsuarioAnterior = current.getEmailCliente() == null ? "Sin Cliente" : current.getEmailCliente().getEmailCliente();
 
                     current.setEmailCliente(emailClienteSeleccionadoTransfer);
+                    current.setIdCliente(emailClienteSeleccionadoTransfer.getCliente());
 
                     changeLog.add(ManagerCasos.createLogReg(current, "Cambio de Cliente", idUsuarioNuevo, idUsuarioAnterior));
                     getJpaController().mergeCaso(current, changeLog);
