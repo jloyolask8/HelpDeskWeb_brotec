@@ -310,7 +310,9 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
             String freqStr = current.getSetting(EnumEmailSettingKeys.CHECK_FREQUENCY.getKey());
             int freq = HelpDeskScheluder.DEFAULT_CHECK_EMAIL_INTERVAL;
             try{
-                freq = Integer.parseInt(freqStr);
+                if(freqStr != null){
+                    freq = Integer.parseInt(freqStr);
+                }
             }catch(NumberFormatException ex){/*probably a weird value*/}
 
             HelpDeskScheluder.scheduleRevisarCorreo(current.getIdCanal(), freq);

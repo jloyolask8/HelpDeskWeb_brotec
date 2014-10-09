@@ -100,7 +100,9 @@ public class AppStarter implements ServletContextListener {
                         String freqStr = canal.getSetting(EnumEmailSettingKeys.CHECK_FREQUENCY.getKey());
                         int freq = HelpDeskScheluder.DEFAULT_CHECK_EMAIL_INTERVAL;
                         try{
-                            freq = Integer.parseInt(freqStr);
+                            if(freqStr != null){
+                                freq = Integer.parseInt(freqStr);
+                            }
                         }catch(NumberFormatException ex){/*probably a weird value*/}
                         
                         HelpDeskScheluder.scheduleRevisarCorreo(canal.getIdCanal(), freq);//5 minutes fixed

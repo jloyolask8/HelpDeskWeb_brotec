@@ -58,16 +58,17 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
         if (map != null) {
             String idCanal = (String) map.get(ID_CANAL);
             String interval = (String) map.get(INTERVAL_SECONDS);
+            int secondsToNextSync = Integer.valueOf(interval);
             try {
                 if (!StringUtils.isEmpty(idCanal) && !StringUtils.isEmpty(interval)) {
-                    revisarCorreo(idCanal);
+                    secondsToNextSync = revisarCorreo(idCanal);
                 }
             } catch (Exception ex) {
                 Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "erron on execute DownloadEmailJob", ex);
             } finally {
                 try {
                     //schedule to run again after that interval
-                    HelpDeskScheluder.scheduleRevisarCorreo(idCanal, Integer.valueOf(interval));
+                    HelpDeskScheluder.scheduleRevisarCorreo(idCanal, secondsToNextSync);
                 } catch (SchedulerException ex) {
                     Logger.getLogger(DownloadEmailJob.class.getName()).log(Level.SEVERE, "ERROR TRYING TO scheduleRevisarCorreo", ex);
                 }
@@ -85,7 +86,14 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
         }
     }
 
-    private synchronized void revisarCorreo(String idCanal) throws Exception, MailClientFactory.MailNotConfiguredException {
+    /**
+     * 
+     * @param idCanal idCanal for canal settings
+     * @return interval for next mailSync
+     * @throws Exception
+     * @throws com.itcs.helpdesk.util.MailClientFactory.MailNotConfiguredException 
+     */
+    private synchronized int revisarCorreo(String idCanal) throws Exception, MailClientFactory.MailNotConfiguredException {
 
 //        EntityManager em = createEntityManager(schema);
         EntityManagerFactory emf = createEntityManagerFactory();
@@ -101,7 +109,16 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
 //        ManagerCasos managerCasos = new ManagerCasos();
 //        managerCasos.setJpaController(jpaController);
         Canal canal = jpaController.find(Canal.class, idCanal);
+        int freq = HelpDeskScheluder.DEFAULT_CHECK_EMAIL_INTERVAL;
+                        
         if (canal != null) {
+            String freqStr = canal.getSetting(EnumEmailSettingKeys.CHECK_FREQUENCY.getKey());
+            try{
+                if(freqStr != null){
+                    freq = Integer.parseInt(freqStr);
+                }
+            }catch(NumberFormatException ex){/*probably a weird value*/}
+            
             String emailSender = getValueOfCanalSetting(jpaController, canal, EnumEmailSettingKeys.SMTP_USER);
 
             String emailReceiver = getValueOfCanalSetting(jpaController, canal, EnumEmailSettingKeys.INBOUND_USER);
@@ -193,7 +210,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                 throw new MailClientFactory.MailNotConfiguredException("No se puede descargar correos del canal " + idCanal + ", favor comunicarse con el administrador para que configure la cuenta de correo.");
             }
         }
-
+        return freq;
     }
 
 }
