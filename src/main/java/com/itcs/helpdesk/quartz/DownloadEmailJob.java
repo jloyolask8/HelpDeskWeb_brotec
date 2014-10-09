@@ -134,8 +134,8 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                 try {
                     mailClient.connectStore();
                     mailClient.openFolder("inbox");
-                    List<EmailMessage> messages = mailClient.getUnreadMessages();
-                    //List<EmailMessage> messages = mailClient.getAllMessages();
+                    List<EmailMessage> messages = mailClient.getUnreadMessagesOnlyHeaders();
+//                    List<EmailMessage> messages = mailClient.getUnreadMessages();
                     List<BlackListEmail> blackList = (List<BlackListEmail>) jpaController.findAll(BlackListEmail.class);//findAll(BlackListEmail.class);
                     HashMap<String, BlackListEmail> mapBlackList = new HashMap<>();
                     for (BlackListEmail blackListEmail : blackList) {
@@ -158,6 +158,12 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                                 if (idCaso != null) {
                                     Caso caso = jpaController.getCasoFindByIdCaso(idCaso);
                                     if (caso != null) {
+                                        //download message
+                                        
+                                        if((canal.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()) != null) &&
+                                                canal.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()).equals("true")){
+                                            emailMessage = mailClient.getMessage(emailMessage.getIdMessage());
+                                        }
                                         managerCasos.crearNotaDesdeEmail(caso, canal, emailMessage);
                                     }
 
@@ -170,6 +176,11 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                                         //let them know that this is now allowed!!
                                         System.out.println("ignoring email from user  of the system :" + users);
                                     } else {
+                                        //download message
+                                        if((canal.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()) != null) &&
+                                                canal.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()).equals("true")){
+                                            emailMessage = mailClient.getMessage(emailMessage.getIdMessage());
+                                        }
                                         final boolean casoIsCreated = managerCasos.crearCasoDesdeEmail(canal, emailMessage);
                                         if (casoIsCreated) {
                                             mailClient.markReadMessage(emailMessage);
