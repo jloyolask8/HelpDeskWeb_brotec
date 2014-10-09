@@ -2698,7 +2698,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             return false;
         }
 
-        if (otroEmail.isEmpty()) {
+        if (otroEmail == null || (otroEmail != null && otroEmail.isEmpty())) {
             addErrorMessage("No se puede envíar la respuesta.", "No se han incluido destinatarios");
         } else if (current.getEmailCliente() == null || StringUtils.isEmpty(current.getEmailCliente().getEmailCliente())) {
             addErrorMessage("No se puede envíar la respuesta.", "El caso no tiene email del cliente!");

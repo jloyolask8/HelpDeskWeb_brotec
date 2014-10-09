@@ -40,6 +40,12 @@
         <servlet-name>Faces Servlet</servlet-name>
         <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
+        <multipart-config>
+            <location>/tmp</location>
+            <max-file-size>20848820</max-file-size>
+            <max-request-size>418018841</max-request-size>
+            <file-size-threshold>1048576</file-size-threshold>
+        </multipart-config>
     </servlet>
     <servlet>
         <servlet-name>TagListServlet</servlet-name>
@@ -53,6 +59,28 @@
         <servlet-name>EmailClienteListServlet</servlet-name>
         <servlet-class>com.itcs.helpdesk.webapputils.EmailClienteListServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>CKEditorUploadServlet</servlet-name>
+        <servlet-class>com.itcs.helpdesk.webapputils.CKEditorUploadServlet</servlet-class>
+        <multipart-config>
+            <location>/tmp</location>
+            <max-file-size>20848820</max-file-size>
+            <max-request-size>418018841</max-request-size>
+            <file-size-threshold>1048576</file-size-threshold>
+        </multipart-config>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CKEditorUploadServlet</servlet-name>
+        <url-pattern>/ckeditor/uploadimage</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>CKEditorGetImageServlet</servlet-name>
+        <servlet-class>com.itcs.helpdesk.webapputils.CKEditorGetImageServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CKEditorGetImageServlet</servlet-name>
+        <url-pattern>/ckeditor/getimage</url-pattern>
+    </servlet-mapping>
     <servlet>
         <servlet-name>DownloadFileServlet</servlet-name>
         <servlet-class>com.itcs.helpdesk.webapputils.DownloadFileServlet</servlet-class>
@@ -81,7 +109,7 @@
     <listener>
         <listener-class>com.itcs.helpdesk.webapputils.AppStarter</listener-class>
     </listener>
-     <listener>
+    <listener>
         <listener-class>com.itcs.helpdesk.webapputils.UserSessionListener</listener-class>
     </listener>
     
@@ -123,7 +151,7 @@
         <param-name>primefaces.THEME</param-name>
         <param-value>#{UserSessionBean.theme}</param-value>
     </context-param>
-      <context-param>
+    <context-param>
         <param-name>primefaces.PUBLIC_CAPTCHA_KEY</param-name>
         <param-value>6LfwZwoAAAAAAI-oUHpdvRnkMfu9fXQHxc0P7IBu</param-value>
     </context-param>

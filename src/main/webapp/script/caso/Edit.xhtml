@@ -771,7 +771,7 @@
                                             <pe:ckEditor id="ticketDesc" value="#{casoController.selected.descripcionTxt}" 
                                                          language="es"
                                                          toolbar="#{applicationBean.ckEditorToolbar}"
-                                                         required="true"  width="100%" /> 
+                                                         required="true"  width="100%" />
                                             <p:watermark for="ticketDesc" value="Descripción del caso"/>
                                         </f:facet>
                                     </p:inplace>
@@ -1015,7 +1015,7 @@
 
 
                                     <pe:ckEditor id="textonota" value="#{casoController.textoNota}" language="es"
-                                                 toolbar="#{applicationBean.ckEditorToolbar}"
+                                                 toolbar="#{applicationBean.ckEditorToolbar}" customConfig="#{request.contextPath}/resources/js/ckeditor.js"
                                                  required="true"  width="100%" />
 
                                     <h:panelGrid columns="2">
