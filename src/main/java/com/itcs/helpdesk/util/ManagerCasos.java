@@ -199,11 +199,14 @@ public class ManagerCasos implements Serializable {
 
     private static Long extractIdCaso(String subject, Pattern pattern) {
         try {
-            Matcher m = pattern.matcher(subject);
-            if (m.find()) {
-                String id = m.group(2);
-                Long idCaso = Long.parseLong(id);
-                return idCaso;
+            if(StringUtils.isNotEmpty(subject)) // subject can be null
+            {
+                Matcher m = pattern.matcher(subject);
+                if (m.find()) {
+                    String id = m.group(2);
+                    Long idCaso = Long.parseLong(id);
+                    return idCaso;
+                }
             }
         } catch (NumberFormatException e) {
             Log.createLogger(ManagerCasos.class.getName()).log(Level.SEVERE, "NumberFormatException extractIdCaso failed on " + subject, e);
