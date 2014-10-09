@@ -17,7 +17,7 @@ import org.apache.commons.mail.Email;
 public class MailClientFactory {
 
 //    private static EmailClient instance;
-    private static HashMap<String, EmailClient> clients = new HashMap<String, EmailClient>();
+    private static HashMap<String, EmailClient> clients = new HashMap<>();
 
     /**
      * This method creates an instance of EmailClient based on the configuration

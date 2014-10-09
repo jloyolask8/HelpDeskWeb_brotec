@@ -201,7 +201,7 @@ public class ClippingController extends AbstractManagedBean<Clipping> implements
 
             getJpaController().getClippingJpaController().create(current);
             addInfoMessage(ResourceBundle.getBundle("/Bundle").getString("ClippingCreated"));
-            getPrimefacesRequestContext().execute("editCreateDialog.hide()");
+            getPrimefacesRequestContext().execute("PF('editCreateDialog').hide()");
             getPrimefacesRequestContext().update("form:panelG1");
             return prepareList();
         } catch (Exception e) {
@@ -244,7 +244,7 @@ public class ClippingController extends AbstractManagedBean<Clipping> implements
             }
             getJpaController().getClippingJpaController().edit(current);
             addInfoMessage(ResourceBundle.getBundle("/Bundle").getString("ClippingUpdated"));
-            getPrimefacesRequestContext().execute("editCreateDialog.hide()");
+            getPrimefacesRequestContext().execute("PF('editCreateDialog').hide()");
             getPrimefacesRequestContext().update("form:panelG1");
             return prepareList();
         } catch (Exception e) {
