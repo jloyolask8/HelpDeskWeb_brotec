@@ -1479,11 +1479,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         if (current.getNotaList() != null) {
             Collections.sort(current.getNotaList());
         }
-
-<<<<<<< HEAD
-=======
         setTextoNota(null);
->>>>>>> imagenes_en_ckeditor
         setOtroEmail(new LinkedList<String>());
         setCcEmail(new LinkedList<String>());
         setCcoEmail(new LinkedList<String>());
