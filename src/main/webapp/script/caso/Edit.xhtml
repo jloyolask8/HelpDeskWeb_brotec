@@ -1015,11 +1015,11 @@
 
                                     <pe:ckEditor id="textonota" value="#{casoController.textoNota}" language="es"
                                                  toolbar="#{applicationBean.ckEditorToolbar}" customConfig="#{request.contextPath}/resources/js/ckeditor.js"
-                                                 required="true"  width="100%" />
+                                                 width="100%" />
 
                                     <h:panelGrid columns="2">
                                         <h:panelGrid columns="2">
-                                            <p:selectBooleanCheckbox id="addHistory" value="#{casoController.incluirHistoria}" />
+                                            <p:commandButton actionListener="#{casoController.agregarHistoria()}" id="addHistory" update=":inputPanel:formCreateNota:textonota" icon="fa fa-comments-o" title="Agregar historia" />
                                             <p:outputLabel value="Agregar historia" for="addHistory" style="font-weight:bold"/>
                                         </h:panelGrid>
 

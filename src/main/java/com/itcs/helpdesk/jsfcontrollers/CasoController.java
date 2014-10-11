@@ -169,7 +169,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private int cantidadDeRespuestasDelCliente;
     private static transient ResourceBundle resourceBundle = ResourceBundle.getBundle("Bundle");
 //    private List<Nota> listaActividadesOrdenada = null;
-    private boolean incluirHistoria;
+//    private boolean incluirHistoria;
 //    private Integer progresoEnvioRespuesta;
     private ReglaTrigger reglaTriggerSelected;
     private String emailCliente_wizard;
@@ -207,7 +207,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private Integer casosRevisarActualizacion;
     private Integer casosPrioritarios;
     private Integer casosCerrados;
-    
+
     //reply-mode
     private boolean replyMode = false;
     private boolean filterViewToggle = false;
@@ -778,12 +778,10 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
     }
 
-    public boolean getIncluirHistoria() {
-        return incluirHistoria;
-    }
-
-    public void setIncluirHistoria(boolean incluirHistoria) {
-        this.incluirHistoria = incluirHistoria;
+    public void agregarHistoria() {
+        StringBuilder textoMensaje = new StringBuilder(textoNota);
+        textoMensaje.append(obtenerHistorial());
+        textoNota = textoMensaje.toString();
     }
 
     public String getIdFileDelete() {
@@ -1481,12 +1479,13 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         if (current.getNotaList() != null) {
             Collections.sort(current.getNotaList());
         }
-        
+
+        setTextoNota(null);
         setOtroEmail(new LinkedList<String>());
         setCcEmail(new LinkedList<String>());
         setCcoEmail(new LinkedList<String>());
         setReplyByEmail(false);
-        
+
         setCc(false);
         setCco(false);
         if (current.getEmailCliente() != null && current.getEmailCliente().getEmailCliente() != null && !getOtroEmail().contains(current.getEmailCliente().getEmailCliente())) {
@@ -2743,11 +2742,11 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     }
                 }
 
-                if (incluirHistoria) {
-                    StringBuilder textoMensaje = new StringBuilder(mensaje);
-                    textoMensaje.append(obtenerHistorial());
-                    mensaje = textoMensaje.toString();
-                }
+//                if (incluirHistoria) {
+//                    StringBuilder textoMensaje = new StringBuilder(mensaje);
+//                    textoMensaje.append(obtenerHistorial());
+//                    mensaje = textoMensaje.toString();
+//                }
 
                 StringBuilder sbuilder = new StringBuilder();
                 String destinatario;
@@ -2792,7 +2791,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 getJpaController().mergeCaso(current, changeLog);//todo: is this needed?
 
                 selectedClipping = null;//reset clipping
-                incluirHistoria = false;//reset incluir historia
+//                incluirHistoria = false;//reset incluir historia
                 adjuntarArchivosARespuesta = false;//reset attach files checkbox
 //                    current.setRespuesta(null);
 //                    current.setFechaModif(Calendar.getInstance().getTime());
@@ -2840,7 +2839,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         StringBuilder sbuilder = new StringBuilder("<br/><hr/><b>HISTORIA DEL CASO</b><br/>");
         if (current != null && current.getNotaList() != null) {
             for (Nota nota : current.getNotaList()) {
-                if (nota.getTipoNota().equals(EnumTipoNota.RESPUESTA_A_CLIENTE.getTipoNota()) || nota.getTipoNota().equals(EnumTipoNota.RESPUESTA_DE_CLIENTE.getTipoNota())) {
+                if (nota.getTipoNota().equals(EnumTipoNota.RESPUESTA_A_CLIENTE.getTipoNota()) ||
+                        nota.getTipoNota().equals(EnumTipoNota.RESPUESTA_DE_CLIENTE.getTipoNota()) ||
+                        nota.getTipoNota().equals(EnumTipoNota.REG_ENVIO_CORREO.getTipoNota())) {
                     sbuilder.append(creaMensajeOriginal(current, nota));
                 }
             }
@@ -2878,8 +2879,11 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         sbuilder.append("INICIO ");
         sbuilder.append(nota.getTipoNota().getNombre().toUpperCase());
         sbuilder.append("<br/>");
-        sbuilder.append("email cliente: ");
-        sbuilder.append(caso.getEmailCliente());
+        sbuilder.append("De: ");
+        sbuilder.append(nota.getEnviadoPor());
+        sbuilder.append("<br/>");
+        sbuilder.append("Para: ");
+        sbuilder.append(nota.getEnviadoA());
         sbuilder.append("<br/>");
         sbuilder.append("Fecha: ");
         sbuilder.append(nota.getFechaCreacion());
