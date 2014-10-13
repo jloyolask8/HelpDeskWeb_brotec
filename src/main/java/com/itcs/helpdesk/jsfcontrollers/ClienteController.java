@@ -63,7 +63,7 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
                                 count = getJpaController().getClienteJpaController().countSearchEntities(searchPattern).intValue();
                             } else {
 //                                count = getJpaController().getClienteJpaController().getClienteCount();
-                                count = getJpaController().countEntities(getFilterHelper().getVista(), getDefaultUserWho()).intValue();
+                                count = getJpaController().countEntities(getFilterHelper().getVista(), getDefaultUserWho(), null).intValue();
                             }
                         }
 

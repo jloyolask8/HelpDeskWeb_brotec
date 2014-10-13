@@ -5,36 +5,54 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:itcs="http://java.sun.com/jsf/composite/components/filterView">
+      xmlns:go="http://java.sun.com/jsf/composite/go">
 
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
             <h:outputText value="Vistas"></h:outputText>
         </ui:define>
 
-        <ui:define name="west">
-            <p:accordionPanel multiple="true" cache="true" >
-                <p:tab title="Vistas" >
-                    <h:outputLabel escape="false" value="Las vistas reúnen un grupo de casos según un conjunto de criterios que 
-                                   expresan una variedad de estados del caso como, por ejemplo, Nuevo, En proceso o Solucionado. 
-                                   Las vistas permiten crear grupos coherentes de casos para asi poder acceder más rapidamente a los casos de interés."/>
-                </p:tab>
-            </p:accordionPanel>
+        <ui:define name="west" id="west">
+
+            <go:vistasList id="vistasList" update=":vistasList:vistasForm :mainform:messages :formfilter:panelFilter0:panelFilter :form" 
+                           controllerMBean="#{vistaController}"
+                           user="#{UserSessionBean.current}"/>
+
+
+            <div class="formSeparator">
+                <h2>Info</h2>
+            </div>
+
+            <h:outputLabel escape="false" value="Las vistas reúnen un grupo de entidades del sistema según un conjunto de criterios o filtros que 
+                           expresan una variedad de estados de dicha entidad. Por ejemplo para un caso, el estado del caso puede ser Nuevo, En proceso o Solucionado, una Vista podría mostrar todos los casos que estén en estado Nuevo. 
+                           Las vistas permiten crear grupos coherentes de datos para asi poder acceder más rapidamente a la información de interés."/>
+
         </ui:define>
 
+
+
         <ui:define name="body">
+
+            <h:form id="formfilter">
+                <go:filterView id="panelFilter0" titleIconClass="fa fa-filter page-header-icon"
+                               controllerMBean="#{vistaController}" 
+                               filterHelper="#{vistaController.filterHelper}" 
+                               canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
+                               update=":mainform:messages :formfilter:panelFilter0:panelFilter :form"/>
+
+            </h:form>
+
             <h:form id="form">
 
                 <p:messages/>
 
-                <itcs:filterView controllerMBean="#{vistaController}" filterHelper="#{vistaController.filterHelper}" update=":mainform:messages :form"/>
 
                 <h:panelGroup>
 
                     <p:dataTable id="datatableVistas" value="#{vistaController.items}" var="item" emptyMessage="#{bundle.ListVistaEmpty}">
-                       <f:facet name="header">
-                           <h:outputText value="No hay Vistas" rendered="#{vistaController.pagination.itemsCount eq 0}"></h:outputText>
-                           <h:outputText value="Vistas (#{vistaController.pagination.pageFirstItem + 1}-#{vistaController.pagination.pageLastItem + 1} de #{vistaController.pagination.itemsCount})" rendered="#{vistaController.pagination.itemsCount gt 0}"></h:outputText>
+                        <f:facet name="header">
+                            <h:outputText value="No hay Vistas" rendered="#{vistaController.pagination.itemsCount eq 0}"></h:outputText>
+                            <h:outputText value="Vistas (#{vistaController.pagination.pageFirstItem + 1}-#{vistaController.pagination.pageLastItem + 1} de #{vistaController.pagination.itemsCount})" rendered="#{vistaController.pagination.itemsCount gt 0}"></h:outputText>
                         </f:facet>
 
                         <p:columnGroup type="header">  
@@ -46,7 +64,7 @@
                                 <p:column headerText="#{bundle.ListVistaTitle_visibleToAll}" />                                 
                                 <p:column headerText="#{bundle.ListVistaTitle_idGrupo}" />  
                                 <p:column headerText="#{bundle.ListVistaTitle_idArea}" />  
-                                 <p:column headerText="#{bundle.ListVistaTitle_idUsuarioCreadaPor}" />  
+                                <p:column headerText="#{bundle.ListVistaTitle_idUsuarioCreadaPor}" />  
                                 <p:column headerText="Opciones" />  
                             </p:row>  
                         </p:columnGroup>
@@ -56,7 +74,7 @@
                                 <h:outputText value="#{bundle.ListVistaTitle_nombre}"/>
                             </f:facet>
                             <h:outputText id="nombreVista" value="#{item.nombre}"/>
-                            <p:tooltip for="nombreVista" value="#{item.descripcion}"/>
+                            <p:tooltip for="nombreVista" value="#{item.idVista} - #{item.descripcion}"/>
                         </p:column>
 
                         <p:column>
@@ -65,7 +83,7 @@
                             </f:facet>
                             <h:outputText value="#{item.visibleToAll ? 'Para Todos':'Privada'}" />
                         </p:column>
-                    
+
                         <p:column>
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListVistaTitle_idGrupo}"/>
@@ -78,7 +96,7 @@
                             </f:facet>
                             <h:outputText value="#{item.idArea}"/>
                         </p:column>
-                            <p:column>
+                        <p:column>
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListVistaTitle_idUsuarioCreadaPor}"/>
                             </f:facet>
@@ -89,7 +107,7 @@
                                 <h:outputText value="&nbsp;"/>
                             </f:facet>
 
-                            <p:commandButton ajax="false" action="#{vistaController.prepareEdit(item)}" title="Editar" icon="ui-icon-pencil" immediate="true"
+                            <p:commandButton ajax="false" action="#{vistaController.prepareEdit(item.idVista)}" title="Editar" icon="ui-icon-pencil" immediate="true"
                                              rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarVistas() and (item.idUsuarioCreadaPor eq UserSessionBean.current or filtroAcceso.administradorDelSistema)}"/>
                             <h:outputText value=" "/>                         
 
@@ -115,7 +133,7 @@
 
                             &nbsp;
                             <p:commandButton ajax="false" action="#{vistaController.prepareCreate}" immediate="true"
-                                              rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}" value="#{bundle.ListVistaCreateLink}" icon="ui-icon ui-icon-plus" />
+                                             rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}" value="#{bundle.ListVistaCreateLink}" icon="ui-icon ui-icon-plus" />
 
                             &nbsp;
                             <h:commandLink>  

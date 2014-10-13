@@ -24,7 +24,7 @@ public abstract class PaginationHelper {
     public abstract DataModel createPageDataModel();
 
     public List<Integer> getPageSizesAvailable() {
-        List<Integer> list = new ArrayList<Integer>();
+        List<Integer> list = new ArrayList<>();
 //       list.add(1);//Just for testing pagination.
         list.add(10);
         list.add(20);

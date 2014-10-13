@@ -14,9 +14,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.transaction.SystemException;
@@ -80,7 +77,7 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
                                 if (tipoAlerta != null) {
 
                                     caso.setEstadoAlerta(tipoAlerta);
-                                    caso.setFechaModif(new Date());
+//                                    caso.setFechaModif(new Date());//Do not change this!!
 
                                     em.merge(caso);
 

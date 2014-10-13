@@ -105,7 +105,6 @@ import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.FlowEvent;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.event.TabChangeEvent;
 import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.SelectableDataModel;
@@ -131,7 +130,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     @ManagedProperty(value = "#{UserSessionBean}")
     protected transient UserSessionBean userSessionBean;
     // end other bean references
-    private List<Etiqueta> selectedEtiquetas = new ArrayList<Etiqueta>();
+    private List<Etiqueta> selectedEtiquetas = new ArrayList<>();
     private transient HashMap<String, BlackListEmail> blackListMap;
 //    private transient DataModel items = null;
 //    private transient PaginationHelper pagination;
@@ -181,7 +180,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //    private boolean filtrarPorCategorias;
 //    private boolean filtrarPorVista = false;
 //    private Vista vista;
-    private Integer visibilityOption = 1;
+
 //    private transient JPAFilterHelper filterHelper;
     //mobile
     private String swatch = "b";
@@ -210,8 +209,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     //reply-mode
     private boolean replyMode = false;
-    private boolean filterViewToggle = false;
-    private boolean replyByEmail = false;
+
+    private boolean replyByEmail = true;
 
     //respuesta
     private boolean adjuntarArchivosARespuesta = false;
@@ -236,63 +235,43 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public void enableReplyMode() {
-        this.replyMode = true;
+        this.setReplyMode(true);
     }
 
     public void disableReplyMode() {
-        this.replyMode = false;
-        this.selectedClipping = null;
-        this.textoNota = null;
-        this.adjuntarArchivosARespuesta = false;
+        this.resetNotaForm();
     }
 
     public void submitSelectedManyItems() {
-        executeInClient("selectItemsWidget.hide()");
+        executeInClient("PF('selectItemsWidget').hide()");
     }
 
-    /**
-     * will remove
-     *
-     * @param event
-     */
-//    public void onChangeActiveIndexdescOrComment(TabChangeEvent event) {
+//    public void onChangeActiveIndexCasoSections(TabChangeEvent event) {
 //        //THIS CUERO PIC PULGA ES A RAIZ DE UN BUG DE PRIMEFACES, ME ENVIA EL ACTIVE INDEX SIEMPRE EN CER0.
 //        final String idtab = event.getTab().getId();
+//
 //        if (idtab.contains("tabDesc")) {
-//            setActiveIndexdescOrComment(0);
+//            setActiveIndexCasoSections(0);//tabDesc
+//        } else if (idtab.contains("tab-actividades")) {
+//            setActiveIndexCasoSections(1);//tab-actividades
 //        } else if (idtab.contains("tabComments")) {
-//            setActiveIndexdescOrComment(1);
+//            setActiveIndexCasoSections(2);//tabComments
+//        } else if (idtab.contains("tab-timeline")) {
+//            setActiveIndexCasoSections(3);//tab-timeline
+//        } else if (idtab.contains("tabAgendarEvento")) {
+//            setActiveIndexCasoSections(4);//tabAgendarEvento
+//        } else if (idtab.contains("tabArchivos")) {
+//            setActiveIndexCasoSections(5);//tabArchivos
+//        } else if (idtab.contains("tabCasosRelacionados")) {
+//            setActiveIndexCasoSections(6);//tabCasosRelacionados
+//        } else if (idtab.contains("tabSubCasos")) {
+//            setActiveIndexCasoSections(7);//tabSubCasos
+//        } else if (idtab.contains("tabEditarEvento")) {
+//            setActiveIndexCasoSections(8);//tabEditarEvento
 //        } else {
-//            setActiveIndexdescOrComment(0);
+//            setActiveIndexCasoSections(0);//descripcion
 //        }
 //    }
-    public void onChangeActiveIndexCasoSections(TabChangeEvent event) {
-        //THIS CUERO PIC PULGA ES A RAIZ DE UN BUG DE PRIMEFACES, ME ENVIA EL ACTIVE INDEX SIEMPRE EN CER0.
-        final String idtab = event.getTab().getId();
-
-        if (idtab.contains("tabDesc")) {
-            setActiveIndexCasoSections(0);//tabDesc
-        } else if (idtab.contains("tab-actividades")) {
-            setActiveIndexCasoSections(1);//tab-actividades
-        } else if (idtab.contains("tabComments")) {
-            setActiveIndexCasoSections(2);//tabComments
-        } else if (idtab.contains("tab-timeline")) {
-            setActiveIndexCasoSections(3);//tab-timeline
-        } else if (idtab.contains("tabAgendarEvento")) {
-            setActiveIndexCasoSections(4);//tabAgendarEvento
-        } else if (idtab.contains("tabArchivos")) {
-            setActiveIndexCasoSections(5);//tabArchivos
-        } else if (idtab.contains("tabCasosRelacionados")) {
-            setActiveIndexCasoSections(6);//tabCasosRelacionados
-        } else if (idtab.contains("tabSubCasos")) {
-            setActiveIndexCasoSections(7);//tabSubCasos
-        } else if (idtab.contains("tabEditarEvento")) {
-            setActiveIndexCasoSections(8);//tabEditarEvento
-        } else {
-            setActiveIndexCasoSections(0);
-        }
-    }
-
     public List<AuditLog> getAuditLogsCurrentCase() {
         if (current == null) {
             return null;
@@ -816,6 +795,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public String inbox() {
         idCasoStr = null;
+        recreatePagination();
         recreateModel();
         prepareCasoFilterForInbox();
         return "inbox";
@@ -838,6 +818,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public String creaTituloDeNota(Nota nota) {
+        //TODO locale should be the Browser or user configured locale.!
         SimpleDateFormat format = new SimpleDateFormat("EEE, dd/MM/yyyy HH:mm", LOCALE_ES_CL);
         if (nota != null && nota.getTipoNota() != null) {
             if (EnumTipoNota.RESPUESTA_DE_CLIENTE.getTipoNota().equals(nota.getTipoNota())) {
@@ -847,7 +828,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     return nota.getTipoNota().getNombre() + " - enviado por: " + nota.getEnviadoPor() + " - " + format.format(nota.getFechaCreacion());
                 }
             } else if (EnumTipoNota.RESPUESTA_A_CLIENTE.getTipoNota().equals(nota.getTipoNota())
-                    || EnumTipoNota.RESPUESTA_AUT_CLIENTE.getTipoNota().equals(nota.getTipoNota())) {
+                    || EnumTipoNota.RESPUESTA_AUT_CLIENTE.getTipoNota().equals(nota.getTipoNota())
+                    || EnumTipoNota.REG_ENVIO_CORREO.getTipoNota().equals(nota.getTipoNota())) {
                 StringBuilder sbuilder = new StringBuilder(nota.getTipoNota().getNombre());
                 sbuilder.append(" - creada por ");
                 sbuilder.append(nota.getCreadaPor().getIdUsuario());
@@ -1073,21 +1055,27 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         cantidadDeNotas = 0;
         cantidadDeRespuestasACliente = 0;
         cantidadDeRespuestasDelCliente = 0;
-        if (current != null) {
-            final List<Nota> notaList = current.getNotaList();
-            if (notaList != null) {
-                for (Nota nota : notaList) {
-                    if (nota.getTipoNota() != null && nota.getTipoNota().equals(EnumTipoNota.NOTA.getTipoNota())) {
-                        cantidadDeNotas++;
-                    }
-                    if (nota.getTipoNota() != null && nota.getTipoNota().equals(EnumTipoNota.RESPUESTA_A_CLIENTE.getTipoNota())) {
-                        cantidadDeRespuestasACliente++;
-                    }
-                    if (nota.getTipoNota() != null && nota.getTipoNota().equals(EnumTipoNota.RESPUESTA_DE_CLIENTE.getTipoNota())) {
-                        cantidadDeRespuestasDelCliente++;
+
+        try {
+            if (current != null) {
+                final List<Nota> notaList = current.getNotaList();
+                if (notaList != null) {
+                    for (Nota nota : notaList) {
+                        System.out.println("****** nota:" + nota);
+                        if (nota.getTipoNota() != null && nota.getTipoNota().equals(EnumTipoNota.NOTA.getTipoNota())) {
+                            cantidadDeNotas++;
+                        }
+                        if (nota.getTipoNota() != null && nota.getTipoNota().equals(EnumTipoNota.RESPUESTA_A_CLIENTE.getTipoNota())) {
+                            cantidadDeRespuestasACliente++;
+                        }
+                        if (nota.getTipoNota() != null && nota.getTipoNota().equals(EnumTipoNota.RESPUESTA_DE_CLIENTE.getTipoNota())) {
+                            cantidadDeRespuestasDelCliente++;
+                        }
                     }
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return cantidadDeNotas;
@@ -1485,7 +1473,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         setOtroEmail(new LinkedList<String>());
         setCcEmail(new LinkedList<String>());
         setCcoEmail(new LinkedList<String>());
-        setReplyByEmail(false);
+        setReplyByEmail(true);
 
         setCc(false);
         setCco(false);
@@ -1593,9 +1581,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 return "";
             }
             try {
-                Caso casoSearch = getJpaController().getCasoFindByIdCaso(idCaso);
+                Caso casoSearch = getJpaController().find(Caso.class, idCaso);
                 if (casoSearch == null) {
-                    JsfUtil.addErrorMessage("Caso " + idCaso + " no encontrado");
+                    JsfUtil.addErrorMessage("Caso " + idCaso + " no encontrado! Favor verifique que este exista.");
                     return "";
                 } else {
                     current = casoSearch;
@@ -1606,7 +1594,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                             getJpaController().mergeCaso(current, changeList);
                         }
                     }
-//                    listaActividadesOrdenada = null;
+                    recreateModel();
+                    recreatePagination();
                     return "/script/caso/Edit";
                 }
             } catch (Exception ex) {
@@ -1687,58 +1676,17 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         recreateModel();
     }
 
-    public String applyViewFilter(Vista vista) {
+    public String saveCurrentView() {
 
         try {
-            Vista copy = new Vista(Caso.class);
-            copy.setIdUsuarioCreadaPor(userSessionBean.getCurrent());
-            copy.setDescripcion(vista.getDescripcion());
-            copy.setIdArea(vista.getIdArea());
-            copy.setIdGrupo(vista.getIdGrupo());
-            copy.setNombre(vista.getNombre());
-            copy.setVisibleToAll(vista.getVisibleToAll());
-            //Crearemos una copia para que al guardar no pisar la existente.
-            int i = 1;
-            if (vista.getFiltrosVistaList() != null) {
-                for (FiltroVista f : vista.getFiltrosVistaList()) {
-                    FiltroVista fCopy = new FiltroVista();
-                    fCopy.setIdFiltro(i);
-                    i++; //This is an ugly patch to solve issue when removing a filter from the view, if TODO: Warning - this method won't work in the case the id fields are not set
-                    fCopy.setIdCampo(f.getIdCampo());
-                    fCopy.setIdComparador(f.getIdComparador());
-                    fCopy.setValor(f.getValor());
-                    fCopy.setValorLabel(f.getValorLabel());
-                    fCopy.setValor2(f.getValor2());
-                    fCopy.setValor2Label(f.getValor2Label());
-                    fCopy.setIdVista(copy);
-                    copy.getFiltrosVistaList().add(fCopy);
-                    //System.out.println("added filtro " + fCopy);
+
+            if (getFilterHelper().getVista() != null && getFilterHelper().getVista().getFiltrosVistaList() != null) {
+                //SE hizo una copia de esta vista, y los filtros tienen ids falsos
+                for (FiltroVista f : getFilterHelper().getVista().getFiltrosVistaList()) {
+                    f.setIdFiltro(null); //This is an ugly patch to solve issue when removing a filter from the view, if TODO: Warning - this method won't work in the case the id fields are not set
                 }
             }
 
-            getFilterHelper().setVista(copy);
-//        this.setVista(copy);
-//        //System.out.println("Vista copy set:" + copy);
-            recreatePagination();
-            recreateModel();
-        } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
-        }
-
-        return "inbox";
-
-    }
-
-    public void prepareGuardarVista() {
-        JsfUtil.addWarningMessage("Atención: Al Guardar se creará una vista Nueva.");
-    }
-
-    public String saveCurrentView() {
-        //SE hizo una copia de esta vista, y los filtros tienen ids falsos
-        for (FiltroVista f : getFilterHelper().getVista().getFiltrosVistaList()) {
-            f.setIdFiltro(null); //This is an ugly patch to solve issue when removing a filter from the view, if TODO: Warning - this method won't work in the case the id fields are not set
-        }
-        try {
             vistaController.create(getFilterHelper().getVista());
             JsfUtil.addSuccessMessage("La Vista guardada exitosamente. Revisar el panel de Vistas.");
             executeInClient("PF('saveViewDialog').hide()");
@@ -1764,7 +1712,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     private void prepareCasoFilterForInbox() {
 //        //System.out.println("prepareCasoFilterForInbox");
-        List<Vista> vistas = vistaController.getAllVistasItems();
+        List<Vista> vistas = getAllVistasItems(userSessionBean.getCurrent());
 
         if (vistas != null && !vistas.isEmpty()) {
             //there are vistas, lets select the first one as the user inbox
@@ -2052,6 +2000,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public boolean verificarCerrarCaso() {
+        if (current == null) {
+            return false;
+        }
         return current.isOpen() && puedeModificar();
     }
 
@@ -2294,7 +2245,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public void generarPDFVisitaPreventivaPostventa() {
         try {
 //            Archivo a = getJpaController().find(Archivo.class,  getSelected().getIdProducto().getIdLogo());  
-            List<Item> itemsAReparar = new LinkedList<Item>();
+            List<Item> itemsAReparar = new LinkedList<>();
             for (Caso caso : getSelected().getCasosHijosList()) {
                 if (caso.isOpen() && caso.getIdItem() != null) {
                     itemsAReparar.add(caso.getIdItem());
@@ -2306,12 +2257,17 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
                 final String nombre = "VisitaPreventiva_Postventa_" + getSelected().getIdCaso() + ".pdf";
                 Attachment attach = getManagerCasos().crearAdjunto(bytearray, null, this.current, nombre, "application/pdf", (long) bytearray.length);
+                List<Attachment> attachmentList = new ArrayList<>(1);
+                attachmentList.add(attach);
                 final String msg = "Documento " + attach.getNombreArchivo() + " creado con exito";
                 textoNota = textoNota + "<br/>" + msg;
-                armarNota(current, false, textoNota, EnumTipoNota.NOTA.getTipoNota());
-                getJpaController().merge(this.current);
+                Nota nota = createNota(getSelected(), false, textoNota.trim(),
+                        EnumTipoNota.NOTA.getTipoNota(), false, attachmentList);
+                addNotaToCaso(current, nota);
+//                armarNota(current, false, textoNota, EnumTipoNota.NOTA.getTipoNota(), attachmentList);
+                getJpaController().mergeCaso(this.current, ManagerCasos.createLogReg(current, "Attachment", "genera PDF Visita Preventiva Postventa", ""));
                 addInfoMessage(msg);
-                executeInClient("genDocVisitaPreventiva.hide()");
+                executeInClient("PF('genDocVisitaPreventiva').hide()");
             } else {
                 addWarnMessage("No se puede generar el documento sin Items a Reparar.");
             }
@@ -2325,7 +2281,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     //fin visita preventiva
     public String reabrirCaso() {
 
-        List<AuditLog> changeLog = new ArrayList<AuditLog>();
+        List<AuditLog> changeLog = new ArrayList<>();
 
         try {
             //TODO implementar tipo-> SubEstado selection in reabrir dialog
@@ -2392,7 +2348,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public void asignarCaso() {
 
-        List<AuditLog> changeLog = new ArrayList<AuditLog>();
+        List<AuditLog> changeLog = new ArrayList<>();
 
         try {
             String motivo = textoNota;
@@ -2405,7 +2361,10 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
                     current.setOwner(usuarioSeleccionadoTransfer);
                     changeLog.add(ManagerCasos.createLogReg(current, "Asignar caso", idUsuarioNuevo, idUsuarioAnterior));
-                    Nota nota = this.armarNota(current, false, motivo, EnumTipoNota.TRANSFERENCIA_CASO.getTipoNota());
+
+                    Nota nota = buildNewNota(getSelected(), false, motivo.trim(), EnumTipoNota.TRANSFERENCIA_CASO.getTipoNota(), false);
+                    addNotaToCaso(current, nota);
+//                    Nota nota = this.armarNota(current, false, motivo, EnumTipoNota.TRANSFERENCIA_CASO.getTipoNota(), null);
                     changeLog.add(ManagerCasos.createLogReg(current, "Agente agrega nota", "Agente agrega una actividad tipo " + nota.getTipoNota().getNombre(), ""));
 
                     getJpaController().mergeCaso(current, changeLog);
@@ -2433,6 +2392,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     String idUsuarioAnterior = current.getEmailCliente() == null ? "Sin Cliente" : current.getEmailCliente().getEmailCliente();
 
                     current.setEmailCliente(emailClienteSeleccionadoTransfer);
+                    current.setIdCliente(emailClienteSeleccionadoTransfer.getCliente());
 
                     changeLog.add(ManagerCasos.createLogReg(current, "Cambio de Cliente", idUsuarioNuevo, idUsuarioAnterior));
                     getJpaController().mergeCaso(current, changeLog);
@@ -2453,6 +2413,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).log(Level.SEVERE, e.getMessage(), e);
             addErrorMessage("Error al tratar de transferir el caso");
+        } finally {
+            resetNotaForm();
         }
 
 //        return "/script/caso/Edit";
@@ -2460,7 +2422,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public String tomarCaso() {
 
-        List<AuditLog> changeLog = new ArrayList<AuditLog>();
+        List<AuditLog> changeLog = new ArrayList<>();
 
         try {
             current = getJpaController().getCasoFindByIdCaso(current.getIdCaso());
@@ -2497,8 +2459,172 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     /**
+     * persist the Object Nota to DB
+     *
+     * @param caso
+     * @param publica
+     * @param texto
+     * @param tipo
+     * @param customer
+     * @param attachmentList
+     * @return
+     */
+    private Nota createNota(Caso caso, boolean publica, String texto, TipoNota tipo, boolean customer, List<Attachment> attachmentList) {
+//        boolean guardarNota = true;
+        try {
+            Nota nota = new Nota();
+            nota.setIdNota(null);
+            nota.setIdCaso(caso);
+            nota.setFechaCreacion(Calendar.getInstance().getTime());
+            nota.setTexto(HtmlUtils.removeScriptsAndStyles(texto));
+//            nota.setIdCanal(EnumCanal.SISTEMA.getCanal());
+            nota.setVisible(publica);
+
+            if (customer) {
+                nota.setEnviadoPor(userSessionBean.getEmailCliente().getEmailCliente());
+                nota.setCreadaPor(null);
+                nota.setTipoNota(EnumTipoNota.RESPUESTA_DE_CLIENTE.getTipoNota());
+
+            } else {
+
+                nota.setEnviadoPor(null);
+                nota.setCreadaPor(userSessionBean.getCurrent());
+                nota.setTipoNota(tipo);
+
+            }
+
+            getJpaController().persist(nota);
+
+            if (attachmentList != null) {
+                for (Attachment attachment : attachmentList) {
+                    if (attachment.getNotaList() == null) {
+                        attachment.setNotaList(new LinkedList<Nota>());
+                    }
+                    attachment.getNotaList().add(nota);
+                }
+            }
+            nota.setAttachmentList(attachmentList);
+            getJpaController().merge(nota);
+
+            return nota;
+        } catch (Exception e) {
+            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "createNota", e);
+            addErrorMessage("ha ocurrido un error en construyendo el objeto.");
+            return null;
+        }
+    }
+
+    /**
+     * sólo Arma una nota no la persiste (there should be a Nota factory
+     * facility)
+     *
+     * @return
+     */
+    private Nota buildNewNota(Caso caso, boolean publica, String texto, TipoNota tipo, boolean customer/*, List<Attachment> attachmentList*/) {
+//        boolean guardarNota = true;
+        try {
+            Nota nota = new Nota();
+            nota.setIdNota(null);
+            nota.setIdCaso(caso);
+            nota.setFechaCreacion(Calendar.getInstance().getTime());
+            nota.setTexto(HtmlUtils.removeScriptsAndStyles(texto));
+//            nota.setIdCanal(EnumCanal.SISTEMA.getCanal());
+            nota.setVisible(publica);
+//            nota.setAttachmentList(attachmentList);
+//
+//            if (nota.getAttachmentList() != null) {
+//                for (Attachment attachment : nota.getAttachmentList()) {
+//                    if (attachment.getNotaList() == null) {
+//                        attachment.setNotaList(new LinkedList<Nota>());
+//                    }
+//                    attachment.getNotaList().add(nota);
+//                }
+//            }
+
+            if (customer) {
+                nota.setEnviadoPor(userSessionBean.getEmailCliente().getEmailCliente());
+                nota.setCreadaPor(null);
+                nota.setTipoNota(EnumTipoNota.RESPUESTA_DE_CLIENTE.getTipoNota());
+
+            } else {
+
+                nota.setEnviadoPor(null);
+                nota.setCreadaPor(userSessionBean.getCurrent());
+                nota.setTipoNota(tipo);
+
+            }
+
+            return nota;
+        } catch (Exception e) {
+            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "buildNewNota", e);
+            addErrorMessage("ha ocurrido un error en construyendo el objeto.");
+            return null;
+        }
+    }
+
+    private void resetNotaForm() {
+        this.textoNota = null;
+        this.replyMode = false;
+        this.selectedClipping = null;//reset clipping
+        this.incluirHistoria = false;//reset incluir historia
+        this.adjuntarArchivosARespuesta = false;//reset attach files checkbox
+
+        if (tipoNotas != null && tipoNotas.isEmpty()) {
+            tipoNotas.clear();
+        }
+        Collections.sort(current.getNotaList());//fix when you add a nota and shows in last position
+    }
+
+    private void addNotaToCaso(Caso caso, Nota nota) {
+
+        if (caso.getNotaList() == null) {
+            caso.setNotaList(new ArrayList<Nota>());
+        }
+        caso.getNotaList().add(nota);
+
+        if (caso.getOwner() != null) {
+            if (!nota.getCreadaPor().getIdUsuario().equals(caso.getOwner().getIdUsuario())) {
+                caso.setRevisarActualizacion(true);
+            }
+        }
+    }
+
+//     /**
+//     * Arma una nota y la agrega al caso.
+//     *
+//     * @return
+//     */
+//    private Nota armarNota(Caso caso, boolean publica, String texto, TipoNota tipo) {
+////        boolean guardarNota = true;
+//        try {
+//            Nota nota = new Nota();
+//            nota.setFechaCreacion(Calendar.getInstance().getTime());
+//            nota.setCreadaPor(userSessionBean.getCurrent());
+//            nota.setIdCaso(caso);
+//            nota.setTexto(HtmlUtils.removeScriptsAndStyles(texto));
+//            nota.setTipoNota(tipo);
+//            nota.setVisible(publica);
+//           
+//
+//            if (caso.getOwner() != null) {
+//                if (!nota.getCreadaPor().getIdUsuario().equals(caso.getOwner().getIdUsuario())) {
+//                    caso.setRevisarActualizacion(true);
+//                }
+//            }
+//
+//            agregarNotaACaso(nota);
+//            return nota;
+//        } catch (Exception e) {
+//            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+//            JsfUtil.addErrorMessage("ha ocurrido un error, nota no agregada");
+//            return null;
+//        }
+//
+//    }
+    /**
      * TODO deprecate this code
      *
+     * @deprecated
      * @param caso
      * @return
      */
@@ -2524,74 +2650,15 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     }
 
-    /**
-     * Arma una nota y la agrega al caso.
-     *
-     * @return
-     */
-    private Nota armarNota(Caso caso, boolean publica, String texto, TipoNota tipo) {
-//        boolean guardarNota = true;
-        try {
-            Nota nota = new Nota();
-            nota.setFechaCreacion(Calendar.getInstance().getTime());
-            nota.setCreadaPor(userSessionBean.getCurrent());
-            nota.setIdCaso(caso);
-            nota.setTexto(HtmlUtils.removeScriptsAndStyles(texto));
-            nota.setTipoNota(tipo);
-            nota.setVisible(publica);
-
-            if (caso.getOwner() != null) {
-                if (!nota.getCreadaPor().getIdUsuario().equals(caso.getOwner().getIdUsuario())) {
-                    caso.setRevisarActualizacion(true);
-                }
-            }
-
-            agregarNotaACaso(nota);
-            return nota;
-        } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
-            JsfUtil.addErrorMessage("ha ocurrido un error, nota no agregada");
-            return null;
-        }
-
-    }
-
-    /**
-     * guarda la nota en base de datos y la agrega al caso
-     *
-     * @param nota
-     * @throws Exception
-     */
-    private void agregarNotaACaso(Nota nota) throws Exception {
-
-//        getJpaController().refresh(current);
-        getJpaController().getNotaJpaController().create(nota);
-//        getJpaController().persist(nota);
-        this.justCreadedNotaId = nota.getIdNota();
-        List<Nota> notas = current.getNotaList();
-        if (notas == null) {
-            notas = new LinkedList<Nota>();
-            current.setNotaList(notas);
-        }
-        notas.add(nota);
-        Collections.sort(notas);//fix when you add a nota and shows in last position
-        current.setFechaModif(Calendar.getInstance().getTime());
-
-        JsfUtil.addSuccessMessage(resourceBundle.getString("NotaCreated"));
-
-        textoNota = null;
-
-        if (tipoNotas != null && tipoNotas.isEmpty()) {
-            tipoNotas.clear();
-        }
-    }
-
     public String crearNota(boolean notifyClient) {
 //        listaActividadesOrdenada = null;
 //        tipoNota = EnumTipoNota.NOTA.getTipoNota();
 
         try {
-            Nota nota = this.armarNota(current, textoNotaVisibilidadPublica, textoNota, EnumTipoNota.NOTA.getTipoNota());
+            Nota nota = buildNewNota(current, textoNotaVisibilidadPublica, textoNota,
+                    EnumTipoNota.NOTA.getTipoNota(), false);
+            addNotaToCaso(current, nota);
+
             //evaluar estado de alerta del caso
             if (current.getNextResponseDue().after(Calendar.getInstance().getTime())) {
                 current.setEstadoAlerta(EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta());
@@ -2602,14 +2669,15 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             if (notifyClient) {
                 notifyClient();
             }
-            selectedClipping = null;//TODO: CHECK IF NOTA WAS CREATED FIRST
-            adjuntarArchivosARespuesta = false;
+
         } catch (NonexistentEntityException ex) {
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (RollbackFailureException ex) {
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            resetNotaForm();
         }
 
         return "/script/caso/Edit";
@@ -2618,18 +2686,19 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private void notifyClient() {
         String correoEnviado = null;
         try {
-            List<AuditLog> changeLog = new ArrayList<AuditLog>();
+            List<AuditLog> changeLog = new ArrayList<>();
 
             correoEnviado = MailNotifier.emailClientCasoUpdatedByAgent(current);
 
             if (correoEnviado != null) {
-                changeLog.add(ManagerCasos.createLogReg(current, "notificacion actualización (email)", correoEnviado, ""));
+                final String message = "Cliente ha sido notificado por email sobre la actualización del caso. "
+                        + "<br/>Email: <br/>" + correoEnviado;
+                changeLog.add(ManagerCasos.createLogReg(current, "notificacion de actualización (por email)", correoEnviado, ""));
 
-                Nota n = this.armarNota(current, true, "Cliente ha sido notificado por email sobre la actualización del caso. <br/>Email: <br/>" + correoEnviado,
-                        EnumTipoNota.NOTIFICACION_UPDATE_CASO.getTipoNota());
-                if (n != null) {
-                    changeLog.add(ManagerCasos.createLogReg(current, "Se registra envio email", correoEnviado, ""));
-                }
+                Nota nota = buildNewNota(current, true, message,
+                        EnumTipoNota.NOTIFICACION_UPDATE_CASO.getTipoNota(), false);
+                addNotaToCaso(current, nota);
+                changeLog.add(ManagerCasos.createLogReg(current, "Se registra envio email", correoEnviado, ""));
 
                 JsfUtil.addSuccessMessage("Notificación enviada al cliente exitósamente.");
 
@@ -2642,6 +2711,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         } catch (Exception ex) {
             Logger.getLogger(CasoController.class
                     .getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            resetNotaForm();
         }
     }
 
@@ -2704,7 +2775,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             return false;
         }
 
-        List<AuditLog> changeLog = new ArrayList<AuditLog>();
+        List<AuditLog> changeLog = new ArrayList<>();
         Canal canal;
 
         try {
@@ -2724,90 +2795,99 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
             String mensaje = textoNota;
 
-            //TODO: create an Object Builder factory
-            Nota nuevaNota = this.armarNota(current, true, textoNota.trim(),
-                    EnumTipoNota.REG_ENVIO_CORREO.getTipoNota());
-            if (nuevaNota != null) {
+            List<Attachment> attachmentList = null;
 
-                String subject = "Re: " + ManagerCasos.formatIdCaso(current.getIdCaso()) + " "
-                        + current.getTema();
+            if (adjuntarArchivosARespuesta && selectedAttachmensForMail != null) {
+                attachmentList = selectedAttachmensForMail;
+            }
+
+            //TODO: create an Object Builder factory
+            Nota nota = createNota(getSelected(), true, textoNota.trim(),
+                    EnumTipoNota.REG_ENVIO_CORREO.getTipoNota(), false, attachmentList);
+
+//            Nota nuevaNota = this.armarNota(current, true, textoNota.trim(),
+//                    EnumTipoNota.REG_ENVIO_CORREO.getTipoNota(), attachmentList);
+//            getJpaController().persist(nota);
+//            getJpaController().merge(nota);
+            addNotaToCaso(current, nota);
+
+            this.justCreadedNotaId = nota.getIdNota();
+
+//            if (nuevaNota != null) {
+            String subject = "Re: " + ManagerCasos.formatIdCaso(current.getIdCaso()) + " "
+                    + current.getTema();
 //                correoAgendado = enviarCorreo(current.getEmailCliente().getEmailCliente(), 
 //                        subject, mensaje, nuevaNota);
 
-                StringBuilder listIdAtt = new StringBuilder();
+            StringBuilder listIdAtt = new StringBuilder();
 
-                if (adjuntarArchivosARespuesta && selectedAttachmensForMail != null) {
-                    Iterator iteradorAttachments = selectedAttachmensForMail.iterator();
-                    while (iteradorAttachments.hasNext()) {
-                        Long idatt = new Long((String) iteradorAttachments.next());
-                        listIdAtt.append(idatt);
-                        listIdAtt.append(';');
+            if (adjuntarArchivosARespuesta && selectedAttachmensForMail != null) {
+
+                Iterator<Attachment> iteradorAttachments = selectedAttachmensForMail.iterator();
+                while (iteradorAttachments.hasNext()) {
+                    final Attachment next = iteradorAttachments.next();
+                    listIdAtt.append(next.getIdAttachment());
+                    listIdAtt.append(';');
+                }
+            }
+
+            if (incluirHistoria) {
+                StringBuilder textoMensaje = new StringBuilder(mensaje);
+                textoMensaje.append(obtenerHistorial());
+                mensaje = textoMensaje.toString();
+            }
+
+            StringBuilder sbuilder = new StringBuilder();
+            String destinatario;
+            if (!otroEmail.isEmpty()) {
+                for (String string : otroEmail) {
+                    if (sbuilder.length() > 0) {
+                        sbuilder.append(',');
                     }
+                    sbuilder.append(string);
                 }
-
-                if (incluirHistoria) {
-                    StringBuilder textoMensaje = new StringBuilder(mensaje);
-                    textoMensaje.append(obtenerHistorial());
-                    mensaje = textoMensaje.toString();
-                }
-
-                StringBuilder sbuilder = new StringBuilder();
-                String destinatario;
-                if (!otroEmail.isEmpty()) {
-                    for (String string : otroEmail) {
-                        if (sbuilder.length() > 0) {
-                            sbuilder.append(',');
-                        }
-                        sbuilder.append(string);
+                destinatario = sbuilder.toString();
+            } else {
+                destinatario = current.getEmailCliente().getEmailCliente();
+            }
+            String ccEmails = null;
+            if (isCc() && !ccEmail.isEmpty()) {
+                sbuilder = new StringBuilder();
+                for (String string : ccEmail) {
+                    if (sbuilder.length() > 0) {
+                        sbuilder.append(',');
                     }
-                    destinatario = sbuilder.toString();
-                } else {
-                    destinatario = current.getEmailCliente().getEmailCliente();
+                    sbuilder.append(string);
                 }
-                String ccEmails = null;
-                if (isCc() && !ccEmail.isEmpty()) {
-                    sbuilder = new StringBuilder();
-                    for (String string : ccEmail) {
-                        if (sbuilder.length() > 0) {
-                            sbuilder.append(',');
-                        }
-                        sbuilder.append(string);
+                ccEmails = sbuilder.toString();
+            }
+            String ccoEmails = null;
+            if (isCco() && !ccoEmail.isEmpty()) {
+                sbuilder = new StringBuilder();
+                for (String string : ccoEmail) {
+                    if (sbuilder.length() > 0) {
+                        sbuilder.append(',');
                     }
-                    ccEmails = sbuilder.toString();
+                    sbuilder.append(string);
                 }
-                String ccoEmails = null;
-                if (isCco() && !ccoEmail.isEmpty()) {
-                    sbuilder = new StringBuilder();
-                    for (String string : ccoEmail) {
-                        if (sbuilder.length() > 0) {
-                            sbuilder.append(',');
-                        }
-                        sbuilder.append(string);
-                    }
-                    ccoEmails = sbuilder.toString();
-                }
-                HelpDeskScheluder.scheduleSendMailNota(canal.getIdCanal(), mensaje,
-                        destinatario, ccEmails, ccoEmails, subject,
-                        current.getIdCaso(), nuevaNota.getIdNota(), listIdAtt.toString());
-                changeLog.add(ManagerCasos.createLogReg(current, "Envío de Correo de Respuesta agendado ok", userSessionBean.getCurrent().getIdUsuario() + " envía correo de respuesta.", ""));
+                ccoEmails = sbuilder.toString();
+            }
+            HelpDeskScheluder.scheduleSendMailNota(canal.getIdCanal(), mensaje,
+                    destinatario, ccEmails, ccoEmails, subject,
+                    current.getIdCaso(), nota.getIdNota(), listIdAtt.toString());
+            changeLog.add(ManagerCasos.createLogReg(current, "Envío de Correo de Respuesta agendado ok", userSessionBean.getCurrent().getIdUsuario() + " envía correo de respuesta.", ""));
 
-                getJpaController().mergeCaso(current, changeLog);//todo: is this needed?
+            getJpaController().mergeCaso(current, changeLog);//todo: is this needed?
 
-                selectedClipping = null;//reset clipping
-                incluirHistoria = false;//reset incluir historia
-                adjuntarArchivosARespuesta = false;//reset attach files checkbox
 //                    current.setRespuesta(null);
 //                    current.setFechaModif(Calendar.getInstance().getTime());
 //                    current.setFechaRespuesta(Calendar.getInstance().getTime());
-//                    getPrimefacesRequestContext().scrollTo("inputPanel:formact:panelActividades");
+            return true;
 
-                return true;
-
-            }
+//            }
 //                else {
 //                changeLog.add(ManagerCasos.createLogReg(current, "Creación de Respuesta fallida", "Creación de la nota de respuesta falló.", ""));
 //            }
-
         } catch (SchedulerException e) {
             changeLog.add(ManagerCasos.createLogReg(current, "Envio de Correo de Respuesta falló", "Agendar Envío de Correo de Respuesta falló", ""));
             Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "mail send exception in createEmailComment", e);
@@ -2819,6 +2899,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, "RollbackFailureException", ex);
         } catch (Exception ex) {
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, "Exception", ex);
+        } finally {
+            resetNotaForm();
+            getPrimefacesRequestContext().scrollTo("inputPanel:formact:panelActividades");
         }
 
         return false;
@@ -3021,7 +3104,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public StreamedContent exportAllItems() {
 
         try {
-            List<Caso> casos = getJpaController().findCasoEntities(getFilterHelper().getVista(), userSessionBean.getCurrent(), getDefaultOrderBy());//all
+            List<Caso> casos = (List<Caso>) getJpaController().findAllEntities(Caso.class, getFilterHelper().getVista(), getDefaultOrderBy(), userSessionBean.getCurrent());//all
             OutputStream output = new ByteArrayOutputStream();
             //Se crea el libro Excel
             WritableWorkbook workbook
@@ -3565,20 +3648,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     /**
-     * @return the visibilityOption
-     */
-    public Integer getVisibilityOption() {
-        return visibilityOption;
-    }
-
-    /**
-     * @param visibilityOption the visibilityOption to set
-     */
-    public void setVisibilityOption(Integer visibilityOption) {
-        this.visibilityOption = visibilityOption;
-    }
-
-    /**
      * @return the selectedClipping
      */
     public Clipping getSelectedClipping() {
@@ -3970,6 +4039,20 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      */
     public void setSelectedViewId(Integer selectedViewId) {
         this.selectedViewId = selectedViewId;
+    }
+
+    /**
+     * @return the replyMode
+     */
+    public boolean isReplyMode() {
+        return replyMode;
+    }
+
+    /**
+     * @param replyMode the replyMode to set
+     */
+    public void setReplyMode(boolean replyMode) {
+        this.replyMode = replyMode;
     }
 
     @FacesConverter(forClass = Caso.class)

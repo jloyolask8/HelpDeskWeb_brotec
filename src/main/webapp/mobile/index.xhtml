@@ -58,8 +58,8 @@
                 <p:growl  id="growl" />
 
                 <h:form id="vistasForm">
-                    <p:dataList type="ordered" value="#{vistaController.allVistasItems}" var="vista1" 
-                                rendered="#{not empty vistaController.visibleForAllItems}">
+                    <p:dataList type="ordered" value="#{casoController.getAllVistasItems(UserSessionBean.current)}" var="vista1" 
+                                emptyMessage="empty">
                         <p:column>                            
                             <p:commandLink id="link1" value="#{vista1.nombre}" style="font-weight: bold"
                                            update=":casosForm:casosDataList" action="pm:casos">
@@ -67,10 +67,9 @@
                             </p:commandLink>
                         </p:column>
                         <p:column>
-                            <h:outputText value="#{vistaController.countCasosForView(vista1)}" styleClass="ui-li-count"/>
+                            <h:outputText value="#{casoController.countItemsVista(vista1)}" styleClass="ui-li-count"/>
                         </p:column>
                     </p:dataList>
-                    <h:outputText value="No tiene ninguna vista creada." rendered="#{empty vistaController.visibleForAllItems}"/>
                 </h:form>
 
             </pm:content>

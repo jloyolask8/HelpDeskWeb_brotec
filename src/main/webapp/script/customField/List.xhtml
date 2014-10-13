@@ -6,17 +6,17 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:pe="http://primefaces.org/ui/extensions"
       xmlns:f="http://java.sun.com/jsf/core">
-    
-    
+
+
 
     <ui:composition template="/script/template_inbox.xhtml">
-        
+
         <ui:define name="head">
-             <link rel="dns-prefetch" href="//netdna.bootstrapcdn.com" />            
-        <!-- Latest compiled and minified CSS -->
-        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"/>
-        <!-- Optional theme -->
-        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css"/>
+            <link rel="dns-prefetch" href="//netdna.bootstrapcdn.com" />            
+            <!-- Latest compiled and minified CSS -->
+            <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"/>
+            <!-- Optional theme -->
+            <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css"/>
         </ui:define>
 
         <ui:define name="title">
@@ -26,8 +26,8 @@
 
         <ui:define name="west">
 
-                <p><h:outputText escape="false" value="#{bundle.ayudaCustomFields}"/></p>
-                
+            <p><h:outputText escape="false" value="#{bundle.ayudaCustomFields}"/></p>
+
         </ui:define>
 
         <ui:define name="body">
@@ -38,7 +38,7 @@
             </div> <!-- / .page-header -->
 
             <div class="row">
-                
+
 
                 <div class="col-md-9 col-lg-10">
 
@@ -157,7 +157,7 @@
 
                 <h:form id="CustomFieldCreateForm" styleClass="panel form-horizontal">
                     <div class="panel-body">
-                      
+
                         <div class="row form-group">
                             <label class="col-xs-12 col-sm-4 control-label text-slim">#{bundle.CustomField_customFieldPK_fieldKey}</label>
                             <div class="col-xs-12 col-sm-8">
@@ -168,7 +168,7 @@
                                 <p:message for="customFieldPK_fieldKey"/>
                             </div>
                         </div>
-                          <div class="row form-group">
+                        <div class="row form-group">
                             <label class="col-xs-12 col-sm-4 control-label">#{bundle.CustomField_label}</label>
                             <div class="col-xs-12 col-sm-8">
                                 <h:inputText id="label" value="#{customFieldController.selected.label}" styleClass="form-control"
@@ -255,18 +255,18 @@
                 </h:form>
 
 
-              
+
             </p:dialog>
 
             <p:dialog id="CustomFieldEditDlg" widgetVar="CustomFieldEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.EditCustomFieldTitle}">
-                
+
                 <h:form id="CustomFieldEditForm" styleClass="panel form-horizontal">
-                    
-                     <div class="panel-heading">
-                            <span class="panel-title">#{customFieldController.selected.customFieldPK.fieldKey}</span>
-                        </div>
-                    
-                    
+
+                    <div class="panel-heading">
+                        <span class="panel-title">#{customFieldController.selected.customFieldPK.fieldKey}</span>
+                    </div>
+
+
                     <div class="panel-body">
                         <div class="row form-group">
                             <label class="col-xs-12 col-sm-4 control-label">#{bundle.CustomField_label}</label>
@@ -277,7 +277,7 @@
                                 <p:message for="label"/>
                             </div>
                         </div>
-                    
+
                         <div class="row form-group">
                             <label class="col-xs-12 col-sm-4 control-label">#{bundle.CustomField_fieldType}</label>
                             <div class="col-xs-12 col-sm-8">
@@ -345,17 +345,17 @@
                         </p:commandLink>
                         &nbsp;
                         <p:commandLink actionListener="#{customFieldController.update}"  styleClass="btn btn-primary"
-                                      update=":CustomFieldEditForm :CustomFieldListForm :mainform:messages">
+                                       update=":CustomFieldEditForm :CustomFieldListForm :mainform:messages">
                             <i class="fa fa-disk"></i> #{bundle.Save}
                         </p:commandLink>     
-                        
-                        
+
+
                     </div>
 
                     <p:tooltip for="label" value="#{bundle.CustomField_tooltip_label}"/>
                 </h:form>
-                
-                
+
+
             </p:dialog>
 
             <p:dialog id="CustomFieldViewDlg" widgetVar="CustomFieldViewDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ViewCustomFieldTitle}">

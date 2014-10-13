@@ -51,9 +51,9 @@ public abstract class JPAFilterHelper implements Serializable {
         this.emf = emf;
     }
 
-    public Long count(Usuario who) throws IllegalStateException, ClassNotFoundException {
-        return getJpaService().countEntities(vista, who);
-    }
+//    public Long count(Usuario who) throws IllegalStateException, ClassNotFoundException {
+//        return getJpaService().countEntities(vista, who);
+//    }
 
     public abstract JPAServiceFacade getJpaService();
 

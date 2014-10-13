@@ -276,6 +276,8 @@ public class HelpDeskScheluder {
      * @param idCanal
      * @param mensajeFinal
      * @param to
+     * @param cc
+     * @param bcc
      * @param subject
      * @param idCaso
      * @param idNota

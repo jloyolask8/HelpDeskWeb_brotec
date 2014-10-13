@@ -113,39 +113,35 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
 //        }
 //        this.current = selected;
 //    }
-    public List<Caso> getCasoAbiertoList() {
-        System.out.println("getCasoAbiertoList");
-        Vista vista = new Vista(Caso.class);
-        if (vista.getFiltrosVistaList() == null) {
-            vista.setFiltrosVistaList(new ArrayList<FiltroVista>());
-
-        }
-
-        FiltroVista ownerFilter = new FiltroVista();
-        ownerFilter.setIdCampo(Caso_.OWNER_FIELD_NAME);
-        ownerFilter.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
-        ownerFilter.setValor(getSelected().getIdUsuario());
-        ownerFilter.setIdVista(vista);
-        vista.getFiltrosVistaList().add(ownerFilter);
-
-        FiltroVista estadoFilter = new FiltroVista();
-        estadoFilter.setIdCampo(Caso_.ESTADO_FIELD_NAME);
-        estadoFilter.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
-        estadoFilter.setValor(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
-        estadoFilter.setIdVista(vista);
-        vista.getFiltrosVistaList().add(estadoFilter);
-        try {
-            return jpaController.findCasoEntities(vista, ((UserSessionBean) JsfUtil.getManagedBean("UserSessionBean")).getCurrent(), null);
-        } catch (IllegalStateException ex) {
-            JsfUtil.addErrorMessage(ex.getMessage());
-            Logger.getLogger(UsuarioController.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        } catch (ClassNotFoundException ex) {
-            JsfUtil.addErrorMessage(ex.getMessage());
-            Logger.getLogger(UsuarioController.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
-    }
+//    public List<Caso> getCasoAbiertoList() {
+//        System.out.println("getCasoAbiertoList");
+//        Vista vista = new Vista(Caso.class);
+//        if (vista.getFiltrosVistaList() == null) {
+//            vista.setFiltrosVistaList(new ArrayList<FiltroVista>());
+//
+//        }
+//
+//        FiltroVista ownerFilter = new FiltroVista();
+//        ownerFilter.setIdCampo(Caso_.OWNER_FIELD_NAME);
+//        ownerFilter.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+//        ownerFilter.setValor(getSelected().getIdUsuario());
+//        ownerFilter.setIdVista(vista);
+//        vista.getFiltrosVistaList().add(ownerFilter);
+//
+//        FiltroVista estadoFilter = new FiltroVista();
+//        estadoFilter.setIdCampo(Caso_.ESTADO_FIELD_NAME);
+//        estadoFilter.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+//        estadoFilter.setValor(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
+//        estadoFilter.setIdVista(vista);
+//        vista.getFiltrosVistaList().add(estadoFilter);
+//        try {
+//            return (List<Caso>)jpaController.findAllEntities(Caso.class, vista, null, ((UserSessionBean) JsfUtil.getManagedBean("UserSessionBean")).getCurrent());
+//        } catch (Exception ex) {
+//            JsfUtil.addErrorMessage(ex.getMessage());
+//            Logger.getLogger(UsuarioController.class.getName()).log(Level.SEVERE, null, ex);
+//            return null;
+//        } 
+//    }
 
     public String getIdUsuarioDelete() {
         return idUsuarioDelete;
