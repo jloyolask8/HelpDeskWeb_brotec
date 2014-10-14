@@ -58,6 +58,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
     private String tmpEmailInfo;
     private String tmpFreq;
     private boolean tmpEmailDebugEnabled;
+    private boolean tmpEmailDownloadAttachments = true;
     private boolean tmpEmailFinalizeReady;
     private boolean tmpEmailFirstStepReady;
 
@@ -114,6 +115,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         
         settings.put(EnumEmailSettingKeys.CHECK_FREQUENCY.getKey(), (tmpFreq == null) ? String.valueOf(HelpDeskScheluder.DEFAULT_CHECK_EMAIL_INTERVAL) : tmpFreq);
         settings.put(EnumEmailSettingKeys.MAIL_DEBUG.getKey(), tmpEmailDebugEnabled ? "true" : "false");
+        settings.put(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey(), tmpEmailDownloadAttachments ? "true" : "false");
 
         settings.put(EnumEmailSettingKeys.MAIL_SERVER_TYPE_SALIDA.getKey(), "SMTP");
         settings.put(EnumEmailSettingKeys.SMTP_SERVER.getKey(), tmpEmailOutgoingHost);
@@ -170,6 +172,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
                 tmpEmailOutgoingSsl = null;
                 setTmpFreq(null);
                 tmpEmailDebugEnabled = false;
+                tmpEmailDownloadAttachments = true;
             }
         } else {
             tmpEmailInfo = "Correo no es válido";
@@ -215,6 +218,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         tmpEmailInfo = null;
         tmpEmailFinalizeReady = false;
         tmpEmailFirstStepReady = false;
+        tmpEmailDownloadAttachments = true;
         prepareCreate();
     }
     
@@ -262,6 +266,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         tmpEmailUsuario = current.getSetting(EnumEmailSettingKeys.SMTP_FROM.getKey());
         tmpFreq = current.getSetting(EnumEmailSettingKeys.CHECK_FREQUENCY.getKey());
         tmpEmailDebugEnabled = (current.getSetting(EnumEmailSettingKeys.MAIL_DEBUG.getKey()) == null) ? false : current.getSetting(EnumEmailSettingKeys.MAIL_DEBUG.getKey()).equals("true");
+        tmpEmailDownloadAttachments = (current.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()) == null) ? false : current.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()).equals("true");
         tmpEmailInfo = null;
         tmpEmailFinalizeReady = false;
         tmpEmailFirstStepReady = true;
@@ -310,7 +315,9 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
             String freqStr = current.getSetting(EnumEmailSettingKeys.CHECK_FREQUENCY.getKey());
             int freq = HelpDeskScheluder.DEFAULT_CHECK_EMAIL_INTERVAL;
             try{
-                freq = Integer.parseInt(freqStr);
+                if(freqStr != null){
+                    freq = Integer.parseInt(freqStr);
+                }
             }catch(NumberFormatException ex){/*probably a weird value*/}
 
             HelpDeskScheluder.scheduleRevisarCorreo(current.getIdCanal(), freq);
@@ -661,6 +668,20 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
      */
     public void setTmpEmailDebugEnabled(boolean tmpEmailDebugEnabled) {
         this.tmpEmailDebugEnabled = tmpEmailDebugEnabled;
+    }
+
+    /**
+     * @return the tmpEmailDownloadAttachments
+     */
+    public boolean isTmpEmailDownloadAttachments() {
+        return tmpEmailDownloadAttachments;
+    }
+
+    /**
+     * @param tmpEmailDownloadAttachments the tmpEmailDownloadAttachments to set
+     */
+    public void setTmpEmailDownloadAttachments(boolean tmpEmailDownloadAttachments) {
+        this.tmpEmailDownloadAttachments = tmpEmailDownloadAttachments;
     }
 
     @FacesConverter(forClass = Canal.class)

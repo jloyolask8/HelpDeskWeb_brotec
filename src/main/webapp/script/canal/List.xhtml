@@ -291,14 +291,17 @@
                                         <f:selectItem itemLabel="10 min" itemValue="600"/>
                                     </p:selectOneMenu>
                                 </p:column>
-                                <p:column width="80">
-                                    &nbsp;
-                                </p:column>
                                 <p:column>
                                     <h:outputLabel value="Habilitar debug" style="font-size: smaller; color: #8C8989;"/>
                                 </p:column>
-                                <p:column width="70">
+                                <p:column width="30">
                                     <p:selectBooleanCheckbox value="#{canalController.tmpEmailDebugEnabled}" />
+                                </p:column>
+                                <p:column>
+                                    <h:outputLabel value="Descargar adjuntos" style="font-size: smaller; color: #8C8989;"/>
+                                </p:column>
+                                <p:column width="30">
+                                    <p:selectBooleanCheckbox value="#{canalController.tmpEmailDownloadAttachments}" />
                                 </p:column>
                             </p:row>
                         </p:panelGrid>

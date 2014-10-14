@@ -58,16 +58,17 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
         if (map != null) {
             String idCanal = (String) map.get(ID_CANAL);
             String interval = (String) map.get(INTERVAL_SECONDS);
+            int secondsToNextSync = Integer.valueOf(interval);
             try {
                 if (!StringUtils.isEmpty(idCanal) && !StringUtils.isEmpty(interval)) {
-                    revisarCorreo(idCanal);
+                    secondsToNextSync = revisarCorreo(idCanal);
                 }
             } catch (Exception ex) {
                 Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "erron on execute DownloadEmailJob", ex);
             } finally {
                 try {
                     //schedule to run again after that interval
-                    HelpDeskScheluder.scheduleRevisarCorreo(idCanal, Integer.valueOf(interval));
+                    HelpDeskScheluder.scheduleRevisarCorreo(idCanal, secondsToNextSync);
                 } catch (SchedulerException ex) {
                     Logger.getLogger(DownloadEmailJob.class.getName()).log(Level.SEVERE, "ERROR TRYING TO scheduleRevisarCorreo", ex);
                 }
@@ -85,7 +86,14 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
         }
     }
 
-    private synchronized void revisarCorreo(String idCanal) throws Exception, MailClientFactory.MailNotConfiguredException {
+    /**
+     * 
+     * @param idCanal idCanal for canal settings
+     * @return interval for next mailSync
+     * @throws Exception
+     * @throws com.itcs.helpdesk.util.MailClientFactory.MailNotConfiguredException 
+     */
+    private synchronized int revisarCorreo(String idCanal) throws Exception, MailClientFactory.MailNotConfiguredException {
 
 //        EntityManager em = createEntityManager(schema);
         EntityManagerFactory emf = createEntityManagerFactory();
@@ -101,7 +109,16 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
 //        ManagerCasos managerCasos = new ManagerCasos();
 //        managerCasos.setJpaController(jpaController);
         Canal canal = jpaController.find(Canal.class, idCanal);
+        int freq = HelpDeskScheluder.DEFAULT_CHECK_EMAIL_INTERVAL;
+                        
         if (canal != null) {
+            String freqStr = canal.getSetting(EnumEmailSettingKeys.CHECK_FREQUENCY.getKey());
+            try{
+                if(freqStr != null){
+                    freq = Integer.parseInt(freqStr);
+                }
+            }catch(NumberFormatException ex){/*probably a weird value*/}
+            
             String emailSender = getValueOfCanalSetting(jpaController, canal, EnumEmailSettingKeys.SMTP_USER);
 
             String emailReceiver = getValueOfCanalSetting(jpaController, canal, EnumEmailSettingKeys.INBOUND_USER);
@@ -117,8 +134,8 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                 try {
                     mailClient.connectStore();
                     mailClient.openFolder("inbox");
-                    List<EmailMessage> messages = mailClient.getUnreadMessages();
-                    //List<EmailMessage> messages = mailClient.getAllMessages();
+                    List<EmailMessage> messages = mailClient.getUnreadMessagesOnlyHeaders();
+//                    List<EmailMessage> messages = mailClient.getUnreadMessages();
                     List<BlackListEmail> blackList = (List<BlackListEmail>) jpaController.findAll(BlackListEmail.class);//findAll(BlackListEmail.class);
                     HashMap<String, BlackListEmail> mapBlackList = new HashMap<>();
                     for (BlackListEmail blackListEmail : blackList) {
@@ -141,6 +158,12 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                                 if (idCaso != null) {
                                     Caso caso = jpaController.find(Caso.class, idCaso);
                                     if (caso != null) {
+                                        //download message
+                                        
+                                        if((canal.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()) != null) &&
+                                                canal.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()).equals("true")){
+                                            emailMessage = mailClient.getMessage(emailMessage.getIdMessage());
+                                        }
                                         managerCasos.crearNotaDesdeEmail(caso, canal, emailMessage);
                                     }
 
@@ -153,6 +176,11 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                                         //let them know that this is now allowed!!
                                         System.out.println("ignoring email from user  of the system :" + users);
                                     } else {
+                                        //download message
+                                        if((canal.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()) != null) &&
+                                                canal.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()).equals("true")){
+                                            emailMessage = mailClient.getMessage(emailMessage.getIdMessage());
+                                        }
                                         final boolean casoIsCreated = managerCasos.crearCasoDesdeEmail(canal, emailMessage);
                                         if (casoIsCreated) {
                                             mailClient.markReadMessage(emailMessage);
@@ -193,7 +221,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                 throw new MailClientFactory.MailNotConfiguredException("No se puede descargar correos del canal " + idCanal + ", favor comunicarse con el administrador para que configure la cuenta de correo.");
             }
         }
-
+        return freq;
     }
 
 }
