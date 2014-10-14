@@ -139,7 +139,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                                 Long idCaso = ManagerCasos.extractIdCaso(subject);
 
                                 if (idCaso != null) {
-                                    Caso caso = jpaController.getCasoFindByIdCaso(idCaso);
+                                    Caso caso = jpaController.find(Caso.class, idCaso);
                                     if (caso != null) {
                                         managerCasos.crearNotaDesdeEmail(caso, canal, emailMessage);
                                     }

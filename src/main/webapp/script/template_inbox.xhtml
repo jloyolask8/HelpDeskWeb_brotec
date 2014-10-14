@@ -300,6 +300,14 @@
                                     </p:menuitem>
                                 </p:submenu>
 
+                                 <p:menuitem id="casosActualizados" value="#{casoController.countCasosRevisarActualizacion.toString()}"
+                                            style="color: #31b0d5;"
+                                            title="Mis casos que han sido actualizados por otros."
+                                            disabled="#{casoController.countCasosRevisarActualizacion le 0}" ajax="false"
+                                            action="#{casoController.filtraRevisarActualizaciones}" update="formfilter:filtros  formfilter:panelG1"
+                                            icon="fa fa-bolt">
+                                    <p:resetInput target="@form" />
+                                </p:menuitem>
 
                                 <p:menuitem id="casosPrioritarios" value="#{casoController.casosPrioritarios.toString()}"
                                             style="color: #ffcc33;"
@@ -334,14 +342,7 @@
                                             icon="fa fa-exclamation">
                                     <p:resetInput target="@form" />
                                 </p:menuitem>
-                                <p:menuitem id="casosActualizados" value="#{casoController.countCasosRevisarActualizacion.toString()}"
-                                            style="color: #31b0d5;"
-                                            title="Mis casos que han sido actualizados por otros."
-                                            disabled="#{casoController.countCasosRevisarActualizacion le 0}" ajax="false"
-                                            action="#{casoController.filtraRevisarActualizaciones}" update="formfilter:filtros  formfilter:panelG1"
-                                            icon="fa fa-bolt">
-                                    <p:resetInput target="@form" />
-                                </p:menuitem>
+                               
 
                                 <p:menuitem id="casosCerrados" value="#{casoController.casosCerrados.toString()}"
                                             style="color: #000;"

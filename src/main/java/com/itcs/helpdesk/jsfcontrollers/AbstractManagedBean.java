@@ -695,7 +695,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
             }
             Collections.sort(lista, comparadorVistas);
             this.allMyVistas = lista;
-            System.out.println("allMyVistas:"+allMyVistas);
+//            System.out.println("allMyVistas:"+allMyVistas);
         }
 
         return this.allMyVistas;

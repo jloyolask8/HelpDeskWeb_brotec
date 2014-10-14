@@ -108,7 +108,7 @@ public class MailNotifier {
         }
         return null;
     }
-    
+
     public static void sendEmailRecoverPassword(Usuario usuario, String newPassword) {
         if (usuario == null) {
             throw new IllegalStateException("usuario no puede ser null");
@@ -259,26 +259,33 @@ public class MailNotifier {
      * @throws Exception
      */
     public static Canal chooseDefaultCanalToSendMail(Caso caso) throws NoOutChannelException {
-        //choose canal, prioritize the project's default canal
-        Canal canal = (caso.getIdProducto() != null && caso.getIdProducto().getIdOutCanal() != null
-                && caso.getIdProducto().getIdOutCanal().getIdTipoCanal() != null && caso.getIdProducto().getIdOutCanal().getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal()))
-                ? caso.getIdProducto().getIdOutCanal() : null;
 
-        //choose canal, prioritize the area's default canal
-        if (canal == null) {
-            canal = (caso.getIdArea() != null && caso.getIdArea().getIdCanal() != null
+        if (caso.getIdCanal() != null && caso.getIdCanal().getIdTipoCanal() != null && caso.getIdCanal().getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal())) {
+            return caso.getIdCanal();
+        } else {
+
+            //choose canal, prioritize the area's default canal
+            Canal canal = (caso.getIdArea() != null && caso.getIdArea().getIdCanal() != null
                     && caso.getIdArea().getIdCanal().getIdTipoCanal() != null && caso.getIdArea().getIdCanal().getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal()))
                     ? caso.getIdArea().getIdCanal() : caso.getIdCanal();
+
+            if (canal == null) {//TODO do not use this since product may have a ventas email, and when a postventa user gets here there will be problems.
+                //choose the project's default canal
+                canal = (caso.getIdProducto() != null && caso.getIdProducto().getIdOutCanal() != null
+                        && caso.getIdProducto().getIdOutCanal().getIdTipoCanal() != null && caso.getIdProducto().getIdOutCanal().getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal()))
+                        ? caso.getIdProducto().getIdOutCanal() : null;
+            }
+
+            if (canal != null && canal.getIdTipoCanal() != null && canal.getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal())
+                    && !StringUtils.isEmpty(canal.getIdCanal())) {
+
+                return canal;
+
+            } else {
+                throw new NoOutChannelException();
+            }
         }
 
-        if (canal != null && canal.getIdTipoCanal() != null && canal.getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal())
-                && !StringUtils.isEmpty(canal.getIdCanal())) {
-
-            return canal;
-
-        } else {
-            throw new NoOutChannelException();
-        }
     }
 
 }

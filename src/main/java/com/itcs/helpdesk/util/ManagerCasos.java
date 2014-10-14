@@ -897,8 +897,8 @@ public class ManagerCasos implements Serializable {
     }
     
     public synchronized List<AuditLog> verificaCambios(Caso caso) {
-        List<AuditLog> changeList = new LinkedList<AuditLog>();
-        Caso casoOld = getJpaController().getCasoFindByIdCaso(caso.getIdCaso());
+        List<AuditLog> changeList = new LinkedList<>();
+        Caso casoOld = getJpaController().find(Caso.class, caso.getIdCaso());
 
         Method[] metodos = caso.getClass().getMethods();
         for (Method method : metodos) {
