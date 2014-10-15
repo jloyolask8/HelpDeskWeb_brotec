@@ -36,36 +36,45 @@ public class ApplicationConfig {
         }
     }
     private static Log logger = Log.createLogger(ApplicationConfig.class.getName());
-    private static final String MAIL_DEBUG = "mail.debug";
-    private static final String MAIL_SMTP_HOST = "mail.smtp.host";
-    private static final String MAIL_SMTP_PORT = "mail.smtp.port";
-    private static final String MAIL_SMTP_USER = "mail.smtp.user";
-    private static final String MAIL_SMTP_PASSWORD = "mail.smtp.password";
-    private static final String MAIL_SMTP_FROM = "mail.smtp.from";
-    private static final String MAIL_SMTP_FROMNAME = "mail.smtp.fromname";
-    private static final String MAIL_SMTP_AUTH = "mail.smtp.auth";
-    private static final String MAIL_SMTP_SSL_ENABLE = "mail.smtp.ssl.enable";
-    private static final String MAIL_SMTP_SOCKET_FACTORY_PORT = "mail.smtp.socketFactory.port";
-    private static final String MAIL_SMTP_CONNECTIONTIMEOUT = "mail.smtp.connectiontimeout";
-    private static final String MAIL_SMTP_TIMEOUT = "mail.smtp.timeout";
-    private static final String MAIL_TRANSPORT_TLS = "mail.smtp.starttls.enable";
+    public final static String DEFAULT_CONN_TIMEOUT = "60000";
+    public final static String DEFAULT_IO_TIMEOUT = "600000";
+    public static final String MAIL_DEBUG = "mail.debug";
+    public static final String MAIL_SMTP_HOST = "mail.smtp.host";
+    public static final String MAIL_SMTP_PORT = "mail.smtp.port";
+    public static final String MAIL_SMTP_USER = "mail.smtp.user";
+    public static final String MAIL_SMTP_PASSWORD = "mail.smtp.password";
+    public static final String MAIL_SMTP_FROM = "mail.smtp.from";
+    public static final String MAIL_SMTP_FROMNAME = "mail.smtp.fromname";
+    public static final String MAIL_SMTP_AUTH = "mail.smtp.auth";
+    public static final String MAIL_SMTP_SSL_ENABLE = "mail.smtp.ssl.enable";
+    public static final String MAIL_SMTP_SOCKET_FACTORY_PORT = "mail.smtp.socketFactory.port";
+    public static final String MAIL_SMTP_CONNECTIONTIMEOUT = "mail.smtp.connectiontimeout";
+    public static final String MAIL_SMTP_TIMEOUT = "mail.smtp.timeout";
+    public static final String MAIL_TRANSPORT_TLS = "mail.smtp.starttls.enable";
     //----------
-    private static final String MAIL_TRANSPORT_PROTOCOL = "mail.transport.protocol";
-    private static final String MAIL_STORE_PROTOCOL = "mail.store.protocol";
+    public static final String MAIL_TRANSPORT_PROTOCOL = "mail.transport.protocol";
+    public static final String MAIL_STORE_PROTOCOL = "mail.store.protocol";
     //----------
-    private static final String MAIL_POP_HOST = "mail.pop3s.host";
-    private static final String MAIL_POP_PORT = "mail.pop3s.port";
-    private static final String MAIL_POP_USER = "mail.pop3s.user";
-    private static final String MAIL_POP_PASSWORD = "mail.pop3s.password";
-    private static final String MAIL_POP_SSL_ENABLED = "mail.pop3s.ssl.enable";
+    public static final String MAIL_POP_HOST = "mail.pop3s.host";
+    public static final String MAIL_POP_PORT = "mail.pop3s.port";
+    public static final String MAIL_POP_USER = "mail.pop3s.user";
+    public static final String MAIL_POP_PASSWORD = "mail.pop3s.password";
+    public static final String MAIL_POP_SSL_ENABLED = "mail.pop3s.ssl.enable";
     //----------
-    private static final String MAIL_IMAPS_HOST = "mail.imaps.host";
-    private static final String MAIL_IMAPS_PORT = "mail.imaps.port";
-    private static final String MAIL_IMAPS_USER = "mail.imaps.user";
-    private static final String MAIL_IMAPS_PASSWORD = "mail.imaps.password";
-    private static final String MAIL_IMAPS_SSL_ENABLED = "mail.imaps.ssl.enable";
+    public static final String MAIL_IMAPS_HOST = "mail.imaps.host";
+    public static final String MAIL_IMAPS_PORT = "mail.imaps.port";
+    public static final String MAIL_IMAPS_USER = "mail.imaps.user";
+    public static final String MAIL_IMAPS_PASSWORD = "mail.imaps.password";
+    public static final String MAIL_IMAPS_SSL_ENABLED = "mail.imaps.ssl.enable";
     //------
     //----------    
+    //Socket connection timeout value in milliseconds. Default is infinite timeout.
+    public static final String MAIL_IMAPS_CONN_TIMEOUT = "mail.imaps.connectiontimeout";
+    public static final String MAIL_IMAP_CONN_TIMEOUT = "mail.imap.connectiontimeout";
+    //Socket I/O timeout value in milliseconds. Default is infinite timeout.
+    public static final String MAIL_IMAPS_SOCKETIO_TIMEOUT = "mail.imaps.timeout";
+    public static final String MAIL_IMAP_SOCKETIO_TIMEOUT = "mail.imap.timeout";
+
     private Properties configuration;
     private static ApplicationConfig instance = null;
 
@@ -74,12 +83,23 @@ public class ApplicationConfig {
         Properties props = new Properties();
 
         try {
+
+            if (canal.containsKey(EnumEmailSettingKeys.SMTP_CONNECTIONTIMEOUT.getKey())) {
+                props.put(MAIL_IMAPS_CONN_TIMEOUT, canal.getSetting(EnumEmailSettingKeys.SMTP_CONNECTIONTIMEOUT.getKey()));
+                props.put(MAIL_IMAP_CONN_TIMEOUT, canal.getSetting(EnumEmailSettingKeys.SMTP_CONNECTIONTIMEOUT.getKey()));//Try imap even when using imaps
+            } else {
+                props.put(MAIL_IMAPS_CONN_TIMEOUT, DEFAULT_CONN_TIMEOUT);
+                props.put(MAIL_IMAP_CONN_TIMEOUT, DEFAULT_CONN_TIMEOUT);//Try imap even when using imaps
+            }
+
+            props.put(MAIL_IMAPS_SOCKETIO_TIMEOUT, DEFAULT_IO_TIMEOUT);
+            props.put(MAIL_IMAP_SOCKETIO_TIMEOUT, DEFAULT_IO_TIMEOUT);//Try imap even when using imaps
+
             // MAIL_DEBUG
 //            Map<String, String> mailSettings = new HashMap<String, String>();
 //            for (CanalSetting canalSetting : canal.getCanalSettingList()) {
 //                mailSettings.put(canalSetting.getCanalSettingPK().getCanalSettingKey(), canalSetting.getCanalSettingValue());
 //            }
-
             if (canal.containsKey(EnumEmailSettingKeys.MAIL_DEBUG.getKey())) {
                 props.put(MAIL_DEBUG, canal.getSetting(EnumEmailSettingKeys.MAIL_DEBUG.getKey()));
             } else {
@@ -350,7 +370,7 @@ public class ApplicationConfig {
     public static String getCompanyLogo() {
         return ApplicationConfig.getProperty(EnumSettingsBase.COMPANY_LOGO_ID_ATTACHMENT.getAppSetting().getSettingKey());
     }
-    
+
     public static String getCompanyLoginBackground() {
         return ApplicationConfig.getProperty(EnumSettingsBase.COMPANY_LOGIN_BACKGROUND_URL.getAppSetting().getSettingKey());
     }
@@ -434,8 +454,8 @@ public class ApplicationConfig {
     public static String getNotificationClientBodyNewTicketText() {
         return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_NEW_TICKET_CLIENT_BODY_TEXT.getAppSetting().getSettingKey());
     }
-    
-     public static String getNotificationClientSubjectSubscribedToEventText() {
+
+    public static String getNotificationClientSubjectSubscribedToEventText() {
         return ApplicationConfig.getProperty(EnumSettingsBase.NOTIF_SUBSCRIBED_EVENT_CLIENT_SUBJECT.getAppSetting().getSettingKey());
     }
 
