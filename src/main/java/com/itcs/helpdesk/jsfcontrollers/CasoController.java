@@ -251,7 +251,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public void enableReplyMode() {
         this.setReplyMode(true);
         this.setReplyByEmail(true);
-        
+
         //borrador
         this.textoNota = current.getRespuesta();
 
@@ -270,7 +270,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public void enableCommentMode() {
         this.setReplyMode(true);
         this.setReplyByEmail(false);
-        
+
     }
 
     public void disableReplyMode() {
@@ -834,9 +834,11 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public String inbox() {
         idCasoStr = null;
-        recreatePagination();
-        recreateModel();
-        prepareCasoFilterForInbox();
+        if (getFilterHelper().getVista() == null) {
+            recreatePagination();
+            recreateModel();
+            prepareCasoFilterForInbox();
+        }
         return "inbox";
     }
 
@@ -2435,7 +2437,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      * @return
      */
     //TODO add from to Nota type email
-    private Nota createNota(Caso caso, boolean publica, String texto, 
+    private Nota createNota(Caso caso, boolean publica, String texto,
             TipoNota tipo, boolean customer, List<Attachment> attachmentList) {
 //        boolean guardarNota = true;
         try {
@@ -2631,7 +2633,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public String crearNota(boolean notifyClient) {
 
         if (StringUtils.isEmpty(textoNota)) {
-            addErrorMessage("La respuesta no tiene texto, verifíque e intente nuevamente");
+            addErrorMessage("Su comentario no tiene texto, verifíque e intente nuevamente");
             return null;
         }
 

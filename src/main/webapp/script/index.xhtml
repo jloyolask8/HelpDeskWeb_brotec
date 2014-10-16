@@ -134,7 +134,7 @@
 
                             <p:commandButton id="exportAllItems" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop)" 
                                              rendered="#{casoController.items.rowCount > 0}" immediate="true"
-                                             icon="excelicon">  
+                                             icon="fa fa-download">  
                                 <p:fileDownload value="#{casoController.exportAllItems()}" />
                             </p:commandButton>
                             <p:tooltip for="exportAllItems" value="Exportar a excel #{casoController.pagination.itemsCount} casos."/>

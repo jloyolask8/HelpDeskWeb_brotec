@@ -31,11 +31,13 @@ public class ClippingsPlaceHolders {
     public static final String NombreCliente = "emailCliente.cliente.capitalName";
     public static final String EmailCliente = "emailCliente.emailCliente";
     public static final String NombreAgente = "owner.capitalName";
+    public static final String FirmaAgente = "owner.firma";
     public static final String EmailAgente = "owner.email";
     public static final String EstadoAlerta = "estadoAlerta.nombre";
     public static final String SubEstado = "idSubEstado.nombre";
     public static final String Producto = "idProducto.nombre";
     public static final String Prioridad = "idPrioridad.nombre";
+    public static final String Canal = "idCanal.nombre";
     public static final String tipoCaso = "tipoCaso.nombre";
     //--
     public static final String SALUDO_CLIENTE = "SaludoCliente";
@@ -49,10 +51,12 @@ public class ClippingsPlaceHolders {
         placeHolders.put(EmailCliente, "EmailCliente");
         placeHolders.put(NombreAgente, "NombreAgente");
         placeHolders.put(EmailAgente, "EmailAgente");
+        placeHolders.put(FirmaAgente, "FirmaAgente");
         placeHolders.put(EstadoAlerta, "EstadoAlerta");
         placeHolders.put(SubEstado, "SubEstado");
         placeHolders.put(Producto, "Producto");
         placeHolders.put(Prioridad, "Prioridad");
+        placeHolders.put(Canal, "Canal");
         placeHolders.put(tipoCaso, "TipoCaso");
         placeHolders.put(asunto, "Asunto");
         placeHolders.put(descripcion, "Descripcion");
@@ -67,7 +71,7 @@ public class ClippingsPlaceHolders {
 
     public static String buildFinalText(String templateString, Caso caso) {
 //        System.out.println("templateString:" + templateString);
-        Map<String, String> valuesMap = new HashMap<String, String>();
+        Map<String, String> valuesMap = new HashMap<>();
         for (Object key : placeHolders.keySet()) {
             valuesMap.put(placeHolders.getProperty((String) key), StringUtils.defaultString(String.valueOf(getValueObjectFor((String) key, caso))));
         }

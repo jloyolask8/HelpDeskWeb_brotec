@@ -138,18 +138,11 @@
                                 </p:themeSwitcher>
                                 <p:message for="statefulSwitcher" />
 
-                                <h:panelGrid columns="2">
-                                    <h:selectBooleanCheckbox id="firmaEnabled" value="#{UserSessionBean.current.firmaEnabled}">
-                                        <p:ajax update=":myAccountForm:tabView:firma" process="@this"/>
-                                    </h:selectBooleanCheckbox>
-                                    <h:outputLabel for="firmaEnabled" value="Habilitar firma" />  
-                                </h:panelGrid>
+                                <h:outputLabel for="firmaEnabled" value="Firma" />  
 
-                                <p:panel id="firma" visible="#{UserSessionBean.current.firmaEnabled}" style="border: 0px;">
-                                                <pe:ckEditor value="#{UserSessionBean.current.firma}" required="true" language="es"
-                                                             toolbar="#{applicationBean.ckEditorToolbar}"
-                                                             id="textofirma" width="100%" />
-                                </p:panel>
+                                <pe:ckEditor value="#{UserSessionBean.current.firma}" required="true" language="es"
+                                             toolbar="#{applicationBean.ckEditorToolbar}"
+                                             id="textofirma" width="100%" />
 
                                 <p:message for="textofirma"/>
 

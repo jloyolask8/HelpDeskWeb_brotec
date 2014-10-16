@@ -30,19 +30,21 @@
 
 
                 <p:dataList paginator="true" paginatorAlwaysVisible="false" 
-                            type="ordered" rows="10" style="width: 100%;border: 0px;"
+                            type="ordered" rows="10" style="width: 100%;border: none;"
                             value="#{cc.attrs.controllerMBean.getAllVistasItems(cc.attrs.user)}" var="vista1" 
                             emptyMessage="#{bundle.emptyViews}">
                     <p:column>
                         <p:commandLink id="vistalink1" ajax="true" 
                                        update="#{cc.attrs.update}"
                                        action="#{cc.attrs.controllerMBean.applyViewFilter(vista1)}" 
-                                       value="#{vista1.nombre}" style="font-weight: bold" styleClass="ui-state-default" />
+                                       value="#{vista1.nombre}" style="font-weight: bold" 
+                                       styleClass="ui-widget-header #{vista1 eq cc.attrs.controllerMBean.filterHelper.vista ? 'ui-state-hover':''}" />
                         <p:tooltip for="vistalink1" value="#{vista1.descripcion}" />  
 
                     </p:column>
                     <p:column>
-                        <h:outputText value="#{cc.attrs.controllerMBean.countItemsVista(vista1)}" styleClass="ui-li-count"/>
+                        <h:outputText value="#{cc.attrs.controllerMBean.countItemsVista(vista1)}" 
+                                      styleClass="ui-li-count"/>
                     </p:column>
                 </p:dataList>
                 <br/>

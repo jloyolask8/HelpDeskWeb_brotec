@@ -225,6 +225,7 @@
                                    update="panelFilter"
                                    disabled="#{not cc.attrs.canChangeFilters or not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
                                    value="  Ocultar"
+                                   rendered="#{cc.attrs.showApplyAction}"
                                    immediate="true" >
                         <f:setPropertyActionListener target="#{cc.attrs.controllerMBean.filterViewToggle}" 
                                                                  value="#{not cc.attrs.controllerMBean.filterViewToggle}"/>
