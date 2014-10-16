@@ -10,6 +10,7 @@ import com.itcs.commons.email.EmailMessage;
 import com.itcs.commons.email.EnumEmailSettingKeys;
 import com.itcs.helpdesk.persistence.entities.BlackListEmail;
 import com.itcs.helpdesk.persistence.entities.Canal;
+import com.itcs.helpdesk.persistence.entities.CanalSetting;
 import com.itcs.helpdesk.persistence.entities.CanalSettingPK;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Usuario;
@@ -44,6 +45,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
      * {0} = schema {1} = idArea#
      */
     public static final String JOB_ID = "DownloadEmail_Canal_%s";
+    public static final int N_EMAILS_FETCH = 10;
 
     public static String formatJobId(String idCanal) {
         return String.format(JOB_ID, new Object[]{idCanal});
@@ -134,23 +136,40 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                 try {
                     mailClient.connectStore();
                     mailClient.openFolder("inbox");
-                    List<EmailMessage> messages = mailClient.getUnreadMessagesOnlyHeaders();
+                    List<EmailMessage> messages;
+                    if(canal.containsKey(EnumEmailSettingKeys.HIGHEST_UID.getKey()))
+                    {
+                        long nextUID = Long.parseLong(canal.getSetting(EnumEmailSettingKeys.HIGHEST_UID.getKey()))+1;
+                        //Trae los mensajes de a 10
+                        messages = mailClient.getMessagesOnlyHeaders(nextUID, nextUID+N_EMAILS_FETCH);
+                    }else{
+                        messages = mailClient.getUnreadMessagesOnlyHeaders();
+                    }
 //                    List<EmailMessage> messages = mailClient.getUnreadMessages();
-                    List<BlackListEmail> blackList = (List<BlackListEmail>) jpaController.findAll(BlackListEmail.class);//findAll(BlackListEmail.class);
-                    HashMap<String, BlackListEmail> mapBlackList = new HashMap<>();
-                    for (BlackListEmail blackListEmail : blackList) {
-                        mapBlackList.put(blackListEmail.getEmailAddress(), blackListEmail);
-                    }
+                    
+                    //Waste of resources, what if we have a million of blacklisted mails??
+                    
+//                    List<BlackListEmail> blackList = (List<BlackListEmail>) jpaController.findAll(BlackListEmail.class);//findAll(BlackListEmail.class);
+//                    HashMap<String, BlackListEmail> mapBlackList = new HashMap<>();
+//                    for (BlackListEmail blackListEmail : blackList) {
+//                        mapBlackList.put(blackListEmail.getEmailAddress(), blackListEmail);
+//                    }
 
-                    if (ApplicationConfig.isAppDebugEnabled()) {
-                        Log.createLogger(this.getClass().getName()).logDebug("Debug Email BlackList:" + mapBlackList);
-                    }
+//                    if (ApplicationConfig.isAppDebugEnabled()) {
+//                        Log.createLogger(this.getClass().getName()).logDebug("Debug Email BlackList:" + mapBlackList);
+//                    }
 
+                    long highestUID = 0;
                     for (EmailMessage emailMessage : messages) {
                         try {
-
-                            if (!mapBlackList.containsKey(emailMessage.getFromEmail()) && (!emailMessage.getFromEmail().equalsIgnoreCase(emailSender))
-                                    && (!emailMessage.getFromEmail().equalsIgnoreCase(emailReceiver))) {
+                            if(emailMessage.getIdMessage()>highestUID){
+                                highestUID = emailMessage.getIdMessage();
+                                System.out.println("highestUID: "+highestUID);
+                            }
+                            //if isn't a blacklisted address
+                            if ((jpaController.find(BlackListEmail.class, emailMessage.getFromEmail()) == null) &&
+                                    (!emailMessage.getFromEmail().equalsIgnoreCase(emailSender)) &&
+                                    (!emailMessage.getFromEmail().equalsIgnoreCase(emailReceiver))) {
 
                                 String subject = emailMessage.getSubject();
                                 Long idCaso = ManagerCasos.extractIdCaso(subject);
@@ -159,9 +178,10 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                                     Caso caso = jpaController.getCasoFindByIdCaso(idCaso);
                                     if (caso != null) {
                                         //download message
-                                        
+                                        //Si está configurado bajar attachments y el correo tiene attachments se vuelve a descargar con attachments
                                         if((canal.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()) != null) &&
-                                                canal.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()).equals("true")){
+                                                canal.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()).equals("true") &&
+                                                emailMessage.isHasAttachment()){
                                             emailMessage = mailClient.getMessage(emailMessage.getIdMessage());
                                         }
                                         managerCasos.crearNotaDesdeEmail(caso, canal, emailMessage);
@@ -177,8 +197,10 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                                         System.out.println("ignoring email from user  of the system :" + users);
                                     } else {
                                         //download message
+                                        //Si está configurado bajar attachments y el correo tiene attachments se vuelve a descargar con attachments
                                         if((canal.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()) != null) &&
-                                                canal.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()).equals("true")){
+                                                canal.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()).equals("true") &&
+                                                emailMessage.isHasAttachment()){
                                             emailMessage = mailClient.getMessage(emailMessage.getIdMessage());
                                         }
                                         final boolean casoIsCreated = managerCasos.crearCasoDesdeEmail(canal, emailMessage);
@@ -200,7 +222,13 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                             //  mailClient.deleteMessage(emailMessage);
                         }
                     }
-
+                    if(highestUID>0)
+                    {
+                        System.out.println("saving highestUID: "+highestUID);
+                        canal.getCanalSettingList().remove(new CanalSetting(canal.getIdCanal(), EnumEmailSettingKeys.HIGHEST_UID.getKey()));
+                        canal.getCanalSettingList().add(new CanalSetting(canal, EnumEmailSettingKeys.HIGHEST_UID.getKey(),String.valueOf(highestUID),""));
+                        jpaController.merge(canal);
+                    }
                     if (ApplicationConfig.isAppDebugEnabled()) {
                         Log.createLogger(this.getClass().getName()).logDebug("Revisión de correo " + canal + "exitósa: " + messages.size() + " mensajes leídos. Intancia: brotec-icafal");
                     }
