@@ -285,13 +285,14 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
                 current.setNombre(tmpEmailCorreoElectronico);
                 current.setDescripcion("Canal email, para la cuenta " + tmpEmailCorreoElectronico);
                 getJpaController().mergeCanal(current);
-                current.setCanalSettingList(new LinkedList<CanalSetting>());
+//                current.setCanalSettingList(new LinkedList<CanalSetting>());
                 Map<String, String> settingsMap = createEmailSettingsMap();
                 Iterator it = settingsMap.entrySet().iterator();
                 while (it.hasNext()) {
                     Map.Entry pairs = (Map.Entry) it.next();
                     CanalSetting canalSetting = new CanalSetting(current, pairs.getKey().toString(), pairs.getValue().toString(), "");
                     getJpaController().merge(canalSetting);
+                    current.getCanalSettingList().remove(canalSetting);
                     current.getCanalSettingList().add(canalSetting);
                     it.remove(); // avoids a ConcurrentModificationException
                 }
@@ -304,7 +305,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
                 current.setNombre(tmpEmailCorreoElectronico);
                 current.setDescripcion("Canal email, para la cuenta " + tmpEmailCorreoElectronico);
                 getJpaController().persistCanal(current);
-                current.setCanalSettingList(new LinkedList<CanalSetting>());
+//                current.setCanalSettingList(new LinkedList<CanalSetting>());
                 Map<String, String> settingsMap = createEmailSettingsMap();
                 Iterator it = settingsMap.entrySet().iterator();
                 while (it.hasNext()) {
@@ -312,6 +313,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
                     CanalSetting canalSetting = new CanalSetting(current, pairs.getKey().toString(), pairs.getValue().toString(), "");
 
                     getJpaController().persist(canalSetting);
+                    current.getCanalSettingList().remove(canalSetting);
                     current.getCanalSettingList().add(canalSetting);
                     it.remove(); // avoids a ConcurrentModificationException
                 }
