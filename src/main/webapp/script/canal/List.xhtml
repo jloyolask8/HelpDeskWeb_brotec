@@ -303,6 +303,12 @@
                                 <p:column width="30">
                                     <p:selectBooleanCheckbox value="#{canalController.tmpEmailDownloadAttachments}" />
                                 </p:column>
+                                <p:column>
+                                    <h:outputLabel value="Connection Timeout" style="font-size: smaller; color: #8C8989;"/>
+                                </p:column>
+                                <p:column width="30">
+                                    <p:inputText value="#{canalController.tmpEmailConnectionTimeout}" size="6"/>
+                                </p:column>
                             </p:row>
                         </p:panelGrid>
                     </h:panelGroup>

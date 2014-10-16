@@ -9,6 +9,7 @@ import com.itcs.helpdesk.persistence.entities.CanalSetting;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoCanal;
 import com.itcs.helpdesk.quartz.DownloadEmailJob;
 import com.itcs.helpdesk.quartz.HelpDeskScheluder;
+import com.itcs.helpdesk.util.ApplicationConfig;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.MailClientFactory;
 import com.itcs.jpautils.EasyCriteriaQuery;
@@ -57,6 +58,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
     private String tmpEmailUsuario;
     private String tmpEmailInfo;
     private String tmpFreq;
+    private String tmpEmailConnectionTimeout = ApplicationConfig.DEFAULT_CONN_TIMEOUT;
     private boolean tmpEmailDebugEnabled;
     private boolean tmpEmailDownloadAttachments = true;
     private boolean tmpEmailFinalizeReady;
@@ -125,6 +127,8 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         settings.put(EnumEmailSettingKeys.SMTP_FROM.getKey(), tmpEmailUsuario);
         settings.put(EnumEmailSettingKeys.SMTP_FROMNAME.getKey(), tmpEmailSuNombre);
         settings.put(EnumEmailSettingKeys.SMTP_PASS.getKey(), tmpEmailContrasena);
+        
+        settings.put(EnumEmailSettingKeys.SMTP_CONNECTIONTIMEOUT.getKey(), tmpEmailConnectionTimeout);
         return settings;
     }
 
@@ -267,6 +271,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         tmpFreq = current.getSetting(EnumEmailSettingKeys.CHECK_FREQUENCY.getKey());
         tmpEmailDebugEnabled = (current.getSetting(EnumEmailSettingKeys.MAIL_DEBUG.getKey()) == null) ? false : current.getSetting(EnumEmailSettingKeys.MAIL_DEBUG.getKey()).equals("true");
         tmpEmailDownloadAttachments = (current.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()) == null) ? false : current.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()).equals("true");
+        tmpEmailConnectionTimeout = current.getSetting(EnumEmailSettingKeys.SMTP_CONNECTIONTIMEOUT.getKey());
         tmpEmailInfo = null;
         tmpEmailFinalizeReady = false;
         tmpEmailFirstStepReady = true;
@@ -683,6 +688,20 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
      */
     public void setTmpEmailDownloadAttachments(boolean tmpEmailDownloadAttachments) {
         this.tmpEmailDownloadAttachments = tmpEmailDownloadAttachments;
+    }
+
+    /**
+     * @return the tmpEmailConnectionTimeout
+     */
+    public String getTmpEmailConnectionTimeout() {
+        return tmpEmailConnectionTimeout;
+    }
+
+    /**
+     * @param tmpEmailConnectionTimeout the tmpEmailConnectionTimeout to set
+     */
+    public void setTmpEmailConnectionTimeout(String tmpEmailConnectionTimeout) {
+        this.tmpEmailConnectionTimeout = tmpEmailConnectionTimeout;
     }
 
     @FacesConverter(forClass = Canal.class)
