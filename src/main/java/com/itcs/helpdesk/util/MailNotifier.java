@@ -258,7 +258,7 @@ public class MailNotifier {
      * @return
      * @throws Exception
      */
-    public static Canal chooseDefaultCanalToSendMail(Caso caso) throws NoOutChannelException {
+     public static Canal chooseDefaultCanalToSendMail(Caso caso) throws NoOutChannelException {
 
         if (caso.getIdCanal() != null && caso.getIdCanal().getIdTipoCanal() != null && caso.getIdCanal().getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal())) {
             return caso.getIdCanal();
