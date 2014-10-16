@@ -125,7 +125,7 @@ public class ManagerCasos implements Serializable {
 
             vista.getFiltrosVistaList().add(filtroEstado);
 
-            return getJpaController().countEntities(vista, null);
+            return getJpaController().countEntities(vista, null, null);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, null, ex);
             return 0L;
@@ -653,6 +653,7 @@ public class ManagerCasos implements Serializable {
                     ManagerCasos.calcularSLA(casoHijo);//    casoHijo.setNextResponseDue(caso.getNextResponseDue());      
                     casoHijo.setEmailCliente(emailCliente);
 
+                    //TODO brotec-specific
                     System.out.println("persisting recinto " + casoHijo.getIdRecinto());
                     if (null == getJpaController().find(Recinto.class, casoHijo.getIdRecinto())) {
                         Recinto r = new Recinto();
@@ -899,8 +900,8 @@ public class ManagerCasos implements Serializable {
     }
     
     public synchronized List<AuditLog> verificaCambios(Caso caso) {
-        List<AuditLog> changeList = new LinkedList<AuditLog>();
-        Caso casoOld = getJpaController().getCasoFindByIdCaso(caso.getIdCaso());
+        List<AuditLog> changeList = new LinkedList<>();
+        Caso casoOld = getJpaController().find(Caso.class, caso.getIdCaso());
 
         Method[] metodos = caso.getClass().getMethods();
         for (Method method : metodos) {

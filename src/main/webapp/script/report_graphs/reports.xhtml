@@ -4,7 +4,7 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:itcs="http://java.sun.com/jsf/composite/components/filterView"
+      xmlns:go="http://java.sun.com/jsf/composite/go"
       xmlns:p="http://primefaces.org/ui">
 
     <ui:composition template="/script/template_inbox.xhtml">
@@ -193,7 +193,7 @@
                 <h1><p:outputLabel value="#{reporteController.chartModelTitle}"/></h1>
                 <p:messages id="messages" showDetail="true" showSummary="true"/>  
 
-                <itcs:filterView rendered="#{reporteController.showFilter}"
+                <go:filterView rendered="#{reporteController.showFilter}"
                     controllerMBean="#{reporteController}"
                                  filterHelper="#{reporteController.filterHelper2}" update=":mainform:messages :reportForm"/>
 

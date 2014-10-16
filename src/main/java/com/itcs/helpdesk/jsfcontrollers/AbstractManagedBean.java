@@ -8,17 +8,21 @@ import com.itcs.helpdesk.jsfcontrollers.util.JPAFilterHelper;
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
+import com.itcs.helpdesk.persistence.entities.FiltroVista;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.persistence.utils.OrderBy;
 import com.itcs.helpdesk.util.DateUtils;
+import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.ManagerCasos;
 import com.itcs.helpdesk.webapputils.UAgentInfo;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -75,6 +79,16 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     protected E current;
     private ArrayList<E> selectedItems;
     private JPAFilterHelper filterHelper;
+    private String query = null;
+    private boolean filterViewToggle = false;
+    List<Vista> allMyVistas = null;
+
+    private static final Comparator<Vista> comparadorVistas = new Comparator<Vista>() {
+        @Override
+        public int compare(Vista o1, Vista o2) {
+            return o1.getNombre().compareTo(o2.getNombre());
+        }
+    };
 
     public AbstractManagedBean(Class<E> entityClass) {
         this.entityClass = entityClass;
@@ -111,7 +125,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
                 public int getItemsCount() {
                     try {
                         if (countCache == null) {
-                            countCache = getJpaController().countEntities(getFilterHelper().getVista(), getDefaultUserWho()).intValue();// getJpaController().count(Caso.class).intValue();
+                            countCache = getJpaController().countEntities(getFilterHelper().getVista(), getDefaultUserWho(), getQuery()).intValue();// getJpaController().count(Caso.class).intValue();
                         }
 
                         return countCache;
@@ -125,7 +139,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
                 public DataModel createPageDataModel() {
                     try {
                         DataModel<E> dataModel = (DataModel) getDataModelImplementationClass().newInstance();
-                        dataModel.setWrappedData(getJpaController().findEntities(entityClass, getFilterHelper().getVista(), getPageSize(), getPageFirstItem(), getDefaultOrderBy(), getDefaultUserWho()));
+                        dataModel.setWrappedData(getJpaController().findEntities(entityClass, getFilterHelper().getVista(), getPageSize(), getPageFirstItem(), getDefaultOrderBy(), getDefaultUserWho(), getQuery()));
                         return dataModel;
                     } catch (IllegalStateException ex) {//error en el filtro
                         JsfUtil.addErrorMessage(ex, "Existe un problema con el filtro. Favor corregir e intentar nuevamente.");
@@ -360,6 +374,55 @@ public abstract class AbstractManagedBean<E> implements Serializable {
         return entityClass;
     }
 
+    public String applyViewFilter(Vista vista) {
+
+        setQuery(null);
+
+        try {
+            Vista copy = new Vista();
+            copy.setIdVista(vista.getIdVista());
+            copy.setBaseEntityType(vista.getBaseEntityType());
+//            copy.setIdUsuarioCreadaPor(userSessionBean.getCurrent());
+            copy.setDescripcion(vista.getDescripcion());
+            copy.setIdArea(vista.getIdArea());
+            copy.setIdGrupo(vista.getIdGrupo());
+            copy.setNombre(vista.getNombre());
+            copy.setVisibleToAll(vista.getVisibleToAll());
+            //Crearemos una copia para que al guardar no pisar la existente.
+            int i = 1;
+            if (vista.getFiltrosVistaList() != null) {
+                for (FiltroVista f : vista.getFiltrosVistaList()) {
+                    FiltroVista fCopy = new FiltroVista();
+                    fCopy.setIdFiltro(i);
+                    i++; //This is an ugly patch to solve issue when removing a filter from the view, if TODO: Warning - this method won't work in the case the id fields are not set
+                    fCopy.setIdCampo(f.getIdCampo());
+                    fCopy.setIdComparador(f.getIdComparador());
+                    fCopy.setValor(f.getValor());
+                    fCopy.setValorLabel(f.getValorLabel());
+                    fCopy.setValor2(f.getValor2());
+                    fCopy.setValor2Label(f.getValor2Label());
+                    fCopy.setIdVista(copy);
+                    if (copy.getFiltrosVistaList() == null) {
+                        copy.setFiltrosVistaList(new ArrayList<FiltroVista>());
+                    }
+                    copy.getFiltrosVistaList().add(fCopy);
+                    //System.out.println("added filtro " + fCopy);
+                }
+            }
+
+            getFilterHelper().setVista(copy);
+//        this.setVista(copy);
+//        //System.out.println("Vista copy set:" + copy);
+            recreatePagination();
+//            recreateModel();
+        } catch (Exception e) {
+            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+        }
+
+        return prepareList();//"inbox";
+
+    }
+
     /**
      * mothod to determine the browser agent of client!
      *
@@ -519,7 +582,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     }
 
     public String formatDurationRange(Date start, Date end) {
-        if(start == null || end == null){
+        if (start == null || end == null) {
             return "";
         }
         Interval interval = new Interval(new DateTime(start), new DateTime(end));
@@ -540,4 +603,137 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     protected String getListPage() {
         return null;
     }
+
+    /**
+     * @return the query
+     */
+    public String getQuery() {
+        return query;
+    }
+
+    /**
+     * @param query the query to set
+     */
+    public void setQuery(String query) {
+        this.query = query;
+    }
+
+    /**
+     * @return the filterViewToggle
+     */
+    public boolean isFilterViewToggle() {
+        return filterViewToggle;
+    }
+
+    /**
+     * @param filterViewToggle the filterViewToggle to set
+     */
+    public void setFilterViewToggle(boolean filterViewToggle) {
+        this.filterViewToggle = filterViewToggle;
+    }
+
+    public void resetVistas() {
+        allMyVistas = null;
+    }
+
+    public int countItemsVista(Vista vista) {
+        try {
+            UserSessionBean userSessionBean = getUserSessionBean();
+            return getJpaController().countEntities(vista, userSessionBean.getCurrent(), null).intValue();
+        } catch (Exception ex) {
+            addErrorMessage(ex.getMessage());
+            Logger.getLogger(VistaController.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+
+    }
+
+    /**
+     *
+     * @param user
+     * @return
+     */
+    public List<Vista> getAllVistasItems(Usuario user) {
+
+        if (allMyVistas == null) {
+            List<Vista> lista = new ArrayList<>();
+            final List<Vista> visibleForAllItems = getVisibleForAllItems(this.entityClass.getName());
+            final List<Vista> visibleForMeOnlyItems = getVisibleForMeOnlyItems(user, this.entityClass.getName());
+            final List<Vista> visibleForMyGroupsItems = getVisibleForMyGroupsItems(user, this.entityClass.getName());
+            final List<Vista> visibleForMyAreasItems = getVisibleForMyAreasItems(user, this.entityClass.getName());
+
+            if (visibleForAllItems != null) {
+                for (Vista vista : visibleForAllItems) {
+                    if (!lista.contains(vista)) {
+                        lista.addAll(visibleForAllItems);
+                    }
+                }
+            }
+
+            if (visibleForMeOnlyItems != null) {
+                for (Vista vista : visibleForMeOnlyItems) {
+                    if (!lista.contains(vista)) {
+                        lista.addAll(visibleForMeOnlyItems);
+                    }
+                }
+            }
+
+            if (visibleForMyGroupsItems != null) {
+                for (Vista vista : visibleForMyGroupsItems) {
+                    if (!lista.contains(vista)) {
+                        lista.addAll(visibleForMyGroupsItems);
+                    }
+                }
+            }
+
+            if (visibleForMyAreasItems != null) {
+                for (Vista vista : visibleForMyAreasItems) {
+                    if (!lista.contains(vista)) {
+                        lista.addAll(visibleForMyAreasItems);
+                    }
+                }
+            }
+            Collections.sort(lista, comparadorVistas);
+            this.allMyVistas = lista;
+//            System.out.println("allMyVistas:"+allMyVistas);
+        }
+
+        return this.allMyVistas;
+    }
+
+    /**
+     * @param baseEntityType
+     * @deprecated @return
+     */
+    public List<Vista> getVisibleForAllItems(String baseEntityType) {
+        return getJpaController().getVistaJpaController().findVistaEntitiesVisibleForAll(baseEntityType);
+    }
+
+    /**
+     * @param user
+     * @param baseEntityType
+     * @deprecated @return
+     */
+    public List<Vista> getVisibleForMeOnlyItems(Usuario user, String baseEntityType) {
+        return getJpaController().getVistaJpaController().findVistaEntitiesCreatedByUser(user, baseEntityType);
+    }
+
+    /**
+     * @param user
+     * @param baseEntityType
+     * @deprecated @return
+     */
+    public List<Vista> getVisibleForMyGroupsItems(Usuario user, String baseEntityType) {
+        return getJpaController().getVistaJpaController().findVistaEntitiesVisibleForGroupsOfUser(user, baseEntityType);
+    }
+
+    /**
+     * @param user
+     * @param baseEntityType
+     * @deprecated @return
+     */
+    public List<Vista> getVisibleForMyAreasItems(Usuario user, String baseEntityType) {
+        return getJpaController().getVistaJpaController().findVistaEntitiesVisibleForAreasOfUser(user, baseEntityType);
+    }
+
 }

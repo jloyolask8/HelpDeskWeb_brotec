@@ -104,7 +104,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
     }
 
     private Map<String, String> createEmailSettingsMap() {
-        Map<String, String> settings = new HashMap<String, String>();
+        Map<String, String> settings = new HashMap<>();
         settings.put(EnumEmailSettingKeys.INBOUND_SERVER.getKey(), tmpEmailIncommingHost);
         settings.put(EnumEmailSettingKeys.INBOUND_PORT.getKey(), tmpEmailIncommingPort);
         settings.put(EnumEmailSettingKeys.INBOUND_SSL_ENABLED.getKey(), tmpEmailIncommingSsl.equals("SSL/TLS") ? "true" : "false");

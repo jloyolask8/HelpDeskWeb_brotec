@@ -191,7 +191,7 @@ public class CustomFieldController extends AbstractManagedBean<CustomField> impl
 //    }
     public List<CasoCustomField> getCurrentCasoCustomFieldList(Caso caso) {
 
-        System.out.println("getCurrentCasoCustomFieldList...");
+//        System.out.println("getCurrentCasoCustomFieldList...");
 //        System.out.println("getTipoCaso:" + current.getTipoCaso());
 //        System.out.println("CustomFieldList:" + current.getTipoCaso().getCustomFieldList());
 
@@ -204,14 +204,14 @@ public class CustomFieldController extends AbstractManagedBean<CustomField> impl
         }
 
         try {
-            List<CasoCustomField> removeCasoCustomFieldList = new LinkedList<CasoCustomField>();
+            List<CasoCustomField> removeCasoCustomFieldList = new LinkedList<>();
             if (caso.getTipoCaso() != null ) {
                 //remove all old
                 
                 TipoCaso tipo = getJpaController().find(TipoCaso.class, caso.getTipoCaso().getIdTipoCaso(), true);
                 
-                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "CasoController.getCurrentCasoCustomFieldList:{0}", 
-                       tipo.getCustomFieldList());
+//                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "CasoController.getCurrentCasoCustomFieldList:{0}", 
+//                       tipo.getCustomFieldList());
                 
                 for (CasoCustomField casoCustomField : caso.getCasoCustomFieldList()) {
                     if (!casoCustomField.getCustomField().getTipoCasoList().contains(caso.getTipoCaso())) {
@@ -225,7 +225,7 @@ public class CustomFieldController extends AbstractManagedBean<CustomField> impl
                     if (!caso.getCasoCustomFieldList().contains(casoCustomField)) {
                         casoCustomField.setCustomField(customField);
                         caso.getCasoCustomFieldList().add(casoCustomField);
-                        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "added:{0}", casoCustomField);
+//                        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "added:{0}", casoCustomField);
 //                        merge = true;
                     }
                 }
@@ -234,7 +234,7 @@ public class CustomFieldController extends AbstractManagedBean<CustomField> impl
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, "error at getItemsSubEstadoCasoAvailableSelectOneCasoAbierto", ex);
         }
 
-        System.out.println("return:" + caso.getCasoCustomFieldList());
+//        System.out.println("return:" + caso.getCasoCustomFieldList());
         return caso.getCasoCustomFieldList();
     }
 

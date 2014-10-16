@@ -408,7 +408,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                         vista1.getFiltrosVistaList().add(filtroEntityY);
 
                         vista1.getFiltrosVistaList().addAll(getFilterHelper2().getVista().getFiltrosVistaList());
-                        final int countCasosForView = vistaController.countCasosForView(vista1);
+                        final int countCasosForView = vistaController.countItemsVista(vista1);
                         serie_y.set(label, countCasosForView);
                         addTwoDimTableValue(label, serie_y.getLabel(), countCasosForView);
                         items_eje_x.add(vista1);
@@ -440,7 +440,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                         vista1.getFiltrosVistaList().add(filtroEntityY);
 
                         vista1.getFiltrosVistaList().addAll(getFilterHelper2().getVista().getFiltrosVistaList());
-                        final int countCasosForView = vistaController.countCasosForView(vista1);
+                        final int countCasosForView = vistaController.countItemsVista(vista1);
                         serie_y.set(x.getLabel(), countCasosForView);
 
                         addTwoDimTableValue(x.getLabel(), serie_y.getLabel(), countCasosForView);
@@ -491,13 +491,13 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
 
                             if (tipoGraficoSelected.equalsIgnoreCase("pieChart")) {
                                 vista1.getFiltrosVistaList().addAll(getFilterHelper2().getVista().getFiltrosVistaList());
-                                final int countCasosForView = vistaController.countCasosForView(vista1);
+                                final int countCasosForView = vistaController.countItemsVista(vista1);
                                 pieModel.set(label, countCasosForView);
                                 addTwoDimTableValue(label, serie_y.getLabel(), countCasosForView);
 
                             } else if (tipoGraficoSelected.equalsIgnoreCase("barChart") || tipoGraficoSelected.equalsIgnoreCase("lineChart")) {
                                 vista1.getFiltrosVistaList().addAll(getFilterHelper2().getVista().getFiltrosVistaList());
-                                final int countCasosForView = vistaController.countCasosForView(vista1);
+                                final int countCasosForView = vistaController.countItemsVista(vista1);
                                 serie_y.set(label, countCasosForView);
                                 addTwoDimTableValue(label, serie_y.getLabel(), countCasosForView);
                             }
@@ -542,13 +542,13 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
 
                         if (tipoGraficoSelected.equalsIgnoreCase("pieChart")) {
                             vista1.getFiltrosVistaList().addAll(getFilterHelper2().getVista().getFiltrosVistaList());
-                            final int countCasosForView = vistaController.countCasosForView(vista1);
+                            final int countCasosForView = vistaController.countItemsVista(vista1);
                             pieModel.set(label, countCasosForView);
                             addTwoDimTableValue(label, serie_y.getLabel(), countCasosForView);
 
                         } else if (tipoGraficoSelected.equalsIgnoreCase("barChart") || tipoGraficoSelected.equalsIgnoreCase("lineChart")) {
                             vista1.getFiltrosVistaList().addAll(getFilterHelper2().getVista().getFiltrosVistaList());
-                            final int countCasosForView = vistaController.countCasosForView(vista1);
+                            final int countCasosForView = vistaController.countItemsVista(vista1);
                             serie_y.set(label, countCasosForView);
                             addTwoDimTableValue(label, serie_y.getLabel(), countCasosForView);
                         }
@@ -675,13 +675,13 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
 
                     if (tipoGraficoSelected.equalsIgnoreCase("pieChart")) {
                         vista1.getFiltrosVistaList().addAll(getFilterHelper2().getVista().getFiltrosVistaList());
-                        final int countCasosForView = vistaController.countCasosForView(vista1);
-                        pieModel.set(label, vistaController.countCasosForView(vista1));
+                        final int countCasosForView = vistaController.countItemsVista(vista1);
+                        pieModel.set(label, vistaController.countItemsVista(vista1));
                         addOneDimTableValue(label, countCasosForView);
 
                     } else if (tipoGraficoSelected.equalsIgnoreCase("barChart") || tipoGraficoSelected.equalsIgnoreCase("lineChart")) {
                         vista1.getFiltrosVistaList().addAll(getFilterHelper2().getVista().getFiltrosVistaList());
-                        final int countCasosForView = vistaController.countCasosForView(vista1);
+                        final int countCasosForView = vistaController.countItemsVista(vista1);
                         serie.set(label, countCasosForView);
                         addOneDimTableValue(label, countCasosForView);
                     }
@@ -709,13 +709,13 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
 
                     if (tipoGraficoSelected.equalsIgnoreCase("pieChart")) {
                         vista1.getFiltrosVistaList().addAll(getFilterHelper2().getVista().getFiltrosVistaList());
-                        final int countCasosForView = vistaController.countCasosForView(vista1);
+                        final int countCasosForView = vistaController.countItemsVista(vista1);
                         pieModel.set(x.getLabel(), countCasosForView);
                         addOneDimTableValue(x.getLabel(), countCasosForView);
 
                     } else if (tipoGraficoSelected.equalsIgnoreCase("barChart") || tipoGraficoSelected.equalsIgnoreCase("lineChart")) {
                         vista1.getFiltrosVistaList().addAll(getFilterHelper2().getVista().getFiltrosVistaList());
-                        final int countCasosForView = vistaController.countCasosForView(vista1);
+                        final int countCasosForView = vistaController.countItemsVista(vista1);
                         serie.set(x.getLabel(), countCasosForView);
                         addOneDimTableValue(x.getLabel(), countCasosForView);
                     }
@@ -758,14 +758,14 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                         if (tipoGraficoSelected.equalsIgnoreCase("pieChart")) {
 //                            pieModel.set(x.getLabel(), vistaController.countCasosForView(vista1));
                             vista1.getFiltrosVistaList().addAll(getFilterHelper2().getVista().getFiltrosVistaList());
-                            final int countCasosForView = vistaController.countCasosForView(vista1);
+                            final int countCasosForView = vistaController.countItemsVista(vista1);
                             pieModel.set(label, countCasosForView);
                             addOneDimTableValue(label, countCasosForView);
 
                         } else if (tipoGraficoSelected.equalsIgnoreCase("barChart") || tipoGraficoSelected.equalsIgnoreCase("lineChart")) {
 //                            serie.set(x.getLabel(), vistaController.countCasosForView(vista1));
                             vista1.getFiltrosVistaList().addAll(getFilterHelper2().getVista().getFiltrosVistaList());
-                            final int countCasosForView = vistaController.countCasosForView(vista1);
+                            final int countCasosForView = vistaController.countItemsVista(vista1);
                             serie.set(label, countCasosForView);
                             addOneDimTableValue(label, countCasosForView);
                         }
@@ -804,14 +804,14 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                     if (tipoGraficoSelected.equalsIgnoreCase("pieChart")) {
 //                            pieModel.set(x.getLabel(), vistaController.countCasosForView(vista1));
                         vista1.getFiltrosVistaList().addAll(getFilterHelper2().getVista().getFiltrosVistaList());
-                        final int countCasosForView = vistaController.countCasosForView(vista1);
+                        final int countCasosForView = vistaController.countItemsVista(vista1);
                         pieModel.set(label, countCasosForView);
                         addOneDimTableValue(label, countCasosForView);
 
                     } else if (tipoGraficoSelected.equalsIgnoreCase("barChart") || tipoGraficoSelected.equalsIgnoreCase("lineChart")) {
 //                            serie.set(x.getLabel(), vistaController.countCasosForView(vista1));
                         vista1.getFiltrosVistaList().addAll(getFilterHelper2().getVista().getFiltrosVistaList());
-                        final int countCasosForView = vistaController.countCasosForView(vista1);
+                        final int countCasosForView = vistaController.countItemsVista(vista1);
                         serie.set(label, countCasosForView);
                         addOneDimTableValue(label, countCasosForView);
                     }
@@ -884,7 +884,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                 vistaItems.add(vista1);
 
                 vista1.getFiltrosVistaList().addAll(getFilterHelper2().getVista().getFiltrosVistaList());
-                final int countCasosForView = vistaController.countCasosForView(vista1);
+                final int countCasosForView = vistaController.countItemsVista(vista1);
                 serieEstado.set(a.getIdArea(), countCasosForView);
                 addTwoDimTableValue(a.getIdArea(), estado.getNombre(), countCasosForView);
 
@@ -947,7 +947,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
             vista0.getFiltrosVistaList().add(filtroEstado);
 
             vista0.getFiltrosVistaList().addAll(getFilterHelper2().getVista().getFiltrosVistaList());
-            serieEstado.set("Sin Agente", vistaController.countCasosForView(vista0));
+            serieEstado.set("Sin Agente", vistaController.countItemsVista(vista0));
 
             ArrayList<Vista> vistaItems = new ArrayList<Vista>();
             vistaItems.add(vista0);
@@ -974,7 +974,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                 vista1.getFiltrosVistaList().add(filtroEstado1);
 
                 vista1.getFiltrosVistaList().addAll(getFilterHelper2().getVista().getFiltrosVistaList());
-                final int countCasosForView = vistaController.countCasosForView(vista1);
+                final int countCasosForView = vistaController.countItemsVista(vista1);
                 serieEstado.set(agent.getIdUsuario(), countCasosForView);
                 addTwoDimTableValue(agent.getIdUsuario(), estado.getNombre(), countCasosForView);
 
@@ -1027,12 +1027,12 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         vista2.getFiltrosVistaList().add(filtroCasosCerrados);
 
         vista1.getFiltrosVistaList().addAll(getFilterHelper2().getVista().getFiltrosVistaList());
-        final int countCasosForView = vistaController.countCasosForView(vista1);
-        pieModel.set("Abiertos", vistaController.countCasosForView(vista1));
+        final int countCasosForView = vistaController.countItemsVista(vista1);
+        pieModel.set("Abiertos", vistaController.countItemsVista(vista1));
         addOneDimTableValue("Abiertos", countCasosForView);
 
         vista2.getFiltrosVistaList().addAll(getFilterHelper2().getVista().getFiltrosVistaList());
-        final int countCasosForView2 = vistaController.countCasosForView(vista2);
+        final int countCasosForView2 = vistaController.countItemsVista(vista2);
         pieModel.set("Cerrados", countCasosForView2);
         addOneDimTableValue("Cerrados", countCasosForView2);
 
@@ -1075,7 +1075,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         }
         vista0.getFiltrosVistaList().add(filtroNotAssigned);
         vista0.getFiltrosVistaList().addAll(getFilterHelper2().getVista().getFiltrosVistaList());
-        pieModel.set("No Asignados", vistaController.countCasosForView(vista0));
+        pieModel.set("No Asignados", vistaController.countItemsVista(vista0));
         vistaItems.add(vista0);
 
         List<Usuario> agents = getJpaController().getUsuarioFindAll();
@@ -1093,7 +1093,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                 }
                 vista1.getFiltrosVistaList().add(filtro);
                 vista1.getFiltrosVistaList().addAll(getFilterHelper2().getVista().getFiltrosVistaList());
-                final int countCasosForView = vistaController.countCasosForView(vista1);
+                final int countCasosForView = vistaController.countItemsVista(vista1);
                 pieModel.set(agent.getIdUsuario(), countCasosForView);
                 addOneDimTableValue(agent.getIdUsuario(), countCasosForView);
                 vistaItems.add(vista1);
@@ -1136,7 +1136,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
             }
             vista1.getFiltrosVistaList().add(filtro);
             vista1.getFiltrosVistaList().addAll(getFilterHelper2().getVista().getFiltrosVistaList());
-            final int countCasosForView = vistaController.countCasosForView(vista1);
+            final int countCasosForView = vistaController.countItemsVista(vista1);
             pieModel.set(area.getIdArea(), countCasosForView);
             addOneDimTableValue(area.getIdArea(), countCasosForView);
             vistaItems.add(vista1);
@@ -1228,7 +1228,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
 
             view.getFiltrosVistaList().addAll(getFilterHelper2().getVista().getFiltrosVistaList());
 
-            pieModel.set((i) + (i > 1 ? " días" : " día") + (i != howManyPeriodsToShow ? "" : " o más"), vistaController.countCasosForView(view));
+            pieModel.set((i) + (i > 1 ? " días" : " día") + (i != howManyPeriodsToShow ? "" : " o más"), vistaController.countItemsVista(view));
             vistaItems.add(view);
 
         }

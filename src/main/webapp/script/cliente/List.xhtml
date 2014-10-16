@@ -5,13 +5,19 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:go="http://java.sun.com/jsf/composite/components/filterView">
+      xmlns:go="http://java.sun.com/jsf/composite/go">
 
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
             <h:outputText value="Clientes"></h:outputText>
         </ui:define>
         <ui:define name="west">
+
+            <go:vistasList id="vistasList" update=":vistasList:vistasForm :mainform:messages :formfilter:panelFilter0:panelFilter :form" 
+                           controllerMBean="#{clienteController}"
+                           user="#{UserSessionBean.current}"/>
+
+            <br/>
             <p:accordionPanel multiple="true" cache="true" id="accionesaccordion1">
                 <p:tab title="Clientes" id="accionestab1">
                     <h:outputLabel escape="false" value="#{bundle.ayudaClientes}"/>
@@ -20,7 +26,15 @@
         </ui:define>
         <ui:define name="body">
 
+            <h:form id="formfilter">
 
+                <go:filterView id="panelFilter0" titleIconClass="fa fa-users page-header-icon"
+                               controllerMBean="#{clienteController}" 
+                               filterHelper="#{clienteController.filterHelper}" 
+                               canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
+                               update=":mainform:messages :formfilter:panelFilter0:panelFilter :form"/>
+
+            </h:form>
 
             <h:form id="form">
                 <p:messages globalOnly="true"/>
@@ -33,11 +47,11 @@
                             <p:commandButton actionListener="#{clienteController.prepareList()}" icon="ui-icon-search" update=":form"/>
                             <p:watermark for="searchRut" value="Nombre o Apellido o email o rut o dirección municipal..."/>
                         </h:panelGrid>
-                        
-                       
+
+
                     </p:panel>
-                    
-                     
+
+
 
 
                     <br/>
@@ -65,7 +79,7 @@
 
                             <p:separator/>
                             <p:commandButton ajax="false" action="#{clienteController.prepareCreate}" value="Crear cliente" icon="ui-icon ui-icon-plus" />
-                          
+
                         </p:toolbarGroup>
                     </p:toolbar>
 
@@ -91,8 +105,8 @@
                                 #{r.emailCliente}
                             </p:dataList>
                         </p:column>
-                        
-                         <p:column headerText="TPC" >
+
+                        <p:column headerText="TPC" >
                             <h:outputText value="#{not empty item.productoContratadoList ? 'Si':'No'}"/>
                         </p:column>
 
@@ -109,15 +123,15 @@
                 </h:panelGroup>
 
                 <p:toolbar style="border: none;">
-                    
+
                     <p:toolbarGroup align="left">
-                           <p:commandButton ajax="false" action="#{clienteController.prepareCreateMasivo()}" value="Importación masiva de clientes" icon="ui-icon ui-icon-arrowstop-1-n" />
+                        <p:commandButton ajax="false" action="#{clienteController.prepareCreateMasivo()}" value="Importación masiva de clientes" icon="ui-icon ui-icon-arrowstop-1-n" />
                         <p:commandButton ajax="false" action="cargarClienteProducto" value="Importar Relación Cliente/#{applicationBean.productSubComponentDescription}" icon="ui-icon ui-icon-arrowstop-1-n" />
 
                     </p:toolbarGroup>
-                    
-                    
-                        
+
+
+
                     <p:toolbarGroup align="right">
 
                         <p:outputLabel value="Páginas de "/>
@@ -141,7 +155,7 @@
                         <p:separator/>
                         <p:commandButton ajax="false" action="#{clienteController.prepareCreate}" value="Crear cliente" icon="ui-icon ui-icon-plus" />
 
-                     
+
                     </p:toolbarGroup>
                 </p:toolbar>
 

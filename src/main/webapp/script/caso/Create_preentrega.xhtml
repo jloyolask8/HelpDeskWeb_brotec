@@ -229,7 +229,7 @@
                                                 <p:commandButton icon="ui-icon-plus" actionListener="#{casoController.addNewSubCasoToPreentrega}" immediate="true"
                                                                  update=":form:messages :form:filtrosVista" iconPos="notext" />
                                             </f:facet>
-                                            <p:commandButton icon="ui-icon-close" actionListener="#{casoController.removeSubCasoFromPreentrega(subcaso)}" ajax="true" immediate="true"
+                                            <p:commandButton icon="ui-icon-close" actionListener="#{casoController.removeSubCasoFromCurrentCaso(subcaso)}" ajax="true" immediate="true"
                                                              update=":form" iconPos="notext" />
                                         </p:column>
                                     </p:dataTable>

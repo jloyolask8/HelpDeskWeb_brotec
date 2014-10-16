@@ -42,18 +42,13 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
     @ManagedProperty(value = "#{filtroAcceso}")
     private FiltroAcceso filtroAcceso;
     private int selectedItemIndex;
-    List<Vista> allMyVistas = null;
+    
     //---
     private Integer visibilityOption = 1;
     //--
     private transient JPAFilterHelper filterHelper2;
 
-    private static Comparator<Vista> comparadorVistas = new Comparator<Vista>() {
-        @Override
-        public int compare(Vista o1, Vista o2) {
-            return o1.getNombre().compareTo(o2.getNombre());
-        }
-    };
+    
 
     public VistaController() {
         super(Vista.class);
@@ -88,6 +83,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         return filterHelper2;
     }
 
+    @Override
     public String prepareList() {
         recreateModel();
         return "/script/vista/List";
@@ -106,20 +102,19 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         return "/script/vista/Create";
     }
 
+    public String prepareCreate(Vista newVista) {
+        current = newVista;
+        this.filterHelper2 = null;//recreate filter helper
+        visibilityOption = determineVisibility(current);
+        selectedItemIndex = -1;
+        JsfUtil.addWarningMessage("Atención: Al Guardar se creará una vista Nueva.");
+        return "/script/vista/Create";
+    }
+
     public void handleAnyChangeEvent() {
     }
 
-    public int countCasosForView(Vista vista) {
-
-        try {
-            return getJpaController().countEntities(vista, userSessionBean.getCurrent()).intValue();
-        } catch (Exception ex) {
-            addErrorMessage(ex.getMessage());
-            Logger.getLogger(VistaController.class.getName()).log(Level.SEVERE, null, ex);
-            return 0;
-        }
-
-    }
+   
 
     public void create(Vista view) throws RollbackFailureException, Exception {
         visibilityOption = determineVisibility(view);
@@ -141,9 +136,10 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
             default: //Error
 
         }
-
-        for (FiltroVista filtroVista : view.getFiltrosVistaList()) {
-            filtroVista.setIdFiltro(null);
+        if (view.getFiltrosVistaList() != null) {
+            for (FiltroVista filtroVista : view.getFiltrosVistaList()) {
+                filtroVista.setIdFiltro(null);
+            }
         }
 
         getJpaController().getVistaJpaController().create(view);
@@ -183,8 +179,15 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
 
     }
 
-    public String prepareEdit(Vista item) {
-        current = item;
+//    public String prepareEdit(Vista item) {
+//        current = item;
+//        this.filterHelper2 = null;//recreate filter helper
+//        visibilityOption = determineVisibility(current);
+//        return "/script/vista/Edit";
+//    }
+    
+    public String prepareEdit(Integer idVista) {
+        current = getJpaController().find(Vista.class, idVista);
         this.filterHelper2 = null;//recreate filter helper
         visibilityOption = determineVisibility(current);
         return "/script/vista/Edit";
@@ -334,84 +337,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         return lista;
     }
 
-    public void resetVistas() {
-        allMyVistas = null;
-    }
-
-    public List<Vista> getAllVistasItems() {
-
-        if (allMyVistas == null) {
-            List<Vista> lista = new ArrayList<>();
-            final List<Vista> visibleForAllItems = getVisibleForAllItems();
-            final List<Vista> visibleForMeOnlyItems = getVisibleForMeOnlyItems();
-            final List<Vista> visibleForMyGroupsItems = getVisibleForMyGroupsItems();
-            final List<Vista> visibleForMyAreasItems = getVisibleForMyAreasItems();
-
-            if (visibleForAllItems != null) {
-                for (Vista vista : visibleForAllItems) {
-                    if (!lista.contains(vista)) {
-                        lista.addAll(visibleForAllItems);
-                    }
-                }
-            }
-
-            if (visibleForMeOnlyItems != null) {
-                for (Vista vista : visibleForMeOnlyItems) {
-                    if (!lista.contains(vista)) {
-                        lista.addAll(visibleForMeOnlyItems);
-                    }
-                }
-            }
-
-            if (visibleForMyGroupsItems != null) {
-                for (Vista vista : visibleForMyGroupsItems) {
-                    if (!lista.contains(vista)) {
-                        lista.addAll(visibleForMyGroupsItems);
-                    }
-                }
-            }
-
-            if (visibleForMyAreasItems != null) {
-                for (Vista vista : visibleForMyAreasItems) {
-                    if (!lista.contains(vista)) {
-                        lista.addAll(visibleForMyAreasItems);
-                    }
-                }
-            }
-            Collections.sort(lista, comparadorVistas);
-            this.allMyVistas = lista;
-        }
-
-        return this.allMyVistas;
-    }
-
-    /**
-     * @deprecated @return
-     */
-    public List<Vista> getVisibleForAllItems() {
-        return getJpaController().getVistaJpaController().findVistaEntitiesVisibleForAll();
-    }
-
-    /**
-     * @deprecated @return
-     */
-    public List<Vista> getVisibleForMeOnlyItems() {
-        return getJpaController().getVistaJpaController().findVistaEntitiesCreatedByUser(userSessionBean.getCurrent(), true, 0, 0);
-    }
-
-    /**
-     * @deprecated @return
-     */
-    public List<Vista> getVisibleForMyGroupsItems() {
-        return getJpaController().getVistaJpaController().findVistaEntitiesVisibleForGroupsOfUser(userSessionBean.getCurrent());
-    }
-
-    /**
-     * @deprecated @return
-     */
-    public List<Vista> getVisibleForMyAreasItems() {
-        return getJpaController().getVistaJpaController().findVistaEntitiesVisibleForAreasOfUser(userSessionBean.getCurrent());
-    }
+    
 
     /**
      * @param userSessionBean the userSessionBean to set
@@ -459,7 +385,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
             }
             VistaController controller = (VistaController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "vistaController");
-            return controller.getJpaController().getVistaJpaController().findVista(getKey(value));
+            return controller.getJpaController().find(Vista.class, getKey(value));
         }
 
         java.lang.Integer getKey(String value) {

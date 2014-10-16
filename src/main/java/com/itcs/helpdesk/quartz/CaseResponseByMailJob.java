@@ -73,7 +73,7 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
             emails_to = emails_to.trim().replace(" ", "");
             String attachIds = (String) map.get(EMAIL_ATTACHMENTS);
 
-            List<Long> idAtts = new LinkedList<Long>();
+            List<Long> idAtts = new LinkedList<>();
             String ids[] = attachIds.split(";");
             for (String string : ids) {
                 try {
@@ -93,7 +93,7 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
                     //SEND THE EMAIL!
                     List<EmailAttachment> attachments = null;
                     if (!idAtts.isEmpty()) {
-                        attachments = new LinkedList<EmailAttachment>();
+                        attachments = new LinkedList<>();
                         for (Long idAtt : idAtts) {
 
                             Attachment att = jpaController.getReference(Attachment.class, idAtt);
@@ -132,7 +132,7 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
                         nota.setEnviadoA("to:"+Arrays.toString(split) 
                                 + (ccEmails == null?"":" cc:"+Arrays.toString(ccEmails))
                                 + (bccEmails == null?"":" bcc:"+Arrays.toString(bccEmails)));
-                        jpaController.getNotaJpaController().edit(nota);
+                        jpaController.merge(nota);
                         unschedule(formatJobId);
                     } catch (SchedulerException ex) {
                         Logger.getLogger(CaseResponseByMailJob.class.getName()).log(Level.SEVERE, "no se pudo desagendar " + formatJobId, ex);

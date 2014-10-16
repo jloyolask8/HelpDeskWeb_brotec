@@ -5,7 +5,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:itcs="http://java.sun.com/jsf/composite/components/filterView">
+      xmlns:go="http://java.sun.com/jsf/composite/go">
 
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
@@ -21,7 +21,7 @@
         <ui:define name="body">
             <h:form id="form">
 
-                <itcs:filterView controllerMBean="#{subEstadoCasoController}" filterHelper="#{subEstadoCasoController.filterHelper}" update=":mainform:messages :form"/>
+                <go:filterView controllerMBean="#{subEstadoCasoController}" filterHelper="#{subEstadoCasoController.filterHelper}" update=":mainform:messages :form"/>
 
                 <h:panelGroup >
 

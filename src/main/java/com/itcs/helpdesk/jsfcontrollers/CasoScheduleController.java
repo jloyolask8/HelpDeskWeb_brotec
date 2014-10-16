@@ -194,7 +194,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
                         getFilterHelper().getVista().getFiltrosVistaList().add(f5);
                     }
 
-                    System.out.println("VISTA=" + getFilterHelper().getVista());
+//                    System.out.println("VISTA=" + getFilterHelper().getVista());
 
                     final List<com.itcs.helpdesk.persistence.entities.ScheduleEvent> findEntities
                             = (List<com.itcs.helpdesk.persistence.entities.ScheduleEvent>) getJpaController().findAllEntities(getEntityClass(), getFilterHelper().getVista(), new OrderBy("startDate", OrderBy.OrderType.DESC), null);
@@ -213,7 +213,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
             }
         };
 
-        System.out.println("new CasoScheduleController()");
+//        System.out.println("new CasoScheduleController()");
 
     }
 
@@ -221,7 +221,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
         this.event = scheduleEvent;
         com.itcs.helpdesk.persistence.entities.ScheduleEvent scheduleEvent1 = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) scheduleEvent.getData();
-        casoController.setActiveIndexCasoSections(8);//tabEditarEvento
+        casoController.setActiveIndexCasoSections(CasoController.TAB_EVENTO_INDEX);//tabEditarEvento
         return casoController.filterByIdCaso(scheduleEvent1.getIdCaso().getIdCaso());
 
     }
@@ -271,7 +271,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     public void quickSaveEvent() {
 
-        System.out.println("void quickSaveEvent called");
+//        System.out.println("void quickSaveEvent called");
 
         try {
             com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) event.getData();
@@ -307,7 +307,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     public void saveEvent() {
 
-        System.out.println("void saveEvent called");
+//        System.out.println("void saveEvent called");
 
         try {
             com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) event.getData();
@@ -332,7 +332,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
                 moveEventQuartzTriggers(entityEvent);
 
                 lazyScheduleEventsModel.updateEvent(event);
-                casoController.setActiveIndexCasoSections(4);//tabAgendarEvento
+                casoController.setActiveIndexCasoSections(CasoController.TAB_AGENDA_INDEX);//tabAgendarEvento
                 this.event = null;
                 addInfoMessage("Evento actualizado exitósamente.");
                 executeInClient("PF('myschedule').update();");
@@ -347,16 +347,16 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     public void onTabClose(TabCloseEvent closeEvent) {
         //update=":inputPanel"
-        System.out.println("TabCloseEvent:" + closeEvent.getTab());
-        FacesMessage msg = new FacesMessage("Tab Closed", "Closed tab: " + closeEvent.getTab().getTitle());
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+//        System.out.println("TabCloseEvent:" + closeEvent.getTab());
+//        FacesMessage msg = new FacesMessage("Tab Closed", "Closed tab: " + closeEvent.getTab().getTitle());
+//        FacesContext.getCurrentInstance().addMessage(null, msg);
         this.event = null;
     }
 
     public void goEditEvent() {
         //casoController.onChangeActiveIndexdescOrComment(event);
         addEvent();
-        casoController.setActiveIndexCasoSections(8);//tabEditarEvento
+        casoController.setActiveIndexCasoSections(CasoController.TAB_EVENTO_INDEX);//tabEditarEvento
         executeInClient("PF('viewEventDialog').hide();PF('createEventDialog').hide();");
         updateComponentInClient("inputPanel");
     }

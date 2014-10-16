@@ -6,7 +6,7 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
       xmlns:pe="http://primefaces.org/ui/extensions"
-      xmlns:itcs="http://java.sun.com/jsf/composite/components/filterView">
+      xmlns:go="http://java.sun.com/jsf/composite/go">
 
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
@@ -24,7 +24,6 @@
 
         <ui:define name="body">
 
-
             <pe:layoutPane position="center" styleHeader="margin-top: 6px !important;">
                 <f:facet name="header">
                     <p:outputLabel value="#{bundle.ListClippingTitle}"/>
@@ -33,7 +32,7 @@
                 <h:form id="form">
                     <p:messages />
 
-                    <itcs:filterView controllerMBean="#{clippingController}" filterHelper="#{clippingController.filterHelper}" update=":mainform:messages :form"/>
+                    <go:filterView controllerMBean="#{clippingController}" filterHelper="#{clippingController.filterHelper}" update=":mainform:messages :form"/>
 
                     <h:panelGroup>
                         <p:dataTable id="panelG1" value="#{clippingController.items}" 

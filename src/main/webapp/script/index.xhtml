@@ -6,7 +6,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:pe="http://primefaces.org/ui/extensions"
-      xmlns:go="http://java.sun.com/jsf/composite/components/filterView">
+      xmlns:go="http://java.sun.com/jsf/composite/go">
 
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
@@ -38,29 +38,12 @@
 
         <ui:define name="west" id="west">
 
-            <p:accordionPanel cache="true" id="accionesaccordion1" activeIndex="#{casoController.activeIndexMenuAccordionPanel}" multiple="true">
-                <p:tab title="Vistas">
-                    <h:form id="vistasForm">
-                        <p:dataList paginator="true" paginatorAlwaysVisible="false" type="ordered" rows="10" style="width: 100%;border: 0px;"
-                                    value="#{vistaController.allVistasItems}" var="vista1" >
-                            <p:column>
-                                <p:commandLink id="vistalink1" ajax="true" update=":accionesaccordion1:vistasForm :mainform:messages :formfilter:panelFilter0:panelFilter :form0:panelG1" 
-                                               action="#{casoController.applyViewFilter(vista1)}" 
-                                               value="#{vista1.nombre}" style="font-weight: bold" styleClass="ui-state-default" />
-                                <p:tooltip for="vistalink1" value="#{vista1.descripcion}" />  
+            <go:vistasList id="vistasList" update=":vistasList:vistasForm :mainform:messages :formfilter:panelFilter0:panelFilter :form0:panelG1" 
+                           controllerMBean="#{casoController}"
+                           user="#{UserSessionBean.current}"/>
 
-                            </p:column>
-                            <p:column>
-                                <h:outputText value="#{vistaController.countCasosForView(vista1)}" styleClass="ui-li-count"/>
-                            </p:column>
-                        </p:dataList>
-                        <br/>
-
-                        <p:commandLink ajax="false" action="#{vistaController.prepareList()}"
-                                       rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
-                                       value="Administrar Vistas" style="float: right;"/>
-                    </h:form>
-                </p:tab>
+            <p:accordionPanel cache="true" id="accionesaccordion1" 
+                              activeIndex="#{casoController.activeIndexMenuAccordionPanel}" multiple="true">
                 <p:tab title="Etiquetas">
                     <p:tagCloud id="tagCloud" model="#{tagCloudBean.etiquetasByUsuario}" style="width: 100%;">  
                         <p:ajax event="select" listener="#{casoController.onTagSelect}" 
@@ -100,6 +83,16 @@
 
             <pe:importEnum type="com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta" var="EnumTipoAlerta" allSuffix="ALL_ENUM_VALUES" />
 
+            <h:form id="formfilter">
+
+                <go:filterView id="panelFilter0" titleIconClass="fa fa-inbox page-header-icon"
+                               controllerMBean="#{casoController}" 
+                               filterHelper="#{casoController.filterHelper}" 
+                               canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
+                               update=":mainform:messages :formfilter:panelFilter0:panelFilter :form0:panelG1"/>
+
+            </h:form>
+
             <h:form id="form0">
 
                 <h:panelGroup id="panelG1">
@@ -112,8 +105,7 @@
                             <p:commandButton id="updateList" title="Actualizar" icon="fa fa-refresh" style="width: 40px;" 
                                              actionListener="#{casoController.refresh()}" update=":form0:panelG1" />
 
-                            <p:commandButton onclick="PF('filterViewdialog').show()" title="Filtro de casos"
-                                             type="button" icon="fa fa-filter"/>  
+
 
                             <p:commandButton onclick="PF('applyRuleDialog').show()" icon="fa fa-cog" title="Ejecutar Regla" iconPos="notext"
                                              update=":applyRuleForm" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/> 
@@ -176,7 +168,7 @@
                         <p:toolbarGroup align="right">
 
                             <p:selectOneMenu id="cant" value="#{casoController.paginationPageSize}" style="top: 7px" >
-                                <p:ajax event="change" listener="#{casoController.filterList}" update=":form0:panelG1"/>
+                                <p:ajax event="change" listener="#{casoController.resetPageSize()}" update=":form0:panelG1"/>
                                 <f:selectItems value="#{casoController.pagination.pageSizesAvailable}"/>
                             </p:selectOneMenu>
 
@@ -226,13 +218,13 @@
 
                         <p:column sortBy="#{item.clientName}" headerText="Solicitante">                                
                             <p:commandLink  
-                                action="#{clienteController.prepareView(item.idCliente, 'inbox')}" 
+                                action="#{clienteController.prepareView(item.idCliente ne null ? item.idCliente:item.emailCliente.cliente, 'inbox')}" 
                                 ajax="false" value="#{item.clientName}" title="#{item.emailCliente.emailCliente}"
                                 immediate="true"/>
 
                         </p:column>
 
-                        
+
 
                         <p:column sortBy="#{item.tema}" headerText="Asunto"> 
                             <h:panelGroup layout="block" >  
@@ -270,7 +262,7 @@
                             <h:outputText id="fechaModif" value="#{casoController.formatShortDate(item.fechaModif)}" />
                             <p:tooltip for="fechaModif" value="Modificado: #{casoController.formatDate(item.fechaModif)} (#{casoController.prettyDate(item.fechaModif)})"  />
                         </p:column>
-                        
+
                         <p:column headerText="SLA">   
 
                             <pe:switch id="switchTicketAlertState" value="#{item.isOpen().toString()}">  
@@ -305,7 +297,7 @@
                                 </pe:case>  
                             </pe:switch>
                         </p:column>
-                        
+
                     </p:dataTable>
 
                     <br/>
@@ -373,25 +365,7 @@
             </p:dialog>
 
 
-            <p:dialog id="filterViewdialog" header="Criterios de Selección de la vista" widgetVar="filterViewdialog"  closeOnEscape="true"
-                      dynamic="true"  modal="true" appendTo="@(body)">
-                <h:form id="formfilter">
 
-                    <go:filterView id="panelFilter0" controllerMBean="#{casoController}" filterHelper="#{casoController.filterHelper}" canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
-                                     update=":mainform:messages :formfilter:panelFilter0:panelFilter :form0:panelG1"/>
-
-
-                    <p:tooltip id="toolTipG" for="linkGuardar" style="width: 300px">
-                        <p:outputLabel id="outtip" value="Permite guardar estos criterios de busqueda como una Vista que puede ejecutar directamente más tarde." />
-                    </p:tooltip>
-
-                    <p:commandButton id="linkGuardar" actionListener="#{casoController.prepareGuardarVista()}" update=":saveViewForm" oncomplete="PF('saveViewDialog').show()" 
-                                     icon="ui-icon-disk" rendered="#{not empty casoController.filterHelper.vista.filtrosVistaList}" style="float: right;"
-                                     disabled="#{not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
-                                     styleClass="ui-panel-titlebar-icon ui-corner-all ui-state-default" value="Guardar como.."/>
-
-                </h:form>
-            </p:dialog>
 
             <p:dialog  widgetVar="excelStatusDialog" header="Generando Documento Excel con los casos..." draggable="false" closable="false" resizable="false"
                        dynamic="true" modal="true" appendTo="@(body)">  
@@ -400,70 +374,7 @@
             </p:dialog> 
 
 
-            <p:dialog id="saveView" closable="true" closeOnEscape="true" width="500"
-                      dynamic="true" modal="true" appendTo="@(body)"
-                      header="Guardar Criterios de Selección como Vista" widgetVar="saveViewDialog">
-                <h:form id="saveViewForm">
-                    <p:messages/>
-                    <h:panelGrid columns="2">
-                        <h:outputLabel value="#{bundle.VistaLabel_nombre}" for="nombre" style="font-weight: bold"/>
-                        <p:inputText id="nombre" value="#{casoController.filterHelper.vista.nombre}" style="width: 100%;"
-                                     title="#{bundle.VistaTitle_nombre}" required="true" requiredMessage="#{bundle.VistaRequiredMessage_nombre}"/>
-
-                        <h:outputLabel value="Visibilidad" for="VisibilidadPanel" style="font-weight: bold"/>
-
-                        <p:outputPanel id="VisibilidadPanel">  
-                            <p:selectOneRadio id="visibility" value="#{casoController.visibilityOption}" layout="custom">  
-                                <f:selectItem itemLabel="Visible por Todos" itemValue="1" />  
-                                <f:selectItem itemLabel="Grupo" itemValue="2" />  
-                                <f:selectItem itemLabel="Area" itemValue="3" />     
-                                <p:ajax update=":saveViewForm:VisibilidadPanel" listener="#{vistaController.handleAnyChangeEvent()}" /> 
-                            </p:selectOneRadio>  
-
-                            <h:panelGrid>
-                                <h:panelGrid columns="3">
-                                    <p:radioButton id="visibleToAll" for="visibility" itemIndex="0"/>  
-                                    <h:outputLabel value="Visible por Todos:" for="visibleToAll" style="font-weight: bold"/>
-
-                                    <p:selectOneButton id="visibleToAllSelect" value="#{casoController.filterHelper.vista.visibleToAll}" 
-                                                       rendered="#{casoController.visibilityOption eq 1}"
-                                                       required="true" requiredMessage="#{bundle.VistaRequiredMessage_visibleToAll}">  
-                                        <f:selectItem itemLabel="Si, para todo el mundo" itemValue="true" />  
-                                        <f:selectItem itemLabel="No, sólo yo" itemValue="false" />  
-                                    </p:selectOneButton> 
-                                </h:panelGrid>
-
-                                <h:panelGrid columns="3">
-                                    <p:radioButton id="idGrupo" for="visibility" itemIndex="1"/>  
-                                    <h:outputLabel value="Grupo:" for="idGrupo" style="font-weight: bold"/>
-                                    <p:selectOneMenu id="idGrupoSelect" value="#{casoController.filterHelper.vista.idGrupo}" required="true" requiredMessage="Debe Seleccionar un grupo si desea Visibilidad a nivel de Grupo."
-                                                     rendered="#{casoController.visibilityOption eq 2}" >
-                                        <f:selectItems value="#{grupoController.itemsAvailableSelectOne}"/>
-                                    </p:selectOneMenu> 
-                                </h:panelGrid>
-
-                                <h:panelGrid columns="3">
-                                    <p:radioButton id="idArea" for="visibility" itemIndex="2"/>  
-                                    <h:outputLabel value="Area:" for="idArea" style="font-weight: bold"/>
-                                    <p:selectOneMenu id="idAreaSelect" value="#{casoController.filterHelper.vista.idArea}" required="true" requiredMessage="Debe Seleccionar un Area si desea Visibilidad a nivel de Area."
-                                                     rendered="#{casoController.visibilityOption eq 3}">
-                                        <f:selectItems value="#{areaController.itemsAvailableSelectOne}"/>
-                                    </p:selectOneMenu>
-                                </h:panelGrid>
-                            </h:panelGrid>  
-                        </p:outputPanel>  
-
-                        <h:outputLabel value="#{bundle.VistaLabel_descripcion}" for="descripcion" style="font-weight: bold"/>
-                        <p:inputTextarea id="descripcion" value="#{casoController.filterHelper.vista.descripcion}" title="#{bundle.VistaTitle_descripcion}" style="width: 100%;"/>
-
-                    </h:panelGrid>
-
-                    <br />
-                    <p:commandButton action="#{casoController.saveCurrentView()}" value="Guardar" update=":mainform:messages :accionesaccordion1"/>
-
-
-                </h:form>
-            </p:dialog>
+            
 
             <p:dialog  widgetVar="deleteSelectedCasos" header="Confirmar" resizable="false" closeOnEscape="true" modal="true" appendTo="@(body)" dynamic="true">  
                 <h:form id="formdeleteSelectedCasos">

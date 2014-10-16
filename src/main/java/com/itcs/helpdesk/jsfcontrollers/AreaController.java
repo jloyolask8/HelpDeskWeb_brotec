@@ -79,6 +79,7 @@ public class AreaController extends AbstractManagedBean<Area> implements Seriali
         return pagination;
     }
 
+    @Override
     public String prepareList() {
         recreateModel();
         return "/script/area/List";

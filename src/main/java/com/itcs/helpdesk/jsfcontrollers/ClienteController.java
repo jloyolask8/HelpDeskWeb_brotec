@@ -63,7 +63,7 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
                                 count = getJpaController().getClienteJpaController().countSearchEntities(searchPattern).intValue();
                             } else {
 //                                count = getJpaController().getClienteJpaController().getClienteCount();
-                                count = getJpaController().countEntities(getFilterHelper().getVista(), getDefaultUserWho()).intValue();
+                                count = getJpaController().countEntities(getFilterHelper().getVista(), getDefaultUserWho(), null).intValue();
                             }
                         }
 
@@ -171,13 +171,18 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
     }
 
     public String prepareView(Cliente c) {
-        current = c;
+        if (c != null) {
+            current = c;
+        }
         this.backOutcome = null;
         return "/script/cliente/View";
     }
 
     public String prepareView(Cliente c, String backOutcome) {
-        current = c;
+        if (c != null) {
+            current = c;
+        }
+
         this.backOutcome = backOutcome;
         return "/script/cliente/View";
     }
@@ -297,12 +302,12 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
         }
     }
 
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
+//    public DataModel getItems() {
+//        if (items == null) {
+//            items = getPagination().createPageDataModel();
+//        }
+//        return items;
+//    }
 
     @Override
     public Class getDataModelImplementationClass() {
