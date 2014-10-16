@@ -1616,7 +1616,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         recreateModel();
         recreatePagination();
 
-        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Etiqueta Seleccionada:" + tagId, "");
+//        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Etiqueta Seleccionada:" + tagId, "");
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
