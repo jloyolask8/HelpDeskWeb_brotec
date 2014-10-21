@@ -54,7 +54,8 @@
         <ui:define name="body">
             <h:form id="form">
 
-                <go:filterView controllerMBean="#{prioridadController}" filterHelper="#{prioridadController.filterHelper}" update=":mainform:messages :form"/>
+                <go:filterView controllerMBean="#{prioridadController}" filterHelper="#{prioridadController.filterHelper}" update=":mainform:messages :form"
+                               vistaControllerBackOutcome="/script/prioridad/List"/>
 
                 <h:panelGroup>
 

@@ -50,9 +50,9 @@ public class BlackListController extends AbstractManagedBean<BlackListEmail> imp
         current = new BlackListEmail();
     }
 
-    public void prepareEdit(BlackListEmail o) {
-        current = o;
-    }
+//    public void prepareEdit(BlackListEmail o) {
+//        current = o;
+//    }
 
     public void create() {
         try {

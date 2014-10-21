@@ -103,15 +103,16 @@ public class GrupoController extends AbstractManagedBean<Grupo> implements Seria
         }
     }
 
-    public String prepareEdit(Grupo item) throws Exception {
+    @Override
+    public String prepareEdit(Grupo item) {
         setSelected(item);
-        setUsuariosDualListModel(new DualListModel<Usuario>(getJpaController().getUsuarioFindAll(), current.getUsuarioList()));
+        setUsuariosDualListModel(new DualListModel<>(getJpaController().getUsuarioFindAll(), current.getUsuarioList()));
         for (Usuario user : current.getUsuarioList()) {
             if (getUsuariosDualListModel().getSource().contains(user)) {
                 getUsuariosDualListModel().getSource().remove(user);
             }
         }
-        setProductoDualListModel(new DualListModel<Producto>((List<Producto>)getJpaController().findAll(Producto.class), current.getProductoList()));
+        setProductoDualListModel(new DualListModel<>((List<Producto>)getJpaController().findAll(Producto.class), current.getProductoList()));
         for (Producto producto : current.getProductoList()) {
             if (getProductoDualListModel().getSource().contains(producto)) {
                 getProductoDualListModel().getSource().remove(producto);
@@ -121,14 +122,26 @@ public class GrupoController extends AbstractManagedBean<Grupo> implements Seria
         return "/script/grupo/Edit";
     }
 
-    public String prepareView(Grupo item) throws Exception {
-        selectItem(item);
-        if (getSelected() == null) {
-            JsfUtil.addSuccessMessage("Se requiere que seleccione un grupo para visualizar.");
-            return "";
-        }
-        return "/script/grupo/View";
+//    public String prepareView(Grupo item) {
+//        selectItem(item);
+//        if (getSelected() == null) {
+//            JsfUtil.addSuccessMessage("Se requiere que seleccione un grupo para visualizar.");
+//            return "";
+//        }
+//        return "/script/grupo/View";
+//    }
+
+    @Override
+    protected String getViewPage() {
+       return "/script/grupo/View";
     }
+
+    @Override
+    protected String getEditPage() {
+       return "/script/grupo/Edit";
+    }
+    
+    
 
     public void selectItem(Grupo item) {
         //System.out.println("selectItem="+item.getIdGrupo());

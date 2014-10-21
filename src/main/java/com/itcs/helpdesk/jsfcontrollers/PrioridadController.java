@@ -66,10 +66,18 @@ public class PrioridadController extends AbstractManagedBean<Prioridad> implemen
         }
     }
 
-    public String prepareEdit(Prioridad item) throws Exception {
-        current = (item);
+//    @Override
+//    public String prepareEdit(Prioridad item)  {
+//        current = (item);
+//        return "/script/prioridad/Edit";
+//    }
+
+    @Override
+    protected String getEditPage() {
         return "/script/prioridad/Edit";
     }
+    
+    
 
     public String update() {
         try {

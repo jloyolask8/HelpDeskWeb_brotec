@@ -88,13 +88,20 @@ public class ComponenteController extends AbstractManagedBean<Componente> implem
         }
     }
 
-    public void prepareEdit(Componente comp) {
-        if (comp != null) {
-            current = comp;
-        } else {
-            JsfUtil.addWarningMessage("Se requiere un elemento para editar.");
-        }
+//    public void prepareEdit(Componente comp) {
+//        if (comp != null) {
+//            current = comp;
+//        } else {
+//            JsfUtil.addWarningMessage("Se requiere un elemento para editar.");
+//        }
+//    }
+
+    @Override
+    protected String getEditPage() {
+        return super.getEditPage(); //To change body of generated methods, choose Tools | Templates.
     }
+    
+    
 
 //    public String prepareEdit() {
 //        if (getSelectedItems().length != 1) {

@@ -200,9 +200,20 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         return "/script/canal/List";
     }
 
-    public void prepareView(Canal c) {
-        current = c;
+//    public void prepareView(Canal c) {
+//        current = c;
+//    }
+    @Override
+    protected String getViewPage() {
+        return super.getViewPage(); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    protected String getEditPage() {
+        return super.getEditPage(); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
 
     public void prepareCreateEmail() {
         tmpEmailSuNombre = null;
@@ -249,9 +260,11 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         mode = "Create";
     }
 
-    public void prepareEdit(Canal c) {
+    @Override
+    public String prepareEdit(Canal c) {
         current = c;
         mode = "Edit";
+        return null;
     }
 
     public void prepareEditEmail(Canal c) {

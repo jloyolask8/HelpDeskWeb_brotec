@@ -18,9 +18,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
-import javax.resource.NotSupportedException;
 import org.primefaces.model.SelectableDataModel;
 
 @ManagedBean(name = "clienteController")
@@ -35,7 +33,7 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
     private boolean canCreate = false;
     private boolean canEdit;
 
-    protected String backOutcome;
+    
 
     public ClienteController() {
         super(Cliente.class);
@@ -48,72 +46,71 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
 //        }
 //        return current;
 //    }
+//    @Override
+//    public PaginationHelper getPagination() {
+//        if (pagination == null) {
+//            pagination = new PaginationHelper(getPaginationPageSize()) {
+//
+//                private Integer count = null;
+//
+//                @Override
+//                public int getItemsCount() {
+//                    try {
+//                        if (count == null) {
+//                            if (searchPattern != null && !searchPattern.trim().isEmpty()) {
+//                                count = getJpaController().getClienteJpaController().countSearchEntities(searchPattern).intValue();
+//                            } else {
+////                                count = getJpaController().getClienteJpaController().getClienteCount();
+//                                count = getJpaController().countEntities(getFilterHelper().getVista(), getDefaultUserWho(), null).intValue();
+//                            }
+//                        }
+//
+//                        return count;
+//
+//                    } catch (Exception ex) {
+//                        Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "getItemsCount", ex);
+//                    }
+//                    return 0;
+//                }
+//
+//                @Override
+//                public DataModel createPageDataModel() {
+//                    if (searchPattern != null && !searchPattern.trim().isEmpty()) {
+//                        return new ClienteDataModel(getJpaController().getClienteJpaController().searchEntities(searchPattern, false, getPageSize(), getPageFirstItem()));
+//                    } else {
+////                        return new ClienteDataModel((List<Cliente>) getJpaController().findEntities(Cliente.class, false, getPageSize(), getPageFirstItem(),"nombres","apellidos"));
+//                        try {
+//                            ClienteDataModel dataModel = new ClienteDataModel();
+//                            dataModel.setWrappedData(getJpaController().findEntities(Cliente.class, getFilterHelper().getVista(), getPageSize(), getPageFirstItem(), getDefaultOrderBy(), getDefaultUserWho()));
+//                            return dataModel;
+//                        } catch (IllegalStateException ex) {//error en el filtro
+//                            JsfUtil.addErrorMessage(ex, "Existe un problema con el filtro. Favor corregir e intentar nuevamente.");
+//                        } catch (ClassNotFoundException ex) {
+//                            JsfUtil.addErrorMessage(ex, "Lo sentimos, ocurrió un error inesperado. Favor contactar a soporte.");
+//                            Logger.getLogger(AbstractManagedBean.class.getName()).log(Level.SEVERE, "ClassNotFoundException createPageDataModel", ex);
+//                        } catch (NotSupportedException ex) {
+//                            addWarnMessage("Lo sentimos, ocurrió un error inesperado. La acción que desea realizar aún no esta soportada por el sistema.");
+//                        }
+//                    }
+//                    return null;
+//                }
+//            };
+//        }
+//        return pagination;
+//    }
+
+//    public String prepareList() {
+//        recreateModel();
+//        recreatePagination();
+//        return "/script/cliente/List";
+//    }
+
     @Override
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(getPaginationPageSize()) {
-
-                private Integer count = null;
-
-                @Override
-                public int getItemsCount() {
-                    try {
-                        if (count == null) {
-                            if (searchPattern != null && !searchPattern.trim().isEmpty()) {
-                                count = getJpaController().getClienteJpaController().countSearchEntities(searchPattern).intValue();
-                            } else {
-//                                count = getJpaController().getClienteJpaController().getClienteCount();
-                                count = getJpaController().countEntities(getFilterHelper().getVista(), getDefaultUserWho(), null).intValue();
-                            }
-                        }
-
-                        return count;
-
-                    } catch (Exception ex) {
-                        Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "getItemsCount", ex);
-                    }
-                    return 0;
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    if (searchPattern != null && !searchPattern.trim().isEmpty()) {
-                        return new ClienteDataModel(getJpaController().getClienteJpaController().searchEntities(searchPattern, false, getPageSize(), getPageFirstItem()));
-                    } else {
-//                        return new ClienteDataModel((List<Cliente>) getJpaController().findEntities(Cliente.class, false, getPageSize(), getPageFirstItem(),"nombres","apellidos"));
-                        try {
-                            ClienteDataModel dataModel = new ClienteDataModel();
-                            dataModel.setWrappedData(getJpaController().findEntities(Cliente.class, getFilterHelper().getVista(), getPageSize(), getPageFirstItem(), getDefaultOrderBy(), getDefaultUserWho()));
-                            return dataModel;
-                        } catch (IllegalStateException ex) {//error en el filtro
-                            JsfUtil.addErrorMessage(ex, "Existe un problema con el filtro. Favor corregir e intentar nuevamente.");
-                        } catch (ClassNotFoundException ex) {
-                            JsfUtil.addErrorMessage(ex, "Lo sentimos, ocurrió un error inesperado. Favor contactar a soporte.");
-                            Logger.getLogger(AbstractManagedBean.class.getName()).log(Level.SEVERE, "ClassNotFoundException createPageDataModel", ex);
-                        } catch (NotSupportedException ex) {
-                            addWarnMessage("Lo sentimos, ocurrió un error inesperado. La acción que desea realizar aún no esta soportada por el sistema.");
-                        }
-                    }
-                    return null;
-                }
-            };
-        }
-        return pagination;
-    }
-
-    public String prepareList() {
-        recreateModel();
-        recreatePagination();
+    protected String getListPage() {
         return "/script/cliente/List";
     }
-
-    public String goBack() {
-        if (this.backOutcome == null) {
-            return prepareList();
-        } else {
-            return this.backOutcome;
-        }
-    }
+    
+  
 
 //    public String prepareView() {
 //        if (getSelectedItems().length != 1) {
@@ -170,23 +167,31 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
         return null;
     }
 
-    public String prepareView(Cliente c) {
-        if (c != null) {
-            current = c;
-        }
-        this.backOutcome = null;
+    @Override
+    protected String getViewPage() {
         return "/script/cliente/View";
     }
+    
+    
 
-    public String prepareView(Cliente c, String backOutcome) {
-        if (c != null) {
-            current = c;
-        }
+//    public String prepareView(Cliente c) {
+//        if (c != null) {
+//            current = c;
+//        }
+//        this.backOutcome = null;
+//        return "/script/cliente/View";
+//    }
+//
+//    public String prepareView(Cliente c, String backOutcome) {
+//        if (c != null) {
+//            current = c;
+//        }
+//
+//        this.backOutcome = backOutcome;
+//        return "/script/cliente/View";
+//    }
 
-        this.backOutcome = backOutcome;
-        return "/script/cliente/View";
-    }
-
+    @Override
     public String prepareEdit(Cliente item) {
         try {
             emailToAdd = new EmailCliente();
@@ -311,7 +316,7 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
 
     @Override
     public Class getDataModelImplementationClass() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return ClienteDataModel.class;
     }
 
     /**

@@ -17,8 +17,6 @@ import com.itcs.helpdesk.persistence.utils.OrderBy;
 import com.itcs.helpdesk.util.Constants;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -83,11 +81,14 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         return filterHelper2;
     }
 
+    
+
     @Override
-    public String prepareList() {
-        recreateModel();
-        return "/script/vista/List";
+    protected String getListPage() {
+       return "/script/vista/List";
     }
+    
+    
 
     public String prepareView() {
         current = (Vista) getItems().getRowData();
@@ -102,14 +103,43 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         return "/script/vista/Create";
     }
 
-    public String prepareCreate(Vista newVista) {
+    public String prepareCreate(Vista newVista, String backOutcome) {
         current = newVista;
         this.filterHelper2 = null;//recreate filter helper
         visibilityOption = determineVisibility(current);
         selectedItemIndex = -1;
         JsfUtil.addWarningMessage("Atención: Al Guardar se creará una vista Nueva.");
+         this.backOutcome = backOutcome;
         return "/script/vista/Create";
     }
+    
+    public String prepareEdit(Integer idVista) {
+        current = getJpaController().find(Vista.class, idVista);
+        this.filterHelper2 = null;//recreate filter helper
+        visibilityOption = determineVisibility(current);
+        return "/script/vista/Edit";
+    }
+
+    @Override
+    protected String getEditPage() {
+        return "/script/vista/Edit";
+    }
+
+    @Override
+    protected String getViewPage() {
+         return "/script/vista/Edit";
+    }
+    
+    
+
+    
+    @Override
+    protected void afterSetSelected() {
+        this.filterHelper2 = null;//recreate filter helper
+        visibilityOption = determineVisibility(current);
+    }
+    
+    
 
     public void handleAnyChangeEvent() {
     }
@@ -186,12 +216,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
 //        return "/script/vista/Edit";
 //    }
     
-    public String prepareEdit(Integer idVista) {
-        current = getJpaController().find(Vista.class, idVista);
-        this.filterHelper2 = null;//recreate filter helper
-        visibilityOption = determineVisibility(current);
-        return "/script/vista/Edit";
-    }
+    
 
     public String update() {
         try {
@@ -221,7 +246,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
                 }
                 getJpaController().getVistaJpaController().edit(current);
                 JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("VistaUpdated"));
-                return "/script/vista/List";
+                return prepareList();
             } else {
                 addErrorMessage("No tiene privilegios para realizar esta operación!");
             }
@@ -244,7 +269,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         recreatePagination();
         recreateModel();
         resetVistas();
-        return "List";
+        return prepareList();
     }
 
     public String destroyAndView() {
@@ -255,8 +280,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
             return "/script/vista/View";
         } else {
             // all items were removed - go back to list
-            recreateModel();
-            return "List";
+            return prepareList();
         }
     }
 

@@ -32,7 +32,8 @@
                 <h:form id="form">
                     <p:messages />
 
-                    <go:filterView controllerMBean="#{clippingController}" filterHelper="#{clippingController.filterHelper}" update=":mainform:messages :form"/>
+                    <go:filterView controllerMBean="#{clippingController}" filterHelper="#{clippingController.filterHelper}" update=":mainform:messages :form"
+                                   vistaControllerBackOutcome="/script/clipping/List"/>
 
                     <h:panelGroup>
                         <p:dataTable id="panelG1" value="#{clippingController.items}" 

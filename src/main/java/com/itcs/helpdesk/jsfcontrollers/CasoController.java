@@ -254,6 +254,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         //borrador
         this.textoNota = current.getRespuesta();
+        
+        agregarHistoria();
 
         if (getOtroEmail() == null) {
             setOtroEmail(new LinkedList<String>());
@@ -270,6 +272,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public void enableCommentMode() {
         this.setReplyMode(true);
         this.setReplyByEmail(false);
+        
+        this.textoNota = current.getRespuesta();
 
     }
 

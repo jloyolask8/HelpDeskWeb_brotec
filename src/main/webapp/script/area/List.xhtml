@@ -10,21 +10,10 @@
             <h:outputText value="#{bundle.ListAreaTitle}"></h:outputText>
         </ui:define>
 
+        <ui:define name="menutitle">Áreas</ui:define>
         <ui:define name="west">
-            <p:accordionPanel multiple="true" cache="true" >
-                <p:tab title="Áreas" >
-                    <h:outputLabel escape="false" value="Un Área es una division o departamento de su organización, ejemplo: Ventas, PostVenta, Soporte."/>
-                    <br/>
-                    <h:outputLabel escape="false" value="Cada Área Puede tener su propia cuenta de correo con la cual interactuar con sus clientes."/>
-                    <br/>
-                    <h:outputLabel escape="false" value="Configuración correo de Salida:" style="font-weight: bold"/>
-                    <br/>
-                    <h:outputLabel escape="false" value="Ud. puede configurar un canal de correo por el cual ésta área enviará Correos a sus clientes."/>
-                    <h:outputLabel escape="false" value="Sin embargo la forma de responder a un cliente siempre prioriza el producto al cual esta asociado el caso. 
-                                   Es decir si el caso tiene producto y el producto tiene asignado un canal de correo asignado, se utilizará éste en primera instancia.
-                                   Si el caso no tiene producto, se intentará usar el canal de correo del área, y si el caso no esta en un área asignado, se utilizará el canal por el cual llegó el caso."/>
-                </p:tab>
-            </p:accordionPanel>
+        
+            <ui:include src="help.xhtml"/>
         </ui:define>
 
         <ui:define name="body">
@@ -142,7 +131,7 @@
 
                     <p:tab id="organigrama" title="Organigrama" >
 
-                        <p:tree id="tree" value="#{areaController.root}" var="item"  orientation="horizontal" animate="true" >  
+                        <p:tree id="tree" value="#{areaController.root}" var="item"  orientation="horizontal" animate="true" style="border: none;" >  
                             <p:treeNode expandedIcon="ui-icon-folder-open"  
                                         collapsedIcon="ui-icon-folder-collapsed">  
                                 <h:outputText value="#{item}"/>  
@@ -173,8 +162,8 @@
                         </p:tree> 
                         <br/>
 
-                        <p:commandButton id="expandTree" value="toggle all" actionListener="#{areaController.toggleAllTree()}" immediate="true"
-                                         update=":form:tabs:tree" />
+                        <p:commandButton id="expandTree" value="#{areaController.expanded ? 'Colapsar':'Expandir'}" actionListener="#{areaController.toggleAllTree()}" immediate="true"
+                                         update=":form:tabs:tree expandTree" />
 
                         <p:commandButton id="refreshTree" value="Actualizar" actionListener="#{areaController.refreshTree()}" immediate="true"
                                          update=":form:tabs:tree" />

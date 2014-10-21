@@ -43,7 +43,8 @@
 
                     <go:filterView controllerMBean="#{usuarioSessionLogController}" 
                                    filterHelper="#{usuarioSessionLogController.filterHelper}" 
-                                   update=":mainform:messages :form"/>
+                                   update=":mainform:messages :form"
+                                   vistaControllerBackOutcome="/script/sessions/List"/>
 
 
                         <p:dataTable id="datalist" value="#{usuarioSessionLogController.items}" var="item"                                    

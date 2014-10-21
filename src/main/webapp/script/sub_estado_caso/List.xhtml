@@ -21,7 +21,8 @@
         <ui:define name="body">
             <h:form id="form">
 
-                <go:filterView controllerMBean="#{subEstadoCasoController}" filterHelper="#{subEstadoCasoController.filterHelper}" update=":mainform:messages :form"/>
+                <go:filterView controllerMBean="#{subEstadoCasoController}" filterHelper="#{subEstadoCasoController.filterHelper}" update=":mainform:messages :form"
+                               vistaControllerBackOutcome="/script/sub_estado_caso/List"/>
 
                 <h:panelGroup >
 

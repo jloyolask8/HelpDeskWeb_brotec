@@ -43,10 +43,8 @@
                     padding: 0px !important;
                 }
 
-                #j_idt13, #j_idt12, #j_idt11{
-                    padding: 1px !important;
-                    padding-top: 5px !important;
-                    margin: 0px !important;
+                .ui-widget {
+                    font-size: 12px !important;
                 }
 
                 .ui-layout-north .ui-layout-unit-content {
@@ -57,37 +55,33 @@
                     visibility: hidden !important;
                 }
 
-                .ui-widget {
-                    font-size: 12px !important;
-                }
+             
 
                 .ui-layout-pane-west{
-                    border: none !important;
-                    padding-top: 0px !important;
-                    padding-left: 1px !important;
+                    //border: none !important;
+                    //padding-top: 0px !important;
+                   // padding-left: 1px !important;
                     //margin-top: -5px !important;
                 }
 
                 .ui-layout-pane-center{
-                    border: none !important;
-                    padding-top: 0px !important;
-                    padding-left: 1px !important;
+                    //border: none !important;
+                    //padding-top: 0px !important;
+                    //padding-left: 1px !important;
                     //margin-top: -5px !important;
                 }
 
                 .ui-layout-pane-right{
-                    border: none !important;
-                    padding-top: 0px !important;
-                    padding-left: 1px !important;
+                    //border: none !important;
+                    //padding-top: 0px !important;
+                    //padding-left: 1px !important;
                     //margin-top: -5px !important;
                 }
 
                 .ui-toolbar-group-right{
                     margin-top: -4px;
                 }
-                .ui-toolbar-group-left{
-                    margin-top: 3px;
-                }
+               
 
                 .autocompleteTagsCreate .ui-autocomplete-multiple-container {
                     width: 600px;
@@ -385,10 +379,16 @@
                 </pe:layoutPane>  
 
                 <pe:layoutPane position="center">  
+                     <f:facet name="header">  
+                     <ui:insert name="title"></ui:insert>
+                </f:facet>  
                     <ui:insert name="body"></ui:insert>
                 </pe:layoutPane> 
 
-                <pe:layoutPane position="west" size="350" resizable="true" >               
+                <pe:layoutPane position="west" size="350" resizable="true" >         
+                     <f:facet name="header">  
+                     <ui:insert name="menutitle">Menú</ui:insert>
+                </f:facet>  
                     <ui:insert name="west"/>               
                 </pe:layoutPane> 
             </pe:layout>  

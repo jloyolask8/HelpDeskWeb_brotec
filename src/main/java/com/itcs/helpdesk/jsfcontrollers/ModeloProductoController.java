@@ -112,11 +112,18 @@ public class ModeloProductoController extends AbstractManagedBean<ModeloProducto
         }
     }
 
-    public void prepareEdit(ModeloProducto model) {
-        current = model;//(ModeloProducto) getItems().getRowData();
-//        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-//        mode = "Edit";
+//    public void prepareEdit(ModeloProducto model) {
+//        current = model;//(ModeloProducto) getItems().getRowData();
+////        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
+////        mode = "Edit";
+//    }
+
+    @Override
+    protected String getEditPage() {
+        return super.getEditPage(); //To change body of generated methods, choose Tools | Templates.
     }
+    
+    
 
     public String update() {
         try {

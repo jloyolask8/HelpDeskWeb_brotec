@@ -83,6 +83,12 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     private boolean filterViewToggle = false;
     List<Vista> allMyVistas = null;
 
+    protected String backOutcome;
+
+    public String goBack() {
+       return prepareList();
+    }
+
     private static final Comparator<Vista> comparadorVistas = new Comparator<Vista>() {
         @Override
         public int compare(Vista o1, Vista o2) {
@@ -589,9 +595,114 @@ public abstract class AbstractManagedBean<E> implements Serializable {
         return interval.toDuration().toString();
     }
 
+    public String prepareView(E entity) {
+        if (entity == null) {
+            JsfUtil.addSuccessMessage("Se requiere que seleccione un item para editar.");
+            return null;
+        }
+        setSelected(entity);
+        this.backOutcome = null;
+        return getViewPage();
+    }
+
+    public String prepareView(E entity, String backOutcome) {
+        if (entity == null) {
+            JsfUtil.addSuccessMessage("Se requiere que seleccione un item para editar.");
+            return null;
+        }
+        setSelected(entity);
+        this.backOutcome = backOutcome;
+        return getViewPage();
+    }
+
+    protected void beforeSetSelected() {
+
+    }
+
+    protected void afterSetSelected() {
+
+    }
+
+    public String prepareEdit(E entity) {
+        if (entity == null) {
+            JsfUtil.addSuccessMessage("Se requiere que seleccione un item para editar.");
+            return null;
+        }
+
+        beforeSetSelected();
+
+        setSelected(entity);
+
+        afterSetSelected();
+        this.backOutcome = null;
+        return getEditPage();
+    }
+
+    public String prepareEdit(E entity, String backOutcome) {
+        prepareEdit(entity);
+        this.backOutcome = backOutcome;
+        return getEditPage();
+    }
+
+    public String prepareEditPK(Object entityPK) {
+        try {
+            if (entityPK == null) {
+                return null;
+            }
+            E entity = getJpaController().find(entityClass, entityPK);
+
+            beforeSetSelected();
+
+            setSelected(entity);
+
+            afterSetSelected();
+
+        } catch (Exception ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "prepareEdit (" + entityPK + ")", ex);
+        } finally {
+            this.backOutcome = null;
+        }
+
+        return getEditPage();
+    }
+
+    public String prepareEditPK(Object entityPK, String backOutcome) {
+
+        prepareEditPK(entityPK);
+        this.backOutcome = backOutcome;
+
+        return getEditPage();
+    }
+
     public String prepareList() {
         recreateModel();
-        return getListPage();
+
+        if (this.backOutcome == null) {
+            return getListPage();
+        } else {
+            return this.backOutcome;
+        }
+
+    }
+
+    /**
+     * When done with experiment this method should be abstract
+     *
+     * @return the list page to outcome
+     */
+//    protected abstract String getListPage();
+    protected String getEditPage() {
+        return null;
+    }
+
+    /**
+     * When done with experiment this method should be abstract
+     *
+     * @return the list page to outcome
+     */
+//    protected abstract String getListPage();
+    protected String getViewPage() {
+        return null;
     }
 
     /**

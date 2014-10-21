@@ -267,12 +267,20 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
         RequestContext.getCurrentInstance().openDialog("/script/usuario/View_1", options, null);
     }
 
-    public String prepareView(Usuario u) throws Exception {
-        current = u;
+//    public String prepareView(Usuario u) {
+//        current = u;
+//        return "/script/usuario/View";
+//    }
+
+    @Override
+    protected String getViewPage() {
         return "/script/usuario/View";
     }
+    
+    
 
-    public String prepareEdit(Usuario u) throws Exception {
+    @Override
+    public String prepareEdit(Usuario u)  {
         current = u;
         System.out.println("prepareEdit " + current.getIdUsuario());
         if (current == null) {
@@ -282,7 +290,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
         current.setPass("");
         roles = (List<Rol>) current.getRolList();
 
-        setGruposDualListModel(new DualListModel<Grupo>(getJpaController().getGrupoFindAll(), current.getGrupoList()));
+        setGruposDualListModel(new DualListModel<>(getJpaController().getGrupoFindAll(), current.getGrupoList()));
         for (Grupo grup : current.getGrupoList()) {
             if (getGruposDualListModel().getSource().contains(grup)) {
                 getGruposDualListModel().getSource().remove(grup);

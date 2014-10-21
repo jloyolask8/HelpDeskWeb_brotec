@@ -93,7 +93,8 @@ public class RolController extends AbstractManagedBean<Rol> implements Serializa
         return "View";
     }
 
-    public String prepareView(Rol item) throws Exception {
+    @Override
+    public String prepareView(Rol item) {
         current = item;
         funciones = current.getFuncionList();
 

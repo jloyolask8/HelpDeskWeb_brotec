@@ -18,41 +18,44 @@
 
         <h:form id="vistasForm">
 
-            <p:panel id="vistasPanel" header="Vistas">
-
-                <f:facet name="actions">
-                    <p:commandLink actionListener="#{cc.attrs.controllerMBean.resetVistas}"
-                        update="#{cc.attrs.update}"
-                        styleClass="ui-panel-titlebar-icon ui-corner-all ui-state-default" title="Refrescar Vistas">
-                        <h:outputText styleClass="ui-icon ui-icon-refresh" />
-                    </p:commandLink>
-                </f:facet>
+            <p:dataList paginator="true" paginatorAlwaysVisible="false" 
+                        type="ordered" rows="10" style="width: 100%;border: none;"
+                        value="#{cc.attrs.controllerMBean.getAllVistasItems(cc.attrs.user)}" var="vista1" 
+                        emptyMessage="#{bundle.emptyViews}">
 
 
-                <p:dataList paginator="true" paginatorAlwaysVisible="false" 
-                            type="ordered" rows="10" style="width: 100%;border: none;"
-                            value="#{cc.attrs.controllerMBean.getAllVistasItems(cc.attrs.user)}" var="vista1" 
-                            emptyMessage="#{bundle.emptyViews}">
-                    <p:column>
-                        <p:commandLink id="vistalink1" ajax="true" 
-                                       update="#{cc.attrs.update}"
-                                       action="#{cc.attrs.controllerMBean.applyViewFilter(vista1)}" 
-                                       value="#{vista1.nombre}" style="font-weight: bold" 
-                                       styleClass="ui-widget-header #{vista1 eq cc.attrs.controllerMBean.filterHelper.vista ? 'ui-state-hover':''}" />
-                        <p:tooltip for="vistalink1" value="#{vista1.descripcion}" />  
+                <p:column>
+                    <p:commandLink id="vistalink1" ajax="true" 
+                                   update="#{cc.attrs.update}"
+                                   action="#{cc.attrs.controllerMBean.applyViewFilter(vista1)}" 
+                                   value="#{vista1.nombre}" style="font-weight: bold" 
+                                   styleClass="ui-widget-header #{vista1 eq cc.attrs.controllerMBean.filterHelper.vista ? 'ui-state-hover':''}" />
+                    <p:tooltip for="vistalink1" value="#{vista1.descripcion}" />  
 
-                    </p:column>
-                    <p:column>
-                        <h:outputText value="#{cc.attrs.controllerMBean.countItemsVista(vista1)}" 
-                                      styleClass="ui-li-count"/>
-                    </p:column>
-                </p:dataList>
-                <br/>
+                </p:column>
+                <p:column>
+                    <h:outputText value="#{cc.attrs.controllerMBean.countItemsVista(vista1)}" 
+                                  styleClass="ui-li-count"/>
+                </p:column>
+            </p:dataList>
+      
+            <div align="right">
+                <p:panelGrid columns="2" styleClass="filtersGrid" >
                 <p:commandLink ajax="false" action="#{vistaController.prepareList()}"
                                rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
                                value="Administrar Vistas" />
+                
+                <p:commandLink actionListener="#{cc.attrs.controllerMBean.resetVistas}"
+                               update="#{cc.attrs.update}"
+                               title="Refrescar Vistas">
+                    <h:outputText styleClass="ui-icon ui-icon-refresh" />
+                </p:commandLink>
+            </p:panelGrid>
+            </div>
+            
 
-            </p:panel>
+
+          
 
         </h:form>
     </cc:implementation>

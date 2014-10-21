@@ -4,6 +4,7 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:pe="http://primefaces.org/ui/extensions"
       xmlns:go="http://java.sun.com/jsf/composite/go">
@@ -14,7 +15,7 @@
         </ui:define>
 
         <ui:define name="head">
-
+            
             <style type="text/css">
 
                 .ui-datatable thead th, .ui-datatable tbody td, .ui-datatable tfoot td {
@@ -27,7 +28,7 @@
                 function start() {
                     PF('excelStatusDialog').show();
                 }
-                window.parent.CKEDITOR.tools.callFunction(1,'','');
+                window.parent.CKEDITOR.tools.callFunction(1, '', '');
 
                 function stop() {
                     PF('excelStatusDialog').hide();
@@ -55,8 +56,8 @@
 
                     <p:dataTable id="usersLoggedIn" value="#{applicationBean.usersLoggedIn}" var="userLoggedIn" 
                                  styleClass="hide-column-names"
-                                 emptyMessage="Muy raro que no haya un usuario aqui =(" 
-                                 scrollRows="22" scrollable="true" liveScroll="true" scrollHeight="250">  
+                                 paginator="true" rows="10" paginatorAlwaysVisible="false"
+                                 emptyMessage="Muy raro que no haya un usuario aqui =(" >  
 
 
                         <p:column width="5%">
@@ -78,6 +79,8 @@
 
             </p:accordionPanel>
         </ui:define>
+        
+        <ui:define name="menutitle">Vistas</ui:define>
 
         <ui:define name="body" id="body">
 
@@ -89,7 +92,8 @@
                                controllerMBean="#{casoController}" 
                                filterHelper="#{casoController.filterHelper}" 
                                canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
-                               update=":mainform:messages :formfilter:panelFilter0:panelFilter :form0:panelG1"/>
+                               update=":mainform:messages :formfilter:panelFilter0:panelFilter :form0:panelG1"
+                               vistaControllerBackOutcome="/script/index"/>
 
             </h:form>
 
@@ -374,7 +378,7 @@
             </p:dialog> 
 
 
-            
+
 
             <p:dialog  widgetVar="deleteSelectedCasos" header="Confirmar" resizable="false" closeOnEscape="true" modal="true" appendTo="@(body)" dynamic="true">  
                 <h:form id="formdeleteSelectedCasos">
@@ -382,15 +386,26 @@
                         <f:param value="#{casoController.selectedItemsCount}" />
                     </h:outputFormat>
 
-                    <br/>
+                    <p:panel style="border-color: window;">
+                        <h:panelGrid columns="1">
+                            <c:forEach items="#{casoController.selectedItems}" var="item" >
+                                <h:commandLink action="#{casoController.filterByIdCaso(item.idCaso)}" >
+                                    <h:outputText styleClass="ticket-status" 
+                                                  style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};" value="#{item.idSubEstado.nombre}"
+                                                  />
+                                    <h:outputText value=" #{item.tipoCaso.nombre} N°#{item.idCaso} - #{item.tema}"/>
+                                </h:commandLink>
+                            </c:forEach>
+                        </h:panelGrid>
+                    </p:panel>
 
-                    <p:dataList value="#{casoController.selectedItems}" var="casoSelected">
-                        #{casoSelected.idCaso} #{casoSelected.tema} 
-                    </p:dataList>
-
-                    <p:commandButton value="#{bundle.yesDelete}" actionListener="#{casoController.destroySelected()}" disabled="#{empty casoController.selectedItems}"
-                                     update=":form0:panelG1 :accionesaccordion1:vistasForm" />
+                    <p:separator/>
                     <p:commandButton value="#{bundle.decline}" onclick="PF('deleteSelectedCasos').hide()" type="button" /> 
+
+                    <p:commandButton value="#{bundle.yesDelete}" styleClass="btn btn-danger" style="float: right"
+                                     actionListener="#{casoController.destroySelected()}" disabled="#{empty casoController.selectedItems}"
+                                     update=":form0:panelG1 :vistasList:vistasForm" />
+
                 </h:form>
 
 

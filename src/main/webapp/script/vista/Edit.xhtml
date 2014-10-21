@@ -36,7 +36,7 @@
                     <h:outputLabel value="Criterios:" style="font-weight: bold"/>
 
                      <go:filterView id="panelFilter0" controllerMBean="#{vistaController}" filterHelper="#{vistaController.filterHelper2}" showApplyAction="false"
-                                         update=":mainform:messages :form:panelFilter0:panelFilter :form"/>
+                                         update=":mainform:messages :form:panelFilter0:panelFilter :form" vistaControllerBackOutcome="/script/vista/List"/>
 
 
                     <h:outputLabel value="Visibilidad" for="VisibilidadPanel" style="font-weight: bold"/>
@@ -99,7 +99,7 @@
 
                 <p:commandButton ajax="false" action="#{vistaController.update}" value="Guardar" update=":mainform:messages"/>
 
-                <p:commandButton ajax="false" action="#{vistaController.prepareList}" value="Cancelar" immediate="true"/>
+                <p:commandButton ajax="false" action="#{vistaController.goBack()}" value="Cancelar" immediate="true"/>
 
 
             </h:form>

@@ -14,6 +14,7 @@
             <composite:attribute name="titleIconClass" default="" /> 
             <composite:attribute name="canChangeFilters" default="true" />
             <composite:attribute name="update" default=":mainform:messages" />
+            <composite:attribute name="vistaControllerBackOutcome" required="true"  />
             <composite:facet name="header" />
             <composite:facet name="saveView" />
         </composite:interface>
@@ -31,11 +32,11 @@
                                             rendered="#{cc.attrs.controllerMBean.filterHelper.vista.idUsuarioCreadaPor eq UserSessionBean.current
                                                         or filtroAcceso.administradorDelSistema}" 
                                             disabled="#{cc.attrs.controllerMBean.filterHelper.vista.idVista eq null or not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
-                                            action="#{vistaController.prepareEdit(cc.attrs.controllerMBean.filterHelper.vista.idVista)}"                                                  
+                                            action="#{vistaController.prepareEditPK(cc.attrs.controllerMBean.filterHelper.vista.idVista, cc.attrs.vistaControllerBackOutcome)}"                                                  
                                             immediate="true" ajax="false"
                                             icon="ui-icon-pencil"/>
                                 <p:menuitem id="linkGuardar" 
-                                            action="#{vistaController.prepareCreate(cc.attrs.controllerMBean.filterHelper.vista)}"
+                                            action="#{vistaController.prepareCreate(cc.attrs.controllerMBean.filterHelper.vista, cc.attrs.vistaControllerBackOutcome)}"
                                             ajax="false"
                                             disabled="#{not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
                                             value="Guardar como.."

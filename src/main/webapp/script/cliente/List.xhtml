@@ -32,7 +32,8 @@
                                controllerMBean="#{clienteController}" 
                                filterHelper="#{clienteController.filterHelper}" 
                                canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
-                               update=":mainform:messages :formfilter:panelFilter0:panelFilter :form"/>
+                               update=":mainform:messages :formfilter:panelFilter0:panelFilter :form"
+                               vistaControllerBackOutcome="/script/cliente/List"/>
 
             </h:form>
 
@@ -40,7 +41,7 @@
                 <p:messages globalOnly="true"/>
                 <h:panelGroup>
 
-                    <p:panel header="Buscar" toggleable="true" >
+                    <p:panel header="Buscar" toggleable="true" rendered="false">
                         <h:panelGrid columns="3">
                             <p:inputText id="searchRut" value="#{clienteController.searchPattern}" size="50"  />                            
                             <p:message for="searchRut"/>
@@ -53,8 +54,6 @@
 
 
 
-
-                    <br/>
 
                     <p:toolbar style="border: none;">
                         <p:toolbarGroup align="right">
@@ -72,6 +71,8 @@
 
                             <p:commandButton action="#{clienteController.previous}" update=":form" disabled="#{not clienteController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{clienteController.pagination.itemsCount > 0}"/>
 
+                            <h:outputText rendered="#{clienteController.pagination.itemsCount gt 0}" value=" #{clienteController.pagination.pageFirstItem + 1} - #{clienteController.pagination.pageLastItem + 1} de #{clienteController.pagination.itemsCount} "></h:outputText>                           
+                            
                             <p:commandButton action="#{clienteController.next}" update=":form" disabled="#{not clienteController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{clienteController.pagination.itemsCount > 0}"/>
 
                             <p:commandButton action="#{clienteController.last}" update=":form" disabled="#{not clienteController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{clienteController.pagination.itemsCount > 0}"/>
@@ -87,10 +88,7 @@
                     <p:dataTable widgetVar="dataTable" var="item" value="#{clienteController.items}" selectionMode="single"
                                  emptyMessage="#{bundle.emptyList}">
 
-                        <f:facet name="header">  
-                            <h:outputText rendered="#{clienteController.pagination.itemsCount gt 0}" value="Clientes (#{clienteController.pagination.pageFirstItem + 1} - #{clienteController.pagination.pageLastItem + 1} de #{clienteController.pagination.itemsCount})"></h:outputText>                           
-                            <h:outputText rendered="#{clienteController.pagination.itemsCount eq 0}" value="No se han encontrado resultados"></h:outputText>                           
-                        </f:facet>
+                    
 
                         <p:column headerText="Nombre Cliente">
                             <h:outputText value="#{item.nombres} #{item.apellidos}"/>

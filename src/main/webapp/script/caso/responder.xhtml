@@ -7,10 +7,10 @@
     xmlns:ui="http://java.sun.com/jsf/facelets">
 
     <h:form id="formCreateNota">
-         <br/>
+        <br/>
 
         <h:panelGroup rendered="#{not casoController.replyMode}">
-         
+
             <p:panel style="height: 40px;">
                 <p style="color: #999;">
                     Haz click para  
@@ -20,7 +20,7 @@
                                              update="formCreateNota"/></strong>
                 </p>
             </p:panel>
-            
+
         </h:panelGroup>
 
         <p:panel id="message-details-reply" 
@@ -113,21 +113,27 @@
                 <pe:ckEditor id="textonota" value="#{casoController.textoNota}" language="es"
                              toolbar="#{applicationBean.ckEditorToolbar}"
                              width="100%" />
-                
-                 <p:message for="textonota"/>
+
+                <p:message for="textonota"/>
+
+                  <p:panel id="parchivos" visible="#{casoController.replyByEmail and casoController.adjuntarArchivosARespuesta}">
+                    <h:panelGrid columns="2" >
+                        <p:outputLabel for="listaadjuntosrespuesta" value="Seleccione adjuntos" style="font-weight:bold"/>
+
+                        <p:selectManyCheckbox id="listaadjuntosrespuesta" value="#{casoController.selectedAttachmensForMail}" layout="grid" columns="3"
+                                              converter="attachmentConverter">
+                            <f:selectItems value="#{casoController.selected.attachmentsNotEmbedded}" 
+                                           var="item" itemLabel="${item.nombreArchivo}" itemValue="${item}" />
+                        </p:selectManyCheckbox>
+                    </h:panelGrid>
+                </p:panel>
+
+                <p:panelGrid styleClass="filtersGrid" style="width: 100%">
 
 
-                <p:panelGrid styleClass="filtersGrid">
-                    <p:row rendered="#{casoController.replyByEmail}">
-                        <p:column >
-                            <h:panelGrid columns="2">
-                                <p:commandButton actionListener="#{casoController.agregarHistoria()}" 
-                                                 id="addHistory" update=":inputPanel:formCreateNota:textonota" icon="fa fa-comments-o" title="Agregar historia" />
-                                <p:outputLabel value="Agregar historia" for="addHistory" style="font-weight:bold"/>
-                            </h:panelGrid>
-                        </p:column>
+                    <p:row>
 
-                        <p:column >
+                        <p:column rendered="#{casoController.replyByEmail}">
                             <h:panelGrid columns="2">
                                 <p:selectBooleanCheckbox id="adjuntarArchivosARespuesta" value="#{casoController.adjuntarArchivosARespuesta}" 
                                                          disabled="#{casoController.cantidadAttachment() le 0}">
@@ -137,9 +143,6 @@
                             </h:panelGrid>
                         </p:column>
 
-                    </p:row>
-
-                    <p:row>
                         <p:column >
                             <h:panelGrid columns="2">  
                                 <p:outputLabel for="nextResponseDue1" value="#{bundle.cambiarSLA}" style="font-weight:bold"/>
@@ -163,83 +166,74 @@
                                 </p:selectOneMenu>
                             </h:panelGrid>
                         </p:column>
+                        <p:column>
+                            <h:panelGrid style="float: right" columns="2">
+
+                                <p:commandButton action="#{casoController.disableReplyMode()}"  value="Cancelar"
+                                                 immediate="true" update=":inputPanel:formCreateNota"/>
+
+                                <p:splitButton id="sendCommentButton" value="Enviar" actionListener="#{casoController.responder()}" 
+                                               update=":mainform:messages :formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso :inputPanel:resumenNotas"
+                                               icon="ui-icon-mail-closed"
+                                               rendered="#{casoController.replyByEmail}">
+
+                                    <p:menuitem value="Descartar borrador" actionListener="#{casoController.descartarBorrador()}"
+                                                update=":mainform:messages :inputPanel:formCreateNota"
+                                                icon="ui-icon-trash"
+                                                rendered="#{not empty casoController.selected.respuesta}"/>
+
+                                    <p:menuitem value="Guardar borrador" actionListener="#{casoController.guardarBorrador()}"
+                                                update=":mainform:messages :inputPanel:formCreateNota"
+                                                icon="ui-icon-disk"/>
+
+
+                                </p:splitButton> 
+
+                                <p:splitButton id="saveCommentButton" value="Guardar" actionListener="#{casoController.crearNota(false)}" 
+                                               update=":mainform:messages :formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso :formTopMenu :inputPanel:resumenNotas" 
+                                               icon="fa fa-pencil-square-o" rendered="#{not casoController.replyByEmail}">  
+                                    <p:menuitem value="Guardar y notificar al cliente" actionListener="#{casoController.crearNota(true)}" 
+                                                update=":mainform:messages :formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso :formTopMenu :inputPanel:resumenNotas"  
+                                                icon="ui-icon-disk" />  
+
+                                    <p:separator />  
+
+                                    <p:menuitem value="Descartar borrador" actionListener="#{casoController.descartarBorrador()}"
+                                                update=":mainform:messages :inputPanel:formCreateNota"
+                                                icon="ui-icon-trash"
+                                                rendered="#{not empty casoController.selected.respuesta}"/>
+
+                                    <p:menuitem value="Guardar borrador" actionListener="#{casoController.guardarBorrador()}"
+                                                update=":mainform:messages :inputPanel:formCreateNota"
+                                                icon="ui-icon-disk"/>
+
+
+                                </p:splitButton>  
+
+                            </h:panelGrid>
+                        </p:column>
                     </p:row>
 
                 </p:panelGrid>
 
-                <p:panel id="parchivos" visible="#{casoController.adjuntarArchivosARespuesta}">
-                    <h:panelGrid columns="2" >
-                        <p:outputLabel for="listaadjuntosrespuesta" value="Seleccione adjuntos" style="font-weight:bold"/>
-
-                        <p:selectManyCheckbox id="listaadjuntosrespuesta" value="#{casoController.selectedAttachmensForMail}" layout="grid" columns="3"
-                                              converter="attachmentConverter">
-                            <f:selectItems value="#{casoController.selected.attachmentsNotEmbedded}" 
-                                           var="item" itemLabel="${item.nombreArchivo}" itemValue="${item}" />
-                        </p:selectManyCheckbox>
-                    </h:panelGrid>
-                </p:panel>
+              
 
                 <h:panelGrid columns="4">
                     <p:message for="nextResponseDue1"/>
                     <p:message for="idSubEstadox"/>
-                   
+
                 </h:panelGrid>
 
                 <br/>
                 <p:panel id="panelbuttons" style="border: 0px; padding: 0px;">
-                    <h:panelGrid style="float: right" columns="2">
 
-                        <p:commandLink action="#{casoController.disableReplyMode()}" styleClass="btn btn-default"
-                                       immediate="true" update=":inputPanel:formCreateNota">
-                            Cancelar
-                        </p:commandLink>
-
-                        <p:splitButton id="sendCommentButton" value="Enviar" actionListener="#{casoController.responder()}" 
-                                       update=":mainform:messages :westPanel:formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso :inputPanel:resumenNotas"
-                                       icon="ui-icon-mail-closed"
-                                       rendered="#{casoController.replyByEmail}">
-
-                            <p:menuitem value="Descartar borrador" actionListener="#{casoController.descartarBorrador()}"
-                                        update=":mainform:messages :inputPanel:formCreateNota"
-                                        icon="ui-icon-trash"
-                                        rendered="#{casoController.selected.respuesta ne null}"/>
-
-                            <p:menuitem value="Guardar borrador" actionListener="#{casoController.guardarBorrador()}"
-                                        update=":mainform:messages :inputPanel:formCreateNota"
-                                        icon="ui-icon-disk"/>
-
-
-                        </p:splitButton> 
-
-                        <p:splitButton id="saveCommentButton" value="Guardar" actionListener="#{casoController.crearNota(false)}" 
-                                       update=":mainform:messages :westPanel:formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso :formTopMenu :inputPanel:resumenNotas" 
-                                       icon="fa fa-pencil-square-o" rendered="#{not casoController.replyByEmail}">  
-                            <p:menuitem value="Guardar y notificar al cliente" actionListener="#{casoController.crearNota(true)}" 
-                                        update=":mainform:messages :westPanel:formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso :formTopMenu :inputPanel:resumenNotas"  
-                                        icon="ui-icon-disk" />  
-
-                            <p:separator />  
-
-                            <p:menuitem value="Descartar borrador" actionListener="#{casoController.descartarBorrador()}"
-                                        update=":mainform:messages :inputPanel:formCreateNota"
-                                        icon="ui-icon-trash"
-                                        rendered="#{casoController.selected.respuesta ne null}"/>
-
-                            <p:menuitem value="Guardar borrador" actionListener="#{casoController.guardarBorrador()}"
-                                        update=":mainform:messages :inputPanel:formCreateNota"
-                                        icon="ui-icon-disk"/>
-
-
-                        </p:splitButton>  
-
-                    </h:panelGrid>
                 </p:panel>
 
             </h:panelGrid>  
 
         </p:panel>
-         
-         <br/>
+
+        <br/>
     </h:form>
 
 </ui:composition>
