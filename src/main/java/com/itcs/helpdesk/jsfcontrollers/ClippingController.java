@@ -43,7 +43,6 @@ public class ClippingController extends AbstractManagedBean<Clipping> implements
     
      
 
-    //--Filter
     public ClippingController() {
         super(Clipping.class);
     }
@@ -57,106 +56,12 @@ public class ClippingController extends AbstractManagedBean<Clipping> implements
     }
  
 
-//    @Override
-//    public PaginationHelper getPagination() {
-//        if (pagination == null) {
-//            pagination = new PaginationHelper(getPaginationPageSize()) {
-//                @Override
-//                public int getItemsCount() {
-//                    return getJpaController().count(Clipping.class).intValue();
-//                }
-//
-//                @Override
-//                public DataModel createPageDataModel() {
-//                    if (getFilterHelper().getVista().getFiltrosVistaList() != null && !getFilterHelper().getVista().getFiltrosVistaList().isEmpty()) {
-//                        try {
-//                            return new ListDataModel(getJpaController().findEntities(Clipping.class, getFilterHelper().getVista(), getPageSize(), getPageFirstItem(), new OrderBy("idClipping", OrderBy.OrderType.DESC), userSessionBean.getCurrent()));
-//                        } catch (NotSupportedException ex) {
-//                            JsfUtil.addErrorMessage(ex, "Error on findClippingEntities");
-//                            Logger.getLogger(ClippingController.class.getName()).log(Level.SEVERE, null, ex);
-//                        } catch (ClassNotFoundException ex) {
-//                            JsfUtil.addErrorMessage(ex, "Error on findClippingEntities");
-//                            Logger.getLogger(ClippingController.class.getName()).log(Level.SEVERE, null, ex);
-//                        }
-//                    }
-//                    return new ListDataModel(getJpaController().queryByRange(Clipping.class, getPageSize(), getPageFirstItem()));
-//                }
-//            };
-//        }
-//        return pagination;
-//    }
-
-    //-- this will be util in primefaces 4.0
-//////////    public MenuModel getClippingsMenuModel() {
-//////////
-//////////        if (clippingsMenuModel != null) {
-//////////            return clippingsMenuModel;
-//////////        }
-//////////
-//////////        clippingsMenuModel = new DefaultMenuModel();
-//////////        //hay que traerse solo los roots.
-//////////        List<Clipping> clippings = getJpaController().getClippingJpaController().selectRootClippings();
-//////////
-//////////        //Ordenar los clippings
-//////////        Collections.sort(clippings, new Comparator<Clipping>() {
-//////////            @Override
-//////////            public int compare(Clipping o1, Clipping o2) {
-//////////                return o1.getOrden() - o2.getOrden();
-//////////            }
-//////////        });
-//////////
-//////////        for (Clipping root : clippings) {
-//////////            if (root.isFolder()) {
-//////////                DefaultSubMenu rootFolder = new DefaultSubMenu(root.getNombre());
-//////////                addChildClippingsToSubMenu(root, rootFolder);
-//////////                clippingsMenuModel.addElement(rootFolder);
-//////////            } else {
-//////////                //is empty... so is a leaf, a fucking clipping as root.
-//////////                DefaultMenuItem item = new DefaultMenuItem(root.getNombre());
-//////////                item.setIcon("ui-icon-disk");
-//////////                item.setCommand("#{menuBean.save}");
-//////////                item.setUpdate("messages");
-//////////                clippingsMenuModel.addElement(item);
-//////////            }
-//////////        }
-//////////        return clippingsMenuModel;
-//////////
-//////////    }
-//////////
-//////////    private void addChildClippingsToSubMenu(Clipping c, DefaultSubMenu subMenu) {
-//////////
-//////////        Collections.sort(c.getClippingList(), new Comparator<Clipping>() {
-//////////            @Override
-//////////            public int compare(Clipping o1, Clipping o2) {
-//////////                return o1.getOrden() - o2.getOrden();
-//////////            }
-//////////        });
-//////////
-//////////        Iterator iterator = c.getClippingList().iterator();
-//////////        while (iterator.hasNext()) {
-//////////            Clipping clip = (Clipping) iterator.next();
-//////////            //Does it have more childs?
-//////////            if (clip.isFolder()) {
-//////////                DefaultSubMenu folder = new DefaultSubMenu(clip.getNombre());
-//////////                addChildClippingsToSubMenu(clip, folder);
-//////////            } else {
-//////////                //is empty... so is a leaf, a fucking clipping.
-//////////                DefaultMenuItem item = new DefaultMenuItem(clip.getNombre());
-//////////                item.setIcon("ui-icon-disk");
-//////////                item.setCommand("#{menuBean.save}");
-//////////                item.setUpdate("messages");
-//////////                subMenu.addElement(item);
-//////////            }
-//////////
-//////////        }
-//////////    }
-    //--
     @Override
-    public String prepareList() {
-        recreateModel();
-        return "/script/clipping/List";
+    protected String getListPage() {
+      return "/script/clipping/List";
     }
 
+    
     public String prepareCreate() {
         current = new Clipping();
 //        selectedItemIndex = -1;

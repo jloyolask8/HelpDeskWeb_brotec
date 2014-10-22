@@ -11,7 +11,11 @@
 
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
-            <h:outputText value="#{applicationBean.helpdeskTitle} #{bundle.Inbox}"></h:outputText>
+            <p:outputLabel value="#{bundle.casosTitle}"/>
+        </ui:define>
+        
+        <ui:define name="menutitle">
+            <p:outputLabel value="Vistas de casos"/>
         </ui:define>
 
         <ui:define name="head">
@@ -80,7 +84,6 @@
             </p:accordionPanel>
         </ui:define>
         
-        <ui:define name="menutitle">Vistas</ui:define>
 
         <ui:define name="body" id="body">
 
@@ -92,7 +95,7 @@
                                controllerMBean="#{casoController}" 
                                filterHelper="#{casoController.filterHelper}" 
                                canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
-                               update=":mainform:messages :formfilter:panelFilter0:panelFilter :form0:panelG1"
+                               update=":mainform:messages  :form0:panelG1"
                                vistaControllerBackOutcome="/script/index"/>
 
             </h:form>
@@ -108,8 +111,6 @@
                         <p:toolbarGroup align="left">
                             <p:commandButton id="updateList" title="Actualizar" icon="fa fa-refresh" style="width: 40px;" 
                                              actionListener="#{casoController.refresh()}" update=":form0:panelG1" />
-
-
 
                             <p:commandButton onclick="PF('applyRuleDialog').show()" icon="fa fa-cog" title="Ejecutar Regla" iconPos="notext"
                                              update=":applyRuleForm" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/> 
@@ -144,7 +145,6 @@
                             <p:tooltip for="exportAllItems" value="Exportar a excel #{casoController.pagination.itemsCount} casos."/>
 
                             <p:overlayPanel id="TagPanel" widgetVar="TagPanel" for="TagAsBtn" hideEffect="fade" dynamic="true">                                     
-
                                 <h:panelGrid width="220px"> 
                                     <p:dataTable id="tabletags" var="tag" value="#{tagCloudBean.etiquetasListByUsuario}" 
                                                  emptyMessage="No se encontraron etiquetas." 
@@ -152,11 +152,11 @@
                                                  selection="#{casoController.selectedEtiquetas}"
                                                  scrollRows="10" scrollable="true" liveScroll="true" scrollHeight="200">  
 
-                                        <p:column selectionMode="multiple" width="15%"/>  
+                                        <p:column selectionMode="multiple" width="15%"/>
 
                                         <p:column filterBy="#{tag.tagId}">
                                             <h:outputText value="#{tag.tagId}" />  
-                                        </p:column>  
+                                        </p:column>
 
                                     </p:dataTable>  
                                 </h:panelGrid>
@@ -164,28 +164,15 @@
                                 <p:commandButton value="Aplicar"  icon="ui-icon-tag"  
                                                  actionListener="#{casoController.tagManyCasosManyTags}"
                                                  update=":accionesaccordion1:tagCloud :mainform:messages :form0:ID_TABLA" oncomplete="PF('TagPanel').hide()"/> 
-                            </p:overlayPanel>  
+                            </p:overlayPanel>
 
                             <p:separator />  
                         </p:toolbarGroup>  
 
                         <p:toolbarGroup align="right">
 
-                            <p:selectOneMenu id="cant" value="#{casoController.paginationPageSize}" style="top: 7px" >
-                                <p:ajax event="change" listener="#{casoController.resetPageSize()}" update=":form0:panelG1"/>
-                                <f:selectItems value="#{casoController.pagination.pageSizesAvailable}"/>
-                            </p:selectOneMenu>
-
-
-                            <p:separator/>
-                            <p:commandButton action="#{casoController.first}" update=":form0:panelG1" disabled="#{not casoController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{casoController.pagination.itemsCount > 0}"/>
-                            <p:commandButton action="#{casoController.previous}" update=":form0:panelG1" disabled="#{not casoController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{casoController.pagination.itemsCount > 0}"/>
-                            &nbsp;
-                            <h:outputText value="#{casoController.pagination.pageFirstItem + 1}-#{casoController.pagination.pageLastItem + 1} de #{casoController.pagination.itemsCount}" rendered="#{casoController.pagination.itemsCount gt 0}"></h:outputText>
-                            &nbsp;
-                            <p:commandButton action="#{casoController.next}" update=":form0:panelG1" disabled="#{not casoController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{casoController.pagination.itemsCount > 0}"/>
-                            <p:commandButton action="#{casoController.last}" update=":form0:panelG1" disabled="#{not casoController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{casoController.pagination.itemsCount > 0}"/>
-
+                            <go:paginatorButtons controllerMBean="#{casoController}" update=":form0:panelG1"/>
+                            
                         </p:toolbarGroup>  
 
                     </p:toolbar>

@@ -38,7 +38,7 @@
                                controllerMBean="#{vistaController}" 
                                filterHelper="#{vistaController.filterHelper}" 
                                canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
-                               update=":mainform:messages :formfilter:panelFilter0:panelFilter :form" vistaControllerBackOutcome="/script/vista/List"/>
+                               update=":mainform:messages :form" vistaControllerBackOutcome="/script/vista/List"/>
 
             </h:form>
 
@@ -49,11 +49,26 @@
 
                 <h:panelGroup>
 
+                    <p:toolbar>
+
+                        <p:toolbarGroup align="left">
+                            <p:commandButton icon="fa fa-download" ajax="false">  
+                                <p:dataExporter type="xls" target="datatableVistas" fileName="export_casos" postProcessor="#{casoController.postProcessXLS}"/>  
+                            </p:commandButton>
+                        </p:toolbarGroup>
+
+                        <p:toolbarGroup align="right">
+
+                            <go:paginatorButtons controllerMBean="#{vistaController}" update=":form"/>
+                            <p:separator/>
+                            <p:commandButton ajax="false" action="#{vistaController.prepareCreate}" immediate="true"
+                                             rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}" value="#{bundle.ListVistaCreateLink}" icon="fa fa-plus-circle" />
+
+                        </p:toolbarGroup>  
+
+                    </p:toolbar>
+
                     <p:dataTable id="datatableVistas" value="#{vistaController.items}" var="item" emptyMessage="#{bundle.ListVistaEmpty}">
-                        <f:facet name="header">
-                            <h:outputText value="No hay Vistas" rendered="#{vistaController.pagination.itemsCount eq 0}"></h:outputText>
-                            <h:outputText value="Vistas (#{vistaController.pagination.pageFirstItem + 1}-#{vistaController.pagination.pageLastItem + 1} de #{vistaController.pagination.itemsCount})" rendered="#{vistaController.pagination.itemsCount gt 0}"></h:outputText>
-                        </f:facet>
 
                         <p:columnGroup type="header">  
                             <p:row>  
@@ -96,13 +111,18 @@
                             </f:facet>
                             <h:outputText value="#{item.idArea}"/>
                         </p:column>
-                        <p:column>
+
+
+                        <p:column sortBy="#{item.idUsuarioCreadaPor.capitalName}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListVistaTitle_idUsuarioCreadaPor}"/>
                             </f:facet>
-                            <h:outputText value="#{item.idUsuarioCreadaPor}"/>
+                            <p:commandLink value="#{item.idUsuarioCreadaPor.capitalName}"
+                                           rendered="#{not empty item.idUsuarioCreadaPor}" 
+                                           action="#{usuarioController.prepareView(item.idUsuarioCreadaPor, '/script/clipping/List')}" ajax="false" immediate="true"/>
                         </p:column>
-                        <p:column>
+
+                        <p:column exportable="false">
                             <f:facet name="header">
                                 <h:outputText value="&nbsp;"/>
                             </f:facet>
@@ -119,29 +139,7 @@
 
 
 
-                        <f:facet name="footer">
 
-                            <p:selectOneMenu id="cant" value="#{vistaController.paginationPageSize}" style="position: relative; left: 0px; top: 7px; height: 22px; width: 50px;" >
-                                <p:ajax event="change" listener="#{vistaController.resetPageSize()}" update=":form"/>
-                                <f:selectItems value="#{vistaController.pagination.pageSizesAvailable}"/>
-                            </p:selectOneMenu>
-
-                            <p:commandButton ajax="true" action="#{vistaController.first}" update=":form" disabled="#{not vistaController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{vistaController.pagination.itemsCount > 0}"/>
-                            <p:commandButton ajax="true" action="#{vistaController.previous}" update=":form" disabled="#{not vistaController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{vistaController.pagination.itemsCount > 0}"/>
-                            <p:commandButton ajax="true" action="#{vistaController.next}" update=":form" disabled="#{not vistaController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{vistaController.pagination.itemsCount > 0}"/>
-                            <p:commandButton ajax="true" action="#{vistaController.last}" update=":form" disabled="#{not vistaController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{vistaController.pagination.itemsCount > 0}"/>
-
-                            &nbsp;
-                            <p:commandButton ajax="false" action="#{vistaController.prepareCreate}" immediate="true"
-                                             rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}" value="#{bundle.ListVistaCreateLink}" icon="ui-icon ui-icon-plus" />
-
-                            &nbsp;
-                            <h:commandLink>  
-                                <p:graphicImage value="/images/excel.png" width="22" height="22"/>
-                                <p:dataExporter type="xls" target="datatableVistas" fileName="export_casos" postProcessor="#{casoController.postProcessXLS}"/>  
-                            </h:commandLink>
-
-                        </f:facet>
 
 
 

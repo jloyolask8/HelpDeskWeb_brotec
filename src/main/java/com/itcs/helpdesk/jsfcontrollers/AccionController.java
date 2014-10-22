@@ -22,57 +22,11 @@ import org.primefaces.model.SelectableDataModel;
 public class AccionController extends AbstractManagedBean<Accion>  implements Serializable {
 
 
-//    private Accion current;
-//    private Accion[] selectedItems;
-//    private transient DataModel items = null;
-//    private transient PaginationHelper pagination;
     private int selectedItemIndex;
 
     public AccionController() {
         super(Accion.class);
     }
-
-//    public Accion getSelected() {
-//        if (current == null) {
-//            current = new Accion();
-//            selectedItemIndex = -1;
-//        }
-//        return current;
-//    }
-
-    @Override
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(getPaginationPageSize()) {
-                @Override
-                public int getItemsCount() {
-                    return getJpaController().count(Accion.class).intValue();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    return new AccionDataModel(getJpaController().queryByRange(Accion.class, getPageSize(), getPageFirstItem()));
-                }
-            };
-        }
-        return pagination;
-    }
-
-    public String prepareList() {
-        recreateModel();
-        return "List";
-    }
-
-//    public String prepareView() {
-//        if (getSelectedItems().length != 1) {
-//            JsfUtil.addSuccessMessage("Es requerido que seleccione una fila para visualizar.");
-//            return "";
-//        } else {
-//            current = getSelectedItems()[0];
-//        }
-//        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-//        return "View";
-//    }
 
     public String prepareCreate() {
         current = new Accion();
@@ -90,17 +44,6 @@ public class AccionController extends AbstractManagedBean<Accion>  implements Se
             return null;
         }
     }
-
-//    public String prepareEdit() {
-//        if (getSelectedItems().length != 1) {
-//            JsfUtil.addSuccessMessage("Se requiere que seleccione una fila para editar.");
-//            return "";
-//        } else {
-//            current = getSelectedItems()[0];
-//        }
-//        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-//        return "Edit";
-//    }
 
     public String update() {
         try {
@@ -122,21 +65,6 @@ public class AccionController extends AbstractManagedBean<Accion>  implements Se
         recreateModel();
         return "List";
     }
-
-//    public String destroySelected() {
-//
-//        if (getSelectedItems().length <= 0) {
-//            return "";
-//        } else {
-//            for (int i = 0; i < getSelectedItems().length; i++) {
-//                current = getSelectedItems()[i];
-//                performDestroy();
-//            }
-//        }
-//        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-//        recreateModel();
-//        return "List";
-//    }
 
     public String destroyAndView() {
         performDestroy();
@@ -175,16 +103,11 @@ public class AccionController extends AbstractManagedBean<Accion>  implements Se
         }
     }
 
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
+   
 
     @Override
     public Class getDataModelImplementationClass() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return AccionDataModel.class;
     }
 
 //    /**

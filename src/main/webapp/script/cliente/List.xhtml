@@ -9,7 +9,10 @@
 
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
-            <h:outputText value="Clientes"></h:outputText>
+            <p:outputLabel value="Clientes"></p:outputLabel>
+        </ui:define>
+        <ui:define name="menutitle">
+            <p:outputLabel value="Vistas de Clientes"></p:outputLabel>
         </ui:define>
         <ui:define name="west">
 
@@ -18,16 +21,13 @@
                            user="#{UserSessionBean.current}"/>
 
             <br/>
-            <p:accordionPanel multiple="true" cache="true" id="accionesaccordion1">
-                <p:tab title="Clientes" id="accionestab1">
-                    <h:outputLabel escape="false" value="#{bundle.ayudaClientes}"/>
-                </p:tab>
-            </p:accordionPanel>
+
+            <p:outputLabel escape="false" value="#{bundle.ayudaClientes}"/>
+
         </ui:define>
         <ui:define name="body">
 
             <h:form id="formfilter">
-
                 <go:filterView id="panelFilter0" titleIconClass="fa fa-users page-header-icon"
                                controllerMBean="#{clienteController}" 
                                filterHelper="#{clienteController.filterHelper}" 
@@ -55,40 +55,29 @@
 
 
 
-                    <p:toolbar style="border: none;">
+                    <p:toolbar >
+
+                        <p:toolbarGroup align="left">
+                            <p:commandButton ajax="false" action="#{clienteController.prepareCreateMasivo()}" value="Importación masiva de clientes" icon="fa fa-upload" />
+                            <p:commandButton ajax="false" action="cargarClienteProducto" value="Importar Relación Cliente/#{applicationBean.productSubComponentDescription}" icon="fa fa-upload" />
+                        </p:toolbarGroup>
+
                         <p:toolbarGroup align="right">
 
-                            <p:outputLabel value="Páginas de "/>
-
-                            <p:selectOneMenu value="#{clienteController.paginationPageSize}" style="top: 7px">
-                                <p:ajax event="change" listener="#{clienteController.resetPageSize()}" update=":form"/>
-                                <f:selectItems value="#{clienteController.pagination.pageSizesAvailable}"/>
-                            </p:selectOneMenu>
-
+                            <go:paginatorButtons controllerMBean="#{clienteController}" update=":form"/>
                             <p:separator/>
+                            <p:commandButton ajax="false" action="#{clienteController.prepareCreate}" value="Crear cliente" icon="fa fa-plus-circle" />
 
-                            <p:commandButton action="#{clienteController.first}" update=":form" disabled="#{not clienteController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{clienteController.pagination.itemsCount > 0}"/>
-
-                            <p:commandButton action="#{clienteController.previous}" update=":form" disabled="#{not clienteController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{clienteController.pagination.itemsCount > 0}"/>
-
-                            <h:outputText rendered="#{clienteController.pagination.itemsCount gt 0}" value=" #{clienteController.pagination.pageFirstItem + 1} - #{clienteController.pagination.pageLastItem + 1} de #{clienteController.pagination.itemsCount} "></h:outputText>                           
-                            
-                            <p:commandButton action="#{clienteController.next}" update=":form" disabled="#{not clienteController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{clienteController.pagination.itemsCount > 0}"/>
-
-                            <p:commandButton action="#{clienteController.last}" update=":form" disabled="#{not clienteController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{clienteController.pagination.itemsCount > 0}"/>
+                        </p:toolbarGroup>  
 
 
-                            <p:separator/>
-                            <p:commandButton ajax="false" action="#{clienteController.prepareCreate}" value="Crear cliente" icon="ui-icon ui-icon-plus" />
-
-                        </p:toolbarGroup>
                     </p:toolbar>
 
 
                     <p:dataTable widgetVar="dataTable" var="item" value="#{clienteController.items}" selectionMode="single"
                                  emptyMessage="#{bundle.emptyList}">
 
-                    
+
 
                         <p:column headerText="Nombre Cliente">
                             <h:outputText value="#{item.nombres} #{item.apellidos}"/>
@@ -120,42 +109,7 @@
 
                 </h:panelGroup>
 
-                <p:toolbar style="border: none;">
 
-                    <p:toolbarGroup align="left">
-                        <p:commandButton ajax="false" action="#{clienteController.prepareCreateMasivo()}" value="Importación masiva de clientes" icon="ui-icon ui-icon-arrowstop-1-n" />
-                        <p:commandButton ajax="false" action="cargarClienteProducto" value="Importar Relación Cliente/#{applicationBean.productSubComponentDescription}" icon="ui-icon ui-icon-arrowstop-1-n" />
-
-                    </p:toolbarGroup>
-
-
-
-                    <p:toolbarGroup align="right">
-
-                        <p:outputLabel value="Páginas de "/>
-
-                        <p:selectOneMenu value="#{clienteController.paginationPageSize}" style="top: 7px">
-                            <p:ajax event="change" listener="#{clienteController.resetPageSize()}" update=":form"/>
-                            <f:selectItems value="#{clienteController.pagination.pageSizesAvailable}"/>
-                        </p:selectOneMenu>
-
-                        <p:separator/>
-
-                        <p:commandButton action="#{clienteController.first}" update=":form" disabled="#{not clienteController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{clienteController.pagination.itemsCount > 0}"/>
-
-                        <p:commandButton action="#{clienteController.previous}" update=":form" disabled="#{not clienteController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{clienteController.pagination.itemsCount > 0}"/>
-
-                        <p:commandButton action="#{clienteController.next}" update=":form" disabled="#{not clienteController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{clienteController.pagination.itemsCount > 0}"/>
-
-                        <p:commandButton action="#{clienteController.last}" update=":form" disabled="#{not clienteController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{clienteController.pagination.itemsCount > 0}"/>
-
-
-                        <p:separator/>
-                        <p:commandButton ajax="false" action="#{clienteController.prepareCreate}" value="Crear cliente" icon="ui-icon ui-icon-plus" />
-
-
-                    </p:toolbarGroup>
-                </p:toolbar>
 
 
 

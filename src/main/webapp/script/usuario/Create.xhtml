@@ -20,7 +20,6 @@
         <ui:define name="body">
           
             <h:form>
-                <p:panel header="#{bundle.CreateUsuarioTitle}">
                     <p:messages globalOnly="true"/>
 
                    <p:fieldset legend="Identificación del usuario"> 
@@ -100,14 +99,25 @@
                         </h:panelGrid>
                     </p:fieldset>
 
-                    <f:facet name="footer">
-                        <p:commandButton action="#{usuarioController.create}" value="#{bundle.CreateUsuarioSaveLink}" ajax="false" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>                     
-                        <p:commandButton action="#{usuarioController.prepareList}" value="#{bundle.CreateUsuarioShowAllLink}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" immediate="true" ajax="false" icon="ui-icon-folder-open"/>
-                    </f:facet> 
+                     <br/>
+                     <p:toolbar>  
+                   <p:toolbarGroup align="left">   
+                       <p:commandButton action="#{usuarioController.prepareList}" value="#{bundle.goBack}" 
+                                         rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" immediate="true" ajax="false" icon="fa fa-chevron-left"/>
+                         <p:separator/> 
+                         <p:commandButton action="#{usuarioController.create}" value="#{bundle.CreateUsuarioSaveLink}" 
+                                          ajax="false" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
+                                          icon="fa fa-save"/>
+                                                
+                       
+
+                   </p:toolbarGroup>
+                </p:toolbar>
+                    
+                
 
               
 
-</p:panel>
             </h:form>
         </ui:define>
     </ui:composition>

@@ -9,32 +9,32 @@
 
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
-            <h:outputText value="Relacionar Clientes con #{applicationBean.productDescription}"></h:outputText>
+            <p:outputLabel value="Relacionar Clientes con #{applicationBean.productDescription}"/>
+        </ui:define>
+        
+         <ui:define name="menutitle">
+            <p:outputLabel value="Clientes"/>
         </ui:define>
 
 
         <ui:define name="west">
-            <p:accordionPanel multiple="true" cache="true" id="accionesaccordion1">
-                <p:tab title="Clientes" id="accionestab1">
                     <h:outputLabel escape="false" value="#{bundle.ayudaClientes}"/>
-                </p:tab>
-            </p:accordionPanel>
         </ui:define>
+        
         <ui:define name="body">
             <h:form id="form" enctype="multipart/form-data">
                 <h:panelGroup id="wrapper" layout="block">  
-                    <h1> <h:outputText value="Relacionar Clientes con #{applicationBean.productDescription}"></h:outputText></h1>
-
 
                     <p:messages id="messages" globalOnly="true"/>
 
-                    <h:panelGroup id="main-nav-holder" layout="block">  
 
-                        <h:outputText value="Especifique las posiciones de las Columnas de cada dato dentro del Achivo Excel:"/>
-                        <h:panelGrid columns="2">
+                        <p:outputLabel value="Especifique las posiciones de las Columnas de cada dato dentro del Achivo Excel que contiene la información a cargar:"/>
+                        <br/>
+                        <h:panelGrid columns="3">
 
                             <p:outputLabel value="Rut Cliente"/>
                             <p:outputLabel value="Id del #{applicationBean.productSubComponentDescription} Contratado"/>
+                            <p:outputLabel value="Seleccione el Tipo de Relación" title="Seleccione el Tipo de Relación entre el Cliente y el producto"/>
 
                             <p:inputText value="#{emailClienteController.cellPositionRut}" required="true">
                                 <pe:keyFilter mask="alpha"/>
@@ -42,37 +42,40 @@
 
                             <p:inputText value="#{emailClienteController.cellPositionSubComponentId}" required="true">
                                 <pe:keyFilter mask="alpha"/>
-                            </p:inputText>                           
-                        </h:panelGrid>
-
-                        <h:panelGrid columns="2">
-
-                            <p:outputLabel value="Tipo de Relación entre el Cliente y el producto"/>
-
-                            <p:selectOneMenu id="bulkLoadedProductoContratadoTipoAsoc" filter="true" filterMatchMode="contains"
+                            </p:inputText>     
+                            
+                            <p:selectOneMenu id="bulkLoadedProductoContratadoTipoAsoc" filter="true" filterMatchMode="contains"                                             
                                              value="#{emailClienteController.bulkLoadedProductoContratadoTipoAsoc}" 
                                              required="true" requiredMessage="Favor indiquenos el tipo de relación entre el Cliente y el producto">
                                 <f:selectItem itemLabel="Propietario" itemValue="Propietario"/>
                                 <f:selectItem itemLabel="Familiar del Propietario" itemValue="Familiar del Propietario"/>
                                 <f:selectItem itemLabel="Cotizante" itemValue="Cotizante"/>
                             </p:selectOneMenu>
-
-
-
+                            
                         </h:panelGrid>
-
 
                         <br/>
 
                         <p:fileUpload value="#{emailClienteController.fileClients}" mode="simple" allowTypes="/(\.|\/)(xls|xlsx)$/" update=":form"/>  
 
-                        <p:commandButton value="Subir Achivo Excel" ajax="false"  
-                                         actionListener="#{emailClienteController.handleFileUploadClienteProd()}"/>                   
+                         <br/>
+                         
+                        <p:toolbar>
+                            
+                             <p:toolbarGroup align="left">
+                                 <p:commandButton value="#{bundle.goBack}" ajax="false"  icon="fa fa-chevron-left"
+                                                  action="#{clienteController.prepareList()}"/>     
+                            </p:toolbarGroup>
+                            
+                            <p:toolbarGroup align="right">
+                                <p:commandButton value="Subir Achivo Excel" ajax="false" icon="fa fa-upload" style="top: 4px"
+                                         actionListener="#{emailClienteController.handleFileUploadClienteProd()}"/>     
+                            </p:toolbarGroup>
+                            
+                        </p:toolbar>
+                            
+                                      
 
-
-
-
-                    </h:panelGroup>  
 
 
                     <br/>

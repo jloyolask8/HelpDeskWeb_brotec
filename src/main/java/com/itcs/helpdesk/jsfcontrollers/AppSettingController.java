@@ -251,37 +251,14 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
         return null;
     }
 
-//    public AppSetting getSelected() {
-//        if (current == null) {
-//            current = new AppSetting();
-//            selectedItemIndex = -1;
-//        }
-//        return current;
-//    }
-    @Override
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(getPaginationPageSize()) {
-                @Override
-                public int getItemsCount() {
-                    return getJpaController().count(AppSetting.class).intValue();
-                }
 
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getJpaController().queryByRange(AppSetting.class, getPageFirstItem() + getPageSize(), getPageFirstItem()));
-                }
-            };
-        }
-        return pagination;
-    }
 
     public String goToConfigPage() {
         return "/script/appSetting/config";
     }
 
-    public String prepareList() {
-        recreateModel();
+    @Override
+    protected String getListPage() {
         return "/script/appSetting/List";
     }
 

@@ -6,7 +6,7 @@
     xmlns:pe="http://primefaces.org/ui/extensions"
     xmlns:ui="http://java.sun.com/jsf/facelets">
 
-    <h:form id="formCreateNota">
+    <h:form id="formCreateNota" rendered="#{casoController.selected.open}">
         <br/>
 
         <h:panelGroup rendered="#{not casoController.replyMode}">

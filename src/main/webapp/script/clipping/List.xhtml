@@ -9,118 +9,126 @@
       xmlns:go="http://java.sun.com/jsf/composite/go">
 
     <ui:composition template="/script/template_inbox.xhtml">
-        <ui:define name="title">
-            <h:outputText value="#{bundle.ListClippingTitle}"></h:outputText>
+          <ui:define name="title">
+            <p:outputLabel value="#{bundle.ListClippingTitle}"/>
         </ui:define>
 
+        <ui:define name="menutitle"><p:outputLabel value="#{bundle.clippingDesc}"/></ui:define>
         <ui:define name="west">
-            <p:accordionPanel multiple="true" cache="true" >
-                <p:tab title="#{bundle.clippingDesc}" >
-                    <p:outputLabel escape="false" value="#{bundle.clippingHelp}"/>
 
-                </p:tab>
-            </p:accordionPanel>
+            <p:outputLabel escape="false" value="#{bundle.clippingHelp}"/>
+
+
         </ui:define>
 
         <ui:define name="body">
 
-            <pe:layoutPane position="center" styleHeader="margin-top: 6px !important;">
-                <f:facet name="header">
-                    <p:outputLabel value="#{bundle.ListClippingTitle}"/>
-                </f:facet>                
-
-                <h:form id="form">
-                    <p:messages />
-
-                    <go:filterView controllerMBean="#{clippingController}" filterHelper="#{clippingController.filterHelper}" update=":mainform:messages :form"
-                                   vistaControllerBackOutcome="/script/clipping/List"/>
-
-                    <h:panelGroup>
-                        <p:dataTable id="panelG1" value="#{clippingController.items}" 
-                                     emptyMessage="#{bundle.ListClippingEmpty}"
-                                     var="item">
-                           
-                            <p:column sortBy="#{item.nombre}">
-                                <f:facet name="header">
-                                    <h:outputText value="#{bundle.ListClippingTitle_nombre}"/>
-                                </f:facet>
-                                <h:outputText id="name" value="#{item.nombre}"/>
-                                <p:overlayPanel id="overlayPanel" for="name" hideEffect="fade" dynamic="true">  
-                                    <h:outputText value="#{item.texto}" escape="false"/>
-                                </p:overlayPanel>
-
-                            </p:column>
-
-                            <p:column>
-                                <f:facet name="header">
-                                    <h:outputText value="#{bundle.ListClippingTitle_visibleToAll}"/>
-                                </f:facet>
-                                <h:outputText value="#{item.visibleToAll ? 'Si':'No'}"/>
-                            </p:column>
-                            <p:column>
-                                <f:facet name="header">
-                                    <h:outputText value="#{bundle.ListClippingTitle_idGrupo}"/>
-                                </f:facet>
-                                <h:outputText value="#{item.idGrupo.nombre}"/>
-                            </p:column>
-
-                            <p:column>
-                                <f:facet name="header">
-                                    <h:outputText value="#{bundle.ListClippingTitle_idArea}"/>
-                                </f:facet>
-                                <h:outputText value="#{item.idArea.nombre}"/>
-                            </p:column>
-                            <p:column>
-                                <f:facet name="header">
-                                    <h:outputText value="&nbsp;"/>
-                                </f:facet>
-
-                                <p:commandButton id="editBtn" action="#{clippingController.prepareEdit()}" ajax="false"
-                                                 icon="ui-icon ui-icon-pencil" rendered="#{item.idUsuarioCreadaPor eq UserSessionBean.current}"/>
-                            
-                                <p:commandButton icon="ui-icon ui-icon-trash" actionListener="#{clippingController.destroy()}" update=":form :mainform:messages">
-                                    <p:confirm header="Confirmación" message="Esta seguro de eliminar #{item.nombre} ??" icon="ui-icon-alert"/>
-                                </p:commandButton>
-
-                            </p:column>
 
 
+            <h:form id="form">
+                <p:messages />
+
+                <go:filterView controllerMBean="#{clippingController}" filterHelper="#{clippingController.filterHelper}" update=":mainform:messages :form"
+                               vistaControllerBackOutcome="/script/clipping/List"/>
+
+                <h:panelGroup>
+                    <p:dataTable id="panelG1" value="#{clippingController.items}" 
+                                 emptyMessage="#{bundle.ListClippingEmpty}"
+                                 var="item">
+
+                        <p:column sortBy="#{item.nombre}">
                             <f:facet name="header">
-                                <p:toolbar style="border: none;">
-                                    <p:toolbarGroup align="right">
+                                <h:outputText value="#{bundle.ListClippingTitle_nombre}"/>
+                            </f:facet>
+                            <h:outputText id="name" value="#{item.nombre}"/>
+                            <p:overlayPanel id="overlayPanel" for="name" hideEffect="fade" dynamic="true">  
+                                <h:outputText value="#{item.texto}" escape="false"/>
+                            </p:overlayPanel>
 
-                                        <p:outputLabel value="Páginas de "/>
-                                        <p:selectOneMenu id="cant" value="#{clippingController.paginationPageSize}" style="top: 7px">
-                                            <p:ajax event="change" listener="#{clippingController.resetPageSize()}" update=":form"/>
-                                            <f:selectItems value="#{clippingController.pagination.pageSizesAvailable}"/>
-                                        </p:selectOneMenu>
+                        </p:column>
 
-                                        <p:separator/>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListClippingTitle_visibleToAll}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.visibleToAll ? 'Si':'No'}"/>
+                        </p:column>
 
-                                        <p:commandButton ajax="false" action="#{clippingController.first}" disabled="#{not clippingController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{clippingController.pagination.itemsCount > 0}"/>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListClippingTitle_idGrupo}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idGrupo.nombre}"/>
+                        </p:column>
 
-                                        <p:commandButton ajax="false" action="#{clippingController.previous}" disabled="#{not clippingController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{clippingController.pagination.itemsCount > 0}"/>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListClippingTitle_idArea}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idArea.nombre}"/>
+                        </p:column>
 
-                                        <p:commandButton ajax="false" action="#{clippingController.next}" disabled="#{not clippingController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{clippingController.pagination.itemsCount > 0}"/>
+                        <p:column sortBy="#{item.idUsuarioCreadaPor.capitalName}" headerText="Agente">
+                            <p:commandLink value="#{item.idUsuarioCreadaPor.capitalName}"
+                                           rendered="#{not empty item.idUsuarioCreadaPor}" 
+                                           action="#{usuarioController.prepareView(item.idUsuarioCreadaPor, '/script/clipping/List')}" ajax="false" immediate="true"/>
+                        </p:column>
 
-                                        <p:commandButton ajax="false" action="#{clippingController.last}" disabled="#{not clippingController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{clippingController.pagination.itemsCount > 0}"/>
-
-                                        <p:separator/>
-
-                                        <p:commandButton action="#{clippingController.prepareCreate}" ajax="false"
-                                                         value="#{bundle.ListClippingCreateLink}" icon="ui-icon ui-icon-plus"/>
-
-                                    </p:toolbarGroup>
-                                </p:toolbar>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="&nbsp;"/>
                             </f:facet>
 
-                        </p:dataTable>
-                    </h:panelGroup>
+                            <p:commandButton id="editBtn" action="#{clippingController.prepareEdit()}" ajax="false"
+                                             icon="ui-icon ui-icon-pencil" rendered="#{item.idUsuarioCreadaPor eq UserSessionBean.current}"/>
+
+                            <p:commandButton icon="ui-icon ui-icon-trash" actionListener="#{clippingController.destroy()}" update=":form :mainform:messages">
+                                <p:confirm header="Confirmación" message="Esta seguro de eliminar #{item.nombre} ??" icon="ui-icon-alert"/>
+                            </p:commandButton>
+
+                        </p:column>
+
+
+                        <f:facet name="header">
+                            <p:toolbar style="border: none;">
+                                <p:toolbarGroup align="right">
+
+                                    <p:outputLabel value="Páginas de "/>
+                                    <p:selectOneMenu id="cant" value="#{clippingController.paginationPageSize}" style="top: 7px">
+                                        <p:ajax event="change" listener="#{clippingController.resetPageSize()}" update=":form"/>
+                                        <f:selectItems value="#{clippingController.pagination.pageSizesAvailable}"/>
+                                    </p:selectOneMenu>
+
+                                    <p:separator/>
+
+                                    <p:commandButton ajax="false" action="#{clippingController.first}" disabled="#{not clippingController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{clippingController.pagination.itemsCount > 0}"/>
+
+                                    <p:commandButton ajax="false" action="#{clippingController.previous}" disabled="#{not clippingController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{clippingController.pagination.itemsCount > 0}"/>
+
+                                    &nbsp;
+                                    <h:outputText value="#{clippingController.pagination.pageFirstItem + 1}-#{clippingController.pagination.pageLastItem + 1} de #{clippingController.pagination.itemsCount}" rendered="#{clippingController.pagination.itemsCount gt 0}"></h:outputText>
+                                    &nbsp;
+
+                                    <p:commandButton ajax="false" action="#{clippingController.next}" disabled="#{not clippingController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{clippingController.pagination.itemsCount > 0}"/>
+
+                                    <p:commandButton ajax="false" action="#{clippingController.last}" disabled="#{not clippingController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{clippingController.pagination.itemsCount > 0}"/>
+
+                                    <p:separator/>
+
+                                    <p:commandButton action="#{clippingController.prepareCreate}" ajax="false"
+                                                     value="#{bundle.ListClippingCreateLink}" icon="ui-icon ui-icon-plus"/>
+
+                                </p:toolbarGroup>
+                            </p:toolbar>
+                        </f:facet>
+
+                    </p:dataTable>
+                </h:panelGroup>
 
 
 
-                </h:form>
-            </pe:layoutPane>
+            </h:form>
+
 
         </ui:define>
 
@@ -142,7 +150,7 @@
                 </h:form>
             </p:dialog>
 
-            
+
         </ui:define>
 
     </ui:composition>

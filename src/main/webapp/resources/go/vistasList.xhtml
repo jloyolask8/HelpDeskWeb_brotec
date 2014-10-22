@@ -27,7 +27,7 @@
                 <p:column>
                     <p:commandLink id="vistalink1" ajax="true" 
                                    update="#{cc.attrs.update}"
-                                   action="#{cc.attrs.controllerMBean.applyViewFilter(vista1)}" 
+                                   actionListener="#{cc.attrs.controllerMBean.applyViewFilter(vista1)}" 
                                    value="#{vista1.nombre}" style="font-weight: bold" 
                                    styleClass="ui-widget-header #{vista1 eq cc.attrs.controllerMBean.filterHelper.vista ? 'ui-state-hover':''}" />
                     <p:tooltip for="vistalink1" value="#{vista1.descripcion}" />  

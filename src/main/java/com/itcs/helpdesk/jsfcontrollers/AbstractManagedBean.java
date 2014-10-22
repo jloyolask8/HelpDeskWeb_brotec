@@ -86,7 +86,12 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     protected String backOutcome;
 
     public String goBack() {
-       return prepareList();
+        if (this.backOutcome == null) {
+            recreateModel();
+            return getListPage();
+        } else {
+            return this.backOutcome;
+        }
     }
 
     private static final Comparator<Vista> comparadorVistas = new Comparator<Vista>() {
@@ -676,13 +681,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
 
     public String prepareList() {
         recreateModel();
-
-        if (this.backOutcome == null) {
-            return getListPage();
-        } else {
-            return this.backOutcome;
-        }
-
+        return getListPage();
     }
 
     /**

@@ -22,7 +22,6 @@
             <pe:importEnum type="com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta" var="EnumTipoAlerta" allSuffix="ALL_ENUM_VALUES" />
 
             <h:form id="form">
-                <p:panel header="Detalles del Cliente">
                     <p:messages globalOnly="true"/>
 
                     <p:tabView id="tabs" activeIndex="#{areaController.editActiveIndex}" dynamic="true">
@@ -117,7 +116,7 @@
 
                         <p:tab id="tab3" title="Histórico de Casos" >
 
-                                <go:casoList casosList="#{clienteController.selected.casoList}"/>
+                            <go:casoList casosList="#{clienteController.selected.casoList}" header="Histórico de Casos"/>
 
                         </p:tab>
 
@@ -130,10 +129,9 @@
 
 
 
-                    <f:facet name="footer">    
                         <p:toolbar>  
                             <p:toolbarGroup align="left">   
-                                <p:commandButton action="#{clienteController.goBack}" value="#{bundle.goBack}" icon="ui-icon-folder-open" ajax="false"/>
+                                <p:commandButton action="#{clienteController.goBack}" value="#{bundle.goBack}" icon="fa fa-chevron-left" ajax="false"/>
                                 <p:separator/>
                                 <p:commandButton action="#{clienteController.prepareEdit(clienteController.selected)}" ajax="false"
                                                  value="#{bundle.edit}" icon="ui-icon ui-icon-pencil" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/> 
@@ -143,19 +141,14 @@
                                                  icon="ui-icon ui-icon-trash" disabled="#{not clienteController.puedeEliminar(clienteController.selected)}"/> 
                             </p:toolbarGroup>
 
-                            <p:toolbarGroup align="right">   
-                                <p:commandButton action="#{clienteController.prepareCreate}" ajax="false"
-                                                 value="#{bundle.createNew}" icon="ui-icon ui-icon-plus" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>  
-                            </p:toolbarGroup>
+                         
 
 
                         </p:toolbar>
 
 
-                    </f:facet>
 
 
-                </p:panel>
 
 
                 <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 

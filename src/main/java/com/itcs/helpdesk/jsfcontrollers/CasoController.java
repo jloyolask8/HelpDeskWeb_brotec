@@ -1146,12 +1146,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         return "";
     }
 
-//    @Override
-//    public String prepareList() {
-//        recreateModel();
-////        recreatePagination();
-//        return "inbox";
-//    }
     public void handleFileUpload(FileUploadEvent event) {
 
         FacesMessage msg = new FacesMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
@@ -3245,12 +3239,13 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public String mergeCliente() {
         try {
             getJpaController().mergeCliente(current.getEmailCliente().getCliente());
+            executeInClient("PF('dialogClient').hide()");
             JsfUtil.addSuccessMessage("Cliente actualizado exitosamente.");
-            return "/script/caso/Edit";
+            
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, e.getMessage());
-            return null;
         }
+        return null;
     }
 
     public String update() {

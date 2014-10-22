@@ -134,13 +134,20 @@ public class AuditLogController extends AbstractManagedBean<AuditLog> implements
         return pagination;
     }
 
-    public String prepareList() {
-        pagination = null;
-        alerta = new AuditLogVO();
-        recreateModel();
-        isAlerts = false;
-        return "/script/audit_log/List";
+//    public String prepareList() {
+//        pagination = null;
+//        alerta = new AuditLogVO();
+//        recreateModel();
+//        isAlerts = false;
+//        return "/script/audit_log/List";
+//    }
+
+    @Override
+    protected String getListPage() {
+       return "/script/audit_log/List";
     }
+    
+    
 
 //    public String prepareView() {
 //        if (getSelectedItems().length != 1) {

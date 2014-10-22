@@ -1,7 +1,6 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.BlackListEmail;
 import com.itcs.helpdesk.util.Log;
 import java.io.Serializable;
@@ -12,7 +11,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 
 @ManagedBean
@@ -23,28 +21,28 @@ public class BlackListController extends AbstractManagedBean<BlackListEmail> imp
         super(BlackListEmail.class);
     }
 
-    @Override
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(getPaginationPageSize()) {
-                @Override
-                public int getItemsCount() {
-                    return getJpaController().count(BlackListEmail.class).intValue();
-                }
+//    @Override
+//    public PaginationHelper getPagination() {
+//        if (pagination == null) {
+//            pagination = new PaginationHelper(getPaginationPageSize()) {
+//                @Override
+//                public int getItemsCount() {
+//                    return getJpaController().count(BlackListEmail.class).intValue();
+//                }
+//
+//                @Override
+//                public DataModel createPageDataModel() {
+//                    return new ListDataModel(getJpaController().queryByRange(BlackListEmail.class, getPageSize(), getPageFirstItem()));
+//                }
+//            };
+//        }
+//        return pagination;
+//    }
 
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getJpaController().queryByRange(BlackListEmail.class, getPageSize(), getPageFirstItem()));
-                }
-            };
-        }
-        return pagination;
-    }
-
-    public String prepareList() {
-        recreateModel();
-        return getListOutcomeNotAbstract();
-    }
+//    public String prepareList() {
+//        recreateModel();
+//        return getListOutcomeNotAbstract();
+//    }
 
     public void prepareCreate() {
         current = new BlackListEmail();
@@ -134,23 +132,22 @@ public class BlackListController extends AbstractManagedBean<BlackListEmail> imp
 //            current = (Canal) getJpaController().queryByRange(Canal.class, 1, selectedItemIndex).get(0);
 //        }
 //    }
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
+//    public DataModel getItems() {
+//        if (items == null) {
+//            items = getPagination().createPageDataModel();
+//        }
+//
+//        return items;
+//    }
 
-        return items;
-    }
-
-
-
-    private String getListOutcomeNotAbstract() {
+    @Override
+    protected String getListPage() {
         return "/script/blackList/List";
     }
 
     @Override
     public Class getDataModelImplementationClass() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return ListDataModel.class;
     }
 
     @FacesConverter(forClass = BlackListEmail.class)

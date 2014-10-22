@@ -10,7 +10,11 @@
       xmlns:go="http://java.sun.com/jsf/composite/go">
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
-            <h:outputText value="Caso #{casoController.selected.idCaso}: #{casoController.selected.tema}"></h:outputText>
+            <p:outputLabel value="Actividad Caso N°#{casoController.selected.idCaso}"/>
+        </ui:define>
+        
+        <ui:define name="menutitle">
+            <p:outputLabel value="Datos del Caso"/>
         </ui:define>
 
         <ui:define name="head">
@@ -56,7 +60,6 @@
 
         </ui:define>
         
-        <ui:define name="menutitle">Datos del caso</ui:define>
 
         <ui:define name="west">
            
@@ -343,13 +346,11 @@
 
                         <p:tab id="tabCasosRelacionados" title="Casos relacionados" >
 
-                           
-
                            <go:casoList casosList="#{casoController.selected.casosRelacionadosList}" header="Casos relacionados (#{casoController.selected.casosRelacionadosList.size()})"/>
                            
                            <go:casoList casosList="#{casoController.selected.casosHijosList}" header="Sub casos (#{casoController.selected.casosHijosList.size()})"/>
                             
-                            <go:casoList casosList="#{casoController.selected.idCliente.casoList}" header="Otros casos del cliente (#{casoController.selected.clientName})"/>
+                            <go:casoList casosList="#{casoController.selected.idCliente.casoList}" header="Historial de casos de #{casoController.selected.clientName}"/>
 
                         </p:tab>
 

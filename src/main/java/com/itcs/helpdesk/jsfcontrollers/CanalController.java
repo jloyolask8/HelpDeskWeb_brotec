@@ -195,10 +195,14 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         return JsfUtil.getSelectItems(ecq.getAllResultList(), true);
     }
 
-    public String prepareList() {
-        recreateModel();
+   
+
+    @Override
+    protected String getListPage() {
         return "/script/canal/List";
     }
+    
+    
 
 //    public void prepareView(Canal c) {
 //        current = c;

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html [
+    <!ENTITY nbsp "&#160;"> 
+    ]>
+    <html xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:cc="http://java.sun.com/jsf/composite"
+          xmlns:h="http://java.sun.com/jsf/html"
+          xmlns:p="http://primefaces.org/ui"
+          xmlns:f="http://java.sun.com/jsf/core">
+
+        <!-- INTERFACE -->
+        <cc:interface>
+            <cc:attribute name="controllerMBean" required="true" /> 
+            <cc:attribute name="update" default=":mainform:messages" />
+        </cc:interface>
+
+        <!-- IMPLEMENTATION -->
+        <cc:implementation>
+            <h:panelGroup rendered="#{cc.attrs.controllerMBean.pagination.itemsCount > 0}">
+                <p:selectOneMenu id="cant" value="#{cc.attrs.controllerMBean.paginationPageSize}" style="top: 7px" >
+                    <p:ajax event="change" listener="#{cc.attrs.controllerMBean.resetPageSize()}" update="#{cc.attrs.update}"/>
+                    <f:selectItems value="#{cc.attrs.controllerMBean.pagination.pageSizesAvailable}"/>
+                </p:selectOneMenu>
+                &nbsp;
+                <p:commandButton action="#{cc.attrs.controllerMBean.first}" update="#{cc.attrs.update}" disabled="#{not cc.attrs.controllerMBean.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first"/>
+                <p:commandButton action="#{cc.attrs.controllerMBean.previous}" update="#{cc.attrs.update}" disabled="#{not cc.attrs.controllerMBean.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev"/>
+                &nbsp;
+                <h:outputText value="#{cc.attrs.controllerMBean.pagination.pageFirstItem + 1}-#{cc.attrs.controllerMBean.pagination.pageLastItem + 1} de #{cc.attrs.controllerMBean.pagination.itemsCount}" rendered="#{cc.attrs.controllerMBean.pagination.itemsCount gt 0}"/>
+                &nbsp;
+                <p:commandButton action="#{cc.attrs.controllerMBean.next}" update="#{cc.attrs.update}" disabled="#{not cc.attrs.controllerMBean.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next"/>
+                <p:commandButton action="#{cc.attrs.controllerMBean.last}" update="#{cc.attrs.update}" disabled="#{not cc.attrs.controllerMBean.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end"/>
+
+            </h:panelGroup>
+
+        </cc:implementation>
+    </html>

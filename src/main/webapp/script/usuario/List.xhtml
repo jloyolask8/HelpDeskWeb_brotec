@@ -12,13 +12,13 @@
             <h:outputText value="Usuarios"></h:outputText>
         </ui:define>
         <ui:define name="west">
-            
-            
-             <go:vistasList id="vistasList" update=":vistasList:vistasForm :mainform:messages :formfilter:panelFilter0:panelFilter :form" 
+
+
+            <go:vistasList id="vistasList" update=":vistasList:vistasForm :mainform:messages :formfilter:panelFilter0:panelFilter :form" 
                            controllerMBean="#{usuarioController}"
                            user="#{UserSessionBean.current}"/>
-             
-             
+
+
             <p:accordionPanel multiple="true" cache="true" id="accionesaccordion1">
                 <p:tab title="Usuarios" id="accionestab1">
                     <h:outputLabel escape="false" value="#{bundle.ayudaUsuarios}"/>
@@ -27,17 +27,16 @@
         </ui:define>
         <ui:define name="body">
 
-           
+
+
 
             <h:form id="formfilter">
-
                 <go:filterView id="panelFilter0" titleIconClass="fa fa-users page-header-icon"
                                controllerMBean="#{usuarioController}" 
                                filterHelper="#{usuarioController.filterHelper}" 
                                canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
-                               update=":mainform:messages :formfilter:panelFilter0:panelFilter :form"
+                               update=":mainform:messages :form"
                                vistaControllerBackOutcome="/script/usuario/List"/>
-
             </h:form>
 
             <h:form id="form">
@@ -46,13 +45,36 @@
 
                     <p:messages/>
 
+                    <p:toolbar id="toolbar1">
+                        <p:toolbarGroup align="right">
+
+                            <p:selectOneMenu id="cant" value="#{usuarioController.paginationPageSize}" style="top: 7px">
+                                <p:ajax event="change" listener="#{usuarioController.resetPageSize()}" update=":form"/>
+                                <f:selectItems value="#{usuarioController.pagination.pageSizesAvailable}"/>
+                            </p:selectOneMenu>
+                            <p:separator/>
+                            <p:commandButton ajax="false" action="#{usuarioController.first}" disabled="#{not usuarioController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{usuarioController.pagination.itemsCount > 0}"/>
+
+                            <p:commandButton ajax="false" action="#{usuarioController.previous}" disabled="#{not usuarioController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{usuarioController.pagination.itemsCount > 0}"/>
+
+                            &nbsp;
+                            <h:outputText value="#{usuarioController.pagination.pageFirstItem + 1}-#{usuarioController.pagination.pageLastItem + 1} de #{usuarioController.pagination.itemsCount}" rendered="#{usuarioController.pagination.itemsCount gt 0}"></h:outputText>
+                            &nbsp;
+
+                            <p:commandButton ajax="false" action="#{usuarioController.next}" disabled="#{not usuarioController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{usuarioController.pagination.itemsCount > 0}"/>
+
+                            <p:commandButton ajax="false" action="#{usuarioController.last}" disabled="#{not usuarioController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{usuarioController.pagination.itemsCount > 0}"/>
+
+                            <p:commandButton ajax="false" action="#{usuarioController.prepareCreate}" value="#{bundle.ListUsuarioCreateLink}"
+                                             rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" icon="fa fa-plus-circle"/>
+
+                        </p:toolbarGroup>
+                    </p:toolbar>
+
                     <p:dataTable id="tablausuarios" widgetVar="UsuarioTable" var="item" value="#{usuarioController.items}"
                                  emptyMessage="#{bundle.ListUsuarioEmpty}">
 
-                        <f:facet name="header">
-                            <h:outputText value="Usuarios (#{usuarioController.pagination.pageFirstItem + 1} - #{usuarioController.pagination.pageLastItem + 1} de #{usuarioController.pagination.itemsCount}) "></h:outputText>
 
-                        </f:facet>
 
 
 
@@ -71,9 +93,12 @@
                             <h:outputText value="#{item.email}"/>
                         </p:column>
 
-                        <p:column headerText="#{bundle.ListUsuarioTitle_supervisor}">
 
-                            <h:outputText value="#{item.supervisor}"/>
+
+                        <p:column sortBy="#{item.supervisor.capitalName}" headerText="#{bundle.ListUsuarioTitle_supervisor}">
+                            <p:commandLink value="#{item.supervisor.capitalName}"
+                                           rendered="#{not empty item.supervisor}" 
+                                           action="#{usuarioController.prepareView(item.supervisor, '/script/clipping/List')}" ajax="false" immediate="true"/>
                         </p:column>
 
                         <p:column headerText="Roles">
@@ -93,33 +118,6 @@
                             <p:commandButton id="editBtn" ajax="false" action="#{usuarioController.prepareEdit(item)}" disabled="#{not usuarioController.puedeEditar(item)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" title="Editar" icon="ui-icon ui-icon-pencil"/>
                             <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" action="#{usuarioController.setSelected(item)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" oncomplete="PF('confirmation').show()" disabled="#{not usuarioController.puedeEditar(item)}" icon="ui-icon ui-icon-trash"/>
                         </p:column>
-
-                        <f:facet name="footer">
-                            <p:toolbar style="border: none;">
-                                <p:toolbarGroup align="left">
-
-                                    <p:outputLabel value="Páginas de "/>
-                                    <p:selectOneMenu id="cant" value="#{usuarioController.paginationPageSize}" style="top: 7px">
-                                        <p:ajax event="change" listener="#{usuarioController.resetPageSize()}" update=":form"/>
-                                        <f:selectItems value="#{usuarioController.pagination.pageSizesAvailable}"/>
-                                    </p:selectOneMenu>
-
-                                    <p:commandButton ajax="false" action="#{usuarioController.first}" disabled="#{not usuarioController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{usuarioController.pagination.itemsCount > 0}"/>
-
-                                    <p:commandButton ajax="false" action="#{usuarioController.previous}" disabled="#{not usuarioController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{usuarioController.pagination.itemsCount > 0}"/>
-
-                                    <p:commandButton ajax="false" action="#{usuarioController.next}" disabled="#{not usuarioController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{usuarioController.pagination.itemsCount > 0}"/>
-
-                                    <p:commandButton ajax="false" action="#{usuarioController.last}" disabled="#{not usuarioController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{usuarioController.pagination.itemsCount > 0}"/>
-                                    <p:separator/>
-                                    <p:commandButton ajax="false" action="#{usuarioController.prepareCreate}" value="#{bundle.ListUsuarioCreateLink}"
-                                                     rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" icon="ui-icon ui-icon-plus"/>
-
-                                </p:toolbarGroup>
-                            </p:toolbar>
-
-
-                        </f:facet>
 
 
                     </p:dataTable>

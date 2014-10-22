@@ -20,7 +20,7 @@
                     <p:outputLabel value="Cliente:" for="clienteNotNull" style="font-weight:bold"/>
                 </p:column>
                 <p:column>
-                    <p:commandLink id="clienteNotNull" value="#{casoController.selected.clientName}" style="color: #4183C4 !important;"
+                    <p:commandLink id="clienteNotNull" value="#{casoController.selected.clientName}" style="color: #4183C4 !important;" immediate="true"
                                    update=":formDatosCliente" onclick="PF('dialogClient').show()" />
                 </p:column>
             </p:row>
@@ -109,7 +109,7 @@
                 </p:column>
 
                 <p:column>
-                    <p:inplace  editor="true" emptyLabel="sin tipo" saveLabel="Guardar">
+                    <p:inplace  editor="true" emptyLabel="sin tipo" saveLabel="Guardar" disabled="#{casoController.selected.closed}">
                         <p:ajax event="save" update=":formint1 :formCerrarCaso" />
                         <f:facet name="output">
                             <h:outputText value="#{casoController.selected.tipoCaso ne null ? casoController.selected.tipoCaso:'sin tipo'}" />
@@ -139,7 +139,7 @@
 
                 <p:column>
 
-                    <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar">
+                    <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar" disabled="#{casoController.selected.closed}">
                         <p:ajax event="save" update=":formint1 :formCerrarCaso" />
                         <f:facet name="output">
                             <h:outputText value="#{casoController.selected.idPrioridad.nombre}"/>
@@ -164,11 +164,10 @@
                 </p:column>
 
                 <p:column>
-                    <p:commandLink id="owner" actionListener="#{usuarioController.prepareViewUserInDialog(casoController.selected.owner)}"  
+                    <p:commandLink id="owner" action="#{usuarioController.prepareView(casoController.selected.owner, '/script/caso/Edit')}"  
                                    value="#{casoController.selected.owner.capitalName}" 
-                                   immediate="true"
-                                   style="color: #4183C4 !important;"
-                                   disabled="#{casoController.selected.closed or not usuarioController.puedeEditar(casoController.selected.owner)}" 
+                                   immediate="true" ajax="false"
+                                   style="color: #4183C4 !important;"                                 
                                    title="Ver Datos del Agente" />
                 </p:column>
             </p:row>
@@ -191,7 +190,7 @@
                     <p:outputLabel value="Area:" style="font-weight:bold"/>
                 </p:column>
                 <p:column>
-                    <p:inplace  editor="true" emptyLabel="sin area" saveLabel="Guardar">
+                    <p:inplace  editor="true" emptyLabel="sin area" saveLabel="Guardar" disabled="#{casoController.selected.closed}">
                         <p:ajax event="save" update=":formint1 :formCerrarCaso" />
                         <f:facet name="output">
                             <h:outputText value="#{casoController.selected.idArea}" />
@@ -210,7 +209,7 @@
 
             </p:row>
 
-            <p:row rendered="#{casoController.selected.idCasoPadre ne null}">
+            <p:row rendered="#{not empty casoController.selected.idCasoPadre}">
                 <p:column>
                     <p:outputLabel value="#{bundle.EditCasoLabel_idCasoPadre}"  style="font-weight:bold"/>
                 </p:column>
@@ -235,7 +234,7 @@
 
                 <p:column>
 
-                    <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar">
+                    <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar" disabled="#{casoController.selected.closed}">
                         <p:ajax event="save" listener="#{casoController.handleProductChange}" update="idComponente modeloProductoId" />
                         <f:facet name="output">
                             <h:outputText value="#{casoController.selected.idProducto.nombre}"/>
@@ -261,7 +260,7 @@
 
                 <p:column>
 
-                    <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar">
+                    <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar" disabled="#{casoController.selected.closed}">
                         <p:ajax event="save" update="idComponente" listener="#{casoController.onProductoModeloChosen()}" />
                         <f:facet name="output">
                             <h:outputText value="#{casoController.selected.idModelo.nombre}"/>
@@ -288,7 +287,7 @@
 
                 <p:column>
 
-                    <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar">
+                    <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar" disabled="#{casoController.selected.closed}">
                         <p:ajax event="save" update="idSubComponente"  listener="#{casoController.handleProductChange}" />
                         <f:facet name="output">
                             <h:outputText value="#{casoController.selected.idComponente.nombre}"/>

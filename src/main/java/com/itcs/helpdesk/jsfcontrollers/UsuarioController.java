@@ -43,7 +43,6 @@ import org.primefaces.model.SelectableDataModel;
 import org.primefaces.model.chart.CartesianChartModel;
 import org.primefaces.model.chart.MeterGaugeChartModel;
 
-
 @ManagedBean(name = "usuarioController")
 @SessionScoped
 public class UsuarioController extends AbstractManagedBean<Usuario> implements Serializable {
@@ -142,7 +141,6 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
 //            return null;
 //        } 
 //    }
-
     public String getIdUsuarioDelete() {
         return idUsuarioDelete;
     }
@@ -175,12 +173,10 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
 //        }
 //        return pagination;
 //    }
-
-    public String prepareList() {
-        recreateModel();
-        return "/script/usuario/List";
-    }
-
+//    public String prepareList() {
+//        recreateModel();
+//        return "/script/usuario/List";
+//    }
     public String prepareView() {
         if (current == null) {
             JsfUtil.addSuccessMessage("Se requiere que seleccione una fila.");
@@ -195,7 +191,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
         current = new Usuario();
         current.setSupervisor(userSessionBean.getCurrent());
         selectedItemIndex = -1;
-        setGruposDualListModel(new DualListModel<Grupo>(getJpaController().getGrupoFindAll(), new ArrayList<Grupo>()));
+        setGruposDualListModel(new DualListModel<>(getJpaController().getGrupoFindAll(), new ArrayList<Grupo>()));
 
         return "/script/usuario/Create";
     }
@@ -239,7 +235,6 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
                 }
             }
 
-
             current.setPass(UtilSecurity.getMD5(current.getPass()));
             current.setEditable(true);
             current.setGrupoList(getGruposDualListModel().getTarget());
@@ -258,7 +253,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
     public void prepareViewUserInDialog(Usuario u) {
 //        System.out.println("prepareViewUserInDialog(" + u + ")");
         current = u;
-        Map<String, Object> options = new HashMap<String, Object>();
+        Map<String, Object> options = new HashMap<>();
         options.put("height", "600");
 //        options.put("width", "800");
         options.put("modal", true);
@@ -271,16 +266,23 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
 //        current = u;
 //        return "/script/usuario/View";
 //    }
-
     @Override
     protected String getViewPage() {
         return "/script/usuario/View";
     }
-    
-    
 
     @Override
-    public String prepareEdit(Usuario u)  {
+    protected String getListPage() {
+        return "/script/usuario/List";
+    }
+
+    @Override
+    protected String getEditPage() {
+        return "/script/usuario/Edit";
+    }
+
+    @Override
+    public String prepareEdit(Usuario u) {
         current = u;
         System.out.println("prepareEdit " + current.getIdUsuario());
         if (current == null) {
@@ -503,7 +505,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
         lista.remove(EnumUsuariosBase.SISTEMA.getUsuario());
         return JsfUtil.getSelectItems(lista, true);
     }
-    
+
     public SelectItem[] getStringItemsAvailableSelectOneNoSystem() {
         List<Usuario> lista = getJpaController().getUsuarioFindAll();
         lista.remove(EnumUsuariosBase.SISTEMA.getUsuario());
@@ -753,6 +755,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
         }
     }
 }
+
 class UsuarioDataModel extends ListDataModel<Usuario> implements SelectableDataModel<Usuario>, java.io.Serializable {
 
     public UsuarioDataModel() {
