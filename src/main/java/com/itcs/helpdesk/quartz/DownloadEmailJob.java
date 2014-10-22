@@ -89,11 +89,12 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
     }
 
     /**
-     * 
+     *
      * @param idCanal idCanal for canal settings
      * @return interval for next mailSync
      * @throws Exception
-     * @throws com.itcs.helpdesk.util.MailClientFactory.MailNotConfiguredException 
+     * @throws
+     * com.itcs.helpdesk.util.MailClientFactory.MailNotConfiguredException
      */
     private synchronized int revisarCorreo(String idCanal) throws Exception, MailClientFactory.MailNotConfiguredException {
 
@@ -111,142 +112,142 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
 //        ManagerCasos managerCasos = new ManagerCasos();
 //        managerCasos.setJpaController(jpaController);
         Canal canal = jpaController.find(Canal.class, idCanal);
+
         int freq = HelpDeskScheluder.DEFAULT_CHECK_EMAIL_INTERVAL;
-                        
+
         if (canal != null) {
             String freqStr = canal.getSetting(EnumEmailSettingKeys.CHECK_FREQUENCY.getKey());
-            try{
-                if(freqStr != null){
+            try {
+                if (freqStr != null) {
                     freq = Integer.parseInt(freqStr);
                 }
-            }catch(NumberFormatException ex){/*probably a weird value*/}
-            
-            String emailSender = getValueOfCanalSetting(jpaController, canal, EnumEmailSettingKeys.SMTP_USER);
+            } catch (NumberFormatException ex) {/*probably a weird value*/
 
-            String emailReceiver = getValueOfCanalSetting(jpaController, canal, EnumEmailSettingKeys.INBOUND_USER);
-            EmailClient mailClient;
-            try {
-                mailClient = MailClientFactory.getInstance(canal.getIdCanal());
-            } catch (MailClientFactory.MailNotConfiguredException ex) {
-                mailClient = MailClientFactory.createInstance(canal);
             }
 
-            if (mailClient != null) {
+            if (canal.getEnabled()) {
 
+                String emailSender = getValueOfCanalSetting(jpaController, canal, EnumEmailSettingKeys.SMTP_USER);
+
+                String emailReceiver = getValueOfCanalSetting(jpaController, canal, EnumEmailSettingKeys.INBOUND_USER);
+                EmailClient mailClient;
                 try {
-                    mailClient.connectStore();
-                    mailClient.openFolder("inbox");
-                    List<EmailMessage> messages;
-                    if(canal.containsKey(EnumEmailSettingKeys.HIGHEST_UID.getKey()))
-                    {
-                        long nextUID = Long.parseLong(canal.getSetting(EnumEmailSettingKeys.HIGHEST_UID.getKey()))+1;
-                        //Trae los mensajes de a 10
-                        messages = mailClient.getMessagesOnlyHeaders(nextUID, nextUID+N_EMAILS_FETCH);
-                    }else{
-                        messages = mailClient.getUnreadMessagesOnlyHeaders();
-                    }
-//                    List<EmailMessage> messages = mailClient.getUnreadMessages();
-                    
-                    //Waste of resources, what if we have a million of blacklisted mails??
-                    
-//                    List<BlackListEmail> blackList = (List<BlackListEmail>) jpaController.findAll(BlackListEmail.class);//findAll(BlackListEmail.class);
-//                    HashMap<String, BlackListEmail> mapBlackList = new HashMap<>();
-//                    for (BlackListEmail blackListEmail : blackList) {
-//                        mapBlackList.put(blackListEmail.getEmailAddress(), blackListEmail);
-//                    }
+                    mailClient = MailClientFactory.getInstance(canal.getIdCanal());
+                } catch (MailClientFactory.MailNotConfiguredException ex) {
+                    mailClient = MailClientFactory.createInstance(canal);
+                }
 
-//                    if (ApplicationConfig.isAppDebugEnabled()) {
-//                        Log.createLogger(this.getClass().getName()).logDebug("Debug Email BlackList:" + mapBlackList);
-//                    }
+                if (mailClient != null) {
 
-                    long highestUID = 0;
-                    for (EmailMessage emailMessage : messages) {
-                        try {
-                            if(emailMessage.getIdMessage()>highestUID){
-                                highestUID = emailMessage.getIdMessage();
-                                System.out.println("highestUID: "+highestUID);
-                            }
-                            //if isn't a blacklisted address
-                            if ((jpaController.find(BlackListEmail.class, emailMessage.getFromEmail()) == null) &&
-                                    (!emailMessage.getFromEmail().equalsIgnoreCase(emailSender)) &&
-                                    (!emailMessage.getFromEmail().equalsIgnoreCase(emailReceiver))) {
+                    try {
+                        mailClient.connectStore();
+                        mailClient.openFolder("inbox");
+                        List<EmailMessage> messages;
+                        if (canal.containsKey(EnumEmailSettingKeys.HIGHEST_UID.getKey())) {
+                            long nextUID = Long.parseLong(canal.getSetting(EnumEmailSettingKeys.HIGHEST_UID.getKey())) + 1;
+                            //Trae los mensajes de a 10
+                            messages = mailClient.getMessagesOnlyHeaders(nextUID, nextUID + N_EMAILS_FETCH);
+                        } else {
+                            messages = mailClient.getUnreadMessagesOnlyHeaders();
+                        }
+    //                    List<EmailMessage> messages = mailClient.getUnreadMessages();
 
-                                String subject = emailMessage.getSubject();
-                                Long idCaso = ManagerCasos.extractIdCaso(subject);
+                        //Waste of resources, what if we have a million of blacklisted mails??
+    //                    List<BlackListEmail> blackList = (List<BlackListEmail>) jpaController.findAll(BlackListEmail.class);//findAll(BlackListEmail.class);
+                        //                    HashMap<String, BlackListEmail> mapBlackList = new HashMap<>();
+                        //                    for (BlackListEmail blackListEmail : blackList) {
+                        //                        mapBlackList.put(blackListEmail.getEmailAddress(), blackListEmail);
+                        //                    }
+    //                    if (ApplicationConfig.isAppDebugEnabled()) {
+                        //                        Log.createLogger(this.getClass().getName()).logDebug("Debug Email BlackList:" + mapBlackList);
+                        //                    }
+                        long highestUID = 0;
+                        for (EmailMessage emailMessage : messages) {
+                            try {
+                                if (emailMessage.getIdMessage() > highestUID) {
+                                    highestUID = emailMessage.getIdMessage();
+                                    System.out.println("highestUID: " + highestUID);
+                                }
+                                //if isn't a blacklisted address
+                                if ((jpaController.find(BlackListEmail.class, emailMessage.getFromEmail()) == null)
+                                        && (!emailMessage.getFromEmail().equalsIgnoreCase(emailSender))
+                                        && (!emailMessage.getFromEmail().equalsIgnoreCase(emailReceiver))) {
 
-                                if (idCaso != null) {
-                                    Caso caso = jpaController.find(Caso.class, idCaso);
-                                    if (caso != null) {
-                                        //download message
-                                        //Si está configurado bajar attachments y el correo tiene attachments se vuelve a descargar con attachments
-                                        if((canal.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()) != null) &&
-                                                canal.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()).equals("true") &&
-                                                emailMessage.isHasAttachment()){
-                                            emailMessage = mailClient.getMessage(emailMessage.getIdMessage());
+                                    String subject = emailMessage.getSubject();
+                                    Long idCaso = ManagerCasos.extractIdCaso(subject);
+
+                                    if (idCaso != null) {
+                                        Caso caso = jpaController.find(Caso.class, idCaso);
+                                        if (caso != null) {
+                                            //download message
+                                            //Si está configurado bajar attachments y el correo tiene attachments se vuelve a descargar con attachments
+                                            if ((canal.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()) != null)
+                                                    && canal.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()).equals("true")
+                                                    && emailMessage.isHasAttachment()) {
+                                                emailMessage = mailClient.getMessage(emailMessage.getIdMessage());
+                                            }
+                                            managerCasos.crearNotaDesdeEmail(caso, canal, emailMessage);
                                         }
-                                        managerCasos.crearNotaDesdeEmail(caso, canal, emailMessage);
-                                    }
 
-                                } else {
-                                    //block messages that do not ref# to a case comming from an FromEmail configured as a agent's email addresss.
-                                    //NEW TICKET?
-                                    List<Usuario> users = jpaController.getUsuarioFindByEmail(emailMessage.getFromEmail());
-                                    if (users != null && !users.isEmpty()) {
-                                        //ignore emails from users of the system !!
-                                        //let them know that this is now allowed!!
-                                        System.out.println("ignoring email from user  of the system :" + users);
                                     } else {
-                                        //download message
-                                        //Si está configurado bajar attachments y el correo tiene attachments se vuelve a descargar con attachments
-                                        if((canal.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()) != null) &&
-                                                canal.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()).equals("true") &&
-                                                emailMessage.isHasAttachment()){
-                                            emailMessage = mailClient.getMessage(emailMessage.getIdMessage());
-                                        }
-                                        final boolean casoIsCreated = managerCasos.crearCasoDesdeEmail(canal, emailMessage);
-                                        if (casoIsCreated) {
-                                            mailClient.markReadMessage(emailMessage);
-//                                      mailClient.deleteMessage(emailMessage);//TODO add a config, deleteMessagesAfterSuccessRead?
+                                        //block messages that do not ref# to a case comming from an FromEmail configured as a agent's email addresss.
+                                        //NEW TICKET?
+                                        List<Usuario> users = jpaController.getUsuarioFindByEmail(emailMessage.getFromEmail());
+                                        if (users != null && !users.isEmpty()) {
+                                            //ignore emails from users of the system !!
+                                            //let them know that this is now allowed!!
+                                            System.out.println("ignoring email from user  of the system :" + users);
+                                        } else {
+                                            //download message
+                                            //Si está configurado bajar attachments y el correo tiene attachments se vuelve a descargar con attachments
+                                            if ((canal.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()) != null)
+                                                    && canal.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()).equals("true")
+                                                    && emailMessage.isHasAttachment()) {
+                                                emailMessage = mailClient.getMessage(emailMessage.getIdMessage());
+                                            }
+                                            final boolean casoIsCreated = managerCasos.crearCasoDesdeEmail(canal, emailMessage);
+                                            if (casoIsCreated) {
+                                                mailClient.markReadMessage(emailMessage);
+                                                //                                      mailClient.deleteMessage(emailMessage);//TODO add a config, deleteMessagesAfterSuccessRead?
+                                            }
                                         }
                                     }
+                                } else {
+                                    if (ApplicationConfig.isAppDebugEnabled()) {
+                                        Log.createLogger(this.getClass().getName()).logDebug("BLOCKED EMAIL FROM:" + emailMessage.getFromEmail());
+                                    }
                                 }
-                            } else {
-                                if (ApplicationConfig.isAppDebugEnabled()) {
-                                    Log.createLogger(this.getClass().getName()).logDebug("BLOCKED EMAIL FROM:" + emailMessage.getFromEmail());
-                                }
+                            } catch (MessagingException e) {
+                                Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "MessagingException Error: No se pudo crear el caso. email subject: " + emailMessage.getSubject(), e);
+                            } finally {
+                                mailClient.markReadMessage(emailMessage);
+                                //  mailClient.deleteMessage(emailMessage);
                             }
-                        } catch (MessagingException e) {
-                            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "MessagingException Error: No se pudo crear el caso. email subject: " + emailMessage.getSubject(), e);
-                        } finally {
-                            mailClient.markReadMessage(emailMessage);
-                            //  mailClient.deleteMessage(emailMessage);
+                        }
+                        if (highestUID > 0) {
+                            System.out.println("saving highestUID: " + highestUID);
+                            canal.getCanalSettingList().remove(new CanalSetting(canal.getIdCanal(), EnumEmailSettingKeys.HIGHEST_UID.getKey()));
+                            canal.getCanalSettingList().add(new CanalSetting(canal, EnumEmailSettingKeys.HIGHEST_UID.getKey(), String.valueOf(highestUID), ""));
+                            jpaController.merge(canal);
+                        }
+                        if (ApplicationConfig.isAppDebugEnabled()) {
+                            Log.createLogger(this.getClass().getName()).logDebug("Revisión de correo " + canal + "exitósa: " + messages.size() + " mensajes leídos. Intancia: brotec-icafal");
+                        }
+
+                    } finally {
+                        try {
+
+                            UserTransactionHelper.returnUserTransaction(utx);
+                            mailClient.closeFolder();
+                            mailClient.disconnectStore();
+
+                        } catch (Exception ex2) {
+                            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "error al cerrar folder/store o returnUserTransaction", ex2);
                         }
                     }
-                    if(highestUID>0)
-                    {
-                        System.out.println("saving highestUID: "+highestUID);
-                        canal.getCanalSettingList().remove(new CanalSetting(canal.getIdCanal(), EnumEmailSettingKeys.HIGHEST_UID.getKey()));
-                        canal.getCanalSettingList().add(new CanalSetting(canal, EnumEmailSettingKeys.HIGHEST_UID.getKey(),String.valueOf(highestUID),""));
-                        jpaController.merge(canal);
-                    }
-                    if (ApplicationConfig.isAppDebugEnabled()) {
-                        Log.createLogger(this.getClass().getName()).logDebug("Revisión de correo " + canal + "exitósa: " + messages.size() + " mensajes leídos. Intancia: brotec-icafal");
-                    }
-
-                } finally {
-                    try {
-
-                        UserTransactionHelper.returnUserTransaction(utx);
-                        mailClient.closeFolder();
-                        mailClient.disconnectStore();
-                        
-                       
-                    } catch (Exception ex2) {
-                        Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "error al cerrar folder/store o returnUserTransaction", ex2);
-                    }
+                } else {
+                    throw new MailClientFactory.MailNotConfiguredException("No se puede descargar correos del canal " + idCanal + ", favor comunicarse con el administrador para que configure la cuenta de correo.");
                 }
-            } else {
-                throw new MailClientFactory.MailNotConfiguredException("No se puede descargar correos del canal " + idCanal + ", favor comunicarse con el administrador para que configure la cuenta de correo.");
             }
         }
         return freq;
