@@ -8,19 +8,18 @@
 
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
-            <h:outputText value="#{bundle.EditUsuarioTitle}"></h:outputText>
+            <p:outputLabel value="#{bundle.EditUsuarioTitle}"/>
         </ui:define>
+        <ui:define name="menutitle">
+            <p:outputLabel value="Usuarios"/>
+        </ui:define>
+        
         <ui:define name="west">
-            <p:accordionPanel multiple="true" cache="true" id="accionesaccordion1">
-                <p:tab title="Usuarios" id="accionestab1">
                     <h:outputLabel escape="false" value="#{bundle.ayudaUsuarios}"/>
-                </p:tab>
-            </p:accordionPanel>
         </ui:define>
         <ui:define name="body">
 
             <h:form>
-                <p:panel header="#{bundle.EditUsuarioTitle}"> 
 
                     <p:fieldset legend="Identificacion del usuario"> 
                         <h:panelGrid columns="2">
@@ -95,7 +94,6 @@
                         <p:commandButton ajax="false" action="#{usuarioController.prepareList}" value="#{bundle.EditUsuarioShowAllLink}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" immediate="true" icon="ui-icon-folder-open"/>
                     </f:facet>
 
-                </p:panel>            
             </h:form>
         </ui:define>
     </ui:composition>
