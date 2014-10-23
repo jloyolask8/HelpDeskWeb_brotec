@@ -404,6 +404,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                         filtroEntityY.setIdCampo(campoCompCasoEjeYItemsEntity.getIdCampo());
                         filtroEntityY.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
                         filtroEntityY.setValor(y.getValue().toString());
+                        filtroEntityY.setValorLabel(y.getLabel());
                         filtroEntityY.setIdVista(vista1);
                         vista1.getFiltrosVistaList().add(filtroEntityY);
 
@@ -429,6 +430,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                         filtroEntityX.setIdCampo(campoCompCasoEjeXSeriesEntity.getIdCampo());
                         filtroEntityX.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
                         filtroEntityX.setValor(x.getValue().toString());
+                        filtroEntityX.setValorLabel(x.getLabel());
                         filtroEntityX.setIdVista(vista1);
                         vista1.getFiltrosVistaList().add(filtroEntityX);
 
@@ -436,6 +438,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                         filtroEntityY.setIdCampo(campoCompCasoEjeYItemsEntity.getIdCampo());
                         filtroEntityY.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
                         filtroEntityY.setValor(y.getValue().toString());
+                        filtroEntityY.setValorLabel(y.getLabel());
                         filtroEntityY.setIdVista(vista1);
                         vista1.getFiltrosVistaList().add(filtroEntityY);
 
@@ -486,6 +489,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                             filtroEntityY.setIdCampo(getCampoCompCasoEjeYItemsEntity().getIdCampo());
                             filtroEntityY.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
                             filtroEntityY.setValor(y.getValue().toString());
+                            filtroEntityY.setValorLabel(y.getLabel());
                             filtroEntityY.setIdVista(vista1);
                             vista1.getFiltrosVistaList().add(filtroEntityY);
 
@@ -530,6 +534,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                         filtroEntity.setIdCampo(campoCompCasoEjeXSeriesEntity.getIdCampo());
                         filtroEntity.setIdComparador(campoCompCasoEjeXSeriesEntity.getIdComparador());
                         filtroEntity.setValor(campoCompCasoEjeXSeriesEntity.getValor());
+                        filtroEntity.setValorLabel(campoCompCasoEjeXSeriesEntity.getValorLabel());
                         filtroEntity.setIdVista(vista1);
                         vista1.getFiltrosVistaList().add(filtroEntity);
 
@@ -537,6 +542,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                         filtroEntityY.setIdCampo(getCampoCompCasoEjeYItemsEntity().getIdCampo());
                         filtroEntityY.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
                         filtroEntityY.setValor(y.getValue().toString());
+                        filtroEntityY.setValorLabel(y.getLabel());
                         filtroEntityY.setIdVista(vista1);
                         vista1.getFiltrosVistaList().add(filtroEntityY);
 
@@ -704,6 +710,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                     filtroEntity.setIdCampo(campoCompCasoEjeXSeriesEntity.getIdCampo());
                     filtroEntity.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
                     filtroEntity.setValor(x.getValue().toString());
+                    filtroEntity.setValorLabel(x.getLabel());
                     filtroEntity.setIdVista(vista1);
                     vista1.getFiltrosVistaList().add(filtroEntity);
 
@@ -752,6 +759,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                         filtroEntity.setIdCampo(campoCompCasoEjeXSeriesEntity.getIdCampo());
                         filtroEntity.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
                         filtroEntity.setValor(value);
+                        filtroEntity.setValorLabel(label);
                         filtroEntity.setIdVista(vista1);
                         vista1.getFiltrosVistaList().add(filtroEntity);
 
@@ -798,6 +806,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                     filtroEntity.setIdCampo(campoCompCasoEjeXSeriesEntity.getIdCampo());
                     filtroEntity.setIdComparador(campoCompCasoEjeXSeriesEntity.getIdComparador());
                     filtroEntity.setValor(campoCompCasoEjeXSeriesEntity.getValor());
+                    filtroEntity.setValorLabel(campoCompCasoEjeXSeriesEntity.getValorLabel());
                     filtroEntity.setIdVista(vista1);
                     vista1.getFiltrosVistaList().add(filtroEntity);
 
@@ -849,7 +858,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         List<EstadoCaso> estados = getJpaController().getEstadoCasoFindAll();//Y-axis
         List<Area> areas = getJpaController().getAreaFindAll();//X-axix
 
-        viewMatrix = new HashMap<Integer, ArrayList<Vista>>();
+        viewMatrix = new HashMap<>();
         int seriesIndex = 0;
 
         for (EstadoCaso estado : estados) {//series index
@@ -857,7 +866,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
             ChartSeries serieEstado = new ChartSeries();
             serieEstado.setLabel(estado.getIdEstado());
 
-            ArrayList<Vista> vistaItems = new ArrayList<Vista>();
+            ArrayList<Vista> vistaItems = new ArrayList<>();
 
             for (Area a : areas) {//item index
 
@@ -870,6 +879,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                 filtroArea.setIdCampo(Caso_.AREA_FIELD_NAME);
                 filtroArea.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
                 filtroArea.setValor(a.getIdArea());
+                filtroArea.setValorLabel(a.getNombre());
                 filtroArea.setIdVista(vista1);
 
                 vista1.getFiltrosVistaList().add(filtroArea);
@@ -878,6 +888,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                 filtroEstado1.setIdCampo(Caso_.ESTADO_FIELD_NAME);
                 filtroEstado1.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
                 filtroEstado1.setValor(estado.getIdEstado());
+                filtroEstado1.setValorLabel(estado.getNombre());
                 filtroEstado1.setIdVista(vista1);
                 vista1.getFiltrosVistaList().add(filtroEstado1);
 
@@ -901,7 +912,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
     public String prepareCategoryModelCasosPorAgente() {
         this.setShowFilter(false);
         variables = 2;
-        twoDimData = new HashMap<String, Map<String, Integer>>();
+        twoDimData = new HashMap<>();
         pieModel = null;//Hide Pie chart
         categoryModel = new CartesianChartModel();
         setTipoGraficoSelected("barChart");
@@ -919,7 +930,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
             //ignore.
         }
 
-        viewMatrix = new HashMap<Integer, ArrayList<Vista>>();
+        viewMatrix = new HashMap<>();
         int seriesIndex = 0;
 
         for (EstadoCaso estado : estados) {
@@ -932,6 +943,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
             filtroNotAssigned.setIdCampo(Caso_.OWNER_FIELD_NAME);
             filtroNotAssigned.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
             filtroNotAssigned.setValor(CasoJPACustomController.PLACE_HOLDER_NULL);
+            filtroNotAssigned.setValorLabel("sin asignar");
             filtroNotAssigned.setIdVista(vista0);
             if (vista0.getFiltrosVistaList() == null) {
                 vista0.setFiltrosVistaList(new ArrayList<FiltroVista>());
@@ -943,13 +955,14 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
             filtroEstado.setIdCampo(Caso_.ESTADO_FIELD_NAME);
             filtroEstado.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
             filtroEstado.setValor(estado.getIdEstado());
+            filtroEstado.setValorLabel(estado.getNombre());
             filtroEstado.setIdVista(vista0);
             vista0.getFiltrosVistaList().add(filtroEstado);
 
             vista0.getFiltrosVistaList().addAll(getFilterHelper2().getVista().getFiltrosVistaList());
             serieEstado.set("Sin Agente", vistaController.countItemsVista(vista0));
 
-            ArrayList<Vista> vistaItems = new ArrayList<Vista>();
+            ArrayList<Vista> vistaItems = new ArrayList<>();
             vistaItems.add(vista0);
 
             for (Usuario agent : agents) {
@@ -959,6 +972,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                 filtro.setIdCampo(Caso_.OWNER_FIELD_NAME);
                 filtro.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
                 filtro.setValor(agent.getIdUsuario());
+                filtro.setValorLabel(agent.getCapitalName());
                 filtro.setIdVista(vista1);
                 if (vista1.getFiltrosVistaList() == null) {
                     vista1.setFiltrosVistaList(new ArrayList<FiltroVista>());
@@ -970,6 +984,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                 filtroEstado1.setIdCampo(Caso_.ESTADO_FIELD_NAME);
                 filtroEstado1.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
                 filtroEstado1.setValor(estado.getIdEstado());
+                filtroEstado1.setValorLabel(estado.getNombre());
                 filtroEstado1.setIdVista(vista1);
                 vista1.getFiltrosVistaList().add(filtroEstado1);
 
@@ -992,14 +1007,14 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
     public String preparePieModelEstadoCasos() {
         this.setShowFilter(false);
         variables = 1;
-        oneDimData = new HashMap<String, Integer>();
+        oneDimData = new HashMap<>();
         System.out.println("preparePieModelEstadoCasos()");
         categoryModel = null;
         pieModel = new PieChartModel();
         setTipoGraficoSelected("pieChart");
         setXaxisLabel("Estados");
 
-        viewMatrix = new HashMap<Integer, ArrayList<Vista>>();
+        viewMatrix = new HashMap<>();
         int seriesIndex = 0;
 
         Vista vista1 = new Vista(Caso.class);
@@ -1007,6 +1022,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         filtroCasosAbiertos.setIdCampo(Caso_.ESTADO_FIELD_NAME);
         filtroCasosAbiertos.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
         filtroCasosAbiertos.setValor(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
+        filtroCasosAbiertos.setValorLabel(EnumEstadoCaso.ABIERTO.getEstado().getNombre());
         filtroCasosAbiertos.setIdVista(vista1);
         if (vista1.getFiltrosVistaList() == null) {
             vista1.setFiltrosVistaList(new ArrayList<FiltroVista>());
@@ -1019,6 +1035,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         filtroCasosCerrados.setIdCampo(Caso_.ESTADO_FIELD_NAME);
         filtroCasosCerrados.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
         filtroCasosCerrados.setValor(EnumEstadoCaso.CERRADO.getEstado().getIdEstado());
+        filtroCasosCerrados.setValor(EnumEstadoCaso.CERRADO.getEstado().getNombre());
         filtroCasosCerrados.setIdVista(vista2);
         if (vista2.getFiltrosVistaList() == null) {
             vista2.setFiltrosVistaList(new ArrayList<FiltroVista>());
@@ -1036,7 +1053,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         pieModel.set("Cerrados", countCasosForView2);
         addOneDimTableValue("Cerrados", countCasosForView2);
 
-        ArrayList<Vista> vistaItems = new ArrayList<Vista>();
+        ArrayList<Vista> vistaItems = new ArrayList<>();
         vistaItems.add(vista1);
         vistaItems.add(vista2);
 
@@ -1053,21 +1070,22 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
     public String preparePieModelCasosPorAgente() {
         this.setShowFilter(false);
         variables = 1;
-        oneDimData = new HashMap<String, Integer>();
+        oneDimData = new HashMap<>();
         pieModel = new PieChartModel();
         categoryModel = null;
         setTipoGraficoSelected("pieChart");
         setXaxisLabel("Ejecutivos");
 
-        viewMatrix = new HashMap<Integer, ArrayList<Vista>>();
+        viewMatrix = new HashMap<>();
         int seriesIndex = 0;
-        ArrayList<Vista> vistaItems = new ArrayList<Vista>();
+        ArrayList<Vista> vistaItems = new ArrayList<>();
 
         Vista vista0 = new Vista(Caso.class);
         FiltroVista filtroNotAssigned = new FiltroVista();
         filtroNotAssigned.setIdCampo(Caso_.OWNER_FIELD_NAME);
         filtroNotAssigned.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
         filtroNotAssigned.setValor(CasoJPACustomController.PLACE_HOLDER_NULL);
+        filtroNotAssigned.setValorLabel("sin asignar");
         filtroNotAssigned.setIdVista(vista0);
         if (vista0.getFiltrosVistaList() == null) {
             vista0.setFiltrosVistaList(new ArrayList<FiltroVista>());
@@ -1086,6 +1104,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                 filtro.setIdCampo(Caso_.OWNER_FIELD_NAME);
                 filtro.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
                 filtro.setValor(agent.getIdUsuario());
+                filtro.setValorLabel(agent.getCapitalName());
                 filtro.setIdVista(vista1);
                 if (vista1.getFiltrosVistaList() == null) {
                     vista1.setFiltrosVistaList(new ArrayList<FiltroVista>());
@@ -1111,14 +1130,14 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
     public String preparePieModelCasosPorArea() {
         this.setShowFilter(false);
         variables = 1;
-        oneDimData = new HashMap<String, Integer>();
+        oneDimData = new HashMap<>();
         pieModel = new PieChartModel();
         categoryModel = null;
         setTipoGraficoSelected("pieChart");
 
-        viewMatrix = new HashMap<Integer, ArrayList<Vista>>();
+        viewMatrix = new HashMap<>();
         int seriesIndex = 0;
-        ArrayList<Vista> vistaItems = new ArrayList<Vista>();
+        ArrayList<Vista> vistaItems = new ArrayList<>();
 
         //1.Que quiero mostrar en el eje x ???  = Areas.
         List<Area> areas = getJpaController().getAreaFindAll();
@@ -1129,6 +1148,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
             filtro.setIdCampo(Caso_.AREA_FIELD_NAME);
             filtro.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
             filtro.setValor(area.getIdArea());
+            filtro.setValorLabel(area.getNombre());
             filtro.setIdVista(vista1);
             if (vista1.getFiltrosVistaList() == null) {
                 vista1.setFiltrosVistaList(new ArrayList<FiltroVista>());
@@ -1189,6 +1209,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
             filtroCasosCerrados.setIdCampo(Caso_.ESTADO_FIELD_NAME);
             filtroCasosCerrados.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
             filtroCasosCerrados.setValor(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
+            filtroCasosCerrados.setValorLabel(EnumEstadoCaso.ABIERTO.getEstado().getNombre());
             filtroCasosCerrados.setIdVista(view);
             if (view.getFiltrosVistaList() == null) {
                 view.setFiltrosVistaList(new ArrayList<FiltroVista>());
@@ -1201,8 +1222,10 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
             filtroAsignadoAgente.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
             if (asignados) {
                 filtroAsignadoAgente.setValor(CasoJPACustomController.PLACE_HOLDER_ANY);
+                filtroAsignadoAgente.setValorLabel(JPAFilterHelper.PLACE_HOLDER_ANY_LABEL);
             } else {
                 filtroAsignadoAgente.setValor(CasoJPACustomController.PLACE_HOLDER_NULL);
+                filtroAsignadoAgente.setValorLabel(JPAFilterHelper.PLACE_HOLDER_NULL_LABEL);
             }
 
             filtroAsignadoAgente.setIdVista(view);
@@ -1213,6 +1236,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                 filtroFecha1.setIdCampo(Caso_.FECHA_CREACION_FIELD_NAME);
                 filtroFecha1.setIdComparador(EnumTipoComparacion.GE.getTipoComparacion());
                 filtroFecha1.setValor(fecha1);
+                filtroFecha1.setValorLabel(fecha1);
                 filtroFecha1.setIdVista(view);
                 view.getFiltrosVistaList().add(filtroFecha1);
             }
@@ -1224,7 +1248,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
             filtroFecha2.setIdVista(view);
             view.getFiltrosVistaList().add(filtroFecha2);
 //==================
-            System.out.println(view);
+//            System.out.println(view);
 
             view.getFiltrosVistaList().addAll(getFilterHelper2().getVista().getFiltrosVistaList());
 

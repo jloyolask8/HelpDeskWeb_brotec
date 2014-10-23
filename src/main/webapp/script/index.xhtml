@@ -223,7 +223,7 @@
 
                                 <p:commandLink id="temalink" action="#{casoController.prepareEdit()}" 
                                                ajax="false" style="color: #000" immediate="true">
-                                    #{item.tipoCaso.nombre} \##{item.idCaso} #{item.tema}
+                                    #{item.tipoCaso.nombre} \##{item.idCaso} #{item.tema} (#{item.notaList.size()})
                                 </p:commandLink>
 
                                 <h:panelGroup rendered="#{item.hasScheduledEvents}">

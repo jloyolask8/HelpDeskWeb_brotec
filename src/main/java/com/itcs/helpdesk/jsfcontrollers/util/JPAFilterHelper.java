@@ -37,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public abstract class JPAFilterHelper implements Serializable {
 
+    //TODO make a bundle message for i18n for this labels
     public static final String PLACE_HOLDER_CURRENT_USER_LABEL = "Usuario en Sesión";
     public static final String PLACE_HOLDER_NULL_LABEL = "Sin valor asignado (nulo)";
     public static final String PLACE_HOLDER_ANY_LABEL = "Cualquier valor distinto de nulo";
