@@ -220,6 +220,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private boolean replyMode = false;
 
     private boolean replyByEmail = true;
+    
+    private boolean searchBarVisible = false;
 
     //respuesta
     private boolean adjuntarArchivosARespuesta = false;
@@ -1859,6 +1861,11 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public void refresh() {
         recreateModel();
         recreatePagination();
+    }
+    
+    public void changeSearchBarVisibility(){
+        setSearchBarVisible(!isSearchBarVisible());
+//        System.out.println("changeSearchBarVisibility: "+isSearchBarVisible());
     }
 
 //    public void refreshNotas() {
@@ -3999,6 +4006,20 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      */
     public void setReplyMode(boolean replyMode) {
         this.replyMode = replyMode;
+    }
+
+    /**
+     * @return the searchBarVisible
+     */
+    public boolean isSearchBarVisible() {
+        return searchBarVisible;
+    }
+
+    /**
+     * @param searchBarVisible the searchBarVisible to set
+     */
+    public void setSearchBarVisible(boolean searchBarVisible) {
+        this.searchBarVisible = searchBarVisible;
     }
 
     @FacesConverter(forClass = Caso.class)

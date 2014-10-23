@@ -39,10 +39,43 @@
                 }
                 //]]>
             </script>
+  
+            <script>
+                //<![CDATA[
+                function setFocusToQueryTextBox(){
+                    var queryTextBox = document.getElementById("formfilter:panelFilter0:query");
+                    if(queryTextBox !== null)
+                    {
+                        queryTextBox.focus();
+                    }
+                }
+                
+                $(document).off('keyup').on('keyup', 
+                function(e){
+                    if (e.shiftKey && e.ctrlKey && (e.key === 'B'))
+                    {
+                        changeSearchBarVisibility();
+                    }
+                    return false;
+                });
+                //]]>
+            </script>
         </ui:define>
 
         <ui:define name="west" id="west">
 
+            <style>
+                .ui-panel .ui-panel-content {
+                    padding: 0;
+                    border: 0;
+                }
+                
+                .pe-layout-pane-content {
+                    padding: 0px;
+                    overflow: auto;
+                }
+                
+            </style>
             <go:vistasList id="vistasList" update=":vistasList:vistasForm :mainform:messages :formfilter:panelFilter0:panelFilter :form0:panelG1" 
                            controllerMBean="#{casoController}"
                            user="#{UserSessionBean.current}"/>
@@ -90,17 +123,18 @@
             <pe:importEnum type="com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta" var="EnumTipoAlerta" allSuffix="ALL_ENUM_VALUES" />
 
             <h:form id="formfilter">
-
                 <go:filterView id="panelFilter0" titleIconClass="fa fa-inbox page-header-icon"
                                controllerMBean="#{casoController}" 
                                filterHelper="#{casoController.filterHelper}" 
                                canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
                                update=":mainform:messages  :form0:panelG1"
-                               vistaControllerBackOutcome="/script/index"/>
-
+                               vistaControllerBackOutcome="/script/index" rendered="#{casoController.searchBarVisible}">
+                </go:filterView>
             </h:form>
 
             <h:form id="form0">
+                <p:remoteCommand name="changeSearchBarVisibility" actionListener="#{casoController.changeSearchBarVisibility()}" update=":formfilter" 
+                                 oncomplete="setFocusToQueryTextBox();"/>
 
                 <h:panelGroup id="panelG1">
 
@@ -112,6 +146,11 @@
                             <p:commandButton id="updateList" title="Actualizar" icon="fa fa-refresh" style="width: 40px;" 
                                              actionListener="#{casoController.refresh()}" update=":form0:panelG1" />
 
+                            <p:commandButton id="searchButton" title="Buscar (ctrl+shift+b)" icon="fa fa-search" style="width: 40px;" 
+                                             actionListener="#{casoController.changeSearchBarVisibility()}" update=":formfilter" />
+                            
+                            
+                            
                             <p:commandButton onclick="PF('applyRuleDialog').show()" icon="fa fa-cog" title="Ejecutar Regla" iconPos="notext"
                                              update=":applyRuleForm" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/> 
 
