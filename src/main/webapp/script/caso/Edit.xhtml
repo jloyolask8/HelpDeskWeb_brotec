@@ -79,7 +79,7 @@
                     <h:form id="botoneraCaso" style="margin-top: 5px;">
                         <h:panelGrid columns="14">     
 
-                            <p:commandButton ajax="false" title="#{casoController.selected.idCasoPadre ne null ? 'Subir al caso '.concat(casoController.selected.idCasoPadre):'Ir al listado de casos'}" icon="fa fa-level-up" action="#{casoController.goOneLevelUp()}" style="width: 60px;"/>
+                                <p:commandButton ajax="false" title="#{casoController.selected.idCasoPadre ne null ? 'Subir al caso '.concat(casoController.selected.idCasoPadre):'Ir al listado de casos'}" icon="fa fa-level-up" action="#{casoController.goOneLevelUp()}" style="width: 60px;"/>
 
                             <p:commandButton ajax="false" title="Actualizar" icon="fa fa-refresh" actionListener="#{casoController.refreshCurrentCaso()}" style="width: 60px;"/>
                             <p:commandButton rendered="#{casoController.verificarTomarCaso()}" ajax="true" value="Asignármelo" onclick="PF('tomarCaso').show()" />
@@ -123,7 +123,7 @@
                                             ajax="true" value="Eliminar" onclick="PF('destroyCase').show();"/>
                             </p:menu>
 
-                            <p:commandButton icon="ui-icon ui-icon-seek-prev" ajax="false"
+                                <p:commandButton icon="ui-icon ui-icon-seek-prev" ajax="false"
                                              action="#{casoController.prepareEditPreviusItem()}" 
                                              title="Ir al caso anterior"
                                              disabled="#{casoController.selectedItemIndex eq casoController.pagination.pageFirstItem}"
@@ -139,9 +139,6 @@
                         </h:panelGrid>
 
                         <h:panelGroup id="tituloCaso">
-
-
-
                             <p:panelGrid styleClass="filtersGrid" id="panelGridDatos">
                                 <p:row>
                                     <p:column>
@@ -186,10 +183,6 @@
                                     </p:column>
                                 </p:row>
                             </p:panelGrid>
-
-
-
-
                         </h:panelGroup>
                     </h:form>
                     <p:separator />
@@ -198,14 +191,14 @@
 
                 <pe:layoutPane id="layout1_1" position="center">
 
-                    <p:tabView id="inputPanel" dynamic="true" cache="false"  activeIndex="#{casoController.activeIndexCasoSections}">
+                    <p:tabView id="inputPanel" dynamic="true" scrollable="true" cache="false" style="width: 99% !important; height: 99% !important;" activeIndex="#{casoController.activeIndexCasoSections}">
                         <p:ajax event="tabChange" listener="#{casoController.onChangeActiveIndexCasoSections}" />
                         <p:ajax event="tabClose" listener="#{casoScheduleController.onTabClose}" />
 
 
                         <p:tab id="tab-actividades" title="Actividades">
                             
-                            <p:scrollPanel mode="native" style="border: 0; height: 600px;">
+                            <p:scrollPanel id="scrollpaneActividades" mode="native" style="border: 0; height: 500px;">
                                 <p:panel id="resumenNotas" style="border: 0;">
                                 <p:effect type="highlight" event="load" /> 
                                 <h:panelGrid columns="9" >
@@ -1356,8 +1349,25 @@
                                    actionListener="#{casoScheduleController.goEditEvent()}" update=":inputPanel"/>
                 </h:form>
             </p:dialog>
-
-
+            <script>
+                //<![CDATA[
+                setTimeout(function(){resizeScrollPanel()},200);
+                function resizeScrollPanel(){
+                    var inputPanel = document.getElementById("inputPanel");
+                    var tabsBar = inputPanel.getElementsByClassName("ui-tabs-navscroller")[0];
+                    var height = inputPanel.clientHeight-tabsBar.clientHeight-30;
+                    //alert("inputPanel.height:"+height);
+                    var scrollpanel = document.getElementById("inputPanel:scrollpaneActividades");
+                    var strHeight = (height+"px");
+                    //alert(strHeight);
+                    scrollpanel.style.height = strHeight;
+                    //alert("inputPanel.height:"+scrollpanel.style.height);
+                }
+                $(window).resize(function() {
+                    setTimeout(function(){resizeScrollPanel()},500);
+                  });
+                //]]>
+            </script>
         </ui:define>
     </ui:composition>
 
