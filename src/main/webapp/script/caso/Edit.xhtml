@@ -12,7 +12,7 @@
         <ui:define name="title">
             <p:outputLabel value="Actividad Caso N°#{casoController.selected.idCaso}"/>
         </ui:define>
-        
+
         <ui:define name="menutitle">
             <p:outputLabel value="Datos del Caso"/>
         </ui:define>
@@ -48,7 +48,7 @@
                 #menucc_button{
                     background: transparent !important;
                 }
-                
+
                 .ui-layout-pane-center{
                     border: none !important;
                     //padding-top: 0px !important;
@@ -59,10 +59,10 @@
             </style>
 
         </ui:define>
-        
+
 
         <ui:define name="west">
-           
+
             <ui:include src="propertiesCaso.xhtml"/>
 
         </ui:define>
@@ -79,7 +79,7 @@
                     <h:form id="botoneraCaso" style="margin-top: 5px;">
                         <h:panelGrid columns="14">     
 
-                                <p:commandButton ajax="false" title="#{casoController.selected.idCasoPadre ne null ? 'Subir al caso '.concat(casoController.selected.idCasoPadre):'Ir al listado de casos'}" icon="fa fa-level-up" action="#{casoController.goOneLevelUp()}" style="width: 60px;"/>
+                            <p:commandButton ajax="false" title="#{casoController.selected.idCasoPadre ne null ? 'Subir al caso '.concat(casoController.selected.idCasoPadre):'Ir al listado de casos'}" icon="fa fa-level-up" action="#{casoController.goOneLevelUp()}" style="width: 60px;"/>
 
                             <p:commandButton ajax="false" title="Actualizar" icon="fa fa-refresh" actionListener="#{casoController.refreshCurrentCaso()}" style="width: 60px;"/>
                             <p:commandButton rendered="#{casoController.verificarTomarCaso()}" ajax="true" value="Asignármelo" onclick="PF('tomarCaso').show()" />
@@ -123,7 +123,7 @@
                                             ajax="true" value="Eliminar" onclick="PF('destroyCase').show();"/>
                             </p:menu>
 
-                                <p:commandButton icon="ui-icon ui-icon-seek-prev" ajax="false"
+                            <p:commandButton icon="ui-icon ui-icon-seek-prev" ajax="false"
                                              action="#{casoController.prepareEditPreviusItem()}" 
                                              title="Ir al caso anterior"
                                              disabled="#{casoController.selectedItemIndex eq casoController.pagination.pageFirstItem}"
@@ -197,31 +197,31 @@
 
 
                         <p:tab id="tab-actividades" title="Actividades">
-                            
+
                             <p:scrollPanel id="scrollpaneActividades" mode="native" style="border: 0; height: 500px;">
                                 <p:panel id="resumenNotas" style="border: 0;">
-                                <p:effect type="highlight" event="load" /> 
-                                <h:panelGrid columns="9" >
-                                    <p:graphicImage value="/images/view-pim-notes.png" width="22" height="22"/>
-                                    <h:outputText value="Comentarios:"/>
-                                    <h:outputText value="#{casoController.cantidadDeNotas}" />
+                                    <p:effect type="highlight" event="load" /> 
+                                    <h:panelGrid columns="9" >
+                                        <p:graphicImage value="/images/view-pim-notes.png" width="22" height="22"/>
+                                        <h:outputText value="Comentarios:"/>
+                                        <h:outputText value="#{casoController.cantidadDeNotas}" />
 
-                                    <p:graphicImage value="/images/email_out.png" width="22" height="22"/>
-                                    <h:outputText value="Respuestas:"/>
-                                    <h:outputText value="#{casoController.cantidadDeRespuestasACliente}" />
+                                        <p:graphicImage value="/images/email_out.png" width="22" height="22"/>
+                                        <h:outputText value="Respuestas:"/>
+                                        <h:outputText value="#{casoController.cantidadDeRespuestasACliente}" />
 
-                                    <p:graphicImage value="/images/email_in.png" width="22" height="22"/>
-                                    <h:outputText value="Comentarios del solicitante:"/>
-                                    <h:outputText value="#{casoController.cantidadDeRespuestasDelCliente}" />
-                                </h:panelGrid>
-                            </p:panel>
+                                        <p:graphicImage value="/images/email_in.png" width="22" height="22"/>
+                                        <h:outputText value="Comentarios del solicitante:"/>
+                                        <h:outputText value="#{casoController.cantidadDeRespuestasDelCliente}" />
+                                    </h:panelGrid>
+                                </p:panel>
 
-                            <ui:include src="responder.xhtml" />
+                                <ui:include src="responder.xhtml" />
 
-                            <ui:include src="actividadesListForm.xhtml" />
+                                <ui:include src="actividadesListForm.xhtml" />
                             </p:scrollPanel>
 
-                            
+
 
 
                         </p:tab>
@@ -339,10 +339,10 @@
 
                         <p:tab id="tabCasosRelacionados" title="Casos relacionados" >
 
-                           <go:casoList casosList="#{casoController.selected.casosRelacionadosList}" header="Casos relacionados (#{casoController.selected.casosRelacionadosList.size()})"/>
-                           
-                           <go:casoList casosList="#{casoController.selected.casosHijosList}" header="Sub casos (#{casoController.selected.casosHijosList.size()})"/>
-                            
+                            <go:casoList casosList="#{casoController.selected.casosRelacionadosList}" header="Casos relacionados (#{casoController.selected.casosRelacionadosList.size()})"/>
+
+                            <go:casoList casosList="#{casoController.selected.casosHijosList}" header="Sub casos (#{casoController.selected.casosHijosList.size()})"/>
+
                             <go:casoList casosList="#{casoController.selected.idCliente.casoList}" header="Historial de casos de #{casoController.selected.clientName}"/>
 
                         </p:tab>
@@ -1351,21 +1351,23 @@
             </p:dialog>
             <script>
                 //<![CDATA[
-                setTimeout(function(){resizeScrollPanel()},200);
-                function resizeScrollPanel(){
+                $(document).ready(function () {
+                    resizeScrollPanel();
+                });
+                
+                function resizeScrollPanel() {
                     var inputPanel = document.getElementById("inputPanel");
                     var tabsBar = inputPanel.getElementsByClassName("ui-tabs-navscroller")[0];
-                    var height = inputPanel.clientHeight-tabsBar.clientHeight-30;
-                    //alert("inputPanel.height:"+height);
+                    var height = inputPanel.clientHeight - tabsBar.clientHeight - 30;
                     var scrollpanel = document.getElementById("inputPanel:scrollpaneActividades");
-                    var strHeight = (height+"px");
-                    //alert(strHeight);
-                    scrollpanel.style.height = strHeight;
-                    //alert("inputPanel.height:"+scrollpanel.style.height);
+                    scrollpanel.style.height = (height + "px");
                 }
+                
+                var id;
                 $(window).resize(function() {
-                    setTimeout(function(){resizeScrollPanel()},500);
-                  });
+                    id = setTimeout(resizeScrollPanel, 500);
+                });
+
                 //]]>
             </script>
         </ui:define>
