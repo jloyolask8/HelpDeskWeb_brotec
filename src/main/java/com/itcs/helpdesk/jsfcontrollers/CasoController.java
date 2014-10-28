@@ -138,6 +138,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //    private transient PaginationHelper pagination;
     protected int selectedItemIndex;
     private int activeIndexMenuAccordionPanel;
+    private int selectedItemIndex;
+    private int activeIndexMenuAccordionPanel = 2;
     private String activeIndexWestPanel = "0";//TODO should be an int
     //Notas
     protected String textoNota = null;

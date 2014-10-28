@@ -12,7 +12,7 @@
         <ui:define name="title">
             <p:outputLabel value="#{casoController.selected.tipoCaso ne null ? casoController.selected.tipoCaso.nombre:'Caso' } N°#{casoController.selected.idCaso}"/>
         </ui:define>
-        
+
         <ui:define name="menutitle">
             <p:outputLabel value="Datos del Caso"/>
         </ui:define>
@@ -48,7 +48,7 @@
                 #menucc_button{
                     background: transparent !important;
                 }
-                
+
                 .ui-layout-pane-center{
                     /*border: none !important;*/
                     //padding-top: 0px !important;
@@ -59,10 +59,10 @@
             </style>
 
         </ui:define>
-        
+
 
         <ui:define name="west">
-           
+
             <ui:include src="propertiesCaso.xhtml"/>
 
         </ui:define>
@@ -77,6 +77,68 @@
                     <h:form id="botoneraCaso" style="margin-top: 5px;">
                         
                          <h:panelGroup id="tituloCaso">
+                        <h:panelGrid columns="14">     
+
+                            <p:commandButton ajax="false" title="#{casoController.selected.idCasoPadre ne null ? 'Subir al caso '.concat(casoController.selected.idCasoPadre):'Ir al listado de casos'}" icon="fa fa-level-up" action="#{casoController.goOneLevelUp()}" style="width: 60px;"/>
+
+                            <p:commandButton ajax="false" title="Actualizar" icon="fa fa-refresh" actionListener="#{casoController.refreshCurrentCaso()}" style="width: 60px;"/>
+                            <p:commandButton rendered="#{casoController.verificarTomarCaso()}" ajax="true" value="Asignármelo" onclick="PF('tomarCaso').show()" />
+
+
+
+
+                            <p:commandButton rendered="#{casoController.verificarCerrarCaso()}"
+                                             ajax="true" value="Cerrar" onclick="PF('closeCase').show();"/>
+
+                            <p:commandButton rendered="#{casoController.verificarReabrirCaso()}" ajax="true" value="Reabrir Caso" onclick="PF('openCase').show();" />
+
+                            <p:commandButton ajax="false" icon="fa fa-download" value="Generar Acta de PreEntrega" 
+                                             rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.ENTREGA.getTipoCaso()}">
+                                <p:fileDownload value="#{casoController.generarActaPreEntrega()}" />
+                            </p:commandButton>
+
+                            <p:commandButton id="panelBotonesResp" value="Otras acciones" type="button" />
+                            <p:menu overlay="true" trigger="panelBotonesResp" my="left top" at="left bottom" style="width:250px !important;">
+
+                                <p:menuitem rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.PREVENTIVO.getTipoCaso()}"
+                                            value="Generar Documento Visita Preventiva" 
+                                            title="Generar Documento Visita Preventiva"                                                 
+                                            actionListener="#{casoController.generarPDFVisitaPreventivaPostventa()}"
+                                            icon="fa fa-file"  />
+
+                                <p:menuitem ajax="false" value="Copiar" action="#{casoController.prepareCopy()}"/>
+
+                                <p:menuitem ajax="false" value="Copiar y Asignármelo" action="#{casoController.prepareCopyAndAssignMe()}"/>
+
+                                <p:menuitem rendered="#{casoController.verificarTransferirCaso()}"
+                                            ajax="true" value="Transferir" onclick="PF('transferir').show();"/>
+                                <p:menuitem rendered="#{casoController.verificarCrearColaborativo()}"
+                                            ajax="false" value="Crear Caso Colaborativo" action="#{casoController.crearCasoColab(casoController.selected)}"/>
+                                <p:menuitem rendered="#{casoController.verificarAsignarCaso()}"
+                                            ajax="true" value="Asignar" onclick="PF('transferir').show();" />
+                                <p:menuitem rendered="#{casoController.verificarRelacionarCaso()}"
+                                            ajax="true" value="Relacionar Otro Caso" onclick="PF('casosRela').show();"/>
+
+                                <p:menuitem rendered="#{casoController.verificarEliminarCaso()}"
+                                            ajax="true" value="Eliminar" onclick="PF('destroyCase').show();"/>
+                            </p:menu>
+
+                            <p:commandButton icon="ui-icon ui-icon-seek-prev" ajax="false"
+                                             action="#{casoController.prepareEditPreviusItem()}" 
+                                             title="Ir al caso anterior"
+                                             disabled="#{casoController.selectedItemIndex eq casoController.pagination.pageFirstItem}"
+                                             rendered="#{casoController.pagination.itemsCount > 0}"/>
+
+
+
+                            <p:commandButton icon="ui-icon ui-icon-seek-next" ajax="false"
+                                             action="#{casoController.prepareEditNextItem()}" 
+                                             title="Ir al caso siguiente"
+                                             disabled="#{casoController.selectedItemIndex eq casoController.pagination.pageLastItem}"
+                                             rendered="#{casoController.pagination.itemsCount > 0}"/>
+                        </h:panelGrid>
+
+                        <h:panelGroup id="tituloCaso">
                             <p:panelGrid styleClass="filtersGrid" id="panelGridDatos">
                                 <p:row>
                                     
@@ -206,28 +268,28 @@
                             
                            <p:scrollPanel id="scrollpaneActividades" mode="native" style="border: 0; height: 500px;">
                                 <p:panel id="resumenNotas" style="border: 0;">
-                                <p:effect type="highlight" event="load" /> 
-                                <h:panelGrid columns="9" >
-                                    <p:graphicImage value="/images/view-pim-notes.png" width="22" height="22"/>
-                                    <h:outputText value="Comentarios:"/>
-                                    <h:outputText value="#{casoController.cantidadDeNotas}" />
+                                    <p:effect type="highlight" event="load" /> 
+                                    <h:panelGrid columns="9" >
+                                        <p:graphicImage value="/images/view-pim-notes.png" width="22" height="22"/>
+                                        <h:outputText value="Comentarios:"/>
+                                        <h:outputText value="#{casoController.cantidadDeNotas}" />
 
-                                    <p:graphicImage value="/images/email_out.png" width="22" height="22"/>
-                                    <h:outputText value="Respuestas:"/>
-                                    <h:outputText value="#{casoController.cantidadDeRespuestasACliente}" />
+                                        <p:graphicImage value="/images/email_out.png" width="22" height="22"/>
+                                        <h:outputText value="Respuestas:"/>
+                                        <h:outputText value="#{casoController.cantidadDeRespuestasACliente}" />
 
-                                    <p:graphicImage value="/images/email_in.png" width="22" height="22"/>
-                                    <h:outputText value="Comentarios del solicitante:"/>
-                                    <h:outputText value="#{casoController.cantidadDeRespuestasDelCliente}" />
-                                </h:panelGrid>
-                            </p:panel>
+                                        <p:graphicImage value="/images/email_in.png" width="22" height="22"/>
+                                        <h:outputText value="Comentarios del solicitante:"/>
+                                        <h:outputText value="#{casoController.cantidadDeRespuestasDelCliente}" />
+                                    </h:panelGrid>
+                                </p:panel>
 
-                            <ui:include src="responder.xhtml" />
+                                <ui:include src="responder.xhtml" />
 
-                            <ui:include src="actividadesListForm.xhtml" />
+                                <ui:include src="actividadesListForm.xhtml" />
                             </p:scrollPanel>
 
-                            
+
 
 
                         </p:tab>
@@ -345,10 +407,10 @@
 
                         <p:tab id="tabCasosRelacionados" title="Casos relacionados" >
 
-                           <go:casoList casosList="#{casoController.selected.casosRelacionadosList}" header="Casos relacionados (#{casoController.selected.casosRelacionadosList.size()})"/>
-                           
-                           <go:casoList casosList="#{casoController.selected.casosHijosList}" header="Sub casos (#{casoController.selected.casosHijosList.size()})"/>
-                            
+                            <go:casoList casosList="#{casoController.selected.casosRelacionadosList}" header="Casos relacionados (#{casoController.selected.casosRelacionadosList.size()})"/>
+
+                            <go:casoList casosList="#{casoController.selected.casosHijosList}" header="Sub casos (#{casoController.selected.casosHijosList.size()})"/>
+
                             <go:casoList casosList="#{casoController.selected.idCliente.casoList}" header="Historial de casos de #{casoController.selected.clientName}"/>
 
                         </p:tab>
@@ -1347,7 +1409,29 @@
                                    actionListener="#{casoScheduleController.goEditEvent()}" update=":inputPanel"/>
                 </h:form>
             </p:dialog>
+            <script>
+                //<![CDATA[
+                $(document).ready(function () {
+                    resizeScrollPanel();
+                });
+                
+                function resizeScrollPanel() {
+                    var inputPanel = document.getElementById("inputPanel");
+                    var tabsBar = inputPanel.getElementsByClassName("ui-tabs-navscroller")[0];
+                    var height = inputPanel.clientHeight - tabsBar.clientHeight - 30;
+                    var scrollpanel = document.getElementById("inputPanel:scrollpaneActividades");
+                    scrollpanel.style.height = (height + "px");
+                }
+                
+                var id;
+                $(window).resize(function() {
+                    id = setTimeout(resizeScrollPanel, 500);
+                });
 
+        </ui:define>
+    </ui:composition>
+
+</html>
              <script>
                 //<![CDATA[
                 $(document).ready(function () {
@@ -1370,7 +1454,3 @@
                 //]]>
             </script>
             
-        </ui:define>
-    </ui:composition>
-
-</html>
