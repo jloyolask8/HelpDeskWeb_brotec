@@ -16,7 +16,6 @@ import com.itcs.helpdesk.quartz.ActionClassExecutorJob;
 import com.itcs.helpdesk.quartz.HelpDeskScheluder;
 import com.itcs.helpdesk.quartz.ScheduleEventReminderJob;
 import com.itcs.helpdesk.util.Log;
-import com.itcs.helpdesk.util.ManagerCasos;
 import com.itcs.helpdesk.util.view.Colors;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -149,7 +148,7 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
                             getFilterHelper().getVista().setFiltrosVistaList(filtrosVistaList);
 
                             final List<com.itcs.helpdesk.persistence.entities.ScheduleEvent> findEntities
-                                    = (List<com.itcs.helpdesk.persistence.entities.ScheduleEvent>) getJpaController().findAllEntities(getEntityClass(), getFilterHelper().getVista(), new OrderBy("startDate", OrderBy.OrderType.DESC), null);
+                                    = (List<com.itcs.helpdesk.persistence.entities.ScheduleEvent>) getJpaController().findAllEntities(getFilterHelper().getVista(), new OrderBy("startDate", OrderBy.OrderType.DESC), null);
 //                    System.out.println("events:" + findEntities);
                             for (com.itcs.helpdesk.persistence.entities.ScheduleEvent scheduleEvent : findEntities) {
                                 final DefaultScheduleEvent defaultScheduleEvent

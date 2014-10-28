@@ -21,45 +21,18 @@ import org.primefaces.model.SelectableDataModel;
 @SessionScoped
 public class ComponenteController extends AbstractManagedBean<Componente> implements Serializable {
 
-//    private Componente current;
-//    private Componente[] selectedItems;    
     private int selectedItemIndex;
 
     public ComponenteController() {
         super(Componente.class);
     }
 
-//    public Componente getSelected() {
-//        if (current == null) {
-//            current = new Componente();
-//            selectedItemIndex = -1;
-//        }
-//        return current;
-//    }
-
     @Override
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(getPaginationPageSize()) {
-                @Override
-                public int getItemsCount() {
-                    return getJpaController().count(Componente.class).intValue();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ComponenteDataModel(getJpaController().queryByRange(Componente.class, getPageSize(), getPageFirstItem()));
-                }
-            };
-        }
-        return pagination;
+    protected String getListPage() {
+       return "/script/componente/List";
     }
 
-    public String prepareList() {
-        recreateModel();
-        return "List";
-    }
-
+   
 //    public String prepareView() {
 //        if (getSelectedItems().length != 1) {
 //            JsfUtil.addSuccessMessage("Es requerido que seleccione una fila para visualizar.");
@@ -145,7 +118,7 @@ public class ComponenteController extends AbstractManagedBean<Componente> implem
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         performDestroy();
         recreateModel();
-        return "List";
+        return getListPage();
     }
 
 //    public String destroySelected() {
@@ -200,16 +173,11 @@ public class ComponenteController extends AbstractManagedBean<Componente> implem
         }
     }
 
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
+    
 
     @Override
     public Class getDataModelImplementationClass() {
-        throw new UnsupportedOperationException("Not supported yet.");
+      return ComponenteDataModel.class;
     }
 
 //    /**

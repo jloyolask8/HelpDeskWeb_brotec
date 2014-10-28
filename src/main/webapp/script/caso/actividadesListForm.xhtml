@@ -11,7 +11,7 @@
 
         <p:accordionPanel multiple="true" id="listanotas" >
             <c:forEach items="#{casoController.selected.notaList}" var="item">
-                <p:tab title="(#{item.idNota}) #{casoController.creaTituloDeNota(item)} - #{item.visible?'Publico':'Interno'}" 
+                <p:tab title="#{casoController.creaTituloDeNota(item)} - #{item.visible?'Publico':'Interno'}" 
                        titletip="#{item.fechaCreacion} - #{item.enviadoA}"
                        titleStyleClass="#{casoController.getNotaStyle(item.tipoNota)}">
                     <p:panel  style="border-color: window;">

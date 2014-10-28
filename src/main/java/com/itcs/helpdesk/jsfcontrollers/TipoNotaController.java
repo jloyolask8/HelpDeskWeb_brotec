@@ -1,7 +1,6 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.TipoNota;
 import java.io.Serializable;
 import java.util.List;
@@ -12,7 +11,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import org.primefaces.model.SelectableDataModel;
 
@@ -30,36 +28,11 @@ public class TipoNotaController extends AbstractManagedBean<TipoNota> implements
         super(TipoNota.class);
     }
 
-//    public TipoNota getSelected() {
-//        if (current == null) {
-//            current = new TipoNota();
-//            selectedItemIndex = -1;
-//        }
-//        return current;
+
+//    public String prepareList() {
+//        recreateModel();
+//        return "List";
 //    }
-
-    @Override
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(getPaginationPageSize()) {
-                @Override
-                public int getItemsCount() {
-                    return getJpaController().count(TipoNota.class).intValue();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    return new TipoNotaDataModel(getJpaController().queryByRange(TipoNota.class, getPageSize(), getPageFirstItem()));
-                }
-            };
-        }
-        return pagination;
-    }
-
-    public String prepareList() {
-        recreateModel();
-        return "List";
-    }
 
    
 
@@ -105,18 +78,18 @@ public class TipoNotaController extends AbstractManagedBean<TipoNota> implements
 
    
 
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "View";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "List";
-        }
-    }
+//    public String destroyAndView() {
+//        performDestroy();
+//        recreateModel();
+////        updateCurrentItem();
+//        if (selectedItemIndex >= 0) {
+//            return "View";
+//        } else {
+//            // all items were removed - go back to list
+//            recreateModel();
+//            return "List";
+//        }
+//    }
 
     private void performDestroy() {
         try {
@@ -127,27 +100,27 @@ public class TipoNotaController extends AbstractManagedBean<TipoNota> implements
         }
     }
 
-    private void updateCurrentItem() {
-        int count = getJpaController().count(TipoNota.class).intValue();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = (TipoNota) getJpaController().queryByRange(TipoNota.class, 1, selectedItemIndex).get(0);
-        }
-    }
-
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
+//    private void updateCurrentItem() {
+//        int count = getJpaController().count(TipoNota.class).intValue();
+//        if (selectedItemIndex >= count) {
+//            // selected index cannot be bigger than number of items:
+//            selectedItemIndex = count - 1;
+//            // go to previous page if last page disappeared:
+//            if (pagination.getPageFirstItem() >= count) {
+//                pagination.previousPage();
+//            }
+//        }
+//        if (selectedItemIndex >= 0) {
+//            current = (TipoNota) getJpaController().queryByRange(TipoNota.class, 1, selectedItemIndex).get(0);
+//        }
+//    }
+//
+//    public DataModel getItems() {
+//        if (items == null) {
+//            items = getPagination().createPageDataModel();
+//        }
+//        return items;
+//    }
 //
 //    /**
 //     * @return the selectedItems

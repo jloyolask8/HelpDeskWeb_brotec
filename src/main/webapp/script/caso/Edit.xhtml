@@ -10,7 +10,7 @@
       xmlns:go="http://java.sun.com/jsf/composite/go">
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
-            <p:outputLabel value="Actividad Caso N°#{casoController.selected.idCaso}"/>
+            <p:outputLabel value="#{casoController.selected.tipoCaso ne null ? casoController.selected.tipoCaso.nombre:'Caso' } N°#{casoController.selected.idCaso}"/>
         </ui:define>
         
         <ui:define name="menutitle">
@@ -50,7 +50,7 @@
                 }
                 
                 .ui-layout-pane-center{
-                    border: none !important;
+                    /*border: none !important;*/
                     //padding-top: 0px !important;
                     //padding-left: 1px !important;
                     //margin-top: -5px !important;
@@ -72,83 +72,27 @@
             <pe:importEnum type="com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso" var="EnumTipoCaso" allSuffix="ALL_ENUM_VALUES" />
 
 
-            <pe:layoutPane id="layoutcenter" position="center" >
 
-                <pe:layoutPane id="layout1_North" position="north" size="70px" minHeight="70px" maxHeight="70px" closable="false" maxSize="70px">              
 
                     <h:form id="botoneraCaso" style="margin-top: 5px;">
-                        <h:panelGrid columns="14">     
-
-                            <p:commandButton ajax="false" title="#{casoController.selected.idCasoPadre ne null ? 'Subir al caso '.concat(casoController.selected.idCasoPadre):'Ir al listado de casos'}" icon="fa fa-level-up" action="#{casoController.goOneLevelUp()}" style="width: 60px;"/>
-
-                            <p:commandButton ajax="false" title="Actualizar" icon="fa fa-refresh" actionListener="#{casoController.refreshCurrentCaso()}" style="width: 60px;"/>
-                            <p:commandButton rendered="#{casoController.verificarTomarCaso()}" ajax="true" value="Asignármelo" onclick="PF('tomarCaso').show()" />
-
-
-
-
-                            <p:commandButton rendered="#{casoController.verificarCerrarCaso()}"
-                                             ajax="true" value="Cerrar" onclick="PF('closeCase').show();"/>
-
-                            <p:commandButton rendered="#{casoController.verificarReabrirCaso()}" ajax="true" value="Reabrir Caso" onclick="PF('openCase').show();" />
-
-                            <p:commandButton ajax="false" icon="fa fa-download" value="Generar Acta de PreEntrega" 
-                                             rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.ENTREGA.getTipoCaso()}">
-                                <p:fileDownload value="#{casoController.generarActaPreEntrega()}" />
-                            </p:commandButton>
-
-                            <p:commandButton id="panelBotonesResp" value="Otras acciones" type="button" />
-                            <p:menu overlay="true" trigger="panelBotonesResp" my="left top" at="left bottom" style="width:250px !important;">
-
-                                <p:menuitem rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.PREVENTIVO.getTipoCaso()}"
-                                            value="Generar Documento Visita Preventiva" 
-                                            title="Generar Documento Visita Preventiva"                                                 
-                                            actionListener="#{casoController.generarPDFVisitaPreventivaPostventa()}"
-                                            icon="fa fa-file"  />
-
-                                <p:menuitem ajax="false" value="Copiar" action="#{casoController.prepareCopy()}"/>
-
-                                <p:menuitem ajax="false" value="Copiar y Asignármelo" action="#{casoController.prepareCopyAndAssignMe()}"/>
-
-                                <p:menuitem rendered="#{casoController.verificarTransferirCaso()}"
-                                            ajax="true" value="Transferir" onclick="PF('transferir').show();"/>
-                                <p:menuitem rendered="#{casoController.verificarCrearColaborativo()}"
-                                            ajax="false" value="Crear Caso Colaborativo" action="#{casoController.crearCasoColab(casoController.selected)}"/>
-                                <p:menuitem rendered="#{casoController.verificarAsignarCaso()}"
-                                            ajax="true" value="Asignar" onclick="PF('transferir').show();" />
-                                <p:menuitem rendered="#{casoController.verificarRelacionarCaso()}"
-                                            ajax="true" value="Relacionar Otro Caso" onclick="PF('casosRela').show();"/>
-
-                                <p:menuitem rendered="#{casoController.verificarEliminarCaso()}"
-                                            ajax="true" value="Eliminar" onclick="PF('destroyCase').show();"/>
-                            </p:menu>
-
-                            <p:commandButton icon="ui-icon ui-icon-seek-prev" ajax="false"
-                                             action="#{casoController.prepareEditPreviusItem()}" 
-                                             title="Ir al caso anterior"
-                                             disabled="#{casoController.selectedItemIndex eq casoController.pagination.pageFirstItem}"
-                                             rendered="#{casoController.pagination.itemsCount > 0}"/>
-
-
-
-                            <p:commandButton icon="ui-icon ui-icon-seek-next" ajax="false"
-                                             action="#{casoController.prepareEditNextItem()}" 
-                                             title="Ir al caso siguiente"
-                                             disabled="#{casoController.selectedItemIndex eq casoController.pagination.pageLastItem}"
-                                             rendered="#{casoController.pagination.itemsCount > 0}"/>
-                        </h:panelGrid>
-
-                        <h:panelGroup id="tituloCaso">
-
-
-
+                        
+                         <h:panelGroup id="tituloCaso">
                             <p:panelGrid styleClass="filtersGrid" id="panelGridDatos">
                                 <p:row>
+                                    
+                                    <p:column>
+                                        <h:commandLink id="prio" disabled="#{casoController.selected.closed}" >
+                                            <p:graphicImage library="images" name="#{casoController.selected.esPrioritario ? 'star-enabled.png':'star-disabled.png'}" title="Importante!"/>
+                                            <p:ajax id="aj2" listener="#{casoController.changePriority(casoController.selected, casoController.selected.esPrioritario)}" update="prio :formTopMenu"/>
+
+                                        </h:commandLink>
+                                    </p:column>
+                                    
                                     <p:column>
                                         <p:inplace editor="true" disabled="#{casoController.selected.closed}">
                                             <f:facet name="output">
                                                 <p:outputLabel style="font-size: 18px !important;"
-                                                               value="#{casoController.selected.tipoCaso ne null ? casoController.selected.tipoCaso.nombre:'Caso' } N°#{casoController.selected.idCaso}: #{casoController.selected.tema}"/>
+                                                               value="#{casoController.selected.tema}"/>
                                             </f:facet>
                                             <f:facet name="input">
                                                 <p:inputText id="ticketTema" value="#{casoController.selected.tema}"/> 
@@ -157,13 +101,7 @@
                                         </p:inplace>
                                     </p:column>
 
-                                    <p:column>
-                                        <h:commandLink id="prio" disabled="#{casoController.selected.closed}" >
-                                            <p:graphicImage library="images" name="#{casoController.selected.esPrioritario ? 'star-enabled.png':'star-disabled.png'}" title="Importante!"/>
-                                            <p:ajax id="aj2" listener="#{casoController.changePriority(casoController.selected, casoController.selected.esPrioritario)}" update="prio :formTopMenu"/>
-
-                                        </h:commandLink>
-                                    </p:column>
+                                    
 
                                     <p:column>
                                         <h:outputText styleClass="ticket-status" value="#{casoController.selected.idEstado.nombre}"
@@ -186,26 +124,87 @@
                                     </p:column>
                                 </p:row>
                             </p:panelGrid>
-
-
-
-
                         </h:panelGroup>
+                        
+                        <h:panelGrid columns="14">     
+
+                            <p:commandButton ajax="false" title="#{casoController.selected.idCasoPadre ne null ? 'Subir al caso '.concat(casoController.selected.idCasoPadre):'Ir al listado de casos'}" icon="fa fa-chevron-left" action="#{casoController.goOneLevelUp()}" style="width: 60px;"/>
+
+                            <p:commandButton ajax="false" title="Actualizar" icon="fa fa-refresh" actionListener="#{casoController.refreshCurrentCaso()}" style="width: 60px;"/>
+                            <p:commandButton rendered="#{casoController.verificarTomarCaso()}" ajax="true" value="Asignármelo" onclick="PF('tomarCaso').show()" />
+
+
+
+
+                            <p:commandButton rendered="#{casoController.verificarCerrarCaso()}" icon="fa fa-lock"
+                                             ajax="true" value="Cerrar" onclick="PF('closeCase').show();"/>
+
+                            <p:commandButton rendered="#{casoController.verificarReabrirCaso()}" ajax="true" value="Reabrir Caso"  icon="fa fa-unlock"
+                                             onclick="PF('openCase').show();" />
+                            
+                            <p:commandButton rendered="#{casoController.verificarTransferirCaso()}" icon="fa fa-plane"
+                                             ajax="true" value="Transferir" onclick="PF('transferir').show();"/>
+                            
+                                <p:commandButton rendered="#{casoController.verificarAsignarCaso()}" icon="fa fa-plane"
+                                             ajax="true" value="Asignar" onclick="PF('transferir').show();"/>
+                            
+
+                            <p:commandButton ajax="false" icon="fa fa-download" value="Generar Acta de PreEntrega" 
+                                             rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.ENTREGA.getTipoCaso()}">
+                                <p:fileDownload value="#{casoController.generarActaPreEntrega()}" />
+                            </p:commandButton>
+
+                            <p:commandButton id="panelBotonesResp" value="Otras acciones" type="button" />
+                            <p:menu overlay="true" trigger="panelBotonesResp" my="left top" at="left bottom" style="width:250px !important;">
+
+                                <p:menuitem rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.PREVENTIVO.getTipoCaso()}"
+                                            value="Generar Documento Visita Preventiva" 
+                                            title="Generar Documento Visita Preventiva"                                                 
+                                            actionListener="#{casoController.generarPDFVisitaPreventivaPostventa()}"
+                                            icon="fa fa-file"  />
+
+                                <p:menuitem ajax="false" value="Copiar" action="#{casoController.prepareCopy()}" icon="fa fa-copy"/>
+
+                                <p:menuitem ajax="false" value="Copiar y Asignármelo" action="#{casoController.prepareCopyAndAssignMe()}" icon="fa fa-clipboard"/>
+
+                             
+                                <p:menuitem rendered="#{casoController.verificarCrearColaborativo()}" icon="fa fa-code-fork"
+                                            ajax="false" value="Crear Caso Colaborativo" action="#{casoController.crearCasoColab(casoController.selected)}"/>
+                              
+                                <p:menuitem rendered="#{casoController.verificarRelacionarCaso()}" icon="fa fa-chain"
+                                            ajax="true" value="Relacionar Otro Caso" onclick="PF('casosRela').show();"/>
+
+                                <p:menuitem rendered="#{casoController.verificarEliminarCaso()}" icon="fa fa-trash-o"
+                                            ajax="true" value="Eliminar" onclick="PF('destroyCase').show();"/>
+                            </p:menu>
+
+                            <p:commandButton icon="ui-icon ui-icon-seek-prev" ajax="false"
+                                             action="#{casoController.prepareEditPreviusItem()}" 
+                                             title="Ir al caso anterior"
+                                             disabled="#{casoController.selectedItemIndex eq casoController.pagination.pageFirstItem}"
+                                             rendered="#{casoController.pagination.itemsCount > 0}"/>
+
+
+
+                            <p:commandButton icon="ui-icon ui-icon-seek-next" ajax="false"
+                                             action="#{casoController.prepareEditNextItem()}" 
+                                             title="Ir al caso siguiente"
+                                             disabled="#{casoController.selectedItemIndex eq casoController.pagination.pageLastItem}"
+                                             rendered="#{casoController.pagination.itemsCount > 0}"/>
+                        </h:panelGrid>
+
+                       
                     </h:form>
-                    <p:separator />
 
-                </pe:layoutPane>
 
-                <pe:layoutPane id="layout1_1" position="center">
-
-                    <p:tabView id="inputPanel" dynamic="true" cache="false"  activeIndex="#{casoController.activeIndexCasoSections}">
+                    <p:tabView id="inputPanel" dynamic="true" scrollable="true" cache="false" style="width: 99% !important; height: 99% !important;" activeIndex="#{casoController.activeIndexCasoSections}">
                         <p:ajax event="tabChange" listener="#{casoController.onChangeActiveIndexCasoSections}" />
                         <p:ajax event="tabClose" listener="#{casoScheduleController.onTabClose}" />
 
 
                         <p:tab id="tab-actividades" title="Actividades">
                             
-                            <p:scrollPanel mode="native" style="border: 0; height: 600px;">
+                           <p:scrollPanel id="scrollpaneActividades" mode="native" style="border: 0; height: 500px;">
                                 <p:panel id="resumenNotas" style="border: 0;">
                                 <p:effect type="highlight" event="load" /> 
                                 <h:panelGrid columns="9" >
@@ -744,14 +743,6 @@
                         </p:tab>
 
                     </p:tabView> 
-
-
-                </pe:layoutPane>
-
-
-
-
-            </pe:layoutPane>
 
 
 
@@ -1357,7 +1348,28 @@
                 </h:form>
             </p:dialog>
 
+             <script>
+                //<![CDATA[
+                $(document).ready(function () {
+                    resizeScrollPanel();
+                });
+                
+                function resizeScrollPanel() {
+                    var inputPanel = document.getElementById("inputPanel");
+                    var tabsBar = inputPanel.getElementsByClassName("ui-tabs-navscroller")[0];
+                    var height = inputPanel.clientHeight - tabsBar.clientHeight - 30;
+                    var scrollpanel = document.getElementById("inputPanel:scrollpaneActividades");
+                    scrollpanel.style.height = (height + "px");
+                }
+                
+                var id;
+                $(window).resize(function() {
+                    id = setTimeout(resizeScrollPanel, 500);
+                });
 
+                //]]>
+            </script>
+            
         </ui:define>
     </ui:composition>
 

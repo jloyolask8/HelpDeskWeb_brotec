@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions">
+    <h:head>
+        <title>Solicitud - HelpDesk Brotec-Icafal</title>
+        <style type="text/css">
+            .ui-widget {
+                font-size: 12px !important;
+            }
+            .ui-widget-overlay{background:#000000;opacity:.80;filter:Alpha(Opacity=80);}
+
+        </style>
+    </h:head>
+    <h:body style="margin:0; padding: 0;border: 0;font-size: 100%;font: inherit;vertical-align: baseline;">
+
+        <f:event type="preRenderView" listener="#{casoCustomerController.initializeDataEmbeddedForm}" />
+
+        <p:growl id="messagesDialogId" autoUpdate="true" life="5000" />
+       
+
+        <h:form id="form_">
+            <p:panel id="panel" widgetVar="panelW" >
+                <f:facet name="header">
+                    <h:outputText value="Contacto"/>
+                    <h:outputText value=" con Proyecto #{casoCustomerController.proyecto.nombre}" rendered="#{casoCustomerController.proyecto ne null}"/>
+                </f:facet>
+                <h:inputHidden value="#{casoCustomerController.rut}"/>
+                <h:inputHidden value="#{casoCustomerController.tema}"/>
+                <p:inputTextarea  id="problem"  value="#{casoCustomerController.descripcion}" style="width: 100%" rows="6" autoResize="false"
+                                  required="true" requiredMessage="Debes escribir una descripción breve de tu comentario."/>
+                <p:watermark for="problem" value="Escribe tu mensaje..."/>
+
+                <br/>
+                <h:panelGrid columns="2">
+
+                    <p:commandButton id="inp" actionListener="#{casoCustomerController.enviarSimple(e)}"
+                                     update=":messagesDialogId :form_"  
+                                     onstart="blockUIWidget1.block()" oncomplete="blockUIWidget1.unblock()"
+                                     value="Enviar" style="float: right;"/>
+                </h:panelGrid>
+
+
+
+            </p:panel>
+
+
+            <pe:blockUI target="panel" widgetVar="blockUIWidget1">  
+                <h:panelGrid columns="2">  
+                    <h:graphicImage value="../resources/images/loading.gif" 
+                                    style="margin-right: 12px; vertical-align: middle;"/>  
+                    <h:outputText value="Cargando..." style="white-space: nowrap;"/>  
+                </h:panelGrid>  
+            </pe:blockUI> 
+
+        </h:form>
+    </h:body>
+</html>
+

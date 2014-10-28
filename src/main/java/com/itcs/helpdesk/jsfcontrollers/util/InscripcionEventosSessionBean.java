@@ -148,7 +148,7 @@ public class InscripcionEventosSessionBean extends AbstractManagedBean<Caso> imp
         vista.setFiltrosVistaList(filtrosVistaList);
 
         try {
-            return (List<ProductoContratado>) getJpaController().findAllEntities(ProductoContratado.class, vista,
+            return (List<ProductoContratado>) getJpaController().findAllEntities(vista,
                     getDefaultOrderBy(), getDefaultUserWho());
         } catch (IllegalStateException ex) {//error en el filtro
             JsfUtil.addErrorMessage(ex, "Existe un problema con el filtro. Favor corregir e intentar nuevamente.");

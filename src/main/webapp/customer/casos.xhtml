@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <f:event type="preRenderView" listener="#{loginCustomerController.checkAccessToCasosList}" />
+
+    <ui:composition  template="/customer/template.xhtml">
+        <ui:define name="page_content">            
+
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-3 col-md-2 sidebar">
+
+
+                        <h:form id="vistasForm">
+                            <ul class="nav nav-sidebar">
+                                <ui:repeat value="#{vistaController.vistasCustomersItems}" var="vista1">
+                                    <li title="#{vista1.descripcion}" class="#{casoCustomerController.selectedViewId eq vista1.idVista ? 'active':''}" >
+                                        <h:commandLink action="#{casoCustomerController.applyViewFilter(vista1)}"  immediate="true" value="#{vista1.nombre}">
+                                            <span class="badge pull-right">#{vistaController.countCasosForView(vista1)}</span>
+                                        </h:commandLink>                                   
+                                    </li>
+                                </ui:repeat>
+                            </ul>
+                        </h:form>
+
+
+                    </div>
+                    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                        <h1 class="page-header">Listado de mis solicitudes</h1>
+
+                        <h:form id="form0">
+                            <h:panelGroup id="panelG1">
+
+                                <f:verbatim rendered="#{not (casoCustomerController.items.rowCount gt 0)}">
+                                    <p>No existen Solicitudes para la vista seleccionada.</p>
+                                </f:verbatim> 
+
+
+                                <div class="table-responsive">
+                                    <h:dataTable id="ID_TABLA" value="#{casoCustomerController.items}" var="item" rendered="#{casoCustomerController.items.rowCount gt 0}"                                            
+                                                 styleClass="table table-striped">
+
+                                        <h:column>
+                                            <f:facet name="header"></f:facet>
+                                            <h:commandLink id="prio">
+                                                <p:graphicImage library="images" name="#{item.esPrioritario ? 'starEnabled.png':'starDisabled.png'}" title="Prioritario"/>
+                                                <p:ajax id="aj2" listener="#{casoCustomerController.changePriority(item, item.esPrioritario)}" update="prio"/>
+                                            </h:commandLink>
+                                        </h:column>
+
+                                        <h:column>
+                                            <f:facet name="header"></f:facet>
+                                            <h:graphicImage value="/images/user-available.png" title="Caso pendiente (entre 0 y 50% del tiempo asignado)" rendered="#{item.estadoAlerta.idalerta eq 1 and item.idEstado.idEstado eq 'abierto'}"/>
+                                            <h:graphicImage value="/images/dialog-warning-3.png" title="Caso por vencer (mas del 50% del tiempo asignado)" rendered="#{item.estadoAlerta.idalerta eq 2 and item.idEstado.idEstado eq 'abierto'}"/>
+                                            <h:graphicImage value="/images/software-update-urgent-2.png" title="Caso vencido (mas del 100% del tiempo asignado)" rendered="#{item.estadoAlerta.idalerta eq 3 and item.idEstado.idEstado eq 'abierto'}"/>
+                                            <h:graphicImage value="/images/locked.png" title="Caso cerrado" rendered="#{item.idEstado.idEstado eq 'cerrado'}"/>
+                                        </h:column>
+
+                                        <h:column> 
+                                            <f:facet name="header">#</f:facet>
+                                            <h:commandLink id="editBtn"  action="#{casoCustomerController.prepareCustomerViewCaso(item)}"
+                                                           value="#{item.idCaso}"  title="Abrir" immediate="true"/>
+                                        </h:column>  
+
+                                        <h:column>
+                                            <f:facet name="header">Estado</f:facet>
+                                            <span class="label" style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};">#{item.idSubEstado.nombre}</span>
+
+                                        </h:column>
+
+                                        <h:column>  
+                                            <f:facet name="header">Tipo</f:facet>
+                                            <h:outputText value="#{item.tipoCaso.nombre}"/>
+                                        </h:column>     
+
+                                        <h:column> 
+                                            <f:facet name="header">Asunto</f:facet>
+                                            <h:panelGroup layout="block">  
+                                                <h:outputText id="temalink" value="#{item.tema}"/>
+                                            </h:panelGroup> 
+
+
+                                        </h:column>
+
+                                        <h:column>   
+                                            <f:facet name="header">Creado</f:facet>
+                                            <h:outputText value="#{item.fechaCreacion}" >
+                                                <f:convertDateTime pattern="#{bundle.dateFormatShortTime}"/>
+                                            </h:outputText>
+                                        </h:column>
+
+                                        <h:column>   
+                                            <f:facet name="header">SLA</f:facet>
+                                            <h:outputText value="#{item.nextResponseDue}">
+                                                <f:convertDateTime pattern="#{bundle.dateFormatShortTime}"/>
+                                            </h:outputText>
+                                        </h:column>
+
+                                        <h:column> 
+                                            <f:facet name="header">Solicitante</f:facet>
+                                            <h:outputText value="#{item.emailCliente.cliente.nombres} #{item.emailCliente.cliente.apellidos} &lt;#{item.emailCliente.emailCliente}&gt;"/>
+                                        </h:column>
+
+                                        <h:column>
+                                            <f:facet name="header">#{bundle.ListCasoTitle_owner}</f:facet>
+                                            <h:outputText rendered="#{not (item.owner eq null)}" value="#{item.owner.capitalName}" />
+                                        </h:column>
+
+
+                                    </h:dataTable>
+                                </div>
+                            </h:panelGroup>
+                        </h:form>
+
+                    </div>
+                </div>
+            </div>
+
+        </ui:define>
+    </ui:composition>
+</html>

@@ -15,19 +15,46 @@ import javax.faces.convert.FacesConverter;
 import javax.faces.model.ListDataModel;
 import org.primefaces.model.SelectableDataModel;
 
-
 @ManagedBean(name = "subComponenteController")
 @SessionScoped
 public class SubComponenteController extends AbstractManagedBean<SubComponente> implements Serializable {
 
-
     public SubComponenteController() {
         super(SubComponente.class);
     }
+
+    @Override
+    protected String getListPage() {
+        return "/script/subComponente/List";
+    }
     
+    public String prepareCreate() {
+        current = new SubComponente();
+        return "/script/subComponente/Create";
+    }
+
+    public String destroy() {
+        if (current == null) {
+            return "";
+        }
+//        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
+        performDestroy();
+        recreateModel();
+        return getListPage();
+    }
+
+    private void performDestroy() {
+        try {
+            getJpaController().remove(getEntityClass(), getSelected());
+            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ClienteDeleted"));
+        } catch (Exception e) {
+            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
+        }
+    }
+
     public void destroy(SubComponente item) {
         try {
-            getJpaController().remove(SubComponente.class, item);
+            getJpaController().remove(getEntityClass(), item);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("SubComponenteDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -35,13 +62,8 @@ public class SubComponenteController extends AbstractManagedBean<SubComponente> 
     }
 
     @Override
-    public PaginationHelper getPagination() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public Class getDataModelImplementationClass() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return SubComponenteDataModel.class;
     }
 
     @FacesConverter(forClass = SubComponente.class)
@@ -83,6 +105,7 @@ public class SubComponenteController extends AbstractManagedBean<SubComponente> 
         }
     }
 }
+
 class SubComponenteDataModel extends ListDataModel<SubComponente> implements SelectableDataModel<SubComponente> {
 
     public SubComponenteDataModel() {

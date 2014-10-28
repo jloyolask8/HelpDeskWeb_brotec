@@ -298,7 +298,7 @@ public abstract class ParseCotizacionAction extends Action {
         }
         vista.getFiltrosVistaList().add(filter1);
         
-        List<ModeloProducto> modelos = (List<ModeloProducto>) getJpaController().findAllEntities(ModeloProducto.class, vista, new OrderBy("nombre"), null);
+        List<ModeloProducto> modelos = (List<ModeloProducto>) getJpaController().findAllEntities(vista, new OrderBy("nombre"), null);
         
 //                System.out.println("modelos:" + modelos);
         if (modelos != null) {

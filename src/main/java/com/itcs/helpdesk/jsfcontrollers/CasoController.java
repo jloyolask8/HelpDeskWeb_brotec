@@ -136,12 +136,12 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private transient HashMap<String, BlackListEmail> blackListMap;
 //    private transient DataModel items = null;
 //    private transient PaginationHelper pagination;
-    private int selectedItemIndex;
+    protected int selectedItemIndex;
     private int activeIndexMenuAccordionPanel;
     private String activeIndexWestPanel = "0";//TODO should be an int
     //Notas
-    private String textoNota = null;
-    private boolean textoNotaVisibilidadPublica = false;
+    protected String textoNota = null;
+    protected boolean textoNotaVisibilidadPublica = false;
     private boolean responderAOtroEmail = false;
     private boolean cc = false;
     private boolean cco = false;
@@ -150,7 +150,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private List<String> ccoEmail;
 //    private TipoNota tipoNota;
 //    private float laborTime = 0;
-    private List<String> tipoNotas;
+    protected List<String> tipoNotas;
     //Clippings
     private Clipping selectedClipping;
     /*
@@ -161,22 +161,23 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     /*
      * Objetos para attachments
      */
-    private transient UploadedFile uploadFile;
-    private String idFileDelete = "";
+    protected transient UploadedFile uploadFile;
+    protected String idFileDelete = "";
     private transient List<Attachment> selectedAttachmensForMail;
-    private int cantidadDeNotas;
-    private int cantidadDeRespuestasACliente;
-    private int cantidadDeRespuestasDelCliente;
-    private static transient ResourceBundle resourceBundle = ResourceBundle.getBundle("Bundle");
+    protected int cantidadDeNotas;
+    protected int cantidadDeRespuestasACliente;
+    protected int cantidadDeRespuestasDelCliente;
+    //TODO send it to abstract manager 
+    static transient ResourceBundle resourceBundle = ResourceBundle.getBundle("Bundle");
 //    private List<Nota> listaActividadesOrdenada = null;
 //    private boolean incluirHistoria;
 //    private Integer progresoEnvioRespuesta;
     private ReglaTrigger reglaTriggerSelected;
-    private String emailCliente_wizard;
-    private String rutCliente_wizard;
-    private boolean emailCliente_wizard_existeEmail = false;
-    private boolean emailCliente_wizard_existeCliente = false;
-    private boolean emailCliente_wizard_updateCliente = false;
+    protected String emailCliente_wizard;
+    protected String rutCliente_wizard;
+    protected boolean emailCliente_wizard_existeEmail = false;
+    protected boolean emailCliente_wizard_existeCliente = false;
+    protected boolean emailCliente_wizard_updateCliente = false;
 //    private transient ManagerCasos managerCasos;
     private String htmlToView = null;
 //    private boolean filtrarPorCategorias;
@@ -192,13 +193,13 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private Usuario usuarioSeleccionadoTransfer;
     private EmailCliente emailClienteSeleccionadoTransfer;
     private Long idFileRemove;
-    private Integer justCreadedNotaId;
-    private Integer selectedViewId;//Vista seleccionada
+    protected Integer justCreadedNotaId;
+    protected Integer selectedViewId;//Vista seleccionada
 
     private String accionToRunSelected;
     private String accionToRunParametros;
 //    private int activeIndexdescOrComment;
-    private int activeIndexCasoSections;
+    protected int activeIndexCasoSections;
     public static final int TAB_ACTIVIDADES_INDEX = 0;
     public static final int TAB_AGENDA_INDEX = 1;
     public static final int TAB_ADJUNTOS_INDEX = 2;
@@ -206,7 +207,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public static final int TAB_TIMELINE_INDEX = 4;
     public static final int TAB_EVENTO_INDEX = 5;
 
-    //visitas preventivas
+    //visitas preventivas, TODO brotec specific
     private static final int visitaPreventivaCrearCasoDiasAntes = 10;
     private static final int visitaPreventivaCrearCasoEnMeses = 6;
     private Long casosPendientes;
@@ -217,11 +218,11 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private Long casosCerrados;
 
     //reply-mode
-    private boolean replyMode = false;
+    protected boolean replyMode = false;
 
     private boolean replyByEmail = true;
-    
-    private boolean searchBarVisible = false;
+
+    protected boolean searchBarVisible = false;
 
     //respuesta
     private boolean adjuntarArchivosARespuesta = false;
@@ -256,7 +257,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         //borrador
         this.textoNota = current.getRespuesta();
-        
+
         agregarHistoria();
 
         if (getOtroEmail() == null) {
@@ -274,7 +275,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public void enableCommentMode() {
         this.setReplyMode(true);
         this.setReplyByEmail(false);
-        
+
         this.textoNota = current.getRespuesta();
 
     }
@@ -325,7 +326,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         try {
             return (List<AuditLog>) getJpaController()
-                    .findAllEntities(AuditLog.class, vista1, new OrderBy("fecha", OrderBy.OrderType.DESC), userSessionBean.getCurrent());
+                    .findAllEntities(vista1, new OrderBy("fecha", OrderBy.OrderType.DESC), userSessionBean.getCurrent());
         } catch (NotSupportedException ex) {
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, "NotSupportedException", ex);
         } catch (ClassNotFoundException ex) {
@@ -405,7 +406,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         } else {
             //run on all items in Vista
             try {
-                casosToSend = (List<Caso>) getJpaController().findAllEntities(Caso.class, getFilterHelper().getVista(), getDefaultOrderBy(), userSessionBean.getCurrent());
+                casosToSend = (List<Caso>) getJpaController().findAllEntities(getFilterHelper().getVista(), getDefaultOrderBy(), userSessionBean.getCurrent());
             } catch (Exception ex) {
                 Logger.getLogger(CasoController.class
                         .getName()).log(Level.SEVERE, "findEntities", ex);
@@ -439,7 +440,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         } else {
             //run on all items in Vista
             try {
-                casosToSend = (List<Caso>) getJpaController().findAllEntities(Caso.class, getFilterHelper().getVista(), getDefaultOrderBy(), userSessionBean.getCurrent());
+                casosToSend = (List<Caso>) getJpaController().findAllEntities(getFilterHelper().getVista(), getDefaultOrderBy(), userSessionBean.getCurrent());
             } catch (Exception ex) {
                 Logger.getLogger(CasoController.class
                         .getName()).log(Level.SEVERE, "findEntities", ex);
@@ -719,8 +720,15 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
     }
 
-    private void persist(Caso newCaso) throws PreexistingEntityException, RollbackFailureException, Exception {
-        if (newCaso.getIdPrioridad().getSlaHoras() != null) {
+    protected void persist(Caso newCaso) throws PreexistingEntityException, RollbackFailureException, Exception {
+        if (newCaso.getFechaCreacion() == null) {
+            newCaso.setFechaCreacion(new Date());
+        }
+        if (newCaso.getIdPrioridad() == null) {
+            newCaso.setIdPrioridad(EnumPrioridad.BAJA.getPrioridad());
+        }
+
+        if (newCaso.getIdPrioridad() != null && newCaso.getIdPrioridad().getSlaHoras() != null) {
             int horas = newCaso.getIdPrioridad().getSlaHoras();
             Calendar calendario = Calendar.getInstance();
             calendario.setTime(newCaso.getFechaCreacion());
@@ -728,11 +736,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             newCaso.setNextResponseDue(calendario.getTime());
         }
 
-        TipoAlerta alerta = EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta();
-
-        if (alerta != null) {
-            newCaso.setEstadoAlerta(alerta);
-        }
+        newCaso.setEstadoAlerta(EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta());
 
         if (emailCliente_wizard_updateCliente && emailCliente_wizard_existeCliente) {
             getJpaController().merge(newCaso.getEmailCliente().getCliente());
@@ -1421,9 +1425,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public void refreshCurrentCaso() throws Exception {
         current = getJpaController().find(Caso.class, current.getIdCaso());
-        if (current != null && current.getNotaList() != null) {
-            Collections.sort(current.getNotaList());
-        }
+//        if (current != null && current.getNotaList() != null) {
+//            Collections.sort(current.getNotaList());
+//        }
         resetNotaForm();
 //        recreateModel();
     }
@@ -1455,16 +1459,16 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     /**
      * Opens ticket, reset the tab, set selected ticket, refresh ticket data
-     * updates RevisarActualizacion state.
+     * updates RevisarActualizacion state if opener is owner user.
      *
      * This method must be used in all ways to open a case.
      *
      * @param caso
      * @throws Exception
      */
-    private void openCase(Caso caso) throws Exception {
-        setActiveIndexCasoSections(TAB_ACTIVIDADES_INDEX);//descripcion
-        setSelected(caso);
+    public void openCase(Caso caso) throws Exception {
+        current = caso;
+        setActiveIndexCasoSections(TAB_ACTIVIDADES_INDEX);
         if (current != null) {
             refreshCurrentCaso();
         }
@@ -1664,7 +1668,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         return filtraPorAlerta(EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta());
     }
 
-    private void prepareCasoFilterForInbox() {
+    public void prepareCasoFilterForInbox() {
 //        //System.out.println("prepareCasoFilterForInbox");
         List<Vista> vistas = getAllVistasItems(userSessionBean.getCurrent());
 
@@ -1862,8 +1866,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         recreateModel();
         recreatePagination();
     }
-    
-    public void changeSearchBarVisibility(){
+
+    public void changeSearchBarVisibility() {
         setSearchBarVisible(!isSearchBarVisible());
 //        System.out.println("changeSearchBarVisibility: "+isSearchBarVisible());
     }
@@ -3086,7 +3090,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public StreamedContent exportAllItems() {
 
         try {
-            List<Caso> casos = (List<Caso>) getJpaController().findAllEntities(Caso.class, getFilterHelper().getVista(), getDefaultOrderBy(), userSessionBean.getCurrent());//all
+            List<Caso> casos = (List<Caso>) getJpaController().findAllEntities(getFilterHelper().getVista(), getDefaultOrderBy(), userSessionBean.getCurrent());//all
             OutputStream output = new ByteArrayOutputStream();
             //Se crea el libro Excel
             WritableWorkbook workbook
@@ -3248,7 +3252,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             getJpaController().mergeCliente(current.getEmailCliente().getCliente());
             executeInClient("PF('dialogClient').hide()");
             JsfUtil.addSuccessMessage("Cliente actualizado exitosamente.");
-            
+
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, e.getMessage());
         }

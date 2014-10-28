@@ -1,8 +1,6 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
-import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Funcion;
 import com.itcs.helpdesk.persistence.entities.Rol;
 import com.itcs.helpdesk.persistence.entities.Usuario;
@@ -11,17 +9,14 @@ import com.itcs.helpdesk.persistence.entityenums.EnumUsuariosBase;
 import com.itcs.helpdesk.util.Log;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import org.primefaces.model.SelectableDataModel;
 
@@ -29,29 +24,13 @@ import org.primefaces.model.SelectableDataModel;
 @SessionScoped
 public class RolController extends AbstractManagedBean<Rol> implements Serializable {
 
-    @ManagedProperty(value = "#{UserSessionBean}")
-    private UserSessionBean userSessionBean;
-//    private Rol current;
-//    private transient DataModel items = null;
-//    private transient PaginationHelper pagination;
     private int selectedItemIndex;
-    private List<Funcion> funciones = new ArrayList<Funcion>();
+    private List<Funcion> funciones = new ArrayList<>();
 
     public RolController() {
         super(Rol.class);
     }
 
-//    public Rol getSelected() {
-//        if (current == null) {
-//            current = new Rol();
-//            selectedItemIndex = -1;
-//        }
-//        return current;
-//    }
-//
-//    public void setSelected(Rol rol) {
-//        this.current = rol;
-//    }
     public List<Funcion> getFunciones() {
         return funciones;
     }
@@ -61,25 +40,7 @@ public class RolController extends AbstractManagedBean<Rol> implements Serializa
     }
 
     @Override
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(getPaginationPageSize()) {
-                @Override
-                public int getItemsCount() {
-                    return getJpaController().count(Rol.class).intValue();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getJpaController().queryByRange(Rol.class, getPageSize(), getPageFirstItem()));
-                }
-            };
-        }
-        return pagination;
-    }
-
-    public String prepareList() {
-        recreateModel();
+    protected String getListPage() {
         return "/script/rol/List";
     }
 
@@ -90,7 +51,7 @@ public class RolController extends AbstractManagedBean<Rol> implements Serializa
         }
         funciones = current.getFuncionList();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "View";
+       return "/script/rol/View";
     }
 
     @Override
@@ -112,7 +73,7 @@ public class RolController extends AbstractManagedBean<Rol> implements Serializa
     }
 
     public boolean esUsuarioSistema() {
-        Usuario user = userSessionBean.getCurrent();
+        Usuario user = getUserSessionBean().getCurrent();
         if (user != null && user.equals(EnumUsuariosBase.SISTEMA.getUsuario())) {
             return true;
         }
@@ -136,10 +97,10 @@ public class RolController extends AbstractManagedBean<Rol> implements Serializa
         }
     }
 
-    public String prepareEdit(Rol item) {
-        setSelected(item);
-        return prepareEdit();
-    }
+//    public String prepareEdit(Rol item) {
+//        setSelected(item);
+//        return prepareEdit();
+//    }
 
     public String prepareEdit() {
         if (current == null) {
@@ -248,65 +209,11 @@ public class RolController extends AbstractManagedBean<Rol> implements Serializa
         }
     }
 
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        Iterator iter = items.iterator();
-        List<Rol> listOfRol = new ArrayList<Rol>();
-        while (iter.hasNext()) {
-            listOfRol.add((Rol) iter.next());
-        }
-
-        return new RolDataModel(listOfRol);
-    }
-
     @Override
     public Class getDataModelImplementationClass() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return RolDataModel.class;
     }
-
-    /**
-     * @param userSessionBean the userSessionBean to set
-     */
-    public void setUserSessionBean(UserSessionBean userSessionBean) {
-        this.userSessionBean = userSessionBean;
-    }
-
-//    private void recreateModel() {
-//        items = null;
-//    }
-//
-//    public String next() {
-//        getPagination().nextPage();
-//        recreateModel();
-//        return "List";
-//    }
-//
-//    public String previous() {
-//        getPagination().previousPage();
-//        recreateModel();
-//        return "List";
-//    }
-//
-//    public String last() {
-//        getPagination().lastPage();
-//        recreateModel();
-//        return "List";
-//    }
-//
-//    public String first() {
-//        getPagination().firstPage();
-//        recreateModel();
-//        return "List";
-//    }
-//    public SelectItem[] getItemsAvailableSelectMany() {
-//        return JsfUtil.getSelectItems(getJpaController().getRolFindAll(), false);
-//    }
-//
-//    public SelectItem[] getItemsAvailableSelectOne() {
-//        return JsfUtil.getSelectItems(getJpaController().getRolFindAll(), true);
-//    }
+   
     @FacesConverter(forClass = Rol.class)
     public static class RolControllerConverter implements Converter {
 

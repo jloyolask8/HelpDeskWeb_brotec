@@ -29,7 +29,7 @@
                                    update="#{cc.attrs.update}"
                                    actionListener="#{cc.attrs.controllerMBean.applyViewFilter(vista1)}" 
                                    value="#{vista1.nombre}" style="font-weight: bold" 
-                                   styleClass="ui-widget-header #{vista1 eq cc.attrs.controllerMBean.filterHelper.vista ? 'ui-state-hover':''}" />
+                                   styleClass="ui-state-default #{vista1 eq cc.attrs.controllerMBean.filterHelper.vista ? 'ui-state-hover':''}" />
                     <p:tooltip for="vistalink1" value="#{vista1.descripcion}" />  
 
                 </p:column>

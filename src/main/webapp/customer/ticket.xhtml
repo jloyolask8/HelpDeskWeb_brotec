@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <f:event type="preRenderView" listener="#{loginCustomerController.checkAccessToCasosList(event)}" />
+
+    <ui:composition  template="/customer/template.xhtml">
+        <ui:define name="page_content">     
+
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-6 col-md-5 col-lg-3 sidebar">  
+
+
+                        <ul class="nav nav-tabs" id="leftTicketTabs">
+
+                            <li class="active"><a data-toggle="tab" href="#tabDatosTicket"><span class="glyphicon glyphicon-info-sign">#{casoCustomerController.selected.tipoCaso.nombre} \##{casoCustomerController.selected.idCaso}</span></a></li>
+                            <li><a data-toggle="tab" href="#tabCliente"><span class="glyphicon glyphicon-user">Cliente</span></a></li>
+
+                            <li class="dropdown">
+                                <a data-toggle="dropdown" class="dropdown-toggle" href="#">Más <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a data-toggle="tab" href="#productoSection">#{applicationBean.productSubComponentDescription}</a></li>
+                                    <li><a data-toggle="tab" href="#dropdown2">Archivos adjuntos</a></li>
+                                </ul>
+                            </li>
+
+
+
+                        </ul>
+
+                        <div class="tab-content" id="myTabContent">
+
+                            <div id="tabDatosTicket" class="tab-pane fade in active">
+
+                                <h:form id="infoCasoForm">
+
+
+                                    <h3>Info</h3>
+                                    <p>Información del caso.</p>
+
+                                    <div class="row">
+                                        <ul class="list-group">
+
+                                            <li class="list-group-item">
+                                                <div class="row">
+                                                    <div class="col-sm-6 col-md-4 col-lg-6"><label>Tipo de solicitud</label></div>
+                                                    <div class="col-sm-6 col-md-8 col-lg-6">
+                                                        #{casoCustomerController.selected.tipoCaso.nombre}
+                                                    </div>
+                                                </div>
+                                            </li>
+
+
+                                            <li class="list-group-item">
+
+                                                <label>Estado</label>
+                                                <f:verbatim rendered="#{casoCustomerController.selected.isOpen()}">
+                                                    <span class="badge pull-right" style="background: #5CB85C;color: #FFF">#{casoCustomerController.selected.idEstado.nombre}</span>
+                                                </f:verbatim>
+                                                <f:verbatim rendered="#{not casoCustomerController.selected.isOpen()}">
+                                                    <span class="badge pull-right">#{casoCustomerController.selected.idEstado.nombre}</span>
+                                                </f:verbatim> 
+
+
+                                            </li>
+
+                                            <li class="list-group-item">
+
+                                                <label>Sub-estado</label>
+                                                <span class="badge pull-right" style="background: \##{casoCustomerController.selected.idSubEstado.backgroundColor}; color: \##{casoCustomerController.selected.idSubEstado.fontColor};">
+                                                    <h:outputText value="#{casoCustomerController.selected.idSubEstado.nombre}"/>
+                                                </span>
+
+
+                                            </li>
+
+                                            <li class="list-group-item">
+                                                <label>#{bundle.EditCasoLabel_idPrioridad}</label>
+
+                                                <span class="badge pull-right label-default">
+                                                    #{casoCustomerController.selected.idPrioridad}
+                                                </span>
+                                            </li>
+
+                                            <li class="list-group-item">
+                                                <div class="row">
+                                                    <div class="col-sm-6 col-md-4 col-lg-6"><label>#{bundle.EditCasoLabel_owner}</label></div>
+                                                    <div class="col-sm-6 col-md-8 col-lg-6">
+                                                        #{casoCustomerController.selected.owner.capitalName}
+                                                    </div>
+                                                </div>
+                                            </li>
+
+                                            <li class="list-group-item #{casoCustomerController.selected.isOpen() ? 'show':'hidden'}">
+                                                <div class="row">
+                                                    <div class="col-sm-6 col-md-4 col-lg-6"><label>#{bundle.EditCasoLabel_nextResponseDue}</label></div>
+                                                    <div class="col-sm-6 col-md-8 col-lg-6">
+                                                        <h:outputText value="#{casoCustomerController.selected.nextResponseDue}" >
+                                                            <f:convertDateTime pattern="#{bundle.dateFormat2}" />
+                                                        </h:outputText>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            
+                                              <li class="list-group-item #{casoCustomerController.selected.isOpen() ? 'hidden':'show'}">
+                                                <div class="row">
+                                                    <div class="col-sm-6 col-md-4 col-lg-6"><label>Fecha cierre</label></div>
+                                                    <div class="col-sm-6 col-md-8 col-lg-6">
+                                                        <h:outputText value="#{casoCustomerController.selected.fechaCierre}" >
+                                                            <f:convertDateTime pattern="#{bundle.dateFormat2}" />
+                                                        </h:outputText>
+                                                    </div>
+                                                </div>
+                                            </li>
+
+                                            <li class="list-group-item">
+                                                <div class="row">
+                                                    <div class="col-sm-6 col-md-4 col-lg-6"><label>#{bundle.EditCasoLabel_fechaCreacion}</label></div>
+                                                    <div class="col-sm-6 col-md-8 col-lg-6">
+                                                        <h:outputText id="fechaCreacion" value="#{casoCustomerController.selected.fechaCreacion}" title="#{bundle.EditCasoTitle_fechaCreacion}">
+                                                            <f:convertDateTime pattern="#{bundle.dateFormat2}" />
+                                                        </h:outputText>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <div class="row">
+                                                    <div class="col-sm-6 col-md-4 col-lg-6"><label>#{bundle.EditCasoLabel_fechaModif}</label></div>
+                                                    <div class="col-sm-6 col-md-8 col-lg-6">
+                                                        <h:outputText id="fechaModif" value="#{casoCustomerController.selected.fechaModif}" title="#{bundle.EditCasoTitle_fechaModif}">
+                                                            <f:convertDateTime pattern="#{bundle.dateFormat2}" />
+                                                        </h:outputText>
+                                                    </div>
+                                                </div>
+                                            </li>
+
+                                            <li class="list-group-item">
+                                                <div class="row">
+                                                    <div class="col-sm-6 col-md-4 col-lg-6"><label>#{bundle.EditCasoLabel_idCanal}</label></div>
+                                                    <div class="col-sm-6 col-md-8 col-lg-6">
+                                                        <h:outputText id="idCanal" value="#{casoCustomerController.selected.idCanal.nombre}" title="#{bundle.EditCasoTitle_idCanal}"/>
+                                                    </div>
+                                                </div>
+                                            </li>
+
+
+                                            <li class="list-group-item">
+                                                <div class="row">
+                                                    <div class="col-sm-6 col-md-4 col-lg-6"><label>Área</label></div>
+                                                    <div class="col-sm-6 col-md-8 col-lg-6">
+                                                        <h:outputText id="area_" value="#{casoCustomerController.selected.idArea.nombre}"/>
+                                                    </div>
+                                                </div>
+                                            </li>
+
+
+
+                                        </ul>
+
+                                    </div>
+
+                                </h:form>
+
+                            </div>
+
+
+
+                            <div id="tabCliente" class="tab-pane fade">
+
+                                <h:form id="tabClienteForm" styleClass="form-horizontal">
+
+                                    <h:panelGroup id="messages"
+                                                  rendered="#{(not facesContext.validationFailed) and (not empty facesContext.messageList)}">
+                                        <div class="alert alert-success">
+                                            <a class="close" data-dismiss="alert">×</a>
+                                            <h:messages styleClass="messages" errorClass="invalid"
+                                                        infoClass="valid" warnClass="warning" globalOnly="true" />
+                                        </div>
+                                    </h:panelGroup>
+
+
+                                    <h3>#{casoCustomerController.selected.emailCliente.emailCliente}</h3>
+
+
+
+                                    <div class="form-group">
+                                        <label for="rut"></label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                                            <h:inputText id="rut" value="#{casoCustomerController.selected.emailCliente.cliente.rut}" 
+                                                         title="#{bundle.CreateClienteTitle_rut}" validator="#{inputValidationBean.validarRut}"
+                                                         styleClass="form-control">
+                                                <p:ajax event="blur" listener="#{casoCustomerController.formateaRut()}" update="rut"/>
+                                            </h:inputText>
+                                            <p:watermark for="rut" value="Rut"/>
+                                        </div>
+                                        <h:message for="rut" errorClass="text-danger" />
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                                            <h:inputText id="nombres" value="#{casoCustomerController.selected.emailCliente.cliente.nombres}" 
+                                                         required="true" requiredMessage="Los nombres son requeridos"
+                                                         styleClass="form-control"/>
+                                            <p:watermark for="nombres" value="#{bundle.CreateClienteLabel_nombres}"/>
+                                        </div>
+                                        <h:message for="nombres" errorClass="text-danger" />
+
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                                            <h:inputText id="apellidos" value="#{casoCustomerController.selected.emailCliente.cliente.apellidos}" 
+                                                         required="true" requiredMessage="Los apellidos son requeridos"
+                                                         styleClass="form-control"/>
+                                            <p:watermark for="apellidos" value="#{bundle.CreateClienteLabel_apellidos}"/>
+                                        </div>
+                                        <h:message for="apellidos" errorClass="text-danger" />
+
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-addon"><span class="glyphicon glyphicon-earphone"></span></span>
+                                            <p:inputText  id="fono1" value="#{casoCustomerController.selected.emailCliente.cliente.fono1}" label="fono1" validatorMessage="Teléfono no es valido" styleClass="form-control">
+                                                <pe:keyFilter regEx="/[\d\.\+\-\(\)]/"/>
+                                            </p:inputText>
+                                            <p:watermark for="fono1" value="Teléfono"/>
+                                        </div>
+                                        <h:message for="fono1" errorClass="text-danger" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-addon"><span class="glyphicon glyphicon-phone"></span></span>
+                                            <p:inputText  id="fono2" value="#{casoCustomerController.selected.emailCliente.cliente.fono2}" validatorMessage="Celular no es valido" styleClass="form-control">
+                                                <pe:keyFilter regEx="/[\d\.\+\-\(\)]/"/>
+                                            </p:inputText>
+                                            <p:watermark for="fono2" value="Celular"/>
+                                        </div>
+                                        <h:message for="fono2" errorClass="text-danger" />
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-addon"><span class="glyphicon glyphicon-home"></span></span>
+                                            <h:inputTextarea id="dirParticular" value="#{casoCustomerController.selected.emailCliente.cliente.dirParticular}" 
+                                                             title="#{bundle.CreateClienteTitle_dirParticular}"
+                                                             styleClass="form-control"/>
+                                            <p:watermark for="dirParticular" value="#{bundle.CreateClienteTitle_dirParticular}"/>
+                                        </div>
+                                        <h:message for="dirParticular" errorClass="text-danger" />
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-addon"><span class="glyphicon glyphicon-home"></span></span>
+                                            <h:inputTextarea  id="dirComercial" value="#{casoCustomerController.selected.emailCliente.cliente.dirComercial}" 
+                                                              title="#{bundle.CreateClienteTitle_dirComercial}"
+                                                              styleClass="form-control"/>
+                                            <p:watermark for="dirComercial" value="#{bundle.CreateClienteTitle_dirComercial}"/>
+                                        </div>
+                                        <h:message for="dirComercial" errorClass="text-danger" />
+                                    </div>
+                                    <div class="form-actions pull-right">
+
+                                        <p:commandLink ajax="true" styleClass="btn btn-primary btn-sm" update=":tabClienteForm :mainform:messages" action="#{casoCustomerController.mergeCliente}">
+                                            <span class="glyphicon glyphicon-envelope"></span>
+                                            Guardar
+                                        </p:commandLink>
+
+
+
+                                    </div>
+                                </h:form>
+
+
+                            </div>
+
+                            <div id="productoSection" class="tab-pane fade">
+                                <h3>Información del #{applicationBean.productSubComponentDescription}</h3>
+                                <p>mostrar aqui info del producto/items relacionados con el caso.</p>
+
+                                <div class="row">
+                                    <ul class="list-group">
+
+                                        <li class="list-group-item">
+                                            <div class="row">
+                                                <div class="col-sm-6 col-md-4 col-lg-6"><label> #{applicationBean.productDescription}</label></div>
+                                                <div class="col-sm-6 col-md-8 col-lg-6">
+                                                    #{casoCustomerController.selected.idProducto.nombre}
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+
+                                            <div class="row">
+                                                <div class="col-sm-6 col-md-4 col-lg-6"><label>Modelo</label></div>
+                                                <div class="col-sm-6 col-md-8 col-lg-6">
+                                                    #{casoCustomerController.selected.idModelo.nombre}
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row">
+                                                <div class="col-sm-6 col-md-4 col-lg-6"><label>#{applicationBean.productComponentDescription}</label></div>
+                                                <div class="col-sm-6 col-md-8 col-lg-6">
+                                                    #{casoCustomerController.selected.idComponente.nombre}
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row">
+                                                <div class="col-sm-6 col-md-4 col-lg-6"><label>#{applicationBean.productSubComponentDescription}</label></div>
+                                                <div class="col-sm-6 col-md-8 col-lg-6">
+                                                    #{casoCustomerController.selected.idSubComponente.nombre}
+                                                </div>
+                                            </div>
+                                        </li>
+
+
+
+
+                                    </ul>
+
+                                </div>
+                            </div>
+                            <div id="dropdown2" class="tab-pane fade">
+                                <h3>Archivos adjuntos</h3>
+                                <p></p>
+
+                                <p:accordionPanel cache="false" multiple="true"  id="westPanel" activeIndex="#{casoCustomerController.activeIndexWestPanel}">        
+
+                                    <p:ajax event="tabChange"/>
+
+                                    <p:tab id="tabArchivos" title="Archivos adjuntos (#{casoCustomerController.selected.cantidadAttachment})">
+
+                                        <h:form id="formlistaadjuntos">
+                                            <p:fileUpload id="fileupload"
+                                                          fileUploadListener="#{casoCustomerController.subir}"
+                                                          disabled="false"
+                                                          label="seleccionar o arrastrar aquí ..."
+                                                          uploadLabel="Subir"
+                                                          cancelLabel="Cancelar Subida"
+                                                          invalidFileMessage="Archivo Invalido." 
+                                                          mode="advanced"
+                                                          dragDropSupport="true"
+                                                          auto="true"
+                                                          update=":mainform:messages :westPanel"
+                                                          multiple="true"  
+                                                          rendered="#{casoCustomerController.selected.open}"/>
+
+                                            <p:separator/>
+                                            <h:panelGroup id="listaadjuntos" layout="block">
+
+                                          
+                                                <p:dataTable var="fileitem" value="#{casoCustomerController.selected.attachmentList}" 
+                                                             emptyMessage="No hay archivos adjuntos.">
+
+                                                    <p:column headerText="Nombre Archivo"  rendered="#{fileitem.contentId eq null}">
+                                                        <p:lightBox iframe="true" rendered="#{fileitem.imageOrPDF}">
+                                                            <h:outputLink  value="#{facesContext.externalContext.requestContextPath}/DownloadFileServlet?id=#{fileitem.idAttachment}" title="Preview">  
+                                                                <h:outputText value="#{casoCustomerController.nombreArchivoParaDesplegar(fileitem.nombreArchivo)}" title="#{fileitem.nombreArchivo}"/> 
+                                                            </h:outputLink>
+                                                        </p:lightBox>
+                                                        <h:outputText rendered="#{not fileitem.imageOrPDF}" value="#{casoCustomerController.nombreArchivoParaDesplegar(fileitem.nombreArchivo)}" title="#{fileitem.nombreArchivo}"/> 
+                                                    </p:column>
+
+                                                    <p:column headerText=""  rendered="#{fileitem.contentId eq null}">
+                                                        <p:commandButton ajax="false" icon="ui-icon-circle-arrow-s" title="Download" style="height: 22px;width: 22px;">
+                                                            <p:fileDownload contentDisposition="attachment" value="#{casoCustomerController.bajarArchivo(fileitem.idAttachment)}" />
+                                                        </p:commandButton>
+                                                    </p:column>
+                                                </p:dataTable> 
+                                            </h:panelGroup>
+
+
+                                        </h:form>
+
+
+                                    </p:tab>
+
+                                   
+
+                                </p:accordionPanel>
+
+                            </div>
+                        </div>
+                        <hr/>
+                    </div>
+                    <div class="col-sm-6 col-md-7 col-lg-9 col-sm-offset-6 col-md-offset-5 col-lg-offset-3 main" role="main">
+
+
+                        <div class="page-header">
+                            <h1>#{casoCustomerController.selected.tema}<small># #{casoCustomerController.selected.idCaso}</small></h1>
+                        </div>
+                        
+                        
+                        
+
+                        <ul class="nav nav-tabs" id="leftTicketTabs">
+
+                            <li><a data-toggle="tab" href="#desc">Descripción de su #{casoCustomerController.selected.tipoCaso ne null ? casoCustomerController.selected.tipoCaso.nombre : 'caso'}</a></li>
+                            <li class="active"><a data-toggle="tab" href="#activity">Actividad Reciente</a></li>
+                        </ul>
+
+                        <div class="tab-content" id="ticketContent">
+                            
+                            <br/>
+
+                            <div id="desc" class="tab-pane fade">                                
+                                <div class="panel panel-default">
+                                    <div class="panel-body">
+                                        <p><h:outputText value="#{casoCustomerController.selected.descripcionTxt}" escape="false"/></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="activity" class="tab-pane fade in active">
+                                <br/>
+                                <div >
+                                    <h:form id="formact">
+
+                                        <div class="form-group col-sm-12 col-md-12 col-lg-12">
+
+                                            <ul class="media-list">
+                                                <li class="media">
+                                                    <a class="pull-left" href="#">
+                                                        <img class="media-object" data-src="holder.js/64x64" alt="64x64" style="width: 64px; height: 64px;" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSIjZWVlIj48L3JlY3Q+PHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMzIiIHk9IjMyIiBzdHlsZT0iZmlsbDojYWFhO2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1zaXplOjEycHg7Zm9udC1mYW1pbHk6QXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWY7ZG9taW5hbnQtYmFzZWxpbmU6Y2VudHJhbCI+NjR4NjQ8L3RleHQ+PC9zdmc+"></img>
+                                                    </a>
+                                                    <div class="media-body">
+                                                        <h:inputTextarea id="textonota" value="#{casoCustomerController.textoNota}"  styleClass="form-control" 
+                                                                         required="true" requiredMessage="Favor ingrese comentarios"/>
+                                                        <p:watermark for="textonota" value="Escriba un comentario..."/>
+
+                                                        <div class="pull-left" style="padding-top: 5px;">
+                                                            <p:commandButton value="Enviar" ajax="true" 
+                                                                             update=":mainform:messages :formact :infoCasoForm" actionListener="#{casoCustomerController.customerCreateNota}" styleClass="btn btn-primary btn-xs"/> 
+                                                        </div>
+
+                                                    </div>
+
+
+                                                </li>
+                                            </ul>
+
+                                            <h:message for="textonota" errorClass="text-danger" />
+                                        </div>
+                                        <div class="form-group col-sm-12 col-md-12 col-lg-12">
+                                            <ul class="media-list">
+                                                <ui:repeat value="#{casoCustomerController.selected.notaList}" var="item" >
+
+                                                    <h:panelGroup rendered="#{item.visible}">
+                                                        <li class="media">
+                                                            <a class="pull-left" href="#">
+                                                                <img class="media-object" data-src="holder.js/64x64" alt="64x64" style="width: 64px; height: 64px;" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSIjZWVlIj48L3JlY3Q+PHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMzIiIHk9IjMyIiBzdHlsZT0iZmlsbDojYWFhO2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1zaXplOjEycHg7Zm9udC1mYW1pbHk6QXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWY7ZG9taW5hbnQtYmFzZWxpbmU6Y2VudHJhbCI+NjR4NjQ8L3RleHQ+PC9zdmc+"></img>
+                                                            </a>
+                                                            <div class="media-body">
+                                                                <h4 class="media-heading">#{casoCustomerController.creaAutorDeNota(item)}</h4>
+
+                                                                <p><h:outputText value="#{casoCustomerController.parseHtmlToText(item.texto)}" escape="false"/></p>
+
+                                                                <blockquote class="blockquote-reverse">
+                                                                    <footer>
+                                                                        <cite title="Fecha">
+                                                                            <h:outputText id="fechaCreacion" value="#{item.fechaCreacion}">
+                                                                                <f:convertDateTime pattern="#{bundle.dateFormat2}"/>
+                                                                            </h:outputText> 
+                                                                        </cite>
+                                                                    </footer>
+                                                                </blockquote>
+
+                                                            </div>
+
+                                                            <div class="pull-right">
+                                                                <h:commandButton action="#{casoCustomerController.prepareViewHtml(item.texto)}" styleClass="btn btn-warning btn-sm"
+                                                                                 value="vista HTML" onclick="this.form.target = '_blank'"/>
+                                                            </div>
+                                                        </li>                                                        
+                                                        <hr/>
+                                                    </h:panelGroup>
+                                                </ui:repeat>
+                                            </ul>
+                                        </div>
+                                    </h:form>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </ui:define>
+
+
+    </ui:composition>
+</html>

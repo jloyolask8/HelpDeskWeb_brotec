@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <f:event type="preRenderView" listener="#{loginCustomerController.prepareCreateTicket}" />
+
+    <ui:composition  template="/customer/template_index.xhtml">
+        <ui:define name="page_content">    
+
+            <div class="container" role="main">
+
+
+                <div class="page-header">
+                    <h1>Consultar estado de su solicitud</h1>
+                </div>
+
+                <p>Estimad@ Cliente:</p>
+                <p>Aquí usted podrá revisar el avance y el estado en el cúal se encuentra su solicitud, esta búsqueda se debe realizar por medio de su email con el cual se creó la solicitud y el número de solicitud.
+                </p>
+
+
+
+                <h:form id="form" styleClass="form-horizontal">
+
+                    <p:focus context="form" />
+                     
+                    <div class="well panel panel-default col-md-9">
+
+                        <h:panelGroup
+                            rendered="#{(not facesContext.validationFailed) and (not empty facesContext.messageList)}">
+                            <div class="alert alert-success">
+                                <a class="close" data-dismiss="alert">×</a>
+                                <h:messages styleClass="messages" errorClass="invalid"
+                                            infoClass="valid" warnClass="warning" globalOnly="true" />
+                            </div>
+                        </h:panelGroup>  
+
+
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label for="Email">Email</label>
+
+                                <h:inputText id="Email" validator="#{inputValidationBean.validarEmail}" value="#{loginCustomerController.emailCliente}" styleClass="form-control"
+                                             required="true" requiredMessage="Ingrese su email"/>
+
+                                <h:message for="Email" errorClass="text-danger" />
+                                <span class="help-block">Su email de cliente con el que se generó la solicitud.</span>
+
+
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="Rut">Número de solicitud</label>
+
+                                <h:inputText id="caso" value="#{loginCustomerController.numCaso}" styleClass="form-control"
+                                             required="true" requiredMessage="Ingrese el número de solicitud"/>
+
+                                <h:message for="caso" errorClass="text-danger" />
+                                <span class="help-block">Número identificador de su solicitud, este número se le fue asignado al momento de crear la solicitud.</span>
+
+
+                            </div>
+
+                        </div> 
+                        <div class="panel-footer clearfix">
+
+                            <h:commandButton value="Buscar" action="#{loginCustomerController.login()}"  styleClass="btn btn-primary"/> 
+
+                            <a href="forgot.xhtml" class="btn btn-default">Olvidó su número de solicitud?</a>
+
+
+
+                        </div>
+
+                    </div>
+                </h:form>
+
+
+
+               
+            </div>
+        </ui:define>
+    </ui:composition>
+</html>

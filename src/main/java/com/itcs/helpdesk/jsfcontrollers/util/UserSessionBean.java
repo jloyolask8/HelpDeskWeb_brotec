@@ -195,6 +195,7 @@ public class UserSessionBean extends AbstractManagedBean<Usuario> implements Ser
      */
     public void setEmailCliente(EmailCliente emailCliente) {
         this.emailCliente = emailCliente;
+        setCurrent(null);
     }
 
     /**

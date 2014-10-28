@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <f:event type="preRenderView" listener="#{loginCustomerController.prepareCreateTicket}" />
+
+    <ui:composition  template="/customer/template_index.xhtml">
+        <ui:define name="page_content">    
+
+            <div class="container" role="main">
+
+
+                <div class="page-header">
+                    <h1>Recuperar mis números de solicitudes</h1>
+                </div>
+
+                <p>Estimad@ Cliente:</p>
+                <p>Olvidó su(s) número(s) de solicitud(es)?, no hay problema... ingrese su email y le enviaremos esta información a su email.
+                </p>
+                
+             
+
+               <div class="well panel panel-default col-md-9">
+
+                   <h:form id="form" styleClass="form-horizontal">
+                        
+                       <p:focus context="form" />
+
+                        <h:panelGroup
+                            rendered="#{(not facesContext.validationFailed) and (not empty facesContext.messageList)}">
+                            <div class="alert alert-success">
+                                <a class="close" data-dismiss="alert">×</a>
+                                <h:messages styleClass="messages" errorClass="invalid"
+                                            infoClass="valid" warnClass="warning" globalOnly="true" />
+                            </div>
+                        </h:panelGroup>  
+
+
+                        <div class="panel-body">
+
+                            <div class="form-group">
+                                <label for="Email">Email</label>
+                                <h:inputText id="Email" validator="#{inputValidationBean.validarEmail}"
+                                             value="#{loginCustomerController.emailCliente}" styleClass="form-control"
+                                             required="true" requiredMessage="Ingrese su email"/>
+                                <h:message for="Email" errorClass="text-danger" />
+                                <span class="help-block">La información será enviada a esta dirección.</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Captcha">Confirmenos que usted es un ser humano, Favor ingrese el texto que se visualiza en la imagen</label>
+                                <p:captcha id="Captcha" label="Captcha" language="es" required="true" requiredMessage="Favor ingrese el texto que se visualiza en la imagen." />  
+                                <h:message for="Captcha" errorClass="text-danger" />
+                            </div>
+
+                        </div> 
+                        <div class="panel-footer clearfix">                           
+
+                            <div class="form-actions">
+
+                                <h:commandButton value="Recuperar mis solicitudes" action="#{loginCustomerController.sendCasosByEmail()}"  styleClass="btn btn-primary"/> 
+
+                                <a href="login.xhtml" class="btn btn-default">Volver</a>
+                            </div>
+
+
+                        </div>
+
+
+                    </h:form>
+
+                </div>
+            </div>
+        </ui:define>
+    </ui:composition>
+</html>

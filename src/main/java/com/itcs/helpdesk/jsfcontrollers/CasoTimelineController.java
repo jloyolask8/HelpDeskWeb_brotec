@@ -91,7 +91,7 @@ public class CasoTimelineController extends AbstractManagedBean<ScheduleEvent> i
                     filtro1.setIdVista(vista0);
                     vista0.getFiltrosVistaList().add(filtro1);
 
-                    List<ScheduleEvent> findEntities = (List<ScheduleEvent>) getJpaController().findAllEntities(ScheduleEvent.class, vista0, new OrderBy("startDate", OrderBy.OrderType.DESC), null);
+                    List<ScheduleEvent> findEntities = (List<ScheduleEvent>) getJpaController().findAllEntities(vista0, new OrderBy("startDate", OrderBy.OrderType.DESC), null);
                     for (ScheduleEvent log : findEntities) {
                         events.add(new TimelineEvent(log, log.getStartDate(), Boolean.TRUE));
                     }
@@ -125,7 +125,7 @@ public class CasoTimelineController extends AbstractManagedBean<ScheduleEvent> i
                     f3.setIdVista(vista);
                     vista.getFiltrosVistaList().add(f3);
 
-                    List<AuditLog> findEntities = (List<AuditLog>) getJpaController().findAllEntities(AuditLog.class, vista, new OrderBy("fecha", OrderBy.OrderType.DESC), null);
+                    List<AuditLog> findEntities = (List<AuditLog>) getJpaController().findAllEntities(vista, new OrderBy("fecha", OrderBy.OrderType.DESC), null);
                     for (AuditLog log : findEntities) {
                         events.add(new TimelineEvent(log, log.getFecha(), Boolean.FALSE));
                     }

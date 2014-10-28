@@ -99,7 +99,7 @@ public class EmailClienteListServlet extends HttpServlet {
             }
             vista.getFiltrosVistaList().add(filter1);
 
-            return (List<EmailCliente>) getJpaController().findEntities(EmailCliente.class, vista, 10, 0, new OrderBy("emailCliente"), null);
+            return (List<EmailCliente>) getJpaController().findEntities(vista, 10, 0, new OrderBy("emailCliente"), null);
         }
 
     }

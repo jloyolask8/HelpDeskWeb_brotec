@@ -150,7 +150,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
                 public DataModel createPageDataModel() {
                     try {
                         DataModel<E> dataModel = (DataModel) getDataModelImplementationClass().newInstance();
-                        dataModel.setWrappedData(getJpaController().findEntities(entityClass, getFilterHelper().getVista(), getPageSize(), getPageFirstItem(), getDefaultOrderBy(), getDefaultUserWho(), getQuery()));
+                        dataModel.setWrappedData(getJpaController().findEntities(getFilterHelper().getVista(), getPageSize(), getPageFirstItem(), getDefaultOrderBy(), getDefaultUserWho(), getQuery()));
                         return dataModel;
                     } catch (IllegalStateException ex) {//error en el filtro
                         JsfUtil.addErrorMessage(ex, "Existe un problema con el filtro. Favor corregir e intentar nuevamente.");

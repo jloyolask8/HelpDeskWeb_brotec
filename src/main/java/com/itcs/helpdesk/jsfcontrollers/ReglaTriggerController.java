@@ -189,7 +189,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 
                         try {
                             DataModel<ReglaTrigger> dataModel = (DataModel) getDataModelImplementationClass().newInstance();
-                            dataModel.setWrappedData(getJpaController().findEntities(ReglaTrigger.class, getFilterHelper().getVista(), getPageSize(), getPageFirstItem(), getDefaultOrderBy(), getDefaultUserWho()));
+                            dataModel.setWrappedData(getJpaController().findEntities(getFilterHelper().getVista(), getPageSize(), getPageFirstItem(), getDefaultOrderBy(), getDefaultUserWho()));
                             return dataModel;
                         } catch (IllegalStateException ex) {//error en el filtro
                             JsfUtil.addErrorMessage(ex, "Existe un problema con el filtro. Favor corregir e intentar nuevamente.");

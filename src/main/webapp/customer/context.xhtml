@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html [
+    <!ENTITY nbsp "&#160;"> 
+    ]>
+    <html xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:ui="http://java.sun.com/jsf/facelets"    
+          xmlns:h="http://java.sun.com/jsf/html"
+          xmlns:f="http://java.sun.com/jsf/core"
+          xmlns:p="http://primefaces.org/ui">
+        <h:head>
+            <f:facet name="first">
+                <meta charset="utf-8"/>
+                <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                <meta name="description" content=""/>
+                <meta name="author" content="ITCS"/>
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+                <title><ui:insert name="title">#{bundle.helpdeskTitle}</ui:insert></title>     
+            </f:facet>
+
+            <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&amp;subset=latin" rel="stylesheet" type="text/css"></link>
+            <!-- Pixel Admin's stylesheets -->
+
+            <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+            <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/pixel-admin.min.css" rel="stylesheet" type="text/css"/>
+            <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/widgets.min.css" rel="stylesheet" type="text/css"/>
+            <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/pages.min.css" rel="stylesheet" type="text/css"/>
+            <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/themes.min.css" rel="stylesheet" type="text/css"/>
+
+            <style type="text/css">
+
+            </style>
+
+        </h:head>
+
+        <h:body id="mainbody" styleClass="page-404"> 
+
+            <script>var init = [];</script>
+
+            <div class="header">
+                  <a href="index.html" class="logo">
+                   
+                        <p:graphicImage library="images" name="LogoGODesk.png" title="GoDesk"/>
+                   
+                </a> <!-- / .logo -->
+            </div> <!-- / .header -->
+
+            <div class="error-code">Acceso restringido!</div>
+
+            <div class="error-text">
+                <span class="oops">Seleccione su empresa!</span><br/>
+                <span class="hr"></span>
+                <br/>
+                La página no se puede mostrar por que no ha especificado un contexto de empresa. Favor ingrese manualmente el la empresa a la cúal desea visitar.
+                o ingrese a godesk.cl usando la URL correcta, ejemplo: miempresa.godesk.cl
+            </div> <!-- / .error-text -->
+
+             <h:form styleClass="search-form">
+                <h:inputText styleClass="search-input" value="#{UserSessionBean.tenantId}" required="true"/>
+                <h:commandButton styleClass="search-btn" action="#{loginController.selectTenant()}" value="Go!"/>
+            </h:form>
+          <!-- / .search-form -->
+
+            <script src="#{facesContext.externalContext.requestContextPath}/resources/javascripts/bootstrap.min.js"></script>
+
+            <script src="#{facesContext.externalContext.requestContextPath}/resources/javascripts/pixel-admin.min.js"></script>
+
+            <!-- Get jQuery from Google CDN -->
+            <!--[if !IE]> -->
+            <script type="text/javascript">
+                //<![CDATA[
+                window.jQuery || document.write('<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js">' + "<" + "/script>");
+                //]]>
+            </script>
+
+            <!-- <![endif]-->
+            <!--[if lte IE 9]>
+             <script type="text/javascript">
+                //<![CDATA[
+                window.jQuery || document.write('<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js">'+"<"+"/script>");
+                //]]>
+           </script>
+            <![endif]-->
+
+
+
+
+            <script type="text/javascript">
+                //<![CDATA[
+                init.push(function() {
+                    // Javascript code here
+                })
+                window.PixelAdmin.start(init);
+                //]]>
+            </script>
+
+
+        </h:body>
+    </html>

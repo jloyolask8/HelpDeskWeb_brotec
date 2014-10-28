@@ -125,5 +125,35 @@
             <redirect/>
         </navigation-case>
     </navigation-rule>
+    
+    <navigation-rule>
+		
+        <navigation-case>
+            <from-outcome>inbox_customer</from-outcome>
+            <to-view-id>/customer/casos.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+    </navigation-rule>
+    
+     <navigation-rule>
+		
+        <navigation-case>
+            <from-outcome>login</from-outcome>
+            <to-view-id>/script/login.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+    </navigation-rule>
+    
+       <navigation-rule>
+		
+        <navigation-case>
+            <from-outcome>loginCustomer</from-outcome>
+            <to-view-id>/customer/login.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+    </navigation-rule>
   
 </faces-config>

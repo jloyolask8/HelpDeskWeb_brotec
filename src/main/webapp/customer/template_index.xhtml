@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">   
+
+    <f:view contentType="text/html">
+        <h:head>
+            <f:facet name="first">
+                <meta charset="utf-8"/>
+                <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                <meta name="description" content=""/>
+                <meta name="author" content="ITCS"/>
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+                <title><ui:insert name="title">#{applicationBean.helpdeskTitle}</ui:insert></title>     
+            </f:facet>
+
+            <link rel="dns-prefetch" href="//cdn.api.twitter.com" />
+            <link rel="dns-prefetch" href="//netdna.bootstrapcdn.com" />            
+
+
+            <!-- Latest compiled and minified CSS -->
+            <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"/>
+
+            <!-- Optional theme -->
+            <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css"/>
+
+            <!-- Latest compiled and minified JavaScript -->
+            <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+
+            <style type="text/css">
+
+                /* Sticky footer styles
+-------------------------------------------------- */
+                html {
+                    position: relative;
+                    min-height: 100%;
+                }
+                body {
+                    /* Margin bottom by footer height */
+                    margin-bottom: 30px;
+                }
+                #footer {
+                    position: absolute;
+                    bottom: 0;
+                    width: 100%;
+                    /* Set the fixed height of the footer here */
+                    height: 30px;
+                    background-color: #ffffff;
+                }
+
+                /* Move down content because we have a fixed navbar that is 50px tall */
+                body {
+                    padding-top: 30px;
+                    padding-bottom: 10px;
+                }
+
+                .ui-widget {
+                    font-size: 12px !important;
+                }
+
+                .navbar-inner{
+                    /*height: 90px*/
+                    min-height: 60px
+                }
+                .navbar .brand{
+                    padding: 0 10px;
+                }
+                .navbar .nav > li > a {
+                    padding: 20px 15px;
+                    /*padding: 35px 15px;*/
+                }
+                .navbar .btn-navbar {
+                    /*margin-right: 0px;*/
+                    margin-top:15px;
+                }
+                .brand img{
+                    margin-top: 5px
+                }
+                @media (max-width:768px) {
+                    .brand img{
+                        margin-bottom: 5px
+                    }
+                    .navbar .btn-navbar{
+                        /*margin-right: -15px;*/
+                    }
+                    .navbar .nav > li > a {
+                        padding: 10px 15px;
+                    }
+                }
+
+            </style>
+
+
+
+        </h:head>
+
+        <h:body>
+
+            <h:form id="mainform" style="height: 100%">
+                <p:growl id="messages" life="20000" autoUpdate="false"  globalOnly="true" widgetVar="messages" />
+            </h:form>
+
+
+            <h:form>
+
+                <!-- Fixed navbar -->
+                <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+                      <div class="navbar-inner">
+                        <div class="navbar-header">
+                              <h:commandLink title="#{applicationBean.helpdeskTitle}" styleClass="brand" action="customer_index">
+                                <p:graphicImage value="#{applicationBean.getLogo()}"  cache="false" rendered="#{applicationBean.showCompanyLogo}" height="50"/>
+                            </h:commandLink>
+                            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-1">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                           
+
+                        </div>
+                        <div class="navbar-collapse collapse" id="navbar-collapse-1">
+                            <ul class="nav navbar-nav">
+                                <li>
+                                    <h:commandLink 
+                                        action="#{casoCustomerController.prepareCreateCasoFromCustomer()}">
+                                        <span class="glyphicon glyphicon-plus"></span> Nueva Solicitud
+                                    </h:commandLink>
+                                </li>
+                                <li>
+                                    <h:commandLink 
+                                        action="inbox_customer">
+                                        <span class="glyphicon glyphicon-list"></span> Mis Solicitudes
+                                    </h:commandLink>
+                                </li>
+                            </ul>
+
+                            <ul class="nav navbar-nav navbar-right">
+
+                                <li>
+                                    <h:commandLink 
+                                        action="inbox">
+                                        <span class="glyphicon glyphicon-user"></span> Login Agentes
+                                    </h:commandLink>
+
+                                </li>
+
+
+
+                            </ul>
+
+
+                        </div><!--/.nav-collapse -->
+
+
+                    </div>
+                </div>
+
+            </h:form>
+
+
+            <ui:insert name="page_content"></ui:insert>
+
+
+
+
+
+            <div id="footer">
+                <div class="container">
+                    <hr/>
+                    <p class="text-muted">Powered by ITCS, Integrated Solutions. <a href="http://www.itcs.cl">www.itcs.cl</a></p>
+                </div>
+            </div>
+
+        </h:body>
+
+    </f:view>
+</html>
+

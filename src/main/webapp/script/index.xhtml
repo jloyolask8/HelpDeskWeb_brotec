@@ -13,13 +13,13 @@
         <ui:define name="title">
             <p:outputLabel value="#{bundle.casosTitle}"/>
         </ui:define>
-        
+
         <ui:define name="menutitle">
             <p:outputLabel value="Vistas de casos"/>
         </ui:define>
 
         <ui:define name="head">
-            
+
             <style type="text/css">
 
                 .ui-datatable thead th, .ui-datatable tbody td, .ui-datatable tfoot td {
@@ -32,32 +32,35 @@
                 function start() {
                     PF('excelStatusDialog').show();
                 }
-                window.parent.CKEDITOR.tools.callFunction(1, '', '');
 
                 function stop() {
                     PF('excelStatusDialog').hide();
                 }
                 //]]>
             </script>
-  
+
             <script>
                 //<![CDATA[
-                function setFocusToQueryTextBox(){
+                function setFocusToQueryTextBox() {
                     var queryTextBox = document.getElementById("formfilter:panelFilter0:query");
-                    if(queryTextBox !== null)
+                    if (queryTextBox !== null)
                     {
                         queryTextBox.focus();
                     }
                 }
-                
-                $(document).off('keyup').on('keyup', 
-                function(e){
-                    if (e.shiftKey && e.ctrlKey && (e.key === 'B'))
-                    {
-                        changeSearchBarVisibility();
-                    }
-                    return false;
+
+                $(document).ready(function () {
+                    $(document).off('keyup').on('keyup',
+                            function (e) {
+                                //chrome and IE dont get the key, only keyCode
+                                if (e.shiftKey && e.ctrlKey && (e.keyCode === 70))
+                                {
+                                    changeSearchBarVisibility();
+                                }
+                                return false;
+                            });
                 });
+
                 //]]>
             </script>
         </ui:define>
@@ -69,12 +72,12 @@
                     padding: 0;
                     border: 0;
                 }
-                
+
                 .pe-layout-pane-content {
                     padding: 0px;
                     overflow: auto;
                 }
-                
+
             </style>
             <go:vistasList id="vistasList" update=":vistasList:vistasForm :mainform:messages :formfilter:panelFilter0:panelFilter :form0:panelG1" 
                            controllerMBean="#{casoController}"
@@ -116,7 +119,7 @@
 
             </p:accordionPanel>
         </ui:define>
-        
+
 
         <ui:define name="body" id="body">
 
@@ -146,11 +149,11 @@
                             <p:commandButton id="updateList" title="Actualizar" icon="fa fa-refresh" style="width: 40px;" 
                                              actionListener="#{casoController.refresh()}" update=":form0:panelG1" />
 
-                            <p:commandButton id="searchButton" title="Buscar (ctrl+shift+b)" icon="fa fa-search" style="width: 40px;" 
+                            <p:commandButton id="searchButton" title="Buscar (ctrl+shift+F)" icon="fa fa-search" style="width: 40px;" 
                                              actionListener="#{casoController.changeSearchBarVisibility()}" update=":formfilter" />
-                            
-                            
-                            
+
+
+
                             <p:commandButton onclick="PF('applyRuleDialog').show()" icon="fa fa-cog" title="Ejecutar Regla" iconPos="notext"
                                              update=":applyRuleForm" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/> 
 
@@ -210,7 +213,7 @@
                         <p:toolbarGroup align="right">
 
                             <go:paginatorButtons controllerMBean="#{casoController}" update=":form0:panelG1"/>
-                            
+
                         </p:toolbarGroup>  
 
                     </p:toolbar>

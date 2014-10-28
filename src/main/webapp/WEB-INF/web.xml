@@ -14,6 +14,11 @@
         <filter-name>LoginFilter</filter-name>
         <filter-class>com.itcs.helpdesk.jsfcontrollers.util.LoginFilter</filter-class>
     </filter>
+     <filter>
+        <filter-name>LoginCustomerFilter</filter-name>
+        <filter-class>com.itcs.helpdesk.jsfcontrollers.util.LoginCustomerFilter</filter-class>
+        <async-supported>true</async-supported>
+    </filter>
     <filter>
         <filter-name>PrimeFaces FileUpload Filter</filter-name>
         <filter-class>
@@ -101,6 +106,10 @@
     <filter-mapping>
         <filter-name>LoginFilter</filter-name>
         <url-pattern>/faces/script/*</url-pattern>
+    </filter-mapping>
+     <filter-mapping>
+        <filter-name>LoginCustomerFilter</filter-name>
+        <url-pattern>/faces/customer/*</url-pattern>
     </filter-mapping>
     <filter-mapping>
         <filter-name>PrimeFaces FileUpload Filter</filter-name>

@@ -547,8 +547,8 @@
                 <p:column colspan="2">
 
                     <p:commandButton disabled="#{casoController.selected.closed or not (casoController.verificarGrabarCaso())}" style="float: right"   
-                                     value="Guardar" icon="ui-icon-disk" action="#{casoController.update}" 
-                                     update=":botoneraCaso :formint1"/>
+                                     value="Guardar" icon="fa fa-save" actionListener="#{casoController.update}" ajax="true" 
+                                     update=":formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso"/>
 
                 </p:column>
             </p:row>

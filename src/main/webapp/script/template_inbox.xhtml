@@ -23,7 +23,7 @@
 
             <style type="text/css">
 
-                
+
 
                 <c:if test="#{UserSessionBean.theme eq 'bootstrap'}" var="bootstrapTheme">
                 .ui-state-error, .ui-widget-content .ui-state-error, .ui-widget-header .ui-state-error {
@@ -55,12 +55,12 @@
                     visibility: hidden !important;
                 }
 
-             
+
 
                 .ui-layout-pane-west{
                     //border: none !important;
                     //padding-top: 0px !important;
-                   // padding-left: 1px !important;
+                    // padding-left: 1px !important;
                     //margin-top: -5px !important;
                 }
 
@@ -81,7 +81,7 @@
                 .ui-toolbar-group-right{
                     margin-top: -4px;
                 }
-               
+
 
                 .autocompleteTagsCreate .ui-autocomplete-multiple-container {
                     width: 600px;
@@ -131,7 +131,7 @@
         </h:head>
 
         <h:body id="mainbody">
-            
+
             <f:event type="preRenderView" listener="#{casoController.initializeData}" />
 
             <pe:ajaxErrorHandler /> 
@@ -173,6 +173,16 @@
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
                                     <p:menuitem value="#{applicationBean.productDescription}(s)" action="#{productoController.prepareList}"
+                                                ajax="false" icon="fa fa-building-o">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+
+                                    <p:menuitem value="#{applicationBean.productComponentDescription}(s)" action="#{componenteController.prepareList}"
+                                                ajax="false" icon="fa fa-building-o">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+
+                                    <p:menuitem value="#{applicationBean.productSubComponentDescription}(s)" action="#{subComponenteController.prepareList}"
                                                 ajax="false" icon="fa fa-building-o">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
@@ -293,7 +303,7 @@
                                     </p:menuitem>
                                 </p:submenu>
 
-                                 <p:menuitem id="casosActualizados" value="#{casoController.countCasosRevisarActualizacion.toString()}"
+                                <p:menuitem id="casosActualizados" value="#{casoController.countCasosRevisarActualizacion.toString()}"
                                             style="color: #31b0d5;"
                                             title="Mis casos que han sido actualizados por otros."
                                             disabled="#{casoController.countCasosRevisarActualizacion le 0}" ajax="false"
@@ -335,7 +345,7 @@
                                             icon="fa fa-exclamation">
                                     <p:resetInput target="@form" />
                                 </p:menuitem>
-                               
+
 
                                 <p:menuitem id="casosCerrados" value="#{casoController.casosCerrados.toString()}"
                                             style="color: #000;"
@@ -379,16 +389,18 @@
                 </pe:layoutPane>  
 
                 <pe:layoutPane position="center">  
-                     <f:facet name="header">  
-                     <ui:insert name="title"></ui:insert>
-                </f:facet>  
+                    <f:facet name="header">  
+                        <ui:insert name="title"></ui:insert>
+                    </f:facet>  
                     <ui:insert name="body"></ui:insert>
                 </pe:layoutPane> 
 
                 <pe:layoutPane position="west" size="350" resizable="true" >         
-                     <f:facet name="header">  
-                     <ui:insert name="menutitle"> <p:outputLabel value="Menú"/></ui:insert>
-                </f:facet>  
+                    <f:facet name="header">  
+                        <ui:insert name="menutitle"> <p:outputLabel value="Menú"/></ui:insert>
+                    </f:facet>  
+
+
                     <ui:insert name="west"/>               
                 </pe:layoutPane> 
             </pe:layout>  
