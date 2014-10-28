@@ -314,7 +314,7 @@ public class RulesEngine implements CasoChangeListener {
                     //One or more values, as list select many.
                     List<String> valores = condicion.getValoresList();
 
-                    if (oneEntity != null) {
+                    if (oneEntity != null && valores != null) {
                         return valores.contains(emf.getPersistenceUnitUtil().getIdentifier(oneEntity).toString());
 
                     } else {

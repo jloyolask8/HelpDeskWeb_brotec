@@ -3249,7 +3249,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public String mergeCliente() {
         try {
-            getJpaController().mergeCliente(current.getEmailCliente().getCliente());
+            getJpaController().mergeCliente(current.getIdCliente());
             executeInClient("PF('dialogClient').hide()");
             JsfUtil.addSuccessMessage("Cliente actualizado exitosamente.");
 

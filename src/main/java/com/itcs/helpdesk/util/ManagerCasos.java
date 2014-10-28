@@ -199,7 +199,7 @@ public class ManagerCasos implements Serializable {
 
     private static Long extractIdCaso(String subject, Pattern pattern) {
         try {
-            if(StringUtils.isNotEmpty(subject)) // subject can be null
+            if (StringUtils.isNotEmpty(subject)) // subject can be null
             {
                 Matcher m = pattern.matcher(subject);
                 if (m.find()) {
@@ -281,6 +281,7 @@ public class ManagerCasos implements Serializable {
     public Caso crearCaso(DatosCaso datos, Canal canal, Date fechaCreacion) throws Exception {
         Caso createdCaso = null;
         try {
+            //TODO remove this!!!
             createdCaso = getJpaController().getCasoFindByEmailCreationTimeAndType(datos.getEmail().trim(), fechaCreacion, EnumTipoCaso.PREVENTA.getTipoCaso());
         } catch (Exception ex) {
             //Do nothing if NoResultException (normal behaviour)
@@ -299,7 +300,7 @@ public class ManagerCasos implements Serializable {
                 EmailCliente emailCliente = createOrUpdateEmailCliente(datos);
                 caso.setEmailCliente(emailCliente);
                 caso.setIdCliente(emailCliente.getCliente());
-                        }
+            }
 
             caso.setIdCanal(canal);
 
@@ -424,7 +425,6 @@ public class ManagerCasos implements Serializable {
             caso.setFechaEstimadaCompra(datos.getFechaEstimadaCompra());
             caso.setCreditoPreAprobado(datos.isCredito());
 
-            
             if (fechaCreacion == null) {
                 persistCaso(caso, createLogReg(caso, "Crear", "se crea caso desde " + canal.getNombre(), ""));
             } else {
@@ -446,9 +446,9 @@ public class ManagerCasos implements Serializable {
         String address = datos.getEmail().toLowerCase().trim();
         //Se busca el email del cliente
         EmailCliente existentEmailClient = getJpaController().getEmailClienteFindByEmail(address);
-        
+
         EmailCliente emailClient;
-        
+
         //Si emailCliente no existe
         if (existentEmailClient == null)
         {
@@ -470,13 +470,13 @@ public class ManagerCasos implements Serializable {
             //Se setea nuevamente en el caso el emailClient
             emailClient = existentEmailClient;
         }
-        
+
         if (!StringUtils.isEmpty(datos.getTelefono()))//Se actualiza el telefono
         {
             emailClient.getCliente().setFono1(datos.getTelefono().trim());
         }
         getJpaController().merge(emailClient.getCliente()); //Se realiza el merge del cliente
-        
+
         return emailClient;
     }
 
@@ -507,7 +507,7 @@ public class ManagerCasos implements Serializable {
             handleEmailAttachments(item, caso);
 
         } catch (Exception ex) {
-            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "log: crearCasoDesdeEmail fail", ex);
+            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "crearCasoDesdeEmail fail", ex);
         }
         return retorno;
     }
@@ -529,7 +529,7 @@ public class ManagerCasos implements Serializable {
     }
 
     public void persistCaso(Caso caso, AuditLog audit, Date fechaCreacion) throws Exception {
-        List<AuditLog> changeLog = new ArrayList<AuditLog>(1);
+        List<AuditLog> changeLog = new ArrayList<>(1);
         changeLog.add(audit);
 
         caso.setIdEstado(EnumEstadoCaso.ABIERTO.getEstado());
@@ -568,21 +568,26 @@ public class ManagerCasos implements Serializable {
             throw new Exception("ERROR!! Tipo caso cannot be null");
         }
 
+        //TODO set html text 
+//        caso.setDescripcionTxt(HtmlUtils.removeScriptsAndStyles(caso.getDescripcion()));
         caso.setDescripcionTxt(HtmlUtils.stripInvalidMarkup(caso.getDescripcion()));
 
         calcularSLA(caso);
 
-//        prepareCustomFields(caso);
+//        prepareCustomFields(caso);??
         List<Caso> casosHijos = caso.getCasosHijosList();
         caso.setCasosHijosList(null);
 
         getJpaController().persistCaso(caso, changeLog);
 
-        if (caso.getTipoCaso().getIdTipoCaso().equalsIgnoreCase("inscripcion")) {//TODO: CUERO PENE, cambiará pronto
-            MailNotifier.notifyClientConfirmedEvent(caso);
-        } else {
-            if (!caso.getTipoCaso().equals(EnumTipoCaso.PREVENTA.getTipoCaso())) {
-                MailNotifier.notifyClientCasoReceived(caso);
+//        if (caso.getTipoCaso().getIdTipoCaso().equalsIgnoreCase("inscripcion")) {//TODO: CUERO PENE, cambiará pronto
+//            MailNotifier.notifyClientConfirmedEvent(caso);
+//        } else {
+        if (caso.getIdArea() != null) {
+            if (caso.getIdArea().getEmailAcusederecibo()) {
+                if (!caso.getTipoCaso().equals(EnumTipoCaso.PREVENTA.getTipoCaso())) {
+                    MailNotifier.notifyClientCasoReceived(caso);
+                }
             }
         }
 
@@ -631,7 +636,7 @@ public class ManagerCasos implements Serializable {
 
                 }
 
-                List<Caso> newCasosHijosSaved = new ArrayList<Caso>(casosHijos.size());
+                List<Caso> newCasosHijosSaved = new ArrayList<>(casosHijos.size());
 
                 for (Caso casoHijo : casosHijos) {
                     casoHijo.setIdCaso(null);
@@ -671,7 +676,6 @@ public class ManagerCasos implements Serializable {
                 caso.setCasosHijosList(newCasosHijosSaved);
                 getJpaController().mergeCaso(caso, ManagerCasos.createLogReg(caso, "Se agregan Sub Casos", newCasosHijosSaved.toString(), ""));
 
-                System.out.println("done!!");
             }
 
         } catch (Exception e) {
@@ -777,9 +781,9 @@ public class ManagerCasos implements Serializable {
 
             getJpaController().persist(nota);
             caso.getNotaList().add(nota);
-            List<AuditLog> changeLog = new ArrayList<AuditLog>();
+            List<AuditLog> changeLog = new ArrayList<>();
             if (respuestaCliente) {
-                changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "Se agrega nota respuesta del cliente " + senderName + "al caso vía email, nota#Id:" + nota.getIdNota(), ""));
+                changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "cliente " + senderName + " respondió el caso vía email, nota#Id:" + nota.getIdNota(), ""));
 
             } else {
                 changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "Agente " + senderName + " agrega nota pública vía email al cliente nota#Id:" + nota.getIdNota(), ""));
@@ -823,12 +827,11 @@ public class ManagerCasos implements Serializable {
     private Attachment agregarAdjunto(EmailAttachment attachment, Caso caso) {
         try {
             String nombre = attachment.getName();
-            if((nombre != null) && (!nombre.trim().isEmpty())){
+            if ((nombre != null) && (!nombre.trim().isEmpty())) {
                 nombre = nombre.substring(nombre.lastIndexOf(File.separator) + 1);
                 nombre = nombre.substring(nombre.lastIndexOf('\\') + 1);
-            }
-            else{
-                nombre = "att"+System.currentTimeMillis();
+            } else {
+                nombre = "att" + System.currentTimeMillis();
                 attachment.setName(nombre);
             }
             Attachment a = crearAdjunto(attachment.getData(), attachment.getContentId(), caso, nombre, attachment.getMimeType(), attachment.getSize());
@@ -839,8 +842,6 @@ public class ManagerCasos implements Serializable {
         }
         return null;
     }
-
-    
 
     /**
      * Crear un registro en la tabla de log
@@ -898,7 +899,7 @@ public class ManagerCasos implements Serializable {
     public static AuditLog createLogComment(Caso caso, String comment) {
         return createLogReg(caso, "", comment, "");
     }
-    
+
     public synchronized List<AuditLog> verificaCambios(Caso caso) {
         List<AuditLog> changeList = new LinkedList<>();
         Caso casoOld = getJpaController().find(Caso.class, caso.getIdCaso());
@@ -974,8 +975,7 @@ public class ManagerCasos implements Serializable {
 //        }
 //    }
     private String getReadableFileSize(Long fileSize) {
-        if(fileSize == null)
-        {
+        if (fileSize == null) {
             return "0";
         }
         if (fileSize <= 0) {
@@ -992,8 +992,7 @@ public class ManagerCasos implements Serializable {
 
         String fileName = nombre.trim().replace(" ", "_");
         Archivo archivo = null;
-        if(bytearray != null)
-        {
+        if (bytearray != null) {
             archivo = new Archivo();
             archivo.setArchivo(bytearray);
             archivo.setContentType(mimeType);
@@ -1019,8 +1018,7 @@ public class ManagerCasos implements Serializable {
         getJpaController().persistAttachment(attach);
         col.add(attach);
         caso.setAttachmentList(col);
-        if(archivo != null)
-        {
+        if (archivo != null) {
             archivo.setIdAttachment(attach.getIdAttachment());
             getJpaController().persistArchivo(archivo);
             getJpaController().persistAuditLog(createLogReg(caso, "Archivo subido", "archivo atachado: " + fileName, ""));
@@ -1054,7 +1052,7 @@ public class ManagerCasos implements Serializable {
             mergeCaso(caso, createLogReg(caso, "Adjunto", "se agregan adjuntos al caso", ""));
         }
     }
-    
+
     public static Date getFechaVisitaPreventiva(Caso caso) {
         Date fechaEntrega = caso.getIdSubComponente().getFechaEntrega();
         Calendar cal = Calendar.getInstance();
