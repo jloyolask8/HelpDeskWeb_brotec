@@ -18,7 +18,7 @@
         <ui:define name="body">
 
             <h:form id="form">
-                <p:panel header="#{bundle.ViewAreaTitle}"> 
+              
                     <h:panelGrid columns="2" cellpadding="5">
                         <p:outputLabel value="#{bundle.ViewAreaLabel_idArea}" style="font-weight:bold"/>
                         <h:outputText value="#{areaController.selected.idArea}" title="#{bundle.ViewAreaTitle_idArea}"/>
@@ -61,24 +61,21 @@
                       
                     </h:panelGrid>
 
+                  <p:toolbar>  
+                   <p:toolbarGroup align="left">   
+                       <p:commandButton ajax="false" action="#{areaController.prepareList}" value="#{bundle.goBack}" immediate="true" icon="fa fa-chevron-left"/>
 
-                    <f:facet name="footer">    
-                        <p:toolbar>  
-                            <p:toolbarGroup align="left">   
-                                <p:commandButton ajax="false" action="#{areaController.prepareCreate}" value="#{bundle.createNew}" icon="ui-icon ui-icon-plus" />
-                                <p:separator/>
+                        <p:separator/>
                                 <p:commandButton ajax="false" action="Edit" value="#{bundle.edit}" icon="ui-icon ui-icon-pencil"/>
-                                <p:commandButton ajax="false" action="#{areaController.prepareList}" value="#{bundle.showAll}" icon="ui-icon-folder-open"/>
+                                 <p:separator/>
+                                <p:commandButton id="showDialogButton" value="#{bundle.destroy}" onclick="PF('confirmation').show()" icon="ui-icon ui-icon-trash" />
+                   </p:toolbarGroup>
+                    
+                     <p:toolbarGroup align="right">   
+                          <p:commandButton ajax="false" action="#{areaController.prepareCreate}" value="#{bundle.createNew}" icon="ui-icon ui-icon-plus"  style="top: 4px"/>
 
-                                <p:separator/>
-                                <p:commandButton id="showDialogButton" value="#{bundle.destroy}" onclick="PF('confirmation').show()" icon="ui-icon ui-icon-trash" /> 
-                            </p:toolbarGroup>  
-                        </p:toolbar>
-
-
-                    </f:facet>
-
-                </p:panel>
+                   </p:toolbarGroup>
+                </p:toolbar>
 
 
                 <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 

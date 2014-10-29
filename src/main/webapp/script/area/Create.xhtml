@@ -18,10 +18,9 @@
         <ui:define name="body">
 
             <h:form>
-                <p:panel header="#{bundle.CreateAreaTitle}">
 
                     <h:panelGrid columns="3" cellpadding="5">
-                        <h:outputLabel value="#{bundle.CreateAreaLabel_idArea}" for="idArea" style="font-weight:bold"/>
+                        <h:outputLabel value="Id #{bundle.CreateAreaLabel_idArea}" for="idArea" style="font-weight:bold"/>
                         <p:inputText id="idArea" value="#{areaController.selected.idArea}" title="#{bundle.CreateAreaTitle_idArea}" 
                                      required="true" requiredMessage="#{bundle.CreateAreaRequiredMessage_idArea}" size="40"/>
                         <p:message for="idArea"/>
@@ -41,24 +40,22 @@
                         <p:selectOneMenu id="idCanalSalida" style="width: 220px;"
                                          filter="true" filterMatchMode="contains"
                                          value="#{areaController.selected.idCanal}" >
-                            <f:selectItem itemLabel="" itemValue=""/>
                             <f:selectItems value="#{canalController.emailsAvailableSelectOne}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
 
                         </p:selectOneMenu>
                     </h:panelGrid>
 
-                    <f:facet name="footer">
                         <p:toolbar>  
+                             <p:toolbarGroup align="right">
+                                 <p:commandButton action="#{areaController.create}" value="#{bundle.CreateAreaSaveLink}" ajax="false" icon="fa fa-save" style="top:4px"/>        
+                             </p:toolbarGroup>
+                            
                              <p:toolbarGroup align="left">
-                                <p:commandButton action="#{areaController.create}" value="#{bundle.CreateAreaSaveLink}" ajax="false" icon="ui-icon-disk"/>        
-                                <p:separator/>                              
-                                <p:commandButton action="#{areaController.prepareList}" value="Volver" immediate="true" ajax="false" icon="ui-icon-folder-open"/>
+                                <p:commandButton action="#{areaController.prepareList}" value="Volver" immediate="true" ajax="false" icon="fa fa-chevron-left"/>
                              </p:toolbarGroup>
                         </p:toolbar>
 
-                    </f:facet> 
 
-                </p:panel>
             </h:form>
         </ui:define>
     </ui:composition>

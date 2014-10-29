@@ -78,121 +78,117 @@
 
                 <h:panelGroup id="tituloCaso">
 
-                        <p:panelGrid styleClass="filtersGrid" id="panelGridDatos">
-                            <p:row>
+                    <p:panelGrid styleClass="filtersGrid" id="panelGridDatos">
+                        <p:row>
 
-                                <p:column>
-                                    <h:commandLink id="prio" disabled="#{casoController.selected.closed}" >
-                                        <p:graphicImage library="images" name="#{casoController.selected.esPrioritario ? 'star-enabled.png':'star-disabled.png'}" title="Importante!"/>
-                                        <p:ajax id="aj2" listener="#{casoController.changePriority(casoController.selected, casoController.selected.esPrioritario)}" update="prio :formTopMenu"/>
+                            <p:column>
+                                <h:commandLink id="prio" disabled="#{casoController.selected.closed}" >
+                                    <p:graphicImage library="images" name="#{casoController.selected.esPrioritario ? 'star-enabled.png':'star-disabled.png'}" title="Importante!"/>
+                                    <p:ajax id="aj2" listener="#{casoController.changePriority(casoController.selected, casoController.selected.esPrioritario)}" update="prio :formTopMenu"/>
 
-                                    </h:commandLink>
-                                </p:column>
+                                </h:commandLink>
+                            </p:column>
 
-                                <p:column>
-                                    <p:inplace editor="true" disabled="#{casoController.selected.closed}">
-                                        <f:facet name="output">
-                                            <p:outputLabel style="font-size: 18px !important;"
-                                                           value="#{casoController.selected.tema}"/>
-                                        </f:facet>
-                                        <f:facet name="input">
-                                            <p:inputText id="ticketTema" value="#{casoController.selected.tema}"/> 
-                                            <p:watermark for="ticketTema" value="Asunto del caso"/>
-                                        </f:facet>
-                                    </p:inplace>
-                                </p:column>
-
-
-
-                                <p:column>
-                                    <h:outputText styleClass="ticket-status" value="#{casoController.selected.idEstado.nombre}"
-                                                  style="#{casoController.selected.isOpen() eq true ? 'background: #4abf5a; color: #FFFFFF;':'background: #444444; color: #FFFFFF;'}"/>
-                                </p:column>
-                                <!-- Ticket Alert status -->
-                                <p:column>
-                                    <h:outputText id="idSubEstado" styleClass="ticket-status" 
-                                                  style="background: \##{casoController.selected.idSubEstado.backgroundColor}; color: \##{casoController.selected.idSubEstado.fontColor};" 
-                                                  value="#{casoController.selected.idSubEstado.nombre}"/>
-                                </p:column>
-
-                                <p:column>
-                                    <h:panelGroup rendered="#{casoController.selected.hasScheduledEvents}">
-                                        <i class="fa fa-calendar"></i>
-                                    </h:panelGroup>
-                                    <h:panelGroup rendered="#{casoController.selected.hasAttachments}">
-                                        <i class="fa fa-paperclip"></i>    
-                                    </h:panelGroup>
-                                </p:column>
-                            </p:row>
-                        </p:panelGrid>
-                    </h:panelGroup>
-
-                    <h:panelGrid columns="14">     
-
-                        <p:commandButton ajax="false" title="#{casoController.selected.idCasoPadre ne null ? 'Subir al caso '.concat(casoController.selected.idCasoPadre):'Ir al listado de casos'}" icon="fa fa-chevron-left" action="#{casoController.goOneLevelUp()}" style="width: 60px;"/>
-
-                        <p:commandButton ajax="false" title="Actualizar" icon="fa fa-refresh" actionListener="#{casoController.refreshCurrentCaso()}" style="width: 60px;"/>
-                        <p:commandButton rendered="#{casoController.verificarTomarCaso()}" ajax="true" value="Asignármelo" onclick="PF('tomarCaso').show()" />
+                            <p:column>
+                                <p:inplace editor="true" disabled="#{casoController.selected.closed}">
+                                    <f:facet name="output">
+                                        <p:outputLabel style="font-size: 18px !important;"
+                                                       value="#{casoController.selected.tema}"/>
+                                    </f:facet>
+                                    <f:facet name="input">
+                                        <p:inputText id="ticketTema" value="#{casoController.selected.tema}"/> 
+                                        <p:watermark for="ticketTema" value="Asunto del caso"/>
+                                    </f:facet>
+                                </p:inplace>
+                            </p:column>
 
 
 
+                            <p:column>
+                                <h:outputText styleClass="ticket-status" value="#{casoController.selected.idEstado.nombre}"
+                                              style="#{casoController.selected.isOpen() eq true ? 'background: #4abf5a; color: #FFFFFF;':'background: #444444; color: #FFFFFF;'}"/>
+                            </p:column>
+                            <!-- Ticket Alert status -->
+                            <p:column>
+                                <h:outputText id="idSubEstado" styleClass="ticket-status" 
+                                              style="background: \##{casoController.selected.idSubEstado.backgroundColor}; color: \##{casoController.selected.idSubEstado.fontColor};" 
+                                              value="#{casoController.selected.idSubEstado.nombre}"/>
+                            </p:column>
 
-                        <p:commandButton rendered="#{casoController.verificarCerrarCaso()}" icon="fa fa-lock"
-                                         ajax="true" value="Cerrar" onclick="PF('closeCase').show();"/>
+                            <p:column>
+                                <h:panelGroup rendered="#{casoController.selected.hasScheduledEvents}">
+                                    <i class="fa fa-calendar"></i>
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{casoController.selected.hasAttachments}">
+                                    <i class="fa fa-paperclip"></i>    
+                                </h:panelGroup>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </h:panelGroup>
 
-                        <p:commandButton rendered="#{casoController.verificarReabrirCaso()}" ajax="true" value="Reabrir Caso"  icon="fa fa-unlock"
-                                         onclick="PF('openCase').show();" />
+                <h:panelGrid columns="14">     
 
-                        <p:commandButton rendered="#{casoController.verificarTransferirCaso()}" icon="fa fa-plane"
-                                         ajax="true" value="Transferir" onclick="PF('transferir').show();"/>
+                    <p:commandButton ajax="false" title="#{casoController.selected.idCasoPadre ne null ? 'Subir al caso '.concat(casoController.selected.idCasoPadre):'Ir al listado de casos'}" icon="fa fa-chevron-left" action="#{casoController.goOneLevelUp()}" style="width: 50px;"/>
 
-                        <p:commandButton rendered="#{casoController.verificarAsignarCaso()}" icon="fa fa-plane"
-                                         ajax="true" value="Asignar" onclick="PF('transferir').show();"/>
+                    <p:commandButton ajax="false" title="Actualizar" icon="fa fa-refresh" actionListener="#{casoController.refreshCurrentCaso()}" style="width: 50px;"/>
 
+                    <p:commandButton rendered="#{casoController.verificarCerrarCaso()}" icon="fa fa-lock"
+                                     ajax="true" title="Cerrar" iconPos="notext" onclick="PF('closeCase').show();"/>
 
-                        <p:commandButton ajax="false" icon="fa fa-download" value="Generar Acta de PreEntrega" 
-                                         rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.ENTREGA.getTipoCaso()}">
-                            <p:fileDownload value="#{casoController.generarActaPreEntrega()}" />
-                        </p:commandButton>
-
-                        <p:commandButton id="panelBotonesResp" value="Otras acciones" type="button" />
-                        <p:menu overlay="true" trigger="panelBotonesResp" my="left top" at="left bottom" style="width:250px !important;">
-
-                            <p:menuitem rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.PREVENTIVO.getTipoCaso()}"
-                                        value="Generar Documento Visita Preventiva" 
-                                        title="Generar Documento Visita Preventiva"                                                 
-                                        actionListener="#{casoController.generarPDFVisitaPreventivaPostventa()}"
-                                        icon="fa fa-file"  />
-
-                            <p:menuitem ajax="false" value="Copiar" action="#{casoController.prepareCopy()}" icon="fa fa-copy"/>
-
-                            <p:menuitem ajax="false" value="Copiar y Asignármelo" action="#{casoController.prepareCopyAndAssignMe()}" icon="fa fa-clipboard"/>
-
-
-                            <p:menuitem rendered="#{casoController.verificarCrearColaborativo()}" icon="fa fa-code-fork"
-                                        ajax="false" value="Crear Caso Colaborativo" action="#{casoController.crearCasoColab(casoController.selected)}"/>
-
-                            <p:menuitem rendered="#{casoController.verificarRelacionarCaso()}" icon="fa fa-chain"
-                                        ajax="true" value="Relacionar Otro Caso" onclick="PF('casosRela').show();"/>
-
-                            <p:menuitem rendered="#{casoController.verificarEliminarCaso()}" icon="fa fa-trash-o"
-                                        ajax="true" value="Eliminar" onclick="PF('destroyCase').show();"/>
-                        </p:menu>
-
-                        <p:commandButton icon="ui-icon ui-icon-seek-prev" ajax="false"
-                                         action="#{casoController.prepareEditPreviusItem()}" 
-                                         title="Ir al caso anterior"
-                                         disabled="#{casoController.selectedItemIndex eq casoController.pagination.pageFirstItem}"
-                                         rendered="#{casoController.pagination.itemsCount > 0}"/>
+                    <p:commandButton rendered="#{casoController.verificarReabrirCaso()}" ajax="true" title="Reabrir Caso"  icon="fa fa-unlock" iconPos="notext"
+                                     onclick="PF('openCase').show();" />
 
 
+                    <p:commandButton ajax="false" icon="fa fa-download" value="Acta Pre-entrega" 
+                                     rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.ENTREGA.getTipoCaso()}">
+                        <p:fileDownload value="#{casoController.generarActaPreEntrega()}" />
+                    </p:commandButton>
 
-                        <p:commandButton icon="ui-icon ui-icon-seek-next" ajax="false"
-                                         action="#{casoController.prepareEditNextItem()}" 
-                                         title="Ir al caso siguiente"
-                                         disabled="#{casoController.selectedItemIndex eq casoController.pagination.pageLastItem}"
-                                         rendered="#{casoController.pagination.itemsCount > 0}"/>
-                    </h:panelGrid>
+                    <p:commandButton id="panelBotonesResp" title="Acciones" type="button" icon="fa fa-cogs fa-user" iconPos="notext" style="width: 50px;"/>
+                    <p:menu overlay="true" trigger="panelBotonesResp" my="left top" at="left bottom" style="width:250px !important;">
+
+                        <p:menuitem  rendered="#{casoController.verificarTomarCaso()}" ajax="true" value="Asignármelo" onclick="PF('tomarCaso').show()" icon="fa fa-inbox" />
+                        <p:menuitem  rendered="#{casoController.verificarTransferirCaso()}" icon="fa fa-user"
+                                     ajax="true" value="Transferir" onclick="PF('transferir').show();" />
+                        <p:menuitem  rendered="#{casoController.verificarAsignarCaso()}" icon="fa fa-user"
+                                     ajax="true" value="Asignar" onclick="PF('transferir').show();" />
+                        <p:separator/>
+                        <p:menuitem rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.PREVENTIVO.getTipoCaso()}"
+                                    value="Generar Documento Visita Preventiva" 
+                                    title="Generar Documento Visita Preventiva"                                                 
+                                    actionListener="#{casoController.generarPDFVisitaPreventivaPostventa()}"
+                                    icon="fa fa-file"  />
+
+                        <p:menuitem ajax="false" value="Copiar" action="#{casoController.prepareCopy()}" icon="fa fa-copy"/>
+
+                        <p:menuitem ajax="false" value="Copiar y Asignármelo" action="#{casoController.prepareCopyAndAssignMe()}" icon="fa fa-clipboard"/>
+
+
+                        <p:menuitem rendered="#{casoController.verificarCrearColaborativo()}" icon="fa fa-code-fork"
+                                    ajax="false" value="Crear Caso Colaborativo" action="#{casoController.crearCasoColab(casoController.selected)}"/>
+
+                        <p:menuitem rendered="#{casoController.verificarRelacionarCaso()}" icon="fa fa-chain"
+                                    ajax="true" value="Relacionar Otro Caso" onclick="PF('casosRela').show();"/>
+
+                        <p:menuitem rendered="#{casoController.verificarEliminarCaso()}" icon="fa fa-trash-o"
+                                    ajax="true" value="Eliminar" onclick="PF('destroyCase').show();"/>
+                    </p:menu>
+
+                    <p:commandButton icon="ui-icon ui-icon-seek-prev" ajax="false"
+                                     action="#{casoController.prepareEditPreviusItem()}" 
+                                     title="Ir al caso anterior"
+                                     disabled="#{casoController.selectedItemIndex eq casoController.pagination.pageFirstItem}"
+                                     rendered="#{casoController.pagination.itemsCount > 0}"/>
+
+
+
+                    <p:commandButton icon="ui-icon ui-icon-seek-next" ajax="false"
+                                     action="#{casoController.prepareEditNextItem()}" 
+                                     title="Ir al caso siguiente"
+                                     disabled="#{casoController.selectedItemIndex eq casoController.pagination.pageLastItem}"
+                                     rendered="#{casoController.pagination.itemsCount > 0}"/>
+                </h:panelGrid>
 
             </h:form>
 
@@ -270,7 +266,7 @@
                                      showNavigation="true" 
                                      editable="false" eventStyle="dot"
                                      showButtonNew="false" minHeight="200" widgetVar="timelineWdgt">  
-                            
+
                             <h:panelGrid columns="1">  
                                 <i class="fa fa-calendar"></i>
                                 <h:outputText value="#{event.title}"/>  

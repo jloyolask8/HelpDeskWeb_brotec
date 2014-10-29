@@ -190,7 +190,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
     }
     
     public SelectItem[] getEmailsAvailableSelectOne() {
-        EasyCriteriaQuery<Canal> ecq = new EasyCriteriaQuery<Canal>(emf, Canal.class);
+        EasyCriteriaQuery<Canal> ecq = new EasyCriteriaQuery<>(emf, Canal.class);
         ecq.addEqualPredicate("idTipoCanal", EnumTipoCanal.EMAIL.getTipoCanal());
         return JsfUtil.getSelectItems(ecq.getAllResultList(), true);
     }

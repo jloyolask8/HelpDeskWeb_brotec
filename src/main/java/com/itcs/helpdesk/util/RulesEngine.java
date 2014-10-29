@@ -48,6 +48,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.resource.NotSupportedException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.mail.EmailException;
 
@@ -113,12 +114,15 @@ public class RulesEngine implements CasoChangeListener {
         List<ReglaTrigger> listaSup = getJpaController().getReglaTriggerFindByEvento("%UPDATE%");
         List<ReglaTrigger> lista;
         do {
-            lista = new LinkedList<ReglaTrigger>(listaSup);
+            lista = new LinkedList<>(listaSup);
             for (ReglaTrigger reglaTrigger : lista) {
                 if (reglaTrigger.getReglaActiva()) {
                     boolean aplica = evalConditions(reglaTrigger, caso, changeList);
                     if (aplica) {
-                        Log.createLogger(this.getClass().getName()).logInfo("regla " + reglaTrigger.getIdTrigger() + " APLICA_AL_CASO " + caso.toString());
+                        if (ApplicationConfig.isAppDebugEnabled()) {
+                            Log.createLogger(this.getClass().getName()).logInfo("regla " + reglaTrigger.getIdTrigger() + " APLICA_AL_CASO " + caso.toString());
+                        }
+
                         listaSup.remove(reglaTrigger);
                         for (Accion accion : reglaTrigger.getAccionList()) {
                             executeAction(accion, caso);
@@ -134,7 +138,9 @@ public class RulesEngine implements CasoChangeListener {
     }
 
     private boolean evalConditions(ReglaTrigger reglaTrigger, Caso caso, List<AuditLog> changeList) {
-        Log.createLogger(this.getClass().getName()).logInfo("*** Verificando regla -> " + reglaTrigger);
+        if (ApplicationConfig.isAppDebugEnabled()) {
+            Log.createLogger(this.getClass().getName()).logInfo("Verificando regla -> " + reglaTrigger.getIdTrigger());
+        }
         boolean any = false;
         if (reglaTrigger.getAnyOrAll() != null) {
             any = reglaTrigger.getAnyOrAll().equals("ANY");
@@ -155,7 +161,7 @@ public class RulesEngine implements CasoChangeListener {
                     break;
                 }
             } catch (Exception e) {
-                Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "error on casoCreated Listener", e);
+                Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "error on evalConditions for regla " + reglaTrigger.getIdTrigger(), e);
                 break;
             }
         }
@@ -168,7 +174,9 @@ public class RulesEngine implements CasoChangeListener {
 //            if (reglaTrigger.getReglaActiva()) {
             boolean aplica = evalConditions(reglaTrigger, caso);
             if (aplica) {
-                Log.createLogger(this.getClass().getName()).logInfo("regla " + reglaTrigger.getIdTrigger() + " APLICA_AL_CASO " + caso.toString());
+                if (ApplicationConfig.isAppDebugEnabled()) {
+                    Log.createLogger(this.getClass().getName()).logInfo("regla " + reglaTrigger.getIdTrigger() + " APLICA_AL_CASO " + caso.toString());
+                }
                 for (Accion accion : reglaTrigger.getAccionList()) {
                     executeAction(accion, caso);
                 }
@@ -485,6 +493,43 @@ public class RulesEngine implements CasoChangeListener {
                 return false;
             }
 
+        } else if (fieldType.equals(EnumFieldType.NUMBER.getFieldType())) {
+
+            if (NumberUtils.isDigits(valorAttributo)) {
+                final Long valorAtt = NumberUtils.createLong(valorAttributo);
+                //El valor es de tipo String, usarlo tal como estta
+                if (operador.equals(EnumTipoComparacion.EQ.getTipoComparacion())) {
+
+                    if (value != null) {
+                        return valorAtt.equals(value);
+                    }
+
+                } else if (operador.equals(EnumTipoComparacion.NE.getTipoComparacion())) {
+                    if (value != null) {
+                        return !valorAtt.equals(value);
+                    }
+                } else if (operador.equals(EnumTipoComparacion.LT.getTipoComparacion())) {
+                    if (value != null) {
+                        return valorAtt < (Long) value;
+                    }
+                } else if (operador.equals(EnumTipoComparacion.GT.getTipoComparacion())) {
+                    if (value != null) {
+                        return valorAtt > (Long) value;
+                    }
+                } else if (operador.equals(EnumTipoComparacion.GE.getTipoComparacion())) {
+                    if (value != null) {
+                        return valorAtt >= (Long) value;
+                    }
+                } else if (operador.equals(EnumTipoComparacion.LE.getTipoComparacion())) {
+                    if (value != null) {
+                        return valorAtt <= (Long) value;
+                    }
+                } else {
+                    throw new IllegalStateException("Comparator " + operador.getIdComparador() + " is not supported!!");
+                }
+
+            }
+
         } else {
             throw new NotSupportedException("Regla " + reglaTrigger.getIdTrigger() + ", fieldType " + fieldType.getFieldTypeId() + " is not supported yet!!");
         }
@@ -585,7 +630,7 @@ public class RulesEngine implements CasoChangeListener {
             Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "asignarCasoArea", ex);
         }
     }
-    
+
     private void definirTipoCaso(Accion accion, Caso caso) {
         try {
             TipoCaso area = getJpaController().find(TipoCaso.class, accion.getParametros());
