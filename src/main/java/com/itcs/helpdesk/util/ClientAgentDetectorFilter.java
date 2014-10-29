@@ -46,7 +46,7 @@ public class ClientAgentDetectorFilter implements Filter {
         }
 
         if (detector.detectTierTablet()) {
-            return true;
+            return false;
         }
 
         return false;

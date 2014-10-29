@@ -26,8 +26,8 @@
         <p:panel id="message-details-reply" 
                  rendered="#{(casoController.replyMode) and ((casoController.verificarCrearActividad()) 
                              and (casoController.verificarResponderCaso()))}">  
-            
-         
+
+
 
             <h:panelGrid width="100%">
 
@@ -169,9 +169,9 @@
                             </h:panelGrid>
                         </p:column>
                     </p:row>
-                  
-                    
-                    
+
+
+
 
                 </p:panelGrid>
 
@@ -183,72 +183,72 @@
 
                 </h:panelGrid>
 
-              
+
 
             </h:panelGrid>  
-            
-               <f:facet name="footer">
-                   
-                   <p:panelGrid styleClass="filtersGrid" style="width: 100%">
-                       <p:row>
 
-                        <p:column >
-                            <p:commandButton action="#{casoController.disableReplyMode()}"  value="Cancelar"
-                                             immediate="true" update=":inputPanel:formCreateNota"/>
-                        </p:column>
+            <f:facet name="footer">
+                <div align="right" style="width: 100%;">
+                    <p:panelGrid styleClass="filtersGrid" >
+                        <p:row>
 
-                        <p:column colspan="2">
+                            <p:column >
+                                <p:commandButton action="#{casoController.disableReplyMode()}"  value="Cancelar"
+                                                 immediate="true" update=":inputPanel:formCreateNota"/>
+                            </p:column>
 
-
-                            <h:panelGroup style="float: right">
-                                <p:splitButton id="sendCommentButton" value="Enviar" actionListener="#{casoController.responder()}" 
-                                               update=":mainform:messages :formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso :inputPanel:resumenNotas"
-                                               icon="fa fa-envelope"
-                                               rendered="#{casoController.replyByEmail}">
-
-                                    <p:menuitem value="Descartar borrador" actionListener="#{casoController.descartarBorrador()}"
-                                                update=":mainform:messages :inputPanel:formCreateNota"
-                                                icon="fa fa-trash-o"
-                                                rendered="#{not empty casoController.selected.respuesta}"/>
-
-                                    <p:menuitem value="Guardar borrador" actionListener="#{casoController.guardarBorrador()}"
-                                                update=":mainform:messages :inputPanel:formCreateNota"
-                                                icon="fa fa-save"/>
+                            <p:column colspan="2">
 
 
-                                </p:splitButton> 
-                            </h:panelGroup>
+                                <h:panelGroup style="float: right">
+                                    <p:splitButton id="sendCommentButton" value="Enviar" actionListener="#{casoController.responder()}" 
+                                                   update=":mainform:messages :formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso :inputPanel:resumenNotas"
+                                                   icon="fa fa-envelope"
+                                                   rendered="#{casoController.replyByEmail}">
 
-                            <h:panelGroup style="float: right">
-                                <p:splitButton id="saveCommentButton" value="Guardar" actionListener="#{casoController.crearNota(false)}"
-                                               update=":mainform:messages :formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso :formTopMenu :inputPanel:resumenNotas" 
-                                               icon="fa fa-save" rendered="#{not casoController.replyByEmail}">  
-                                    <p:menuitem value="Guardar y notificar al cliente" actionListener="#{casoController.crearNota(true)}" 
-                                                update=":mainform:messages :formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso :formTopMenu :inputPanel:resumenNotas"  
-                                                icon="fa fa-save" />  
+                                        <p:menuitem value="Descartar borrador" actionListener="#{casoController.descartarBorrador()}"
+                                                    update=":mainform:messages :inputPanel:formCreateNota"
+                                                    icon="fa fa-trash-o"
+                                                    rendered="#{not empty casoController.selected.respuesta}"/>
 
-                                    <p:separator />  
-
-                                    <p:menuitem value="Descartar borrador" actionListener="#{casoController.descartarBorrador()}"
-                                                update=":mainform:messages :inputPanel:formCreateNota"
-                                                icon="fa fa-trash-o"
-                                                rendered="#{not empty casoController.selected.respuesta}"/>
-
-                                    <p:menuitem value="Guardar borrador" actionListener="#{casoController.guardarBorrador()}"
-                                                update=":mainform:messages :inputPanel:formCreateNota"
-                                                icon="fa fa-save"
-                                                rendered="#{empty casoController.selected.respuesta}"/>
+                                        <p:menuitem value="Guardar borrador" actionListener="#{casoController.guardarBorrador()}"
+                                                    update=":mainform:messages :inputPanel:formCreateNota"
+                                                    icon="fa fa-save"/>
 
 
-                                </p:splitButton> 
-                            </h:panelGroup>
+                                    </p:splitButton> 
+                                </h:panelGroup>
+
+                                <h:panelGroup style="float: right">
+                                    <p:splitButton id="saveCommentButton" value="Guardar" actionListener="#{casoController.crearNota(false)}"
+                                                   update=":mainform:messages :formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso :formTopMenu :inputPanel:resumenNotas" 
+                                                   icon="fa fa-save" rendered="#{not casoController.replyByEmail}">  
+                                        <p:menuitem value="Guardar y notificar al cliente" actionListener="#{casoController.crearNota(true)}" 
+                                                    update=":mainform:messages :formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso :formTopMenu :inputPanel:resumenNotas"  
+                                                    icon="fa fa-save" />  
+
+                                        <p:separator />  
+
+                                        <p:menuitem value="Descartar borrador" actionListener="#{casoController.descartarBorrador()}"
+                                                    update=":mainform:messages :inputPanel:formCreateNota"
+                                                    icon="fa fa-trash-o"
+                                                    rendered="#{not empty casoController.selected.respuesta}"/>
+
+                                        <p:menuitem value="Guardar borrador" actionListener="#{casoController.guardarBorrador()}"
+                                                    update=":mainform:messages :inputPanel:formCreateNota"
+                                                    icon="fa fa-save"
+                                                    rendered="#{empty casoController.selected.respuesta}"/>
+
+
+                                    </p:splitButton> 
+                                </h:panelGroup>
 
 
 
-                        </p:column>
-                    </p:row>
-                   </p:panelGrid>
-                
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </div>
             </f:facet>
 
         </p:panel>

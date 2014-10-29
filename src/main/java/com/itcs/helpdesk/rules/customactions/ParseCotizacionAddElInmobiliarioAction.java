@@ -47,4 +47,9 @@ public class ParseCotizacionAddElInmobiliarioAction extends ParseCotizacionActio
     protected String getCanalName() {
         return canalName;
     }
+    
+    @Override
+    protected boolean complyWithMinimalDataRequirements(DatosCaso datos) {
+        return true;
+}
 }
