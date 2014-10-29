@@ -180,6 +180,10 @@ public class RulesEngine implements CasoChangeListener {
                 for (Accion accion : reglaTrigger.getAccionList()) {
                     executeAction(accion, caso);
                 }
+            } else {
+                if (ApplicationConfig.isAppDebugEnabled()) {
+                    Log.createLogger(this.getClass().getName()).logInfo("regla " + reglaTrigger.getIdTrigger() + " NO_APLICA_AL_CASO " + caso.toString());
+                }
             }
 //            }
         }
@@ -510,24 +514,26 @@ public class RulesEngine implements CasoChangeListener {
                     }
                 } else if (operador.equals(EnumTipoComparacion.LT.getTipoComparacion())) {
                     if (value != null) {
-                        return valorAtt < (Long) value;
+                        return   (Long) value < valorAtt;
                     }
                 } else if (operador.equals(EnumTipoComparacion.GT.getTipoComparacion())) {
                     if (value != null) {
-                        return valorAtt > (Long) value;
+                        return   (Long) value > valorAtt;
                     }
                 } else if (operador.equals(EnumTipoComparacion.GE.getTipoComparacion())) {
                     if (value != null) {
-                        return valorAtt >= (Long) value;
+                        return  (Long) value >=  valorAtt;
                     }
                 } else if (operador.equals(EnumTipoComparacion.LE.getTipoComparacion())) {
                     if (value != null) {
-                        return valorAtt <= (Long) value;
+                        return  (Long) value <= valorAtt;
                     }
                 } else {
                     throw new IllegalStateException("Comparator " + operador.getIdComparador() + " is not supported!!");
                 }
 
+            } else {
+                throw new IllegalStateException("Valor " + valorAttributo + " is not legal for Number operations!!");
             }
 
         } else {

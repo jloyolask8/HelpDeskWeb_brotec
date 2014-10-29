@@ -449,7 +449,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         if (casosToSend != null && !casosToSend.isEmpty()) {
             rulesEngine.applyRuleOnThisCasos(reglaTriggerSelected, casosToSend);
-            addInfoMessage("Regla " + reglaTriggerSelected + " ejecutada en " + casosToSend.size() + " casos.");
+            addInfoMessage("Regla ejecutada en " + casosToSend.size() + " casos.");
             recreateModel();
             //TODO update table data
         } else {

@@ -49,9 +49,9 @@
                     }
                 }
 
-                $(document).ready(function () {
+                $(document).ready(function() {
                     $(document).off('keyup').on('keyup',
-                            function (e) {
+                            function(e) {
                                 //chrome and IE dont get the key, only keyCode
                                 if (e.shiftKey && e.ctrlKey && (e.keyCode === 70))
                                 {
@@ -124,6 +124,7 @@
         <ui:define name="body" id="body">
 
             <pe:importEnum type="com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta" var="EnumTipoAlerta" allSuffix="ALL_ENUM_VALUES" />
+            <pe:importEnum type="com.itcs.helpdesk.persistence.entityenums.EnumPrioridad" var="EnumPrioridad" allSuffix="ALL_ENUM_VALUES" />
 
             <h:form id="formfilter">
                 <go:filterView id="panelFilter0" titleIconClass="fa fa-inbox page-header-icon"
@@ -248,6 +249,7 @@
                             <i title="Creado vía #{item.idCanal.nombre}" class="#{(item.idCanal.idTipoCanal.idTipo eq 'EMAIL') ? 'fa fa-envelope-o fa-lg':((item.idCanal.idTipoCanal.idTipo eq 'CHAT') ? 'fa fa-comments fa-lg':((item.idCanal.idTipoCanal.idTipo eq 'MANUAL') ? 'fa fa-pencil-square-o fa-lg':((item.idCanal.idTipoCanal.idTipo eq 'FORMULARIO') ? 'fa fa-list-alt fa-lg':'')))}"></i>
                         </p:column>
 
+
                         <p:column sortBy="#{item.clientName}" headerText="Solicitante">                                
                             <p:commandLink  
                                 action="#{clienteController.prepareView(item.idCliente ne null ? item.idCliente:item.emailCliente.cliente, 'inbox')}" 
@@ -266,6 +268,7 @@
                                 <p:commandLink id="temalink" action="#{casoController.prepareEdit()}" 
                                                ajax="false" style="color: #000" immediate="true">
                                     #{item.tipoCaso.nombre} \##{item.idCaso} #{item.tema} (#{item.notaList.size()})
+
                                 </p:commandLink>
 
                                 <h:panelGroup rendered="#{item.hasScheduledEvents}">
@@ -277,7 +280,7 @@
                             </h:panelGroup> 
                         </p:column>     
 
-
+                        
 
                         <p:column sortBy="#{item.owner.capitalName}" headerText="Agente">
                             <p:commandLink value="#{item.owner.capitalName}"
@@ -328,6 +331,38 @@
                                     <p:tooltip for="cerrado" value="Cerrado #{casoController.prettyDate(item.fechaCierre)} - #{casoController.formatDate(item.fechaCierre)}"/>
                                 </pe:case>  
                             </pe:switch>
+                        </p:column>
+                        
+                        <p:column sortBy="#{item.idPrioridad.idPrioridad}" headerText="Prio" exportable="false">
+                           <pe:switch id="prioridadCaso" value="#{item.idPrioridad.idPrioridad}" rendered="#{not empty item.idPrioridad}">  
+                                    <pe:case value="#{EnumPrioridad.BAJA.getPrioridad().getIdPrioridad()}">  
+                                        <h:panelGroup id="prioridadCasox">
+                                            <i class="fa fa-fw fa-flag-o"></i>
+                                        </h:panelGroup>
+                                        <p:tooltip for="prioridadCasox" value="#{item.idPrioridad.nombre}"/>
+                                    </pe:case>
+
+                                    <pe:case value="#{EnumPrioridad.MEDIA.getPrioridad().getIdPrioridad()}">  
+                                        <h:panelGroup id="prioridadCasox" style="color: #006dcc;">
+                                            <i class="fa fa-fw fa-flag" style=""></i>
+                                        </h:panelGroup>
+                                        <p:tooltip for="prioridadCasox" value="#{item.idPrioridad.nombre}"/>
+                                    </pe:case> 
+
+                                    <pe:case value="#{EnumPrioridad.ALTA.getPrioridad().getIdPrioridad()}">  
+                                        <h:panelGroup id="prioridadCasox" style="color: #f0ad4e;">
+                                            <i class="fa fa-fw fa-flag" style=""></i>
+                                        </h:panelGroup>
+                                        <p:tooltip for="prioridadCasox" value="#{item.idPrioridad.nombre}"/>
+                                    </pe:case> 
+
+                                    <pe:case value="#{EnumPrioridad.MAXIMA.getPrioridad().getIdPrioridad()}">  
+                                        <h:panelGroup id="prioridadCasox" style="color: red;">
+                                            <i class="fa fa-fw fa-flag" style=""></i>
+                                        </h:panelGroup>
+                                        <p:tooltip for="prioridadCasox" value="#{item.idPrioridad.nombre}"/>
+                                    </pe:case> 
+                                </pe:switch>
                         </p:column>
 
                     </p:dataTable>

@@ -133,13 +133,6 @@
 
                     <p:commandButton ajax="false" title="Actualizar" icon="fa fa-refresh" actionListener="#{casoController.refreshCurrentCaso()}" style="width: 50px;"/>
 
-                    <p:commandButton rendered="#{casoController.verificarCerrarCaso()}" icon="fa fa-lock"
-                                     ajax="true" title="Cerrar" iconPos="notext" onclick="PF('closeCase').show();"/>
-
-                    <p:commandButton rendered="#{casoController.verificarReabrirCaso()}" ajax="true" title="Reabrir Caso"  icon="fa fa-unlock" iconPos="notext"
-                                     onclick="PF('openCase').show();" />
-
-
                     <p:commandButton ajax="false" icon="fa fa-download" value="Acta Pre-entrega" 
                                      rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.ENTREGA.getTipoCaso()}">
                         <p:fileDownload value="#{casoController.generarActaPreEntrega()}" />
@@ -153,13 +146,17 @@
                                      ajax="true" value="Transferir" onclick="PF('transferir').show();" />
                         <p:menuitem  rendered="#{casoController.verificarAsignarCaso()}" icon="fa fa-user"
                                      ajax="true" value="Asignar" onclick="PF('transferir').show();" />
+                        <p:menuitem  rendered="#{casoController.verificarCerrarCaso()}" icon="fa fa-lock"
+                                     ajax="true" value="Cerrar el caso"  onclick="PF('closeCase').show();" />
+                        <p:menuitem  rendered="#{casoController.verificarReabrirCaso()}" ajax="true" value="Reabrir Caso"  icon="fa fa-unlock" 
+                                     onclick="PF('openCase').show();" />
                         <p:separator/>
                         <p:menuitem rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.PREVENTIVO.getTipoCaso()}"
                                     value="Generar Documento Visita Preventiva" 
                                     title="Generar Documento Visita Preventiva"                                                 
                                     actionListener="#{casoController.generarPDFVisitaPreventivaPostventa()}"
                                     icon="fa fa-file"  />
-
+                        <p:separator rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.PREVENTIVO.getTipoCaso()}"/>
                         <p:menuitem ajax="false" value="Copiar" action="#{casoController.prepareCopy()}" icon="fa fa-copy"/>
 
                         <p:menuitem ajax="false" value="Copiar y Asignármelo" action="#{casoController.prepareCopyAndAssignMe()}" icon="fa fa-clipboard"/>
@@ -1345,7 +1342,7 @@
             </p:dialog>
             <script>
                 //<![CDATA[
-                $(document).ready(function () {
+                $(document).ready(function() {
                     resizeScrollPanel();
                 });
 
@@ -1375,7 +1372,7 @@
                 }
 
                 var id;
-                $(window).resize(function () {
+                $(window).resize(function() {
                     id = setTimeout(resizeScrollPanel, 500);
                 });
 

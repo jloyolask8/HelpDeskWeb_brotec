@@ -201,7 +201,7 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
         System.out.println("removeChannel " + user);
         if (getChannels().containsKey(user)) {
             getChannels().remove(user);
-            RequestContext.getCurrentInstance().update("accionesaccordion1:usersLoggedIn");
+//            RequestContext.getCurrentInstance().update("accionesaccordion1:usersLoggedIn");
             System.out.println(user + " removed OK from applicationBean");
         }
     }
