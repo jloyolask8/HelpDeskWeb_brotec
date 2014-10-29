@@ -19,6 +19,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.model.ListDataModel;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.model.SelectableDataModel;
 
 @ManagedBean(name = "clienteController")
@@ -166,6 +167,23 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
         }
         return null;
     }
+
+//    public Cliente persistirCliente(Cliente cliente)
+//    {
+//        //Cliente trae rut, y el rut es valido
+//        //buscamos por rut
+//        Cliente oldClient = null;
+//        if((!StringUtils.isEmpty(cliente.getRut())) && 
+//                UtilesRut.validar(cliente.getRut())){
+//            oldClient = getJpaController().getClienteJpaController().findByRut(cliente.getRut());
+//        }
+//        //Si no encontramos al cliente por rut, buscamos por email
+//        //Si la lista de emails no esta vacia
+//        if ((oldClient == null) &&
+//                !cliente.getEmailClienteList().isEmpty()){
+//            
+//        }
+//    }
 
     @Override
     protected String getViewPage() {

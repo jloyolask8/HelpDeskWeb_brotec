@@ -43,6 +43,7 @@ import org.apache.commons.lang3.StringUtils;
  * @author jonathan
  */
 public abstract class ParseCotizacionAction extends Action {
+
     private Producto proyecto;
 
     public ParseCotizacionAction(JPAServiceFacade jpaController) {
@@ -159,7 +160,10 @@ public abstract class ParseCotizacionAction extends Action {
         if (complyWithMinimalDataRequirements(datos)) {
             datos.setRut(UtilesRut.formatear(datos.getRut()));
             //is a good email lets check if cliente exists
-            EmailCliente persistentEmailCliente = getJpaController().find(EmailCliente.class, datos.getEmail());
+            EmailCliente persistentEmailCliente = null;
+            if (!StringUtils.isEmpty(datos.getEmail())) {
+                persistentEmailCliente = getJpaController().find(EmailCliente.class, datos.getEmail());
+            }
             if (persistentEmailCliente != null) {
                 //exists, so what should i do with the data in the email?? i will just keep it in the description so agent can update if needed.
                 //no reason to update the data in the DB if client also exists. but it could be helpful if we dont have the data.
@@ -199,6 +203,9 @@ public abstract class ParseCotizacionAction extends Action {
                 caso.setEmailCliente(persistentEmailCliente);
 
             } else {
+                if (StringUtils.isEmpty(datos.getEmail())) {
+                    
+                } else {
                 //email not exist, will create email.
                 EmailCliente newEmailCliente = new EmailCliente(datos.getEmail());
 
@@ -224,6 +231,7 @@ public abstract class ParseCotizacionAction extends Action {
                 getJpaController().merge(newEmailCliente);
                 caso.setEmailCliente(newEmailCliente);
             }
+            }
 
         } else {
             //check if only client rut is util to identify the user
@@ -237,7 +245,9 @@ public abstract class ParseCotizacionAction extends Action {
                 } else {
                     //ERROR HORROR
                     //Will use the suposed bad email.
+                    if (!StringUtils.isEmpty(datos.getEmail())) {
                     caso.setEmailCliente(new EmailCliente(datos.getEmail()));//just use the first available
+                }
                 }
             } else {
                 //rut not present, must create the client. but wait not possible to associate this man with the case since there is no email
@@ -276,7 +286,7 @@ public abstract class ParseCotizacionAction extends Action {
                     }
                 }
             }
-            if ( (caso.getIdProducto() == null) && !StringUtils.isEmpty(datos.getModelo()) ) {
+            if ((caso.getIdProducto() == null) && !StringUtils.isEmpty(datos.getModelo())) {
                 handleProductByModel(datos, caso);
             }
 
@@ -326,12 +336,10 @@ public abstract class ParseCotizacionAction extends Action {
     protected void extractEmail(String txt, DatosCaso datos) throws ActionExecutionException {
         
         String email = findPattern(txt, "(Email:\\s*?)([a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)", 2);
-        if(StringUtils.isEmpty(email))
-        {
+        if (StringUtils.isEmpty(email)) {
             email = findPattern(txt, "(E-mail:\\s*?)([a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)", 2);
         }
-        if(!StringUtils.isEmpty(email))
-        {
+        if (!StringUtils.isEmpty(email)) {
             datos.setEmail(email);
         }
     }
@@ -398,16 +406,13 @@ public abstract class ParseCotizacionAction extends Action {
 
     protected void extractNombre(DatosCaso datos, String txt) {
         String nombre = findPattern(txt, "(Cotizante:)(.*?)(\\n)", 2);
-        if(StringUtils.isEmpty(nombre))
-        {
+        if (StringUtils.isEmpty(nombre)) {
             nombre = findPattern(txt, "(Nombre de la persona:)(.*?)(\\n)", 2);
         }
-        if(StringUtils.isEmpty(nombre))
-        {
+        if (StringUtils.isEmpty(nombre)) {
             nombre = findPattern(txt, "(Nombre:)(.*?)(\\n)", 2);
         }
-        if(!StringUtils.isEmpty(nombre))
-        {
+        if (!StringUtils.isEmpty(nombre)) {
             datos.parseNombre(nombre);
         }
         
@@ -415,7 +420,7 @@ public abstract class ParseCotizacionAction extends Action {
 
     protected void extractTelefono(DatosCaso datos, String txt) {
         datos.setTelefono(findPattern(txt, "(Teléfono celular:)(.*?)(\\n)", 2));
-        if(datos.getTelefono() == null){
+        if (datos.getTelefono() == null) {
             datos.setTelefono(findPattern(txt, "(Teléfono Movil:)(.*?)(\\n)", 2));
         }
         if (datos.getTelefono() == null) {
@@ -445,7 +450,7 @@ public abstract class ParseCotizacionAction extends Action {
                 return string1.trim();
             }
         } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "error tratar de extraer patron:"+strPattern, e);
+            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "error tratar de extraer patron:" + strPattern, e);
         }
         return null;
     }

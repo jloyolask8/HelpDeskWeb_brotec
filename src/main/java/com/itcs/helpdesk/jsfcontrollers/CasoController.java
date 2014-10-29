@@ -941,13 +941,13 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public void formateaRut() {
 //        System.out.println("formateaRut");
-        String rutFormateado = UtilesRut.formatear(getSelected().getEmailCliente().getCliente().getRut());
-        getSelected().getEmailCliente().getCliente().setRut(rutFormateado);
+        String rutFormateado = UtilesRut.formatear(getSelected().getIdCliente().getRut());
+        getSelected().getIdCliente().setRut(rutFormateado);
         validaRut();
     }
 
     public void validaRut() {
-        if (!UtilesRut.validar(getSelected().getEmailCliente().getCliente().getRut())) {
+        if (!UtilesRut.validar(getSelected().getIdCliente().getRut())) {
             JsfUtil.addErrorMessage("Rut invalido");
         }
     }
