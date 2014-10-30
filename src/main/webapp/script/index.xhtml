@@ -182,6 +182,7 @@
 
                             <p:commandButton id="exportAllItems" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop)" 
                                              rendered="#{casoController.items.rowCount > 0}" immediate="true"
+                                             disabled="#{casoController.pagination.itemsCount > 500}"
                                              icon="fa fa-download">  
                                 <p:fileDownload value="#{casoController.exportAllItems()}" />
                             </p:commandButton>
@@ -249,28 +250,20 @@
                             <i title="Creado vía #{item.idCanal.nombre}" class="#{(item.idCanal.idTipoCanal.idTipo eq 'EMAIL') ? 'fa fa-envelope-o fa-lg':((item.idCanal.idTipoCanal.idTipo eq 'CHAT') ? 'fa fa-comments fa-lg':((item.idCanal.idTipoCanal.idTipo eq 'MANUAL') ? 'fa fa-pencil-square-o fa-lg':((item.idCanal.idTipoCanal.idTipo eq 'FORMULARIO') ? 'fa fa-list-alt fa-lg':'')))}"></i>
                         </p:column>
 
-
                         <p:column sortBy="#{item.clientName}" headerText="Solicitante">                                
                             <p:commandLink  
                                 action="#{clienteController.prepareView(item.idCliente ne null ? item.idCliente:item.emailCliente.cliente, 'inbox')}" 
                                 ajax="false" value="#{item.clientName}" title="#{item.emailCliente.emailCliente}"
                                 immediate="true"/>
-
                         </p:column>
-
-
 
                         <p:column sortBy="#{item.tema}" headerText="Asunto"> 
                             <h:panelGroup layout="block" >  
-
                                 <h:outputText styleClass="ticket-status" style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};" value="#{item.idSubEstado.nombre}"/>
-
                                 <p:commandLink id="temalink" action="#{casoController.prepareEdit()}" 
                                                ajax="false" style="color: #000" immediate="true">
                                     #{item.tipoCaso.nombre} \##{item.idCaso} #{item.tema} (#{item.notaList.size()})
-
                                 </p:commandLink>
-
                                 <h:panelGroup rendered="#{item.hasScheduledEvents}">
                                     <i class="fa fa-calendar"></i>
                                 </h:panelGroup>
