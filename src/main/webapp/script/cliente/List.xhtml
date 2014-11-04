@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
@@ -38,22 +39,7 @@
             </h:form>
 
             <h:form id="form">
-                <p:messages globalOnly="true"/>
                 <h:panelGroup>
-
-                    <p:panel header="Buscar" toggleable="true" rendered="false">
-                        <h:panelGrid columns="3">
-                            <p:inputText id="searchRut" value="#{clienteController.searchPattern}" size="50"  />                            
-                            <p:message for="searchRut"/>
-                            <p:commandButton actionListener="#{clienteController.prepareList()}" icon="ui-icon-search" update=":form"/>
-                            <p:watermark for="searchRut" value="Nombre o Apellido o email o rut o dirección municipal..."/>
-                        </h:panelGrid>
-
-
-                    </p:panel>
-
-
-
 
                     <p:toolbar >
 
@@ -79,18 +65,18 @@
 
 
 
-                        <p:column headerText="Nombre Cliente">
-                            <h:outputText value="#{item.nombres} #{item.apellidos}"/>
+                        <p:column headerText="Nombre" sortBy="#{item.capitalFullName}">
+                            <h:outputText value="#{item.capitalFullName}"/>
                         </p:column>
 
-                        <p:column headerText="Rut Cliente">
+                        <p:column headerText="Rut Cliente" sortBy="#{item.rut}">
                             <h:outputText value="#{item.rut}"/>
                         </p:column>
 
                         <p:column headerText="Email">
-                            <p:dataList value="#{item.emailClienteList}" var="r" style="border: none" rendered="#{not empty item.emailClienteList}">
-                                #{r.emailCliente}
-                            </p:dataList>
+                            <ui:repeat value="#{item.emailClienteList}" var="r" >
+                                <p:outputLabel value="#{r.emailCliente} "/>
+                            </ui:repeat>
                         </p:column>
 
                         <p:column headerText="TPC" >

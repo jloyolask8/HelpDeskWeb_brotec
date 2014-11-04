@@ -1,7 +1,6 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.SubComponente;
 import java.io.Serializable;
 import java.util.List;
@@ -26,6 +25,16 @@ public class SubComponenteController extends AbstractManagedBean<SubComponente> 
     @Override
     protected String getListPage() {
         return "/script/subComponente/List";
+    }
+
+    @Override
+    protected String getEditPage() {
+        return "/script/subComponente/Edit";
+    }
+
+    @Override
+    protected String getViewPage() {
+        return "/script/subComponente/View";
     }
     
     public String prepareCreate() {

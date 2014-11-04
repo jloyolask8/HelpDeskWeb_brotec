@@ -9,10 +9,10 @@
 
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
-            <p:outputLabel value="#{applicationBean.productSubComponentDescription}"></p:outputLabel>
+            <p:outputLabel value="#{applicationBean.productComponentDescription}"></p:outputLabel>
         </ui:define>
         <ui:define name="menutitle">
-            <p:outputLabel value="Vistas de #{applicationBean.productSubComponentDescription}"></p:outputLabel>
+            <p:outputLabel value="Vistas de #{applicationBean.productComponentDescription}(s)"></p:outputLabel>
         </ui:define>
         <ui:define name="west">
 
@@ -56,44 +56,18 @@
 
 
                     <p:dataTable widgetVar="dataTable" var="item" value="#{componenteController.items}" selectionMode="single"
-                                 paginator="true"
                                  emptyMessage="#{bundle.emptyList}">
 
-                 
-
-                        <p:columnGroup type="header">
-                            <p:row>
-                                <p:column headerText="Código">
-                                </p:column>
-
-                                <p:column headerText="Nombre">
-                                </p:column>
-
-                                <p:column headerText="descripcion">
-                                </p:column>
-                                
-                                 <p:column headerText="accion">
-                                </p:column>
-                            </p:row>
-                          
-                        </p:columnGroup>
-
-
-                        <p:subTable var="subComponente" value="#{item.subComponenteList}" >
-                            <f:facet name="header">
-                                <h:outputText value="#{subComponente.idComponente.nombre}" />
-                            </f:facet>
-                            
-                            <p:column>
-                                <h:outputText value="#{subComponente.idSubComponente}" />
+                        <p:column headerText="Código" sortBy="#{item.idComponente}">
+                                <h:outputText value="#{item.idComponente}" />
                             </p:column>
 
-                            <p:column>
-                                <h:outputText value="#{subComponente.nombre}" />
+                        <p:column headerText="Nombre" sortBy="#{item.nombre}">
+                                <h:outputText value="#{item.nombre}" />
                             </p:column>
 
-                            <p:column>
-                                <h:outputText value="#{subComponente.descripcion}" />
+                        <p:column headerText="#{applicationBean.productDescription}" sortBy="#{item.idProducto.nombre}">
+                                <h:outputText value="#{item.idProducto.nombre}" />
                             </p:column>
 
                             <p:column headerText="Acción">
@@ -102,16 +76,7 @@
                                 <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" action="#{componenteController.setSelected(item)}" oncomplete="PF('confirmation').show()" icon="ui-icon ui-icon-trash"/>
                             </p:column>
 
-                            <p:columnGroup type="footer">
-                                <p:row>
-                                    <p:column footerText="Totals: " style="text-align:right"/>
-                                    <p:column footerText="0" />
-                                    <p:column footerText="0" />
-                                    <p:column footerText="0" />
-                                </p:row>
-                            </p:columnGroup>
-                        </p:subTable>
-
+                       
 
 
 

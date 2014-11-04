@@ -11,9 +11,7 @@
             <p:outputLabel value="#{bundle.ListAreaTitle}"/>
         </ui:define>
 
-        <ui:define name="menutitle">Áreas</ui:define>
         <ui:define name="west">
-        
             <ui:include src="help.xhtml"/>
         </ui:define>
 
@@ -26,27 +24,22 @@
 
                         <h:outputText escape="false" value="#{bundle.ListAreaEmpty}" rendered="#{areaController.items.rowCount == 0}"/>
                         <h:panelGroup rendered="#{areaController.items.rowCount > 0}">
+                            <p:toolbar>
+                                <p:toolbarGroup align="right">
 
+                                    <go:paginatorButtons controllerMBean="#{areaController}" update=":form"/>
+                                    <p:separator/>
+                                    <p:commandButton ajax="false" action="#{areaController.prepareCreate}" immediate="true"
+                                                     rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" value="#{bundle.ListAreaCreateLink}" icon="fa fa-plus-circle" />
 
-                              <p:toolbar>
+                                </p:toolbarGroup>  
 
-                      
-
-                        <p:toolbarGroup align="right">
-
-                            <go:paginatorButtons controllerMBean="#{areaController}" update=":form"/>
-                            <p:separator/>
-                            <p:commandButton ajax="false" action="#{areaController.prepareCreate}" immediate="true"
-                                             rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" value="#{bundle.ListAreaCreateLink}" icon="fa fa-plus-circle" />
-
-                        </p:toolbarGroup>  
-
-                    </p:toolbar>
+                            </p:toolbar>
 
                             <p:dataTable widgetVar="AreaTable" var="item" value="#{areaController.items}" selectionMode="single"
                                          emptyMessage="#{bundle.ListAreaEmpty}" >
 
-                               
+
 
                                 <p:column style="width:4%">  
                                     <p:rowToggler />  
@@ -58,10 +51,10 @@
                                         <h:outputText value="#{item.nombre}" title="#{item.idArea}" style="font-weight: bold;"/>
                                         &nbsp;
                                         <h:outputText title="#{bundle.ListAreaTitle_descripcion}"
-                                                     value="#{item.descripcion}" />
+                                                      value="#{item.descripcion}" />
                                     </h:panelGroup>
                                 </p:column>
-                             
+
                                 <p:column headerText="Casos(Abiertos/Cerrados)">                            
                                     <h:outputText value="#{areaController.countCasosAbiertos(item)}/#{areaController.countCasosCerrados(item)}"/>
                                 </p:column>
@@ -72,7 +65,7 @@
                                     </f:facet>
                                     <h:outputText value="#{item.emailAcusederecibo ? 'Si':'No'}" />
                                 </p:column>
-                                
+
                                 <p:column>
                                     <f:facet name="header">
                                         <h:outputText value="Canal"/>
@@ -81,8 +74,9 @@
                                 </p:column>
 
                                 <p:column headerText="Acciones">
+                                                                        <p:commandButton ajax="false" action="#{areaController.prepareView(item.idArea)}" title="#{bundle.ListAreaViewLink}" iconPos="notext" icon="ui-icon ui-icon-search"/>
+
                                     <p:commandButton ajax="false" action="#{areaController.prepareEdit(item.idArea)}" title="#{bundle.ListAreaEditLink}" iconPos="notext" icon="ui-icon ui-icon-pencil"/>
-                                    <p:commandButton ajax="false" action="#{areaController.prepareView(item.idArea)}" title="#{bundle.ListAreaViewLink}" iconPos="notext" icon="ui-icon ui-icon-search"/>
 
                                     <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" iconPos="notext"
                                                      action="#{areaController.setSelected(item)}" oncomplete="PF('confirmation').show()" 
@@ -95,22 +89,22 @@
                                 <p:rowExpansion> 
 
 
-                                        <p:dataList id="tablaGrupos" widgetVar="grupoList" var="item2" value="#{item.grupoList}" 
-                                                    paginator="true" rows="5" paginatorAlwaysVisible="false">
+                                    <p:dataList id="tablaGrupos" widgetVar="grupoList" var="item2" value="#{item.grupoList}" 
+                                                paginator="true" rows="5" paginatorAlwaysVisible="false">
 
-                                            <f:facet name="header">
-                                                <h:outputText value="Grupos "/>
-                                            </f:facet>
+                                        <f:facet name="header">
+                                            <h:outputText value="Grupos "/>
+                                        </f:facet>
 
-                                            <h:outputText value="#{item2.idGrupo} - #{item2.nombre}"/>
+                                        <h:outputText value="#{item2.idGrupo} - #{item2.nombre}"/>
 
-                                        </p:dataList>
+                                    </p:dataList>
 
 
                                 </p:rowExpansion>
 
                                 <f:facet name="footer">
-                                    
+
                                 </f:facet>
 
 

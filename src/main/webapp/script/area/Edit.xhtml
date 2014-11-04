@@ -30,7 +30,7 @@
 
                                 <p:outputLabel style="font-weight: bold;" value="#{bundle.EditAreaLabel_descripcion}" for="descripcion"/>
                                 <p:inputTextarea rows="4" cols="50" id="descripcion" value="#{areaController.selected.descripcion}" title="#{bundle.EditAreaTitle_descripcion}" />
-                                <p:outputLabel style="font-weight: bold;" value="Canal de salida por defecto" for="idCanalSalida"/>
+                                <p:outputLabel style="font-weight: bold;" value="#{bundle.AreaCanalSalida}" for="idCanalSalida"/>
                                 <p:selectOneMenu id="idCanalSalida" style="width: 220px;"
                                                  filter="true" filterMatchMode="contains"
                                                  value="#{areaController.selected.idCanal}" >

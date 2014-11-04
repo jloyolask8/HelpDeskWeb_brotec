@@ -425,6 +425,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             }
         }
         addInfoMessage("Acción " + accionToRunSelected + " ejecutada exitosamente en " + count + " casos.");
+        recreateModel();
+        recreatePagination();
+        executeInClient("PF('runActionDialog').hide()");
         if (getSelectedItemsCount() > count) {
             addWarnMessage("Error: " + (getSelectedItemsCount() - count) + " casos no han sido enviados, favor revisar la configuración de correo del area correspondiente.");
         }
@@ -451,6 +454,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             rulesEngine.applyRuleOnThisCasos(reglaTriggerSelected, casosToSend);
             addInfoMessage("Regla ejecutada en " + casosToSend.size() + " casos.");
             recreateModel();
+            recreatePagination();
+            executeInClient("PF('applyRuleDialog').hide()");
             //TODO update table data
         } else {
             addWarnMessage("No se ha Seleccionado ningun caso para ejecutar la regla de negocio.");

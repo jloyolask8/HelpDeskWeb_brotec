@@ -94,6 +94,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
             getJpaController().merge(regla);
         }
         recreateModel();
+        addInfoMessage("Reglas re-ordenadas exitósamente.");
 //        myList = n;
 
 //        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Reordered! New order is:" + newOrder));
@@ -632,6 +633,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 //            recreateModel();
 //        }
         recreateModel();
+        recreatePagination();
         return "/script/reglaTrigger/List";
     }
 

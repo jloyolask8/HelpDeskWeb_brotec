@@ -13,86 +13,97 @@
         <ui:define name="menutitle">
             <p:outputLabel value="Usuarios"/>
         </ui:define>
-        
+
         <ui:define name="west">
-                    <h:outputLabel escape="false" value="#{bundle.ayudaUsuarios}"/>
+            <h:outputLabel escape="false" value="#{bundle.ayudaUsuarios}"/>
         </ui:define>
         <ui:define name="body">
 
             <h:form>
 
-                    <p:fieldset legend="Identificacion del usuario"> 
-                        <h:panelGrid columns="2">
-                            <h:outputLabel value="#{bundle.EditUsuarioLabel_idUsuario}" for="idUsuario" style="font-weight:bold"/>
-                            <p:inputText id="idUsuario" value="#{usuarioController.selected.idUsuario}" disabled="true" title="#{bundle.EditUsuarioTitle_idUsuario}" required="true" requiredMessage="#{bundle.EditUsuarioRequiredMessage_idUsuario}"/>
-                            <h:outputLabel value="Contraseña" for="Pass" style="font-weight:bold"/>
-                            <p:password id="Pass" value="#{usuarioController.selected.pass}" title="Contraseña" required="false" feedback="false" />
-                           
-                            <h:outputLabel value="#{bundle.EditUsuarioLabel_activo}" for="activo" style="font-weight:bold"/>
-                            <p:selectOneMenu id="activo" value="#{usuarioController.selected.activo}">
-                                <f:selectItem itemLabel="Si" itemValue="true"/>
-                                <f:selectItem itemLabel="No" itemValue="false"/>
-                            </p:selectOneMenu>
-                            
-                             <p:watermark for="Pass" value="(sin cambios)"/>
-                        </h:panelGrid>
-                    </p:fieldset>
-                    <br/>
-                    <p:fieldset legend="Datos Personales"> 
-                        <h:panelGrid columns="2">
-                            <h:outputLabel value="Rut" for="rut" style="font-weight:bold"/>
-                            <p:inputText id="rut" value="#{usuarioController.selected.rut}" title="Rut del usuario">
-                                <p:ajax event="blur" listener="#{usuarioController.formateaRut}" update="rut, :mainform:messages"/>
-                            </p:inputText>
-                            <h:outputLabel value="#{bundle.EditUsuarioLabel_nombres}" for="nombres" style="font-weight:bold"/>
-                            <p:inputText id="nombres" value="#{usuarioController.selected.nombres}" title="#{bundle.EditUsuarioTitle_nombres}" />
-                            <h:outputLabel value="#{bundle.EditUsuarioLabel_apellidos}" for="apellidos" style="font-weight:bold"/>
-                            <p:inputText id="apellidos" value="#{usuarioController.selected.apellidos}" title="#{bundle.EditUsuarioTitle_apellidos}" />
-                            <h:outputLabel value="#{bundle.EditUsuarioLabel_email}" for="email" style="font-weight:bold"/>
-                            <p:inputText id="email" value="#{usuarioController.selected.email}" title="#{bundle.EditUsuarioTitle_email}" />
-                            <h:outputLabel value="#{bundle.EditUsuarioLabel_telFijo}" for="telFijo" style="font-weight:bold"/>
-                            <p:inputText id="telFijo" value="#{usuarioController.selected.telFijo}" title="#{bundle.EditUsuarioTitle_telFijo}" />
-                            <h:outputLabel value="#{bundle.EditUsuarioLabel_telMovil}" for="telMovil" style="font-weight:bold" />
-                            <p:inputText id="telMovil" value="#{usuarioController.selected.telMovil}" title="#{bundle.EditUsuarioTitle_telMovil}" />
-                        </h:panelGrid>
-                    </p:fieldset>
-                    <br/>
+                <p:fieldset legend="Identificacion del usuario"> 
+                    <h:panelGrid columns="2">
+                        <h:outputLabel value="#{bundle.EditUsuarioLabel_idUsuario}" for="idUsuario" style="font-weight:bold"/>
+                        <p:inputText id="idUsuario" value="#{usuarioController.selected.idUsuario}" disabled="true" title="#{bundle.EditUsuarioTitle_idUsuario}" required="true" requiredMessage="#{bundle.EditUsuarioRequiredMessage_idUsuario}"/>
+                        <h:outputLabel value="Contraseña" for="Pass" style="font-weight:bold"/>
+                        <p:password id="Pass" value="#{usuarioController.selected.pass}" title="Contraseña" required="false" feedback="false" />
 
-                    <p:fieldset legend="Datos de Organizacion"> 
-                        <h:panelGrid columns="2">
-                            <h:outputLabel value="#{bundle.EditUsuarioLabel_supervisor}" for="supervisor" style="font-weight:bold"/>
-                            <p:selectOneMenu id="supervisor" value="#{usuarioController.selected.supervisor}">
-                                <f:selectItems value="#{usuarioController.itemsAvailableSelectOneNoSystem}"/>
-                            </p:selectOneMenu>
-                           <h3>A qué Grupos pertenece este Usuario?</h3> 
-                            <p:pickList id="pojoPickList"  value="#{usuarioController.gruposDualListModel}" var="g" effect="slide" 
-                                        itemValue="#{g}" itemLabel="#{g.nombre}" converter="GrupoConverter"
-                                        showSourceControls="true" showTargetControls="true"  
-                                        showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains" > 
-                          
-                                <f:facet name="sourceCaption">Grupos</f:facet> 
-                                <f:facet name="targetCaption">Seleccionados</f:facet> 
+                        <h:outputLabel value="#{bundle.EditUsuarioLabel_activo}" for="activo" style="font-weight:bold"/>
+                        <p:selectOneMenu id="activo" value="#{usuarioController.selected.activo}">
+                            <f:selectItem itemLabel="Si" itemValue="true"/>
+                            <f:selectItem itemLabel="No" itemValue="false"/>
+                        </p:selectOneMenu>
 
-                                <p:column> 
-                                    #{g.nombre} 
-                                </p:column> 
+                        <p:watermark for="Pass" value="(sin cambios)"/>
+                    </h:panelGrid>
+                </p:fieldset>
+                <br/>
+                <p:fieldset legend="Datos Personales"> 
+                    <h:panelGrid columns="2">
+                        <h:outputLabel value="Rut" for="rut" style="font-weight:bold"/>
+                        <p:inputText id="rut" value="#{usuarioController.selected.rut}" title="Rut del usuario">
+                            <p:ajax event="blur" listener="#{usuarioController.formateaRut}" update="rut, :mainform:messages"/>
+                        </p:inputText>
+                        <h:outputLabel value="#{bundle.EditUsuarioLabel_nombres}" for="nombres" style="font-weight:bold"/>
+                        <p:inputText id="nombres" value="#{usuarioController.selected.nombres}" title="#{bundle.EditUsuarioTitle_nombres}" />
+                        <h:outputLabel value="#{bundle.EditUsuarioLabel_apellidos}" for="apellidos" style="font-weight:bold"/>
+                        <p:inputText id="apellidos" value="#{usuarioController.selected.apellidos}" title="#{bundle.EditUsuarioTitle_apellidos}" />
+                        <h:outputLabel value="#{bundle.EditUsuarioLabel_email}" for="email" style="font-weight:bold"/>
+                        <p:inputText id="email" value="#{usuarioController.selected.email}" title="#{bundle.EditUsuarioTitle_email}" />
+                        <h:outputLabel value="#{bundle.EditUsuarioLabel_telFijo}" for="telFijo" style="font-weight:bold"/>
+                        <p:inputText id="telFijo" value="#{usuarioController.selected.telFijo}" title="#{bundle.EditUsuarioTitle_telFijo}" />
+                        <h:outputLabel value="#{bundle.EditUsuarioLabel_telMovil}" for="telMovil" style="font-weight:bold" />
+                        <p:inputText id="telMovil" value="#{usuarioController.selected.telMovil}" title="#{bundle.EditUsuarioTitle_telMovil}" />
+                    </h:panelGrid>
+                </p:fieldset>
+                <br/>
 
-                            </p:pickList>     
-                           
-                          
-                            <h:outputLabel value="Roles" style="font-weight:bold"/>
-                            <p:selectManyCheckbox converter="RolConverter" value="#{usuarioController.selected.rolList}" layout="pageDirection">
-                                <f:selectItems  value="#{rolController.itemsAvailableSelectMany}" itemLabel="nombre" itemValue="idRol"/>
-                            </p:selectManyCheckbox>
-                        </h:panelGrid>
-                    </p:fieldset>
+                <p:fieldset legend="Datos de Organizacion"> 
+                    <h:panelGrid columns="2">
+                        <h:outputLabel value="#{bundle.EditUsuarioLabel_supervisor}" for="supervisor" style="font-weight:bold"/>
+                        <p:selectOneMenu id="supervisor" value="#{usuarioController.selected.supervisor}">
+                            <f:selectItems value="#{usuarioController.itemsAvailableSelectOneNoSystem}"/>
+                        </p:selectOneMenu>
+                        <h3>A qué Grupos pertenece este Usuario?</h3> 
+                        <p:pickList id="pojoPickList"  value="#{usuarioController.gruposDualListModel}" var="g" effect="slide" 
+                                    itemValue="#{g}" itemLabel="#{g.nombre}" converter="GrupoConverter"
+                                    showSourceControls="true" showTargetControls="true"  
+                                    showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains" > 
+
+                            <f:facet name="sourceCaption">Grupos</f:facet> 
+                            <f:facet name="targetCaption">Seleccionados</f:facet> 
+
+                            <p:column> 
+                                #{g.nombre} 
+                            </p:column> 
+
+                        </p:pickList>     
 
 
-                    <f:facet name="footer">
-                        <p:commandButton ajax="false" action="#{usuarioController.update}" value="#{bundle.EditUsuarioSaveLink}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
-                        <p:commandButton ajax="false" action="View" value="#{bundle.EditUsuarioViewLink}" immediate="true"/>
-                        <p:commandButton ajax="false" action="#{usuarioController.prepareList}" value="#{bundle.EditUsuarioShowAllLink}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" immediate="true" icon="ui-icon-folder-open"/>
-                    </f:facet>
+                        <h:outputLabel value="Roles" style="font-weight:bold"/>
+                        <p:selectManyCheckbox converter="RolConverter" value="#{usuarioController.selected.rolList}" layout="pageDirection">
+                            <f:selectItems  value="#{rolController.itemsAvailableSelectMany}" itemLabel="nombre" itemValue="idRol"/>
+                        </p:selectManyCheckbox>
+                    </h:panelGrid>
+                </p:fieldset>
+                <br/>
+
+                <p:toolbar>  
+                    <p:toolbarGroup align="left">   
+                        <p:commandButton action="#{usuarioController.goBack()}" value="#{bundle.goBack}" 
+                                         immediate="true" ajax="false" icon="fa fa-chevron-left"/>
+                        <p:separator/> 
+                        <p:commandButton ajax="false" action="View" value="#{bundle.EditUsuarioViewLink}" 
+                                         immediate="true" icon="fa fa-eye"/>
+                    </p:toolbarGroup>
+
+                    <p:toolbarGroup align="right">   
+                        <p:separator/> 
+                        <p:commandButton ajax="false" action="#{usuarioController.update}" value="#{bundle.EditUsuarioSaveLink}" icon="fa fa-save" style="top:4px"
+                                         rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
+                    </p:toolbarGroup>
+                </p:toolbar>
+
 
             </h:form>
         </ui:define>

@@ -201,16 +201,16 @@
                                         <p:column filterBy="#{tag.tagId}">
                                             <h:outputText value="#{tag.tagId}" />  
                                         </p:column>
-                                    </p:dataTable>  
+                                    </p:dataTable>
                                 </h:panelGrid>
 
                                 <p:commandButton value="Aplicar"  icon="ui-icon-tag"  
                                                  actionListener="#{casoController.tagManyCasosManyTags}"
-                                                 update=":accionesaccordion1:tagCloud :mainform:messages :form0:ID_TABLA" oncomplete="PF('TagPanel').hide()"/> 
+                                                 update=":accionesaccordion1:tagCloud :mainform:messages :form0:ID_TABLA" oncomplete="PF('TagPanel').hide()"/>
                             </p:overlayPanel>
 
-                            <p:separator />  
-                        </p:toolbarGroup>  
+                            <p:separator/>
+                        </p:toolbarGroup>
 
                         <p:toolbarGroup align="right">
 
@@ -230,35 +230,35 @@
                                  selection="#{casoController.selectedItems}"
                                  rowSelectMode="add">
 
-                        <p:ajax event="toggleSelect" update=":form0:panelG1" />                             
+                        <p:ajax event="toggleSelect" update=":form0:panelG1" />
 
-                        <p:ajax event="rowSelect"  listener="#{casoController.onRowSelect}" update=":form0:panelG1" /> 
-                        <p:ajax event="rowUnselect" update=":form0:panelG1" />  
-                        <p:ajax event="rowSelectCheckbox" update=":form0:panelG1" />  
-                        <p:ajax event="rowUnselectCheckbox" update=":form0:panelG1" />  
+                        <p:ajax event="rowSelect"  listener="#{casoController.onRowSelect}" update=":form0:panelG1" />
+                        <p:ajax event="rowUnselect" update=":form0:panelG1" />
+                        <p:ajax event="rowSelectCheckbox" update=":form0:panelG1" />
+                        <p:ajax event="rowUnselectCheckbox" update=":form0:panelG1" />
 
-                        <p:column selectionMode="multiple"   />  
+                        <p:column selectionMode="multiple" />
 
-                        <p:column headerText="" exportable="false"  >
+                        <p:column headerText="" exportable="false">
                             <h:commandLink id="prio" disabled="#{not item.open}">
                                 <p:graphicImage library="images" name="#{item.esPrioritario ? 'star-enabled.png':'star-disabled.png'}" title="Prioritario"/>
                                 <p:ajax id="aj2" listener="#{casoController.changePriority(item, item.esPrioritario)}" update="prio :formTopMenu"/>
                             </h:commandLink>
                         </p:column>
 
-                        <p:column headerText="Vía">                                
+                        <p:column headerText="Vía">
                             <i title="Creado vía #{item.idCanal.nombre}" class="#{(item.idCanal.idTipoCanal.idTipo eq 'EMAIL') ? 'fa fa-envelope-o fa-lg':((item.idCanal.idTipoCanal.idTipo eq 'CHAT') ? 'fa fa-comments fa-lg':((item.idCanal.idTipoCanal.idTipo eq 'MANUAL') ? 'fa fa-pencil-square-o fa-lg':((item.idCanal.idTipoCanal.idTipo eq 'FORMULARIO') ? 'fa fa-list-alt fa-lg':'')))}"></i>
                         </p:column>
 
-                        <p:column sortBy="#{item.clientName}" headerText="Solicitante">                                
-                            <p:commandLink  
+                        <p:column sortBy="#{item.clientName}" headerText="Solicitante">
+                            <p:commandLink 
                                 action="#{clienteController.prepareView(item.idCliente ne null ? item.idCliente:item.emailCliente.cliente, 'inbox')}" 
                                 ajax="false" value="#{item.clientName}" title="#{item.emailCliente.emailCliente}"
                                 immediate="true"/>
                         </p:column>
 
-                        <p:column sortBy="#{item.tema}" headerText="Asunto"> 
-                            <h:panelGroup layout="block" >  
+                        <p:column sortBy="#{item.tema}" headerText="Asunto">
+                            <h:panelGroup layout="block">
                                 <h:outputText styleClass="ticket-status" style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};" value="#{item.idSubEstado.nombre}"/>
                                 <p:commandLink id="temalink" action="#{casoController.prepareEdit()}" 
                                                ajax="false" style="color: #000" immediate="true">
@@ -269,11 +269,9 @@
                                 </h:panelGroup>
                                 <h:panelGroup rendered="#{item.hasAttachments}">
                                     <i class="fa fa-paperclip"></i>    
-                                </h:panelGroup>  
-                            </h:panelGroup> 
-                        </p:column>     
-
-                        
+                                </h:panelGroup>
+                            </h:panelGroup>
+                        </p:column>                        
 
                         <p:column sortBy="#{item.owner.capitalName}" headerText="Agente">
                             <p:commandLink value="#{item.owner.capitalName}"
@@ -281,17 +279,49 @@
                                            action="#{usuarioController.prepareView(item.owner)}" ajax="false" immediate="true"/>
                         </p:column>
 
-                        <p:column sortBy="#{item.fechaCreacion}" headerText="Creado">                                
+                        <p:column sortBy="#{item.fechaCreacion}" headerText="Creado">
                             <h:outputText id="fechaCreacion" value="#{casoController.formatShortDate(item.fechaCreacion)}" />
                             <p:tooltip for="fechaCreacion" value="Creado: #{casoController.formatDate(item.fechaCreacion)} (#{casoController.prettyDate(item.fechaCreacion)})"  />
                         </p:column>
 
-                        <p:column sortBy="#{item.fechaModif}" headerText="Modif">    
+                        <p:column sortBy="#{item.fechaModif}" headerText="Modif">
                             <h:outputText id="fechaModif" value="#{casoController.formatShortDate(item.fechaModif)}" />
                             <p:tooltip for="fechaModif" value="Modificado: #{casoController.formatDate(item.fechaModif)} (#{casoController.prettyDate(item.fechaModif)})"  />
                         </p:column>
 
-                        <p:column headerText="SLA">   
+                        <p:column sortBy="#{item.idPrioridad.idPrioridad}" headerText="Prio" exportable="false">
+                           <pe:switch id="prioridadCaso" value="#{item.idPrioridad.idPrioridad}" rendered="#{not empty item.idPrioridad}">  
+                                    <pe:case value="#{EnumPrioridad.BAJA.getPrioridad().getIdPrioridad()}">  
+                                        <h:panelGroup id="prioridadCasox">
+                                            <i class="fa fa-fw fa-flag-o"></i>
+                                        </h:panelGroup>
+                                        <p:tooltip for="prioridadCasox" value="#{item.idPrioridad.nombre}"/>
+                                    </pe:case>
+
+                                    <pe:case value="#{EnumPrioridad.MEDIA.getPrioridad().getIdPrioridad()}">  
+                                        <h:panelGroup id="prioridadCasox" style="color: #006dcc;">
+                                            <i class="fa fa-fw fa-flag" style=""></i>
+                                        </h:panelGroup>
+                                        <p:tooltip for="prioridadCasox" value="#{item.idPrioridad.nombre}"/>
+                                    </pe:case> 
+
+                                    <pe:case value="#{EnumPrioridad.ALTA.getPrioridad().getIdPrioridad()}">  
+                                        <h:panelGroup id="prioridadCasox" style="color: #f0ad4e;">
+                                            <i class="fa fa-fw fa-flag" style=""></i>
+                                        </h:panelGroup>
+                                        <p:tooltip for="prioridadCasox" value="#{item.idPrioridad.nombre}"/>
+                                    </pe:case> 
+
+                                    <pe:case value="#{EnumPrioridad.MAXIMA.getPrioridad().getIdPrioridad()}">  
+                                        <h:panelGroup id="prioridadCasox" style="color: red;">
+                                            <i class="fa fa-fw fa-flag" style=""></i>
+                                        </h:panelGroup>
+                                        <p:tooltip for="prioridadCasox" value="#{item.idPrioridad.nombre}"/>
+                                    </pe:case> 
+                                </pe:switch>
+                        </p:column>
+                        
+                        <p:column headerText="SLA">
 
                             <pe:switch id="switchTicketAlertState" value="#{item.isOpen().toString()}">  
                                 <pe:case value="true">  
@@ -324,38 +354,6 @@
                                     <p:tooltip for="cerrado" value="Cerrado #{casoController.prettyDate(item.fechaCierre)} - #{casoController.formatDate(item.fechaCierre)}"/>
                                 </pe:case>  
                             </pe:switch>
-                        </p:column>
-                        
-                        <p:column sortBy="#{item.idPrioridad.idPrioridad}" headerText="Prio" exportable="false">
-                           <pe:switch id="prioridadCaso" value="#{item.idPrioridad.idPrioridad}" rendered="#{not empty item.idPrioridad}">  
-                                    <pe:case value="#{EnumPrioridad.BAJA.getPrioridad().getIdPrioridad()}">  
-                                        <h:panelGroup id="prioridadCasox">
-                                            <i class="fa fa-fw fa-flag-o"></i>
-                                        </h:panelGroup>
-                                        <p:tooltip for="prioridadCasox" value="#{item.idPrioridad.nombre}"/>
-                                    </pe:case>
-
-                                    <pe:case value="#{EnumPrioridad.MEDIA.getPrioridad().getIdPrioridad()}">  
-                                        <h:panelGroup id="prioridadCasox" style="color: #006dcc;">
-                                            <i class="fa fa-fw fa-flag" style=""></i>
-                                        </h:panelGroup>
-                                        <p:tooltip for="prioridadCasox" value="#{item.idPrioridad.nombre}"/>
-                                    </pe:case> 
-
-                                    <pe:case value="#{EnumPrioridad.ALTA.getPrioridad().getIdPrioridad()}">  
-                                        <h:panelGroup id="prioridadCasox" style="color: #f0ad4e;">
-                                            <i class="fa fa-fw fa-flag" style=""></i>
-                                        </h:panelGroup>
-                                        <p:tooltip for="prioridadCasox" value="#{item.idPrioridad.nombre}"/>
-                                    </pe:case> 
-
-                                    <pe:case value="#{EnumPrioridad.MAXIMA.getPrioridad().getIdPrioridad()}">  
-                                        <h:panelGroup id="prioridadCasox" style="color: red;">
-                                            <i class="fa fa-fw fa-flag" style=""></i>
-                                        </h:panelGroup>
-                                        <p:tooltip for="prioridadCasox" value="#{item.idPrioridad.nombre}"/>
-                                    </pe:case> 
-                                </pe:switch>
                         </p:column>
 
                     </p:dataTable>
@@ -418,7 +416,7 @@
 
                     <p:separator/>
 
-                    <p:commandButton actionListener="#{casoController.applyReglaToSelectedCasos}" update=":mainform:messages"
+                    <p:commandButton actionListener="#{casoController.applyReglaToSelectedCasos}" update=":mainform:messages form0:panelG1"
                                      value="Ejecutar"/>
                 </h:form>
 
