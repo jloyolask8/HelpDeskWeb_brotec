@@ -252,6 +252,17 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public void enableReplyMode() {
+        
+         if (current.getIdProducto() == null) {
+            showMessageInDialog(FacesMessage.SEVERITY_ERROR, "Acción requerida", "Antes de continuar es necesario que seleccione y guarde el " + applicationBean.getProductDescription() + " relacionado con el caso.");
+            return ;
+        }
+
+        if (current.getIdArea() == null) {
+            showMessageInDialog(FacesMessage.SEVERITY_ERROR, "Acción requerida", "Antes de continuar es necesario que seleccione y guarde el área al cual pertenece el caso.");
+            return ;
+        }
+        
         this.setReplyMode(true);
         this.setReplyByEmail(true);
 
@@ -273,6 +284,17 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public void enableCommentMode() {
+        
+         if (current.getIdProducto() == null) {
+            showMessageInDialog(FacesMessage.SEVERITY_ERROR, "Acción requerida", "Antes de continuar es necesario que seleccione y guarde el " + applicationBean.getProductDescription() + " relacionado con el caso.");
+            return ;
+        }
+
+        if (current.getIdArea() == null) {
+            showMessageInDialog(FacesMessage.SEVERITY_ERROR, "Acción requerida", "Antes de continuar es necesario que seleccione y guarde el área al cual pertenece el caso.");
+            return ;
+        }
+        
         this.setReplyMode(true);
         this.setReplyByEmail(false);
 
@@ -3266,6 +3288,17 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public String update() {
         try {
+
+            if (current.getIdProducto() == null) {
+                showMessageInDialog(FacesMessage.SEVERITY_ERROR, "Acción requerida", "Antes de continuar es necesario que seleccione y guarde el " + applicationBean.getProductDescription() + " relacionado con el caso.");
+                return null;
+            }
+
+            if (current.getIdArea() == null) {
+                showMessageInDialog(FacesMessage.SEVERITY_ERROR, "Acción requerida", "Antes de continuar es necesario que seleccione y guarde el área al cual pertenece el caso.");
+                return null;
+            }
+
             update(current);
             return "/script/caso/Edit";
         } catch (Exception e) {
