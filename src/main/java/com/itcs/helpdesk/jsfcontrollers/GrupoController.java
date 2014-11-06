@@ -27,50 +27,39 @@ import org.primefaces.model.SelectableDataModel;
 public class GrupoController extends AbstractManagedBean<Grupo> implements Serializable {
 
     private int selectedItemIndex;
-    private DualListModel<Usuario> usuariosDualListModel = new DualListModel<Usuario>();
-    private DualListModel<Producto> productoDualListModel = new DualListModel<Producto>();
+    private DualListModel<Usuario> usuariosDualListModel = new DualListModel<>();
+    private DualListModel<Producto> productoDualListModel = new DualListModel<>();
 
     public GrupoController() {
         super(Grupo.class);
     }
 
-//    @Override
-//    public PaginationHelper getPagination() {
-//        if (pagination == null) {
-//            pagination = new PaginationHelper(getPaginationPageSize()) {
-//                @Override
-//                public int getItemsCount() {
-//                    return getJpaController().count(Grupo.class).intValue();
-//                }
-//
-//                @Override
-//                public DataModel createPageDataModel() {
-//                    return new ListDataModel(getJpaController().queryByRange(Grupo.class, getPageSize(), getPageFirstItem()));
-//                }
-//            };
-//        }
-//        return pagination;
+//    public String prepareList() {
+//        recreateModel();
+//        return "/script/grupo/List";
 //    }
-
-    public String prepareList() {
-        recreateModel();
-        return "/script/grupo/List";
+    
+    @Override
+    protected String getListPage() {
+       return "/script/grupo/List";
     }
+    
+    
 
     public String prepareView() {
         if (getSelected() == null) {
             JsfUtil.addSuccessMessage("Se requiere que seleccione una fila para visualizar.");
             return "";
         }
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
+//        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         return "/script/grupo/View";
     }
 
     public String prepareCreate() {
         current = new Grupo();
         selectedItemIndex = -1;
-        setUsuariosDualListModel(new DualListModel<Usuario>(getJpaController().getUsuarioFindAll(), new ArrayList<Usuario>()));
-        setProductoDualListModel(new DualListModel<Producto>((List<Producto>)getJpaController().findAll(Producto.class), new ArrayList<Producto>()));
+        setUsuariosDualListModel(new DualListModel<>(getJpaController().getUsuarioFindAll(), new ArrayList<Usuario>()));
+        setProductoDualListModel(new DualListModel<>((List<Producto>)getJpaController().findAll(Producto.class), new ArrayList<Producto>()));
         //setCategoriasDualListModel(new DualListModel<Categoria>(getJpaController().getCategoriaFindAll(), new ArrayList<Categoria>()));
         return "/script/grupo/Create";
     }
@@ -102,10 +91,10 @@ public class GrupoController extends AbstractManagedBean<Grupo> implements Seria
             return null;
         }
     }
-
+    
     @Override
-    public String prepareEdit(Grupo item) {
-        setSelected(item);
+    protected void afterSetSelected() {
+       
         setUsuariosDualListModel(new DualListModel<>(getJpaController().getUsuarioFindAll(), current.getUsuarioList()));
         for (Usuario user : current.getUsuarioList()) {
             if (getUsuariosDualListModel().getSource().contains(user)) {
@@ -119,8 +108,27 @@ public class GrupoController extends AbstractManagedBean<Grupo> implements Seria
             }
         }
         
-        return "/script/grupo/Edit";
     }
+
+    
+//    @Override
+//    public String prepareEdit(Grupo item) {
+//        setSelected(item);
+//        setUsuariosDualListModel(new DualListModel<>(getJpaController().getUsuarioFindAll(), current.getUsuarioList()));
+//        for (Usuario user : current.getUsuarioList()) {
+//            if (getUsuariosDualListModel().getSource().contains(user)) {
+//                getUsuariosDualListModel().getSource().remove(user);
+//            }
+//        }
+//        setProductoDualListModel(new DualListModel<>((List<Producto>)getJpaController().findAll(Producto.class), current.getProductoList()));
+//        for (Producto producto : current.getProductoList()) {
+//            if (getProductoDualListModel().getSource().contains(producto)) {
+//                getProductoDualListModel().getSource().remove(producto);
+//            }
+//        }
+//        
+//        return "/script/grupo/Edit";
+//    }
 
 //    public String prepareView(Grupo item) {
 //        selectItem(item);

@@ -66,7 +66,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                     secondsToNextSync = revisarCorreo(idCanal);
                 }
             } catch (Exception ex) {
-                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "erron on execute DownloadEmailJob", ex);
+                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "erron on execute DownloadEmailJob. Canal:"+idCanal, ex);
             } finally {
                 try {
                     //schedule to run again after that interval

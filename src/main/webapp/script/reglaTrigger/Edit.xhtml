@@ -10,36 +10,20 @@
 
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
-            <h:outputText value="Editar Regla de Negocio"></h:outputText>
+            <p:outputLabel value="Editar Regla de Negocio: #{reglaTriggerController.selected.idTrigger}"/>
         </ui:define>
         <ui:define name="west">
-            <p:accordionPanel multiple="true" cache="true">
-                <p:tab title="Reglas de negocio" id="accionestab1">
+            <p:panel>
                     <h:outputLabel escape="false" value="#{bundle.ayudaReglas}"/>
-                </p:tab>
-            </p:accordionPanel>
+            </p:panel>
         </ui:define>
         <ui:define name="body">
             <h:form id="form">
-
-                <h1>Editar Regla de Negocio</h1>
-                <p:separator/>
 
                 <p:messages id="messages"/>
                 <h:panelGrid>
 
                     <h:panelGrid>
-                        <p:row>
-                            <p:column>
-                                <p:outputLabel value="Nombre:" for="idTrigger" />
-                            </p:column>
-                            <p:column>
-                                <p:inputText id="idTrigger" value="#{reglaTriggerController.selected.idTrigger}" size="40" maxlength="40" 
-                                             title="#{bundle.CreateReglaTriggerTitle_idTrigger}" required="true" 
-                                             requiredMessage="#{bundle.CreateReglaTriggerRequiredMessage_idTrigger}"/>
-                            </p:column>
-                        </p:row>
-                        <p:row></p:row>
                         <p:row>
                             <p:column>
                                 <p:outputLabel value="Ejecutar &nbsp;&nbsp;" for="eventoid" />
@@ -127,6 +111,13 @@
                                 <f:selectItems value="#{reglaTriggerController.filterHelperForConditions.findPosibleOptionsIncludingAllPlaceHolders(filtro.idCampo, UserSessionBean.current)}" />
                                 <p:ajax/>
                             </p:selectOneMenu>
+                            
+                                 <p:inputText id="valorNumber" value="#{filtro.valor}" 
+                                               rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelperForConditions.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'NUMBER'}" 
+                                             required="true" requiredMessage="Se necesita un valor para comparar." />
+
+                                  <pe:keyFilter for="valorNumber" mask="int" rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelperForConditions.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'NUMBER'}" />
+          
 
                             <p:autoComplete styleClass="full-width" value="#{filtro.valor}"
                                             id="valorentity11" completeMethod="#{emailClienteController.completeEmailCliente}"  
@@ -273,17 +264,20 @@
                                              update=":form:messages :form:accionesTable" title="Agregar acci&oacute;n"/>
                         </p:column>
                     </p:dataTable>
-                    <div align="right">
-                        <h:panelGrid columns="2">
-                            <p:outputLabel value="#{bundle.CreateReglaTriggerLabel_desccripcion}" for="descripcion" />                        
-                            <p:inputTextarea rows="2" cols="117" id="descripcion" value="#{reglaTriggerController.selected.desccripcion}" title="#{bundle.CreateReglaTriggerTitle_desccripcion}" />
-                        </h:panelGrid>
-                    </div>
-
+                    
+                     <br/>
+                
+                 <p:outputLabel value="#{bundle.CreateReglaTriggerLabel_desccripcion}" for="descripcion" style="font-weight: bold"/>     
+                
+                  <p:inputTextarea rows="2" id="descripcion" value="#{reglaTriggerController.selected.desccripcion}" style="width: 100%"
+                                             title="#{bundle.CreateReglaTriggerTitle_desccripcion}" />
+                   
                 </h:panelGrid>
 
 
-                <br/>
+               
+    <br/>
+                            
                 <div align="right" style="width: 800px;">
                     <p:commandButton action="#{reglaTriggerController.prepareList}" value="Volver a las Reglas" immediate="true" ajax="false" icon="fa fa-level-up"/>
                     &nbsp;

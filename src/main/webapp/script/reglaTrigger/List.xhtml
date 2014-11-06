@@ -9,19 +9,17 @@
 
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
-            <h:outputText value="Reglas de negocio"></h:outputText>
+            <p:outputLabel value="Reglas de negocio"/>
         </ui:define>
         <ui:define name="west">
-            <p:accordionPanel multiple="true" cache="false" >
-                <p:tab title="Reglas de negocio" id="accionestab1">
+            <p:panel>
                     <h:outputLabel escape="false" value="#{bundle.ayudaReglas}"/>
                     <br/>
                     <h:outputLabel value="Ordering triggers" style="font-weight: bold"/>
                     <h:outputLabel value="When a ticket is created or updated, Itcs helpdesk runs through all the triggers in order. 
                                    So it's important to make sure your triggers are in the right order.                                   
                                    New triggers are added to the bottom of the triggers list. "/>
-                </p:tab>
-            </p:accordionPanel>
+            </p:panel>
         </ui:define>
         <ui:define name="body">
             <style type="text/css">
@@ -30,9 +28,7 @@
                     max-width: 500px;
                 }
             </style>
-            <h1>Reglas de Negocio</h1>
-            <p:separator/>
-            <br/>
+           
             <h:form id="form">
                 <script type="text/javascript">
                     jQuery(function() {
@@ -69,25 +65,30 @@
                         </div>
                     </f:facet>
 
-                    <p:column headerText="Estado" exportable="false">
-                        <p:selectBooleanButton style="width: 50px; height: 20px;" id="EstadoRegla" value="#{item.reglaActiva}" onLabel="ON" offLabel="OFF" onIcon="ui-icon-check" offIcon="ui-icon-close">  
-                            <p:ajax update=":form" listener="#{reglaTriggerController.update(item)}"/>  
-                        </p:selectBooleanButton>  
-                        <p:tooltip for="EstadoRegla" value="#{item.desccripcion}"/>
-
-                    </p:column>
+                    
 
                     <p:column >
                         <f:facet name="header">
                             <h:outputText value="Descripci&oacute;n"/>
                         </f:facet>
                         <h:panelGroup id="nombreDescripcion">
+                            <i class="fa fa-bars"> &nbsp; <p:outputLabel value="#{item.orden}." /></i>
+                            
+                              &nbsp;
                             <h:outputText id="Nombre" value="#{item.idTrigger}" style="font-weight: bold;"/>
                             &nbsp;
                             <h:outputText id="evento" title=""
                                           value="#{item.desccripcion}" escape="false"/>
                         </h:panelGroup>
                         <pe:tooltip for="nombreDescripcion" value="#{item.toString()}" />
+                    </p:column>
+                    
+                     <p:column headerText="Estado" exportable="false">
+                        <p:selectBooleanButton style="width: 50px; height: 20px;" id="EstadoRegla" value="#{item.reglaActiva}" onLabel="ON" offLabel="OFF" onIcon="ui-icon-check" offIcon="ui-icon-close">  
+                            <p:ajax update=":form" listener="#{reglaTriggerController.update(item)}"/>  
+                        </p:selectBooleanButton>  
+                        <p:tooltip for="EstadoRegla" value="#{item.desccripcion}"/>
+
                     </p:column>
 
 

@@ -4,8 +4,7 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:go="http://java.sun.com/jsf/composite/go">
+      xmlns:p="http://primefaces.org/ui">
 
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
@@ -15,16 +14,10 @@
 
             <ui:include src="help.xhtml"/>
 
-
         </ui:define>
         <ui:define name="body">
             <h:form id="form">
-
-                <go:filterView controllerMBean="#{prioridadController}" filterHelper="#{prioridadController.filterHelper}" 
-                               vistaControllerBackOutcome="/script/prioridad/List"/>
-
                 <h:panelGroup>
-
                     <p:dataTable id="tabla" widgetVar="PrioridadTable" var="item" value="#{prioridadController.items}" 
                                  rowKey="#{item.idPrioridad}"
                                  selection="#{prioridadController.selectedItems}"
@@ -70,37 +63,7 @@
                                              rendered="#{prioridadController.puedeEliminar(item) and filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
                         </p:column>
 
-                        <f:facet name="footer">
-                            <p:toolbar style="border: none;">
-                                <p:toolbarGroup align="left">
-
-                                    <p:outputLabel value="Páginas de "/>
-                                    <p:selectOneMenu id="cant" value="#{prioridadController.paginationPageSize}" style="top: 7px">
-                                        <p:ajax event="change" listener="#{prioridadController.resetPageSize()}" update=":form"/>
-                                        <f:selectItems value="#{prioridadController.pagination.pageSizesAvailable}"/>
-                                    </p:selectOneMenu>
-
-                                    <p:separator/>
-
-                                    <p:commandButton ajax="false" action="#{prioridadController.first}" disabled="#{not prioridadController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{prioridadController.pagination.itemsCount > 0}"/>
-
-                                    <p:commandButton ajax="false" action="#{prioridadController.previous}" disabled="#{not prioridadController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{prioridadController.pagination.itemsCount > 0}"/>
-
-                                    <p:commandButton ajax="false" action="#{prioridadController.next}" disabled="#{not prioridadController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{prioridadController.pagination.itemsCount > 0}"/>
-
-                                    <p:commandButton ajax="false" action="#{prioridadController.last}" disabled="#{not prioridadController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{prioridadController.pagination.itemsCount > 0}"/>
-
-                                    <p:separator/>
-                                    <p:commandButton ajax="true" action="#{prioridadController.destroySelected()}" value="Eliminar" disabled="#{empty prioridadController.selectedItems}"
-                                                     update=":form"
-                                                     icon="ui-icon ui-icon-close" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
-
-                                    <p:separator/>
-                                    <p:commandButton ajax="false" action="#{prioridadController.prepareCreate}" value="#{bundle.ListPrioridadCreateLink}" icon="ui-icon ui-icon-plus" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
-
-                                </p:toolbarGroup>
-                            </p:toolbar>
-                        </f:facet>
+                        
 
 
                     </p:dataTable>

@@ -30,8 +30,18 @@
                         <p:commandButton ajax="false" action="#{usuarioController.goBack}" value="#{bundle.goBack}" 
                                          icon="fa fa-chevron-left"/>
                          <p:separator/> 
+                         <p:commandButton ajax="false" action="#{usuarioController.prepareEditPK(usuarioController.selected.idUsuario)}" value="#{bundle.edit}" 
+                                         icon="fa fa-edit"
+                                         rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" />
+                           
+                       
+
+                   </p:toolbarGroup>
+                    
+                    <p:toolbarGroup align="right">   
+                      
                         <p:commandButton ajax="false" action="#{usuarioController.prepareCreate}" value="#{bundle.ViewUsuarioCreateLink}" 
-                                         icon="fa fa-plus-circle"
+                                         icon="fa fa-plus-circle" style="top:4px"
                                          rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" />
                            
                        

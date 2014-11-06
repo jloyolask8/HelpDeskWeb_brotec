@@ -55,7 +55,6 @@ public abstract class JPAFilterHelper implements Serializable {
 //    public Long count(Usuario who) throws IllegalStateException, ClassNotFoundException {
 //        return getJpaService().countEntities(vista, who);
 //    }
-
     public abstract JPAServiceFacade getJpaService();
 
     public List<ComparableField> getComparableFields() throws ClassNotFoundException {
@@ -140,13 +139,12 @@ public abstract class JPAFilterHelper implements Serializable {
             //El valor es el id de un entity, que tipo de Entity?= comparableField.tipo
 
             List<?> entities = getJpaService().findEntitiesBySearchQuery(query, comparableFieldsMap.get(idCampo), who);
-            
+
             List<SelectItem> selectItems = new LinkedList<>();
-                    
-            if(StringUtils.isEmpty(query)){
-                selectItems.addAll( getPlaceHolderItems(includeAny, includeNull, includeCurrentUser, comparableField) );
+
+            if (StringUtils.isEmpty(query)) {
+                selectItems.addAll(getPlaceHolderItems(includeAny, includeNull, includeCurrentUser, comparableField));
             }
-            
 
             for (Object o : entities) {
                 selectItems.add(new SelectItem(emf.getPersistenceUnitUtil().getIdentifier(o), o.toString()));
@@ -325,6 +323,16 @@ public abstract class JPAFilterHelper implements Serializable {
                 if (changeOps) {
                     lista.add(EnumTipoComparacion.CT.getTipoComparacion());
                 }
+            } else if (fieldType.equals(EnumFieldType.NUMBER.getFieldType())) {
+
+                lista = new ArrayList<>();
+                lista.add(EnumTipoComparacion.EQ.getTipoComparacion());
+                lista.add(EnumTipoComparacion.NE.getTipoComparacion());
+                lista.add(EnumTipoComparacion.GE.getTipoComparacion());
+                lista.add(EnumTipoComparacion.GT.getTipoComparacion());
+                lista.add(EnumTipoComparacion.LE.getTipoComparacion());
+                lista.add(EnumTipoComparacion.LT.getTipoComparacion());
+
             } else if (fieldType.equals(EnumFieldType.CALENDAR.getFieldType())) {
                 //El valor es de tipo Fecha, usar el String parseado a una fecha
                 lista = new ArrayList<>();

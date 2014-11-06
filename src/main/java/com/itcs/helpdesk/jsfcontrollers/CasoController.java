@@ -252,6 +252,17 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public void enableReplyMode() {
+        
+         if (current.getIdProducto() == null) {
+            showMessageInDialog(FacesMessage.SEVERITY_ERROR, "Acción requerida", "Antes de continuar es necesario que seleccione y guarde el " + applicationBean.getProductDescription() + " relacionado con el caso.");
+            return ;
+        }
+
+        if (current.getIdArea() == null) {
+            showMessageInDialog(FacesMessage.SEVERITY_ERROR, "Acción requerida", "Antes de continuar es necesario que seleccione y guarde el área al cual pertenece el caso.");
+            return ;
+        }
+        
         this.setReplyMode(true);
         this.setReplyByEmail(true);
 
@@ -273,6 +284,17 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public void enableCommentMode() {
+        
+         if (current.getIdProducto() == null) {
+            showMessageInDialog(FacesMessage.SEVERITY_ERROR, "Acción requerida", "Antes de continuar es necesario que seleccione y guarde el " + applicationBean.getProductDescription() + " relacionado con el caso.");
+            return ;
+        }
+
+        if (current.getIdArea() == null) {
+            showMessageInDialog(FacesMessage.SEVERITY_ERROR, "Acción requerida", "Antes de continuar es necesario que seleccione y guarde el área al cual pertenece el caso.");
+            return ;
+        }
+        
         this.setReplyMode(true);
         this.setReplyByEmail(false);
 
@@ -425,6 +447,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             }
         }
         addInfoMessage("Acción " + accionToRunSelected + " ejecutada exitosamente en " + count + " casos.");
+        recreateModel();
+        recreatePagination();
+        executeInClient("PF('runActionDialog').hide()");
         if (getSelectedItemsCount() > count) {
             addWarnMessage("Error: " + (getSelectedItemsCount() - count) + " casos no han sido enviados, favor revisar la configuración de correo del area correspondiente.");
         }
@@ -449,8 +474,10 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         if (casosToSend != null && !casosToSend.isEmpty()) {
             rulesEngine.applyRuleOnThisCasos(reglaTriggerSelected, casosToSend);
-            addInfoMessage("Regla " + reglaTriggerSelected + " ejecutada en " + casosToSend.size() + " casos.");
+            addInfoMessage("Regla ejecutada en " + casosToSend.size() + " casos.");
             recreateModel();
+            recreatePagination();
+            executeInClient("PF('applyRuleDialog').hide()");
             //TODO update table data
         } else {
             addWarnMessage("No se ha Seleccionado ningun caso para ejecutar la regla de negocio.");
@@ -3249,7 +3276,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public String mergeCliente() {
         try {
-            getJpaController().mergeCliente(current.getEmailCliente().getCliente());
+            getJpaController().mergeCliente(current.getIdCliente());
             executeInClient("PF('dialogClient').hide()");
             JsfUtil.addSuccessMessage("Cliente actualizado exitosamente.");
 
@@ -3261,6 +3288,17 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public String update() {
         try {
+
+            if (current.getIdProducto() == null) {
+                showMessageInDialog(FacesMessage.SEVERITY_ERROR, "Acción requerida", "Antes de continuar es necesario que seleccione y guarde el " + applicationBean.getProductDescription() + " relacionado con el caso.");
+                return null;
+            }
+
+            if (current.getIdArea() == null) {
+                showMessageInDialog(FacesMessage.SEVERITY_ERROR, "Acción requerida", "Antes de continuar es necesario que seleccione y guarde el área al cual pertenece el caso.");
+                return null;
+            }
+
             update(current);
             return "/script/caso/Edit";
         } catch (Exception e) {

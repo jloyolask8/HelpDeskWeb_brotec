@@ -282,13 +282,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
     }
 
     @Override
-    public String prepareEdit(Usuario u) {
-        current = u;
-        System.out.println("prepareEdit " + current.getIdUsuario());
-        if (current == null) {
-            JsfUtil.addSuccessMessage("Se requiere que seleccione una fila.");
-            return null;
-        }
+    protected void afterSetSelected() {
         current.setPass("");
         roles = (List<Rol>) current.getRolList();
 
@@ -298,28 +292,32 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
                 getGruposDualListModel().getSource().remove(grup);
             }
         }
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "/script/usuario/Edit";
     }
 
-    public String prepareEdit() {
-        if (current == null) {
-            JsfUtil.addSuccessMessage("Se requiere que seleccione una fila.");
-            return null;
-        }
-        current.setPass("");
-        roles = (List<Rol>) current.getRolList();
-
-        setGruposDualListModel(new DualListModel<Grupo>(getJpaController().getGrupoFindAll(), current.getGrupoList()));
-        for (Grupo grup : current.getGrupoList()) {
-            if (getGruposDualListModel().getSource().contains(grup)) {
-                getGruposDualListModel().getSource().remove(grup);
-            }
-        }
-
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "Edit";
-    }
+    
+//    @Override
+//    public String prepareEdit(Usuario u) {
+//        current = u;
+//        System.out.println("prepareEdit " + current.getIdUsuario());
+//        if (current == null) {
+//            JsfUtil.addSuccessMessage("Se requiere que seleccione una fila.");
+//            return null;
+//        }
+//        afterSetSelected();
+//        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
+//        return "/script/usuario/Edit";
+//    }
+//
+//    public String prepareEdit() {
+//        if (current == null) {
+//            JsfUtil.addSuccessMessage("Se requiere que seleccione una fila.");
+//            return null;
+//        }
+//       afterSetSelected();
+//
+//        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
+//        return "/script/usuario/Edit";
+//    }
 
     public String prepareDelete() {
         String idUsuario = JsfUtil.getRequestParameter("idUsuario");

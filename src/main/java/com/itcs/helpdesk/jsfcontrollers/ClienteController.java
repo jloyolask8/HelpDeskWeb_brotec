@@ -19,7 +19,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.model.ListDataModel;
-import org.apache.commons.lang3.StringUtils;
 import org.primefaces.model.SelectableDataModel;
 
 @ManagedBean(name = "clienteController")
@@ -131,9 +130,9 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
         return "/script/cliente/Create";
     }
 
-    public String reinit() {
+    public void reinit() {
         emailToAdd = new EmailCliente();
-        return null;
+        executeInClient("PF('addEmail').hide()");
     }
 
     public String create() {

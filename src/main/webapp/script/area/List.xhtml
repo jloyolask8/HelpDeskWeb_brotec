@@ -3,16 +3,15 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:go="http://java.sun.com/jsf/composite/go">
 
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
             <p:outputLabel value="#{bundle.ListAreaTitle}"/>
         </ui:define>
 
-        <ui:define name="menutitle">Áreas</ui:define>
         <ui:define name="west">
-        
             <ui:include src="help.xhtml"/>
         </ui:define>
 
@@ -25,15 +24,22 @@
 
                         <h:outputText escape="false" value="#{bundle.ListAreaEmpty}" rendered="#{areaController.items.rowCount == 0}"/>
                         <h:panelGroup rendered="#{areaController.items.rowCount > 0}">
+                            <p:toolbar>
+                                <p:toolbarGroup align="right">
 
+                                    <go:paginatorButtons controllerMBean="#{areaController}" update=":form"/>
+                                    <p:separator/>
+                                    <p:commandButton ajax="false" action="#{areaController.prepareCreate}" immediate="true"
+                                                     rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" value="#{bundle.ListAreaCreateLink}" icon="fa fa-plus-circle" />
 
+                                </p:toolbarGroup>  
+
+                            </p:toolbar>
 
                             <p:dataTable widgetVar="AreaTable" var="item" value="#{areaController.items}" selectionMode="single"
                                          emptyMessage="#{bundle.ListAreaEmpty}" >
 
-                                <f:facet name="header">  
-                                    <h:outputText value="#{bundle.ListAreaTitle} (#{areaController.pagination.pageFirstItem + 1} - #{areaController.pagination.pageLastItem + 1} de #{areaController.pagination.itemsCount})"></h:outputText>                                                     
-                                </f:facet>   
+
 
                                 <p:column style="width:4%">  
                                     <p:rowToggler />  
@@ -45,10 +51,10 @@
                                         <h:outputText value="#{item.nombre}" title="#{item.idArea}" style="font-weight: bold;"/>
                                         &nbsp;
                                         <h:outputText title="#{bundle.ListAreaTitle_descripcion}"
-                                                     value="#{item.descripcion}" />
+                                                      value="#{item.descripcion}" />
                                     </h:panelGroup>
                                 </p:column>
-                             
+
                                 <p:column headerText="Casos(Abiertos/Cerrados)">                            
                                     <h:outputText value="#{areaController.countCasosAbiertos(item)}/#{areaController.countCasosCerrados(item)}"/>
                                 </p:column>
@@ -60,9 +66,17 @@
                                     <h:outputText value="#{item.emailAcusederecibo ? 'Si':'No'}" />
                                 </p:column>
 
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Canal"/>
+                                    </f:facet>
+                                    <h:outputText value="#{item.idCanal}" />
+                                </p:column>
+
                                 <p:column headerText="Acciones">
+                                                                        <p:commandButton ajax="false" action="#{areaController.prepareView(item.idArea)}" title="#{bundle.ListAreaViewLink}" iconPos="notext" icon="ui-icon ui-icon-search"/>
+
                                     <p:commandButton ajax="false" action="#{areaController.prepareEdit(item.idArea)}" title="#{bundle.ListAreaEditLink}" iconPos="notext" icon="ui-icon ui-icon-pencil"/>
-                                    <p:commandButton ajax="false" action="#{areaController.prepareView(item.idArea)}" title="#{bundle.ListAreaViewLink}" iconPos="notext" icon="ui-icon ui-icon-search"/>
 
                                     <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" iconPos="notext"
                                                      action="#{areaController.setSelected(item)}" oncomplete="PF('confirmation').show()" 
@@ -74,47 +88,23 @@
 
                                 <p:rowExpansion> 
 
-                                    <h:panelGrid>
 
-                                        <p:dataList id="tablaGrupos" widgetVar="grupoList" var="item2" value="#{item.grupoList}" >
+                                    <p:dataList id="tablaGrupos" widgetVar="grupoList" var="item2" value="#{item.grupoList}" 
+                                                paginator="true" rows="5" paginatorAlwaysVisible="false">
 
-                                            <f:facet name="header">
-                                                <h:outputText value="Grupos "/>
-                                            </f:facet>
+                                        <f:facet name="header">
+                                            <h:outputText value="Grupos "/>
+                                        </f:facet>
 
-                                            <h:outputText value="#{item2.idGrupo} - #{item2.nombre}"/>
+                                        <h:outputText value="#{item2.idGrupo} - #{item2.nombre}"/>
 
-                                        </p:dataList>
+                                    </p:dataList>
 
-                                    </h:panelGrid>
 
                                 </p:rowExpansion>
 
                                 <f:facet name="footer">
-                                    <p:toolbar style="border: none;">
-                                        <p:toolbarGroup align="left">
 
-                                            <p:outputLabel value="Páginas de "/>
-                                            <p:selectOneMenu id="cant" value="#{areaController.paginationPageSize}" style="top: 7px">
-                                                <p:ajax event="change" listener="#{areaController.resetPageSize()}" update=":form"/>
-                                                <f:selectItems value="#{areaController.pagination.pageSizesAvailable}"/>
-                                            </p:selectOneMenu>
-
-                                            <p:separator/>
-
-                                            <p:commandButton ajax="false" action="#{areaController.first}" disabled="#{not areaController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{areaController.pagination.itemsCount > 0}"/>
-
-                                            <p:commandButton ajax="false" action="#{areaController.previous}" disabled="#{not areaController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{areaController.pagination.itemsCount > 0}"/>
-
-                                            <p:commandButton ajax="false" action="#{areaController.next}" disabled="#{not areaController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{areaController.pagination.itemsCount > 0}"/>
-
-                                            <p:commandButton ajax="false" action="#{areaController.last}" disabled="#{not areaController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{areaController.pagination.itemsCount > 0}"/>
-
-                                            <p:separator/>
-                                            <p:commandButton ajax="false" action="#{areaController.prepareCreate}" value="#{bundle.ListAreaCreateLink}" icon="ui-icon ui-icon-plus" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
-
-                                        </p:toolbarGroup>
-                                    </p:toolbar>
                                 </f:facet>
 
 

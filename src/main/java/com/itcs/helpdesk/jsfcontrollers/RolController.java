@@ -40,6 +40,16 @@ public class RolController extends AbstractManagedBean<Rol> implements Serializa
     }
 
     @Override
+    protected String getEditPage() {
+        return "/script/rol/Edit";
+    }
+
+    @Override
+    protected String getViewPage() {
+        return "/script/rol/View";
+    }
+
+    @Override
     protected String getListPage() {
         return "/script/rol/List";
     }

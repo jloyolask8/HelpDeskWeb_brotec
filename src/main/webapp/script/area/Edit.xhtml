@@ -20,12 +20,6 @@
 
             <h:form id="form">
                 <p:messages/>
-                <p:tabView id="tabs" activeIndex="#{areaController.editActiveIndex}" dynamic="true">
-
-
-                    <p:tab id="DatosArea" title="Datos del Area" >
-
-                        <p:fieldset legend="Información Base del área"> 
                             <h:panelGrid columns="2">
                                 <p:outputLabel style="font-weight: bold;" value="Identificador único:" for="idArea" />
                                 <p:inputText id="idArea" disabled="true" value="#{areaController.selected.idArea}" title="#{bundle.EditAreaTitle_idArea}" required="true" requiredMessage="#{bundle.EditAreaRequiredMessage_idArea}"/>
@@ -36,7 +30,7 @@
 
                                 <p:outputLabel style="font-weight: bold;" value="#{bundle.EditAreaLabel_descripcion}" for="descripcion"/>
                                 <p:inputTextarea rows="4" cols="50" id="descripcion" value="#{areaController.selected.descripcion}" title="#{bundle.EditAreaTitle_descripcion}" />
-                                <p:outputLabel style="font-weight: bold;" value="Canal de salida por defecto" for="idCanalSalida"/>
+                                <p:outputLabel style="font-weight: bold;" value="#{bundle.AreaCanalSalida}" for="idCanalSalida"/>
                                 <p:selectOneMenu id="idCanalSalida" style="width: 220px;"
                                                  filter="true" filterMatchMode="contains"
                                                  value="#{areaController.selected.idCanal}" >
@@ -72,21 +66,17 @@
                                              toolbar="#{applicationBean.ckEditorToolbar}"
                                              id="respuesta" height="210"/>
                             </h:panelGrid>
-                        </p:fieldset>
                         <br/>
-                    </p:tab>
-                </p:tabView>
 
                 <p:toolbar>  
                    <p:toolbarGroup align="left">   
-                        <p:commandButton ajax="false" action="#{areaController.update}" value="#{bundle.SaveLink}" icon="ui-icon-disk"/>
+                       <p:commandButton ajax="false" action="#{areaController.prepareList}" value="#{bundle.goBack}" immediate="true" icon="fa fa-chevron-left"/>
 
-                        <p:separator/>
-                        <p:commandButton ajax="false" action="View" value="#{bundle.EditAreaViewLink}" immediate="true" icon="ui-icon-document"/>
-                        <p:commandButton ajax="false" action="#{areaController.prepareList}" value="#{bundle.EditAreaShowAllLink}" immediate="true" icon="ui-icon-folder-open"/>
+                   </p:toolbarGroup>
+                    
+                     <p:toolbarGroup align="right">   
+                         <p:commandButton ajax="false" action="#{areaController.update}" value="#{bundle.SaveLink}" icon="fa fa-save" style="top: 4px"/>
 
-                        <p:separator/>
-                        <p:commandButton id="showDialogButton" value="#{bundle.DestroyLink} Area" onclick="PF('confirmation').show()" icon="ui-icon ui-icon-trash" />                                
                    </p:toolbarGroup>
                 </p:toolbar>
 

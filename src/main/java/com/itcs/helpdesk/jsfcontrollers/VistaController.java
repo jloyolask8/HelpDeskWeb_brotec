@@ -184,7 +184,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
             if (filtroAcceso.verificarAccesoAFuncionAdministrarVistas()) {
                 this.create(current);
                 resetVistas();
-                return prepareList();
+                return goBack();
             } else {
                 addErrorMessage("No tiene privilegios para realizar esta operación!");
             }

@@ -128,6 +128,13 @@
                                 <f:selectItems value="#{reglaTriggerController.filterHelperForConditions.findPosibleOptionsIncludingAllPlaceHolders(filtro.idCampo, UserSessionBean.current)}" />
                                 <p:ajax/>
                             </p:selectOneMenu>
+                            
+                                <p:inputText id="valorNumber" value="#{filtro.valor}" 
+                                               rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelperForConditions.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'NUMBER'}" 
+                                             required="true" requiredMessage="Se necesita un valor para comparar." />
+
+                                  <pe:keyFilter for="valorNumber" mask="int" rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelperForConditions.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'NUMBER'}" />
+                                 
 
                             <p:autoComplete styleClass="full-width" value="#{filtro.valor}"
                                             id="valorentity11" completeMethod="#{emailClienteController.completeEmailCliente}"  

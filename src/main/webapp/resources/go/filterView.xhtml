@@ -6,6 +6,7 @@
           xmlns:h="http://java.sun.com/jsf/html"
           xmlns:f="http://java.sun.com/jsf/core"
           xmlns:p="http://primefaces.org/ui"
+          xmlns:pe="http://primefaces.org/ui/extensions"
           xmlns:composite="http://java.sun.com/jsf/composite">
         <composite:interface>
             <composite:attribute name="controllerMBean" required="true" /> 
@@ -129,7 +130,13 @@
 
                                 <p:inputText id="valortext" value="#{filtro.valor}" rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'TEXT'}" 
                                              required="true" requiredMessage="Se necesita un valor para comparar." disabled="#{not cc.attrs.canChangeFilters}"/>
+                                
+                                  <p:inputText id="valorNumber" value="#{filtro.valor}" 
+                                               rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'NUMBER'}" 
+                                             required="true" requiredMessage="Se necesita un valor para comparar." disabled="#{not cc.attrs.canChangeFilters}"/>
 
+                                  <pe:keyFilter for="valorNumber" mask="int" rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'NUMBER'}" />
+                                 
                                 <p:autoComplete value="#{filtro.valoresList}" forceSelection="true"  
                                                 disabled="#{not cc.attrs.canChangeFilters}"
                                                 required="true" requiredMessage="Se necesita un valor para comparar."

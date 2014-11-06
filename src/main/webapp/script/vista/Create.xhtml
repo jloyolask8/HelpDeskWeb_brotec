@@ -12,14 +12,12 @@
             <h:outputText value="#{bundle.CreateVistaTitle}"></h:outputText>
         </ui:define>
         
-         <ui:define name="west">
-            <p:accordionPanel multiple="true" cache="true" >
-                <p:tab title="Vistas" >
+       <ui:define name="west">
+                <p:panel>
                     <h:outputLabel escape="false" value="Las vistas reúnen un grupo de casos según un conjunto de criterios que 
                                    expresan una variedad de estados del caso como, por ejemplo, Nuevo, En proceso o Solucionado. 
                                    Las vistas permiten crear grupos coherentes de casos para asi poder acceder más rapidamente a los casos de interés."/>
-                </p:tab>
-            </p:accordionPanel>
+                </p:panel>
         </ui:define>
         
         <ui:define name="body">

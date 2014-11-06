@@ -19,9 +19,7 @@
                            user="#{UserSessionBean.current}"/>
 
 
-            <div class="formSeparator">
-                <h2>Info</h2>
-            </div>
+            <br/>
 
             <h:outputLabel escape="false" value="Las vistas reúnen un grupo de entidades del sistema según un conjunto de criterios o filtros que 
                            expresan una variedad de estados de dicha entidad. Por ejemplo para un caso, el estado del caso puede ser Nuevo, En proceso o Solucionado, una Vista podría mostrar todos los casos que estén en estado Nuevo. 
@@ -70,21 +68,9 @@
 
                     <p:dataTable id="datatableVistas" value="#{vistaController.items}" var="item" emptyMessage="#{bundle.ListVistaEmpty}">
 
-                        <p:columnGroup type="header">  
-                            <p:row>  
-                                <p:column rowspan="2" headerText="#{bundle.ListVistaTitle_nombre}" />  
-                                <p:column colspan="5" headerText="Visibilidad" />  
-                            </p:row>  
-                            <p:row>  
-                                <p:column headerText="#{bundle.ListVistaTitle_visibleToAll}" />                                 
-                                <p:column headerText="#{bundle.ListVistaTitle_idGrupo}" />  
-                                <p:column headerText="#{bundle.ListVistaTitle_idArea}" />  
-                                <p:column headerText="#{bundle.ListVistaTitle_idUsuarioCreadaPor}" />  
-                                <p:column headerText="Opciones" />  
-                            </p:row>  
-                        </p:columnGroup>
+                      
 
-                        <p:column>
+                        <p:column sortBy="#{item.nombre}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListVistaTitle_nombre}"/>
                             </f:facet>
@@ -92,24 +78,24 @@
                             <p:tooltip for="nombreVista" value="#{item.idVista} - #{item.descripcion}"/>
                         </p:column>
 
-                        <p:column>
+                        <p:column sortBy="#{item.visibleToAll}">
                             <f:facet name="header">
                                 <h:outputText value="Visible por"/>
                             </f:facet>
                             <h:outputText value="#{item.visibleToAll ? 'Para Todos':'Privada'}" />
                         </p:column>
 
-                        <p:column>
+                        <p:column sortBy="#{item.idGrupo.nombre}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListVistaTitle_idGrupo}"/>
                             </f:facet>
-                            <h:outputText value="#{item.idGrupo}"/>
+                            <h:outputText value="#{item.idGrupo.nombre}"/>
                         </p:column>
-                        <p:column>
+                        <p:column sortBy="#{item.idArea.nombre}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListVistaTitle_idArea}"/>
                             </f:facet>
-                            <h:outputText value="#{item.idArea}"/>
+                            <h:outputText value="#{item.idArea.nombre}"/>
                         </p:column>
 
 

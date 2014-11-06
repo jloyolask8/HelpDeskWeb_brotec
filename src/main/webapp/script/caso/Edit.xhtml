@@ -129,41 +129,34 @@
 
                 <h:panelGrid columns="14">     
 
-                    <p:commandButton ajax="false" title="#{casoController.selected.idCasoPadre ne null ? 'Subir al caso '.concat(casoController.selected.idCasoPadre):'Ir al listado de casos'}" icon="fa fa-chevron-left" action="#{casoController.goOneLevelUp()}" style="width: 60px;"/>
+                    <p:commandButton ajax="false" title="#{casoController.selected.idCasoPadre ne null ? 'Subir al caso '.concat(casoController.selected.idCasoPadre):'Ir al listado de casos'}" icon="fa fa-chevron-left" action="#{casoController.goOneLevelUp()}" style="width: 50px;"/>
 
-                    <p:commandButton ajax="false" title="Actualizar" icon="fa fa-refresh" actionListener="#{casoController.refreshCurrentCaso()}" style="width: 60px;"/>
-                    <p:commandButton rendered="#{casoController.verificarTomarCaso()}" ajax="true" value="Asignármelo" onclick="PF('tomarCaso').show()" />
+                    <p:commandButton ajax="false" title="Actualizar" icon="fa fa-refresh" actionListener="#{casoController.refreshCurrentCaso()}" style="width: 50px;"/>
 
-
-
-
-                    <p:commandButton rendered="#{casoController.verificarCerrarCaso()}" icon="fa fa-lock"
-                                     ajax="true" value="Cerrar" onclick="PF('closeCase').show();"/>
-
-                    <p:commandButton rendered="#{casoController.verificarReabrirCaso()}" ajax="true" value="Reabrir Caso"  icon="fa fa-unlock"
-                                     onclick="PF('openCase').show();" />
-
-                    <p:commandButton rendered="#{casoController.verificarTransferirCaso()}" icon="fa fa-plane"
-                                     ajax="true" value="Transferir" onclick="PF('transferir').show();"/>
-
-                    <p:commandButton rendered="#{casoController.verificarAsignarCaso()}" icon="fa fa-plane"
-                                     ajax="true" value="Asignar" onclick="PF('transferir').show();"/>
-
-
-                    <p:commandButton ajax="false" icon="fa fa-download" value="Generar Acta de PreEntrega" 
+                    <p:commandButton ajax="false" icon="fa fa-download" value="Acta Pre-entrega" 
                                      rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.ENTREGA.getTipoCaso()}">
                         <p:fileDownload value="#{casoController.generarActaPreEntrega()}" />
                     </p:commandButton>
 
-                    <p:commandButton id="panelBotonesResp" value="Otras acciones" type="button" />
+                    <p:commandButton id="panelBotonesResp" title="Acciones" type="button" icon="fa fa-cogs fa-user" iconPos="notext" style="width: 50px;"/>
                     <p:menu overlay="true" trigger="panelBotonesResp" my="left top" at="left bottom" style="width:250px !important;">
 
+                        <p:menuitem  rendered="#{casoController.verificarTomarCaso()}" ajax="true" value="Asignármelo" onclick="PF('tomarCaso').show()" icon="fa fa-inbox" />
+                        <p:menuitem  rendered="#{casoController.verificarTransferirCaso()}" icon="fa fa-user"
+                                     ajax="true" value="Transferir" onclick="PF('transferir').show();" />
+                        <p:menuitem  rendered="#{casoController.verificarAsignarCaso()}" icon="fa fa-user"
+                                     ajax="true" value="Asignar" onclick="PF('transferir').show();" />
+                        <p:menuitem  rendered="#{casoController.verificarCerrarCaso()}" icon="fa fa-lock"
+                                     ajax="true" value="Cerrar el caso"  onclick="PF('closeCase').show();" />
+                        <p:menuitem  rendered="#{casoController.verificarReabrirCaso()}" ajax="true" value="Reabrir Caso"  icon="fa fa-unlock" 
+                                     onclick="PF('openCase').show();" />
+                        <p:separator/>
                         <p:menuitem rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.PREVENTIVO.getTipoCaso()}"
                                     value="Generar Documento Visita Preventiva" 
                                     title="Generar Documento Visita Preventiva"                                                 
                                     actionListener="#{casoController.generarPDFVisitaPreventivaPostventa()}"
                                     icon="fa fa-file"  />
-
+                        <p:separator rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.PREVENTIVO.getTipoCaso()}"/>
                         <p:menuitem ajax="false" value="Copiar" action="#{casoController.prepareCopy()}" icon="fa fa-copy"/>
 
                         <p:menuitem ajax="false" value="Copiar y Asignármelo" action="#{casoController.prepareCopyAndAssignMe()}" icon="fa fa-clipboard"/>
@@ -204,7 +197,7 @@
 
                 <p:tab id="tab-actividades" title="Actividades">
 
-                    <p:scrollPanel id="scrollpaneActividades" mode="native" style="border: 0; height: 500px;">
+                    <p:scrollPanel id="scrollpaneActividades" mode="native" style="border: 0;">
                         <p:panel id="resumenNotas" style="border: 0;">
                             <p:effect type="highlight" event="load" /> 
                             <h:panelGrid columns="9" >
@@ -288,11 +281,6 @@
 
                 <p:tab id="tabArchivos" title="Adjuntos (#{casoController.cantidadAttachment()})">
                     <h:form id="formlistaadjuntos">
-
-
-                        <div class="formSeparator">
-                            <h2>Adjuntos (#{casoController.cantidadAttachment()})</h2>
-                        </div>
 
                         <h:panelGroup id="listaadjuntos" layout="block">
 
@@ -1354,7 +1342,7 @@
             </p:dialog>
             <script>
                 //<![CDATA[
-                $(document).ready(function () {
+                $(document).ready(function() {
                     resizeScrollPanel();
                 });
 
@@ -1384,7 +1372,7 @@
                 }
 
                 var id;
-                $(window).resize(function () {
+                $(window).resize(function() {
                     id = setTimeout(resizeScrollPanel, 500);
                 });
 

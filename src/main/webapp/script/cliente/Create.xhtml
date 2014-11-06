@@ -8,19 +8,17 @@
 
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
-            <h:outputText value="Formulario de nuevo cliente"></h:outputText>
+            <p:outputLabel value="Formulario de nuevo cliente"/>
         </ui:define>
         <ui:define name="west">
-            <p:accordionPanel multiple="true" cache="true" id="accionesaccordion1">
-                <p:tab title="Clientes" id="accionestab1">
+                <p:panel>
                     <h:outputLabel escape="false" value="#{bundle.ayudaClientes}"/>
-                </p:tab>
-            </p:accordionPanel>
+                </p:panel>
         </ui:define>
         <ui:define name="body">     
             <h:form id="form">
                 <p:messages globalOnly="true"/>
-                <p:panel header="Ingresar Nuevo Cliente">
+             
 
                     <h:panelGrid id="datosDelCliente" columns="3">
                         <p:outputLabel id="rutLbl" value="#{bundle.CreateClienteLabel_rut}" for="rut" style="font-weight:bold"/>
@@ -60,42 +58,65 @@
                         <p:message display="both" for="dirComercial"/>
                     </h:panelGrid>
 
-                    <p:panel header="Agregar e-mail" style="margin-bottom:20px" >
-                        <h:panelGrid columns="2" cellpadding="5">
-                            <h:outputLabel value="e-mail" for="txt_title"></h:outputLabel>
-                            <p:inputText id="txt_title" disabled="#{not clienteController.canEdit}"  value="#{clienteController.emailToAdd.emailCliente}" required="true"/>
+                   <div class="formSeparator">
+                    <h2>Email(s)</h2>
+                </div>
 
-                            <p:commandButton id="btn_reset" disabled="#{not clienteController.canEdit}"  value="Reset" type="reset"/>
-                            <p:commandButton id="btn_add" disabled="#{not clienteController.canEdit}"  value="Agregar" update="books @parent" action="#{clienteController.reinit()}" >
-                                <p:collector value="#{clienteController.emailToAdd}" addTo="#{clienteController.selected.emailClienteList}" unique="true"/>
-                            </p:commandButton>
-                        </h:panelGrid>
-                    </p:panel>
+                <p:outputPanel id="emails">
+                    <p:dataTable value="#{clienteController.selected.emailClienteList}" var="email" id="emailsTable">
 
-                    <p:outputPanel id="books">
-                        <p:dataTable value="#{clienteController.selected.emailClienteList}" var="email" id="booksTable">
+                        <p:column headerText="e-mail">
+                            <h:outputText value="#{email.emailCliente}" />
+                        </p:column>
 
-                            <p:column headerText="e-mail">
-                                <h:outputText value="#{email.emailCliente}" />
-                            </p:column>
+                        <p:column headerText="Accion">
+                            <p:commandLink value="Eliminar" update=":form:emails" process=":form:emails">
+                                <p:collector value="#{email}" removeFrom="#{clienteController.selected.emailClienteList}" unique="true"/>
+                            </p:commandLink>
+                        </p:column>
 
-                            <p:column headerText="Accion">
-                                <p:commandLink value="Eliminar" update=":form:books" process=":form:books">
-                                    <p:collector value="#{email}" removeFrom="#{clienteController.selected.emailClienteList}" unique="true"/>
-                                </p:commandLink>
-                            </p:column>
+                    </p:dataTable>
+                </p:outputPanel>
 
-                        </p:dataTable>
-                    </p:outputPanel>
+                
 
-                    <f:facet name="footer">
-                        <p:commandButton action="#{clienteController.create}" value="Guardar" ajax="true" update=":form" disabled="#{not clienteController.canCreate}"/>                     
-                        <p:commandButton action="#{clienteController.prepareList}" value="Volver" immediate="true" ajax="false" icon="ui-icon-folder-open"/>
-                    </f:facet> 
+                   
+<br/>
+               <p:toolbar>  
+                    <p:toolbarGroup align="left">   
+                        <p:commandButton action="#{clienteController.prepareList}" value="#{bundle.goBack}" 
+                                         immediate="true" ajax="false" icon="fa fa-chevron-left"/>
+                        <p:separator/> 
+                        <p:commandButton type="button" onclick="PF('addEmail').show()" disabled="#{not clienteController.canCreate}"
+                                 value="Agregar email"/>
+                    </p:toolbarGroup>
 
-                </p:panel>
+                    <p:toolbarGroup align="right">   
+                        <p:commandButton ajax="false" action="#{clienteController.create}" value="#{bundle.Save}" icon="fa fa-save" style="top:4px" disabled="#{not clienteController.canCreate}"/>
+                    </p:toolbarGroup>
+                </p:toolbar>
+                
             </h:form>
         </ui:define>
+        
+         <ui:define name="dialogs">
+            <p:dialog header="Agregar e-mail" widgetVar="addEmail" modal="true" dynamic="true" closeOnEscape="true" closable="true">
+                <h:form>
+                    <h:panelGrid columns="2" cellpadding="5">
+                        <h:outputLabel value="e-mail" for="txt_title"></h:outputLabel>
+                        <p:inputText id="txt_title" value="#{clienteController.emailToAdd.emailCliente}" required="true"/>
+
+                        <p:commandButton type="button" onclick="PF('addEmail').hide()" value="Cerrar"/>
+                        <p:commandButton id="btn_add" value="Agregar" update=":form:emails @parent" action="#{clienteController.reinit()}" >
+                            <p:collector value="#{clienteController.emailToAdd}" 
+                                         addTo="#{clienteController.selected.emailClienteList}" unique="true"/>
+                        </p:commandButton>
+                    </h:panelGrid>
+                </h:form>
+            </p:dialog>
+
+        </ui:define>
+        
     </ui:composition>
 
 </html>

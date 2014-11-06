@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <p:outputLabel value="Detalles del Producto #{subComponenteController.selected.idSubComponente}"/>
+        </ui:define>
+        <ui:define name="west">
+          
+             <h:form id="productoContratadoForm">
+                <p:panel header="Cliente">
+
+                    <p:dataTable var="item" value="#{subComponenteController.selected.productoContratadoList}"
+                                 emptyMessage="#{bundle.ListProductoContratadoEmpty}">
+
+
+                        <p:column headerText="Cliente">
+
+                            <p:commandLink  
+                                action="#{clienteController.prepareView(item.cliente, '/script/producto/ViewSubComponente')}" 
+                                ajax="false" value="#{item.cliente.capitalName}"
+                                immediate="true"/>
+                        </p:column>
+
+                        <p:column headerText="Relación">
+                            <h:outputText value="#{item.tipoAsociacion}"/>
+                        </p:column>
+
+                    </p:dataTable>
+
+                </p:panel>
+
+            </h:form>
+
+            <br/>
+            
+            <h:form id="documentosForm">
+                <p:panel header="Documentos del Producto #{subComponenteController.selected.idSubComponente}">
+
+                    <h:panelGrid columns="2">
+                        <p:outputLabel value="Acta de Entrega:" style="font-weight: bold;"/>
+                        <p:commandLink value="adjuntar archivo" onclick="PF('uploadDialogidArchivoActaEntrega').show()"
+                                       rendered="#{subComponenteController.selected.idArchivoActaEntrega eq null}"/>
+
+                        <h:panelGrid columns="3"  rendered="#{subComponenteController.selected.idArchivoActaEntrega ne null}">
+                            <h:outputText value="#{productoController.getFileName(subComponenteController.selected.idArchivoActaEntrega)}"/>
+
+                            <p:commandButton ajax="false" icon="ui-icon-circle-arrow-s">
+                                <p:fileDownload value="#{productoController.downloadArchivo(subComponenteController.selected.idArchivoActaEntrega)}" />
+                            </p:commandButton>
+
+                            <p:commandButton icon="ui-icon-close" update=":formborrarArchivoActaEntrega :uploadFormidArchivoActaEntrega"
+                                             onclick="borrarArchivoActaEntrega.show();">
+                                <f:setPropertyActionListener target="#{productoController.idFileDelete}" 
+                                                             value="#{subComponenteController.selected.idArchivoActaEntrega}"/>
+                            </p:commandButton>
+                        </h:panelGrid>
+
+                        <p:outputLabel value="Acta de Pre-Entrega:" style="font-weight: bold;"/>
+                        <p:commandLink value="adjuntar archivo" onclick="PF('uploadDialogidArchivoActaPreEntrega').show()"
+                                       rendered="#{subComponenteController.selected.idArchivoActaPreEntrega eq null}"/>
+
+                        <h:panelGrid columns="3"  rendered="#{subComponenteController.selected.idArchivoActaPreEntrega ne null}">
+                            <h:outputText value="#{productoController.getFileName(subComponenteController.selected.idArchivoActaPreEntrega)}"/>
+
+                            <p:commandButton ajax="false" icon="ui-icon-circle-arrow-s">
+                                <p:fileDownload value="#{productoController.downloadArchivo(subComponenteController.selected.idArchivoActaPreEntrega)}" />
+                            </p:commandButton>
+
+                            <p:commandButton icon="ui-icon-close" update=":formborrarArchivoActaPreEntrega :uploadFormidArchivoActaPreEntrega"
+                                             onclick="borrarArchivoActaPreEntrega.show();">
+                                <f:setPropertyActionListener target="#{productoController.idFileDelete}" 
+                                                             value="#{subComponenteController.selected.idArchivoActaPreEntrega}"/>
+                            </p:commandButton>
+                        </h:panelGrid>
+
+
+                        <p:outputLabel value="Carta de Entrega:" style="font-weight: bold;"/>
+                        <p:commandLink value="adjuntar archivo" onclick="PF('uploadDialogidArchivoCartaEntrega').show()"
+                                       rendered="#{subComponenteController.selected.idArchivoCartaEntrega eq null}"/>
+
+                        <h:panelGrid columns="3"  rendered="#{subComponenteController.selected.idArchivoCartaEntrega ne null}">
+                            <h:outputText value="#{productoController.getFileName(subComponenteController.selected.idArchivoCartaEntrega)}"/>
+
+                            <p:commandButton ajax="false" icon="ui-icon-circle-arrow-s">
+                                <p:fileDownload value="#{productoController.downloadArchivo(subComponenteController.selected.idArchivoCartaEntrega)}" />
+                            </p:commandButton>
+
+                            <p:commandButton icon="ui-icon-close" update=":formborrarArchivoCartaEntrega :uploadFormidArchivoCartaEntrega"
+                                             onclick="borrarArchivoCartaEntrega.show();">
+                                <f:setPropertyActionListener target="#{productoController.idFileDelete}" 
+                                                             value="#{subComponenteController.selected.idArchivoCartaEntrega}"/>
+                            </p:commandButton>
+                        </h:panelGrid>
+
+
+                    </h:panelGrid>
+                </p:panel>
+            </h:form>
+            <br/>
+            
+              <p:panel>
+                    <p:outputLabel escape="false" value="#{bundle.ayudaProductos}"/>
+            </p:panel>
+            
+            
+        </ui:define>
+        <ui:define name="body">
+
+
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+
+
+
+            <h:form>
+
+
+                    <h:panelGrid columns="2">
+                        
+                          <p:outputLabel value="Código:" for="idSubComponente" style="font-weight: bold;"/>
+                        <p:outputLabel id="idSubComponente" value="#{subComponenteController.selected.idSubComponente}" />
+                        
+                          <p:outputLabel value="#{bundle.EditSubComponenteLabel_nombre}" for="nombre" style="font-weight: bold;"/>
+                        <p:inputText id="nombre" value="#{subComponenteController.selected.nombre}" title="#{bundle.EditSubComponenteTitle_nombre}" />
+
+                        <p:outputLabel value="#{applicationBean.productDescription}:" for="proyecto" style="font-weight: bold;"/>
+                        <p:outputLabel id="proyecto" value="#{subComponenteController.selected.idComponente.idProducto.nombre}" />
+
+                        <p:outputLabel value="#{applicationBean.productComponentDescription}" for="idComponente" style="font-weight: bold;"/>
+                        <p:selectOneMenu id="idComponente" filter="true" filterMatchMode="contains"
+                                         value="#{subComponenteController.selected.idComponente}" 
+                                         required="true" requiredMessage="#{bundle.EditSubComponenteRequiredMessage_idComponente}">
+                            <f:selectItems value="#{componenteController.itemsAvailableSelectOne}"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel value="#{bundle.EditSubComponenteLabel_modeloProducto}" for="modeloProducto" style="font-weight: bold;"/>
+
+                        <p:selectOneMenu id="modeloProducto" value="#{subComponenteController.selected.modelo}" editable="false">
+                            <f:selectItems value="#{modeloProductoController.getItemsAvailableSelectOneByProduct(subComponenteController.selected.idComponente.idProducto.idProducto)}" />
+                        </p:selectOneMenu>
+
+                        <p:outputLabel value="#{bundle.EditSubComponenteLabel_direccionMunicipal}" for="direccionMunicipal" style="font-weight: bold;"/>
+                        <p:inputTextarea id="direccionMunicipal" cols="50"
+                                         value="#{subComponenteController.selected.direccionMunicipal}" title="#{bundle.EditSubComponenteTitle_direccionMunicipal}" />
+
+                        <p:outputLabel value="#{bundle.EditSubComponenteLabel_descripcion}" for="descripcion" style="font-weight: bold;"/>
+                        <p:inputTextarea id="descripcion" cols="50"
+                                         value="#{subComponenteController.selected.descripcion}" title="#{bundle.EditSubComponenteTitle_descripcion}" />
+                        <p:outputLabel value="#{bundle.EditSubComponenteLabel_fechaReserva}" for="fechaReserva" style="font-weight: bold;"/>
+                        <p:calendar id="fechaReserva" value="#{subComponenteController.selected.fechaReserva}" pattern="dd/MM/yyyy"
+                                    title="#{bundle.EditSubComponenteTitle_fechaReserva}" >
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </p:calendar>
+                        <p:outputLabel value="#{bundle.EditSubComponenteLabel_fechaPromesa}" for="fechaPromesa" style="font-weight: bold;"/>
+                        <p:calendar id="fechaPromesa" value="#{subComponenteController.selected.fechaPromesa}" pattern="dd/MM/yyyy"
+                                    title="#{bundle.EditSubComponenteTitle_fechaPromesa}" >
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </p:calendar>
+                        <p:outputLabel value="#{bundle.EditSubComponenteLabel_fechaEscritura}" for="fechaEscritura" style="font-weight: bold;"/>
+                        <p:calendar id="fechaEscritura" value="#{subComponenteController.selected.fechaEscritura}" pattern="dd/MM/yyyy"
+                                    title="#{bundle.EditSubComponenteTitle_fechaEscritura}" >
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </p:calendar>
+                        <p:outputLabel value="#{bundle.EditSubComponenteLabel_fechaDesistimiento}" for="fechaDesistimiento" style="font-weight: bold;"/>
+                        <p:calendar id="fechaDesistimiento" value="#{subComponenteController.selected.fechaDesistimiento}" pattern="dd/MM/yyyy"
+                                    title="#{bundle.EditSubComponenteTitle_fechaDesistimiento}" >
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </p:calendar>
+                        <p:outputLabel value="#{bundle.EditSubComponenteLabel_fechaEntrega}" for="fechaEntrega" style="font-weight: bold;"/>
+                        <p:calendar id="fechaEntrega" value="#{subComponenteController.selected.fechaEntrega}" pattern="dd/MM/yyyy"
+                                    title="#{bundle.EditSubComponenteTitle_fechaEntrega}" >
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </p:calendar>
+
+
+                    </h:panelGrid>
+
+                        <p:commandButton ajax="false" action="#{productoController.updateCurrentSubComponente}" value="#{bundle.EditSubComponenteSaveLink}"/>
+
+                        <p:commandButton ajax="false" action="#{subComponenteController.goBack()}" value="Volver atrás"/>
+
+
+            </h:form>
+
+            <br/>
+
+           
+
+            
+
+
+
+
+
+
+            <p:dialog header="Confirmar Borrar el Acta de Entrega" widgetVar="borrarArchivoActaEntrega" modal="true" appendTo="@(body)">
+                <h:form id="formborrarArchivoActaEntrega">
+                    <label>¿Esta seguro de borrar el archivo de Acta de Entrega #{productoController.getFileName(productoController.idFileDelete)}?</label>
+                    <br/>
+                    <br/>
+                    <div style="text-align: right">                       
+                        <p:commandButton value="Si" update=":mainform:messages :documentosForm :uploadFormidArchivoActaEntrega"
+                                         actionListener="#{productoController.deleteArchivoActaEntrega(actionEvent)}" />
+
+                        <p:commandButton value="No" onclick="PF('borrarArchivoActaEntrega').hide()" type="button" />
+                    </div>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog header="Confirmar Borrar el Acta de Pre Entrega" widgetVar="borrarArchivoActaPreEntrega" modal="true" appendTo="@(body)">
+                <h:form id="formborrarArchivoActaPreEntrega">
+                    <label>¿Esta seguro de borrar el archivo de Acta de Pre Entrega #{productoController.getFileName(productoController.idFileDelete)}?</label>
+                    <br/>
+                    <br/>
+                    <div style="text-align: right">                       
+                        <p:commandButton value="Si" update=":mainform:messages :documentosForm :uploadFormidArchivoActaPreEntrega"
+                                         actionListener="#{productoController.deleteArchivoActaPreEntrega(actionEvent)}" />
+
+                        <p:commandButton value="No" onclick="PF('borrarArchivoActaPreEntrega').hide()" type="button" />
+                    </div>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog header="Confirmar Borrar la Carta de Entrega" widgetVar="borrarArchivoCartaEntrega" modal="true" appendTo="@(body)">
+                <h:form id="formborrarArchivoCartaEntrega">
+                    <label>¿Esta seguro de borrar el archivo de Carta de Entrega #{productoController.getFileName(productoController.idFileDelete)}?</label>
+                    <br/>
+                    <br/>
+                    <div style="text-align: right">                       
+                        <p:commandButton value="Si" update=":mainform:messages :documentosForm :uploadFormidArchivoCartaEntrega"
+                                         actionListener="#{productoController.deleteArchivoCartaEntrega(actionEvent)}" />
+
+                        <p:commandButton value="No" onclick="PF('borrarArchivoCartaEntrega').hide()" type="button" />
+                    </div>
+                </h:form>
+            </p:dialog>
+
+
+            <h:form id="uploadFormidArchivoActaEntrega">
+                <p:dialog id="uploadDialogidArchivoActaEntrega" showEffect="fade" hideEffect="fade"  
+                          header="Adjuntar archivo Acta de Entrega" widgetVar="uploadDialogidArchivoActaEntrega">
+
+                    <p:fileUpload id="fileupload"
+                                  sizeLimit="5242880"
+                                  invalidSizeMessage="El archivo excede el tamaño maximo: 5MB."
+                                  fileUploadListener="#{productoController.uploadActaEntrega}"
+                                  disabled="#{subComponenteController.selected.idArchivoActaEntrega ne null}"
+                                  rendered="true"
+                                  label="seleccionar archivo"
+                                  uploadLabel="Subir"
+                                  cancelLabel="Cancelar Subida"
+                                  invalidFileMessage="Archivo Invalido." 
+                                  mode="advanced"
+                                  dragDropSupport="true"
+                                  auto="true"
+                                  update=":mainform:messages :documentosForm :uploadFormidArchivoActaEntrega"
+                                  multiple="false"  
+                                  />
+
+                    <f:facet name="footer">
+
+                    </f:facet>  
+                </p:dialog>
+            </h:form>
+
+            <h:form id="uploadFormidArchivoActaPreEntrega">
+                <p:dialog id="uploadDialogidArchivoActaPreEntrega" showEffect="fade" hideEffect="fade"  
+                          header="Adjuntar archivo Acta de Pre Entrega" widgetVar="uploadDialogidArchivoActaPreEntrega">
+
+                    <p:fileUpload id="fileupload"
+                                  sizeLimit="5242880"
+                                  invalidSizeMessage="El archivo excede el tamaño maximo: 5MB."
+                                  fileUploadListener="#{productoController.uploadActaPreEntrega}"
+                                  disabled="#{subComponenteController.selected.idArchivoActaPreEntrega ne null}"
+                                  rendered="true"
+                                  label="seleccionar archivo"
+                                  uploadLabel="Subir"
+                                  cancelLabel="Cancelar Subida"
+                                  invalidFileMessage="Archivo Invalido." 
+                                  mode="advanced"
+                                  dragDropSupport="true"
+                                  auto="true"
+                                  update=":mainform:messages :documentosForm :uploadFormidArchivoActaPreEntrega"
+                                  multiple="false"  
+                                  />
+
+                    <f:facet name="footer">
+
+                    </f:facet>  
+                </p:dialog>
+            </h:form>
+
+            <h:form id="uploadFormidArchivoCartaEntrega">
+                <p:dialog id="uploadDialogidArchivoCartaEntrega" showEffect="fade" hideEffect="fade"  
+                          header="Adjuntar archivo Carta de Entrega" widgetVar="uploadDialogidArchivoCartaEntrega">
+
+                    <p:fileUpload id="fileupload"
+                                  sizeLimit="5242880"
+                                  invalidSizeMessage="El archivo excede el tamaño maximo: 5MB."
+                                  fileUploadListener="#{productoController.uploadCartaEntrega}"
+                                  disabled="#{subComponenteController.selected.idArchivoCartaEntrega ne null}"
+                                  rendered="true"
+                                  label="seleccionar archivo"
+                                  uploadLabel="Subir"
+                                  cancelLabel="Cancelar Subida"
+                                  invalidFileMessage="Archivo Invalido." 
+                                  mode="advanced"
+                                  dragDropSupport="true"
+                                  auto="true"
+                                  update=":mainform:messages :documentosForm :uploadFormidArchivoCartaEntrega"
+                                  multiple="false"  
+                                  />
+
+                    <f:facet name="footer">
+
+                    </f:facet>  
+                </p:dialog>
+            </h:form>
+
+
+
+        </ui:define>
+    </ui:composition>
+
+</html>

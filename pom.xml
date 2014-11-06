@@ -34,6 +34,13 @@
     </properties>
     
     <profiles>
+          <profile>
+            <id>beltec</id>
+            <properties>
+                <rp.build.warname>beltec</rp.build.warname>
+            </properties>
+        </profile>  
+        
         <profile>
             <id>itcs_prod</id>
             <properties>

@@ -12,73 +12,92 @@
         </ui:define>
 
         <ui:define name="west">
-           <ui:include src="help.xhtml"/>
+            <ui:include src="help.xhtml"/>
         </ui:define>
 
         <ui:define name="body">
 
             <h:form id="form">
-                <p:panel header="#{bundle.ViewAreaTitle}"> 
+
+                <h:panelGrid columns="2" cellpadding="5">
+                    <p:outputLabel value="#{bundle.ViewAreaLabel_idArea}" style="font-weight:bold"/>
+                    <h:outputText value="#{areaController.selected.idArea}" title="#{bundle.ViewAreaTitle_idArea}"/>
+                    <p:outputLabel value="#{bundle.ViewAreaLabel_nombre}" style="font-weight:bold"/>
+                    <h:outputText value="#{areaController.selected.nombre}" title="#{bundle.ViewAreaTitle_nombre}"/>
+                    <p:outputLabel value="#{bundle.ViewAreaLabel_descripcion}" style="font-weight:bold"  />
+                    <h:outputText value="#{areaController.selected.descripcion}" title="#{bundle.ViewAreaTitle_descripcion}"/>
+
+                    <p:outputLabel value="#{bundle.AreaCanalSalida}" style="font-weight:bold"/>
+                    <h:outputText value="#{areaController.selected.idCanal}"/>
+                    
+                    <p:outputLabel value="#{bundle.EditAreaLabel_emailAcusederecibo}" style="font-weight:bold"/>
+                    <h:outputText value="#{areaController.selected.emailAcusederecibo ? bundle.yes : bundle.no}"/>
+
+                    
+                </h:panelGrid>
+
+                <p:fieldset legend="Respuesta Automática" rendered="#{areaController.selected.emailAcusederecibo}"
+                            toggleable="true">
                     <h:panelGrid columns="2" cellpadding="5">
-                        <p:outputLabel value="#{bundle.ViewAreaLabel_idArea}" style="font-weight:bold"/>
-                        <h:outputText value="#{areaController.selected.idArea}" title="#{bundle.ViewAreaTitle_idArea}"/>
-                        <p:outputLabel value="#{bundle.ViewAreaLabel_nombre}" style="font-weight:bold"/>
-                        <h:outputText value="#{areaController.selected.nombre}" title="#{bundle.ViewAreaTitle_nombre}"/>
-                        <p:outputLabel value="#{bundle.ViewAreaLabel_descripcion}" style="font-weight:bold"  />
-                        <h:outputText value="#{areaController.selected.descripcion}" title="#{bundle.ViewAreaTitle_descripcion}"/>
-                        <h:outputLabel value="Editable:" for="editable" style="font-weight:bold"/>
-                        <h:outputText id="editable" value="#{areaController.selected.editable}" />
+                        <p:outputLabel style="font-weight: bold;" value="Subject:"/>
+                        <h:outputText value="#{areaController.selected.subjectRespAutomatica}" />
+
+                        <p:outputLabel value="Texto De Respuesta:" style="font-weight: bold;"/>
+                        <h:outputText value="#{areaController.selected.textoRespAutomatica}" escape="false"/>
                     </h:panelGrid>
+                </p:fieldset>
 
-                    <h:panelGrid cellspacing="5" style="width: 100%">
+                <h:panelGrid cellspacing="5" style="width: 100%">
 
-                        <p:dataTable widgetVar="GrupoTableByArea" var="item" value="#{areaController.selected.grupoList}"                                 
-                                     emptyMessage="#{bundle.ListGrupoEmpty}" paginatorAlwaysVisible="false"
-                                     resizableColumns="true" paginator="true" rows="10"
-                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                     rowsPerPageTemplate="5,10,15,30,50">
+                    <p:dataTable widgetVar="GrupoTableByArea" var="item" value="#{areaController.selected.grupoList}"                                 
+                                 emptyMessage="#{bundle.ListGrupoEmpty}" paginatorAlwaysVisible="false"
+                                 resizableColumns="true" paginator="true" rows="10"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="5,10,15,30,50">
 
-                            <f:facet name="header">  
-                                <h:outputText value="Grupos Asociados"/>                           
-                            </f:facet>   
+                        <f:facet name="header">  
+                            <h:outputText value="Grupos Asociados"/>                           
+                        </f:facet>   
 
-                            <p:column sortBy="#{item.idGrupo}" headerText="#{bundle.ListGrupoTitle_idGrupo}">
-                                <h:outputText value="#{item.idGrupo}"/>
-                            </p:column>
-                            <p:column sortBy="#{item.nombre}" headerText="#{bundle.ListGrupoTitle_nombre}">
-                                <h:outputText value="#{item.nombre}"/>
-                            </p:column>
-                            <p:column sortBy="#{item.descripcion}" headerText="#{bundle.ListGrupoTitle_descripcion}">
-                                <h:outputText value="#{item.descripcion}"/>
-                            </p:column>
+                        <p:column sortBy="#{item.idGrupo}" headerText="#{bundle.ListGrupoTitle_idGrupo}">
+                            <h:outputText value="#{item.idGrupo}"/>
+                        </p:column>
+                        <p:column sortBy="#{item.nombre}" headerText="#{bundle.ListGrupoTitle_nombre}">
+                            <h:outputText value="#{item.nombre}"/>
+                        </p:column>
+                        <p:column sortBy="#{item.descripcion}" headerText="#{bundle.ListGrupoTitle_descripcion}">
+                            <h:outputText value="#{item.descripcion}"/>
+                        </p:column>
 
-
-                            <f:facet name="footer">
-                                <h:commandLink action="#{grupoController.prepareList()}" value="Ver Grupos"/>
-                            </f:facet> 
-                        </p:dataTable>
-
-                      
-                    </h:panelGrid>
+                        <p:column headerText="Acción">
+                            <p:commandButton id="viewBtn" ajax="false" action="#{grupoController.prepareView(item, '/script/area/View')}" disabled="#{not grupoController.puedeEditar(item)}" title="Ver" icon="ui-icon ui-icon-search" />
+                            <p:commandButton id="editBtn" ajax="false" action="#{grupoController.prepareEdit(item, '/script/area/View')}" disabled="#{not grupoController.puedeEditar(item)}" title="Editar" icon="ui-icon ui-icon-pencil" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
+                        </p:column>
 
 
-                    <f:facet name="footer">    
-                        <p:toolbar>  
-                            <p:toolbarGroup align="left">   
-                                <p:commandButton ajax="false" action="#{areaController.prepareCreate}" value="#{bundle.createNew}" icon="ui-icon ui-icon-plus" />
-                                <p:separator/>
-                                <p:commandButton ajax="false" action="Edit" value="#{bundle.edit}" icon="ui-icon ui-icon-pencil"/>
-                                <p:commandButton ajax="false" action="#{areaController.prepareList}" value="#{bundle.showAll}" icon="ui-icon-folder-open"/>
-
-                                <p:separator/>
-                                <p:commandButton id="showDialogButton" value="#{bundle.destroy}" onclick="PF('confirmation').show()" icon="ui-icon ui-icon-trash" /> 
-                            </p:toolbarGroup>  
-                        </p:toolbar>
+                        <f:facet name="footer">
+                            <h:commandLink action="#{grupoController.prepareList()}" value="Ver Grupos"/>
+                        </f:facet> 
+                    </p:dataTable>
 
 
-                    </f:facet>
+                </h:panelGrid>
 
-                </p:panel>
+                <p:toolbar>  
+                    <p:toolbarGroup align="left">   
+                        <p:commandButton ajax="false" action="#{areaController.prepareList}" value="#{bundle.goBack}" immediate="true" icon="fa fa-chevron-left"/>
+
+                        <p:separator/>
+                        <p:commandButton ajax="false" action="Edit" value="#{bundle.edit}" icon="ui-icon ui-icon-pencil"/>
+                        <p:separator/>
+                        <p:commandButton id="showDialogButton" value="#{bundle.destroy}" onclick="PF('confirmation').show()" icon="ui-icon ui-icon-trash" />
+                    </p:toolbarGroup>
+
+                    <p:toolbarGroup align="right">   
+                        <p:commandButton ajax="false" action="#{areaController.prepareCreate}" value="#{bundle.createNew}" icon="ui-icon ui-icon-plus"  style="top: 4px"/>
+
+                    </p:toolbarGroup>
+                </p:toolbar>
 
 
                 <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
