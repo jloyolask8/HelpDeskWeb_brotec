@@ -1,5 +1,6 @@
 package com.itcs.helpdesk.util;
 
+import com.itcs.commons.email.EmailAutoconfigClient;
 import com.itcs.commons.email.EmailClient;
 import com.itcs.commons.email.EnumEmailSettingKeys;
 import com.itcs.commons.email.impl.ExchangeEmailClientImpl;
@@ -37,7 +38,8 @@ public class MailClientFactory {
             if (useJNDI) {
                 instance = new PopImapEmailClientImpl(canal.getSetting(EnumEmailSettingKeys.SESSION_JNDINAME.getKey()));//props.getProperty(ApplicationConfig.MAIL_SESSION_JNDINAME));
             } else {
-                instance = new PopImapEmailClientImpl(ApplicationConfig.generateEmailPropertiesFromCanal(canal));
+//                instance = new PopImapEmailClientImpl(ApplicationConfig.generateEmailPropertiesFromCanal(canal));
+                instance = new PopImapEmailClientImpl(EmailAutoconfigClient.generateEmailProperties(canal.getMapSetting()));
             }
         } else if (canal.containsKey(EnumEmailSettingKeys.SERVER_TYPE.getKey()) && canal.getSetting(EnumEmailSettingKeys.SERVER_TYPE.getKey()).equals(Email.EXCHANGE)) {
             instance = new ExchangeEmailClientImpl(ApplicationConfig.generateEmailPropertiesFromCanal(canal));

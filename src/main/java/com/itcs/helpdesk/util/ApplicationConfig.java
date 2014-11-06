@@ -66,6 +66,7 @@ public class ApplicationConfig {
     public static final String MAIL_IMAPS_USER = "mail.imaps.user";
     public static final String MAIL_IMAPS_PASSWORD = "mail.imaps.password";
     public static final String MAIL_IMAPS_SSL_ENABLED = "mail.imaps.ssl.enable";
+    public static final String MAIL_IMAPS_STARTTLS_ENABLED = "mail.imap.starttls.enable";
     //------
     //----------    
     //Socket connection timeout value in milliseconds. Default is infinite timeout.
@@ -78,6 +79,14 @@ public class ApplicationConfig {
     private Properties configuration;
     private static ApplicationConfig instance = null;
 
+    /**
+     * Genera properties de un canal especifico
+     *
+     * @deprecated use {@link #new()} instead.
+     *
+     * @param canal
+     * @return
+     */
     public static Properties generateEmailPropertiesFromCanal(Canal canal) {
 
         Properties props = new Properties();
@@ -134,6 +143,10 @@ public class ApplicationConfig {
 
                         if (canal.containsKey(EnumEmailSettingKeys.INBOUND_SSL_ENABLED.getKey())) {
                             props.put(MAIL_IMAPS_SSL_ENABLED, canal.getSetting(EnumEmailSettingKeys.INBOUND_SSL_ENABLED.getKey()));
+                        }
+
+                        if (canal.containsKey(EnumEmailSettingKeys.INBOUND_STARTTLS.getKey())) {
+                            props.put(MAIL_IMAPS_STARTTLS_ENABLED, canal.getSetting(EnumEmailSettingKeys.INBOUND_STARTTLS.getKey()));
                         }
 
                     } else if (canal.getSetting(EnumEmailSettingKeys.STORE_PROTOCOL.getKey()).equalsIgnoreCase("pop3s")) {
@@ -234,10 +247,11 @@ public class ApplicationConfig {
                         }
                     } else {
                         //check TLS
-                        if (canal.containsKey(EnumEmailSettingKeys.TRANSPORT_TLS.getKey())
-                                && StringUtils.isNotEmpty(canal.getSetting(EnumEmailSettingKeys.TRANSPORT_TLS.getKey()))) {
-                            if (Boolean.getBoolean(canal.getSetting(EnumEmailSettingKeys.TRANSPORT_TLS.getKey()))) {
+                        if (canal.containsKey(EnumEmailSettingKeys.SMTP_STARTTLS.getKey())
+                                && StringUtils.isNotEmpty(canal.getSetting(EnumEmailSettingKeys.SMTP_STARTTLS.getKey()))) {
+                            if (Boolean.parseBoolean(canal.getSetting(EnumEmailSettingKeys.SMTP_STARTTLS.getKey()))) {
                                 props.put(MAIL_TRANSPORT_TLS, Boolean.TRUE);
+                                props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
                                 props.put("mail.smtp.auth", "true");
                             } else {
                                 props.put(MAIL_TRANSPORT_TLS, Boolean.FALSE);

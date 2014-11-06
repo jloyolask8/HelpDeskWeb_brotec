@@ -110,10 +110,12 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         settings.put(EnumEmailSettingKeys.INBOUND_SERVER.getKey(), tmpEmailIncommingHost);
         settings.put(EnumEmailSettingKeys.INBOUND_PORT.getKey(), tmpEmailIncommingPort);
         settings.put(EnumEmailSettingKeys.INBOUND_SSL_ENABLED.getKey(), tmpEmailIncommingSsl.equals("SSL/TLS") ? "true" : "false");
+        settings.put(EnumEmailSettingKeys.INBOUND_STARTTLS.getKey(), tmpEmailIncommingSsl.equals("STARTTLS") ? "true" : "false");
         settings.put(EnumEmailSettingKeys.INBOUND_USER.getKey(), tmpEmailUsuario);
         settings.put(EnumEmailSettingKeys.INBOUND_PASS.getKey(), tmpEmailContrasena);
         settings.put(EnumEmailSettingKeys.SERVER_TYPE.getKey(), "popimap");
-        settings.put(EnumEmailSettingKeys.STORE_PROTOCOL.getKey(), tmpEmailIncommingType.equals("imap") ? "imaps" : "pop3s");
+        settings.put(EnumEmailSettingKeys.STORE_PROTOCOL.getKey(), (tmpEmailIncommingType.equals("imap") ? "imap" : "pop3")+(tmpEmailIncommingSsl.equals("SSL/TLS")?"s":""));
+        
         
         settings.put(EnumEmailSettingKeys.CHECK_FREQUENCY.getKey(), (tmpFreq == null) ? String.valueOf(HelpDeskScheluder.DEFAULT_CHECK_EMAIL_INTERVAL) : tmpFreq);
         settings.put(EnumEmailSettingKeys.MAIL_DEBUG.getKey(), tmpEmailDebugEnabled ? "true" : "false");
@@ -123,8 +125,9 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         settings.put(EnumEmailSettingKeys.SMTP_SERVER.getKey(), tmpEmailOutgoingHost);
         settings.put(EnumEmailSettingKeys.SMTP_PORT.getKey(), tmpEmailOutgoingPort);
         settings.put(EnumEmailSettingKeys.SMTP_SSL_ENABLED.getKey(), tmpEmailOutgoingSsl.equals("SSL/TLS") ? "true" : "false");
+        settings.put(EnumEmailSettingKeys.SMTP_STARTTLS.getKey(), tmpEmailOutgoingSsl.equals("STARTTLS") ? "true" : "false");
         settings.put(EnumEmailSettingKeys.SMTP_USER.getKey(), tmpEmailUsuario);
-        settings.put(EnumEmailSettingKeys.SMTP_FROM.getKey(), tmpEmailUsuario);
+        settings.put(EnumEmailSettingKeys.SMTP_FROM.getKey(), tmpEmailCorreoElectronico);
         settings.put(EnumEmailSettingKeys.SMTP_FROMNAME.getKey(), tmpEmailSuNombre);
         settings.put(EnumEmailSettingKeys.SMTP_PASS.getKey(), tmpEmailContrasena);
         
@@ -134,13 +137,16 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
 
     public void detectAutoConfig() {
         tmpEmailInfo = "intentando autodetectar configuración";
-        RequestContext.getCurrentInstance().update(":formAddEditEmail");
+        RequestContext.getCurrentInstance().update("formAddEditEmail");
+        System.out.println(tmpEmailInfo);
         if (EmailAutoconfigClient.isValidEmail(tmpEmailCorreoElectronico)) {
             tmpEmailInfo = "buscando una configuración conocida";
-            RequestContext.getCurrentInstance().update(":formAddEditEmail");
+            RequestContext.getCurrentInstance().update("formAddEditEmail");
+            System.out.println(tmpEmailInfo);
             if (EmailAutoconfigClient.existsAutoconfigSettings(tmpEmailCorreoElectronico)) {
                 tmpEmailInfo = "se ha encontrado una configuración conocida";
-                RequestContext.getCurrentInstance().update(":formAddEditEmail");
+                RequestContext.getCurrentInstance().update("formAddEditEmail");
+                System.out.println(tmpEmailInfo);
                 Map<String, String> settings;
                 if (EmailAutoconfigClient.isImapAvailable(tmpEmailCorreoElectronico)) {
                     settings = EmailAutoconfigClient.getIncommingServerSettings(tmpEmailCorreoElectronico, "imap");
@@ -166,7 +172,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
                 }
             } else {
                 tmpEmailInfo = "No se ha encontrado una configuración conocida";
-                RequestContext.getCurrentInstance().update(":formAddEditEmail");
+                RequestContext.getCurrentInstance().update("formAddEditEmail");
                 tmpEmailUsuario = null;
                 tmpEmailIncommingHost = null;
                 tmpEmailIncommingPort = null;
@@ -180,12 +186,12 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
             }
         } else {
             tmpEmailInfo = "Correo no es válido";
-            RequestContext.getCurrentInstance().update(":formAddEditEmail");
+            RequestContext.getCurrentInstance().update("formAddEditEmail");
             System.out.println(tmpEmailCorreoElectronico + " mail not valid!!");
             return;
         }
         tmpEmailFirstStepReady = true;
-        RequestContext.getCurrentInstance().update(":formAddEditEmail");
+        RequestContext.getCurrentInstance().update("formAddEditEmail");
 //        refreshPage();
     }
     
@@ -279,11 +285,13 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         tmpEmailIncommingType = current.getSetting(EnumEmailSettingKeys.STORE_PROTOCOL.getKey()).equals("imaps") ? "imap" : "pop3";
         tmpEmailIncommingHost = current.getSetting(EnumEmailSettingKeys.INBOUND_SERVER.getKey());
         tmpEmailIncommingPort = current.getSetting(EnumEmailSettingKeys.INBOUND_PORT.getKey());
-        tmpEmailIncommingSsl = current.getSetting(EnumEmailSettingKeys.INBOUND_SSL_ENABLED.getKey()).equals("true") ? "SSL/TLS" : "NINGUNO";
+        tmpEmailIncommingSsl = current.getSetting(EnumEmailSettingKeys.INBOUND_SSL_ENABLED.getKey()).equals("true") ? "SSL/TLS" :
+                (current.getSetting(EnumEmailSettingKeys.INBOUND_STARTTLS.getKey()).equals("true") ? "STARTTLS" : "NINGUNO");
         //tmpEmailOutgoingType = current.getSetting(EnumEmailSettingKeys.SMTP_FROMNAME.getKey());
         tmpEmailOutgoingHost = current.getSetting(EnumEmailSettingKeys.SMTP_SERVER.getKey());
         tmpEmailOutgoingPort = current.getSetting(EnumEmailSettingKeys.SMTP_PORT.getKey());
-        tmpEmailOutgoingSsl = current.getSetting(EnumEmailSettingKeys.SMTP_SSL_ENABLED.getKey()).equals("true") ? "SSL/TLS" : "NINGUNO";
+        tmpEmailOutgoingSsl = current.getSetting(EnumEmailSettingKeys.SMTP_SSL_ENABLED.getKey()).equals("true") ? "SSL/TLS" : 
+                (current.getSetting(EnumEmailSettingKeys.SMTP_STARTTLS.getKey()).equals("true") ? "STARTTLS" : "NINGUNO");
         tmpEmailUsuario = current.getSetting(EnumEmailSettingKeys.SMTP_FROM.getKey());
         tmpFreq = current.getSetting(EnumEmailSettingKeys.CHECK_FREQUENCY.getKey());
         tmpEmailDebugEnabled = (current.getSetting(EnumEmailSettingKeys.MAIL_DEBUG.getKey()) == null) ? false : current.getSetting(EnumEmailSettingKeys.MAIL_DEBUG.getKey()).equals("true");
