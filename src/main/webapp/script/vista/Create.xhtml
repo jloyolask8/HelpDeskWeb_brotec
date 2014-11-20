@@ -11,17 +11,17 @@
         <ui:define name="title">
             <h:outputText value="#{bundle.CreateVistaTitle}"></h:outputText>
         </ui:define>
-        
-       <ui:define name="west">
-                <p:panel>
-                    <h:outputLabel escape="false" value="Las vistas reúnen un grupo de casos según un conjunto de criterios que 
-                                   expresan una variedad de estados del caso como, por ejemplo, Nuevo, En proceso o Solucionado. 
-                                   Las vistas permiten crear grupos coherentes de casos para asi poder acceder más rapidamente a los casos de interés."/>
-                </p:panel>
+
+        <ui:define name="west">
+            <p:panel>
+                <h:outputLabel escape="false" value="Las vistas reúnen un grupo de casos según un conjunto de criterios que 
+                               expresan una variedad de estados del caso como, por ejemplo, Nuevo, En proceso o Solucionado. 
+                               Las vistas permiten crear grupos coherentes de casos para asi poder acceder más rapidamente a los casos de interés."/>
+            </p:panel>
         </ui:define>
-        
+
         <ui:define name="body">
-           
+
             <h:form id="form">
                 <h1>Crear Nueva Vista</h1>
                 <p:messages id="messages"/>
@@ -39,7 +39,7 @@
 
                     <h:outputLabel value="Visibilidad" for="VisibilidadPanel" style="font-weight: bold"/>
 
-                     <go:visivility id="VisibilidadPanel" controllerMBean="#{vistaController}"/>
+                    <go:visibility id="VisibilidadPanel" controllerMBean="#{vistaController}"/>
 
                     <h:outputLabel value="#{bundle.VistaLabel_descripcion}" for="descripcion" style="font-weight: bold"/>
                     <p:inputTextarea id="descripcion" value="#{vistaController.selected.descripcion}" title="#{bundle.VistaTitle_descripcion}" style="width: 100%;"/>

@@ -56,7 +56,7 @@
                                     placeholder="buscar..." forceSelection="true" 
                                     converterMessage="convertion failed" converter="entityConverter"
                                     value="#{cc.attrs.filtro.valorAsSelectItem}" disabled="#{not cc.attrs.canChangeFilters}"
-                                    completeMethod="#{cc.attrs.filterHelper.autoCompleteFindPosibleOptionsIncludingAllPlaceHolders}"  
+                                    completeMethod="#{cc.attrs.filterHelper.autoCompleteFindPosibleOptionsIncludingAllPlaceHolders}"
                                     var="selectItem" itemValue="#{selectItem}" itemLabel="#{selectItem.label}"
                                     required="true" requiredMessage="Debe Seleccionar un #{cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).label}."
                                     rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null 
