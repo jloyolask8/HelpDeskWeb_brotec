@@ -45,26 +45,25 @@ public class CustomFieldController extends AbstractManagedBean<CustomField> impl
         return super.getPagination();
     }
 
-    public String prepareList() {
-        recreateModel();
+    @Override
+    protected String getListPage() {
         return "/script/customField/List";
     }
 
-    protected void initializeEmbeddableKey() {
-        current.setCustomFieldPK(new com.itcs.helpdesk.persistence.entities.CustomFieldPK());
-        current.getCustomFieldPK().setEntity(JPAServiceFacade.CASE_CUSTOM_FIELD);
-    }
-
+//    protected void initializeEmbeddableKey() {
+//        current.setCustomFieldPK(new com.itcs.helpdesk.persistence.entities.CustomFieldPK());
+//        current.getCustomFieldPK().setEntity(JPAServiceFacade.CASE_CUSTOM_FIELD);
+//    }
     public void prepareCreate() {
         current = new CustomField();
-        initializeEmbeddableKey();
+//        initializeEmbeddableKey();
     }
 
     public void addOption() {
         final List<String> fieldOptionsList = current.getFieldOptionsList();
         fieldOptionsList.add(currentOption);
         current.setFieldOptionsList(fieldOptionsList);
-        executeInClient("addOptionFormDialog.hide()");
+        executeInClient("PF('addOptionFormDialog').hide()");
     }
 
     public void create() {
@@ -72,19 +71,22 @@ public class CustomFieldController extends AbstractManagedBean<CustomField> impl
         if (current != null) {
 //            setEmbeddableKeys();
             try {
-                for (TipoCaso tipoCaso : current.getTipoCasoList()) {
-                    List<CustomField> customFieldList = tipoCaso.getCustomFieldList();
-                    if (customFieldList == null) {
-                        customFieldList = new LinkedList<CustomField>();
+                if (current.getEntity() != null && current.getEntity().equals("case") && current.getTipoCasoList() != null) {
+                    for (TipoCaso tipoCaso : current.getTipoCasoList()) {
+                        List<CustomField> customFieldList = tipoCaso.getCustomFieldList();
+                        if (customFieldList == null) {
+                            customFieldList = new LinkedList<>();
+                        }
+                        customFieldList.add(current);
+                        tipoCaso.setCustomFieldList(customFieldList);
                     }
-                    customFieldList.add(current);
-                    tipoCaso.setCustomFieldList(customFieldList);
                 }
+
                 getJpaController().persist(current);
                 JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("CustomFieldCreated"));
                 if (!JsfUtil.isValidationFailed()) {
                     items = null;    // Invalidate list of items to trigger re-query.
-                    executeInClient("CustomFieldCreateDialog.hide()");
+                    executeInClient("PF('CustomFieldCreateDialog').hide()");
                 }
             } catch (Exception ex) {
                 Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
@@ -95,7 +97,7 @@ public class CustomFieldController extends AbstractManagedBean<CustomField> impl
 //        persist(JsfUtil.PersistAction.CREATE, ResourceBundle.getBundle("/Bundle").getString("CustomFieldCreated"));
 //        if (!JsfUtil.isValidationFailed()) {
 //            items = null;    // Invalidate list of items to trigger re-query.
-//            executeInClient("CustomFieldCreateDialog.hide()");
+//            executeInClient("PF('CustomFieldCreateDialog').hide()");
 //        }
     }
 
@@ -137,7 +139,7 @@ public class CustomFieldController extends AbstractManagedBean<CustomField> impl
 //                    }
 //                }
                 JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("CustomFieldUpdated"));
-                executeInClient("CustomFieldEditDialog.hide()");
+                executeInClient("PF('CustomFieldEditDialog').hide()");
             } catch (Exception ex) {
                 Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
                 JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -159,10 +161,9 @@ public class CustomFieldController extends AbstractManagedBean<CustomField> impl
         }
     }
 
-    public CustomField getCustomField(com.itcs.helpdesk.persistence.entities.CustomFieldPK id) {
-        return getJpaController().find(CustomField.class, id);
-    }
-
+//    public CustomField getCustomField(com.itcs.helpdesk.persistence.entities.CustomFieldPK id) {
+//        return getJpaController().find(CustomField.class, id);
+//    }
     @Override
     public Class getDataModelImplementationClass() {
         return CustomFieldDataModel.class;
@@ -194,7 +195,6 @@ public class CustomFieldController extends AbstractManagedBean<CustomField> impl
 //        System.out.println("getCurrentCasoCustomFieldList...");
 //        System.out.println("getTipoCaso:" + current.getTipoCaso());
 //        System.out.println("CustomFieldList:" + current.getTipoCaso().getCustomFieldList());
-
         if (caso == null) {
             return null;
         }
@@ -205,14 +205,13 @@ public class CustomFieldController extends AbstractManagedBean<CustomField> impl
 
         try {
             List<CasoCustomField> removeCasoCustomFieldList = new LinkedList<>();
-            if (caso.getTipoCaso() != null ) {
+            if (caso.getTipoCaso() != null) {
                 //remove all old
-                
+
                 TipoCaso tipo = getJpaController().find(TipoCaso.class, caso.getTipoCaso().getIdTipoCaso(), true);
-                
+
 //                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "CasoController.getCurrentCasoCustomFieldList:{0}", 
 //                       tipo.getCustomFieldList());
-                
                 for (CasoCustomField casoCustomField : caso.getCasoCustomFieldList()) {
                     if (!casoCustomField.getCustomField().getTipoCasoList().contains(caso.getTipoCaso())) {
                         removeCasoCustomFieldList.add(casoCustomField);
@@ -221,7 +220,7 @@ public class CustomFieldController extends AbstractManagedBean<CustomField> impl
                 caso.getCasoCustomFieldList().removeAll(removeCasoCustomFieldList);
                 //add all new
                 for (CustomField customField : tipo.getCustomFieldList()) {
-                    CasoCustomField casoCustomField = new CasoCustomField(customField.getCustomFieldPK().getFieldKey(), customField.getCustomFieldPK().getEntity(), caso);
+                    CasoCustomField casoCustomField = new CasoCustomField(customField, caso);
                     if (!caso.getCasoCustomFieldList().contains(casoCustomField)) {
                         casoCustomField.setCustomField(customField);
                         caso.getCasoCustomFieldList().add(casoCustomField);
@@ -241,9 +240,8 @@ public class CustomFieldController extends AbstractManagedBean<CustomField> impl
     @FacesConverter(forClass = CustomField.class)
     public static class CustomFieldControllerConverter implements Converter {
 
-        private static final String SEPARATOR = "#";
-        public static final String SEPARATOR_ESCAPED = "\\#";
-
+//        private static final String SEPARATOR = "#";
+//        public static final String SEPARATOR_ESCAPED = "\\#";
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
             if (value == null || value.length() == 0) {
@@ -251,23 +249,18 @@ public class CustomFieldController extends AbstractManagedBean<CustomField> impl
             }
             CustomFieldController controller = (CustomFieldController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "customFieldController");
-            return controller.getCustomField(getKey(value));
+            return controller.getJpaController().find(CustomField.class, getKey(value));
         }
 
-        com.itcs.helpdesk.persistence.entities.CustomFieldPK getKey(String value) {
-            com.itcs.helpdesk.persistence.entities.CustomFieldPK key;
-            String values[] = value.split(SEPARATOR_ESCAPED);
-            key = new com.itcs.helpdesk.persistence.entities.CustomFieldPK();
-            key.setFieldKey(values[0]);
-            key.setEntity(values[1]);
+        java.lang.Long getKey(String value) {
+            java.lang.Long key;
+            key = Long.valueOf(value);
             return key;
         }
 
-        String getStringKey(com.itcs.helpdesk.persistence.entities.CustomFieldPK value) {
+        String getStringKey(java.lang.Long value) {
             StringBuilder sb = new StringBuilder();
-            sb.append(value.getFieldKey());
-            sb.append(SEPARATOR);
-            sb.append(value.getEntity());
+            sb.append(value);
             return sb.toString();
         }
 
@@ -278,12 +271,41 @@ public class CustomFieldController extends AbstractManagedBean<CustomField> impl
             }
             if (object instanceof CustomField) {
                 CustomField o = (CustomField) object;
-                return getStringKey(o.getCustomFieldPK());
+                return getStringKey(o.getIdCustomField());
             } else {
-                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "object {0} is of type {1}; expected type: {2}", new Object[]{object, object.getClass().getName(), CustomField.class.getName()});
-                return null;
+                throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + CasoController.class.getName());
             }
         }
+
+//        com.itcs.helpdesk.persistence.entities.CustomFieldPK getKey(String value) {
+//            com.itcs.helpdesk.persistence.entities.CustomFieldPK key;
+//            String values[] = value.split(SEPARATOR_ESCAPED);
+//            key = new com.itcs.helpdesk.persistence.entities.CustomFieldPK();
+//            key.setFieldKey(values[0]);
+//            key.setEntity(values[1]);
+//            return key;
+//        }
+//
+//        String getStringKey(com.itcs.helpdesk.persistence.entities.CustomFieldPK value) {
+//            StringBuilder sb = new StringBuilder();
+//            sb.append(value.getFieldKey());
+//            sb.append(SEPARATOR);
+//            sb.append(value.getEntity());
+//            return sb.toString();
+//        }
+//        @Override
+//        public String getAsString(FacesContext facesContext, UIComponent component, Object object) {
+//            if (object == null) {
+//                return null;
+//            }
+//            if (object instanceof CustomField) {
+//                CustomField o = (CustomField) object;
+//                return getStringKey(o.getLabel());
+//            } else {
+//                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "object {0} is of type {1}; expected type: {2}", new Object[]{object, object.getClass().getName(), CustomField.class.getName()});
+//                return null;
+//            }
+//        }
     }
 }
 
@@ -297,33 +319,22 @@ class CustomFieldDataModel extends ListDataModel<CustomField> implements Selecta
         super(data);
     }
 
-    com.itcs.helpdesk.persistence.entities.CustomFieldPK getKey(String value) {
-        System.out.println("getKey " + value);
-        com.itcs.helpdesk.persistence.entities.CustomFieldPK key;
-        String values[] = value.split(CustomFieldController.CustomFieldControllerConverter.SEPARATOR_ESCAPED);
-        key = new com.itcs.helpdesk.persistence.entities.CustomFieldPK();
-        key.setFieldKey(values[0]);
-        key.setEntity(values[1]);
-        return key;
-    }
-
     @Override
     public CustomField getRowData(String rowKey) {
-        System.out.println("getRowData:" + rowKey);
-        List<CustomField> listOfRol = (List<CustomField>) getWrappedData();
+        List<CustomField> list = (List<CustomField>) getWrappedData();
 
-        for (CustomField obj : listOfRol) {
-            if (obj.getCustomFieldPK().equals(getKey(rowKey))) {
-                return obj;
+        if (list != null) {
+            for (CustomField obj : list) {
+                if (obj.getIdCustomField().toString().equals(rowKey)) {
+                    return obj;
+                }
             }
         }
-
         return null;
     }
 
     @Override
     public Object getRowKey(CustomField classname) {
-        System.out.println("getRowKey:" + classname);
-        return classname.getCustomFieldPK();
+        return classname.getIdCustomField();
     }
 }

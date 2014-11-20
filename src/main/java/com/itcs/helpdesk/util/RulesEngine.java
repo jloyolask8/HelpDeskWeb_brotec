@@ -19,7 +19,7 @@ import com.itcs.helpdesk.persistence.entities.TipoCaso;
 import com.itcs.helpdesk.persistence.entities.TipoComparacion;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entityenums.EnumFieldType;
-import com.itcs.helpdesk.persistence.entityenums.EnumNombreAccion;
+import com.itcs.helpdesk.persistence.entityenums.EnumTipoAccion;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoCanal;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
 import com.itcs.helpdesk.persistence.jpa.custom.CasoJPACustomController;
@@ -545,23 +545,23 @@ public class RulesEngine implements CasoChangeListener {
 
     private void executeAction(Accion accion, Caso caso) {
         try {
-            if (accion.getIdNombreAccion().equals(EnumNombreAccion.ASIGNAR_A_GRUPO.getNombreAccion())) {
+            if (accion.getIdNombreAccion().equals(EnumTipoAccion.ASIGNAR_A_GRUPO.getNombreAccion())) {
                 asignarCasoAGrupo(accion, caso);
-            } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.ASIGNAR_A_AREA.getNombreAccion())) {
+            } else if (accion.getIdNombreAccion().equals(EnumTipoAccion.ASIGNAR_A_AREA.getNombreAccion())) {
                 asignarCasoArea(accion, caso);
-            } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.DEFINIR_TIPO.getNombreAccion())) {
+            } else if (accion.getIdNombreAccion().equals(EnumTipoAccion.DEFINIR_TIPO.getNombreAccion())) {
                 definirTipoCaso(accion, caso);
-            } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.CUSTOM.getNombreAccion())) {
+            } else if (accion.getIdNombreAccion().equals(EnumTipoAccion.CUSTOM.getNombreAccion())) {
                 executeCustomAction(accion, caso);
-            } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.ASIGNAR_A_USUARIO.getNombreAccion())) {
+            } else if (accion.getIdNombreAccion().equals(EnumTipoAccion.ASIGNAR_A_USUARIO.getNombreAccion())) {
                 asignarCasoAUsuario(accion, caso);
-            } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.CAMBIAR_PRIORIDAD.getNombreAccion())) {
+            } else if (accion.getIdNombreAccion().equals(EnumTipoAccion.CAMBIAR_PRIORIDAD.getNombreAccion())) {
                 cambiarPrioridad(accion, caso);
-            } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.RECALCULAR_SLA.getNombreAccion())) {
+            } else if (accion.getIdNombreAccion().equals(EnumTipoAccion.RECALCULAR_SLA.getNombreAccion())) {
                 recalcularSLA(caso);
-            } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.DEFINIR_SLA_FECHA_COMPRA.getNombreAccion())) {
+            } else if (accion.getIdNombreAccion().equals(EnumTipoAccion.DEFINIR_SLA_FECHA_COMPRA.getNombreAccion())) {
                 definirSLAFechaCompra(caso);
-            } else if (accion.getIdNombreAccion().equals(EnumNombreAccion.ENVIAR_EMAIL.getNombreAccion())) {
+            } else if (accion.getIdNombreAccion().equals(EnumTipoAccion.ENVIAR_EMAIL.getNombreAccion())) {
                 enviarCorreo(accion, caso);
             }
         } catch (Exception ex) {

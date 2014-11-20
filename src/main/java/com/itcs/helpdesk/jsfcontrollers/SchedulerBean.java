@@ -14,6 +14,7 @@ import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Cliente;
 import com.itcs.helpdesk.persistence.entities.Cliente_;
 import com.itcs.helpdesk.persistence.entities.FieldType;
+import com.itcs.helpdesk.persistence.entities.TipoAccion;
 import com.itcs.helpdesk.persistence.entities.Prioridad;
 import com.itcs.helpdesk.persistence.entities.Responsable;
 import com.itcs.helpdesk.persistence.entities.TipoCanal;
@@ -23,7 +24,7 @@ import com.itcs.helpdesk.persistence.entityenums.EnumCanal;
 import com.itcs.helpdesk.persistence.entityenums.EnumEstadoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumFieldType;
 import com.itcs.helpdesk.persistence.entityenums.EnumFunciones;
-import com.itcs.helpdesk.persistence.entityenums.EnumNombreAccion;
+import com.itcs.helpdesk.persistence.entityenums.EnumTipoAccion;
 import com.itcs.helpdesk.persistence.entityenums.EnumPrioridad;
 import com.itcs.helpdesk.persistence.entityenums.EnumResponsables;
 import com.itcs.helpdesk.persistence.entityenums.EnumRoles;
@@ -565,15 +566,15 @@ public class SchedulerBean extends AbstractManagedBean<Object> implements Serial
     }
 
     private void verificarNombreAcciones(JPAServiceFacade jpaController) {
-        for (EnumNombreAccion enumNombreAccion : EnumNombreAccion.values()) {
+        for (EnumTipoAccion enumNombreAccion : EnumTipoAccion.values()) {
             try {
-                if (null == jpaController.getNombreAccionFindByIdNombreAccion(enumNombreAccion.getNombreAccion().getIdNombreAccion())) {
+                if (null == jpaController.find(TipoAccion.class, enumNombreAccion.getNombreAccion().getIdNombreAccion())) {
                     throw new NoResultException();
                 }
             } catch (NoResultException ex) {
                 Log.createLogger(this.getClass().getName()).logSevere("No existe nombre de accion " + enumNombreAccion.getNombreAccion().getNombre() + ", se creara ahora");
                 try {
-                    jpaController.persistNombreAccion(enumNombreAccion.getNombreAccion());
+                    jpaController.persist(enumNombreAccion.getNombreAccion());
                 } catch (Exception e) {
                     Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
                 }

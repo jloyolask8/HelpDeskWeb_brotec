@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://java.sun.com/jsf/composite"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name="value" required="true" /> 
+        <cc:attribute name="required" required="false"  default="false"/> 
+        <cc:attribute name="requiredMessage" required="false" default="Dato requerido."/> 
+        <cc:attribute name="update" required="false"  default=""/> 
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <p:selectOneMenu id="baseEntityType" value="#{cc.attrs.value}" 
+
+                         filter="true" filterMatchMode="startsWith"
+                         required="#{cc.attrs.required}" requiredMessage="#{cc.attrs.requiredMessage}">
+            <f:selectItem itemLabel="Tipo de Objeto..." itemValue="" noSelectionOption="true"/>
+            <f:selectItem itemLabel="Casos" itemValue="com.itcs.helpdesk.persistence.entities.Caso" />
+            <f:selectItem itemLabel="Clientes" itemValue="com.itcs.helpdesk.persistence.entities.Cliente" />
+            <f:selectItem itemLabel="Usuarios" itemValue="com.itcs.helpdesk.persistence.entities.Usuario" />
+            <f:selectItem itemLabel="Sesiones de Usuarios" itemValue="com.itcs.helpdesk.persistence.entities.UsuarioSessionLog" />
+
+
+            <p:ajax update="@parent,#{cc.attrs.update}"/>
+        </p:selectOneMenu>
+    </cc:implementation>
+</html>

@@ -59,7 +59,7 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
                         user.setPass(UtilSecurity.getMD5(passwordNew1));
                         getJpaController().getUsuarioJpaController().edit(user);
                         JsfUtil.addSuccessMessage("La contraseña ha sido cambiada exitósamente.");
-                        executeInClient("panelChangePass.hide()");
+                        executeInClient("PF('panelChangePass').hide()");
                     } else {
                         JsfUtil.addErrorMessage("La nueva contraseña no coincide!");
                     }

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="ReportChartViewDlg" widgetVar="ReportChartViewDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ViewReportChartTitle}">
+            <h:form id="ReportChartViewForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{reportChartController.selected != null}">
+                        <h:outputText value="#{bundle.ViewReportChartLabel_idChartReport}"/>
+                        <h:outputText value="#{reportChartController.selected.idChartReport}" title="#{bundle.ViewReportChartTitle_idChartReport}"/>
+                        <h:outputText value="#{bundle.ViewReportChartLabel_titulo}"/>
+                        <h:outputText value="#{reportChartController.selected.titulo}" title="#{bundle.ViewReportChartTitle_titulo}"/>
+                        <h:outputText value="#{bundle.ViewReportChartLabel_nombre}"/>
+                        <h:outputText value="#{reportChartController.selected.nombre}" title="#{bundle.ViewReportChartTitle_nombre}"/>
+                        <h:outputText value="#{bundle.ViewReportChartLabel_descripcion}"/>
+                        <h:outputText value="#{reportChartController.selected.descripcion}" title="#{bundle.ViewReportChartTitle_descripcion}"/>
+                        <h:outputText value="#{bundle.ViewReportChartLabel_chartType}"/>
+                        <h:outputText value="#{reportChartController.selected.chartType}" title="#{bundle.ViewReportChartTitle_chartType}"/>
+                        <h:outputText value="#{bundle.ViewReportChartLabel_baseEntityType}"/>
+                        <h:outputText value="#{reportChartController.selected.baseEntityType}" title="#{bundle.ViewReportChartTitle_baseEntityType}"/>
+                        <h:outputText value="#{bundle.ViewReportChartLabel_visibleToAll}"/>
+                        <p:selectBooleanCheckbox value="#{reportChartController.selected.visibleToAll}" disabled="true"/>
+                        <h:outputText value="#{bundle.ViewReportChartLabel_columnIndex}"/>
+                        <h:outputText value="#{reportChartController.selected.columnIndex}" title="#{bundle.ViewReportChartTitle_columnIndex}"/>
+                        <h:outputText value="#{bundle.ViewReportChartLabel_itemIndex}"/>
+                        <h:outputText value="#{reportChartController.selected.itemIndex}" title="#{bundle.ViewReportChartTitle_itemIndex}"/>
+                        <h:outputText value="#{bundle.ViewReportChartLabel_idArea}"/>
+                        <h:outputText value="#{reportChartController.selected.idArea}" title="#{bundle.ViewReportChartTitle_idArea}"/>
+                        <h:outputText value="#{bundle.ViewReportChartLabel_idCampoBase}"/>
+                        <h:outputText value="#{reportChartController.selected.idCampoBase}" title="#{bundle.ViewReportChartTitle_idCampoBase}"/>
+                        <h:outputText value="#{bundle.ViewReportChartLabel_idComparador}"/>
+                        <h:outputText value="#{reportChartController.selected.idComparador}" title="#{bundle.ViewReportChartTitle_idComparador}"/>
+                        <h:outputText value="#{bundle.ViewReportChartLabel_valor}"/>
+                        <h:outputText value="#{reportChartController.selected.valor}" title="#{bundle.ViewReportChartTitle_valor}"/>
+                        <h:outputText value="#{bundle.ViewReportChartLabel_valor2}"/>
+                        <h:outputText value="#{reportChartController.selected.valor2}" title="#{bundle.ViewReportChartTitle_valor2}"/>
+                        <h:outputText value="#{bundle.ViewReportChartLabel_valorLabel}"/>
+                        <h:outputText value="#{reportChartController.selected.valorLabel}" title="#{bundle.ViewReportChartTitle_valorLabel}"/>
+                        <h:outputText value="#{bundle.ViewReportChartLabel_valor2Label}"/>
+                        <h:outputText value="#{reportChartController.selected.valor2Label}" title="#{bundle.ViewReportChartTitle_valor2Label}"/>
+                        <h:outputText value="#{bundle.ViewReportChartLabel_fechaCreacion}"/>
+                        <h:outputText value="#{reportChartController.selected.fechaCreacion}" title="#{bundle.ViewReportChartTitle_fechaCreacion}">
+                            <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                        </h:outputText>
+                        <h:outputText value="#{bundle.ViewReportChartLabel_fechaModif}"/>
+                        <h:outputText value="#{reportChartController.selected.fechaModif}" title="#{bundle.ViewReportChartTitle_fechaModif}">
+                            <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                        </h:outputText>
+                        <h:outputText value="#{bundle.ViewReportChartLabel_idUsuarioCreatedby}"/>
+                        <h:outputText value="#{reportChartController.selected.idUsuarioCreatedby}" title="#{bundle.ViewReportChartTitle_idUsuarioCreatedby}"/>
+                        <h:outputText value="#{bundle.ViewReportChartLabel_idGrupo}"/>
+                        <h:outputText value="#{reportChartController.selected.idGrupo}" title="#{bundle.ViewReportChartTitle_idGrupo}"/>
+                    </p:panelGrid>
+                    <p:commandButton value="#{bundle.Close}" onclick="ReportChartViewDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>
+
+
+
+
+

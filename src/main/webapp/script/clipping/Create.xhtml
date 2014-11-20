@@ -69,49 +69,9 @@
 
                         <p:outputLabel value="Disponible Para:" for="VisibilidadPanel" style="font-weight: bold"/>
 
-                        <p:outputPanel id="VisibilidadPanel">
-                            <p:selectOneRadio id="visibility" value="#{clippingController.visibilityOption}" layout="custom">  
-                                <f:selectItem itemLabel="Todos" itemValue="1" />  
-                                <f:selectItem itemLabel="Grupo" itemValue="2" />  
-                                <f:selectItem itemLabel="Area" itemValue="3" />     
-                                <p:ajax update=":createEditform:VisibilidadPanel" listener="#{clippingController.handleAnyChangeEvent()}" /> 
-                            </p:selectOneRadio>  
-
-                            <h:panelGrid>
-                                <h:panelGrid columns="4">
-                                    <p:radioButton id="visibleToAll" for="visibility" itemIndex="0"/>  
-                                    <p:outputLabel value="Todos" for="visibleToAll" style="font-weight: bold"/>
-
-                                    <p:selectOneButton id="visibleToAllSelect" value="#{clippingController.selected.visibleToAll}" 
-                                                       rendered="#{clippingController.visibilityOption eq 1}"
-                                                       required="true" requiredMessage="#{bundle.VistaRequiredMessage_visibleToAll}">  
-                                        <f:selectItem itemLabel="Todos" itemValue="true" />  
-                                        <f:selectItem itemLabel="Sólo yo" itemValue="false" />  
-                                    </p:selectOneButton> 
-                                    <p:message for="visibleToAllSelect"/>
-                                </h:panelGrid>
-
-                                <h:panelGrid columns="4">
-                                    <p:radioButton id="idGrupo" for="visibility" itemIndex="1"/>  
-                                    <p:outputLabel value="Grupo:" for="idGrupo" style="font-weight: bold"/>
-                                    <p:selectOneMenu id="idGrupoSelect" value="#{clippingController.selected.idGrupo}" required="true" requiredMessage="Debe Seleccionar un grupo si desea Visibilidad a nivel de Grupo."
-                                                     rendered="#{clippingController.visibilityOption eq 2}" >
-                                        <f:selectItems value="#{grupoController.itemsAvailableSelectOne}"/>
-                                    </p:selectOneMenu> 
-                                    <p:message for="idGrupoSelect"/>
-                                </h:panelGrid>
-
-                                <h:panelGrid columns="4">
-                                    <p:radioButton id="idArea" for="visibility" itemIndex="2"/>  
-                                    <p:outputLabel value="Area:" for="idArea" style="font-weight: bold"/>
-                                    <p:selectOneMenu id="idAreaSelect" value="#{clippingController.selected.idArea}" required="true" requiredMessage="Debe Seleccionar un Area si desea Visibilidad a nivel de Area."
-                                                     rendered="#{clippingController.visibilityOption eq 3}">
-                                        <f:selectItems value="#{areaController.itemsAvailableSelectOne}"/>
-                                    </p:selectOneMenu>
-                                    <p:message for="idAreaSelect"/>
-                                </h:panelGrid>
-                            </h:panelGrid>  
-                        </p:outputPanel>
+                        <go:visibility id="VisibilidadPanel" controllerMBean="#{clippingController}"/>
+                         
+                       
                     </h:panelGrid>
 
                     <p:separator/>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:go="http://java.sun.com/jsf/composite/go"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+
+
+        <ui:define name="title">
+            <p:outputLabel value="#{bundle.EditReportChartTitle}"/>
+        </ui:define>
+
+        <ui:define name="body">
+
+            <h:form id="ReportChartEditForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{reportChartController.selected != null}">
+                        <p:outputLabel value="#{bundle.EditReportChartLabel_idChartReport}" for="idChartReport" />
+                        <p:inputText id="idChartReport" value="#{reportChartController.selected.idChartReport}" title="#{bundle.EditReportChartTitle_idChartReport}" required="true" requiredMessage="#{bundle.EditReportChartRequiredMessage_idChartReport}"/>
+                        <p:outputLabel value="#{bundle.EditReportChartLabel_titulo}" for="titulo" />
+                        <p:inputText id="titulo" value="#{reportChartController.selected.titulo}" title="#{bundle.EditReportChartTitle_titulo}" required="true"/>
+                        <p:outputLabel value="#{bundle.EditReportChartLabel_nombre}" for="nombre" />
+                        <p:inputText id="nombre" value="#{reportChartController.selected.nombre}" title="#{bundle.EditReportChartTitle_nombre}" required="true" requiredMessage="#{bundle.EditReportChartRequiredMessage_nombre}"/>
+                        <p:outputLabel value="#{bundle.EditReportChartLabel_descripcion}" for="descripcion" />
+                        <p:inputText id="descripcion" value="#{reportChartController.selected.descripcion}" title="#{bundle.EditReportChartTitle_descripcion}" />
+
+                    </p:panelGrid>
+                    <p:panelGrid columns="2" rendered="#{reportChartController.selected != null}">
+
+                        <p:outputLabel value="#{bundle.EditReportChartLabel_chartType}" for="chartType" />
+                        <p:inputText id="chartType" value="#{reportChartController.selected.chartType}" 
+                                     title="#{bundle.EditReportChartTitle_chartType}" 
+                                     required="true" requiredMessage="#{bundle.EditReportChartRequiredMessage_chartType}"/>
+
+                        <p:outputLabel value="#{bundle.EditReportChartLabel_baseEntityType}" for="baseEntityType" />
+                     
+
+
+                        <go:selectEntityType id="baseEntityType" value="#{reportChartController.selected.baseEntityType}"
+                                             required="true"
+                                             requiredMessage="#{bundle.EditReportChartRequiredMessage_baseEntityType}"
+                                             update=":ReportChartEditForm:serieBase"/>
+
+                    </p:panelGrid>
+
+
+                </h:panelGroup>
+
+
+                <p:panel>
+                    <go:visibility controllerMBean="#{reportChartController}"/>
+                </p:panel>
+
+                <p:panel id="serieBase" rendered="#{not empty reportChartController.selected.baseEntityType}">
+                    <go:entityCriteria id="seriesBase"  filterHelper="#{reportChartController.filterHelperForSelectedEntityType}" filtro="#{reportChartController.filtroBaseSeries}"/>
+                </p:panel>
+
+                <br/>
+                <p:commandButton action="#{reportChartController.update}" value="#{bundle.Save}" ajax="false"/>
+                <p:commandButton value="#{bundle.Cancel}" action="#{reportChartController.goBack()}" ajax="false" immediate="true"/>
+
+            </h:form>
+
+
+        </ui:define>
+    </ui:composition>
+
+</html>
+

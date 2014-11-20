@@ -16,7 +16,6 @@
                 function exportChart() {
                     //export image
                     $('#output').empty().append(chart.exportAsImage());
-
                     //show the dialog
                     dlg.show();
                 }
@@ -194,8 +193,8 @@
                 <p:messages id="messages" showDetail="true" showSummary="true"/>  
 
                 <go:filterView rendered="#{reporteController.showFilter}"
-                    controllerMBean="#{reporteController}"
-                                 filterHelper="#{reporteController.filterHelper2}" update=":mainform:messages :reportForm"
+                               controllerMBean="#{reporteController}"
+                                 filterHelper="#{reporteController.filterHelper}" update=":mainform:messages :reportForm"
                                  vistaControllerBackOutcome="/script/report_graphs/reports"/>
 
                 <br />

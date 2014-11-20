@@ -124,7 +124,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
     }
 
     public void handleEditProductoContratado() {
-        executeInClient("addPCDialog.hide()");
+        executeInClient("PF('addPCDialog').hide()");
     }
 
     public void handleProductChange() {

@@ -123,7 +123,7 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
 
                         for (Usuario usuario : filtrosUsuario) {
 
-                            List<FiltroVista> filtrosVistaList = new ArrayList<FiltroVista>(2);
+                            List<FiltroVista> filtrosVistaList = new ArrayList<>(2);
 
                             //add date filter
                             FiltroVista filtroFechaDesdeHasta = new FiltroVista();
@@ -132,7 +132,7 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
                             filtroFechaDesdeHasta.setIdComparador(EnumTipoComparacion.BW.getTipoComparacion());
                             filtroFechaDesdeHasta.setValor(sdf.format(start));//desde
                             filtroFechaDesdeHasta.setValor2(sdf.format(end));//hasta
-                            filtroFechaDesdeHasta.setIdVista(getFilterHelper().getVista());
+                            filtroFechaDesdeHasta.setIdVista(getVista());
                             filtrosVistaList.add(filtroFechaDesdeHasta);
 
                             //usuariosInvitedList filter
@@ -141,14 +141,14 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
                             filtroUsuariosInvitedList.setIdCampo("usuariosInvitedList");
                             filtroUsuariosInvitedList.setIdComparador(EnumTipoComparacion.IM.getTipoComparacion());
                             filtroUsuariosInvitedList.setValor(usuario.getIdUsuario());
-                            filtroUsuariosInvitedList.setIdVista(getFilterHelper().getVista());
+                            filtroUsuariosInvitedList.setIdVista(getVista());
                             filtrosVistaList.add(filtroUsuariosInvitedList);
 
                             //set filters to vista
-                            getFilterHelper().getVista().setFiltrosVistaList(filtrosVistaList);
+                            getVista().setFiltrosVistaList(filtrosVistaList);
 
                             final List<com.itcs.helpdesk.persistence.entities.ScheduleEvent> findEntities
-                                    = (List<com.itcs.helpdesk.persistence.entities.ScheduleEvent>) getJpaController().findAllEntities(getFilterHelper().getVista(), new OrderBy("startDate", OrderBy.OrderType.DESC), null);
+                                    = (List<com.itcs.helpdesk.persistence.entities.ScheduleEvent>) getJpaController().findAllEntities(getVista(), new OrderBy("startDate", OrderBy.OrderType.DESC), null);
 //                    System.out.println("events:" + findEntities);
                             for (com.itcs.helpdesk.persistence.entities.ScheduleEvent scheduleEvent : findEntities) {
                                 final DefaultScheduleEvent defaultScheduleEvent

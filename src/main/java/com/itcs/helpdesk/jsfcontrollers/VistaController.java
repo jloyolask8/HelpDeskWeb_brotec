@@ -17,6 +17,7 @@ import com.itcs.helpdesk.persistence.utils.OrderBy;
 import com.itcs.helpdesk.util.Constants;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -40,13 +41,11 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
     @ManagedProperty(value = "#{filtroAcceso}")
     private FiltroAcceso filtroAcceso;
     private int selectedItemIndex;
-    
+
     //---
     private Integer visibilityOption = 1;
     //--
     private transient JPAFilterHelper filterHelper2;
-
-    
 
     public VistaController() {
         super(Vista.class);
@@ -71,7 +70,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
      */
     public JPAFilterHelper getFilterHelper2() {
         if (filterHelper2 == null) {
-            filterHelper2 = new JPAFilterHelper(getSelected(), emf) {
+            filterHelper2 = new JPAFilterHelper(getSelected().getBaseEntityType(), emf) {
                 @Override
                 public JPAServiceFacade getJpaService() {
                     return getJpaController();
@@ -81,14 +80,10 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         return filterHelper2;
     }
 
-    
-
     @Override
     protected String getListPage() {
-       return "/script/vista/List";
+        return "/script/vista/List";
     }
-    
-    
 
     public String prepareView() {
         current = (Vista) getItems().getRowData();
@@ -109,14 +104,15 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         visibilityOption = determineVisibility(current);
         selectedItemIndex = -1;
         JsfUtil.addWarningMessage("Atención: Al Guardar se creará una vista Nueva.");
-         this.backOutcome = backOutcome;
+        this.backOutcome = backOutcome;
         return "/script/vista/Create";
     }
     
+    
+
     public String prepareEdit(Integer idVista) {
         current = getJpaController().find(Vista.class, idVista);
-        this.filterHelper2 = null;//recreate filter helper
-        visibilityOption = determineVisibility(current);
+        afterSetSelected();
         return "/script/vista/Edit";
     }
 
@@ -127,24 +123,17 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
 
     @Override
     protected String getViewPage() {
-         return "/script/vista/Edit";
+        return "/script/vista/Edit";
     }
-    
-    
 
-    
     @Override
     protected void afterSetSelected() {
         this.filterHelper2 = null;//recreate filter helper
         visibilityOption = determineVisibility(current);
     }
-    
-    
 
     public void handleAnyChangeEvent() {
     }
-
-   
 
     public void create(Vista view) throws RollbackFailureException, Exception {
         visibilityOption = determineVisibility(view);
@@ -171,6 +160,10 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
                 filtroVista.setIdFiltro(null);
             }
         }
+
+        Date now = new Date();
+        view.setFechaCreacion(now);
+        view.setFechaModif(now);
 
         getJpaController().getVistaJpaController().create(view);
         resetVistas();
@@ -215,9 +208,6 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
 //        visibilityOption = determineVisibility(current);
 //        return "/script/vista/Edit";
 //    }
-    
-    
-
     public String update() {
         try {
 
@@ -244,6 +234,9 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
                         filtroVista.setIdFiltro(null);
                     }
                 }
+
+                Date now = new Date();
+                current.setFechaModif(now);
                 getJpaController().getVistaJpaController().edit(current);
                 JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("VistaUpdated"));
                 return prepareList();
@@ -360,8 +353,6 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
 
         return lista;
     }
-
-    
 
     /**
      * @param userSessionBean the userSessionBean to set

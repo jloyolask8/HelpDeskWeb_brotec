@@ -375,7 +375,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         try {
             current.setEnabled(true);
             getJpaController().persistCanal(current);
-            executeInClient("addEditDialog.hide()");
+            executeInClient("PF('addEditDialog').hide()");
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("CanalCreated"));
             recreateModel();
 //            return prepareCreate();
@@ -389,7 +389,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
     public void update() {
         try {
             getJpaController().mergeCanal(current);
-            executeInClient("addEditDialog.hide()");
+            executeInClient("PF('addEditDialog').hide()");
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("CanalUpdated"));
 //            return "View";
         } catch (Exception e) {

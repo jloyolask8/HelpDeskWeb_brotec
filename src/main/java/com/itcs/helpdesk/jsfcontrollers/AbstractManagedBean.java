@@ -8,6 +8,7 @@ import com.itcs.helpdesk.jsfcontrollers.util.JPAFilterHelper;
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
+import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.FiltroVista;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entities.Vista;
@@ -79,9 +80,13 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     protected E current;
     private ArrayList<E> selectedItems;
     private JPAFilterHelper filterHelper;
+    private JPAFilterHelper casoFilterHelper;
+
     private String query = null;
     private boolean filterViewToggle = false;
     List<Vista> allMyVistas = null;
+
+    private Vista vista;
 
     protected String backOutcome;
 
@@ -136,7 +141,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
                 public int getItemsCount() {
                     try {
                         if (countCache == null) {
-                            countCache = getJpaController().countEntities(getFilterHelper().getVista(), getDefaultUserWho(), getQuery()).intValue();// getJpaController().count(Caso.class).intValue();
+                            countCache = getJpaController().countEntities(getVista(), getDefaultUserWho(), getQuery()).intValue();// getJpaController().count(Caso.class).intValue();
                         }
 
                         return countCache;
@@ -150,7 +155,14 @@ public abstract class AbstractManagedBean<E> implements Serializable {
                 public DataModel createPageDataModel() {
                     try {
                         DataModel<E> dataModel = (DataModel) getDataModelImplementationClass().newInstance();
-                        dataModel.setWrappedData(getJpaController().findEntities(getFilterHelper().getVista(), getPageSize(), getPageFirstItem(), getDefaultOrderBy(), getDefaultUserWho(), getQuery()));
+
+                        final List<?> data = getJpaController().findEntities(getVista(), getPageSize(), getPageFirstItem(), getDefaultOrderBy(), getDefaultUserWho(), getQuery());
+
+                        if (Comparable.class.isAssignableFrom(entityClass)) {
+                            Collections.sort((List<Comparable>) data);
+                        }
+
+                        dataModel.setWrappedData(data);
                         return dataModel;
                     } catch (IllegalStateException ex) {//error en el filtro
                         JsfUtil.addErrorMessage(ex, "Existe un problema con el filtro. Favor corregir e intentar nuevamente.");
@@ -190,7 +202,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
 
     public JPAFilterHelper getFilterHelper() {
         if (filterHelper == null) {
-            filterHelper = new JPAFilterHelper(new Vista(entityClass), emf) {
+            filterHelper = new JPAFilterHelper((entityClass).getName(), emf) {
                 @Override
                 public JPAServiceFacade getJpaService() {
                     return getJpaController();
@@ -198,6 +210,18 @@ public abstract class AbstractManagedBean<E> implements Serializable {
             };
         }
         return filterHelper;
+    }
+
+    public JPAFilterHelper getCasoFilterHelper() {
+        if (casoFilterHelper == null) {
+            casoFilterHelper = new JPAFilterHelper((Caso.class).getName(), emf) {
+                @Override
+                public JPAServiceFacade getJpaService() {
+                    return getJpaController();
+                }
+            };
+        }
+        return casoFilterHelper;
     }
 
     public void filter() {
@@ -421,7 +445,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
                 }
             }
 
-            getFilterHelper().setVista(copy);
+            setVista(copy);
 //        this.setVista(copy);
 //        //System.out.println("Vista copy set:" + copy);
             recreatePagination();
@@ -844,6 +868,25 @@ public abstract class AbstractManagedBean<E> implements Serializable {
      */
     public List<Vista> getVisibleForMyAreasItems(Usuario user, String baseEntityType) {
         return getJpaController().getVistaJpaController().findVistaEntitiesVisibleForAreasOfUser(user, baseEntityType);
+    }
+
+    /**
+     * @return the vista
+     */
+    public Vista getVista() {
+
+        if (vista == null) {
+            vista = new Vista(entityClass);
+        }
+        return vista;
+
+    }
+
+    /**
+     * @param vista the vista to set
+     */
+    public void setVista(Vista vista) {
+        this.vista = vista;
     }
 
 }

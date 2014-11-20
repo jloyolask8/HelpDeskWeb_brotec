@@ -215,6 +215,10 @@
                                     <p:menuitem value="Reportes Gráficos" ajax="false" action="/script/report_graphs/reports" icon="fa fa-bar-chart-o">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
+                                    
+                                    <p:menuitem value="Reports" ajax="false" action="#{reportChartController.prepareList()}" icon="fa fa-bar-chart-o">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
                                 </p:submenu>
 
                                 <p:submenu label="Ajustes" icon="fa fa-wrench" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">                                
