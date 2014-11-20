@@ -139,6 +139,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
 
                 if (mailClient != null) {
 
+                    long highestUID = 0;
                     try {
                         mailClient.connectStore();
                         mailClient.openFolder("inbox");
@@ -161,7 +162,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
     //                    if (ApplicationConfig.isAppDebugEnabled()) {
                         //                        Log.createLogger(this.getClass().getName()).logDebug("Debug Email BlackList:" + mapBlackList);
                         //                    }
-                        long highestUID = 0;
+                        
                         for (EmailMessage emailMessage : messages) {
                             try {
                                 if (emailMessage.getIdMessage() > highestUID) {
@@ -224,18 +225,19 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                                 //  mailClient.deleteMessage(emailMessage);
                             }
                         }
-                        if (highestUID > 0) {
-                            System.out.println("saving highestUID: " + highestUID);
-                            canal.getCanalSettingList().remove(new CanalSetting(canal.getIdCanal(), EnumEmailSettingKeys.HIGHEST_UID.getKey()));
-                            canal.getCanalSettingList().add(new CanalSetting(canal, EnumEmailSettingKeys.HIGHEST_UID.getKey(), String.valueOf(highestUID), ""));
-                            jpaController.merge(canal);
-                        }
+                        
                         if (ApplicationConfig.isAppDebugEnabled()) {
-                            Log.createLogger(this.getClass().getName()).logDebug("Revisión de correo " + canal + "exitósa: " + messages.size() + " mensajes leídos. Intancia: brotec-icafal");
+                            Log.createLogger(this.getClass().getName()).logDebug("Revisión de correo " + canal + "exitosa: " + messages.size() + " mensajes leídos. Intancia: brotec-icafal");
                         }
 
                     } finally {
                         try {
+                            if (highestUID > 0) {
+                                System.out.println("saving highestUID: " + highestUID);
+                                canal.getCanalSettingList().remove(new CanalSetting(canal.getIdCanal(), EnumEmailSettingKeys.HIGHEST_UID.getKey()));
+                                canal.getCanalSettingList().add(new CanalSetting(canal, EnumEmailSettingKeys.HIGHEST_UID.getKey(), String.valueOf(highestUID), ""));
+                                jpaController.merge(canal);
+                            }
 
                             UserTransactionHelper.returnUserTransaction(utx);
                             mailClient.closeFolder();
