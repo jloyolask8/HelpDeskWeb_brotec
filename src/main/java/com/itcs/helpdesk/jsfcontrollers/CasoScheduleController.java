@@ -99,7 +99,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
             @Override
             public void loadEvents(Date start, Date end) {
                 try {
-                    getFilterHelper().getVista().setFiltrosVistaList(new ArrayList<FiltroVista>(2));
+                    getVista().setFiltrosVistaList(new ArrayList<FiltroVista>(2));
                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
                     //add date filters
@@ -110,9 +110,9 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
                     f1.setValor(sdf.format(start));
                     f1.setValor2(sdf.format(end));
 
-                    f1.setIdVista(getFilterHelper().getVista());
+                    f1.setIdVista(getVista());
 
-                    getFilterHelper().getVista().getFiltrosVistaList().add(f1);
+                    getVista().getFiltrosVistaList().add(f1);
 
                     if (insideCasoDisplay) {
                         Caso currentCaso = casoController.getSelected();
@@ -122,8 +122,8 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
                         f3.setIdCampo("idCaso");
                         f3.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
                         f3.setValor(currentCaso.getIdCaso().toString());
-                        f3.setIdVista(getFilterHelper().getVista());
-                        getFilterHelper().getVista().getFiltrosVistaList().add(f3);
+                        f3.setIdVista(getVista());
+                        getVista().getFiltrosVistaList().add(f3);
                     }
 
                     if (filtrosUsuario != null && !filtrosUsuario.isEmpty()) {
@@ -144,8 +144,8 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
                         }
 
                         f4_0.setValor(commaSeparatedIdOfUsuariosFilter);
-                        f4_0.setIdVista(getFilterHelper().getVista());
-                        getFilterHelper().getVista().getFiltrosVistaList().add(f4_0);
+                        f4_0.setIdVista(getVista());
+                        getVista().getFiltrosVistaList().add(f4_0);
                     }
 
                     if (filtrosUsuario != null && !filtrosUsuario.isEmpty()) {
@@ -166,8 +166,8 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
                         }
 
                         f4.setValor(commaSeparatedIdOfUsuariosFilter);
-                        f4.setIdVista(getFilterHelper().getVista());
-                        getFilterHelper().getVista().getFiltrosVistaList().add(f4);
+                        f4.setIdVista(getVista());
+                        getVista().getFiltrosVistaList().add(f4);
                     }
 
                     if (filtrosRecurso != null && !filtrosRecurso.isEmpty()) {
@@ -188,14 +188,14 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
                         }
 
                         f5.setValor(commaSeparatedIdOfResourcesFilter);
-                        f5.setIdVista(getFilterHelper().getVista());
-                        getFilterHelper().getVista().getFiltrosVistaList().add(f5);
+                        f5.setIdVista(getVista());
+                        getVista().getFiltrosVistaList().add(f5);
                     }
 
-//                    System.out.println("VISTA=" + getFilterHelper().getVista());
+//                    System.out.println("VISTA=" + getVista());
 
                     final List<com.itcs.helpdesk.persistence.entities.ScheduleEvent> findEntities
-                            = (List<com.itcs.helpdesk.persistence.entities.ScheduleEvent>) getJpaController().findAllEntities(getFilterHelper().getVista(), new OrderBy("startDate", OrderBy.OrderType.DESC), null);
+                            = (List<com.itcs.helpdesk.persistence.entities.ScheduleEvent>) getJpaController().findAllEntities(getVista(), new OrderBy("startDate", OrderBy.OrderType.DESC), null);
 //                    System.out.println("events:" + findEntities);
                     for (com.itcs.helpdesk.persistence.entities.ScheduleEvent scheduleEvent : findEntities) {
                         final DefaultScheduleEvent defaultScheduleEvent = new DefaultScheduleEvent(scheduleEvent.getTitle(), scheduleEvent.getStartDate(), scheduleEvent.getEndDate());

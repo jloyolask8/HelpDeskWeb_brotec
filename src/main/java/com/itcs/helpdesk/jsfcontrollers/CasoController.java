@@ -20,7 +20,7 @@ import com.itcs.helpdesk.persistence.entities.Etiqueta;
 import com.itcs.helpdesk.persistence.entities.FiltroVista;
 import com.itcs.helpdesk.persistence.entities.Item;
 import com.itcs.helpdesk.persistence.entities.ModeloProducto;
-import com.itcs.helpdesk.persistence.entities.NombreAccion;
+import com.itcs.helpdesk.persistence.entities.TipoAccion;
 import com.itcs.helpdesk.persistence.entities.Nota;
 import com.itcs.helpdesk.persistence.entities.Recinto;
 import com.itcs.helpdesk.persistence.entities.ReglaTrigger;
@@ -33,7 +33,7 @@ import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.entityenums.EnumCanal;
 import com.itcs.helpdesk.persistence.entityenums.EnumEstadoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumFunciones;
-import com.itcs.helpdesk.persistence.entityenums.EnumNombreAccion;
+import com.itcs.helpdesk.persistence.entityenums.EnumTipoAccion;
 import com.itcs.helpdesk.persistence.entityenums.EnumPrioridad;
 import com.itcs.helpdesk.persistence.entityenums.EnumSubEstadoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta;
@@ -428,7 +428,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         } else {
             //run on all items in Vista
             try {
-                casosToSend = (List<Caso>) getJpaController().findAllEntities(getFilterHelper().getVista(), getDefaultOrderBy(), userSessionBean.getCurrent());
+                casosToSend = (List<Caso>) getJpaController().findAllEntities(getVista(), getDefaultOrderBy(), userSessionBean.getCurrent());
             } catch (Exception ex) {
                 Logger.getLogger(CasoController.class
                         .getName()).log(Level.SEVERE, "findEntities", ex);
@@ -465,7 +465,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         } else {
             //run on all items in Vista
             try {
-                casosToSend = (List<Caso>) getJpaController().findAllEntities(getFilterHelper().getVista(), getDefaultOrderBy(), userSessionBean.getCurrent());
+                casosToSend = (List<Caso>) getJpaController().findAllEntities(getVista(), getDefaultOrderBy(), userSessionBean.getCurrent());
             } catch (Exception ex) {
                 Logger.getLogger(CasoController.class
                         .getName()).log(Level.SEVERE, "findEntities", ex);
@@ -871,7 +871,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public String inbox() {
         idCasoStr = null;
-        if (getFilterHelper().getVista() == null) {
+        if (getVista() == null) {
             recreatePagination();
             recreateModel();
             prepareCasoFilterForInbox();
@@ -1642,7 +1642,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         copy.getFiltrosVistaList().add(fCopy);
 
-        getFilterHelper().setVista(copy);
+        setVista(copy);
 
         recreateModel();
         recreatePagination();
@@ -1651,28 +1651,20 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //        FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
-    public Vista getVista() {
-        return getFilterHelper().getVista();
-    }
-
-    public void setVista(Vista vista) {
-        getFilterHelper().setVista(vista);
-        recreatePagination();
-        recreateModel();
-    }
+ 
 
     public String saveCurrentView() {
 
         try {
 
-            if (getFilterHelper().getVista() != null && getFilterHelper().getVista().getFiltrosVistaList() != null) {
+            if (getVista() != null && getVista().getFiltrosVistaList() != null) {
                 //SE hizo una copia de esta vista, y los filtros tienen ids falsos
-                for (FiltroVista f : getFilterHelper().getVista().getFiltrosVistaList()) {
+                for (FiltroVista f : getVista().getFiltrosVistaList()) {
                     f.setIdFiltro(null); //This is an ugly patch to solve issue when removing a filter from the view, if TODO: Warning - this method won't work in the case the id fields are not set
                 }
             }
 
-            vistaController.create(getFilterHelper().getVista());
+            vistaController.create(getVista());
             JsfUtil.addSuccessMessage("La Vista guardada exitosamente. Revisar el panel de Vistas.");
             executeInClient("PF('saveViewDialog').hide()");
         } catch (Exception e) {
@@ -1701,7 +1693,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         if (vistas != null && !vistas.isEmpty()) {
             //there are vistas, lets select the first one as the user inbox
-            getFilterHelper().setVista(vistas.get(0));
+            setVista(vistas.get(0));
         } else {
             //damn there are no vistas for this madafaka, lets give him some default shit
             Vista vista1 = new Vista(Caso.class);
@@ -1728,7 +1720,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
             vista1.getFiltrosVistaList().add(filtroEstado);
 
-            getFilterHelper().setVista(vista1);
+            setVista(vista1);
         }
 
     }
@@ -1744,7 +1736,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      */
     public String filtraRevisarActualizaciones() {
         Vista vista1 = createVistaMyReviewUpdate();
-        getFilterHelper().setVista(vista1);
+        setVista(vista1);
         recreatePagination();
         recreateModel();
         return "inbox";
@@ -1786,7 +1778,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public String filtraCasosCerrados() {
         Vista vista1 = createVistaMisCasosCerrados();
 
-        getFilterHelper().setVista(vista1);
+        setVista(vista1);
         recreatePagination();
         recreateModel();
         return "inbox";
@@ -1817,7 +1809,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public String filtrarPrioritarios() {
         Vista vista1 = createVistaOpenPrio();
 
-        getFilterHelper().setVista(vista1);
+        setVista(vista1);
         recreatePagination();
         recreateModel();
         return "inbox";
@@ -1854,7 +1846,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public String filtraPorAlerta(TipoAlerta alerta) {
         Vista vista1 = createVistaCurrentUserByAlert(alerta, EnumEstadoCaso.ABIERTO.getEstado());
 
-        getFilterHelper().setVista(vista1);
+        setVista(vista1);
         recreatePagination();
         recreateModel();
         return "inbox";
@@ -2198,7 +2190,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             entityEvent.setPublicEvent(true);
 //            entityEvent.setUsuariosInvitedList(visitaPreventivaAsignarAGrupo.getUsuarioList());
             entityEvent.setExecuteAction(true);
-            final NombreAccion nombreAccion = EnumNombreAccion.CREAR_CASO_VISITA_REP_SELLOS.getNombreAccion();
+            final TipoAccion nombreAccion = EnumTipoAccion.CREAR_CASO_VISITA_REP_SELLOS.getNombreAccion();
             entityEvent.setIdTipoAccion(nombreAccion);
             Properties props = new Properties();
             props.put(CrearCasoVisitaRepSellosAction.TEMA_KEY, visitaPreventivaSubject);
@@ -3117,7 +3109,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public StreamedContent exportAllItems() {
 
         try {
-            List<Caso> casos = (List<Caso>) getJpaController().findAllEntities(getFilterHelper().getVista(), getDefaultOrderBy(), userSessionBean.getCurrent());//all
+            List<Caso> casos = (List<Caso>) getJpaController().findAllEntities(getVista(), getDefaultOrderBy(), userSessionBean.getCurrent());//all
             OutputStream output = new ByteArrayOutputStream();
             //Se crea el libro Excel
             WritableWorkbook workbook
@@ -3125,7 +3117,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
             //Se crea una nueva hoja dentro del libro
             WritableSheet sheet
-                    = workbook.createSheet("Casos " + getFilterHelper().getVista().toString(), 0);
+                    = workbook.createSheet("Casos " + getVista().toString(), 0);
             WritableCellFormat timesBoldUnderline;
             WritableFont times10ptBoldUnderline = new WritableFont(WritableFont.TIMES, 10, WritableFont.BOLD, false, UnderlineStyle.SINGLE);
             timesBoldUnderline = new WritableCellFormat(times10ptBoldUnderline);

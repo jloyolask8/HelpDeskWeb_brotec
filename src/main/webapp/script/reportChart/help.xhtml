@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <p:panel>
+        <h:outputLabel escape="false" value="reportes help."/>
+    </p:panel>
+
+</html>
+
+
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="ReportChartCreateDlg" widgetVar="ReportChartCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreateReportChartTitle}">
+            <h:form id="ReportChartCreateForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{reportChartController.selected != null}">
+                        <p:outputLabel value="#{bundle.CreateReportChartLabel_idChartReport}" for="idChartReport" />
+                        <p:inputText id="idChartReport" value="#{reportChartController.selected.idChartReport}" title="#{bundle.CreateReportChartTitle_idChartReport}" required="true" requiredMessage="#{bundle.CreateReportChartRequiredMessage_idChartReport}"/>
+                        <p:outputLabel value="#{bundle.CreateReportChartLabel_titulo}" for="titulo" />
+                        <p:inputText id="titulo" value="#{reportChartController.selected.titulo}" title="#{bundle.CreateReportChartTitle_titulo}" />
+                        <p:outputLabel value="#{bundle.CreateReportChartLabel_nombre}" for="nombre" />
+                        <p:inputText id="nombre" value="#{reportChartController.selected.nombre}" title="#{bundle.CreateReportChartTitle_nombre}" required="true" requiredMessage="#{bundle.CreateReportChartRequiredMessage_nombre}"/>
+                        <p:outputLabel value="#{bundle.CreateReportChartLabel_descripcion}" for="descripcion" />
+                        <p:inputText id="descripcion" value="#{reportChartController.selected.descripcion}" title="#{bundle.CreateReportChartTitle_descripcion}" />
+                        <p:outputLabel value="#{bundle.CreateReportChartLabel_chartType}" for="chartType" />
+                        <p:inputText id="chartType" value="#{reportChartController.selected.chartType}" title="#{bundle.CreateReportChartTitle_chartType}" required="true" requiredMessage="#{bundle.CreateReportChartRequiredMessage_chartType}"/>
+                        <p:outputLabel value="#{bundle.CreateReportChartLabel_baseEntityType}" for="baseEntityType" />
+                        <p:inputText id="baseEntityType" value="#{reportChartController.selected.baseEntityType}" title="#{bundle.CreateReportChartTitle_baseEntityType}" required="true" requiredMessage="#{bundle.CreateReportChartRequiredMessage_baseEntityType}"/>
+                        <p:outputLabel value="#{bundle.CreateReportChartLabel_visibleToAll}" for="visibleToAll" />
+                        <p:selectBooleanCheckbox id="visibleToAll" value="#{reportChartController.selected.visibleToAll}" required="true" requiredMessage="#{bundle.EditReportChartRequiredMessage_visibleToAll}"/>
+                        <p:outputLabel value="#{bundle.CreateReportChartLabel_columnIndex}" for="columnIndex" />
+                        <p:inputText id="columnIndex" value="#{reportChartController.selected.columnIndex}" title="#{bundle.CreateReportChartTitle_columnIndex}" />
+                        <p:outputLabel value="#{bundle.CreateReportChartLabel_itemIndex}" for="itemIndex" />
+                        <p:inputText id="itemIndex" value="#{reportChartController.selected.itemIndex}" title="#{bundle.CreateReportChartTitle_itemIndex}" />
+                        <p:outputLabel value="#{bundle.CreateReportChartLabel_idArea}" for="idArea" />
+                        <p:inputText id="idArea" value="#{reportChartController.selected.idArea}" title="#{bundle.CreateReportChartTitle_idArea}" />
+                        <p:outputLabel value="#{bundle.CreateReportChartLabel_idCampoBase}" for="idCampoBase" />
+                        <p:inputText id="idCampoBase" value="#{reportChartController.selected.idCampoBase}" title="#{bundle.CreateReportChartTitle_idCampoBase}" />
+                        <p:outputLabel value="#{bundle.CreateReportChartLabel_idComparador}" for="idComparador" />
+                        <p:inputText id="idComparador" value="#{reportChartController.selected.idComparador}" title="#{bundle.CreateReportChartTitle_idComparador}" />
+                        <p:outputLabel value="#{bundle.CreateReportChartLabel_valor}" for="valor" />
+                        <p:inputText id="valor" value="#{reportChartController.selected.valor}" title="#{bundle.CreateReportChartTitle_valor}" />
+                        <p:outputLabel value="#{bundle.CreateReportChartLabel_valor2}" for="valor2" />
+                        <p:inputText id="valor2" value="#{reportChartController.selected.valor2}" title="#{bundle.CreateReportChartTitle_valor2}" />
+                        <p:outputLabel value="#{bundle.CreateReportChartLabel_valorLabel}" for="valorLabel" />
+                        <p:inputText id="valorLabel" value="#{reportChartController.selected.valorLabel}" title="#{bundle.CreateReportChartTitle_valorLabel}" />
+                        <p:outputLabel value="#{bundle.CreateReportChartLabel_valor2Label}" for="valor2Label" />
+                        <p:inputText id="valor2Label" value="#{reportChartController.selected.valor2Label}" title="#{bundle.CreateReportChartTitle_valor2Label}" />
+                        <p:outputLabel value="#{bundle.CreateReportChartLabel_fechaCreacion}" for="fechaCreacion" />
+                        <p:calendar id="fechaCreacion" pattern="MM/dd/yyyy HH:mm:ss" value="#{reportChartController.selected.fechaCreacion}" title="#{bundle.EditReportChartTitle_fechaCreacion}"  showOn="button"/>
+                        <p:outputLabel value="#{bundle.CreateReportChartLabel_fechaModif}" for="fechaModif" />
+                        <p:calendar id="fechaModif" pattern="MM/dd/yyyy HH:mm:ss" value="#{reportChartController.selected.fechaModif}" title="#{bundle.EditReportChartTitle_fechaModif}"  showOn="button"/>
+                        <p:outputLabel value="#{bundle.CreateReportChartLabel_idUsuarioCreatedby}" for="idUsuarioCreatedby" />
+                        <p:selectOneMenu id="idUsuarioCreatedby" value="#{reportChartController.selected.idUsuarioCreatedby}" required="true" requiredMessage="#{bundle.EditReportChartRequiredMessage_idUsuarioCreatedby}">
+                            <f:selectItems value="#{usuarioController.itemsAvailableSelectOne}"
+                                           var="idUsuarioCreatedbyItem"
+                                           itemValue="#{idUsuarioCreatedbyItem}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="#{bundle.CreateReportChartLabel_idGrupo}" for="idGrupo" />
+                        <p:selectOneMenu id="idGrupo" value="#{reportChartController.selected.idGrupo}" >
+                            <f:selectItems value="#{grupoController.itemsAvailableSelectOne}"
+                                           var="idGrupoItem"
+                                           itemValue="#{idGrupoItem}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{reportChartController.create}" value="#{bundle.Save}" update="display,:ReportChartListForm:datalist,:mainform:messages" oncomplete="handleSubmit(args,'ReportChartCreateDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" onclick="PF('ReportChartCreateDialog').hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

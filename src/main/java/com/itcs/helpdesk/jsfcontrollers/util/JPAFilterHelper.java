@@ -41,14 +41,15 @@ public abstract class JPAFilterHelper implements Serializable {
     public static final String PLACE_HOLDER_CURRENT_USER_LABEL = "Usuario en Sesión";
     public static final String PLACE_HOLDER_NULL_LABEL = "Sin valor asignado (nulo)";
     public static final String PLACE_HOLDER_ANY_LABEL = "Cualquier valor distinto de nulo";
-    private Vista vista;
+//    private Vista vista;
+    private final String baseEntityClassName;
     public List<ComparableField> comparableFields;
     private Map<String, ComparableField> comparableFieldsMap;
 
     private final transient EntityManagerFactory emf;
 
-    public JPAFilterHelper(Vista v, EntityManagerFactory emf) {
-        this.vista = v;
+    public JPAFilterHelper(String baseEntityClassName, EntityManagerFactory emf) {
+        this.baseEntityClassName = baseEntityClassName;
         this.emf = emf;
     }
 
@@ -57,10 +58,15 @@ public abstract class JPAFilterHelper implements Serializable {
 //    }
     public abstract JPAServiceFacade getJpaService();
 
-    public List<ComparableField> getComparableFields() throws ClassNotFoundException {
+    public List<ComparableField> getComparableFields() {
         if (comparableFields == null) {
-            comparableFields = getJpaService().getAnnotatedComparableFieldsByClass(Class.forName(vista.getBaseEntityType()));
-            Collections.sort(comparableFields);
+            try {
+                comparableFields = getJpaService().getAnnotatedComparableFieldsByClass(Class.forName(getBaseEntityClassName()));
+                Collections.sort(comparableFields);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(JPAFilterHelper.class.getName()).log(Level.SEVERE, null, ex);
+                comparableFields = Collections.EMPTY_LIST;
+            }
         }
         return comparableFields;
     }
@@ -68,7 +74,7 @@ public abstract class JPAFilterHelper implements Serializable {
     public List<ComparableField> getEntityOrCalendarComparableFields() throws ClassNotFoundException {
         List<ComparableField> comparableFieldsOfType = new ArrayList<>();
         if (comparableFields == null) {
-            comparableFields = getJpaService().getAnnotatedComparableFieldsByClass(Class.forName(vista.getBaseEntityType()));
+            comparableFields = getJpaService().getAnnotatedComparableFieldsByClass(Class.forName(getBaseEntityClassName()));
         }
         for (ComparableField comparableField : comparableFields) {
             if (comparableField.getFieldTypeId().equals(EnumFieldType.SELECTONE_ENTITY.getFieldType())
@@ -83,7 +89,7 @@ public abstract class JPAFilterHelper implements Serializable {
     public List<ComparableField> getEntityComparableFields() throws ClassNotFoundException {
         List<ComparableField> comparableFieldsOfType = new ArrayList<>();
         if (comparableFields == null) {
-            comparableFields = getJpaService().getAnnotatedComparableFieldsByClass(Class.forName(vista.getBaseEntityType()));
+            comparableFields = getJpaService().getAnnotatedComparableFieldsByClass(Class.forName(getBaseEntityClassName()));
         }
         for (ComparableField comparableField : comparableFields) {
             if (comparableField.getFieldTypeId().equals(EnumFieldType.SELECTONE_ENTITY.getFieldType())) {
@@ -403,28 +409,33 @@ public abstract class JPAFilterHelper implements Serializable {
 //        filtro.setValor2(null);
     }
 
-    /**
-     * @return the vista
-     */
-    public Vista getVista() {
-        return vista;
-    }
-
-    /**
-     * @param vista the vista to set
-     */
-    public void setVista(Vista vista) {
-        this.vista = vista;
-    }
-
+//    /**
+//     * @return the vista
+//     */
+//    public Vista getVista() {
+//        return vista;
+//    }
+//
+//    /**
+//     * @param vista the vista to set
+//     */
+//    public void setVista(Vista vista) {
+//        this.vista = vista;
+//    }
     /**
      * @return the comparableFieldsMap
-     * @throws java.lang.ClassNotFoundException
      */
-    public Map<String, ComparableField> getComparableFieldsMap() throws ClassNotFoundException {
+    public Map<String, ComparableField> getComparableFieldsMap() {
         if (comparableFieldsMap == null) {
             comparableFieldsMap = getJpaService().getAnnotatedComparableFieldsMap(getComparableFields());
         }
         return comparableFieldsMap;
+    }
+
+    /**
+     * @return the baseEntityClassName
+     */
+    public String getBaseEntityClassName() {
+        return baseEntityClassName;
     }
 }

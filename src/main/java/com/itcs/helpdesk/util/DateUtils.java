@@ -6,8 +6,12 @@ package com.itcs.helpdesk.util;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
+import org.joda.time.Interval;
+import org.joda.time.LocalDate;
 
 /**
  *
@@ -15,7 +19,7 @@ import org.joda.time.Days;
  */
 public class DateUtils {
 
-     /**
+    /**
      * <p>
      * Checks if two dates are on the same day ignoring time.</p>
      *
@@ -51,7 +55,7 @@ public class DateUtils {
         return (cal1.get(Calendar.ERA) == cal2.get(Calendar.ERA)
                 && cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR));
     }
-    
+
     /**
      * <p>
      * Checks if two dates are on the same day ignoring time.</p>
@@ -101,8 +105,8 @@ public class DateUtils {
     public static boolean isToday(Date date) {
         return isSameDay(date, Calendar.getInstance().getTime());
     }
-    
-     /**
+
+    /**
      * <p>
      * Checks if a date is today.</p>
      *
@@ -399,5 +403,13 @@ public class DateUtils {
 //        }
 //        return daysBetween;
         return Days.daysBetween(new DateTime(startDate), new DateTime(endDate)).getDays();
+    }
+
+    public static List<Interval> getRangeStartDates(Date start, Date end, int type) {
+        List<Interval> intervals = new LinkedList<>();
+        for (Interval interval : new DateRangeList(start, end, type)) {
+            intervals.add(interval);
+        }
+        return intervals;
     }
 }

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:go="http://java.sun.com/jsf/composite/go"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+
+
+        <ui:define name="title">
+            <p:outputLabel value="#{bundle.ListReportChartTitle}"/>
+        </ui:define>
+
+        <ui:define name="body">
+
+            <h:form id="form">
+                <p:toolbar rendered="#{reportChartController.items.rowCount > 0}">
+                    <p:toolbarGroup align="right">
+
+                        <go:paginatorButtons controllerMBean="#{reportChartController}" update=":form"/>
+                        <p:separator/>
+                        <p:commandButton ajax="false" action="#{reportChartController.prepareCreate}" immediate="true"
+                                         rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" value="New" icon="fa fa-plus-circle" />
+
+                    </p:toolbarGroup>  
+
+                </p:toolbar>
+                <br/>
+
+
+                <p:dashboard id="dashboard" binding="#{reportChartController.dashboard}" >
+                    <p:ajax event="reorder" listener="#{reportChartController.handleReorder}" update=":form :mainform:messages" />
+                </p:dashboard>
+            </h:form>
+
+
+        </ui:define>
+    </ui:composition>
+
+</html>

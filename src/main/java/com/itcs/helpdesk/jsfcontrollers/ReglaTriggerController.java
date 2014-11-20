@@ -15,7 +15,7 @@ import com.itcs.helpdesk.persistence.entities.TipoComparacion;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.entityenums.EnumFieldType;
-import com.itcs.helpdesk.persistence.entityenums.EnumNombreAccion;
+import com.itcs.helpdesk.persistence.entityenums.EnumTipoAccion;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.persistence.utils.ComparableField;
@@ -46,6 +46,7 @@ import org.primefaces.model.SelectableDataModel;
 import org.primefaces.model.TreeNode;
 import com.itcs.helpdesk.util.ClassUtils;
 import java.lang.reflect.Modifier;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import javax.faces.model.DataModel;
@@ -102,8 +103,8 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 
     private void findAllCustomClasses() {
         if (actionClassNames == null) {
-            actionClassNames = new LinkedList<String>();
-            actionClassInfoMap = new HashMap<String, ActionInfo>();
+            actionClassNames = new LinkedList<>();
+            actionClassInfoMap = new HashMap<>();
             try {
                 getAllPublicActionImplementations("com.itcs.helpdesk.rules.customactions", actionClassNames);
                 getAllPublicActionImplementations("com.itcs.helpdesk.rules.actionsimpl", actionClassNames);
@@ -190,7 +191,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 
                         try {
                             DataModel<ReglaTrigger> dataModel = (DataModel) getDataModelImplementationClass().newInstance();
-                            dataModel.setWrappedData(getJpaController().findEntities(getFilterHelper().getVista(), getPageSize(), getPageFirstItem(), getDefaultOrderBy(), getDefaultUserWho()));
+                            dataModel.setWrappedData(getJpaController().findEntities(getVista(), getPageSize(), getPageFirstItem(), getDefaultOrderBy(), getDefaultUserWho()));
                             return dataModel;
                         } catch (IllegalStateException ex) {//error en el filtro
                             JsfUtil.addErrorMessage(ex, "Existe un problema con el filtro. Favor corregir e intentar nuevamente.");
@@ -359,7 +360,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 
     public JPAFilterHelper getFilterHelperForConditions() {
         if (filterHelperForConditions == null) {
-            filterHelperForConditions = new JPAFilterHelper(new Vista(Caso.class), emf) {
+            filterHelperForConditions = new JPAFilterHelper((Caso.class).getName(), emf) {
                 @Override
                 public JPAServiceFacade getJpaService() {
                     return getJpaController();
@@ -370,35 +371,35 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
     }
 
     public boolean esAccionAsignarArea(Accion accion) {
-        return esAccion(accion, EnumNombreAccion.ASIGNAR_A_AREA);
+        return esAccion(accion, EnumTipoAccion.ASIGNAR_A_AREA);
     }
 
     public boolean esAccionCustom(Accion accion) {
-        return esAccion(accion, EnumNombreAccion.CUSTOM);
+        return esAccion(accion, EnumTipoAccion.CUSTOM);
     }
 
     public boolean esAccionAsignarAGrupo(Accion accion) {
-        return esAccion(accion, EnumNombreAccion.ASIGNAR_A_GRUPO);
+        return esAccion(accion, EnumTipoAccion.ASIGNAR_A_GRUPO);
     }
 
     public boolean esAccionRedefinirSLAFechaCompra(Accion accion) {
-        return esAccion(accion, EnumNombreAccion.DEFINIR_SLA_FECHA_COMPRA);
+        return esAccion(accion, EnumTipoAccion.DEFINIR_SLA_FECHA_COMPRA);
     }
 
     public boolean esAccionAsignarAUsuario(Accion accion) {
-        return esAccion(accion, EnumNombreAccion.ASIGNAR_A_USUARIO);
+        return esAccion(accion, EnumTipoAccion.ASIGNAR_A_USUARIO);
     }
 
     public boolean esAccionCambiarPrioridad(Accion accion) {
-        return esAccion(accion, EnumNombreAccion.CAMBIAR_PRIORIDAD);
+        return esAccion(accion, EnumTipoAccion.CAMBIAR_PRIORIDAD);
     }
 
     public boolean esAccionEnviarEmail(Accion accion) {
-        return esAccion(accion, EnumNombreAccion.ENVIAR_EMAIL);
+        return esAccion(accion, EnumTipoAccion.ENVIAR_EMAIL);
     }
 
     public boolean esAccionRecalcularSLA(Accion accion) {
-        return esAccion(accion, EnumNombreAccion.RECALCULAR_SLA);
+        return esAccion(accion, EnumTipoAccion.RECALCULAR_SLA);
     }
 
     public String prepareList() {
@@ -452,7 +453,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         accionTemp = new Accion();
         resetTempVars();
         JsfUtil.addSuccessMessage("Acción agregada...");
-        executeInClient("addAccionPopup.hide()");
+        executeInClient("PF('addAccionPopup').hide()");
         return null;
     }
 
@@ -479,6 +480,8 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
             for (Accion accion : current.getAccionList()) {
                 accion.setIdAccion(null);
             }
+            Date now = new Date();
+            current.setFechaCreacion(now);
 
             getJpaController().persistReglaTrigger(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ReglaTriggerCreated"));
@@ -523,6 +526,9 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
                 }
             }
 
+            Date now = new Date();
+             current.setFechaModif(now);
+             
             getJpaController().mergeReglaTrigger(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ReglaTriggerUpdated"));
         } catch (Exception e) {
@@ -733,7 +739,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         this.emailTemp = emailTemp;
     }
 
-    public boolean esAccion(Accion accion, EnumNombreAccion enumAccion) {
+    public boolean esAccion(Accion accion, EnumTipoAccion enumAccion) {
         if ((accion == null) || (accion.getIdNombreAccion() == null)) {
             return false;
         }

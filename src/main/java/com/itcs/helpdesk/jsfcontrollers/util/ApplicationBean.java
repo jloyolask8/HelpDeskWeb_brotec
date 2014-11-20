@@ -56,12 +56,12 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
 
 //    private String defaultContactEmail = null;
     //  Map<String, String> loggedInUsers = new HashMap<String, String>();
-    private Map<String, String> channels = new HashMap<String, String>();
-    private Map<String, String> sessionIdMappings = new HashMap<String, String>();
+    private final Map<String, String> channels = new HashMap<>();
+    private Map<String, String> sessionIdMappings = new HashMap<>();
     //--pre created Vistas
-    private final transient Map<Integer, Vista> predefinedVistas = new HashMap<Integer, Vista>();
+    private final transient Map<Integer, Vista> predefinedVistas = new HashMap<>();
     private Vista vistaRevisarActualizacion;
-    private transient final Map<String, Action> predefinedActions = new HashMap<String, Action>();
+    private transient final Map<String, Action> predefinedActions = new HashMap<>();
 
     private String ckEditorToolbar = "[{ name: 'document', items : ['Source','Preview', 'SpellChecker', 'Scayt', 'Link', 'Unlink', 'Iframe', 'Image','Table','HorizontalRule','NumberedList','BulletedList'] },"
             + "{ name: 'style', items : ['Bold','Italic','Underline','TextColor','BGColor', '-','RemoveFormat','Blockquote'] },"
@@ -75,7 +75,7 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
     }
 
     public List<String> getUsersLoggedIn() {
-        List<String> users = new ArrayList<String>(getChannels().size());
+        List<String> users = new ArrayList<>(getChannels().size());
         users.addAll(getChannels().keySet());
         return users;
     }
@@ -99,20 +99,15 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
     }
 
     public void onIdle() {
-
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "Inactividad detectada",
                 "Su sesión expirará si no realiza ninguna actividad.");
-
         RequestContext.getCurrentInstance().showMessageInDialog(message);
-
-//        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, 
-//                                        "Se ha detectado inactividad.", "Su sesión expirará si no realiza ninguna actividad."));
     }
 
     public void onActive() {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
                 "Que bueno que ya estás de vuelta", "Buen Coffee break!"));
-        executeInClient("primefacesmessagedlg.hide()");
+        executeInClient("PF('primefacesmessagedlg').hide()");
     }
 
     /**

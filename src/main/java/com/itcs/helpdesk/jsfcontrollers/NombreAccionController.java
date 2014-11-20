@@ -2,7 +2,7 @@ package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
-import com.itcs.helpdesk.persistence.entities.NombreAccion;
+import com.itcs.helpdesk.persistence.entities.TipoAccion;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,28 +16,25 @@ import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 import org.primefaces.model.SelectableDataModel;
 
-
 @ManagedBean(name = "nombreAccionController")
 @SessionScoped
-public class NombreAccionController extends AbstractManagedBean<NombreAccion> implements Serializable {
+public class NombreAccionController extends AbstractManagedBean<TipoAccion> implements Serializable {
 
-//    private NombreAccion current;
-//    private NombreAccion[] selectedItems;  
     private int selectedItemIndex;
 
     public NombreAccionController() {
-        super(NombreAccion.class);
+        super(TipoAccion.class);
     }
 
- public SelectItem[] getItemsAvailableSelectOneImplementingActionClass() {
-        List<NombreAccion> lista = new LinkedList<NombreAccion>();
-        final List<NombreAccion> findAll = (List<NombreAccion>)getJpaController().findAll(NombreAccion.class);
-        for (NombreAccion tipoAccion : findAll) {
-            if(tipoAccion.getImplementationClassName() != null){
+    public SelectItem[] getItemsAvailableSelectOneImplementingActionClass() {
+        List<TipoAccion> lista = new LinkedList<>();
+        final List<TipoAccion> findAll = (List<TipoAccion>) getJpaController().findAll(TipoAccion.class);
+        for (TipoAccion tipoAccion : findAll) {
+            if (tipoAccion.getImplementationClassName() != null) {
                 lista.add(tipoAccion);
             }
         }
-        
+
         return JsfUtil.getSelectItems(lista, true);
     }
 
@@ -51,39 +48,7 @@ public class NombreAccionController extends AbstractManagedBean<NombreAccion> im
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-
-//    public DataModel getItems() {
-//        if (items == null) {
-//            items = getPagination().createPageDataModel();
-//        }
-//        return items;
-//    }
-
-//    /**
-//     * @return the selectedItems
-//     */
-//    public NombreAccion[] getSelectedItems() {
-//        return selectedItems;
-//    }
-//
-//    /**
-//     * @param selectedItems the selectedItems to set
-//     */
-//    public void setSelectedItems(NombreAccion[] selectedItems) {
-//        this.selectedItems = selectedItems;
-//    }
-//
-//  
-//
-//    public SelectItem[] getItemsAvailableSelectMany() {
-//        return JsfUtil.getSelectItems(getJpaController().getNombreAccionFindAll(), false);
-//    }
-//
-//    public SelectItem[] getItemsAvailableSelectOne() {
-//        return JsfUtil.getSelectItems(getJpaController().getNombreAccionFindAll(), true);
-//    }
-
-    @FacesConverter(forClass = NombreAccion.class)
+    @FacesConverter(forClass = TipoAccion.class)
     public static class NombreAccionControllerConverter implements Converter {
 
         @Override
@@ -93,7 +58,7 @@ public class NombreAccionController extends AbstractManagedBean<NombreAccion> im
             }
             NombreAccionController controller = (NombreAccionController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "nombreAccionController");
-            return controller.getJpaController().getNombreAccionFindByIdNombreAccion(getKey(value));
+            return controller.getJpaController().find(TipoAccion.class, getKey(value));
         }
 
         java.lang.String getKey(String value) {
@@ -113,30 +78,31 @@ public class NombreAccionController extends AbstractManagedBean<NombreAccion> im
             if (object == null) {
                 return null;
             }
-            if (object instanceof NombreAccion) {
-                NombreAccion o = (NombreAccion) object;
+            if (object instanceof TipoAccion) {
+                TipoAccion o = (TipoAccion) object;
                 return getStringKey(o.getIdNombreAccion());
             } else {
-                throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + NombreAccion.class.getName());
+                throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + TipoAccion.class.getName());
             }
         }
     }
 }
-class NombreAccionDataModel extends ListDataModel<NombreAccion> implements SelectableDataModel<NombreAccion> {
+
+class NombreAccionDataModel extends ListDataModel<TipoAccion> implements SelectableDataModel<TipoAccion> {
 
     public NombreAccionDataModel() {
         //nothing
     }
 
-    public NombreAccionDataModel(List<NombreAccion> data) {
+    public NombreAccionDataModel(List<TipoAccion> data) {
         super(data);
     }
 
     @Override
-    public NombreAccion getRowData(String rowKey) {
-        List<NombreAccion> listOfNombreAccion = (List<NombreAccion>) getWrappedData();
+    public TipoAccion getRowData(String rowKey) {
+        List<TipoAccion> listOfNombreAccion = (List<TipoAccion>) getWrappedData();
 
-        for (NombreAccion obj : listOfNombreAccion) {
+        for (TipoAccion obj : listOfNombreAccion) {
             if (obj.getIdNombreAccion().equals(rowKey)) {
                 return obj;
             }
@@ -146,7 +112,7 @@ class NombreAccionDataModel extends ListDataModel<NombreAccion> implements Selec
     }
 
     @Override
-    public Object getRowKey(NombreAccion classname) {
+    public Object getRowKey(TipoAccion classname) {
         return classname.getIdNombreAccion();
     }
 }

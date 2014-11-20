@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:go="http://java.sun.com/jsf/composite/go">
+
+    <ui:composition template="/script/template_inbox.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.CreateReportChartTitle}"></h:outputText>
+        </ui:define>
+        
+       <ui:define name="west">
+            
+        </ui:define>
+        
+        <ui:define name="body">
+           
+            <h:form id="form">
+              
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{bundle.VistaLabel_nombre}" for="nombre" style="font-weight: bold"/>
+                    <p:inputText id="nombre" value="#{reportChartController.selected.nombre}" style="width: 100%;"
+                                 title="#{bundle.VistaTitle_nombre}" required="true" requiredMessage="#{bundle.VistaRequiredMessage_nombre}"/>
+
+                    <h:outputLabel value="tipo chart" for="chart" style="font-weight: bold"/>
+                    <p:inputText id="chart" value="#{reportChartController.selected.chartType}" style="width: 100%;"
+                                 title="#{bundle.VistaTitle_nombre}" required="true" requiredMessage="#{bundle.VistaRequiredMessage_nombre}"/>
+
+
+                         <h:outputLabel value="baseEntityType" for="baseEntityType" style="font-weight: bold"/>
+                                       
+                      <go:selectEntityType id="baseEntityType" value="#{reportChartController.selected.baseEntityType}"
+                                             required="true"
+                                             requiredMessage="#{bundle.EditReportChartRequiredMessage_baseEntityType}"
+                                             update=":form:serieBase"/>
+
+                    
+                    
+                    <h:outputLabel value="Base:" style="font-weight: bold"/>
+                    
+                      <p:panel id="serieBase" rendered="#{not empty reportChartController.selected.baseEntityType}">
+                    <go:entityCriteria id="seriesBase"  filterHelper="#{reportChartController.filterHelperForSelectedEntityType}" filtro="#{reportChartController.filtroBaseSeries}"/>
+                </p:panel>
+
+                 
+
+
+                    <h:outputLabel value="Visibilidad:" for="VisibilidadPanel" style="font-weight: bold"/>
+
+                    <go:visivility id="VisibilidadPanel" controllerMBean="#{reportChartController}"/>
+
+                    <h:outputLabel value="#{bundle.VistaLabel_descripcion}" for="descripcion" style="font-weight: bold"/>
+                    <p:inputTextarea id="descripcion" value="#{reportChartController.selected.descripcion}" title="#{bundle.VistaTitle_descripcion}" style="width: 100%;"/>
+
+                    
+                     <h:outputLabel value="filters" style="font-weight: bold"/>
+                       <go:filterView id="panelFilter0" controllerMBean="#{reportChartController}" filterHelper="#{reportChartController.casoFilterHelper}" showApplyAction="false"
+                                   update=":mainform:messages :form" vistaControllerBackOutcome="/script/vista/List"/>
+                       
+                </h:panelGrid>
+
+                <br />
+                <p:commandButton ajax="false" action="#{reportChartController.create()}" value="Finalizar" update=":mainform:messages"/>
+
+                <p:commandButton ajax="false" action="#{reportChartController.prepareList}" value="Cancelar" immediate="true"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

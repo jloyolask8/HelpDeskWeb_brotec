@@ -147,11 +147,11 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
                 getJpaController().remove(Archivo.class, archivo);
                 getSelected().setIdLogo(null);
                 JsfUtil.addSuccessMessage("Archivo " + archivo.getFileName() + " borrado correctamente.");
-                executeInClient("borrarLogo.hide()");
+                executeInClient("PF('borrarLogo').hide()");
             } else {
                 getSelected().setIdLogo(null);
                 addErrorMessage("El archivo ya no existe");
-                executeInClient("borrarLogo.hide()");
+                executeInClient("PF('borrarLogo').hide()");
             }
 
         } catch (Exception e) {
@@ -169,7 +169,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
 
             JsfUtil.addSuccessMessage("Archivo " + archivo.getFileName() + " borrado correctamente.");
 
-            executeInClient("borrarArchivoActaEntrega.hide()");
+            executeInClient("PF('borrarArchivoActaEntrega').hide()");
 
         } catch (Exception e) {
             JsfUtil.addSuccessMessage("Error, No se ha podido borrar el archivo");
@@ -186,7 +186,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
 
             JsfUtil.addSuccessMessage("Archivo " + archivo.getFileName() + " borrado correctamente.");
 
-            executeInClient("borrarArchivoActaPreEntrega.hide()");
+            executeInClient("PF('borrarArchivoActaPreEntrega').hide()");
 
         } catch (Exception e) {
             JsfUtil.addSuccessMessage("Error, No se ha podido borrar el archivo");
@@ -203,7 +203,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
 
             JsfUtil.addSuccessMessage("Archivo " + archivo.getFileName() + " borrado correctamente.");
 
-            executeInClient("borrarArchivoCartaEntrega.hide()");
+            executeInClient("PF('borrarArchivoCartaEntrega').hide()");
 
         } catch (Exception e) {
             JsfUtil.addSuccessMessage("Error, No se ha podido borrar el archivo");
@@ -254,7 +254,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
                 getSelected().setIdLogo(archivo.getIdAttachment());
                 getJpaController().merge(getSelected());
                 JsfUtil.addSuccessMessage("Logo " + archivo.getFileName() + " subido con exito");
-                executeInClient("uploadLogoProyectoDialog.hide()");
+                executeInClient("PF('uploadLogoProyectoDialog').hide()");
             } else {
                 JsfUtil.addErrorMessage("Ocurrio un error al guardar el archivo, favor intente nuevamente.");
             }
@@ -271,7 +271,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
                 currentSubComponente.setIdArchivoActaEntrega(archivo.getIdAttachment());
                 getJpaController().getSubComponenteJpaController().edit(currentSubComponente);
                 JsfUtil.addSuccessMessage("Archivo " + archivo.getFileName() + " subido con exito");
-                executeInClient("uploadDialogidArchivoActaEntrega.hide()");
+                executeInClient("PF('uploadDialogidArchivoActaEntrega').hide()");
             } else {
                 JsfUtil.addErrorMessage("Ocurrio un error al guardar el archivo, favor intente nuevamente.");
             }
@@ -288,7 +288,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
                 currentSubComponente.setIdArchivoActaPreEntrega(archivo.getIdAttachment());
                 getJpaController().getSubComponenteJpaController().edit(currentSubComponente);
                 JsfUtil.addSuccessMessage("Archivo " + archivo.getFileName() + " subido con exito");
-                executeInClient("uploadDialogidArchivoActaPreEntrega.hide()");
+                executeInClient("PF('uploadDialogidArchivoActaPreEntrega').hide()");
             } else {
                 JsfUtil.addErrorMessage("Ocurrio un error al guardar el archivo, favor intente nuevamente.");
             }
@@ -305,7 +305,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
                 currentSubComponente.setIdArchivoCartaEntrega(archivo.getIdAttachment());
                 getJpaController().getSubComponenteJpaController().edit(currentSubComponente);
                 JsfUtil.addSuccessMessage("Archivo " + archivo.getFileName() + " subido con exito");
-                executeInClient("uploadDialogidArchivoCartaEntrega.hide()");
+                executeInClient("PF('uploadDialogidArchivoCartaEntrega').hide()");
             } else {
                 JsfUtil.addErrorMessage("Ocurrio un error al guardar el archivo, favor intente nuevamente.");
             }

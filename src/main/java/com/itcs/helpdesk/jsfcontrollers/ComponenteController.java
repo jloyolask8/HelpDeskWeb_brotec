@@ -214,7 +214,7 @@ public class ComponenteController extends AbstractManagedBean<Componente> implem
             }
             ComponenteController controller = (ComponenteController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "componenteController");
-            return controller.getJpaController().getComponenteFindByIdComponente(getKey(value));
+            return controller.getJpaController().find(Componente.class, getKey(value));
         }
 
         java.lang.String getKey(String value) {
