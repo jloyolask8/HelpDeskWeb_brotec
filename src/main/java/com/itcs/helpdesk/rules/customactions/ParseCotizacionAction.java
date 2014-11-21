@@ -164,6 +164,7 @@ public abstract class ParseCotizacionAction extends Action {
             if (!StringUtils.isEmpty(datos.getEmail())) {
                 persistentEmailCliente = getJpaController().find(EmailCliente.class, datos.getEmail());
             }
+            //Existe email cliente
             if (persistentEmailCliente != null) {
                 //exists, so what should i do with the data in the email?? i will just keep it in the description so agent can update if needed.
                 //no reason to update the data in the DB if client also exists. but it could be helpful if we dont have the data.
@@ -202,35 +203,27 @@ public abstract class ParseCotizacionAction extends Action {
                 getJpaController().merge(persistentEmailCliente);
                 caso.setEmailCliente(persistentEmailCliente);
 
-            } else {
-                if (StringUtils.isEmpty(datos.getEmail())) {
-                    
-                } else {
-                //email not exist, will create email.
-                EmailCliente newEmailCliente = new EmailCliente(datos.getEmail());
-
-                //check if rut exists in client table first
-                Cliente persistentClient = null;
-                if (datos.getRut() != null && !StringUtils.isEmpty(datos.getRut())) {
-                    persistentClient = getJpaController().getClienteJpaController().findByRut(datos.getRut());
+            }
+            //No existe email cliente
+            else {
+                //Si no viene con correo del cliente
+                if (StringUtils.isEmpty(datos.getEmail())) 
+                {
+                    Cliente cliente = obtenerCliente(datos);
+                    caso.setIdCliente(cliente);
                 }
-                if (persistentClient != null) {
+                //Si es que viene correo de cliente
+                else {
+                    //email not exist, will create email.
+                    EmailCliente newEmailCliente = new EmailCliente(datos.getEmail());
+
+                    Cliente persistentClient = obtenerCliente(datos);
                     caso.setIdCliente(persistentClient);
                     newEmailCliente.setCliente(persistentClient);
                     persistentClient.getEmailClienteList().add(newEmailCliente);
-
-                } else {
-                    //rut not present, must create the client.
-                    Cliente cliente = new Cliente();
-                    setClienteData(cliente, datos);
-                    getJpaController().persist(cliente);
-                    caso.setIdCliente(cliente);
-                    newEmailCliente.setCliente(cliente);
+                    getJpaController().merge(newEmailCliente);
+                    caso.setEmailCliente(newEmailCliente);
                 }
-
-                getJpaController().merge(newEmailCliente);
-                caso.setEmailCliente(newEmailCliente);
-            }
             }
 
         } else {
@@ -259,6 +252,22 @@ public abstract class ParseCotizacionAction extends Action {
         }
     }
 
+    private Cliente obtenerCliente(DatosCaso datos) throws Exception {
+        //check if rut exists in client table first
+        Cliente persistentClient = null;
+        //Datos trae el rut
+        if (datos.getRut() != null && !StringUtils.isEmpty(datos.getRut())) {
+            persistentClient = getJpaController().getClienteJpaController().findByRut(datos.getRut());
+        }
+        //Si el cliente no existe se debe crear
+        if (persistentClient == null) {
+            persistentClient = new Cliente();
+            setClienteData(persistentClient, datos);
+            getJpaController().persist(persistentClient);
+        }
+        return persistentClient;
+    }
+    
     protected void handleModeloData(DatosCaso datos, Caso caso) throws NotSupportedException, ClassNotFoundException {
 
         try {
