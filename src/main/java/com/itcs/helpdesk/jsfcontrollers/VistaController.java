@@ -99,6 +99,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
     }
 
     public String prepareCreate(Vista newVista, String backOutcome) {
+        System.out.println("prepareCreate("+newVista+")");
         current = newVista;
         this.filterHelper2 = null;//recreate filter helper
         visibilityOption = determineVisibility(current);
@@ -190,11 +191,11 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         return null;
     }
 
-    public Integer determineVisibility(Vista vista) {
+    public Integer determineVisibility(Vista view) {
 
-        if (vista.getIdArea() != null) {
+        if (view.getIdArea() != null) {
             return Constants.VISIBILITY_AREA;
-        } else if (vista.getIdGrupo() != null) {
+        } else if (view.getIdGrupo() != null) {
             return Constants.VISIBILITY_GRUPO;
         } else {
             return Constants.VISIBILITY_ALL;

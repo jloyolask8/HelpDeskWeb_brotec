@@ -28,7 +28,9 @@
             <h:form id="form">
                 <p:messages />
 
-                <go:filterView controllerMBean="#{clippingController}" filterHelper="#{clippingController.filterHelper}" update=":mainform:messages :form"
+                <go:filterView controllerMBean="#{clippingController}" vista="#{clippingController.vista}"
+                               filterHelper="#{clippingController.filterHelper}" 
+                               update=":mainform:messages :form"
                                vistaControllerBackOutcome="/script/clipping/List"/>
 
                 <h:panelGroup>

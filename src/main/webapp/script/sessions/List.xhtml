@@ -42,6 +42,7 @@
                           <p:messages />
 
                     <go:filterView controllerMBean="#{usuarioSessionLogController}" 
+                                    vista="#{usuarioSessionLogController.vista}"
                                    filterHelper="#{usuarioSessionLogController.filterHelper}" 
                                    update=":mainform:messages :form"
                                    vistaControllerBackOutcome="/script/sessions/List"/>

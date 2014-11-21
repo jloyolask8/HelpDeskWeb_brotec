@@ -34,24 +34,19 @@
     </properties>
     
     <profiles>
-          <profile>
-            <id>beltec</id>
-            <properties>
-                <rp.build.warname>beltec</rp.build.warname>
-            </properties>
-        </profile>  
+           
         
         <profile>
-            <id>itcs_prod</id>
+            <id>godesk_prod</id>
             <properties>
-                <rp.build.warname>itcs</rp.build.warname>
+                <rp.build.warname>godesk_self_deploy</rp.build.warname>
             </properties>
-        </profile>  
+        </profile>
         
         <profile>
-            <id>itcs_sales_demo</id>
+            <id>godesk_sales_demo</id>
             <properties>
-                <rp.build.warname>itcs_sales_demo</rp.build.warname>
+                <rp.build.warname>godesk_sales_demo</rp.build.warname>
             </properties>
         </profile>      
              
@@ -61,6 +56,13 @@
                 <rp.build.warname>brotec</rp.build.warname>
             </properties>
         </profile>  
+        
+        <profile>
+            <id>beltec</id>
+            <properties>
+                <rp.build.warname>beltec</rp.build.warname>
+            </properties>
+        </profile> 
         
         <profile>
             <id>san_joaquin</id>

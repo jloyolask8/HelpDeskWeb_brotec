@@ -6,13 +6,13 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:pe="http://primefaces.org/ui/extensions"
       xmlns:f="http://java.sun.com/jsf/core"
-       xmlns:go="http://java.sun.com/jsf/composite/go">
+      xmlns:go="http://java.sun.com/jsf/composite/go">
 
 
 
     <ui:composition template="/script/template_inbox.xhtml">
 
-       
+
 
         <ui:define name="title">
             <p:outputLabel value="#{bundle.ListCustomFieldTitle}"/>
@@ -20,16 +20,16 @@
 
 
         <ui:define name="west">
-            
-              <go:vistasList id="vistasList" update=":vistasList:vistasForm :mainform:messages :form" 
+
+            <go:vistasList id="vistasList" update=":vistasList:vistasForm :mainform:messages :form" 
                            controllerMBean="#{customFieldController}"
                            user="#{UserSessionBean.current}"/>
 
 
             <br/>
-            
+
             <p:panel>
-                            <p><h:outputText escape="false" value="#{bundle.ayudaCustomFields}"/></p>
+                <p><h:outputText escape="false" value="#{bundle.ayudaCustomFields}"/></p>
 
             </p:panel>
 
@@ -47,15 +47,16 @@
 
 
                 <div class="col-md-9 col-lg-10">
-                    
-                    <h:form id="formfilter">
-                <go:filterView id="panelFilter0" titleIconClass="fa fa-filter page-header-icon"
-                               controllerMBean="#{customFieldController}" 
-                               filterHelper="#{customFieldController.filterHelper}" 
-                               canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
-                               update=":mainform:messages :form" vistaControllerBackOutcome="/script/vista/List"/>
 
-            </h:form>
+                    <h:form id="formfilter">
+                        <go:filterView id="panelFilter0" titleIconClass="fa fa-filter page-header-icon"
+                                       controllerMBean="#{customFieldController}" 
+                                       vista="#{customFieldController.vista}"
+                                       filterHelper="#{customFieldController.filterHelper}" 
+                                       canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
+                                       update=":mainform:messages :formfilter:panelFilter0:panelFilter :form" vistaControllerBackOutcome="/script/customField/List"/>
+
+                    </h:form>
 
                     <h:form id="form">
 
@@ -170,7 +171,17 @@
                 <h:form id="CustomFieldCreateForm" styleClass="panel form-horizontal">
                     <div class="panel-body">
 
-                       
+                        <div class="row form-group">
+                            <label class="col-xs-12 col-sm-4 control-label">#{bundle.CustomField_customFieldPK_entity}</label>
+                            <div class="col-xs-12 col-sm-8">
+                                <go:selectEntityType id="baseEntityType" value="#{customFieldController.selected.entity}"
+                                                     required="true"
+                                                     requiredMessage="#{bundle.CustomField_customFieldPK_entity} es requerido."
+                                                     />
+                                <p:message for="baseEntityType"/>
+                            </div>
+                        </div>
+
                         <div class="row form-group">
                             <label class="col-xs-12 col-sm-4 control-label">#{bundle.CustomField_label}</label>
                             <div class="col-xs-12 col-sm-8">
@@ -252,9 +263,9 @@
                         </p:commandLink>        
                     </div>
 
-                   
+
                     <p:tooltip for="label" value="#{bundle.CustomField_tooltip_label}"/>
-               
+
                 </h:form>
 
 
@@ -265,7 +276,7 @@
 
                 <h:form id="CustomFieldEditForm" styleClass="panel form-horizontal">
 
-                   
+
                     <div class="panel-body">
                         <div class="row form-group">
                             <label class="col-xs-12 col-sm-4 control-label">#{bundle.CustomField_label}</label>
@@ -361,7 +372,7 @@
                 <h:form id="CustomFieldViewForm">
                     <h:panelGroup id="display">
                         <p:panelGrid columns="2" rendered="#{customFieldController.selected != null}" styleClass="filtersGrid">
-                           
+
                             <h:outputText value="#{bundle.CustomField_customFieldPK_entity}" style="font-weight: bold;"/>
                             <h:outputText value="#{customFieldController.selected.entity}" />
                             <h:outputText value="#{bundle.CustomField_label}" style="font-weight: bold;"/>

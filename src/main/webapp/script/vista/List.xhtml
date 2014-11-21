@@ -34,6 +34,7 @@
             <h:form id="formfilter">
                 <go:filterView id="panelFilter0" titleIconClass="fa fa-filter page-header-icon"
                                controllerMBean="#{vistaController}" 
+                               vista="#{vistaController.vista}"
                                filterHelper="#{vistaController.filterHelper}" 
                                canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
                                update=":mainform:messages :form" vistaControllerBackOutcome="/script/vista/List"/>

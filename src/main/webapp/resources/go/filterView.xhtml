@@ -10,12 +10,13 @@
           xmlns:go="http://java.sun.com/jsf/composite/go">
         <composite:interface>
             <composite:attribute name="controllerMBean" required="true" /> 
+             <composite:attribute name="vista" required="true" /> 
             <composite:attribute name="filterHelper" required="true" /> 
             <composite:attribute name="showApplyAction" default="true" /> 
             <composite:attribute name="titleIconClass" default="" /> 
             <composite:attribute name="canChangeFilters" default="true" />
             <composite:attribute name="update" default=":mainform:messages" />
-            <composite:attribute name="vistaControllerBackOutcome" required="true"  />
+            <composite:attribute name="vistaControllerBackOutcome" required="false"  />
             <composite:facet name="header" />
             <composite:facet name="saveView" />
         </composite:interface>
@@ -26,16 +27,16 @@
                 <h:panelGrid columns="4" rendered="#{cc.attrs.showApplyAction}" style="padding: 0">
 
                     <p:menuButton style="height: 20px; top: 0"
-                                  value="#{cc.attrs.controllerMBean.vista.nombre ne null ? cc.attrs.controllerMBean.vista.nombre:'Vista sin nombre'}" iconPos="notext">
+                                  value="#{cc.attrs.vista.nombre ne null ? cc.attrs.vista.nombre:'Vista sin nombre'}" iconPos="notext">
                         <p:menuitem value="Editar Vista" 
-                                    rendered="#{cc.attrs.controllerMBean.vista.idUsuarioCreadaPor eq UserSessionBean.current
+                                    rendered="#{cc.attrs.vista.idUsuarioCreadaPor eq UserSessionBean.current
                                                 or filtroAcceso.administradorDelSistema}" 
-                                    disabled="#{cc.attrs.controllerMBean.vista.idVista eq null or not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
-                                    action="#{vistaController.prepareEditPK(cc.attrs.controllerMBean.vista.idVista, cc.attrs.vistaControllerBackOutcome)}"                                                  
+                                    disabled="#{cc.attrs.vista.idVista eq null or not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
+                                    action="#{vistaController.prepareEditPK(cc.attrs.vista.idVista, cc.attrs.vistaControllerBackOutcome)}"                                                  
                                     immediate="true" ajax="false"
                                     icon="ui-icon-pencil"/>
                         <p:menuitem id="linkGuardar" 
-                                    action="#{vistaController.prepareCreate(cc.attrs.controllerMBean.vista, cc.attrs.vistaControllerBackOutcome)}"
+                                    action="#{vistaController.prepareCreate(cc.attrs.vista, cc.attrs.vistaControllerBackOutcome)}"
                                     ajax="false"
                                     disabled="#{not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
                                     value="Guardar como.."
@@ -68,7 +69,7 @@
                     <p:watermark for="query" value="Search"/>
 
                 </h:panelGrid>
-                <p:tooltip for="simpleSearchBtn" value="#{empty cc.attrs.controllerMBean.vista ? 'Search all':'Search in '.concat(cc.attrs.controllerMBean.vista.nombre)}"/>
+                <p:tooltip for="simpleSearchBtn" value="#{empty cc.attrs.vista ? 'Search all':'Search in '.concat(cc.attrs.vista.nombre)}"/>
 
 
 
@@ -76,7 +77,7 @@
 
                     <!--<p:fieldset legend="Filtros">-->
 
-                    <h:dataTable id="filtrosVista" value="#{cc.attrs.controllerMBean.vista.filtrosVistaList}" var="filtro" style="border: none;">     
+                    <h:dataTable id="filtrosVista" value="#{cc.attrs.vista.filtrosVistaList}" var="filtro" style="border: none;">     
 
                         <composite:renderFacet id="header" name="header" />
 
@@ -88,21 +89,21 @@
                         
                         <h:column>
                             <p:commandButton id="remove" icon="ui-icon-close" 
-                                             actionListener="#{cc.attrs.controllerMBean.vista.removeFiltroFromVista(filtro)}" ajax="true" immediate="true"
+                                             actionListener="#{cc.attrs.vista.removeFiltroFromVista(filtro)}" ajax="true" immediate="true"
                                              update="@form #{cc.attrs.update}" title="Quitar Criterio de Selección."
                                              disabled="#{not cc.attrs.canChangeFilters}"/>
                         </h:column>
 
                         <f:facet id="footerfacet" name="footer">
                             <p:commandLink id="addButton" 
-                                           actionListener="#{cc.attrs.controllerMBean.vista.addNewFiltroVista()}" 
+                                           actionListener="#{cc.attrs.vista.addNewFiltroVista()}" 
                                            styleClass="fa fa-plus-circle"
                                            update="@form #{cc.attrs.update}" value=" Agregar Filtro" 
                                            disabled="#{not cc.attrs.canChangeFilters}"/>
                             <p:commandButton id="linkAplicar" ajax="true" update="@form #{cc.attrs.update}" icon="ui-icon-play" rendered="#{cc.attrs.showApplyAction}" style="float: right"
                                              styleClass="ui-panel-titlebar-icon ui-corner-all ui-state-default" title="Aplicar Filtro" 
                                              disabled="#{not cc.attrs.canChangeFilters}"
-                                             value="#{empty cc.attrs.controllerMBean.vista.filtrosVistaList ? 'Desplegar Todo':'Filtrar' }"
+                                             value="#{empty cc.attrs.vista.filtrosVistaList ? 'Desplegar Todo':'Filtrar' }"
                                              actionListener="#{cc.attrs.controllerMBean.filter()}"/>                  
                             <p:tooltip id="tipadd" for="addButton">  
                                 <p:outputLabel id="outtip2" value="Agregar criterio de Selección a la Vista." />

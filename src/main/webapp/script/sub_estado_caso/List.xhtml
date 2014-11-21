@@ -21,7 +21,9 @@
         <ui:define name="body">
             <h:form id="form">
 
-                <go:filterView controllerMBean="#{subEstadoCasoController}" filterHelper="#{subEstadoCasoController.filterHelper}" 
+                <go:filterView controllerMBean="#{subEstadoCasoController}" 
+                                vista="#{subEstadoCasoController.vista}"
+                               filterHelper="#{subEstadoCasoController.filterHelper}" 
                                vistaControllerBackOutcome="/script/sub_estado_caso/List"/>
 
                 <h:panelGroup >

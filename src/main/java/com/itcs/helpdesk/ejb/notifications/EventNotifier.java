@@ -6,7 +6,6 @@
 package com.itcs.helpdesk.ejb.notifications;
 
 import javax.ejb.Stateless;
-import javax.ejb.LocalBean;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 

@@ -28,14 +28,11 @@ import org.primefaces.model.SelectableDataModel;
 public class CustomFieldController extends AbstractManagedBean<CustomField> implements Serializable {
 
     private String currentOption;
-//    private List<CustomField> items = null;
 
     public CustomFieldController() {
         super(CustomField.class);
     }
 
-//    protected void setEmbeddableKeys() {
-//    }
     public void filterByCasoCustomFields() {
         recreateModel();
     }
@@ -49,6 +46,18 @@ public class CustomFieldController extends AbstractManagedBean<CustomField> impl
     protected String getListPage() {
         return "/script/customField/List";
     }
+
+    @Override
+    protected String getEditPage() {
+        return null;
+    }
+
+    @Override
+    protected String getViewPage() {
+        return null;
+    }
+    
+    
 
 //    protected void initializeEmbeddableKey() {
 //        current.setCustomFieldPK(new com.itcs.helpdesk.persistence.entities.CustomFieldPK());

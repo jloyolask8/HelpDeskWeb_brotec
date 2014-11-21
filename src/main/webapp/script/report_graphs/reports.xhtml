@@ -194,6 +194,7 @@
 
                 <go:filterView rendered="#{reporteController.showFilter}"
                                controllerMBean="#{reporteController}"
+                                vista="#{reporteController.vista}"
                                  filterHelper="#{reporteController.filterHelper}" update=":mainform:messages :reportForm"
                                  vistaControllerBackOutcome="/script/report_graphs/reports"/>
 

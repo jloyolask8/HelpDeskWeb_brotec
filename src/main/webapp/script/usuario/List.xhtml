@@ -33,6 +33,7 @@
             <h:form id="formfilter">
                 <go:filterView id="panelFilter0" titleIconClass="fa fa-users page-header-icon"
                                controllerMBean="#{usuarioController}" 
+                               vista="#{usuarioController.vista}"
                                filterHelper="#{usuarioController.filterHelper}" 
                                canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
                                update=":mainform:messages :form"
