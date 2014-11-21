@@ -75,9 +75,9 @@ public class FiltroAcceso implements Serializable {
         return verificaAccesoAFuncion(EnumFunciones.ADMINISTRAR_ITEMS_PREENTREGA);
     }
 
-    public boolean verificarAccesoACrearCasoPreentrega() {
-        return verificaAccesoAFuncion(EnumFunciones.CREAR_CASO_ENTREGA);
-    }
+//    public boolean verificarAccesoACrearCasoPreentrega() {
+//        return verificaAccesoAFuncion(EnumFunciones.CREAR_CASO_ENTREGA);
+//    }
 
     public boolean verificarAccesoAFuncionSupervision() {
         return verificaAccesoAFuncion(EnumFunciones.SUPERVISOR);

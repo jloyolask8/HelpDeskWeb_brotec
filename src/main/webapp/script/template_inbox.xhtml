@@ -192,12 +192,13 @@
                                     </p:menuitem>
                                 </p:submenu>
 
-                                <p:submenu label="Casos" icon="fa fa-ticket">
-                                    <p:menuitem value="Crear Nuevo Caso" action="#{casoController.prepareCreate}" ajax="false" icon="fa fa-plus">
+                                <p:submenu label="Casos" icon="fa fa-ticket"  rendered="#{filtroAcceso.verificarAccesoAFuncionAgregarCaso()}">
+                                    <p:menuitem value="Crear Nuevo Caso" action="#{casoController.prepareCreate}" ajax="false" icon="fa fa-plus"
+                                                 rendered="#{filtroAcceso.verificarAccesoAFuncionAgregarCaso()}">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
                                     <p:menuitem value="Crear Nuevo Caso de Entrega" action="#{casoController.prepareCreateCasoPreentrega}" ajax="false" icon="fa fa-briefcase"
-                                                rendered="#{filtroAcceso.verificarAccesoACrearCasoPreentrega()}">  
+                                                rendered="#{filtroAcceso.verificarAccesoAFuncionAgregarCaso()}">  
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
                                 </p:submenu>

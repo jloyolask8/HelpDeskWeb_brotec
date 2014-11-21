@@ -57,7 +57,9 @@
 
                     
                      <h:outputLabel value="filters" style="font-weight: bold"/>
-                       <go:filterView id="panelFilter0" controllerMBean="#{reportChartController}" filterHelper="#{reportChartController.casoFilterHelper}" showApplyAction="false"
+                       <go:filterView id="panelFilter0" controllerMBean="#{reportChartController}"
+                                       vista="#{reportChartController.vista}"
+                                      filterHelper="#{reportChartController.casoFilterHelper}" showApplyAction="false"
                                    update=":mainform:messages :form" vistaControllerBackOutcome="/script/vista/List"/>
                        
                 </h:panelGrid>

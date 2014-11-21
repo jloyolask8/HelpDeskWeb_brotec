@@ -30,6 +30,7 @@
             <h:form id="formfilter">
                 <go:filterView id="panelFilter0" 
                                controllerMBean="#{componenteController}" 
+                               vista="#{componenteController.vista}"
                                filterHelper="#{componenteController.filterHelper}" 
                                canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
                                update=":mainform:messages :form"

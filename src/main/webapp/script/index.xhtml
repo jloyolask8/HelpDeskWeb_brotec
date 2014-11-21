@@ -129,11 +129,12 @@
             <h:form id="formfilter">
                 <go:filterView id="panelFilter0" titleIconClass="fa fa-inbox page-header-icon"
                                controllerMBean="#{casoController}" 
+                                vista="#{casoController.vista}"
                                filterHelper="#{casoController.filterHelper}" 
                                canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
                                update=":mainform:messages  :form0:panelG1"
-                               vistaControllerBackOutcome="/script/index" rendered="#{casoController.searchBarVisible}">
-                </go:filterView>
+                               vistaControllerBackOutcome="/script/index" rendered="#{casoController.searchBarVisible}"/>
+                
             </h:form>
 
             <h:form id="form0">
