@@ -50,7 +50,7 @@
                 <br />
                 <p:commandButton ajax="false" action="#{vistaController.create}" value="Finalizar" update=":mainform:messages"/>
 
-                <p:commandButton ajax="false" action="#{vistaController.prepareList}" value="Cancelar" immediate="true"/>
+                <p:commandButton ajax="false" action="#{vistaController.goBack()}" value="Cancelar" immediate="true"/>
 
             </h:form>
         </ui:define>

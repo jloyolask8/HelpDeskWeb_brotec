@@ -82,34 +82,33 @@
                         <composite:renderFacet id="header" name="header" />
 
                         <h:column>
-                            <go:entityCriteria filterHelper="#{cc.attrs.filterHelper}" filtro="#{filtro}" 
+                            <go:entityCriteria rendered="#{cc.attrs.showApplyAction and filtro.idFiltro lt 0}"
+                                               removeActionListener="#{cc.attrs.vista.removeFiltroFromVista(filtro)}"
+                                               filterHelper="#{cc.attrs.filterHelper}" filtro="#{filtro}" 
                                                canChangeFilters="#{cc.attrs.canChangeFilters}" 
                                                update="#{cc.attrs.update}"/>
                         </h:column>
                         
-                        <h:column>
-                            <p:commandButton id="remove" icon="ui-icon-close" 
-                                             actionListener="#{cc.attrs.vista.removeFiltroFromVista(filtro)}" ajax="true" immediate="true"
-                                             update="@form #{cc.attrs.update}" title="Quitar Criterio de Selección."
-                                             disabled="#{not cc.attrs.canChangeFilters}"/>
-                        </h:column>
+                       
 
                         <f:facet id="footerfacet" name="footer">
+                            
                             <p:commandLink id="addButton" 
                                            actionListener="#{cc.attrs.vista.addNewFiltroVista()}" 
                                            styleClass="fa fa-plus-circle"
                                            update="@form #{cc.attrs.update}" value=" Agregar Filtro" 
                                            disabled="#{not cc.attrs.canChangeFilters}"/>
-                            <p:commandButton id="linkAplicar" ajax="true" update="@form #{cc.attrs.update}" icon="ui-icon-play" rendered="#{cc.attrs.showApplyAction}" style="float: right"
+                            
+                            <p:commandButton id="linkAplicar" ajax="true" update="@form #{cc.attrs.update}" icon="ui-icon-play" 
+                                             rendered="#{cc.attrs.showApplyAction}" style="float: right"
                                              styleClass="ui-panel-titlebar-icon ui-corner-all ui-state-default" title="Aplicar Filtro" 
                                              disabled="#{not cc.attrs.canChangeFilters}"
                                              value="#{empty cc.attrs.vista.filtrosVistaList ? 'Desplegar Todo':'Filtrar' }"
-                                             actionListener="#{cc.attrs.controllerMBean.filter()}"/>                  
+                                             actionListener="#{cc.attrs.controllerMBean.filter()}"/>      
+                            
                             <p:tooltip id="tipadd" for="addButton">  
                                 <p:outputLabel id="outtip2" value="Agregar criterio de Selección a la Vista." />
                             </p:tooltip> 
-
-
 
                         </f:facet>
 

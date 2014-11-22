@@ -95,6 +95,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
             recreateModel();
             return getListPage();
         } else {
+            //TODO Callback to the mbean and refresh vistas
             return this.backOutcome;
         }
     }
@@ -797,32 +798,32 @@ public abstract class AbstractManagedBean<E> implements Serializable {
             final List<Vista> visibleForMyAreasItems = getVisibleForMyAreasItems(user, this.entityClass.getName());
 
             if (visibleForAllItems != null) {
-                for (Vista vista : visibleForAllItems) {
-                    if (!lista.contains(vista)) {
+                for (Vista v : visibleForAllItems) {
+                    if (!lista.contains(v)) {
                         lista.addAll(visibleForAllItems);
                     }
                 }
             }
 
             if (visibleForMeOnlyItems != null) {
-                for (Vista vista : visibleForMeOnlyItems) {
-                    if (!lista.contains(vista)) {
+                for (Vista v : visibleForMeOnlyItems) {
+                    if (!lista.contains(v)) {
                         lista.addAll(visibleForMeOnlyItems);
                     }
                 }
             }
 
             if (visibleForMyGroupsItems != null) {
-                for (Vista vista : visibleForMyGroupsItems) {
-                    if (!lista.contains(vista)) {
+                for (Vista v : visibleForMyGroupsItems) {
+                    if (!lista.contains(v)) {
                         lista.addAll(visibleForMyGroupsItems);
                     }
                 }
             }
 
             if (visibleForMyAreasItems != null) {
-                for (Vista vista : visibleForMyAreasItems) {
-                    if (!lista.contains(vista)) {
+                for (Vista v : visibleForMyAreasItems) {
+                    if (!lista.contains(v)) {
                         lista.addAll(visibleForMyAreasItems);
                     }
                 }
