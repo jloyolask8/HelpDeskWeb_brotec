@@ -238,6 +238,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                                 canal.getCanalSettingList().add(new CanalSetting(canal, EnumEmailSettingKeys.HIGHEST_UID.getKey(), String.valueOf(highestUID), ""));
                                 jpaController.merge(canal);
                             }
+                            jpaController = null;
 
                             UserTransactionHelper.returnUserTransaction(utx);
                             mailClient.closeFolder();
