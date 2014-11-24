@@ -72,7 +72,6 @@ public class ScheduleEventReminderJob extends AbstractGoDeskJob implements Job {
                     && !StringUtils.isEmpty(eventId) && !StringUtils.isEmpty(reminderId)) {
 
                 EntityManagerFactory emf = createEntityManagerFactory();
-
 //                    JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf);
                 UserTransaction utx = null;
                 EntityManager em = null;
@@ -222,23 +221,26 @@ public class ScheduleEventReminderJob extends AbstractGoDeskJob implements Job {
                     utx.commit();
 
                 } catch (Exception ex) {
-                     if (utx != null) {
-                         try {
-                             utx.rollback();
-                         } catch (IllegalStateException ex1) {
-                             Logger.getLogger(ScheduleEventReminderJob.class.getName()).log(Level.SEVERE, "rollback error: IllegalStateException", ex1);
-                         } catch (SecurityException ex1) {
-                             Logger.getLogger(ScheduleEventReminderJob.class.getName()).log(Level.SEVERE, "rollback error: SecurityException", ex1);
-                         } catch (SystemException ex1) {
-                             Logger.getLogger(ScheduleEventReminderJob.class.getName()).log(Level.SEVERE, "rollback error: SystemException", ex1);
-                         }
+                    if (utx != null) {
+                        try {
+                            utx.rollback();
+                        } catch (IllegalStateException ex1) {
+                            Logger.getLogger(ScheduleEventReminderJob.class.getName()).log(Level.SEVERE, "rollback error: IllegalStateException", ex1);
+                        } catch (SecurityException ex1) {
+                            Logger.getLogger(ScheduleEventReminderJob.class.getName()).log(Level.SEVERE, "rollback error: SecurityException", ex1);
+                        } catch (SystemException ex1) {
+                            Logger.getLogger(ScheduleEventReminderJob.class.getName()).log(Level.SEVERE, "rollback error: SystemException", ex1);
+                        }
                     }
                     Logger.getLogger(ScheduleEventReminderJob.class.getName()).log(Level.SEVERE, "ScheduleEventReminderJob error", ex);
                     throw new JobExecutionException(ex);
                 } finally {
+                    UserTransactionHelper.returnUserTransaction(utx);
                     if (em != null) {
-                        UserTransactionHelper.returnUserTransaction(utx);
                         em.close();
+                    }
+                    if (emf != null) {
+                        emf.close();
                     }
                 }
             } else {
@@ -254,10 +256,10 @@ public class ScheduleEventReminderJob extends AbstractGoDeskJob implements Job {
     }
 
     public static boolean unschedule(String formatJobId) throws SchedulerException {
-            //        final String formatJobId = formatJobId( idCaso, idalerta);
-            final JobKey jobKey = JobKey.jobKey(formatJobId, HelpDeskScheluder.GRUPO_CORREO);
-            return HelpDeskScheluder.unschedule(jobKey);
-      
+        //        final String formatJobId = formatJobId( idCaso, idalerta);
+        final JobKey jobKey = JobKey.jobKey(formatJobId, HelpDeskScheluder.GRUPO_CORREO);
+        return HelpDeskScheluder.unschedule(jobKey);
+
     }
 
 }

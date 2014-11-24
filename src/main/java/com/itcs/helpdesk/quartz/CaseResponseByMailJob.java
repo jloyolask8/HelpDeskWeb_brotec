@@ -56,7 +56,7 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        
+
         System.out.println("CaseResponseByMailJob.execute ");
 
         JobDataMap map = context.getMergedJobDataMap();//.getJobDetail().getJobDataMap();
@@ -79,17 +79,22 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
                 try {
                     Long idAtt = Long.parseLong(string);
                     idAtts.add(idAtt);
-                } catch (Exception ex) {
+                } catch (NumberFormatException ex) {
+                    /*probably a weird value, silently ignore it*/
                 }
             }
 
             final String formatJobId = formatJobId(idCanal, idCaso, emails_to);
             if (!StringUtils.isEmpty(idCanal) && !StringUtils.isEmpty(idCaso) && !StringUtils.isEmpty(emails_to)) {
 
+                EntityManagerFactory emf = null;
+                UserTransaction utx = null;
+                JPAServiceFacade jpaController;
+
                 try {
-                    EntityManagerFactory emf = createEntityManagerFactory();
-                    UserTransaction utx = UserTransactionHelper.lookupUserTransaction();
-                    JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf);
+                    emf = createEntityManagerFactory();
+                    utx = UserTransactionHelper.lookupUserTransaction();
+                    jpaController = new JPAServiceFacade(utx, emf);
                     //SEND THE EMAIL!
                     List<EmailAttachment> attachments = null;
                     if (!idAtts.isEmpty()) {
@@ -112,12 +117,10 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
                     final String[] split = emails_to.split(",");
                     String[] splitcc = null;
                     String[] splitbcc = null;
-                    if(!StringUtils.isEmpty(emails_cc))
-                    {
-                        splitcc = emails_cc.split(","); 
+                    if (!StringUtils.isEmpty(emails_cc)) {
+                        splitcc = emails_cc.split(",");
                     }
-                    if(!StringUtils.isEmpty(emails_bcc))
-                    {
+                    if (!StringUtils.isEmpty(emails_bcc)) {
                         splitbcc = emails_bcc.split(",");
                     }
                     final String[] ccEmails = splitcc;
@@ -129,9 +132,9 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
                         Nota nota = jpaController.getReference(Nota.class, Integer.valueOf(idNota));
                         nota.setFechaEnvio(new Date());
                         nota.setEnviado(Boolean.TRUE);
-                        nota.setEnviadoA("to:"+Arrays.toString(split) 
-                                + (ccEmails == null?"":" cc:"+Arrays.toString(ccEmails))
-                                + (bccEmails == null?"":" bcc:"+Arrays.toString(bccEmails)));
+                        nota.setEnviadoA("to:" + Arrays.toString(split)
+                                + (ccEmails == null ? "" : " cc:" + Arrays.toString(ccEmails))
+                                + (bccEmails == null ? "" : " bcc:" + Arrays.toString(bccEmails)));
                         jpaController.merge(nota);
                         unschedule(formatJobId);
                     } catch (SchedulerException ex) {
@@ -140,9 +143,7 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
                     } catch (Exception ex) {
                         Logger.getLogger(CaseResponseByMailJob.class.getName()).log(Level.SEVERE, "Excepcion en " + formatJobId, ex);
                     }
-                    
-                    UserTransactionHelper.returnUserTransaction(utx);
-                    
+
                 } catch (MailClientFactory.MailNotConfiguredException ex) {
                     Logger.getLogger(CaseResponseByMailJob.class.getName()).log(Level.SEVERE, "Mail Not Configured for " + idCanal, ex);
                     try {
@@ -156,6 +157,12 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
                     Logger.getLogger(CaseResponseByMailJob.class.getName()).log(Level.SEVERE, "EmailException trying to send email ", ex);
                 } catch (SchedulerException ex) {
                     Logger.getLogger(CaseResponseByMailJob.class.getName()).log(Level.SEVERE, null, ex);
+                } finally {
+                    jpaController = null;
+                    if (emf != null) {
+                        emf.close();
+                    }
+                    UserTransactionHelper.returnUserTransaction(utx);
                 }
             } else {
                 throw new JobExecutionException("Illegal parameters to Job: CaseResponseByMailJob");
