@@ -78,6 +78,7 @@ public class ActionClassExecutorJob extends AbstractGoDeskJob implements Job {
                         throw new JobExecutionException(ex);
                     } finally {
                         em.close();
+                        emf.close();
                         UserTransactionHelper.returnUserTransaction(utx);
                     }
                 } else {

@@ -117,8 +117,8 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
 
                             caso.getNotaList().add(nota);
 
-                            List<AuditLog> changeLog = new ArrayList<AuditLog>();
-                            changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "Se envía correo a: " + nota.getEnviadoA() , ""));
+                            List<AuditLog> changeLog = new ArrayList<>();
+                            changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "Se envía correo a: " + nota.getEnviadoA(), ""));
 
                             for (AuditLog auditLog : changeLog) {
                                 em.persist(auditLog);
@@ -136,8 +136,12 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
                         } catch (Exception ex) {
                             Logger.getLogger(SendMailJob.class.getName()).log(Level.SEVERE, "SendMailJob fallo la transaccion!!", ex);
                         } finally {
+                            UserTransactionHelper.returnUserTransaction(utx);
                             if (em != null) {
                                 em.close();
+                            }
+                            if (emf != null) {
+                                emf.close();
                             }
                         }
 

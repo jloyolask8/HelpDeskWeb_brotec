@@ -35,7 +35,6 @@ import org.quartz.ee.jta.UserTransactionHelper;
 public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job {
 
 //    EventNotifier eventNotifier = lookupEventNotifierBean();
-
     public static final String ID_ESTADO_ALERTA = "idalerta";
 
     /**
@@ -107,7 +106,6 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
 //                                    eventNotifier.fire(new NotificationData("Estado de Alerta Caso", 
 //                                            "Estado de alerta del caso " + caso.getIdCaso() + 
 //                                                    " pasa a " + caso.getEstadoAlerta().getNombre(), audit.getOwner()));
-
                                     utx.commit();
 
                                 } else {
@@ -137,9 +135,12 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
                         }
                         Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "TicketAlertStateChangeJob.execute exception", ex);
                     } finally {
+                        UserTransactionHelper.returnUserTransaction(utx);
                         if (em != null) {
                             em.close();
-                            UserTransactionHelper.returnUserTransaction(utx);
+                        }
+                        if (emf != null) {
+                            emf.close();
                         }
                     }
 
@@ -172,5 +173,4 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
 //            throw new RuntimeException(ne);
 //        }
 //    }
-
 }
