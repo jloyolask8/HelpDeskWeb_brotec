@@ -463,7 +463,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
 
     @Override
     public Class getDataModelImplementationClass() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return CanalDataModel.class;
     }
 
     /**
