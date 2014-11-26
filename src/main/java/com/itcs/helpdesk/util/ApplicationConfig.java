@@ -402,6 +402,14 @@ public class ApplicationConfig {
     public static String getCompanyName() {
         return ApplicationConfig.getProperty(EnumSettingsBase.COMPANY_NAME.getAppSetting().getSettingKey());
     }
+    
+    public static String getNotificationTicketAlertChangeSubjectText() {
+        return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_TAC_SUBJECT_TEXT.getAppSetting().getSettingKey());
+    }
+
+    public static String getNotificationTicketAlertChangeBodyText() {
+        return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_TAC_BODY_TEXT.getAppSetting().getSettingKey());
+    }
 
     public static String getNotificationSubjectText() {
         return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_SUBJECT_TEXT.getAppSetting().getSettingKey());

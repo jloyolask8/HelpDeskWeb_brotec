@@ -10,6 +10,7 @@ import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.TipoAlerta;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta;
 import com.itcs.helpdesk.persistence.jpa.exceptions.NonexistentEntityException;
+import com.itcs.helpdesk.util.MailNotifier;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
@@ -86,7 +87,7 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
                                     audit.setIdUser(idUser);
                                     audit.setFecha(Calendar.getInstance().getTime());
                                     audit.setTabla(Caso.class.getSimpleName());
-                                    audit.setNewValue("Estado de alerta pasa a " + caso.getEstadoAlerta().getNombre());
+                                    audit.setNewValue("Estado de alerta del caso cambia a: " + caso.getEstadoAlerta().getNombre());
                                     audit.setIdCaso(caso.getIdCaso());
                                     if (caso.getOwner() == null) {
                                         audit.setOwner(null);
@@ -95,17 +96,24 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
                                     }
 
                                     em.persist(audit);
-                                    //End Audit Log
-
-                                    unschedule(formatJobId(valueOfIdCaso, valueOfIdAlerta));
+                                    //End Audit Log                                    
 
                                     if (valueOfIdAlerta.equals(EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta().getIdalerta())) {
                                         HelpDeskScheluder.scheduleAlertaVencido(valueOfIdCaso, caso.getNextResponseDue());
+                                    }
+                                    
+                                    if(caso.getOwner() != null){
+                                        if(caso.getOwner().getEmailNotificationsEnabled() ){
+                                            if(caso.getOwner().getNotifyWhenTicketAlert()){
+                                                MailNotifier.notifyCasoOwnerAlertChanged(caso);
+                                            }
+                                        }
                                     }
 
 //                                    eventNotifier.fire(new NotificationData("Estado de Alerta Caso", 
 //                                            "Estado de alerta del caso " + caso.getIdCaso() + 
 //                                                    " pasa a " + caso.getEstadoAlerta().getNombre(), audit.getOwner()));
+                                    unschedule(formatJobId(valueOfIdCaso, valueOfIdAlerta));
                                     utx.commit();
 
                                 } else {
