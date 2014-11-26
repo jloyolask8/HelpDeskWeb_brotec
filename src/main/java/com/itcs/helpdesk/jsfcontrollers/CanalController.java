@@ -14,6 +14,7 @@ import com.itcs.helpdesk.util.ApplicationConfig;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.MailClientFactory;
 import com.itcs.jpautils.EasyCriteriaQuery;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,8 +74,6 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
     public OrderBy getDefaultOrderBy() {
         return new OrderBy("idCanal");
     }
-    
-    
 
 //    @Override
 //    public PaginationHelper getPagination() {
@@ -345,6 +344,20 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
                 }
                 getJpaController().mergeCanal(current);
             }
+
+            recreateModel();
+            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("CanalCreated"));
+
+            initializeMailRead();
+            
+        } catch (Exception e) {
+            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
+            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
+        }
+    }
+
+    private void initializeMailRead() {
+        try {
             MailClientFactory.createInstance(current);
             String freqStr = current.getSetting(EnumEmailSettingKeys.CHECK_FREQUENCY.getKey());
             int freq = HelpDeskScheluder.DEFAULT_CHECK_EMAIL_INTERVAL;
@@ -353,13 +366,12 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
                     freq = Integer.parseInt(freqStr);
                 }
             } catch (NumberFormatException ex) {/*probably a weird value*/
-
+                
             }
-
+            
             HelpDeskScheluder.scheduleRevisarCorreo(current.getIdCanal(), freq);
-            items = null;
-        } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
+        } catch (IOException | SchedulerException e) {
+            Log.createLogger(this.getClass().getName()).logSevere("Error inicializando lectura del correo. " + e.getMessage());
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
         }
     }
