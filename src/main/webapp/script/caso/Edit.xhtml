@@ -1325,7 +1325,8 @@
                     </p:commandButton>
 
                     &nbsp;
-                    <p:commandButton value="Cerrar" oncomplete="PF('viewEventDialog').hide();" update=":viewEventForm" process="@this">
+                    <p:commandButton value="Cerrar" 
+                                      actionListener="#{casoScheduleController.closeViewEvent()}" update=":viewEventForm" process="@this">
                         <p:resetInput target="@form" />
                     </p:commandButton>
 

@@ -266,6 +266,11 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
         }
 
     }
+    
+    public void closeViewEvent(){
+         this.event = null;
+         executeInClient("PF('viewEventDialog').hide()");
+    }
 
     public void quickSaveEvent() {
 
@@ -299,6 +304,8 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
         } catch (Exception ex) {
             addErrorMessage("No se pudo editar el evento:" + ex.getMessage());
             Logger.getLogger(CasoScheduleController.class.getName()).log(Level.SEVERE, "quickSaveEvent", ex);
+        }finally{
+             this.event = null;
         }
 
     }
