@@ -252,17 +252,11 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public void enableReplyMode() {
-        
-         if (current.getIdProducto() == null) {
-            showMessageInDialog(FacesMessage.SEVERITY_ERROR, "Acción requerida", "Antes de continuar es necesario que seleccione y guarde el " + applicationBean.getProductDescription() + " relacionado con el caso.");
-            return ;
+
+        if (validateEdit()) {
+            return;
         }
 
-        if (current.getIdArea() == null) {
-            showMessageInDialog(FacesMessage.SEVERITY_ERROR, "Acción requerida", "Antes de continuar es necesario que seleccione y guarde el área al cual pertenece el caso.");
-            return ;
-        }
-        
         this.setReplyMode(true);
         this.setReplyByEmail(true);
 
@@ -284,22 +278,28 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public void enableCommentMode() {
-        
-         if (current.getIdProducto() == null) {
-            showMessageInDialog(FacesMessage.SEVERITY_ERROR, "Acción requerida", "Antes de continuar es necesario que seleccione y guarde el " + applicationBean.getProductDescription() + " relacionado con el caso.");
-            return ;
+
+        if (validateEdit()) {
+            return;
         }
 
-        if (current.getIdArea() == null) {
-            showMessageInDialog(FacesMessage.SEVERITY_ERROR, "Acción requerida", "Antes de continuar es necesario que seleccione y guarde el área al cual pertenece el caso.");
-            return ;
-        }
-        
         this.setReplyMode(true);
         this.setReplyByEmail(false);
 
         this.textoNota = current.getRespuesta();
 
+    }
+
+    private boolean validateEdit() {
+        if (applicationBean.isProductoRequired() && current.getIdProducto() == null) {
+            showMessageInDialog(FacesMessage.SEVERITY_ERROR, "Acción requerida", "Antes de continuar es necesario que seleccione el " + applicationBean.getProductDescription() + " relacionado con el caso.");
+            return true;
+        }
+        if (applicationBean.isAreaRequired() && current.getIdArea() == null) {
+            showMessageInDialog(FacesMessage.SEVERITY_ERROR, "Acción requerida", "Antes de continuar es necesario que seleccione el área al cual pertenece el caso.");
+            return true;
+        }
+        return false;
     }
 
     public void disableReplyMode() {
@@ -1650,8 +1650,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //        FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Etiqueta Seleccionada:" + tagId, "");
 //        FacesContext.getCurrentInstance().addMessage(null, msg);
     }
-
- 
 
     public String saveCurrentView() {
 
@@ -3281,13 +3279,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public String update() {
         try {
 
-            if (current.getIdProducto() == null) {
-                showMessageInDialog(FacesMessage.SEVERITY_ERROR, "Acción requerida", "Antes de continuar es necesario que seleccione y guarde el " + applicationBean.getProductDescription() + " relacionado con el caso.");
-                return null;
-            }
-
-            if (current.getIdArea() == null) {
-                showMessageInDialog(FacesMessage.SEVERITY_ERROR, "Acción requerida", "Antes de continuar es necesario que seleccione y guarde el área al cual pertenece el caso.");
+            if (validateEdit()) {
                 return null;
             }
 

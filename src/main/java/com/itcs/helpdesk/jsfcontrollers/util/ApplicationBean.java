@@ -257,8 +257,8 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
     public String getCompanyLogo() {
         return ApplicationConfig.getCompanyLogo();
     }
-    
-     public String getCompanyLoginBackground() {
+
+    public String getCompanyLoginBackground() {
         return ApplicationConfig.getCompanyLoginBackground();
     }
 
@@ -290,7 +290,7 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
         System.out.println("*** getTipoCasoAvailableList()");
         return (List<TipoCaso>) getJpaController().findAll(TipoCaso.class);
     }
-    
+
     public List<Area> getAreasAvailableList() {
         System.out.println("*** getAreasAvailableList()");
         return (List<Area>) getJpaController().findAll(Area.class);
@@ -302,6 +302,14 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
 
     public boolean isShowCompanyLogo() {
         return ApplicationConfig.isShowCompanyLogo();
+    }
+
+    public boolean isAreaRequired() {
+        return ApplicationConfig.isAreaRequired();
+    }
+
+    public boolean isProductoRequired() {
+        return ApplicationConfig.isProductoRequired();
     }
 
     public StreamedContent getLogo() {
