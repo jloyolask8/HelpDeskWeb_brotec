@@ -11,35 +11,37 @@
     <cc:interface>
         <cc:attribute name="filtro" required="true" /> 
         <cc:attribute name="filterHelper" required="true" /> 
-         <cc:attribute name="removeActionListener" required="true" />         
+        <cc:attribute name="removeActionListener" required="true" method-signature="void removeFiltroFromVista(java.lang.Object)"/>         
+        <cc:attribute name="addActionListener" required="true" method-signature="void addNewFiltroVista(java.lang.Object)"/>
+        <cc:attribute name="canRemoveFilter" default="true"/>
         <cc:attribute name="canChangeFilters" default="true" />
         <cc:attribute name="update" default=":mainform:messages" />
+        <cc:attribute name="requiredAttribute" default="true" />
     </cc:interface>
 
     <!-- IMPLEMENTATION -->
     <cc:implementation>
-
-        <p:panelGrid style="margin-bottom:10px;" styleClass="filtersGrid" id="panelGridFilter">
+        <p:panelGrid styleClass="filtersGrid" id="panelGridFilter" style="border: none !important; padding: 0px !important; background: transparent !important;">
             <p:row>
-                <p:column>
+                <p:column style="width: 190px;">
                     <p:selectOneMenu id="idCampo"  value="#{cc.attrs.filtro.idCampo}" disabled="#{not cc.attrs.canChangeFilters}"
-                                     panelStyle="width:170px" style="width:160px"  filter="true" filterMatchMode="startsWith"
-                                     required="false" requiredMessage="Favor Seleccione Attributo.">
+                                     filter="true" filterMatchMode="startsWith"
+                                     required="#{cc.attrs.requiredAttribute}" requiredMessage="Favor Seleccione Attributo." styleClass="full-width">
                         <f:selectItem itemLabel="seleccione un atributo" itemValue="" noSelectionOption="true"/>
                         <f:selectItems value="#{cc.attrs.filterHelper.comparableFields}" var="comparableField" itemValue="#{comparableField.idCampo}" itemLabel="#{comparableField.label}"/>
                         <p:ajax update="@form #{cc.attrs.update}" listener="#{cc.attrs.filterHelper.handleIdCampoChangeEvent(cc.attrs.filtro)}"/>
                     </p:selectOneMenu>
                 </p:column>
-                <p:column>
+                <p:column style="width: 220px;">
                     <p:selectOneMenu id="idComparador" value="#{cc.attrs.filtro.idComparador}" rendered="#{cc.attrs.filtro.idCampo ne null}" disabled="#{not cc.attrs.canChangeFilters}"
                                      panelStyle="width:130px" style="width:110px"  filter="true" filterMatchMode="startsWith"
-                                     required="true" requiredMessage="Favor Seleccione Operador.">
+                                     required="true" requiredMessage="Favor Seleccione Operador." styleClass="full-width">
                         <f:selectItem itemLabel="Operador..." itemValue="" noSelectionOption="true"/>
                         <f:selectItems value="#{cc.attrs.filterHelper.findTipoComparacionesAvailable(cc.attrs.filtro.idCampo, false)}" var="tipoComparador" itemValue="#{tipoComparador}" itemLabel="#{tipoComparador.nombre}" itemDescription="#{tipoComparador.descripcion}"/>
                         <p:ajax update="@form #{cc.attrs.update}" listener="#{cc.attrs.filterHelper.handleOperadorChangeEvent(cc.attrs.filtro)}"/>
                     </p:selectOneMenu>
                 </p:column>
-                <p:column>
+                <p:column style="width: 200px;">
                     <p:autoComplete id="MultipleValueEntity" multiple="true" emptyMessage="no hay objetos que mostrar"
                                     placeholder="buscar..." forceSelection="true" 
                                     converterMessage="convertion failed" converter="entityConverter"
@@ -49,8 +51,9 @@
                                     required="true" requiredMessage="Debe Seleccionar al menos un #{cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).label}."
                                     rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null and 
                                                 cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'SELECTONE_ENTITY' and 
-                                                cc.attrs.filtro.idComparador.idComparador eq 'SC'}">  
+                                                cc.attrs.filtro.idComparador.idComparador eq 'SC'}" style="width: 200px;">  
                         <f:attribute name="filtro" value="#{cc.attrs.filtro}" />
+                        <p:ajax event="itemSelect" update="@form #{cc.attrs.update}"/>
                     </p:autoComplete>   
 
                     <p:autoComplete id="valorentity1" dropdown="true" emptyMessage="no hay objetos que mostrar"
@@ -62,68 +65,86 @@
                                     required="true" requiredMessage="Debe Seleccionar un #{cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).label}."
                                     rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null 
                                                 and cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'SELECTONE_ENTITY' 
-                                                and cc.attrs.filtro.idComparador.idComparador ne 'SC'}">  
+                                                and cc.attrs.filtro.idComparador.idComparador ne 'SC'}" styleClass="full-width">  
                         <f:attribute name="filtro" value="#{cc.attrs.filtro}" />
+                        <p:ajax event="itemSelect" update="@form #{cc.attrs.update}"/>
                     </p:autoComplete>    
 
                     <p:inputText id="valortext" value="#{cc.attrs.filtro.valor}" rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'TEXT'}" 
-                                 required="true" requiredMessage="Se necesita un valor para comparar." disabled="#{not cc.attrs.canChangeFilters}"/>
+                                 required="true" requiredMessage="Se necesita un valor para comparar." disabled="#{not cc.attrs.canChangeFilters}" styleClass="full-width">
+                        <p:ajax update="@form #{cc.attrs.update}"/>
+                    </p:inputText>
 
                     <p:inputText id="valorNumber" value="#{cc.attrs.filtro.valor}" 
                                  rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'NUMBER'}" 
-                                 required="true" requiredMessage="Se necesita un valor para comparar." disabled="#{not cc.attrs.canChangeFilters}"/>
+                                 required="true" requiredMessage="Se necesita un valor para comparar." disabled="#{not cc.attrs.canChangeFilters}" styleClass="full-width">
+                        <p:ajax update="@form #{cc.attrs.update}"/>
+                    </p:inputText>
 
                     <pe:keyFilter for="valorNumber" mask="int" rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'NUMBER'}" />
 
-                    <p:autoComplete value="#{cc.attrs.filtro.valoresList}" forceSelection="true"  
+                    <p:autoComplete styleClass="full-width" value="#{cc.attrs.filtro.valoresList}" forceSelection="true"  
                                     disabled="#{not cc.attrs.canChangeFilters}"
                                     required="true" requiredMessage="Se necesita un valor para comparar."
                                     completeMethod="#{applicationBean.findEtiquetasByPattern}" multiple="true"
                                     rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null 
-                                                and cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'COMMA_SEPARATED_VALUELIST'}"/> 
+                                                and cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'COMMA_SEPARATED_VALUELIST'}">
+                        <p:ajax event="itemSelect" update="@form #{cc.attrs.update}"/>
+                    </p:autoComplete> 
 
                     <p:selectOneRadio id="valorradio" value="#{cc.attrs.filtro.valor}" disabled="#{not cc.attrs.canChangeFilters}" 
                                       required="true" requiredMessage="Se necesita un valor para comparar."
                                       rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'RADIO'}">
                         <f:selectItems value="#{cc.attrs.filterHelper.findPosibleOptionsIncludingAllPlaceHolders(cc.attrs.filtro.idCampo, UserSessionBean.current)}" />
+                        <p:ajax update="@form #{cc.attrs.update}"/>
                     </p:selectOneRadio>
 
-                    <p:selectOneMenu id="placeHolder1" value="#{cc.attrs.filtro.valor}" disabled="#{not cc.attrs.canChangeFilters}" 
-                                     panelStyle="width:300px" style="width:180px"
+                    <p:selectOneMenu styleClass="full-width" id="placeHolder1" value="#{cc.attrs.filtro.valor}" disabled="#{not cc.attrs.canChangeFilters}" 
                                      required="true" requiredMessage="Se necesita un valor para comparar."
                                      rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null 
                                                  and cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'SELECTONE_PLACE_HOLDER'}">
                         <f:selectItems value="#{cc.attrs.filterHelper.findPosibleOptionsGenericEntityPlaceHolders(cc.attrs.filtro.idCampo)}" />
+                        <p:ajax update="@form #{cc.attrs.update}"/>
                     </p:selectOneMenu>
 
-                    <p:selectOneMenu id="valorcheckboolean" value="#{cc.attrs.filtro.valor}" disabled="#{not cc.attrs.canChangeFilters}" 
+                    <p:selectOneMenu styleClass="full-width" id="valorcheckboolean" value="#{cc.attrs.filtro.valor}" disabled="#{not cc.attrs.canChangeFilters}" 
                                      required="true" requiredMessage="Se necesita un valor para comparar."
                                      rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'CHECKBOX'}">
                         <f:selectItems value="#{cc.attrs.filterHelper.findPosibleOptionsIncludingAllPlaceHolders(cc.attrs.filtro.idCampo, UserSessionBean.current)}" />
+                        <p:ajax update="@form #{cc.attrs.update}"/>
                     </p:selectOneMenu>
                     <script>
-                        $(function() {
+                        $(function () {
                             $(".datepicker").datepicker({
                                 dateFormat: "dd/mm/yy"
                             });
                         });
                     </script>
-                    <p:inputText id="valorcalendar1" styleClass="datepicker" disabled="#{not cc.attrs.canChangeFilters}" 
+                    <p:inputText id="valorcalendar1" style="width: 100px;" styleClass="datepicker" disabled="#{not cc.attrs.canChangeFilters}" 
                                  value="#{cc.attrs.filtro.valor}"  title="Desde:"
                                  required="true" requiredMessage="Se necesita un valor para comparar."
-                                 rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR'}" />
-                    <p:inputText id="valorcalendar2" styleClass="datepicker" value="#{cc.attrs.filtro.valor2}" 
+                                 rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR'}">
+                        <p:ajax update="@form #{cc.attrs.update}"/>
+                    </p:inputText>
+                    <p:inputText id="valorcalendar2" style="width: 100px;" styleClass="datepicker" value="#{cc.attrs.filtro.valor2}" 
                                  disabled="#{not cc.attrs.canChangeFilters}"  title="Hasta:"
                                  required="true" requiredMessage="Se necesita un valor para comparar."
-                                 rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR' and cc.attrs.filtro.idComparador.idComparador eq 'BW'}" />
+                                 rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR' and cc.attrs.filtro.idComparador.idComparador eq 'BW'}">
+                        <p:ajax update="@form #{cc.attrs.update}"/>
+                    </p:inputText>
                 </p:column>
 
-                <h:column>
-                    <p:commandButton id="remove" icon="ui-icon-close" 
-                                     actionListener="#{cc.attrs.removeActionListener}" ajax="true" immediate="true"
-                                     update="@parent #{cc.attrs.update}" title="Quitar Criterio de Selección."
-                                     disabled="#{not cc.attrs.canChangeFilters}"/>
-                </h:column>
+                <p:column style="width: 60px; vertical-align: middle !important;">
+                    <p:commandButton icon="ui-icon-minus" actionListener="#{cc.attrs.removeActionListener}" ajax="true" immediate="false"
+                                     update="@form #{cc.attrs.update}" title="Eliminar criterio"
+                                     disabled="#{(not cc.attrs.canChangeFilters) or (not cc.attrs.canRemoveFilter)}" process="@this"
+                                     style="border-radius: 4em; height: 20px; width: 20px; margin-right: 5px;">
+                        <p:resetInput target="@form" />
+                    </p:commandButton>
+                    <p:commandButton icon="ui-icon-plus" actionListener="#{cc.attrs.addActionListener}" immediate="true"
+                                     update="@form #{cc.attrs.update}" title="Agregar criterio"
+                                     style="border-radius: 4em; height: 20px; width: 20px; "/>
+                </p:column>
             </p:row>
         </p:panelGrid>
     </cc:implementation>

@@ -7,12 +7,14 @@ import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.Canal;
 import com.itcs.helpdesk.persistence.entities.CanalSetting;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoCanal;
+import com.itcs.helpdesk.persistence.utils.OrderBy;
 import com.itcs.helpdesk.quartz.DownloadEmailJob;
 import com.itcs.helpdesk.quartz.HelpDeskScheluder;
 import com.itcs.helpdesk.util.ApplicationConfig;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.MailClientFactory;
 import com.itcs.jpautils.EasyCriteriaQuery;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,27 +71,32 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
     }
 
     @Override
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(getPaginationPageSize()) {
-                @Override
-                public int getItemsCount() {
-                    return getJpaController().count(Canal.class).intValue();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    EasyCriteriaQuery<Canal> ecq = new EasyCriteriaQuery<Canal>(emf, Canal.class);
-                    ecq.setMaxResults(getPageSize());
-                    ecq.setFirstResult(getPageFirstItem());
-                    ecq.orderBy("idCanal", true);
-                    return new ListDataModel(ecq.next());
-//                    return new ListDataModel(getJpaController().queryByRange(Canal.class, getPageSize(), getPageFirstItem()));
-                }
-            };
-        }
-        return pagination;
+    public OrderBy getDefaultOrderBy() {
+        return new OrderBy("idCanal");
     }
+
+//    @Override
+//    public PaginationHelper getPagination() {
+//        if (pagination == null) {
+//            pagination = new PaginationHelper(getPaginationPageSize()) {
+//                @Override
+//                public int getItemsCount() {
+//                    return getJpaController().count(Canal.class).intValue();
+//                }
+//
+//                @Override
+//                public DataModel createPageDataModel() {
+//                    EasyCriteriaQuery<Canal> ecq = new EasyCriteriaQuery<Canal>(emf, Canal.class);
+//                    ecq.setMaxResults(getPageSize());
+//                    ecq.setFirstResult(getPageFirstItem());
+//                    ecq.orderBy("idCanal", true);
+//                    return new ListDataModel(ecq.next());
+////                    return new ListDataModel(getJpaController().queryByRange(Canal.class, getPageSize(), getPageFirstItem()));
+//                }
+//            };
+//        }
+//        return pagination;
+//    }
 
     public void verifyEmailAccount() {
         tmpEmailInfo = "Verificando configuración";
@@ -114,9 +121,8 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         settings.put(EnumEmailSettingKeys.INBOUND_USER.getKey(), tmpEmailUsuario);
         settings.put(EnumEmailSettingKeys.INBOUND_PASS.getKey(), tmpEmailContrasena);
         settings.put(EnumEmailSettingKeys.SERVER_TYPE.getKey(), "popimap");
-        settings.put(EnumEmailSettingKeys.STORE_PROTOCOL.getKey(), (tmpEmailIncommingType.equals("imap") ? "imap" : "pop3")+(tmpEmailIncommingSsl.equals("SSL/TLS")?"s":""));
-        
-        
+        settings.put(EnumEmailSettingKeys.STORE_PROTOCOL.getKey(), (tmpEmailIncommingType.equals("imap") ? "imap" : "pop3") + (tmpEmailIncommingSsl.equals("SSL/TLS") ? "s" : ""));
+
         settings.put(EnumEmailSettingKeys.CHECK_FREQUENCY.getKey(), (tmpFreq == null) ? String.valueOf(HelpDeskScheluder.DEFAULT_CHECK_EMAIL_INTERVAL) : tmpFreq);
         settings.put(EnumEmailSettingKeys.MAIL_DEBUG.getKey(), tmpEmailDebugEnabled ? "true" : "false");
         settings.put(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey(), tmpEmailDownloadAttachments ? "true" : "false");
@@ -130,7 +136,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         settings.put(EnumEmailSettingKeys.SMTP_FROM.getKey(), tmpEmailCorreoElectronico);
         settings.put(EnumEmailSettingKeys.SMTP_FROMNAME.getKey(), tmpEmailSuNombre);
         settings.put(EnumEmailSettingKeys.SMTP_PASS.getKey(), tmpEmailContrasena);
-        
+
         settings.put(EnumEmailSettingKeys.SMTP_CONNECTIONTIMEOUT.getKey(), tmpEmailConnectionTimeout);
         return settings;
     }
@@ -194,21 +200,17 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         RequestContext.getCurrentInstance().update("formAddEditEmail");
 //        refreshPage();
     }
-    
+
     public SelectItem[] getEmailsAvailableSelectOne() {
         EasyCriteriaQuery<Canal> ecq = new EasyCriteriaQuery<>(emf, Canal.class);
         ecq.addEqualPredicate("idTipoCanal", EnumTipoCanal.EMAIL.getTipoCanal());
         return JsfUtil.getSelectItems(ecq.getAllResultList(), true);
     }
 
-   
-
     @Override
     protected String getListPage() {
         return "/script/canal/List";
     }
-    
-    
 
 //    public void prepareView(Canal c) {
 //        current = c;
@@ -222,8 +224,6 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
     protected String getEditPage() {
         return super.getEditPage(); //To change body of generated methods, choose Tools | Templates.
     }
-    
-    
 
     public void prepareCreateEmail() {
         tmpEmailSuNombre = null;
@@ -246,19 +246,19 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         tmpEmailDownloadAttachments = true;
         prepareCreate();
     }
-    
+
     public void prepareCreateChat() {
         current = new Canal();
         current.setIdTipoCanal(EnumTipoCanal.CHAT.getTipoCanal());
         mode = "Create";
     }
-    
+
     public void prepareCreateManual() {
         current = new Canal();
         current.setIdTipoCanal(EnumTipoCanal.MANUAL.getTipoCanal());
         mode = "Create";
     }
-    
+
     public void prepareCreateFormulario() {
         current = new Canal();
         current.setIdTipoCanal(EnumTipoCanal.FORMULARIO.getTipoCanal());
@@ -285,13 +285,13 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         tmpEmailIncommingType = current.getSetting(EnumEmailSettingKeys.STORE_PROTOCOL.getKey()).equals("imaps") ? "imap" : "pop3";
         tmpEmailIncommingHost = current.getSetting(EnumEmailSettingKeys.INBOUND_SERVER.getKey());
         tmpEmailIncommingPort = current.getSetting(EnumEmailSettingKeys.INBOUND_PORT.getKey());
-        tmpEmailIncommingSsl = current.getSetting(EnumEmailSettingKeys.INBOUND_SSL_ENABLED.getKey()).equals("true") ? "SSL/TLS" :
-                (current.getSetting(EnumEmailSettingKeys.INBOUND_STARTTLS.getKey()).equals("true") ? "STARTTLS" : "NINGUNO");
+        tmpEmailIncommingSsl = current.getSetting(EnumEmailSettingKeys.INBOUND_SSL_ENABLED.getKey()).equals("true") ? "SSL/TLS"
+                : (current.getSetting(EnumEmailSettingKeys.INBOUND_STARTTLS.getKey()).equals("true") ? "STARTTLS" : "NINGUNO");
         //tmpEmailOutgoingType = current.getSetting(EnumEmailSettingKeys.SMTP_FROMNAME.getKey());
         tmpEmailOutgoingHost = current.getSetting(EnumEmailSettingKeys.SMTP_SERVER.getKey());
         tmpEmailOutgoingPort = current.getSetting(EnumEmailSettingKeys.SMTP_PORT.getKey());
-        tmpEmailOutgoingSsl = current.getSetting(EnumEmailSettingKeys.SMTP_SSL_ENABLED.getKey()).equals("true") ? "SSL/TLS" : 
-                (current.getSetting(EnumEmailSettingKeys.SMTP_STARTTLS.getKey()).equals("true") ? "STARTTLS" : "NINGUNO");
+        tmpEmailOutgoingSsl = current.getSetting(EnumEmailSettingKeys.SMTP_SSL_ENABLED.getKey()).equals("true") ? "SSL/TLS"
+                : (current.getSetting(EnumEmailSettingKeys.SMTP_STARTTLS.getKey()).equals("true") ? "STARTTLS" : "NINGUNO");
         tmpEmailUsuario = current.getSetting(EnumEmailSettingKeys.SMTP_FROM.getKey());
         tmpFreq = current.getSetting(EnumEmailSettingKeys.CHECK_FREQUENCY.getKey());
         tmpEmailDebugEnabled = (current.getSetting(EnumEmailSettingKeys.MAIL_DEBUG.getKey()) == null) ? false : current.getSetting(EnumEmailSettingKeys.MAIL_DEBUG.getKey()).equals("true");
@@ -344,19 +344,34 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
                 }
                 getJpaController().mergeCanal(current);
             }
+
+            recreateModel();
+            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("CanalCreated"));
+
+            initializeMailRead();
+            
+        } catch (Exception e) {
+            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
+            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
+        }
+    }
+
+    private void initializeMailRead() {
+        try {
             MailClientFactory.createInstance(current);
             String freqStr = current.getSetting(EnumEmailSettingKeys.CHECK_FREQUENCY.getKey());
             int freq = HelpDeskScheluder.DEFAULT_CHECK_EMAIL_INTERVAL;
-            try{
-                if(freqStr != null){
+            try {
+                if (freqStr != null) {
                     freq = Integer.parseInt(freqStr);
                 }
-            }catch(NumberFormatException ex){/*probably a weird value*/}
-
+            } catch (NumberFormatException ex) {/*probably a weird value*/
+                
+            }
+            
             HelpDeskScheluder.scheduleRevisarCorreo(current.getIdCanal(), freq);
-            items = null;
-        } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
+        } catch (IOException | SchedulerException e) {
+            Log.createLogger(this.getClass().getName()).logSevere("Error inicializando lectura del correo. " + e.getMessage());
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
         }
     }
@@ -374,13 +389,13 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
     public void create() {
         try {
             current.setEnabled(true);
-            getJpaController().persistCanal(current);
+            getJpaController().persist(current);
             executeInClient("PF('addEditDialog').hide()");
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("CanalCreated"));
             recreateModel();
 //            return prepareCreate();
         } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
+            Log.createLogger(this.getClass().getName()).logSevere("No se pudo crear el canal. " + e.getMessage());
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
 //            return null;
         }
@@ -431,18 +446,18 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         }
     }
 
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        Iterator iter = items.iterator();
-        List<Canal> listOfCanal = new ArrayList<Canal>();
-        while (iter.hasNext()) {
-            listOfCanal.add((Canal) iter.next());
-        }
-
-        return new CanalDataModel(listOfCanal);
-    }
+//    public DataModel getItems() {
+//        if (items == null) {
+//            items = getPagination().createPageDataModel();
+//        }
+//        Iterator iter = items.iterator();
+//        List<Canal> listOfCanal = new ArrayList<Canal>();
+//        while (iter.hasNext()) {
+//            listOfCanal.add((Canal) iter.next());
+//        }
+//
+//        return new CanalDataModel(listOfCanal);
+//    }
 
     /**
      * @return the mode
@@ -460,7 +475,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
 
     @Override
     public Class getDataModelImplementationClass() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return CanalDataModel.class;
     }
 
     /**

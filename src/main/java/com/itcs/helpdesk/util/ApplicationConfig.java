@@ -344,6 +344,16 @@ public class ApplicationConfig {
 //        }
 //
 //    }
+    private static boolean getBooleanPropertyValue(String key) {
+        boolean value = false;
+        try {
+            value = Boolean.valueOf(getProperty(key, "false"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return value;
+    }
+
     private static String getProperty(String key) {
         return ApplicationConfig.getInstance().getConfiguration().getProperty(key);
     }
@@ -353,25 +363,27 @@ public class ApplicationConfig {
     }
 
     public static String getSaludoClienteHombre() {
-        return ApplicationConfig.getProperty(EnumSettingsBase.SALUDO_CLIENTE_HOMBRE.getAppSetting().getSettingKey());
+        return getProperty(EnumSettingsBase.SALUDO_CLIENTE_HOMBRE.getAppSetting().getSettingKey());
     }
 
     public static String getSaludoClienteMujer() {
-        return ApplicationConfig.getProperty(EnumSettingsBase.SALUDO_CLIENTE_MUJER.getAppSetting().getSettingKey());
+        return getProperty(EnumSettingsBase.SALUDO_CLIENTE_MUJER.getAppSetting().getSettingKey());
     }
 
     public static String getSaludoClienteUnknown() {
-        return ApplicationConfig.getProperty(EnumSettingsBase.SALUDO_CLIENTE_UNKNOWN.getAppSetting().getSettingKey());
+        return getProperty(EnumSettingsBase.SALUDO_CLIENTE_UNKNOWN.getAppSetting().getSettingKey());
     }
 
     public static boolean isShowCompanyLogo() {
-        boolean value = false;
-        try {
-            value = Boolean.valueOf(getProperty(EnumSettingsBase.SHOW_COMPANY_LOGO.getAppSetting().getSettingKey(), "false"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return value;
+        return getBooleanPropertyValue(EnumSettingsBase.SHOW_COMPANY_LOGO.getAppSetting().getSettingKey());
+    }
+
+    public static boolean isAreaRequired() {
+        return getBooleanPropertyValue(EnumSettingsBase.AREA_IS_REQUIRED.getAppSetting().getSettingKey());
+    }
+
+    public static boolean isProductoRequired() {
+        return getBooleanPropertyValue(EnumSettingsBase.PRODUCT_IS_REQUIRED.getAppSetting().getSettingKey());
     }
 
 //    public static String getAttachmentRuta() {
@@ -401,6 +413,14 @@ public class ApplicationConfig {
 
     public static String getCompanyName() {
         return ApplicationConfig.getProperty(EnumSettingsBase.COMPANY_NAME.getAppSetting().getSettingKey());
+    }
+
+    public static String getNotificationTicketAlertChangeSubjectText() {
+        return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_TAC_SUBJECT_TEXT.getAppSetting().getSettingKey());
+    }
+
+    public static String getNotificationTicketAlertChangeBodyText() {
+        return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_TAC_BODY_TEXT.getAppSetting().getSettingKey());
     }
 
     public static String getNotificationSubjectText() {
