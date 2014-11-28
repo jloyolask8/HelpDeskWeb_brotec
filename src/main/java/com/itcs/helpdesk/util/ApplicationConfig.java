@@ -422,6 +422,14 @@ public class ApplicationConfig {
     public static String getNotificationTicketAlertChangeBodyText() {
         return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_TAC_BODY_TEXT.getAppSetting().getSettingKey());
     }
+    
+     public static String getNotificationTicketUpdatedSubjectText() {
+        return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_UPDATE_AGENT_SUBJECT_TEXT.getAppSetting().getSettingKey());
+    }
+
+    public static String getNotificationTicketUpdatedBodyText() {
+        return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_UPDATE_AGENT_BODY_TEXT.getAppSetting().getSettingKey());
+    }
 
     public static String getNotificationSubjectText() {
         return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_SUBJECT_TEXT.getAppSetting().getSettingKey());

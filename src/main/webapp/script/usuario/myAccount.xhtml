@@ -168,7 +168,7 @@
                                     </div>
 
                                     <div class="col-sm-12">
-                                        <h:selectBooleanCheckbox id="desktopNotificationsEnabled"
+                                        <h:selectBooleanCheckbox id="desktopNotificationsEnabled" disabled="true"
                                                                  value="#{UserSessionBean.current.desktopNotificationsEnabled}" >
                                         </h:selectBooleanCheckbox>
                                         <label class="control-label">
@@ -235,7 +235,7 @@
                     
                     <p:toolbarGroup align="right">
                         <p:commandButton ajax="false" action="#{UserSessionBean.updateUsuario}" value="#{bundle.EditUsuarioSaveLink}" 
-                                         icon="fa fa-save" style="top: 4px"/>
+                                         icon="fa fa-save" />
                     </p:toolbarGroup>
                     
                 </p:toolbar>

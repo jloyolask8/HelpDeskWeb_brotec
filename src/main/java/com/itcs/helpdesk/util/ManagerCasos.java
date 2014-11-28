@@ -450,15 +450,13 @@ public class ManagerCasos implements Serializable {
         EmailCliente emailClient;
 
         //Si emailCliente no existe
-        if (existentEmailClient == null)
-        {
+        if (existentEmailClient == null) {
             EmailCliente newEmailCliente = new EmailCliente(address);
             Cliente cliente = createOrUpdateCliente(datos);
             newEmailCliente.setCliente(cliente);
             getJpaController().persistEmailCliente(newEmailCliente);
             emailClient = newEmailCliente;
-        }
-        else //Si emailCliente ya existe
+        } else //Si emailCliente ya existe
         {
             if (existentEmailClient.getCliente() == null) //Email no está asociado a un cliente
             {
@@ -719,9 +717,16 @@ public class ManagerCasos implements Serializable {
 //    }
     public boolean crearNotaDesdeEmail(Caso caso, Canal canal, EmailMessage item) throws Exception {
         boolean retorno = false;
-        boolean respuestaCliente = true;
         StringBuilder listIdAtt = new StringBuilder();
+
+//        boolean sendRespuestaCliente = true;
+        boolean isAgent = false;
+        boolean isClient = false;
+        boolean isOwner = false;
+
         if (caso != null) {
+            //FIRST QUESTION IS WHO IS THE SENDER?
+            //OPTIONS ARE: AGENT OR CLIENT. AND OWNER OR NOT OWNER.
             final String emailSender = item.getFromEmail().toLowerCase().trim();
             String senderName = null;
 
@@ -732,21 +737,45 @@ public class ManagerCasos implements Serializable {
 
             //we need to check if the sender is an agent or a client
             //doing a quick check on the caso.owner may improve response time
-            if (caso.getOwner() != null && caso.getOwner().getEmail().equalsIgnoreCase(emailSender)) {
+            if (caso.getOwner() != null && caso.getOwner().getEmail() != null && caso.getOwner().getEmail().equalsIgnoreCase(emailSender)) {
                 //bingo its the owner
+                isAgent = true;
+                isOwner = true;
+                isClient = false;
                 nota.setCreadaPor(caso.getOwner());
                 nota.setTipoNota(EnumTipoNota.RESPUESTA_A_CLIENTE.getTipoNota());
                 nota.setEnviado(false);
-                respuestaCliente = false;
                 senderName = caso.getOwner().getIdUsuario();
-            } else /*if (caso.getEmailCliente() != null && caso.getEmailCliente().getEmailCliente().equalsIgnoreCase(emailSender))*/ {
+            } else if (caso.getEmailCliente() != null && caso.getEmailCliente().getEmailCliente().equalsIgnoreCase(emailSender)) {
                 //its a client
+                isAgent = false;
+                isClient = true;
+                isOwner = true;
                 caso.setRevisarActualizacion(true);
                 nota.setTipoNota(EnumTipoNota.RESPUESTA_DE_CLIENTE.getTipoNota());
                 nota.setEnviadoPor(emailSender);
-                respuestaCliente = true;
+
                 senderName = (caso.getEmailCliente().getCliente() != null
                         && !StringUtils.isEmpty(caso.getEmailCliente().getCliente().getCapitalName())) ? caso.getEmailCliente().getCliente().getCapitalName() : emailSender;
+            } else {
+                isOwner = false;
+                //is not the owner agent and is not the owner client
+                final List<Usuario> usuarioFindByEmail = getJpaController().getUsuarioFindByEmail(emailSender);
+                if (usuarioFindByEmail != null) {
+                    //sender is a user, but not the owner
+                    isClient = false;
+                    isAgent = true;
+                    senderName = usuarioFindByEmail.get(0).getCapitalName();
+                } else {
+                    //last try is to check if this guy is another client
+                    final EmailCliente emailCliente = getJpaController().find(EmailCliente.class, emailSender);
+                    if (emailCliente != null) {
+                        //sender is a client, but not the owner
+                        isClient = true;
+                        isAgent = false;
+                        senderName = emailCliente.getCliente().getCapitalName();
+                    }
+                }
             }
 
             String textoBody = item.getText();
@@ -781,20 +810,42 @@ public class ManagerCasos implements Serializable {
 
             getJpaController().persist(nota);
             caso.getNotaList().add(nota);
+
             List<AuditLog> changeLog = new ArrayList<>();
-            if (respuestaCliente) {
+            if (isClient) {
                 changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "cliente " + senderName + " respondió el caso vía email, nota#Id:" + nota.getIdNota(), ""));
 
-            } else {
-                changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "Agente " + senderName + " agrega nota pública vía email al cliente nota#Id:" + nota.getIdNota(), ""));
+                //notify the case owner
+                if (caso.getOwner() != null) {
+                    if (caso.getOwner().getEmailNotificationsEnabled()) {
+                        if (caso.getOwner().getNotifyWhenTicketIsUpdated()) {
+                            MailNotifier.notifyOwnerCasoUpdated(caso, nota.getTexto(), senderName, nota.getFechaCreacion());
+                        }
+                    }
+                }
 
-                String emailCliente = caso.getEmailCliente() != null && !StringUtils.isEmpty(caso.getEmailCliente().getEmailCliente())
-                        ? caso.getEmailCliente().getEmailCliente() : null;
-                if (emailCliente != null) {
-                    String subject = formatIdCaso(caso.getIdCaso()) + " " + ClippingsPlaceHolders.buildFinalText("${TipoCaso} ${Asunto}", caso);
+            } else if (isAgent) {
+                changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "Agente " + senderName + " agrega nota vía email al cliente nota#Id:" + nota.getIdNota(), ""));
 
-                    HelpDeskScheluder.scheduleSendMailNota(canal.getIdCanal(),
-                            item.getText(), emailCliente, subject, caso.getIdCaso(), nota.getIdNota(), listIdAtt.toString());
+                //notify the owner when the agent is not the owner
+                if (!isOwner) {
+                    if (caso.getOwner() != null) {
+                        if (caso.getOwner().getEmailNotificationsEnabled()) {
+                            if (caso.getOwner().getNotifyWhenTicketIsUpdated()) {
+                                MailNotifier.notifyOwnerCasoUpdated(caso, nota.getTexto(), senderName, nota.getFechaCreacion());
+                            }
+                        }
+                    }
+                } else {
+                    //forward the email to the client when agent is the owner 
+                    String emailCliente = caso.getEmailCliente() != null && !StringUtils.isEmpty(caso.getEmailCliente().getEmailCliente())
+                            ? caso.getEmailCliente().getEmailCliente() : null;
+                    if (emailCliente != null) {
+                        String subject = formatIdCaso(caso.getIdCaso()) + " " + ClippingsPlaceHolders.buildFinalText("${TipoCaso} ${Asunto}", caso);
+
+                        HelpDeskScheluder.scheduleSendMailNota(canal.getIdCanal(),
+                                item.getText(), emailCliente, subject, caso.getIdCaso(), nota.getIdNota(), listIdAtt.toString());
+                    }
                 }
 
             }

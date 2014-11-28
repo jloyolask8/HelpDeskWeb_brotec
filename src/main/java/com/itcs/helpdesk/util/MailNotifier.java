@@ -10,6 +10,7 @@ import com.itcs.helpdesk.persistence.entityenums.EnumTipoCanal;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso;
 import com.itcs.helpdesk.quartz.HelpDeskScheluder;
 import com.itcs.helpdesk.util.MailClientFactory.MailNotConfiguredException;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
@@ -21,14 +22,14 @@ import org.quartz.SchedulerException;
  * @author Jonathan
  */
 public class MailNotifier {
-    
+
     public static void notifyCasoOwnerAlertChanged(Caso caso) throws MailNotConfiguredException, EmailException, NoOutChannelException {
         if (caso != null) {
             String asunto = ApplicationConfig.getNotificationTicketAlertChangeSubjectText(); //may contain place holders
             String subject_ = ClippingsPlaceHolders.buildFinalText(asunto, caso);
 
             String texto = ApplicationConfig.getNotificationTicketAlertChangeBodyText();//may contain place holders 
-         
+
             String mensaje_ = ClippingsPlaceHolders.buildFinalText(texto, caso);
 
             final String subject = ManagerCasos.formatIdCaso(caso.getIdCaso()) + " " + subject_;
@@ -38,8 +39,8 @@ public class MailNotifier {
             Canal canal = chooseDefaultCanalToSendMail(caso);
 
             try {
-                if(ApplicationConfig.isAppDebugEnabled()){
-                    Logger.getLogger(MailNotifier.class.getName()).log(Level.INFO, "notifyCasoOwnerAlertChanged"); 
+                if (ApplicationConfig.isAppDebugEnabled()) {
+                    Logger.getLogger(MailNotifier.class.getName()).log(Level.INFO, "notifyCasoOwnerAlertChanged");
                 }
                 HelpDeskScheluder.scheduleSendMailNow(caso.getIdCaso(), canal.getIdCanal(), mensaje,
                         caso.getOwner().getEmail(),
@@ -102,16 +103,61 @@ public class MailNotifier {
             Canal canal = chooseDefaultCanalToSendMail(caso);
 
             try {
-                HelpDeskScheluder.scheduleSendMailNow(caso.getIdCaso(), canal.getIdCanal(), mensaje,
-                        caso.getOwner().getEmail(),
-                        subject);
+
+                if (caso.getOwner() != null) {
+                    if (caso.getOwner().getEmailNotificationsEnabled()) {
+                        if (caso.getOwner().getNotifyWhenTicketAssigned()) {
+                            HelpDeskScheluder.scheduleSendMailNow(caso.getIdCaso(), canal.getIdCanal(), mensaje,
+                                    caso.getOwner().getEmail(),
+                                    subject);
+                        }
+                    }
+                }
+
             } catch (SchedulerException ex) {
                 Logger.getLogger(MailNotifier.class.getName()).log(Level.SEVERE, "error at scheduleSendMailNow", ex);
                 MailClientFactory.getInstance(canal.getIdCanal())
                         .sendHTML(caso.getOwner().getEmail(), subject,
                                 mensaje, null);
             }
+        }
+    }
 
+    public static void notifyOwnerCasoUpdated(Caso caso, String comments, String sentBy, Date fecha) throws MailNotConfiguredException, EmailException, NoOutChannelException {
+        if (caso != null) {
+            String asunto = ApplicationConfig.getNotificationTicketUpdatedSubjectText(); //may contain place holders
+            String subject_ = ClippingsPlaceHolders.buildFinalText(asunto, caso);
+
+            String texto = ApplicationConfig.getNotificationTicketUpdatedBodyText();//may contain place holders 
+            texto = texto + "<hr/><b>Comentario:<b/><br/> " + (comments != null ? comments : "no comments");
+            texto = texto + "<br/><b>Enviado el:<b/><br/> " + (fecha != null ? fecha.toString() : "unknown");
+            texto = texto + "<br/><b>Enviado por:<b/> " + (sentBy != null ? sentBy : "unknown") + "<hr/>";
+            String mensaje_ = ClippingsPlaceHolders.buildFinalText(texto, caso);
+
+            final String subject = ManagerCasos.formatIdCaso(caso.getIdCaso()) + " " + subject_;
+            final String mensaje = mensaje_;
+
+            //choose canal, prioritize the area's default canal
+            Canal canal = chooseDefaultCanalToSendMail(caso);
+
+            try {
+
+                if (caso.getOwner() != null) {
+                    if (caso.getOwner().getEmailNotificationsEnabled()) {
+                        if (caso.getOwner().getNotifyWhenTicketIsUpdated()) {
+                            HelpDeskScheluder.scheduleSendMailNow(caso.getIdCaso(), canal.getIdCanal(), mensaje,
+                                    caso.getOwner().getEmail(),
+                                    subject);
+                        }
+                    }
+                }
+
+            } catch (SchedulerException ex) {
+                Logger.getLogger(MailNotifier.class.getName()).log(Level.SEVERE, "error at scheduleSendMailNow", ex);
+                MailClientFactory.getInstance(canal.getIdCanal())
+                        .sendHTML(caso.getOwner().getEmail(), subject,
+                                mensaje, null);
+            }
         }
     }
 
@@ -146,7 +192,7 @@ public class MailNotifier {
             String mensaje_ = sb.append("Estimad@ ").append(usuario.getCapitalName()).append(",").append("<br/>")
                     .append("Se ha solicido reestablecer su contraseña de acceso a GoDesk, Su contraseña temporal es:")
                     .append(newPassword)
-                    .append("<br/>Se recomienda cambiar esta contraseña.").toString();
+                    .append("<br/>Se recomienda cambiar esta contraseña lo antes posible.").toString();
             NoReplySystemMailSender.sendHTML(usuario.getEmail(), subject_, mensaje_, null);
             Logger.getLogger(MailNotifier.class.getName()).log(Level.INFO, "sendEmailRecoverPassword succeeded:{0}", usuario.getEmail());
         } catch (EmailException ex) {
@@ -248,10 +294,20 @@ public class MailNotifier {
                     boolean first = true;
                     for (Usuario usuario : grupo.getUsuarioList()) {
                         if (first) {
-                            to.append(usuario.getEmail());
+                            if (usuario.getEmailNotificationsEnabled()) {
+                                if (usuario.getNotifyWhenNewTicketInGroup()) {
+                                    to.append(usuario.getEmail());
+                                }
+                            }
+
                             first = false;
                         } else {
-                            to.append(",").append(usuario.getEmail());
+                            if (usuario.getEmailNotificationsEnabled()) {
+                                if (usuario.getNotifyWhenNewTicketInGroup()) {
+                                    to.append(",").append(usuario.getEmail());
+                                }
+                            }
+
                         }
 
                     }
@@ -284,7 +340,7 @@ public class MailNotifier {
      * @return
      * @throws com.itcs.helpdesk.util.NoOutChannelException
      */
-     public static Canal chooseDefaultCanalToSendMail(Caso caso) throws NoOutChannelException {
+    public static Canal chooseDefaultCanalToSendMail(Caso caso) throws NoOutChannelException {
 
         if (caso.getIdCanal() != null && caso.getIdCanal().getIdTipoCanal() != null && caso.getIdCanal().getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal())) {
             return caso.getIdCanal();
