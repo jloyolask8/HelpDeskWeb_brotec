@@ -18,6 +18,7 @@ import com.itcs.helpdesk.util.Constants;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -94,6 +95,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
     public String prepareCreate() {
         filterHelper2 = null;
         current = new Vista(Caso.class);
+        current.addNewFiltroVista();
         selectedItemIndex = -1;
         return "/script/vista/Create";
     }
@@ -131,6 +133,9 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
     protected void afterSetSelected() {
         this.filterHelper2 = null;//recreate filter helper
         visibilityOption = determineVisibility(current);
+        if(current.getFiltrosVistaList() == null || current.getFiltrosVistaList().isEmpty()){
+            current.addNewFiltroVista();
+        }
     }
 
     public void handleAnyChangeEvent() {

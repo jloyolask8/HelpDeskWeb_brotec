@@ -424,6 +424,9 @@ public abstract class AbstractManagedBean<E> implements Serializable {
             copy.setIdGrupo(vista.getIdGrupo());
             copy.setNombre(vista.getNombre());
             copy.setVisibleToAll(vista.getVisibleToAll());
+            if (copy.getFiltrosVistaList() == null) {
+                copy.setFiltrosVistaList(new ArrayList<FiltroVista>());
+            }
             //Crearemos una copia para que al guardar no pisar la existente.
             int i = 1;
             if (vista.getFiltrosVistaList() != null) {
@@ -438,14 +441,14 @@ public abstract class AbstractManagedBean<E> implements Serializable {
                     fCopy.setValor2(f.getValor2());
                     fCopy.setValor2Label(f.getValor2Label());
                     fCopy.setIdVista(copy);
-                    if (copy.getFiltrosVistaList() == null) {
-                        copy.setFiltrosVistaList(new ArrayList<FiltroVista>());
-                    }
                     copy.getFiltrosVistaList().add(fCopy);
                     //System.out.println("added filtro " + fCopy);
                 }
             }
-
+            
+            if(copy.getFiltrosVistaList().isEmpty()){
+                copy.addNewFiltroVista();
+            }
             setVista(copy);
 //        this.setVista(copy);
 //        //System.out.println("Vista copy set:" + copy);

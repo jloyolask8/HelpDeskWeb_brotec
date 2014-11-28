@@ -751,7 +751,7 @@ img.right {
 }
 
 .btn.ui-button, btn{
-     color: #fff;
+    color: #fff;
     cursor: pointer;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -760,5 +760,60 @@ img.right {
     background-image: none;
     border: 1px solid transparent;
     border-radius: 4px;
+}
+
+.query{
+    /* The search text box. */
+
+    border:none;
+    color:#888888;
+    background:url("../../images/searchBox_1.png") no-repeat;
+
+    float:left;
+    font-family:Arial,Helvetica,sans-serif;
+    font-size:15px;
+    height:26px;
+    line-height:26px;
+    margin-right:0px;
+    outline:medium none;
+    padding:0 0 0 25px;
+    text-shadow:1px 1px 0 white;
+    width:620px;
+}
+
+.ui-datatable-odd {
+    background: none repeat scroll 0 0 #F2F5F9;
+}
+
+.hide-column-names table thead tr {
+    display: none;
+}
+
+.hide-column-names table tbody td {
+    padding: 4px 5px;
+    overflow: visible;
+    border-width: 1px;
+    border-style: none;
+}
+
+
+.ui-autocomplete-multiple-container{
+    width: 100% !important;
+}
+
+.full-width{
+    width: 100% !important;
+}
+
+.order-table-odd-row{
+    background: none repeat scroll 0 0 #F2F5F9;
+}
+
+.order-table-even-row{
+    background:none repeat scroll 0 0 #FFFFFF;
+}
+
+.ui-panelgrid-even {
+    background: transparent;
 }
 

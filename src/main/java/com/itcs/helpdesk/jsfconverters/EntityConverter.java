@@ -69,7 +69,8 @@ public class EntityConverter implements Converter {
 
         try {
             final SelectItem selectItem = (SelectItem) value;
-            final String key = selectItem.getValue().toString();
+            
+            final String key = ((selectItem.getValue() == null)?empty:selectItem.getValue().toString());
             final String label = selectItem.getLabel();
             System.out.println(key + "#" + label);
 //            System.out.println("\n\n\nEntityConverter.getAsString:" + key + " of class " + value.getClass().getName() + " = " + label);
