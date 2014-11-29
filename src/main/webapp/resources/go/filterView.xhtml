@@ -12,7 +12,10 @@
             <composite:attribute name="controllerMBean" required="true" /> 
             <composite:attribute name="vista" required="true" /> 
             <composite:attribute name="filterHelper" required="true" /> 
-            <composite:attribute name="showApplyAction" default="true" /> 
+            <composite:attribute name="showApplyAction" default="true" />
+            <composite:attribute name="showSearchBar" default="true" />
+            <composite:attribute name="showSaveAs" default="true" />
+            <composite:attribute name="showEdit" default="true" />
             <composite:attribute name="titleIconClass" default="" /> 
             <composite:attribute name="canChangeFilters" default="true" />
             <composite:attribute name="update" default=":mainform:messages" />
@@ -25,7 +28,7 @@
             
             <p:panel id="panelFilter"  styleClass="panelFilter" style="border: none !important;">
 
-                <h:panelGrid columns="5" rendered="#{cc.attrs.showApplyAction}" style="padding: 0">
+                <h:panelGrid columns="5" rendered="#{cc.attrs.showSearchBar}" style="padding: 0">
 
                     <h:inputText id="query" styleClass="query" value="#{cc.attrs.controllerMBean.query}" size="64" />
 
@@ -47,12 +50,11 @@
 
                     </p:commandButton>
                     <p:watermark for="query" value="#{empty cc.attrs.vista ? 'Search':'Search in '.concat(cc.attrs.vista.nombre)}"/>
+                    <p:tooltip for="simpleSearchBtn" value="#{empty cc.attrs.vista ? 'Search all':'Search in '.concat(cc.attrs.vista.nombre)}"/>
                 </h:panelGrid>
-                <p:tooltip for="simpleSearchBtn" value="#{empty cc.attrs.vista ? 'Search all':'Search in '.concat(cc.attrs.vista.nombre)}"/>
 
 
-
-                <p:panel id="filters"  visible="#{not cc.attrs.showApplyAction or cc.attrs.controllerMBean.filterViewToggle}" style="border: none !important;">
+                <p:panel id="filters"  visible="#{(cc.attrs.showSearchBar and cc.attrs.controllerMBean.filterViewToggle) or (not cc.attrs.showSearchBar)}" style="border: none !important;">
 
                     <!--<p:fieldset legend="Filtros">-->
 
@@ -69,7 +71,6 @@
                                                filterHelper="#{cc.attrs.filterHelper}" filtro="#{filtro}" 
                                                canChangeFilters="#{cc.attrs.canChangeFilters}"
                                                canRemoveFilter="#{cc.attrs.vista.canRemoveFiltroVista()}"
-                                               update="#{cc.attrs.update}"
                                                requiredAttribute="#{cc.attrs.showApplyAction?'false':'true'}"/>
                         </p:column>
 
@@ -78,7 +79,7 @@
                 <br/>
                     <div align="right" style="width: 730px;">
                         <p:commandButton value="Editar Vista" style="height: 20px; font-size: x-small !important;"
-                                    rendered="#{(cc.attrs.showApplyAction) and (cc.attrs.vista.idUsuarioCreadaPor eq UserSessionBean.current
+                                         rendered="#{(cc.attrs.showEdit) and (cc.attrs.vista.idUsuarioCreadaPor eq UserSessionBean.current
                                                 or filtroAcceso.administradorDelSistema)}" 
                                     disabled="#{cc.attrs.vista.idVista eq null or not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
                                     action="#{vistaController.prepareEditPK(cc.attrs.vista.idVista, cc.attrs.vistaControllerBackOutcome)}"                                                  
@@ -86,7 +87,7 @@
                                     icon="ui-icon-pencil"/>
                         &nbsp;
                         <p:commandButton id="linkGuardar" style="height: 20px; font-size: x-small !important;"
-                                         rendered="#{cc.attrs.showApplyAction}"
+                                         rendered="#{cc.attrs.showSaveAs}"
                                     action="#{vistaController.prepareCreate(cc.attrs.vista, cc.attrs.vistaControllerBackOutcome)}"
                                     ajax="false"
                                     disabled="#{not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"

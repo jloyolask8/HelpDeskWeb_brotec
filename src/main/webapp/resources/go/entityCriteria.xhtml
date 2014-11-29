@@ -120,13 +120,13 @@
                             });
                         });
                     </script>
-                    <p:inputText id="valorcalendar1" style="width: 100px;" styleClass="datepicker" disabled="#{not cc.attrs.canChangeFilters}" 
+                    <p:inputText id="valorcalendar1" style="width: 80px;" styleClass="datepicker" disabled="#{not cc.attrs.canChangeFilters}" 
                                  value="#{cc.attrs.filtro.valor}"  title="Desde:"
                                  required="true" requiredMessage="Se necesita un valor para comparar."
                                  rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR'}">
                         <p:ajax update="@form #{cc.attrs.update}"/>
                     </p:inputText>
-                    <p:inputText id="valorcalendar2" style="width: 100px;" styleClass="datepicker" value="#{cc.attrs.filtro.valor2}" 
+                    <p:inputText id="valorcalendar2" style="width: 80px;" styleClass="datepicker" value="#{cc.attrs.filtro.valor2}" 
                                  disabled="#{not cc.attrs.canChangeFilters}"  title="Hasta:"
                                  required="true" requiredMessage="Se necesita un valor para comparar."
                                  rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR' and cc.attrs.filtro.idComparador.idComparador eq 'BW'}">

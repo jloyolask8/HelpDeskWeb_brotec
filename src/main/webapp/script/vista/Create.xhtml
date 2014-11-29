@@ -34,8 +34,13 @@
                     <h:outputLabel value="Criterios:" style="font-weight: bold"/>
 
                     <go:filterView id="panelFilter0" controllerMBean="#{vistaController}" vista="#{vistaController.selected}"
-                                   filterHelper="#{vistaController.filterHelper2}" showApplyAction="false"
-                                   update=":mainform:messages :form:panelFilter0:panelFilter :form" />
+                                   filterHelper="#{vistaController.filterHelper2}"
+                                   showApplyAction="false"
+                                   showSearchBar="false"
+                                   showEdit="false"
+                                   showSaveAs="false"
+                                   update=":mainform:messages :form:panelFilter0:panelFilter :form"
+                                   />
 
 
                     <h:outputLabel value="Visibilidad" for="VisibilidadPanel" style="font-weight: bold"/>
