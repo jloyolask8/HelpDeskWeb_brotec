@@ -881,6 +881,9 @@ public abstract class AbstractManagedBean<E> implements Serializable {
 
         if (vista == null) {
             vista = new Vista(entityClass);
+            if(vista.getFiltrosVistaList() == null || vista.getFiltrosVistaList().isEmpty()){
+                vista.addNewFiltroVista();
+            }
         }
         return vista;
 

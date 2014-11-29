@@ -128,8 +128,8 @@
 
 
                                 <script>
-                                    $(function() {
-                                        $( ".datepicker" ).datepicker({
+                                    $(function () {
+                                        $(".datepicker").datepicker({
                                             dateFormat: "dd/mm/yy"
                                         });
                                     });
@@ -174,7 +174,7 @@
 
                         </h:panelGrid>
                         <br/>
-                        <p:commandButton action="#{reporteController.generateModel}" value="Generar Reporte" update=":reportForm" style="float: right;" process="@form"/>
+                        <p:commandButton action="#{reporteController.generateModel}" value="Generar Reporte" update=":reportForm :filterForm" style="float: right;" process="@form"/>
 
 
                     </p:tab>
@@ -187,19 +187,22 @@
         <ui:define  name="body">
 
 
-            <h:form id="reportForm">
+            <h:form id="filterForm">
 
                 <h1><p:outputLabel value="#{reporteController.chartModelTitle}"/></h1>
-                <p:messages id="messages" showDetail="true" showSummary="true"/>  
 
                 <go:filterView rendered="#{reporteController.showFilter}"
                                controllerMBean="#{reporteController}"
-                                vista="#{reporteController.vista}"
-                                 filterHelper="#{reporteController.filterHelper}" update=":mainform:messages :reportForm"
-                                 vistaControllerBackOutcome="/script/report_graphs/reports"/>
-
-                <br />
-
+                               vista="#{reporteController.vista}"
+                               filterHelper="#{reporteController.filterHelper}" update=":mainform:messages :reportForm"
+                               vistaControllerBackOutcome="/script/report_graphs/reports" showApplyAction="true"
+                               showSearchBar="false"
+                               showEdit="false"
+                               showSaveAs="false"/>
+            </h:form>
+            <br />
+            <h:form id="reportForm">
+                <p:messages id="messages" showDetail="true" showSummary="true"/>  
                 <h:panelGrid>
                     <h:panelGrid columns="2">
                         <h:outputText value="Apilar:" rendered="#{reporteController.categoryModel ne null and reporteController.tipoGraficoSelected eq 'barChart'}" style="font-weight: bold;"/>
@@ -282,14 +285,14 @@
                         <p:column headerText="Cantidad">
                             <h:outputText value="#{entry1.value}" />
                         </p:column>
-                        
-                          <p:columnGroup type="footer">  
-                                <p:row>  
-                                    <p:column footerText="Total: " style="text-align:right;font-weight: bold;"/>  
-                                    <p:column footerText="#{reporteController.calcularTotal(reporteController.oneDimList)}" style="text-align: left;font-weight: bold;"/>  
-                                 
-                                </p:row>  
-                            </p:columnGroup> 
+
+                        <p:columnGroup type="footer">  
+                            <p:row>  
+                                <p:column footerText="Total: " style="text-align:right;font-weight: bold;"/>  
+                                <p:column footerText="#{reporteController.calcularTotal(reporteController.oneDimList)}" style="text-align: left;font-weight: bold;"/>  
+
+                            </p:row>  
+                        </p:columnGroup> 
 
                         <f:facet name="footer">
                             <p:commandButton ajax="false" immediate="true" value="Exportar" icon="excelicon">  
@@ -335,15 +338,15 @@
                                 <p:row>  
                                     <p:column footerText="Total: " style="text-align:right"/>  
                                     <p:column footerText="#{reporteController.calcularTotal(entry.value)}" />  
-                                 
+
                                 </p:row>  
                             </p:columnGroup>  
-                            
-                            
-                            
+
+
+
                         </p:subTable>                        
 
-                        
+
                     </p:dataTable>
 
                 </h:panelGroup>
