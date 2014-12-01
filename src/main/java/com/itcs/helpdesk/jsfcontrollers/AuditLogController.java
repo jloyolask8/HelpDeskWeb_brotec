@@ -94,6 +94,13 @@ public class AuditLogController extends AbstractManagedBean<AuditLog> implements
     }
 
     @Override
+    protected void beforePrepareList() {
+        alerta = new AuditLogVO();
+        isAlerts = false;
+    }
+    
+
+    @Override
     public PaginationHelper getPagination() {
         if (pagination == null) {
             if (alerta == null) {
@@ -458,6 +465,9 @@ public class AuditLogController extends AbstractManagedBean<AuditLog> implements
         }
     }
 }
+
+
+
 class AuditLogDataModel extends ListDataModel<AuditLog> implements SelectableDataModel<AuditLog> {
 
     public AuditLogDataModel() {

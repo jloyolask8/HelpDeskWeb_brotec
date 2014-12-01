@@ -137,7 +137,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //    private transient DataModel items = null;
 //    private transient PaginationHelper pagination;
     protected int selectedItemIndex;
-    private int activeIndexMenuAccordionPanel;
+    private int activeIndexMenuAccordionPanel = 1;
     private String activeIndexWestPanel = "0";//TODO should be an int
     //Notas
     protected String textoNota = null;
@@ -222,7 +222,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     private boolean replyByEmail = true;
 
-    protected boolean searchBarVisible = false;
+    protected boolean searchBarVisible = true;
 
     //respuesta
     private boolean adjuntarArchivosARespuesta = false;
