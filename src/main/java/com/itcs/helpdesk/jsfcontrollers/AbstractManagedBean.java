@@ -56,6 +56,11 @@ import org.primefaces.context.RequestContext;
  */
 public abstract class AbstractManagedBean<E> implements Serializable {
 
+    @Resource
+    protected UserTransaction utx = null;
+    @PersistenceUnit(unitName = "helpdeskPU")
+    protected EntityManagerFactory emf = null;
+    
     //go back button
 //    private String backOutcome;
     protected static final Locale LOCALE_ES_CL = new Locale("es", "CL");
@@ -68,10 +73,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     protected static final SimpleDateFormat yearDateFormatWTime = new SimpleDateFormat("dd/MM/yy HH:mm", LOCALE_ES_CL);
 
     private final Class<E> entityClass;
-    @Resource
-    protected UserTransaction utx = null;
-    @PersistenceUnit(unitName = "helpdeskPU")
-    protected EntityManagerFactory emf = null;
+    
     protected transient JPAServiceFacade jpaController = null;
     protected transient ManagerCasos managerCasos;
     protected transient DataModel items = null;

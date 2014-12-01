@@ -59,8 +59,8 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
     private ScheduleModel lazyScheduleEventsModel;
     private DefaultScheduleEvent event = null;
 
-    private List<Usuario> filtrosUsuario = new LinkedList<Usuario>();
-    private List<Resource> filtrosRecurso = new LinkedList<Resource>();
+    private List<Usuario> filtrosUsuario = new LinkedList<>();
+    private List<Resource> filtrosRecurso = new LinkedList<>();
     private boolean insideCasoDisplay = true;
 
     //temp vars
@@ -534,7 +534,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
     }
 
     public void onDateSelect(SelectEvent selectEvent) {
-        List<Usuario> fUsuario = new LinkedList<Usuario>();
+        List<Usuario> fUsuario = new LinkedList<>();
         fUsuario.add(userSessionBean.getCurrent());
         if (!userSessionBean.getCurrent().equals(casoController.getSelected().getOwner())) {
             fUsuario.add(casoController.getSelected().getOwner());
@@ -648,7 +648,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 //            emailCliente_wizard_existeEmail = false;
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "No existe ningun usuario con ese email o nombre...", "No existe ningun usuario con ese email o nombre...");
             FacesContext.getCurrentInstance().addMessage(null, message);
-            list = new ArrayList<Usuario>();
+            list = new ArrayList<>();
             System.out.println("No existe el Cliente con email" + query);
             return list;
         }
@@ -666,7 +666,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 //            emailCliente_wizard_existeEmail = false;
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "No existe ningun cliente con ese nombre...", "No existe ningun cliente con ese nombre...");
             FacesContext.getCurrentInstance().addMessage(null, message);
-            list = new ArrayList<Cliente>();
+            list = new ArrayList<>();
             System.out.println("No existe el Cliente " + query);
             return list;
         }
@@ -677,7 +677,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
         Object item = event.getObject();
         try {
             if (this.filtrosUsuario == null) {
-                filtrosUsuario = new LinkedList<Usuario>();
+                filtrosUsuario = new LinkedList<>();
             }
             filtrosUsuario.add((Usuario) item);
             selectedUserToAddInvited = null;//reset selection
@@ -759,7 +759,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 //            emailCliente_wizard_existeEmail = false;
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "No existe ningun Resource...", "No existe ningun Resource...");
             FacesContext.getCurrentInstance().addMessage(null, message);
-            list = new ArrayList<Resource>();
+            list = new ArrayList<>();
             System.out.println("No existe el Resource: " + query);
             return list;
         }
@@ -792,7 +792,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
         try {
 
             if (this.filtrosRecurso == null) {
-                this.filtrosRecurso = (new LinkedList<Resource>());
+                this.filtrosRecurso = (new LinkedList<>());
             }
             this.filtrosRecurso.add((Resource) item);
             setSelectedResourceToAddInvited(null);//reset selection

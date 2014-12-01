@@ -1508,6 +1508,10 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 getJpaController().mergeCaso(current, changeLog);
             }
         }
+        
+        //ugly patch to reset the selected event
+        final CasoScheduleController bean = (CasoScheduleController) JsfUtil.getManagedBean("casoScheduleController");
+        bean.setEvent(null);
     }
 
     /**
@@ -2938,7 +2942,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         sbuilder.append("MENSAJE ORIGINAL");
         sbuilder.append("<br/>");
         sbuilder.append("Email cliente: ");
-        sbuilder.append(caso.getEmailCliente() != null ? caso.getEmailCliente() : "No tiene");
+        sbuilder.append(caso.getEmailCliente() != null ? caso.getEmailCliente() : caso.getIdCliente() != null ? caso.getIdCliente().getEmailClienteList(): "No tiene");
         sbuilder.append("<br/>");
         sbuilder.append("Asunto: ");
         sbuilder.append(caso.getTema());
@@ -2960,20 +2964,20 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         StringBuilder sbuilder = new StringBuilder();
         sbuilder.append("INICIO ");
-        sbuilder.append(nota.getTipoNota() != null ? nota.getTipoNota().getNombre().toUpperCase() : "Comentario");
+        sbuilder.append(nota.getTipoNota() != null ? nota.getTipoNota().getNombre() : "Comentario");
         sbuilder.append("<br/>");
         sbuilder.append("De: ");
-        sbuilder.append(nota.getEnviadoPor() != null ? nota.getEnviadoPor() : "?");
+        sbuilder.append(nota.getEnviadoPor() != null ? nota.getEnviadoPor() : nota.getCreadaPor() != null ? nota.getCreadaPor().getCapitalName() : "?");
         sbuilder.append("<br/>");
         sbuilder.append("Para: ");
-        sbuilder.append(nota.getEnviadoA() != null ? nota.getEnviadoA() : "?");
+        sbuilder.append(nota.getEnviadoA() != null ? nota.getEnviadoA() : "A nadie");
         sbuilder.append("<br/>");
         sbuilder.append("Fecha: ");
         sbuilder.append(nota.getFechaCreacion() != null ? sdf.format(nota.getFechaCreacion()) : "<unknown>");
         sbuilder.append("<br/>");
         sbuilder.append("<b>Mensaje: </b>");
         sbuilder.append("<br/>");
-        sbuilder.append(replaceEmbeddedImages(nota.getTexto() != null ? nota.getTexto() : "<vacío>"));
+        sbuilder.append(replaceEmbeddedImages(nota.getTexto() != null ? nota.getTexto() : "<texto vacío>"));
         sbuilder.append("<hr/>");
         return sbuilder.toString();
     }
