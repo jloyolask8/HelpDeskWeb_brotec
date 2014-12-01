@@ -651,6 +651,10 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     protected void beforeSetSelected() {
 
     }
+    
+    protected void beforePrepareList(){
+    
+    }
 
     protected void afterSetSelected() {
 
@@ -708,6 +712,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     }
 
     public String prepareList() {
+        beforePrepareList();
         recreateModel();
         return getListPage();
     }
