@@ -152,31 +152,6 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
         setSelected(usuario);
     }
 
-//    @Override
-//    public PaginationHelper getPagination() {
-//        if (pagination == null) {
-//            pagination = new PaginationHelper(getPaginationPageSize()) {
-//                @Override
-//                public int getItemsCount() {
-//                    return getJpaController().count(Usuario.class).intValue();
-//                }
-//
-//                @Override
-//                public DataModel createPageDataModel() {
-//                    if (searchPattern != null && !searchPattern.trim().isEmpty()) {
-//                        return new UsuarioDataModel(getJpaController().getUsuarioJpaCustomController().searchEntities(searchPattern, false, getPageSize(), getPageFirstItem()));
-//                    } else {
-//                        return new UsuarioDataModel(getJpaController().queryByRange(Usuario.class, getPageSize(), getPageFirstItem()));
-//                    }
-//                }
-//            };
-//        }
-//        return pagination;
-//    }
-//    public String prepareList() {
-//        recreateModel();
-//        return "/script/usuario/List";
-//    }
     public String prepareView() {
         if (current == null) {
             JsfUtil.addSuccessMessage("Se requiere que seleccione una fila.");
@@ -335,10 +310,11 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
 
     private String update(Usuario updatedUser, boolean updateFull) {
         try {
-            if (!UtilesRut.validar(updatedUser.getRut())) {
+            if (!StringUtils.isEmpty(updatedUser.getRut()) && !UtilesRut.validar(updatedUser.getRut())) {
                 JsfUtil.addErrorMessage("Rut invalido");
                 return null;
             }
+            
             List<Usuario> usuariosExistentesConMismoRut = getJpaController().getUsuarioFindByRut(updatedUser.getRut());
             if (usuariosExistentesConMismoRut != null && usuariosExistentesConMismoRut.size() > 0) {
                 for (Usuario u : usuariosExistentesConMismoRut) {
@@ -457,12 +433,12 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
         }
     }
 
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
+//    public DataModel getItems() {
+//        if (items == null) {
+//            items = getPagination().createPageDataModel();
+//        }
+//        return items;
+//    }
 
 //    private void recreateModel() {
 //        items = null;

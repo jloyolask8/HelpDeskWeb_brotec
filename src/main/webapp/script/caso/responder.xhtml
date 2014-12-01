@@ -23,11 +23,9 @@
 
         </h:panelGroup>
 
-        <p:panel id="message-details-reply" 
+        <p:panel id="message-details-reply" style="border: 0px; padding: 0px;"
                  rendered="#{(casoController.replyMode) and ((casoController.verificarCrearActividad()) 
                              and (casoController.verificarResponderCaso()))}">  
-
-
 
             <h:panelGrid width="100%">
 
@@ -197,7 +195,7 @@
 
                                 <h:panelGroup style="float: right">
                                     <p:splitButton id="sendCommentButton" value="Enviar" actionListener="#{casoController.responder()}" 
-                                                   update=":mainform:messages :formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso :inputPanel:resumenNotas"
+                                                   update=":mainform:messages :formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso "
                                                    icon="fa fa-envelope"
                                                    rendered="#{casoController.replyByEmail}">
 
@@ -216,10 +214,10 @@
 
                                 <h:panelGroup style="float: right">
                                     <p:splitButton id="saveCommentButton" value="Guardar" actionListener="#{casoController.crearNota(false)}"
-                                                   update=":mainform:messages :formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso :formTopMenu :inputPanel:resumenNotas" 
+                                                   update=":mainform:messages :formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso :formTopMenu " 
                                                    icon="fa fa-save" rendered="#{not casoController.replyByEmail}">  
                                         <p:menuitem value="Guardar y notificar al cliente" actionListener="#{casoController.crearNota(true)}" 
-                                                    update=":mainform:messages :formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso :formTopMenu :inputPanel:resumenNotas"  
+                                                    update=":mainform:messages :formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso :formTopMenu "  
                                                     icon="fa fa-save" />  
 
                                         <p:separator />  

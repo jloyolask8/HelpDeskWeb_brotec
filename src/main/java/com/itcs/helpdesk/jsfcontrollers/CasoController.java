@@ -331,7 +331,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public List<AuditLog> getAuditLogsCurrentCase() {
-        if (current == null) {
+        if (current == null || current.getIdCaso() == null) {
             return null;
         }
         Vista vista1 = new Vista(AuditLog.class);
@@ -1508,6 +1508,10 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 getJpaController().mergeCaso(current, changeLog);
             }
         }
+        
+        //ugly patch to reset the selected event
+        final CasoScheduleController bean = (CasoScheduleController) JsfUtil.getManagedBean("casoScheduleController");
+        bean.setEvent(null);
     }
 
     /**
@@ -2923,11 +2927,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         StringBuilder sbuilder = new StringBuilder("<br/><hr/><b>HISTORIA DEL CASO</b><hr/><br/>");
         if (current != null && current.getNotaList() != null) {
             for (Nota nota : current.getNotaList()) {
-                if (nota.getTipoNota().equals(EnumTipoNota.RESPUESTA_A_CLIENTE.getTipoNota())
-                        || nota.getTipoNota().equals(EnumTipoNota.RESPUESTA_DE_CLIENTE.getTipoNota())
-                        || nota.getTipoNota().equals(EnumTipoNota.REG_ENVIO_CORREO.getTipoNota())) {
-                    sbuilder.append(creaMensajeOriginal(current, nota));
-                }
+                sbuilder.append(creaMensajeOriginal(nota));
             }
         }
 
@@ -2936,18 +2936,19 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     private String creaMensajeOriginal(Caso caso) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy HH:mm");
         StringBuilder sbuilder = new StringBuilder();
         sbuilder.append("<br/>");
-        sbuilder.append("INICIO MENSAJE ORIGINAL");
+        sbuilder.append("MENSAJE ORIGINAL");
         sbuilder.append("<br/>");
         sbuilder.append("Email cliente: ");
-        sbuilder.append(caso.getEmailCliente());
+        sbuilder.append(caso.getEmailCliente() != null ? caso.getEmailCliente() : caso.getIdCliente() != null ? caso.getIdCliente().getEmailClienteList(): "No tiene");
         sbuilder.append("<br/>");
         sbuilder.append("Asunto: ");
         sbuilder.append(caso.getTema());
         sbuilder.append("<br/>");
         sbuilder.append("Fecha: ");
-        sbuilder.append(caso.getFechaCreacion());
+        sbuilder.append(caso.getFechaCreacion() != null ? sdf.format(caso.getFechaCreacion()) : "<unknown>");
         sbuilder.append("<br/>");
         sbuilder.append("Mensaje: ");
         sbuilder.append("<br/>");
@@ -2958,26 +2959,25 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         return sbuilder.toString();
     }
 
-    private String creaMensajeOriginal(Caso caso, Nota nota) {
+    private String creaMensajeOriginal(Nota nota) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy HH:mm");
+
         StringBuilder sbuilder = new StringBuilder();
         sbuilder.append("INICIO ");
-        sbuilder.append(nota.getTipoNota().getNombre().toUpperCase());
+        sbuilder.append(nota.getTipoNota() != null ? nota.getTipoNota().getNombre() : "Comentario");
         sbuilder.append("<br/>");
         sbuilder.append("De: ");
-        sbuilder.append(nota.getEnviadoPor());
+        sbuilder.append(nota.getEnviadoPor() != null ? nota.getEnviadoPor() : nota.getCreadaPor() != null ? nota.getCreadaPor().getCapitalName() : "?");
         sbuilder.append("<br/>");
         sbuilder.append("Para: ");
-        sbuilder.append(nota.getEnviadoA());
+        sbuilder.append(nota.getEnviadoA() != null ? nota.getEnviadoA() : "A nadie");
         sbuilder.append("<br/>");
         sbuilder.append("Fecha: ");
-        sbuilder.append(nota.getFechaCreacion());
+        sbuilder.append(nota.getFechaCreacion() != null ? sdf.format(nota.getFechaCreacion()) : "<unknown>");
         sbuilder.append("<br/>");
-        sbuilder.append("Mensaje: ");
+        sbuilder.append("<b>Mensaje: </b>");
         sbuilder.append("<br/>");
-        sbuilder.append(replaceEmbeddedImages(nota.getTexto()));
-        sbuilder.append("<br/>");
-        sbuilder.append("FIN ");
-        sbuilder.append(nota.getTipoNota().getNombre().toUpperCase());
+        sbuilder.append(replaceEmbeddedImages(nota.getTexto() != null ? nota.getTexto() : "<texto vacío>"));
         sbuilder.append("<hr/>");
         return sbuilder.toString();
     }
