@@ -138,9 +138,7 @@
                         <p:fileDownload value="#{casoController.generarActaPreEntrega()}" />
                     </p:commandButton>
 
-                    <p:commandButton id="panelBotonesResp" title="Acciones" type="button" icon="fa fa-cogs fa-user" iconPos="notext" style="width: 50px;"/>
-                    <p:menu overlay="true" trigger="panelBotonesResp" my="left top" at="left bottom" style="width:250px !important;">
-
+                    <p:menuButton id="panelBotonesResp" value="Opciones">
                         <p:menuitem  rendered="#{casoController.verificarTomarCaso()}" ajax="true" value="Asignármelo" onclick="PF('tomarCaso').show()" icon="fa fa-inbox" />
                         <p:menuitem  rendered="#{casoController.verificarTransferirCaso()}" icon="fa fa-user"
                                      ajax="true" value="Transferir" onclick="PF('transferir').show();" />
@@ -170,7 +168,8 @@
 
                         <p:menuitem rendered="#{casoController.verificarEliminarCaso()}" icon="fa fa-trash-o"
                                     ajax="true" value="Eliminar" onclick="PF('destroyCase').show();"/>
-                    </p:menu>
+                    </p:menuButton>
+
 
                     <p:commandButton icon="ui-icon ui-icon-seek-prev" ajax="false"
                                      action="#{casoController.prepareEditPreviusItem()}" 
@@ -841,9 +840,10 @@
                                  toolbar="#{applicationBean.ckEditorToolbar}"
                                  id="textonota" width="560" height="210"/>
 
+                    <p:commandButton value="Cancelar" ajax="true"  onclick="PF('Nota').hide()"  update=":formint1" />
+
                     <p:commandButton value="Guardar" ajax="false" update=":formint1 :formCreateNota :inputPanel:formlistaadjuntos" actionListener="#{casoController.editNota(false)}"/>
                     <p:commandButton value="Guardar y notificar al cliente" ajax="false" update=":formint1 :formCreateNota :inputPanel:formlistaadjuntos" actionListener="#{casoController.editNota(true)}"/>
-                    <p:commandButton value="Cerrar" ajax="true"  onclick="PF('Nota').hide()"  update=":formint1" />
 
 
                 </h:form>
@@ -884,8 +884,8 @@
 
                         <p:commandButton value="Cancelar" ajax="true"  onclick="PF('closeCase').hide()"   />
 
-                        <p:commandButton value="Cerrar el caso" ajax="true" update="formCerrarCaso :mainform:messages"
-                                         actionListener="#{casoController.cerrarCaso}"   />
+                        <p:commandButton value="Aceptar" ajax="true" update="formCerrarCaso :mainform:messages"
+                                         actionListener="#{casoController.cerrarCaso}"  />
 
                         <p:commandButton value="Cerrar el caso y programar visita preventiva" 
                                          rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.ENTREGA.getTipoCaso()}"
@@ -900,9 +900,11 @@
                 <h:form id="formEliminarCaso">
                     <h:outputLabel value="#{bundle.EliminarCaso}" />
                     <br/><br/>
+                    <p:commandButton value="Cancelar" ajax="true"  onclick="PF('destroyCase').hide()"   />
+
                     <p:commandButton rendered="#{casoController.verificarEliminarCaso()}"
                                      ajax="false" value="Eliminar Caso" action="#{casoController.destroy()}"/>
-                    <p:commandButton value="Cancelar" ajax="true"  onclick="PF('destroyCase').hide()"   />
+
                 </h:form>
             </p:dialog>
 
@@ -920,9 +922,11 @@
                         </p:selectOneMenu>
                     </br>
 
+                    <p:commandButton value="Cancelar" ajax="true"  onclick="PF('openCase').hide()"   />
+
                     <p:commandButton value="Aceptar" ajax="false" update=":mainform:messages"
                                      actionListener="#{casoController.reabrirCaso}"   />
-                    <p:commandButton value="Cancelar" ajax="true"  onclick="PF('openCase').hide()"   />
+
                 </h:form>
             </p:dialog>
 
@@ -931,9 +935,10 @@
                     <h:panelGrid columns="2">
                         <h:outputLabel value="Id Caso relacionado:" for="idcasorel" style="font-weight: bold"/>
                         <h:inputText value="${casoController.idCaserel}" id="idcasorel"/>
-                        <p:commandButton value="Agregar" ajax="true" update=":mainform:messages idcasorel"
+                        <p:button value="Cancelar" onclick="PF('casosRela').hide()"   />
+                        <p:commandButton value="Aceptar" ajax="true" update=":mainform:messages idcasorel"
                                          actionListener="#{casoController.agregarRelacionado}"   />
-                        <p:button value="Salir" onclick="PF('casosRela').hide()"   />
+
                     </h:panelGrid>
                 </h:form>
             </p:dialog>
@@ -1043,8 +1048,9 @@
                         </p:panelGrid>
 
                         <f:facet name="footer">
+                            <p:commandButton value="Cancelar" onclick="PF('transferir').hide()" type="button" /> 
+
                             <p:commandButton value="Transferir" update=":transferForm :inputPanel:formact :formint1" actionListener="#{casoController.asignarCaso}"  />
-                            <p:commandButton value="Cerrar" onclick="PF('transferir').hide()" type="button" /> 
                         </f:facet>
                     </p:panel>
 

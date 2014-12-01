@@ -331,7 +331,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public List<AuditLog> getAuditLogsCurrentCase() {
-        if (current == null) {
+        if (current == null || current.getIdCaso() == null) {
             return null;
         }
         Vista vista1 = new Vista(AuditLog.class);
