@@ -3446,9 +3446,12 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public void handleClippingSelectChangeEvent() {
-        textoNota = null;
+        //textoNota = null;
         if (selectedClipping != null && selectedClipping.getTexto() != null) {
-            textoNota = ClippingsPlaceHolders.buildFinalText(selectedClipping.getTexto(), current);
+            StringBuilder sb = new StringBuilder(ClippingsPlaceHolders.buildFinalText(selectedClipping.getTexto(), current));
+            sb.append("<br/>");
+            sb.append(textoNota);
+            textoNota = sb.toString();
         } else {
             addErrorMessage("No se ha seleccionado ningun clipping.");
         }
