@@ -192,7 +192,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
 
     public String create() {
         try {
-            if (current.getRut() != null && !StringUtils.isEmpty(current.getRut())) {
+            if (!StringUtils.isEmpty(current.getRut())) {
                 if (!UtilesRut.validar(current.getRut())) {
                     JsfUtil.addErrorMessage("Rut invalido");
                     return null;
@@ -269,7 +269,6 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
         }
     }
 
-    
 //    @Override
 //    public String prepareEdit(Usuario u) {
 //        current = u;
@@ -293,7 +292,6 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
 //        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
 //        return "/script/usuario/Edit";
 //    }
-
     public String prepareDelete() {
         String idUsuario = JsfUtil.getRequestParameter("idUsuario");
         setIdUsuarioDelete(idUsuario);
@@ -314,16 +312,17 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
                 JsfUtil.addErrorMessage("Rut invalido");
                 return null;
             }
-            
-            List<Usuario> usuariosExistentesConMismoRut = getJpaController().getUsuarioFindByRut(updatedUser.getRut());
-            if (usuariosExistentesConMismoRut != null && usuariosExistentesConMismoRut.size() > 0) {
-                for (Usuario u : usuariosExistentesConMismoRut) {
-                    if (!u.getIdUsuario().equals(updatedUser.getIdUsuario())) {
-                        JsfUtil.addErrorMessage("Ya existe un usuario con el rut que intenta registrar");
-                        return null;
+            if (!StringUtils.isEmpty(current.getRut())) {
+                List<Usuario> usuariosExistentesConMismoRut = getJpaController().getUsuarioFindByRut(updatedUser.getRut());
+                if (usuariosExistentesConMismoRut != null && usuariosExistentesConMismoRut.size() > 0) {
+                    for (Usuario u : usuariosExistentesConMismoRut) {
+                        if (!u.getIdUsuario().equals(updatedUser.getIdUsuario())) {
+                            JsfUtil.addErrorMessage("Ya existe un usuario con el rut que intenta registrar");
+                            return null;
+                        }
                     }
-                }
 
+                }
             }
 
             Usuario usrOld = getJpaController().getUsuarioFindByIdUsuario(updatedUser.getIdUsuario());
@@ -439,7 +438,6 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
 //        }
 //        return items;
 //    }
-
 //    private void recreateModel() {
 //        items = null;
 //    }
