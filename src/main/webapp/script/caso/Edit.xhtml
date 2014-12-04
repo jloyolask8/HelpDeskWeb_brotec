@@ -359,10 +359,12 @@
 
                     </p:scrollPanel>
 
-                </p:tab>  
-
-
-
+                </p:tab>
+                
+                <p:tab id="tabMerge" title="Combinar casos" closable="true">
+                    
+                </p:tab>
+                
                 <p:tab id="tabEditarEvento" title="Detalles del Evento" closable="true" 
                        rendered="#{casoScheduleController.event ne null}">
 
@@ -838,6 +840,7 @@
                     </h:panelGrid>
                     <pe:ckEditor value="#{casoController.selectedNota.texto}" required="true" language="es"
                                  toolbar="#{applicationBean.ckEditorToolbar}"
+                                 customConfig="#{request.contextPath}/resources/js/ckeditor.js"
                                  id="textonota" width="560" height="210"/>
 
                     <p:commandButton value="Cancelar" ajax="true"  onclick="PF('Nota').hide()"  update=":formint1" />

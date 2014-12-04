@@ -767,7 +767,7 @@ img.right {
 
     border:none;
     color:#888888;
-    background:url("../../images/searchBox_1.png") no-repeat;
+    background:url("../../images/searchBox645.png") no-repeat;
 
     float:left;
     font-family:Arial,Helvetica,sans-serif;
@@ -778,7 +778,7 @@ img.right {
     outline:medium none;
     padding:0 0 0 25px;
     text-shadow:1px 1px 0 white;
-    width:620px;
+    width:636px;
 }
 
 .ui-datatable-odd {

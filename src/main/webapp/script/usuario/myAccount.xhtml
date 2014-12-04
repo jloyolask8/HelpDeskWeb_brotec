@@ -140,6 +140,7 @@
 
                             <pe:ckEditor value="#{UserSessionBean.current.firma}" language="es"
                                          toolbar="#{applicationBean.ckEditorToolbar}"
+                                         customConfig="#{request.contextPath}/resources/js/ckeditor.js"
                                          id="textofirma" width="100%" />
 
                             <p:message for="textofirma"/>

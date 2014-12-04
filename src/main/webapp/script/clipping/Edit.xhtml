@@ -60,6 +60,7 @@
                             <pe:ckEditor id="respuesta" value="#{clippingController.selected.texto}" widgetVar="textoHtml"
                                          required="true"
                                          width="100%" language="es"
+                                         customConfig="#{request.contextPath}/resources/js/ckeditor.js"
                                          toolbar="#{applicationBean.ckEditorToolbar}"/>
                             <p:message for="respuesta"/>
                         </h:panelGrid>

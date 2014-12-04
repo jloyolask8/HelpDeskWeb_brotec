@@ -64,6 +64,7 @@
                                 <p:outputLabel value="Texto De Respuesta:" style="font-weight: bold;"/>
                                 <pe:ckEditor value="#{areaController.selected.textoRespAutomatica}"
                                              toolbar="#{applicationBean.ckEditorToolbar}"
+                                             customConfig="#{request.contextPath}/resources/js/ckeditor.js"
                                              id="respuesta" height="210"/>
                             </h:panelGrid>
                         <br/>

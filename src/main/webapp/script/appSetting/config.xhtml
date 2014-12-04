@@ -59,7 +59,8 @@
                                     </f:facet>
                                     <f:facet name="input">
                                         <pe:ckEditor id="settingValue" value="#{data.settingValue}" required="#{data.required}" width="560" height="210" language="es"
-                                                     toolbar="#{applicationBean.ckEditorToolbar}"/>
+                                                     toolbar="#{applicationBean.ckEditorToolbar}"
+                                                     customConfig="#{request.contextPath}/resources/js/ckeditor.js"/>
                                         <p:watermark for="settingValue" value="Descripción del caso"/>
 
                                     </f:facet>

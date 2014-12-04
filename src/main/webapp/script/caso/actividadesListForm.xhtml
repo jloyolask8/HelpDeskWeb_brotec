@@ -74,6 +74,7 @@
                             <pe:ckEditor id="ticketDesc" value="#{casoController.selected.descripcionTxt}" 
                                          language="es"
                                          toolbar="#{applicationBean.ckEditorToolbar}"
+                                         customConfig="#{request.contextPath}/resources/js/ckeditor.js"
                                          required="true"  width="100%" /> 
                             <p:watermark for="ticketDesc" value="Descripción del caso"/>
                         </f:facet>
