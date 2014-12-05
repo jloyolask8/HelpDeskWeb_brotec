@@ -104,8 +104,8 @@ public class HelpDeskScheluder {
     private static String scheduleSendMail(final Long idCaso, final String idCanal, final String mensajeFinal,
             final String to, final String subject, final Date whenToRun) throws SchedulerException {
 
-        System.out.println("scheduling SendMail job");
-        final String jobId = SendMailJob.formatJobId(idCanal, idCaso.toString(), to);
+//        System.out.println("scheduling SendMail job");
+        final String jobId = SendMailJob.formatJobId(idCanal, subject, idCaso.toString(), to);
         final JobKey jobKey = JobKey.jobKey(jobId, HelpDeskScheluder.GRUPO_CORREO);
         if (getInstance().checkExists(jobKey)) {
             HelpDeskScheluder.unschedule(jobKey);

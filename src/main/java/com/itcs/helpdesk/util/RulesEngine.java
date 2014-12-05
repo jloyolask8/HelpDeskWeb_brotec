@@ -22,7 +22,9 @@ import com.itcs.helpdesk.persistence.entityenums.EnumFieldType;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoAccion;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoCanal;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
+import com.itcs.helpdesk.persistence.entityenums.EnumUsuariosBase;
 import com.itcs.helpdesk.persistence.jpa.custom.CasoJPACustomController;
+import com.itcs.helpdesk.persistence.jpa.exceptions.RollbackFailureException;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.persistence.utils.CasoChangeListener;
 import com.itcs.helpdesk.persistence.utils.ComparableField;
@@ -35,6 +37,7 @@ import java.lang.reflect.Constructor;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -79,15 +82,18 @@ public class RulesEngine implements CasoChangeListener {
         List<ReglaTrigger> listaSup = getJpaController().getReglaTriggerFindByEvento("%CREATE%");
         List<ReglaTrigger> lista;
 
+        List<String> rulesThatApply = new LinkedList<>();
+
         if (ApplicationConfig.isAppDebugEnabled()) {
             Log.createLogger(this.getClass().getName()).logInfo("executing casoCreated Reglas -> " + listaSup);
         }
         do {
-            lista = new LinkedList<ReglaTrigger>(listaSup);
+            lista = new LinkedList<>(listaSup);
             for (ReglaTrigger reglaTrigger : lista) {
                 if (reglaTrigger.getReglaActiva()) {
                     boolean aplica = evalConditions(reglaTrigger, caso);
                     if (aplica) {
+                        rulesThatApply.add(reglaTrigger.getIdTrigger());
                         if (ApplicationConfig.isAppDebugEnabled()) {
                             Log.createLogger(this.getClass().getName()).logInfo("regla " + reglaTrigger.getIdTrigger() + " APLICA_AL_CASO " + caso.toString());
                         }
@@ -107,10 +113,19 @@ public class RulesEngine implements CasoChangeListener {
                 }
             }
         } while (lista.size() > listaSup.size());
+
+        try {
+            AuditLog auditLog = ManagerCasos.createLogComment(caso, "Reglas aplicadas en la creación del caso: " + rulesThatApply.toString());
+            getJpaController().persistAuditLog(auditLog);
+        } catch (Exception ex) {
+            Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "RulesEngine.casoCreated", ex);
+        }
+
     }
 
     @Override
     public void casoChanged(Caso caso, List<AuditLog> changeList) {
+        List<String> rulesThatApply = new LinkedList<>();
         List<ReglaTrigger> listaSup = getJpaController().getReglaTriggerFindByEvento("%UPDATE%");
         List<ReglaTrigger> lista;
         do {
@@ -119,6 +134,7 @@ public class RulesEngine implements CasoChangeListener {
                 if (reglaTrigger.getReglaActiva()) {
                     boolean aplica = evalConditions(reglaTrigger, caso, changeList);
                     if (aplica) {
+                        rulesThatApply.add(reglaTrigger.getIdTrigger());
                         if (ApplicationConfig.isAppDebugEnabled()) {
                             Log.createLogger(this.getClass().getName()).logInfo("regla " + reglaTrigger.getIdTrigger() + " APLICA_AL_CASO " + caso.toString());
                         }
@@ -131,6 +147,13 @@ public class RulesEngine implements CasoChangeListener {
                 }
             }
         } while (lista.size() > listaSup.size());
+
+        try {
+            AuditLog auditLog = ManagerCasos.createLogComment(caso, "Reglas aplicadas en la modificación del caso: " + rulesThatApply.toString());
+            getJpaController().persistAuditLog(auditLog);
+        } catch (Exception ex) {
+            Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "RulesEngine.casoChanged", ex);
+        }
     }
 
     private boolean evalConditions(ReglaTrigger reglaTrigger, Caso caso) {
@@ -514,19 +537,19 @@ public class RulesEngine implements CasoChangeListener {
                     }
                 } else if (operador.equals(EnumTipoComparacion.LT.getTipoComparacion())) {
                     if (value != null) {
-                        return   (Long) value < valorAtt;
+                        return (Long) value < valorAtt;
                     }
                 } else if (operador.equals(EnumTipoComparacion.GT.getTipoComparacion())) {
                     if (value != null) {
-                        return   (Long) value > valorAtt;
+                        return (Long) value > valorAtt;
                     }
                 } else if (operador.equals(EnumTipoComparacion.GE.getTipoComparacion())) {
                     if (value != null) {
-                        return  (Long) value >=  valorAtt;
+                        return (Long) value >= valorAtt;
                     }
                 } else if (operador.equals(EnumTipoComparacion.LE.getTipoComparacion())) {
                     if (value != null) {
-                        return  (Long) value <= valorAtt;
+                        return (Long) value <= valorAtt;
                     }
                 } else {
                     throw new IllegalStateException("Comparator " + operador.getIdComparador() + " is not supported!!");
@@ -574,15 +597,7 @@ public class RulesEngine implements CasoChangeListener {
             XStream xstream = new XStream();
             EmailStruct emailStruct = (EmailStruct) xstream.fromXML(accion.getParametros());
 
-            //choose canal, prioritize the project's default canal
-            Canal canal = (caso.getIdProducto() != null && caso.getIdProducto().getIdOutCanal() != null)
-                    ? caso.getIdProducto().getIdOutCanal() : null;
-
-            //choose canal, prioritize the area's default canal
-            if (canal == null) {
-                canal = (caso.getIdArea() != null && caso.getIdArea().getIdCanal() != null)
-                        ? caso.getIdArea().getIdCanal() : caso.getIdCanal();
-            }
+            Canal canal = MailNotifier.chooseDefaultCanalToSendMail(caso);
 
             if (canal != null && canal.getIdTipoCanal() != null && canal.getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal())
                     && !StringUtils.isEmpty(canal.getIdCanal())) {
@@ -590,11 +605,10 @@ public class RulesEngine implements CasoChangeListener {
                         emailStruct.getToAdress(),
                         emailStruct.getSubject());
             } else {
-                throw new EmailException("No se puede enviar el correo de recepcion de caso al cliente " + caso.toString() + ".Error: El area no tiene canal tipo email, el caso no tiene Area ni Canal o el canal no es del tipo email.");
-
+                throw new EmailException("No se puede ejecutar accion enviar correo. Caso = " + caso.toString() + ". Error: El area no tiene canal tipo email, el caso no tiene Area ni Canal o el canal no es del tipo email. XML = " + accion.getParametros());
             }
         } catch (Exception ex) {
-            Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "enviarCorreo", ex);
+            Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "No se puede ejecutar accion enviar correo. Caso = " + caso.toString() + ". Error: El area no tiene canal tipo email, el caso no tiene Area ni Canal o el canal no es del tipo email. XML = " + accion.getParametros(), ex);
         }
     }
 
@@ -610,9 +624,20 @@ public class RulesEngine implements CasoChangeListener {
 
     private void asignarCasoAUsuario(Accion accion, Caso caso) {
         try {
+            String oldOwner = caso.getOwner().getCapitalName();
             Usuario usuario = getJpaController().getUsuarioFindByIdUsuario(accion.getParametros());
             caso.setOwner(usuario);
-            getJpaController().mergeCasoWithoutNotify(caso);
+
+            AuditLog auditLogAssignUser = new AuditLog();
+            auditLogAssignUser.setIdUser(EnumUsuariosBase.SISTEMA.getUsuario().getIdUsuario());
+            auditLogAssignUser.setFecha(Calendar.getInstance().getTime());
+            auditLogAssignUser.setTabla("Caso");
+            auditLogAssignUser.setCampo("Agente");
+            auditLogAssignUser.setNewValue(usuario != null ? usuario.getCapitalName() : "Sin agente");
+            auditLogAssignUser.setOldValue(oldOwner);
+            auditLogAssignUser.setIdCaso(caso.getIdCaso());
+
+            getJpaController().mergeCasoWithoutNotify(caso, auditLogAssignUser);
 
             if (ApplicationConfig.isSendNotificationOnTransfer()) {
                 try {
@@ -629,9 +654,21 @@ public class RulesEngine implements CasoChangeListener {
 
     private void asignarCasoArea(Accion accion, Caso caso) {
         try {
+            String oldArea = caso.getIdArea().getIdArea();
             Area area = getJpaController().find(Area.class, accion.getParametros());
             caso.setIdArea(area);
-            getJpaController().mergeCasoWithoutNotify(caso);
+
+            AuditLog audit = new AuditLog();
+            audit.setIdUser(EnumUsuariosBase.SISTEMA.getUsuario().getIdUsuario());
+            audit.setFecha(Calendar.getInstance().getTime());
+            audit.setTabla("Caso");
+            audit.setCampo("Area");
+            audit.setNewValue(area != null ? area.getIdArea() : "Sin area.");
+            audit.setOldValue(oldArea);
+            audit.setIdCaso(caso.getIdCaso());
+
+            getJpaController().mergeCasoWithoutNotify(caso, audit);
+
         } catch (Exception ex) {
             Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "asignarCasoArea", ex);
         }
@@ -639,9 +676,19 @@ public class RulesEngine implements CasoChangeListener {
 
     private void definirTipoCaso(Accion accion, Caso caso) {
         try {
-            TipoCaso area = getJpaController().find(TipoCaso.class, accion.getParametros());
-            caso.setTipoCaso(area);
+            String old = caso.getTipoCaso().getNombre();
+            TipoCaso tipoCaso = getJpaController().find(TipoCaso.class, accion.getParametros());
+            caso.setTipoCaso(tipoCaso);
             getJpaController().mergeCasoWithoutNotify(caso);
+            AuditLog audit = new AuditLog();
+            audit.setIdUser(EnumUsuariosBase.SISTEMA.getUsuario().getIdUsuario());
+            audit.setFecha(Calendar.getInstance().getTime());
+            audit.setTabla("Caso");
+            audit.setCampo("Tipo Caso");
+            audit.setNewValue(tipoCaso != null ? tipoCaso.getIdTipoCaso() : "Sin tipo de caso.");
+            audit.setOldValue(old);
+            audit.setIdCaso(caso.getIdCaso());
+            getJpaController().persistAuditLog(audit);
         } catch (Exception ex) {
             Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "definirTipoCaso", ex);
         }
@@ -663,9 +710,21 @@ public class RulesEngine implements CasoChangeListener {
 
     private void cambiarPrioridad(Accion accion, Caso caso) {
         try {
+            String old = caso.getIdPrioridad().getNombre();
             Prioridad prioridad = getJpaController().getPrioridadFindByIdPrioridad(accion.getParametros());
             caso.setIdPrioridad(prioridad);
             getJpaController().mergeCasoWithoutNotify(caso);
+
+            AuditLog audit = new AuditLog();
+            audit.setIdUser(EnumUsuariosBase.SISTEMA.getUsuario().getIdUsuario());
+            audit.setFecha(Calendar.getInstance().getTime());
+            audit.setTabla("Caso");
+            audit.setCampo("Tipo Caso");
+            audit.setNewValue(prioridad != null ? prioridad.getNombre() : "Sin prioridad.");
+            audit.setOldValue(old);
+            audit.setIdCaso(caso.getIdCaso());
+            getJpaController().persistAuditLog(audit);
+
         } catch (Exception ex) {
             Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "cambiarPrioridad", ex);
         }

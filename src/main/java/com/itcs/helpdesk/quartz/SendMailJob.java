@@ -45,16 +45,17 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
     public static final String EMAILS_TO = "to";
     public static final String EMAIL_SUBJECT = "subject";
     public static final String EMAIL_TEXT = "email_text";
+    public static final String EMAIL_DESCRIPTION = "email_desc";
 //    public static final String INTENT = "intent";
 //    public static final int RETRY = 3;
 
     /**
      * {0} = idArea,
      */
-    public static final String JOB_ID = "%s_SendEmail_#%s_to_%s";
+    public static final String JOB_ID = "%s_SendEmail_%s_#%s_to_%s";
 
-    public static String formatJobId(String idCanal, String idCaso, String to) {
-        return String.format(JOB_ID, new Object[]{idCanal, idCaso, to});
+    public static String formatJobId(String idCanal, String idCaso, String to, String desc) {
+        return String.format(JOB_ID, new Object[]{idCanal, desc, idCaso, to});
     }
 
     @Override
@@ -71,9 +72,11 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
             //---
             String subject = (String) map.get(EMAIL_SUBJECT);
             String email_text = (String) map.get(EMAIL_TEXT);
+            String email_desc = (String) map.get(EMAIL_DESCRIPTION);
+
             emails_to = emails_to.trim().replace(" ", "");
 
-            final String formatJobId = formatJobId(idCanal, idCaso, emails_to);
+            final String formatJobId = formatJobId(idCanal, email_desc, idCaso, emails_to);
             if (!StringUtils.isEmpty(idCanal) && !StringUtils.isEmpty(emails_to)) {
                 try {
                     final EmailClient instance = MailClientFactory.getInstance(idCanal);
@@ -118,7 +121,7 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
                             caso.getNotaList().add(nota);
 
                             List<AuditLog> changeLog = new ArrayList<>();
-                            changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "Se envía correo a: " + nota.getEnviadoA(), ""));
+                            changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "Se envía correo '" + email_desc + "' a: " + nota.getEnviadoA(), ""));
 
                             for (AuditLog auditLog : changeLog) {
                                 em.persist(auditLog);

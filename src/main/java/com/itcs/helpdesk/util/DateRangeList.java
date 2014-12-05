@@ -25,8 +25,8 @@ public class DateRangeList implements Iterable<Interval> {
 
     public DateRangeList(Date start,
             Date end, int plusPeriod) {
-        this.start = new DateTime(start, DateTimeZone.UTC);
-        this.end = new DateTime(end, DateTimeZone.UTC);
+        this.start = new DateTime(start/*, DateTimeZone.UTC*/);
+        this.end = new DateTime(end/*, DateTimeZone.UTC*/);
         this.plusPeriod = plusPeriod;
     }
 
@@ -79,13 +79,13 @@ public class DateRangeList implements Iterable<Interval> {
                 case Calendar.DATE:
 
                     Date dayEnd = new Date(start.withTimeAtStartOfDay().toDate().getTime() + (24 * 60 * 60 * 1000)); //here i add the days of the period, i can increase by days, weeks, months or years.
-                    interval = new Interval(new DateTime(start), new DateTime(dayEnd.getTime()));
+                    interval = new Interval(new DateTime(start.withTimeAtStartOfDay()), new DateTime(dayEnd.getTime()));
                     start = start.plusDays(1);
                     break;
                 case Calendar.WEEK_OF_MONTH:
 
                     Date weekEnd = new Date(start.withTimeAtStartOfDay().toDate().getTime() + ((7 * 24 * 60 * 60 * 1000) - 1));
-                    interval = new Interval(new DateTime(start), new DateTime(weekEnd.getTime()));
+                    interval = new Interval(new DateTime(start.withTimeAtStartOfDay()), new DateTime(weekEnd.getTime()));
                     start = start.plusWeeks(1);
                     break;
                 case Calendar.YEAR:
@@ -94,7 +94,7 @@ public class DateRangeList implements Iterable<Interval> {
                     yearEnd.setTime(start.toDate());
                     int lastDayOfYear = yearEnd.getActualMaximum(Calendar.DAY_OF_YEAR);
                     yearEnd.set(Calendar.DAY_OF_YEAR, lastDayOfYear);
-                    interval = new Interval(new DateTime(start), new DateTime(yearEnd.getTime()));
+                    interval = new Interval(new DateTime(start.withTimeAtStartOfDay()), new DateTime(yearEnd.getTime()));
 
                     start = start.plusYears(1);
                     break;

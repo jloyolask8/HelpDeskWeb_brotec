@@ -12,6 +12,7 @@ import com.itcs.helpdesk.persistence.entities.Caso_;
 import com.itcs.helpdesk.persistence.entities.Etiqueta;
 import com.itcs.helpdesk.persistence.entities.FieldType;
 import com.itcs.helpdesk.persistence.entities.FiltroVista;
+import com.itcs.helpdesk.persistence.entities.Grupo;
 import com.itcs.helpdesk.persistence.entities.Prioridad;
 import com.itcs.helpdesk.persistence.entities.ReglaTrigger;
 import com.itcs.helpdesk.persistence.entities.TipoAlerta;
@@ -287,13 +288,18 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
     }
 
     public List<TipoCaso> getTipoCasoAvailableList() {
-        System.out.println("*** getTipoCasoAvailableList()");
+//        System.out.println("*** getTipoCasoAvailableList()");
         return (List<TipoCaso>) getJpaController().findAll(TipoCaso.class);
     }
 
     public List<Area> getAreasAvailableList() {
-        System.out.println("*** getAreasAvailableList()");
+//        System.out.println("*** getAreasAvailableList()");
         return (List<Area>) getJpaController().findAll(Area.class);
+    }
+    
+     public List<Grupo> getGruposAvailableList() {
+//        System.out.println("*** getAreasAvailableList()");
+        return (List<Grupo>) getJpaController().findAll(Grupo.class);
     }
 
     public List<Prioridad> getPrioridadItemsAvailableList() {

@@ -134,40 +134,60 @@ public class ManagerCasos implements Serializable {
 
     public void asignarCasoAUsuarioConMenosCasos(Grupo grupo, Caso caso) throws Exception {
 
+        String oldOwner = caso.getOwner().getCapitalName();
 //        System.out.println("asignarCasoAUsuarioConMenosCasos..." + grupo.getUsuarioList());
+        caso.setIdGrupo(grupo);
         Usuario usuarioConMenosCasos = null;
-        for (Usuario usuario : grupo.getUsuarioList()) {
-            if (usuario.getActivo()) {
-                if (usuarioConMenosCasos == null) {
-                    usuarioConMenosCasos = usuario;
-                } else {
-                    final long countCasosByUsuario = countCasosByUsuario(usuarioConMenosCasos);
-                    final long countCasosByUsuario1 = countCasosByUsuario(usuario);
+        if (grupo.getUsuarioList() != null) {
 
+            for (Usuario usuario : grupo.getUsuarioList()) {
+                if (usuario.getActivo()) {
+                    if (usuarioConMenosCasos == null) {
+                        usuarioConMenosCasos = usuario;
+                    } else {
+                        final long countCasosByUsuario = countCasosByUsuario(usuarioConMenosCasos);
+                        final long countCasosByUsuario1 = countCasosByUsuario(usuario);
 //                    System.out.println("usuario " + usuarioConMenosCasos + " tiene " + countCasosByUsuario);
 //                    System.out.println("usuario " + usuario + " tiene " + countCasosByUsuario1);
-                    if (countCasosByUsuario > countCasosByUsuario1) {
-                        usuarioConMenosCasos = usuario;
+                        if (countCasosByUsuario > countCasosByUsuario1) {
+                            usuarioConMenosCasos = usuario;
+                        }
                     }
                 }
             }
-        }
-        if (usuarioConMenosCasos != null) {
-            caso.setOwner(usuarioConMenosCasos);
-            System.out.println("asignarCaso " + caso.getIdCaso() + " A UsuarioConMenosCasos:" + usuarioConMenosCasos);
-            getJpaController().mergeCasoWithoutNotify(caso);
 
-            if (ApplicationConfig.isSendNotificationOnTransfer()) {
-                try {
-                    MailNotifier.notifyCasoAssigned(caso, null);
-                } catch (MailClientFactory.MailNotConfiguredException ex) {
-                    Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "failed at ManagerCasos.asignarCasoAUsuarioConMenosCasos MailNotConfiguredException", ex);
-                } catch (EmailException ex) {
-                    Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "failed at ManagerCasos.asignarCasoAUsuarioConMenosCasos EmailException", ex);
-                }
+        }
+
+//        if (usuarioConMenosCasos != null) {
+        caso.setOwner(usuarioConMenosCasos);
+//            System.out.println("asignarCaso " + caso.getIdCaso() + " A UsuarioConMenosCasos:" + usuarioConMenosCasos);
+
+        AuditLog auditLogAssignUser = new AuditLog();
+        auditLogAssignUser.setIdUser(EnumUsuariosBase.SISTEMA.getUsuario().getIdUsuario());
+        auditLogAssignUser.setFecha(Calendar.getInstance().getTime());
+        auditLogAssignUser.setTabla("Caso");
+        auditLogAssignUser.setCampo("Agente (con menos casos)");
+        auditLogAssignUser.setNewValue(usuarioConMenosCasos != null ? usuarioConMenosCasos.getCapitalName() : "Sin agente asignado");
+        auditLogAssignUser.setOldValue(oldOwner);
+        auditLogAssignUser.setIdCaso(caso.getIdCaso());
+
+        List<AuditLog> logs = new ArrayList<>(2);
+        logs.add(ManagerCasos.createLogComment(caso, "Se asigna el caso al grupo " + grupo.getNombre()));
+        logs.add(auditLogAssignUser);
+
+        getJpaController().mergeCasoWithoutNotify(caso, logs);
+
+        if (ApplicationConfig.isSendNotificationOnTransfer()) {
+            try {
+                MailNotifier.notifyCasoAssigned(caso, null);
+            } catch (MailClientFactory.MailNotConfiguredException ex) {
+                Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "failed at ManagerCasos.asignarCasoAUsuarioConMenosCasos MailNotConfiguredException", ex);
+            } catch (EmailException ex) {
+                Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "failed at ManagerCasos.asignarCasoAUsuarioConMenosCasos EmailException", ex);
             }
-
         }
+
+//        }
     }
 
 //    public void calcularSLA(Caso caso, Date fecha) throws SchedulerException {
@@ -220,6 +240,7 @@ public class ManagerCasos implements Serializable {
      * @param valorCampo Nombre del campo
      * @param newValue Nuevo valor
      * @param oldValue Valor antiguo
+     * @param casoActual
      */
     public void createLogReg(String valorCampo,
             String newValue, String oldValue, Caso casoActual) {
@@ -964,12 +985,18 @@ public class ManagerCasos implements Serializable {
                     String campo = method.getName().substring(3);
                     if ((oldValue != null) || (newValue != null)) {
                         AuditLog audit = null;
-                        if (((oldValue == null) && (newValue != null))
-                                || ((oldValue != null) && (newValue == null))) {
+                        if (((oldValue == null) && (newValue != null)) || ((oldValue != null) && (newValue == null))) {
                             if (method.getName().contains("List")) {
-                                audit = createLogReg(caso, campo, (newValue == null) ? ""
-                                        : ((Collection) newValue).size() + " elementos",
-                                        (oldValue == null) ? "" : ((Collection) oldValue).size() + " elementos");
+                               
+                                int oldListSize = oldValue != null ? ((Collection) oldValue).size() : 0;
+                                int newListSize = newValue != null ? ((Collection) newValue).size() : 0;
+
+                                if (newListSize != 0 || oldListSize != 0) {
+                                    audit = createLogReg(caso, campo, (newValue == null) ? ""
+                                            : ((Collection) newValue).size() + " elementos",
+                                            (oldValue == null) ? "" : ((Collection) oldValue).size() + " elementos");
+                                }
+
                             } else {
                                 audit = createLogReg(caso, campo,
                                         (newValue == null) ? "" : newValue.toString(),
