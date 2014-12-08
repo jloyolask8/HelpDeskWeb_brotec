@@ -4,15 +4,8 @@ import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Area;
-import com.itcs.helpdesk.persistence.entities.Caso;
-import com.itcs.helpdesk.persistence.entities.Caso_;
-import com.itcs.helpdesk.persistence.entities.FiltroVista;
-import com.itcs.helpdesk.persistence.entities.Grupo;
 import com.itcs.helpdesk.persistence.entities.Item;
 import com.itcs.helpdesk.persistence.entities.Usuario;
-import com.itcs.helpdesk.persistence.entities.Vista;
-import com.itcs.helpdesk.persistence.entityenums.EnumEstadoCaso;
-import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
 import com.itcs.helpdesk.util.Log;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -706,11 +699,11 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
         if (itemsTree != null) {
             return itemsTree;
         }
-        Usuario usuario = getJpaController().getUsuarioFindByIdUsuario(user.getIdUsuario());
+        Usuario usuario = getJpaController().find(Usuario.class, user.getIdUsuario());
         List<Item> localCats = getItemsForUser(usuario, this.textoFiltro);
-        DataModel localDataModel = new ItemDataModel(localCats);
 
-        if (localDataModel != null) {
+        if (localCats != null && !localCats.isEmpty()) {
+            DataModel localDataModel = new ItemDataModel(localCats);
             //System.out.println("se reconstruye el arbol");
             Iterator it = localDataModel.iterator();
             itemsTree = new DefaultTreeNode("Item", null);

@@ -57,7 +57,7 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
                     if (passwordNew1 != null && passwordNew1.equals(passwordNew2)) {
                         //So change it
                         user.setPass(UtilSecurity.getMD5(passwordNew1));
-                        getJpaController().getUsuarioJpaController().edit(user);
+                        getJpaController().merge(user);
                         JsfUtil.addSuccessMessage("La contraseña ha sido cambiada exitósamente.");
                         executeInClient("PF('panelChangePass').hide()");
                     } else {
@@ -118,7 +118,7 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
 
         if (!getUserSessionBean().isValidatedSession()) {
             try {
-                usuario = getJpaController().getUsuarioFindByIdUsuario(username);
+                usuario = getJpaController().find(Usuario.class, username);
                 if (usuario == null) {
                     JsfUtil.addErrorMessage("El nombre de usuario ingresado no está registrado en el sistema.");
 //                    return null;

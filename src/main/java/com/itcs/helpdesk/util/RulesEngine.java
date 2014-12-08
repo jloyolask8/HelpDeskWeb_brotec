@@ -624,28 +624,31 @@ public class RulesEngine implements CasoChangeListener {
 
     private void asignarCasoAUsuario(Accion accion, Caso caso) {
         try {
-            String oldOwner = caso.getOwner().getCapitalName();
-            Usuario usuario = getJpaController().getUsuarioFindByIdUsuario(accion.getParametros());
-            caso.setOwner(usuario);
+            String oldOwner = caso.getOwner() != null ? caso.getOwner().getCapitalName() : "";
+            Usuario usuario = getJpaController().find(Usuario.class, accion.getParametros());
 
-            AuditLog auditLogAssignUser = new AuditLog();
-            auditLogAssignUser.setIdUser(EnumUsuariosBase.SISTEMA.getUsuario().getIdUsuario());
-            auditLogAssignUser.setFecha(Calendar.getInstance().getTime());
-            auditLogAssignUser.setTabla("Caso");
-            auditLogAssignUser.setCampo("Agente");
-            auditLogAssignUser.setNewValue(usuario != null ? usuario.getCapitalName() : "Sin agente");
-            auditLogAssignUser.setOldValue(oldOwner);
-            auditLogAssignUser.setIdCaso(caso.getIdCaso());
+            if (usuario != null) {
+                caso.setOwner(usuario);
 
-            getJpaController().mergeCasoWithoutNotify(caso, auditLogAssignUser);
+                AuditLog auditLogAssignUser = new AuditLog();
+                auditLogAssignUser.setIdUser(EnumUsuariosBase.SISTEMA.getUsuario().getIdUsuario());
+                auditLogAssignUser.setFecha(Calendar.getInstance().getTime());
+                auditLogAssignUser.setTabla("Caso");
+                auditLogAssignUser.setCampo("Agente");
+                auditLogAssignUser.setNewValue(usuario != null ? usuario.getCapitalName() : "Sin agente");
+                auditLogAssignUser.setOldValue(oldOwner);
+                auditLogAssignUser.setIdCaso(caso.getIdCaso());
 
-            if (ApplicationConfig.isSendNotificationOnTransfer()) {
-                try {
-                    MailNotifier.notifyCasoAssigned(caso, null);
-                } catch (Exception ex) {
-                    Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "failed at asignarCasoAUsuario", ex);
-                }
-            }//this should be removed since in rules we dont notify actions, there is an option of notity action in the rule.
+                getJpaController().mergeCasoWithoutNotify(caso, auditLogAssignUser);
+
+                if (ApplicationConfig.isSendNotificationOnTransfer()) {
+                    try {
+                        MailNotifier.notifyCasoAssigned(caso, null);
+                    } catch (Exception ex) {
+                        Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "failed at asignarCasoAUsuario", ex);
+                    }
+                }//this should be removed since in rules we dont notify actions, there is an option of notity action in the rule.
+            }
 
         } catch (Exception ex) {
             Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, null, ex);

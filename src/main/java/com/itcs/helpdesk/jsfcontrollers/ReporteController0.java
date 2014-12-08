@@ -1175,7 +1175,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         setXaxisLabel("Ejecutivos");
 
         List<EstadoCaso> estados = getJpaController().getEstadoCasoFindAll();//Y
-        List<Usuario> agents = getJpaController().getUsuarioFindAll();//X
+       List<Usuario> agents = (List<Usuario>) getJpaController().findAll(Usuario.class);//X
 
         try {
             if (agents.contains(EnumUsuariosBase.SISTEMA.getUsuario())) {
@@ -1352,7 +1352,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         pieModel.set("No Asignados", vistaController.countItemsVista(vista0));
         vistaItems.add(vista0);
 
-        List<Usuario> agents = getJpaController().getUsuarioFindAll();
+        List<Usuario> agents = (List<Usuario>) getJpaController().findAll(Usuario.class);
         for (Usuario agent : agents) {
             if (!agent.getIdUsuario().equalsIgnoreCase(EnumUsuariosBase.SISTEMA.getUsuario().getIdUsuario())) {
                 Vista vista1 = new Vista(Caso.class);

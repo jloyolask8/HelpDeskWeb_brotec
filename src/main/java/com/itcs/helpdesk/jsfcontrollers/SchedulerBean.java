@@ -349,14 +349,14 @@ public class SchedulerBean extends AbstractManagedBean<Object> implements Serial
 
     private void verificarUsuarios(JPAServiceFacade jpaController) {
         try {
-            Usuario usuarioSistema = jpaController.getUsuarioFindByIdUsuario(EnumUsuariosBase.SISTEMA.getUsuario().getIdUsuario());
+            Usuario usuarioSistema = jpaController.find(Usuario.class, EnumUsuariosBase.SISTEMA.getUsuario().getIdUsuario());
             if (null == usuarioSistema) {
                 throw new NoResultException("No existe usuario SISTEMA");
             }
         } catch (NoResultException ex) {
             try {
                 Log.createLogger(this.getClass().getName()).logSevere("No existe usuario SISTEMA, se creara ahora");
-                jpaController.persistUsuario(EnumUsuariosBase.SISTEMA.getUsuario());
+                jpaController.persist(EnumUsuariosBase.SISTEMA.getUsuario());
             } catch (Exception e) {
                 Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
             }

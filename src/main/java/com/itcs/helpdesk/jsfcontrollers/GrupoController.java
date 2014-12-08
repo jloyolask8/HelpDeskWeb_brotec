@@ -58,7 +58,7 @@ public class GrupoController extends AbstractManagedBean<Grupo> implements Seria
     public String prepareCreate() {
         current = new Grupo();
         selectedItemIndex = -1;
-        setUsuariosDualListModel(new DualListModel<>(getJpaController().getUsuarioFindAll(), new ArrayList<Usuario>()));
+        setUsuariosDualListModel(new DualListModel<>((List<Usuario>) getJpaController().findAll(Usuario.class), new ArrayList<Usuario>()));
         setProductoDualListModel(new DualListModel<>((List<Producto>)getJpaController().findAll(Producto.class), new ArrayList<Producto>()));
         //setCategoriasDualListModel(new DualListModel<Categoria>(getJpaController().getCategoriaFindAll(), new ArrayList<Categoria>()));
         return "/script/grupo/Create";
@@ -95,7 +95,7 @@ public class GrupoController extends AbstractManagedBean<Grupo> implements Seria
     @Override
     protected void afterSetSelected() {
        
-        setUsuariosDualListModel(new DualListModel<>(getJpaController().getUsuarioFindAll(), current.getUsuarioList()));
+        setUsuariosDualListModel(new DualListModel<>((List<Usuario>) getJpaController().findAll(Usuario.class), current.getUsuarioList()));
         for (Usuario user : current.getUsuarioList()) {
             if (getUsuariosDualListModel().getSource().contains(user)) {
                 getUsuariosDualListModel().getSource().remove(user);
@@ -170,7 +170,7 @@ public class GrupoController extends AbstractManagedBean<Grupo> implements Seria
             JsfUtil.addSuccessMessage("Se requiere que seleccione una fila para editar.");
             return null;
         }
-        setUsuariosDualListModel(new DualListModel<Usuario>(getJpaController().getUsuarioFindAll(), current.getUsuarioList()));
+        setUsuariosDualListModel(new DualListModel<Usuario>((List<Usuario>) getJpaController().findAll(Usuario.class), current.getUsuarioList()));
         for (Usuario user : current.getUsuarioList()) {
             if (getUsuariosDualListModel().getSource().contains(user)) {
                 getUsuariosDualListModel().getSource().remove(user);

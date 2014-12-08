@@ -256,7 +256,7 @@ public class HelpDeskScheluder {
         JobDetail job = JobBuilder.newJob(TicketNotifyMailToGroup.class).withIdentity(jobId, HelpDeskScheluder.GRUPO_CORREO).build();
 
         job.getJobDataMap().put(AbstractGoDeskJob.ID_CANAL, idCanal);
-        job.getJobDataMap().put(TicketNotifyMailToGroup.ID_CASO, valueOfIdCaso);
+        job.getJobDataMap().put(AbstractGoDeskJob.ID_CASO, valueOfIdCaso);
         job.getJobDataMap().put(TicketNotifyMailToGroup.EMAILS_TO, to);
         job.getJobDataMap().put(TicketNotifyMailToGroup.EMAIL_SUBJECT, subject);
         job.getJobDataMap().put(TicketNotifyMailToGroup.EMAIL_TEXT, mensajeFinal);
