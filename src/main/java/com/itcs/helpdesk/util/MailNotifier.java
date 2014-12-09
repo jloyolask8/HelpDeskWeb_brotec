@@ -284,9 +284,6 @@ public class MailNotifier {
         //TODO: use configure texts.
         if (caso != null) {
             try {
-                final String subject = "HELPDESK " + (caso.getIdCanal() != null ? caso.getIdCanal().getNombre() : "")
-                        + " " + (caso.getTipoCaso() != null ? caso.getTipoCaso().getNombre() : EnumTipoCaso.CONTACTO.getTipoCaso().getNombre())
-                        + " #" + caso.getIdCaso();//ApplicationConfig.getNotificationSubjectText(); //may contain place holders
 
                 if (grupo.getUsuarioList() != null && !grupo.getUsuarioList().isEmpty()) {
 
@@ -312,19 +309,26 @@ public class MailNotifier {
 
                     }
 
-                    String mensaje = "Estimado Agente,<br/><br/>"
-                            + "Le notificamos que existe un caso en su grupo (" + grupo.getNombre() + ") para su pronta atención. "
-                            + "Favor contactar al cliente lo antes posible.<br/>";
+                    if (!StringUtils.isEmpty(to)) {
 
-                    final String mensajeFinal = mensaje + CasoExporter.exportToHtmlText(caso);
+                        final String subject = ManagerCasos.formatIdCaso(caso.getIdCaso()) + " "
+                                + "GoDesk " + (caso.getIdCanal() != null ? caso.getIdCanal().getNombre() : "")
+                                + " Nuev@ " + (caso.getTipoCaso() != null ? caso.getTipoCaso().getNombre() : EnumTipoCaso.CONTACTO.getTipoCaso().getNombre());//ApplicationConfig.getNotificationSubjectText(); //may contain place holders
 
-                    Canal canal = chooseDefaultCanalToSendMail(caso);
+                        final String mensaje = "Estimad@ Agente, <br/><br/>"
+                                + "Le notificamos que existe un caso en su grupo (" + grupo.getNombre() + ") para su pronta atención.<br/> "
+                                + "Favor contactar al cliente lo antes posible.<br/>";
 
-                    try {
-                        HelpDeskScheluder.scheduleNotifyAgentsCasoReceived(canal.getIdCanal(), mensajeFinal, to.toString(), subject, caso.getIdCaso());
-                    } catch (SchedulerException ex) {
-                        //It may fail right away, we still continue
-                        Logger.getLogger(MailNotifier.class.getName()).log(Level.SEVERE, "scheduleNotifyAgentsCasoReceived failed!", ex);
+                        final String mensajeFinal = mensaje + CasoExporter.exportToHtmlText(caso);
+
+                        Canal canal = chooseDefaultCanalToSendMail(caso);
+
+                        try {
+                            HelpDeskScheluder.scheduleNotifyAgentsCasoReceived(canal.getIdCanal(), mensajeFinal, to.toString(), subject, caso.getIdCaso());
+                        } catch (SchedulerException ex) {
+                            //It may fail right away, we still continue
+                            Logger.getLogger(MailNotifier.class.getName()).log(Level.SEVERE, "scheduleNotifyAgentsCasoReceived failed!", ex);
+                        }
                     }
                 }
             } catch (Exception ex) {

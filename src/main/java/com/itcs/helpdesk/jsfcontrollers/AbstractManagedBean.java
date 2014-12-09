@@ -784,7 +784,8 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     public int countItemsVista(Vista vista) {
         try {
             UserSessionBean userSessionBean = getUserSessionBean();
-            return getJpaController().countEntities(vista, userSessionBean.getCurrent(), null).intValue();
+            final Long countEntities = getJpaController().countEntities(vista, userSessionBean.getCurrent(), null);
+            return countEntities.intValue();
         } catch (Exception ex) {
             addErrorMessage(ex.getMessage());
             Logger.getLogger(VistaController.class.getName()).log(Level.SEVERE, null, ex);

@@ -192,6 +192,7 @@
                 <p:column>
                     <p:inplace  editor="true" emptyLabel="sin area" saveLabel="Guardar" disabled="#{casoController.selected.closed}">
                         <p:ajax event="save" update=":formint1 :formCerrarCaso" />
+                        <p:ajax event="save" listener="#{casoController.handleProductChange()}" update="idGrupoCaso" />
                         <f:facet name="output">
                             <h:outputText value="#{casoController.selected.idArea}" />
                             <i class="fa fa-search"></i>                                           
@@ -202,6 +203,33 @@
                                              value="#{casoController.selected.idArea}" >
                                 <f:selectItem itemLabel="" itemValue=""/>
                                 <f:selectItems value="#{applicationBean.areasAvailableList}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
+                            </p:selectOneMenu>
+                        </f:facet>
+                    </p:inplace>
+                </p:column>
+
+            </p:row>
+            
+            <p:row>
+                <p:column>
+                    <p:outputLabel value="Grupo:" style="font-weight:bold"/>
+                </p:column>
+                <p:column>
+                    <p:inplace  editor="true" emptyLabel="sin grupo" saveLabel="Guardar" disabled="#{casoController.selected.closed}">
+                        <p:ajax event="save" update=":formint1 :formCerrarCaso" />
+                        <f:facet name="output">
+                            <h:outputText value="#{casoController.selected.idGrupo}" />
+                            <i class="fa fa-search"></i>                                           
+                        </f:facet>
+                        <f:facet name="input">
+                            
+                            <p:selectOneMenu id="idGrupoCaso" style="width: 220px;"
+                                             filter="true" filterMatchMode="contains"
+                                             value="#{casoController.selected.idGrupo}"
+                                             disabled="#{casoController.selected.closed or empty casoController.selected.idArea}">
+                                <f:selectItem itemLabel="" itemValue="" />
+                                <f:selectItems value="#{casoController.selected.idArea.grupoList}" 
+                                               var="grupo" itemLabel="#{grupo.nombre}" itemValue="#{grupo}" itemDescription="#{grupo.descripcion}"/>
                             </p:selectOneMenu>
                         </f:facet>
                     </p:inplace>

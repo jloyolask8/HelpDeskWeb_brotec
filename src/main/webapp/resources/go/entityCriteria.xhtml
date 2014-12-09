@@ -11,8 +11,8 @@
     <cc:interface>
         <cc:attribute name="filtro" required="true" /> 
         <cc:attribute name="filterHelper" required="true" /> 
-        <cc:attribute name="removeActionListener" required="true" method-signature="void removeFiltroFromVista(java.lang.Object)"/>         
-        <cc:attribute name="addActionListener" required="true" method-signature="void addNewFiltroVista(java.lang.Object)"/>
+        <cc:attribute name="removeActionListener" required="false" method-signature="void removeFiltroFromVista(java.lang.Object)"/>         
+        <cc:attribute name="addActionListener" required="false" method-signature="void addNewFiltroVista(java.lang.Object)"/>
         <cc:attribute name="canRemoveFilter" default="true"/>
         <cc:attribute name="canChangeFilters" default="true" />
         <cc:attribute name="update" default=":mainform:messages" />
@@ -135,13 +135,13 @@
                 </p:column>
 
                 <p:column style="width: 60px; vertical-align: middle !important;">
-                    <p:commandButton icon="ui-icon-minus" actionListener="#{cc.attrs.removeActionListener}" ajax="true" immediate="false"
+                    <p:commandButton icon="ui-icon-minus" actionListener="#{cc.attrs.removeActionListener}" ajax="true" immediate="false" rendered="#{not empty cc.attrs.removeActionListener}"
                                      update="@form #{cc.attrs.update}" title="Eliminar criterio"
                                      disabled="#{(not cc.attrs.canChangeFilters) or (not cc.attrs.canRemoveFilter)}" process="@this"
                                      style="border-radius: 4em; height: 20px; width: 20px; margin-right: 5px;">
                         <p:resetInput target="@form" />
                     </p:commandButton>
-                    <p:commandButton icon="ui-icon-plus" actionListener="#{cc.attrs.addActionListener}" immediate="true"
+                    <p:commandButton icon="ui-icon-plus" actionListener="#{cc.attrs.addActionListener}" immediate="true" rendered="#{not empty cc.attrs.addActionListener}"
                                      update="@form #{cc.attrs.update}" title="Agregar criterio"
                                      style="border-radius: 4em; height: 20px; width: 20px; "/>
                 </p:column>

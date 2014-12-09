@@ -13,10 +13,12 @@ import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Caso_;
 import com.itcs.helpdesk.persistence.entities.EstadoCaso;
 import com.itcs.helpdesk.persistence.entities.FiltroVista;
+import com.itcs.helpdesk.persistence.entities.SubEstadoCaso;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.entityenums.EnumEstadoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumFieldType;
+import com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
 import com.itcs.helpdesk.persistence.entityenums.EnumUsuariosBase;
 import com.itcs.helpdesk.persistence.jpa.custom.CasoJPACustomController;
@@ -43,7 +45,9 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
 import javax.resource.NotSupportedException;
+import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.Days;
 import org.joda.time.Interval;
 import org.primefaces.event.ItemSelectEvent;
@@ -192,29 +196,6 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         preparePieModelEstadoCasos();
     }
 
-//    @Override
-//    public JPAFilterHelper getFilterHelper() {
-//        if (filterHelper == null) {
-//            filterHelper = new JPAFilterHelper(vista.getBaseEntityType(), emf) {
-//                @Override
-//                public JPAServiceFacade getJpaService() {
-//                    return getJpaController();
-//                }
-//            };
-//        }
-//        return filterHelper;
-//    }
-//    public JPAFilterHelper getFilterHelper2() {
-//        if (filterHelper2 == null) {
-//            filterHelper2 = new JPAFilterHelper((Caso.class).getName(), emf) {
-//                @Override
-//                public JPAServiceFacade getJpaService() {
-//                    return getJpaController();
-//                }
-//            };
-//        }
-//        return filterHelper2;
-//    }
     public void onTabChange(TabChangeEvent event) {
         //do not do a shit.
     }
@@ -238,6 +219,8 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
     public void handleIdCampoChangeEvent() {
         this.campoCompCasoEjeXSeriesEntity.setValor("");
         this.campoCompCasoEjeXSeriesEntity.setValor2("");
+        this.campoCompCasoEjeXSeriesEntity.setValorLabel("");
+        this.campoCompCasoEjeXSeriesEntity.setValor2Label("");
         this.campoCompCasoEjeXSeriesEntity.setIdComparador(null);
     }
 
@@ -907,6 +890,215 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         System.out.println("oneDimData:" + oneDimData);
     }
 
+    /**
+     * Estado actual de postventa
+     *
+     * @return
+     */
+    public String prepareCategoryModelCasosAbiertosPorSubEstado() {
+        this.setShowFilter(false);
+        variables = 2;
+        twoDimData = new HashMap<>();
+        pieModel = null;//Hide Pie chart
+        categoryModel = new CartesianChartModel();
+        setTipoGraficoSelected("barChart");
+        setXaxisLabel("Ejecutivos");
+
+//      List<SubEstadoCaso> subestados = (List<SubEstadoCaso>)getJpaController().findAll(SubEstadoCaso.class);//Y
+        List<SubEstadoCaso> subestados = (List<SubEstadoCaso>) getJpaController().getSubEstadoCasofindByIdEstadoAndTipoCaso(EnumEstadoCaso.ABIERTO.getEstado(), EnumTipoCaso.POSTVENTA.getTipoCaso());
+
+        List<Area> areas = (List<Area>) getJpaController().findAll(Area.class);//X
+
+        viewMatrix = new HashMap<>();
+        int seriesIndex = 0;
+
+        for (SubEstadoCaso subestado : subestados) {
+
+            ChartSeries serieEstado = new ChartSeries();
+            serieEstado.setLabel(subestado.getIdSubEstado());
+
+            Vista vista0 = new Vista(Caso.class);
+            FiltroVista filtroNotAssigned = new FiltroVista();
+            filtroNotAssigned.setIdCampo(Caso_.AREA_FIELD_NAME);
+            filtroNotAssigned.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+            filtroNotAssigned.setValor(CasoJPACustomController.PLACE_HOLDER_NULL);
+            filtroNotAssigned.setValorLabel("SIN AREA");
+            filtroNotAssigned.setIdVista(vista0);
+            if (vista0.getFiltrosVistaList() == null) {
+                vista0.setFiltrosVistaList(new ArrayList<FiltroVista>());
+
+            }
+            vista0.getFiltrosVistaList().add(filtroNotAssigned);
+
+            FiltroVista filtroEstado = new FiltroVista();
+            filtroEstado.setIdCampo(Caso_.SUBESTADO_FIELD_NAME);
+            filtroEstado.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+            filtroEstado.setValor(subestado.getIdSubEstado());
+            filtroEstado.setValorLabel(subestado.getNombre());
+            filtroEstado.setIdVista(vista0);
+            vista0.getFiltrosVistaList().add(filtroEstado);
+
+            vista0.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
+            serieEstado.set("SIN AREA", vistaController.countItemsVista(vista0));
+
+            ArrayList<Vista> vistaItems = new ArrayList<>();
+            vistaItems.add(vista0);
+
+            for (Area area : areas) {
+
+                Vista vista1 = new Vista(Caso.class);
+                FiltroVista filtro = new FiltroVista();
+                filtro.setIdCampo(Caso_.AREA_FIELD_NAME);
+                filtro.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+                filtro.setValor(area.getIdArea());
+                filtro.setValorLabel(area.getNombre());
+                filtro.setIdVista(vista1);
+                if (vista1.getFiltrosVistaList() == null) {
+                    vista1.setFiltrosVistaList(new ArrayList<FiltroVista>());
+
+                }
+                vista1.getFiltrosVistaList().add(filtro);
+
+                FiltroVista filtroEstado1 = new FiltroVista();
+                filtroEstado1.setIdCampo(Caso_.SUBESTADO_FIELD_NAME);
+                filtroEstado1.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+                filtroEstado1.setValor(subestado.getIdSubEstado());
+                filtroEstado1.setValorLabel(subestado.getNombre());
+                filtroEstado1.setIdVista(vista1);
+                vista1.getFiltrosVistaList().add(filtroEstado1);
+
+                vista1.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
+                final int countCasosForView = vistaController.countItemsVista(vista1);
+                serieEstado.set(area.getIdArea(), countCasosForView);
+                addTwoDimTableValue(area.getIdArea(), subestado.getNombre(), countCasosForView);
+
+                vistaItems.add(vista1);
+
+            }
+            categoryModel.addSeries(serieEstado);
+            viewMatrix.put(seriesIndex, vistaItems);
+            seriesIndex++;
+        }
+        setChartModelTitle("Sub Estados de Casos por Areas");
+        return "reports";
+    }
+
+    /**
+     * Casos Abiertos v/s Cerrados última semana
+     *
+     * @return
+     */
+    public String prepareCategoryModelCasosAbiertosVsCerradosLastWeek() {
+        this.setShowFilter(true);
+        variables = 2;
+        twoDimData = new HashMap<>();
+        pieModel = null;//Hide Pie chart
+        categoryModel = new CartesianChartModel();
+        setTipoGraficoSelected("barChart");
+        setXaxisLabel("Fecha");
+        viewMatrix = new HashMap<>();
+        int seriesIndex = 0;
+
+        final DateTime input = new DateTime();
+        System.out.println(input);
+        final DateTime startOfLastWeek
+                = new DateTime(input.minusWeeks(1).withDayOfWeek(DateTimeConstants.MONDAY).withTimeAtStartOfDay());
+        System.out.println(startOfLastWeek);
+        final DateTime endOfLastWeek = startOfLastWeek.plusDays(6).withTime(23, 59, 59, 0);
+        System.out.println(startOfLastWeek + "---" + endOfLastWeek);
+
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", LOCALE_ES_CL);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM", LOCALE_ES_CL);
+
+        List<Interval> rangeStartDates = DateUtils.getRangeStartDates(startOfLastWeek.toDate(), endOfLastWeek.toDate(), Calendar.DAY_OF_MONTH);
+
+        List<EstadoCaso> estados = getJpaController().getEstadoCasoFindAll();//Y-axis
+        for (EstadoCaso estado : estados) {
+
+            ChartSeries serieEstado = new ChartSeries();
+            serieEstado.setLabel(estado.getIdEstado());
+
+//            Vista vista0 = new Vista(Caso.class);
+//            FiltroVista filtroNull = new FiltroVista();
+//            filtroNull.setIdCampo(Caso_.ESTADO_FIELD_NAME);
+//            filtroNull.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+//            filtroNull.setValor(CasoJPACustomController.PLACE_HOLDER_NULL);
+//            filtroNull.setValorLabel("SIN ESTADO!");
+//            filtroNull.setIdVista(vista0);
+//            if (vista0.getFiltrosVistaList() == null) {
+//                vista0.setFiltrosVistaList(new ArrayList<FiltroVista>());
+//
+//            }
+//            vista0.getFiltrosVistaList().add(filtroNull);
+//
+//            FiltroVista filtroEstado = new FiltroVista();
+//            filtroEstado.setIdCampo(Caso_.SUBESTADO_FIELD_NAME);
+//            filtroEstado.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+//            filtroEstado.setValor(subestado.getIdSubEstado());
+//            filtroEstado.setValorLabel(subestado.getNombre());
+//            filtroEstado.setIdVista(vista0);
+//            vista0.getFiltrosVistaList().add(filtroEstado);
+//
+//            vista0.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
+//            serieEstado.set("SIN AREA", vistaController.countItemsVista(vista0));
+//
+            ArrayList<Vista> vistaItems = new ArrayList<>();
+//            vistaItems.add(vista0);
+
+
+                if (rangeStartDates != null) {
+                    for (Interval interval : rangeStartDates) {
+
+                        final Date startDate = interval.getStart().toDate();
+                        final Date endDate = interval.getEnd().toDate();
+
+                        String fecha_from = format.format(startDate);//ok to start any day i want for any period.
+                        String fecha_to = format.format(endDate);//ok to start any day i want for any period.
+                        String label = dateFormat.format(startDate);
+
+                        //Create Vista to count items
+                        Vista vista1 = new Vista(Caso.class);
+                        if (vista1.getFiltrosVistaList() == null) {
+                            vista1.setFiltrosVistaList(new ArrayList<FiltroVista>());
+                        }
+
+                        //==================FECHA_CREACION/FECHA_X
+                        FiltroVista filtroFecha1 = new FiltroVista();
+                        filtroFecha1.setIdCampo(Caso_.FECHA_CREACION_FIELD_NAME);
+                        filtroFecha1.setIdComparador(EnumTipoComparacion.BW.getTipoComparacion());
+                        filtroFecha1.setValor(fecha_from);
+                        filtroFecha1.setValorLabel(fecha_from);
+                        filtroFecha1.setValor2(fecha_to);
+                        filtroFecha1.setValor2Label(fecha_to);
+                        filtroFecha1.setIdVista(vista1);
+                        vista1.getFiltrosVistaList().add(filtroFecha1);
+
+                        //============= Y AXIS
+                        FiltroVista filtroEntityY = new FiltroVista();
+                        filtroEntityY.setIdCampo(Caso_.ESTADO_FIELD_NAME);
+                        filtroEntityY.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+                        filtroEntityY.setValor(estado.getIdEstado());
+                        filtroEntityY.setValorLabel(estado.getNombre());
+                        filtroEntityY.setIdVista(vista1);
+                        vista1.getFiltrosVistaList().add(filtroEntityY);
+
+                        //====== DATA FILTERS
+                        vista1.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
+                        final int countCasosForView = vistaController.countItemsVista(vista1);
+                        serieEstado.set(label, countCasosForView);
+                        addTwoDimTableValue(label, serieEstado.getLabel(), countCasosForView);
+                        vistaItems.add(vista1);
+                    }
+                }
+
+            categoryModel.addSeries(serieEstado);
+            viewMatrix.put(seriesIndex, vistaItems);
+            seriesIndex++;
+        }
+        setChartModelTitle("Casos Abiertos v/s Cerrados última semana");
+        return "reports";
+    }
+
 //    private int daysBetween(Date d1, Date d2) {
 //        return (int) ((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24));
 //    }
@@ -983,7 +1175,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         setXaxisLabel("Ejecutivos");
 
         List<EstadoCaso> estados = getJpaController().getEstadoCasoFindAll();//Y
-        List<Usuario> agents = getJpaController().getUsuarioFindAll();//X
+       List<Usuario> agents = (List<Usuario>) getJpaController().findAll(Usuario.class);//X
 
         try {
             if (agents.contains(EnumUsuariosBase.SISTEMA.getUsuario())) {
@@ -1099,7 +1291,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         filtroCasosCerrados.setIdCampo(Caso_.ESTADO_FIELD_NAME);
         filtroCasosCerrados.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
         filtroCasosCerrados.setValor(EnumEstadoCaso.CERRADO.getEstado().getIdEstado());
-        filtroCasosCerrados.setValor(EnumEstadoCaso.CERRADO.getEstado().getNombre());
+        filtroCasosCerrados.setValorLabel(EnumEstadoCaso.CERRADO.getEstado().getNombre());
         filtroCasosCerrados.setIdVista(vista2);
         if (vista2.getFiltrosVistaList() == null) {
             vista2.setFiltrosVistaList(new ArrayList<FiltroVista>());
@@ -1107,14 +1299,14 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         }
         vista2.getFiltrosVistaList().add(filtroCasosCerrados);
 
-        vista1.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
+//        vista1.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
         final int countCasosForView = vistaController.countItemsVista(vista1);
-        pieModel.set("Abiertos", vistaController.countItemsVista(vista1));
+        pieModel.set("Abiertos", countCasosForView);//TODO i18n
         addOneDimTableValue("Abiertos", countCasosForView);
 
-        vista2.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
+//        vista2.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
         final int countCasosForView2 = vistaController.countItemsVista(vista2);
-        pieModel.set("Cerrados", countCasosForView2);
+        pieModel.set("Cerrados", countCasosForView2);//TODO i18n
         addOneDimTableValue("Cerrados", countCasosForView2);
 
         ArrayList<Vista> vistaItems = new ArrayList<>();
@@ -1160,7 +1352,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         pieModel.set("No Asignados", vistaController.countItemsVista(vista0));
         vistaItems.add(vista0);
 
-        List<Usuario> agents = getJpaController().getUsuarioFindAll();
+        List<Usuario> agents = (List<Usuario>) getJpaController().findAll(Usuario.class);
         for (Usuario agent : agents) {
             if (!agent.getIdUsuario().equalsIgnoreCase(EnumUsuariosBase.SISTEMA.getUsuario().getIdUsuario())) {
                 Vista vista1 = new Vista(Caso.class);
@@ -1309,6 +1501,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
             filtroFecha2.setIdCampo(Caso_.FECHA_CREACION_FIELD_NAME);
             filtroFecha2.setIdComparador(EnumTipoComparacion.LT.getTipoComparacion());
             filtroFecha2.setValor(fecha2);
+            filtroFecha2.setValorLabel(fecha2);
             filtroFecha2.setIdVista(view);
             view.getFiltrosVistaList().add(filtroFecha2);
 //==================

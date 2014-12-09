@@ -23,7 +23,7 @@ import org.quartz.SchedulerException;
  */
 public class TicketNotifyMailToGroup implements Job {
 
-    public static final String ID_CASO = "idCaso";
+//    public static final String ID_CASO = "idCaso";
     public static final String EMAILS_TO = "to";
     public static final String EMAIL_SUBJECT = "subject";
     public static final String EMAIL_TEXT = "email_text";
@@ -44,12 +44,12 @@ public class TicketNotifyMailToGroup implements Job {
 
         JobDataMap map = context.getMergedJobDataMap();//.getJobDetail().getJobDataMap();
         if (map != null) {
-            String idCanal = (String) map.get(DownloadEmailJob.ID_CANAL);
-            String idCaso = (String) map.get(ID_CASO);
-            String emails_to = (String) map.get(EMAILS_TO);
+            String idCanal = (String) map.get(AbstractGoDeskJob.ID_CANAL);
+            String idCaso = (String) map.get(AbstractGoDeskJob.ID_CASO);
+            String emails_to = (String) map.get(TicketNotifyMailToGroup.EMAILS_TO);
             //---
-            String subject = (String) map.get(EMAIL_SUBJECT);
-            String email_text = (String) map.get(EMAIL_TEXT);
+            String subject = (String) map.get(TicketNotifyMailToGroup.EMAIL_SUBJECT);
+            String email_text = (String) map.get(TicketNotifyMailToGroup.EMAIL_TEXT);
             emails_to = emails_to.trim().replace(" ", "");
 
             final String formatJobId = formatJobId(idCanal, idCaso, emails_to);

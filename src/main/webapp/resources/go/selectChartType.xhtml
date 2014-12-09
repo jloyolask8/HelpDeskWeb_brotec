@@ -15,15 +15,15 @@
 
     <!-- IMPLEMENTATION -->
     <cc:implementation>
-        <p:selectOneMenu id="chartType" value="#{cc.attrs.value}" 
+        <p:selectOneMenu id="baseEntityType" value="#{cc.attrs.value}" 
 
                          filter="true" filterMatchMode="startsWith"
                          required="#{cc.attrs.required}" requiredMessage="#{cc.attrs.requiredMessage}">
-            <f:selectItem itemLabel="Tipo de Grafico..." itemValue="" noSelectionOption="true"/>
-            <f:selectItem itemLabel="Lineas" itemValue="line" />
-            <f:selectItem itemLabel="Barras" itemValue="bar" />
-            <f:selectItem itemLabel="Pie" itemValue="pie" />
-            <f:selectItem itemLabel="donut" itemValue="donut" />
+            <f:selectItem itemLabel="Tipo de Objeto..." itemValue="" noSelectionOption="true"/>
+            <f:selectItem itemLabel="Casos" itemValue="com.itcs.helpdesk.persistence.entities.Caso" />
+            <f:selectItem itemLabel="Clientes" itemValue="com.itcs.helpdesk.persistence.entities.Cliente" />
+            <f:selectItem itemLabel="Usuarios" itemValue="com.itcs.helpdesk.persistence.entities.Usuario" />
+            <f:selectItem itemLabel="Sesiones de Usuarios" itemValue="com.itcs.helpdesk.persistence.entities.UsuarioSessionLog" />
 
 
             <p:ajax update="@parent,#{cc.attrs.update}"/>

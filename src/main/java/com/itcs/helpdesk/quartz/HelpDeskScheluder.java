@@ -104,8 +104,8 @@ public class HelpDeskScheluder {
     private static String scheduleSendMail(final Long idCaso, final String idCanal, final String mensajeFinal,
             final String to, final String subject, final Date whenToRun) throws SchedulerException {
 
-        System.out.println("scheduling SendMail job");
-        final String jobId = SendMailJob.formatJobId(idCanal, idCaso.toString(), to);
+//        System.out.println("scheduling SendMail job");
+        final String jobId = SendMailJob.formatJobId(idCanal, subject, idCaso.toString(), to);
         final JobKey jobKey = JobKey.jobKey(jobId, HelpDeskScheluder.GRUPO_CORREO);
         if (getInstance().checkExists(jobKey)) {
             HelpDeskScheluder.unschedule(jobKey);
@@ -256,7 +256,7 @@ public class HelpDeskScheluder {
         JobDetail job = JobBuilder.newJob(TicketNotifyMailToGroup.class).withIdentity(jobId, HelpDeskScheluder.GRUPO_CORREO).build();
 
         job.getJobDataMap().put(AbstractGoDeskJob.ID_CANAL, idCanal);
-        job.getJobDataMap().put(TicketNotifyMailToGroup.ID_CASO, valueOfIdCaso);
+        job.getJobDataMap().put(AbstractGoDeskJob.ID_CASO, valueOfIdCaso);
         job.getJobDataMap().put(TicketNotifyMailToGroup.EMAILS_TO, to);
         job.getJobDataMap().put(TicketNotifyMailToGroup.EMAIL_SUBJECT, subject);
         job.getJobDataMap().put(TicketNotifyMailToGroup.EMAIL_TEXT, mensajeFinal);

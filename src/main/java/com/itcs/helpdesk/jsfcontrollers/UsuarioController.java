@@ -1,17 +1,10 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
-import com.itcs.helpdesk.persistence.entities.Caso;
-import com.itcs.helpdesk.persistence.entities.Caso_;
-import com.itcs.helpdesk.persistence.entities.FiltroVista;
 import com.itcs.helpdesk.persistence.entities.Grupo;
 import com.itcs.helpdesk.persistence.entities.Rol;
 import com.itcs.helpdesk.persistence.entities.Usuario;
-import com.itcs.helpdesk.persistence.entities.Vista;
-import com.itcs.helpdesk.persistence.entityenums.EnumEstadoCaso;
-import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
 import com.itcs.helpdesk.persistence.entityenums.EnumUsuariosBase;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.UtilSecurity;
@@ -24,8 +17,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
@@ -33,7 +24,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 import org.apache.commons.lang3.StringUtils;
@@ -148,7 +138,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
     public void setIdUsuarioDelete(String idUsuarioDelete) {
         System.out.println("idUsuario: " + idUsuarioDelete);
         this.idUsuarioDelete = idUsuarioDelete;
-        Usuario usuario = getJpaController().getUsuarioFindByIdUsuario(idUsuarioDelete);
+        Usuario usuario = getJpaController().find(Usuario.class, idUsuarioDelete);
         setSelected(usuario);
     }
 
@@ -214,7 +204,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
             current.setEditable(true);
             current.setGrupoList(getGruposDualListModel().getTarget());
 
-            getJpaController().persistUsuario(current);
+            getJpaController().persist(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("UsuarioCreated"));
             return prepareList();
         } catch (Exception e) {
@@ -325,7 +315,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
                 }
             }
 
-            Usuario usrOld = getJpaController().getUsuarioFindByIdUsuario(updatedUser.getIdUsuario());
+            Usuario usrOld = getJpaController().find(Usuario.class, updatedUser.getIdUsuario());
             //Si se cambio la password se actualiza si no, se deja la que ya está
             if (!updatedUser.getPass().trim().isEmpty()) {
                 updatedUser.setPass(UtilSecurity.getMD5(updatedUser.getPass()));
@@ -335,9 +325,9 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
 
             updatedUser.setGrupoList(getGruposDualListModel().getTarget());
             if (updateFull) {
-                getJpaController().mergeUsuarioFull(updatedUser);
+                getJpaController().merge(updatedUser);
             } else {
-                getJpaController().mergeUsuarioLight(updatedUser);
+                getJpaController().merge(updatedUser);
             }
 
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("UsuarioUpdated"));
@@ -408,7 +398,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
 
     private void performDestroy() {
         try {
-            getJpaController().removeUsuario(current);
+            getJpaController().remove(Usuario.class, current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("UsuarioDeleted"));
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
@@ -473,15 +463,15 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
 //        return JsfUtil.getSelectItems(getJpaController().getUsuarioFindAll(), true);
 //    }
     public SelectItem[] getItemsAvailableSelectOneNoSystem() {
-        List<Usuario> lista = getJpaController().getUsuarioFindAll();
+        List<Usuario> lista = (List<Usuario>) getJpaController().findAll(Usuario.class);
         lista.remove(EnumUsuariosBase.SISTEMA.getUsuario());
         return JsfUtil.getSelectItems(lista, true);
     }
 
     public SelectItem[] getStringItemsAvailableSelectOneNoSystem() {
-        List<Usuario> lista = getJpaController().getUsuarioFindAll();
+        List<Usuario> lista = (List<Usuario>) getJpaController().findAll(Usuario.class);
         lista.remove(EnumUsuariosBase.SISTEMA.getUsuario());
-        List<String> ids = new LinkedList<String>();
+        List<String> ids = new LinkedList<>();
         for (Usuario usuario : lista) {
             ids.add(usuario.getIdUsuario());
         }
@@ -489,7 +479,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
     }
 
     public SelectItem[] getItemsAvailableSelectOneNoPropietario() {
-        List<Usuario> lista = getJpaController().getUsuarioFindAll();
+        List<Usuario> lista = (List<Usuario>) getJpaController().findAll(Usuario.class);
         lista.remove(EnumUsuariosBase.SISTEMA.getUsuario());
         lista.add(new Usuario(UsuarioController.SIN_PROPIETARIO, "Sin", "Propietario"));
         return JsfUtil.getSelectItems(lista, true);
@@ -698,7 +688,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
             }
             UsuarioController controller = (UsuarioController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "usuarioController");
-            return controller.getJpaController().getUsuarioFindByIdUsuario(getKey(value));
+            return controller.getJpaController().find(Usuario.class, getKey(value));
         }
 
         java.lang.String getKey(String value) {
