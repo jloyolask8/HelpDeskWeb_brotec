@@ -388,6 +388,12 @@ img.right {
     width:16px;
 }
 
+.mergeIcon {
+    background: url(../../images/flow-merge-16.png) no-repeat !important;
+    height: 16px;
+    width: 16px;
+}
+
 .notaicon {
     background: url(../../images/view-pim-notes16.png) no-repeat !important;
     height:16px;

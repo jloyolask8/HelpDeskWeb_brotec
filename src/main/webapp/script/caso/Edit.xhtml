@@ -314,11 +314,39 @@
                 <p:tab id="tabCasosRelacionados" title="Casos relacionados (#{casoController.selected.casosRelacionadosList.size() + casoController.selected.casosHijosList.size() + casoController.selected.idCliente.casoList.size()})" >
                     <p:scrollPanel id="scrollpaneCasosRel" mode="native" style="border: 0; height: 500px;">
 
-                        <go:casoList casosList="#{casoController.selected.idCliente.casoList}" header="Historial de casos del Cliente #{casoController.selected.clientName} (#{casoController.selected.idCliente.casoList.size()})"/>
+                        <div align="right">
+                            <p:commandButton actionListener="#{casoController.enableMerge()}" rendered="#{not casoController.mergeHabilitado}"
+                                             value="Habilitar combinar con caso actual"
+                                             icon="mergeIcon"
+                                             update="scrollpaneCasosRel"/>
+                            <p:commandButton actionListener="#{casoController.enableMerge()}" rendered="#{casoController.mergeHabilitado}"
+                                             value="Cancelar"
+                                             icon="ui-icon-close"
+                                             update="scrollpaneCasosRel"/>
+                            &nbsp;
+                            <p:commandButton actionListener="#{casoController.mergeSelectedCasos()}" rendered="#{casoController.mergeHabilitado}"
+                                             value="Combinar"
+                                             icon="mergeIcon"
+                                             update=":botoneraCaso scrollpaneCasosRel"/>
+                        </div>
+                        <br/>
+                        
+                        <go:casoList id="casosMerge" rendered="#{casoController.mergeHabilitado}"
+                                     selectionMultiple="true"
+                                     casosList="#{casoController.mergeCandidatesList}"
+                                     header="Candidatos para combinar (#{casoController.mergeCandidatesList.size()}) con caso N°#{casoController.selected.idCaso}"/>
 
-                        <go:casoList casosList="#{casoController.selected.casosRelacionadosList}" header="Casos relacionados (#{casoController.selected.casosRelacionadosList.size()})"/>
+                        <go:casoList id="casosCliente" rendered="#{not casoController.mergeHabilitado}"
+                                     casosList="#{casoController.selected.idCliente.casoList}"
+                                     header="Historial de casos del Cliente #{casoController.selected.clientName} (#{casoController.selected.idCliente.casoList.size()})"/>
 
-                        <go:casoList casosList="#{casoController.selected.casosHijosList}" header="Sub casos (#{casoController.selected.casosHijosList.size()})"/>
+                        <go:casoList id="casosRel" rendered="#{not casoController.mergeHabilitado}"
+                                     casosList="#{casoController.selected.casosRelacionadosList}"
+                                     header="Casos relacionados (#{casoController.selected.casosRelacionadosList.size()})"/>
+
+                        <go:casoList id="subCasos" rendered="#{not casoController.mergeHabilitado}"
+                                     casosList="#{casoController.selected.casosHijosList}"
+                                     header="Sub casos (#{casoController.selected.casosHijosList.size()})"/>
 
                     </p:scrollPanel>
                 </p:tab>
@@ -360,11 +388,7 @@
                     </p:scrollPanel>
 
                 </p:tab>
-                
-                <p:tab id="tabMerge" title="Combinar casos" closable="true">
-                    
-                </p:tab>
-                
+
                 <p:tab id="tabEditarEvento" title="Detalles del Evento" closable="true" 
                        rendered="#{casoScheduleController.event ne null}">
 
@@ -1314,7 +1338,7 @@
             </p:dialog>
             <script>
                 //<![CDATA[
-                $(document).ready(function() {
+                $(document).ready(function () {
                     resizeScrollPanel();
                 });
 
@@ -1344,7 +1368,7 @@
                 }
 
                 var id;
-                $(window).resize(function() {
+                $(window).resize(function () {
                     id = setTimeout(resizeScrollPanel, 500);
                 });
 

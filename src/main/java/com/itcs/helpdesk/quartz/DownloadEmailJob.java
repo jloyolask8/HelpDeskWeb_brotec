@@ -181,6 +181,10 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                                         if (idCaso != null) {
                                             Caso caso = jpaController.find(Caso.class, idCaso);
                                             if (caso != null) {
+                                                //Si el caso encontrado tiene un id de caso combinado, hay que crear la nota en el caso que quedo de la combinacion
+                                                if (caso.getIdCasoCombinado() != null) {
+                                                    caso = caso.getIdCasoCombinado();
+                                                }
                                                 //download message
                                                 //Si está configurado bajar attachments y el correo tiene attachments se vuelve a descargar con attachments
                                                 if ((canal.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()) != null)

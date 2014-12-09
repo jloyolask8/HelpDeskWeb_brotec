@@ -226,6 +226,14 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     //respuesta
     private boolean adjuntarArchivosARespuesta = false;
+    private boolean mergeHabilitado;
+    private LinkedList<Caso> mergeCandidatesList;
+    private Comparator<Caso> comparadorCasosPorFechaCreacion = new Comparator<Caso>() {
+        @Override
+        public int compare(Caso o1, Caso o2) {
+            return o1.getFechaCreacion().compareTo(o2.getFechaCreacion());
+        }
+    };
 
     public CasoController() {
         super(Caso.class);
@@ -244,6 +252,101 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     @Override
     public Usuario getDefaultUserWho() {
         return userSessionBean.getCurrent();
+    }
+
+    public void enableMerge() {
+        this.setMergeHabilitado(!isMergeHabilitado());
+        if (isMergeHabilitado()) {
+            mergeCandidatesList = null;
+            setSelectedItems(new LinkedList<Caso>());
+        }
+    }
+
+    public void mergeSelectedCasos() throws Exception {
+        if (getSelectedItems().isEmpty()) {
+            showMessageInDialog(FacesMessage.SEVERITY_WARN, "No se han seleccionado casos para combinar",
+                    "Para poder combinar casos, se deben seleccionar los que se deseen combinar");
+        } else {
+            getSelectedItems().add(getSelected());
+            Collections.sort(getSelectedItems(), comparadorCasosPorFechaCreacion);
+            Caso casoBase = getSelectedItems().get(0);
+            getSelectedItems().remove(0);
+            StringBuilder sb = new StringBuilder("se ha combinado con el(los) caso(s) ");
+            for (Caso casoToMerge : getSelectedItems()) {
+                casoBase.getNotaList().add(getManagerCasos().crearNotaDesdeCaso(casoToMerge, casoBase));
+                List<Nota> listaNotas = casoToMerge.getNotaList();
+                for (Nota item : listaNotas) {
+                    Nota nuevaNota = getManagerCasos().clonarNota(item);
+                    nuevaNota.setIdCaso(casoBase);
+                    getJpaController().getNotaJpaController().create(nuevaNota);
+                    casoBase.getNotaList().add(nuevaNota);
+                }
+                casoBase.getCasosHijosList().addAll(casoToMerge.getCasosHijosList());
+                casoBase.getAttachmentList().addAll(casoToMerge.getAttachmentList());
+                casoBase.getAttachmentsNotEmbedded().addAll(casoToMerge.getAttachmentsNotEmbedded());
+                mergeList(casoBase.getCasosRelacionadosList(), casoToMerge.getCasosRelacionadosList());
+                casoBase.getCasosRelacionadosList().remove(casoBase);
+                casoToMerge.setIdCasoCombinado(casoBase);
+                casoToMerge.setIdEstado(EnumEstadoCaso.CERRADO.getEstado());
+                getManagerCasos().mergeCaso(casoToMerge,
+                        ManagerCasos.createLogComment(casoToMerge, "Se combina con el caso " + casoBase.getIdCaso()));
+                sb.append(casoToMerge.getIdCaso());
+                sb.append(',');
+            }
+            String comment = sb.toString();
+            comment = comment.substring(0, comment.length() - 1);
+            casoBase.setIdEstado(EnumEstadoCaso.ABIERTO.getEstado());
+            getManagerCasos().mergeCaso(casoBase, ManagerCasos.createLogComment(casoBase, comment));
+            mergeCandidatesList = null;
+            setMergeHabilitado(false);
+            setSelectedItems(null);
+            showMessageInDialog(FacesMessage.SEVERITY_INFO, "Combinación finalizada",
+                    "El caso " + casoBase.getIdCaso() + " " + comment);
+            FacesContext.getCurrentInstance().getExternalContext().redirect("Edit.xhtml");
+        }
+    }
+
+    private void mergeList(List listaOriginal, List lista) {
+        for (Object caso : lista) {
+            if (!listaOriginal.contains(caso)) {
+                listaOriginal.add(caso);
+            }
+        }
+    }
+
+    public List<Caso> getMergeCandidatesList() {
+        if (mergeCandidatesList == null) {
+            mergeCandidatesList = new LinkedList<>();
+            List<Caso> tmpList = getSelected().getIdCliente().getCasoList();
+            for (Caso tmpList1 : tmpList) {
+                addToMergeCandidatesList(tmpList1);
+            }
+            tmpList = getSelected().getCasosRelacionadosList();
+            for (Caso tmpList1 : tmpList) {
+                addToMergeCandidatesList(tmpList1);
+            }
+
+            for (Caso casoHijo : getSelected().getCasosHijosList()) {
+                mergeCandidatesList.remove(casoHijo);
+                if (mergeCandidatesList.isEmpty()) {
+                    break;
+                }
+            }
+
+            if ((getSelected().getIdCasoPadre() != null) && (!mergeCandidatesList.isEmpty())) {
+                mergeCandidatesList.remove(getSelected().getIdCasoPadre());
+            }
+
+        }
+        return mergeCandidatesList;
+    }
+
+    private void addToMergeCandidatesList(Caso casoToMerge) {
+        if ((!mergeCandidatesList.contains(casoToMerge))
+                && (casoToMerge.getIdCasoCombinado() == null)
+                && (!casoToMerge.equals(getSelected()))) {
+            mergeCandidatesList.add(casoToMerge);
+        }
     }
 
     @Override
@@ -1508,10 +1611,12 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 getJpaController().mergeCaso(current, changeLog);
             }
         }
-        
+
         //ugly patch to reset the selected event
         final CasoScheduleController bean = (CasoScheduleController) JsfUtil.getManagedBean("casoScheduleController");
         bean.setEvent(null);
+        //reset the merge option
+        setMergeHabilitado(false);
     }
 
     /**
@@ -2942,7 +3047,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         sbuilder.append("MENSAJE ORIGINAL");
         sbuilder.append("<br/>");
         sbuilder.append("Email cliente: ");
-        sbuilder.append(caso.getEmailCliente() != null ? caso.getEmailCliente() : caso.getIdCliente() != null ? caso.getIdCliente().getEmailClienteList(): "No tiene");
+        sbuilder.append(caso.getEmailCliente() != null ? caso.getEmailCliente() : caso.getIdCliente() != null ? caso.getIdCliente().getEmailClienteList() : "No tiene");
         sbuilder.append("<br/>");
         sbuilder.append("Asunto: ");
         sbuilder.append(caso.getTema());
@@ -4051,6 +4156,22 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         this.searchBarVisible = searchBarVisible;
     }
 
+    /**
+     * @return the habilitarMerge
+     */
+    public boolean isMergeHabilitado() {
+        return mergeHabilitado;
+    }
+
+    /**
+     * @param habilitarMerge the habilitarMerge to set
+     */
+    public void setMergeHabilitado(boolean habilitarMerge) {
+        System.out.println("habilitarMerge: " + habilitarMerge);
+        this.mergeHabilitado = habilitarMerge;
+        System.out.println("seted habilitarMerge: " + this.mergeHabilitado);
+    }
+
     @FacesConverter(forClass = Caso.class)
     public static class CasoControllerConverter implements Converter, Serializable {
 
@@ -4108,8 +4229,10 @@ class CasoDataModel extends ListDataModel<Caso> implements SelectableDataModel<C
 
         if (listOfCaso != null) {
             for (Caso obj : listOfCaso) {
-                if (obj.getIdCaso().toString().equals(rowKey)) {
-                    return obj;
+                if (obj.getIdCaso() != null) {
+                    if (obj.getIdCaso().toString().equals(rowKey)) {
+                        return obj;
+                    }
                 }
             }
         }
