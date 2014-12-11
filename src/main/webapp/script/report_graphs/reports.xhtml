@@ -28,11 +28,11 @@
         <ui:define name="title">
             <p:outputLabel value="#{reporteController.chartModelTitle}"/>
         </ui:define>
-        
-       <ui:define name="menutitle">
+
+        <ui:define name="menutitle">
             <p:outputLabel value="Reportes"/>
         </ui:define>
-        
+
         <ui:define name="west">
             <h:form id="advancedReportForm">
                 <p:accordionPanel id="accordion1" multiple="false" cache="true" activeIndex="#{reporteController.activeLeftTab}">
@@ -40,25 +40,35 @@
                     <p:ajax event="tabChange" listener="#{reporteController.onTabChange}" />  
 
                     <p:tab title="Reportes Predefinidos">
-                        <p:commandLink action="#{reporteController.preparePieModelEstadoCasos()}" value="Estado de Casos" immediate="true"/>
-                        <br/>
+
                         <p:commandLink action="#{reporteController.preparePieModelCasosPorAgente()}" value="Resumen de Casos por Ejecutivo" immediate="true"/>
                         <br/>
-                        <p:commandLink action="#{reporteController.prepareCategoryModelCasosPorAgente()}" value="Estado de Casos por Ejecutivo" immediate="true"/>
-                        <br/>
                         <p:commandLink action="#{reporteController.preparePieModelCasosPorArea()}" value="Resumen de Casos por Area" immediate="true"/>
-                        <br/>
-                        <p:commandLink action="#{reporteController.prepareCategoryModelCasosPorArea()}" value="Estado de Casos por Area" immediate="true"/>
                         <br/>
                         <p:commandLink action="#{reporteController.preparePieModelAntiguedadCasosAbiertosAsignados()}" value="Antiguedad de Casos Abiertos (Asignados)" immediate="true"/>
                         <br/>
                         <p:commandLink action="#{reporteController.preparePieModelAntiguedadCasosAbiertosNoAsignados()}" value="Antiguedad de Casos Abiertos (Sin Asignar)" immediate="true"/>
-
-
-                        <br/><hr/>
-                        <p:commandLink action="#{reporteController.prepareCategoryModelCasosAbiertosPorSubEstado()}" value="Estado actual de casos de postventa" immediate="true"/>
+                        <br/>
+                        <p:commandLink action="#{reporteController.prepareCategoryModelCasosAbiertosPorSubEstado()}" value="Casos de postventa" immediate="true"/>
+                        <br/>
+                        <p:commandLink action="#{reporteController.prepareCategoryModelCasosAbiertosPorEstadoAlerta()}" value="Estado de Alerta de casos por #{applicationBean.productDescription}" immediate="true"/>
+                        <br/>
+                        
+                        
+                        <hr/>
+                        <p:commandLink action="#{reporteController.preparePieModelEstadoCasos()}" value="Casos Abiertos v/s Cerrados" immediate="true"/>
                         <br/>
                         <p:commandLink action="#{reporteController.prepareCategoryModelCasosAbiertosVsCerradosLastWeek()}" value="Casos Abiertos v/s Cerrados última semana" immediate="true"/>
+                        <br/>
+                        <p:commandLink action="#{reporteController.prepareCategoryModelCasosPorArea()}" value="Casos Abiertos v/s Cerrados por Area" immediate="true"/>
+                             <br/>
+                        <p:commandLink action="#{reporteController.prepareCategoryModelCasosPorGrupo()}" value="Casos Abiertos v/s Cerrados por Grupo" immediate="true"/>
+                        <br/>
+                        <p:commandLink action="#{reporteController.prepareCategoryModelCasosPorProductos()}" value="Casos Abiertos v/s Cerrados por #{applicationBean.productDescription}" immediate="true"/>
+                        <br/>
+                        <p:commandLink action="#{reporteController.prepareCategoryModelCasosPorAgente()}" value="Casos Abiertos v/s Cerrados por Ejecutivo" immediate="true"/>
+
+
 
                     </p:tab>
                     <p:tab id="reporteAvanzado" title="Reportes Personalizados" >
@@ -222,7 +232,7 @@
         </ui:define>
         <ui:define  name="body">
 
-            
+
 
 
             <h:form id="filterForm">
