@@ -1338,6 +1338,43 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
         return "/script/caso/Create";
     }
+    
+    public String prepareCreateCasoReparacion() {
+        try {
+            current = new Caso();
+            current.setRevisarActualizacion(true);
+            current.setIdPrioridad(null);
+            current.setFechaCreacion(Calendar.getInstance().getTime());
+            current.setFechaModif(current.getFechaCreacion());
+            current.setOwner(userSessionBean.getCurrent());
+            current.setTema("Postventa para "+current.getIdCliente().getCapitalName());
+            current.setTipoCaso(EnumTipoCaso.POSTVENTA.getTipoCaso());
+            current.setIdSubEstado(EnumSubEstadoCaso.POSTVENTA_NUEVO.getSubEstado());
+            current.setIdCanal(EnumCanal.MANUAL.getCanal());
+            current.setIdCliente(new Cliente());
+            EmailCliente email = new EmailCliente();
+            email.setCliente(current.getIdCliente());
+            current.setEmailCliente(email);
+            EstadoCaso ec = new EstadoCaso();
+            ec.setIdEstado(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
+
+//            SubEstadoCaso sec = new SubEstadoCaso();
+//            sec.setIdSubEstado(EnumSubEstadoCaso.NUEVO.getSubEstado().getIdSubEstado());
+//            current.setIdSubEstado(sec);
+            current.setIdEstado(ec);
+
+            emailCliente_wizard_existeEmail = false;
+            emailCliente_wizard_existeCliente = false;
+            emailCliente_wizard_updateCliente = false;
+            emailCliente_wizard = null;
+            rutCliente_wizard = null;
+            selectedItemIndex = -1;
+        } catch (Exception e) {
+            Log.createLogger(this.getClass().getName()).logInfo("Error al preparar la creación del caso de postventa");
+            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
+        }
+        return "/script/caso/Create_preentrega";
+    }
 
     public String prepareCreateCasoPreentrega() {
         try {

@@ -978,7 +978,7 @@
                                 selectionMode="single" selection="#{itemController.item}"
                                 style="border-color: window;">
                             <p:ajax event="select" listener="#{casoController.onNodeItemSelectedInSelectedCaso}" 
-                                    update="inputPanel:formact:listanotas:panelDesc" oncomplete="PF('idDialogArbolItem').hide()"/>
+                                    update=":inputPanel:formact:listanotas:panelGridDatos" oncomplete="PF('idDialogArbolItem').hide()"/>
                             <p:treeNode expandedIcon="myfoldericon16" collapsedIcon="myfoldericon16">
                                 <h:outputText value="#{node.nombre}" />
                             </p:treeNode>

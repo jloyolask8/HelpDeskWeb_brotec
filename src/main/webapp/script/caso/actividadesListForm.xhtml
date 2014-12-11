@@ -102,7 +102,36 @@
                         </p:row>
                     </p:panelGrid>
 
+                    <pe:importEnum type="com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso" var="EnumTipoCaso" allSuffix="ALL_ENUM_VALUES" />
 
+                    <c:forEach items="#{casoController.selected.casosHijosList}" var="item" >
+                        <p:panelGrid style="margin-bottom:10px; width: 100%">
+                            <p:row rendered="#{item.tipoCaso eq EnumTipoCaso.REPARACION_ITEM.getTipoCaso()}">
+                                <p:column>
+                                    <p:commandLink id="temalink" action="#{casoController.prepareEditCaso(item.idCaso.toString())}" 
+                                                   ajax="false" style="color: #000" immediate="true">
+                                        <b>ID Caso: </b> #{item.idCaso}
+                                    </p:commandLink>
+                                </p:column>
+
+                            </p:row>
+                            <p:row rendered="#{item.tipoCaso eq EnumTipoCaso.REPARACION_ITEM.getTipoCaso()}">
+                                <p:column>
+                                    <p:outputLabel value="&lt;b&gt;Recinto: &lt;/b&gt;#{item.idRecinto}" escape="false"/>
+                                </p:column>
+                            </p:row>
+                            <p:row rendered="#{item.tipoCaso eq EnumTipoCaso.REPARACION_ITEM.getTipoCaso()}">
+                                <p:column colspan="2">
+                                    <p:outputLabel value="&lt;b&gt;Item: &lt;/b&gt;#{item.idItem}" escape="false"/>                                                          
+                                </p:column>
+                            </p:row>
+                            <p:row rendered="#{item.tipoCaso eq EnumTipoCaso.REPARACION_ITEM.getTipoCaso()}">
+                                <p:column colspan="2">
+                                    <p:outputLabel value="&lt;b&gt;Descripción: &lt;/b&gt;#{item.descripcion}" escape="false"/>                               
+                                </p:column>
+                            </p:row>
+                        </p:panelGrid>
+                    </c:forEach>
                     <p:panelGrid style="margin-bottom:10px;" styleClass="filtersGrid" id="panelGridDatos" >
                         <p:row rendered="#{casoController.casoTipoReparacion}">
                             <p:column>
@@ -123,7 +152,7 @@
 
             </p:tab> 
         </p:accordionPanel>
-        
+
     </h:form>
 
 </ui:composition>
