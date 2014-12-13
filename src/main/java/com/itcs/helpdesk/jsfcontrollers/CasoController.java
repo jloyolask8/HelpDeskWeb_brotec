@@ -228,6 +228,13 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private boolean adjuntarArchivosARespuesta = false;
     private boolean mergeHabilitado;
     private LinkedList<Caso> mergeCandidatesList;
+    private Map<Integer, Boolean> showReducedContentMap;
+
+    public static final String HEADER_HISTORY = "<br/><hr/><b>HISTORIA DEL CASO</b><hr/><br/>";
+    public static final String HEADER_HISTORY_NOTA = "<p><strong>HISTORIA DEL CASO</strong></p>";
+    public static final String HEADER_HISTORY_NOTA_ALT = "<b>HISTORIA DEL CASO</b>";
+    public static final String FOOTER_HISTORY_NOTA =">FIN MENSAJE ORIGINAL";
+
     private Comparator<Caso> comparadorCasosPorFechaCreacion = new Comparator<Caso>() {
         @Override
         public int compare(Caso o1, Caso o2) {
@@ -288,6 +295,10 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 casoBase.getCasosRelacionadosList().remove(casoBase);
                 casoToMerge.setIdCasoCombinado(casoBase);
                 casoToMerge.setIdEstado(EnumEstadoCaso.CERRADO.getEstado());
+                casoToMerge.setIdSubEstado((casoToMerge.getTipoCaso().equals(EnumTipoCaso.CONTACTO.getTipoCaso()) ? EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()
+                        : (casoToMerge.getTipoCaso().equals(EnumTipoCaso.COTIZACION.getTipoCaso()) ? EnumSubEstadoCaso.COTIZACION_DUPLICADO.getSubEstado()
+                                : (casoToMerge.getTipoCaso().equals(EnumTipoCaso.CONTACTO.getTipoCaso()) ? EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()
+                                        : EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()))));
                 getManagerCasos().mergeCaso(casoToMerge,
                         ManagerCasos.createLogComment(casoToMerge, "Se combina con el caso " + casoBase.getIdCaso()));
                 sb.append(casoToMerge.getIdCaso());
@@ -1338,7 +1349,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
         return "/script/caso/Create";
     }
-    
+
     public String prepareCreateCasoReparacion() {
         try {
             current = new Caso();
@@ -1347,7 +1358,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             current.setFechaCreacion(Calendar.getInstance().getTime());
             current.setFechaModif(current.getFechaCreacion());
             current.setOwner(userSessionBean.getCurrent());
-            current.setTema("Postventa para "+current.getIdCliente().getCapitalName());
+            current.setTema("Postventa para " + current.getIdCliente().getCapitalName());
             current.setTipoCaso(EnumTipoCaso.POSTVENTA.getTipoCaso());
             current.setIdSubEstado(EnumSubEstadoCaso.POSTVENTA_NUEVO.getSubEstado());
             current.setIdCanal(EnumCanal.MANUAL.getCanal());
@@ -1603,6 +1614,54 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         selectedNota = nota;
     }
 
+    public String extractNotaNewPart(Nota nota) {
+        String ret = nota.getTexto();
+        int headerStartIndex = nota.getTexto().indexOf(HEADER_HISTORY_NOTA);
+        int historyEndIndex = nota.getTexto().lastIndexOf(FOOTER_HISTORY_NOTA);
+        headerStartIndex = (headerStartIndex > 0)?headerStartIndex:nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT);
+        if (headerStartIndex > 0) {
+            ret = nota.getTexto().substring(0, headerStartIndex);
+            if((!debeMostrarContenidoReducido(nota))&&(historyEndIndex>headerStartIndex)){
+                ret+=ret = nota.getTexto().substring(historyEndIndex+FOOTER_HISTORY_NOTA.length());
+            }
+        }
+        return ret;
+    }
+    
+    public boolean existsNotaHistoryPart(Nota nota){
+        return (nota.getTexto().indexOf(HEADER_HISTORY_NOTA)>0)||(nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT)>0);
+    }
+
+    public String extractNotaHistoryPart(Nota nota) {
+        int headerStartIndex = nota.getTexto().indexOf(HEADER_HISTORY_NOTA);
+        headerStartIndex = (headerStartIndex > 0)?headerStartIndex:nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT);
+        if (headerStartIndex > 0) {
+            return nota.getTexto().substring(headerStartIndex);
+        }
+        return "";
+    }
+
+    public void toogleMostrarContenidoReducido(Nota nota) {
+        if (showReducedContentMap == null) {
+            showReducedContentMap = new LinkedHashMap<>();
+        }
+        if (showReducedContentMap.get(nota.getIdNota()) != null) {
+            showReducedContentMap.put(nota.getIdNota(), showReducedContentMap.get(nota.getIdNota()) ? Boolean.FALSE : Boolean.TRUE);
+        } else {
+            showReducedContentMap.put(nota.getIdNota(), Boolean.TRUE);
+        }
+    }
+
+    public boolean debeMostrarContenidoReducido(Nota nota) {
+        if (showReducedContentMap == null) {
+            showReducedContentMap = new LinkedHashMap<>();
+        }
+        if (showReducedContentMap.get(nota.getIdNota()) != null) {
+            return showReducedContentMap.get(nota.getIdNota());
+        }
+        return false;
+    }
+
     /**
      * Opens ticket selected row
      *
@@ -1636,6 +1695,11 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public void openCase(Caso caso) throws Exception {
         current = caso;
         setActiveIndexCasoSections(TAB_ACTIVIDADES_INDEX);
+        if (showReducedContentMap == null) {
+            showReducedContentMap = new LinkedHashMap<>();
+        } else {
+            showReducedContentMap.clear();
+        }
         if (current != null) {
             refreshCurrentCaso();
         }
@@ -3066,7 +3130,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     private String obtenerHistorial() {
-        StringBuilder sbuilder = new StringBuilder("<br/><hr/><b>HISTORIA DEL CASO</b><hr/><br/>");
+        StringBuilder sbuilder = new StringBuilder(HEADER_HISTORY);
         if (current != null && current.getNotaList() != null) {
             for (Nota nota : current.getNotaList()) {
                 sbuilder.append(creaMensajeOriginal(nota));

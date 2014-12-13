@@ -10,11 +10,11 @@
     <h:form id="formact">
 
         <p:accordionPanel multiple="true" id="listanotas" >
-            <c:forEach items="#{casoController.selected.notaList}" var="item">
+            <c:forEach items="#{casoController.selected.notaList}" var="item" varStatus="loop">
                 <p:tab title="#{casoController.creaTituloDeNota(item)} - #{item.visible?'Publico':'Interno'}" 
                        titletip="#{item.fechaCreacion} - #{item.enviadoA}"
                        titleStyleClass="#{casoController.getNotaStyle(item.tipoNota)}">
-                    <p:panel  style="border-color: window;">
+                    <p:panel  style="border-color: window;" id="panelNota#{loop.index}">
                         <p:commandButton actionListener="#{casoController.prepareEditNota(item)}" style="float: right"
                                          update=":formEditNota"
                                          onsuccess="PF('Nota').show();" rendered="#{casoController.notaEditable(item)}" value="Editar" />
@@ -22,8 +22,15 @@
                                          actionListener="#{casoController.prepareViewHtml(item.texto)}" value="ver mensaje HTML" style="float: right"/>
 
 
-                        <h:outputText value="#{item.texto}" escape="false"/>
-
+                        <h:outputText value="#{casoController.extractNotaNewPart(item)}" escape="false"/>
+                        <p:commandButton value="..." title="Muestra el contenido reducido" process="@this" rendered="#{casoController.existsNotaHistoryPart(item)}"
+                                         actionListener="#{casoController.toogleMostrarContenidoReducido(item)}" update="panelNota#{loop.index}"
+                                         style="height: 20px;"/>
+                        <br/>
+                        <h:outputText value="#{casoController.extractNotaHistoryPart(item)}" escape="false"
+                                      rendered="#{casoController.debeMostrarContenidoReducido(item)}"/>
+                        
+                        
                         <h:panelGroup rendered="#{not empty item.attachmentList}">
                             <div class="formSeparator">
                                 <h2>Adjuntos</h2>
@@ -108,7 +115,7 @@
                         <p:panelGrid style="margin-bottom:10px; width: 100%">
                             <p:row rendered="#{item.tipoCaso eq EnumTipoCaso.REPARACION_ITEM.getTipoCaso()}">
                                 <p:column>
-                                    <p:commandLink id="temalink" action="#{casoController.prepareEditCaso(item.idCaso.toString())}" 
+                                    <p:commandLink action="#{casoController.prepareEditCaso(item.idCaso.toString())}" 
                                                    ajax="false" style="color: #000" immediate="true">
                                         <b>ID Caso: </b> #{item.idCaso}
                                     </p:commandLink>
