@@ -236,6 +236,15 @@
                 </p:column>
 
             </p:row>
+            
+            <p:row rendered="#{not empty casoController.selected.idCasoCombinado}">
+                <p:column>
+                    <p:outputLabel value="#{bundle.EditCasoLabel_idCasoCombinado}"  style="font-weight:bold"/>
+                </p:column>
+                <p:column>
+                    <h:commandLink id="idCasoCombinado" action="#{casoController.filterByIdCaso(casoController.selected.idCasoCombinado.idCaso)}" value="${casoController.selected.idCasoCombinado.tipoCaso.nombre} N°${casoController.selected.idCasoCombinado.idCaso} - ${casoController.selected.idCasoCombinado.tema}"/>
+                </p:column>
+            </p:row>
 
             <p:row rendered="#{not empty casoController.selected.idCasoPadre}">
                 <p:column>

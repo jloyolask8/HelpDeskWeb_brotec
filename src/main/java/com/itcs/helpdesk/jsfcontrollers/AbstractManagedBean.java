@@ -80,7 +80,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     protected transient PaginationHelper pagination;
     private int paginationPageSize = 20;
     protected E current;
-    private ArrayList<E> selectedItems;
+    private List<E> selectedItems;
     private JPAFilterHelper filterHelper;
     private JPAFilterHelper casoFilterHelper;
 
@@ -394,14 +394,14 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     /**
      * @return the selectedItems
      */
-    public ArrayList<E> getSelectedItems() {
+    public List<E> getSelectedItems() {
         return selectedItems;
     }
 
     /**
      * @param selectedItems the selectedItems to set
      */
-    public void setSelectedItems(ArrayList<E> selectedItems) {
+    public void setSelectedItems(List<E> selectedItems) {
         this.selectedItems = selectedItems;
     }
 

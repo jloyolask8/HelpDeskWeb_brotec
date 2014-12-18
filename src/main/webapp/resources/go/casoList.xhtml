@@ -11,28 +11,35 @@
     <cc:interface>
         <cc:attribute name="casosList" required="true" />
         <cc:attribute name="header" required="true" />
+        <cc:attribute name="selectionMultiple" default="false"/>
+
     </cc:interface>
 
     <!-- IMPLEMENTATION -->
     <cc:implementation>
-        <h:form id="casosList" rendered="#{cc.attrs.casosList.size() gt 0}">
+        <h:form id="casosList">
 
             <h:panelGroup id="panelG1">
-
                 <p:dataTable id="ID_TABLA" value="#{cc.attrs.casosList}" var="item"
                              paginator="true" paginatorAlwaysVisible="false" rows="10"
-                              paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                         rowsPerPageTemplate="5,10,15,20,50"
-                             selectionMode="single"
+                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="5,10,15,20,50"
+                             selection="#{cc.attrs.selectionMultiple eq 'true' ? casoController.selectedItems : null}"
                              emptyMessage="#{bundle.ListCasoEmpty}" 
                              rowStyleClass="#{casoController.evaluarStyle(item)}"
                              rowKey="#{item.idCaso}"
                              sortBy="fechaCreacion"
-                             sortOrder="descending">
+                             sortOrder="descending"
+                             >
 
+                    <p:ajax event="toggleSelect" process="@this" update="ID_TABLA" />
+                    <p:ajax event="rowSelectCheckbox" process="@this" update="ID_TABLA" />
+                    <p:ajax event="rowUnselectCheckbox" process="@this" update="ID_TABLA" />
                     <f:facet name="header">  
                         <h:outputText value="#{cc.attrs.header}" />  
                     </f:facet>  
+
+                    <p:column rendered="#{cc.attrs.selectionMultiple eq 'true'}" selectionMode="multiple" />
 
                     <p:column headerText="" exportable="false">
                         <h:commandLink id="prio" disabled="#{(not item.open) or not (item.owner eq UserSessionBean.current)}">
@@ -55,7 +62,7 @@
 
                             <h:outputText styleClass="ticket-status" style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};" value="#{item.idSubEstado.nombre}"/>
 
-                            <p:commandLink id="temalink" action="#{casoController.prepareEditCaso(item.idCaso.toString())}" 
+                            <p:commandLink action="#{casoController.prepareEditCaso(item.idCaso.toString())}" 
                                            ajax="false" style="color: #000" immediate="true">
                                 #{item.tipoCaso.nombre} \##{item.idCaso} #{item.tema}
                             </p:commandLink>

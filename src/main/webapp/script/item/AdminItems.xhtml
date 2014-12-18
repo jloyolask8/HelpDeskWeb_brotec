@@ -75,17 +75,37 @@
                 <h:form id="crearItemsForm">
                     <p:panel id="crearItemPanel">
 
-                        <h:panelGrid columns="2">
-                            <h:outputLabel value="Archivo" for="nombre" style="font-weight:bold"/>
-                            <p:fileUpload id="filename" fileUploadListener="#{itemController.handleFileUpload}" mode="advanced" auto="true"
-                                          update=":formadmincat"/>
-                            <h:outputLabel value="Area" for="idArea" style="font-weight:bold"/>
-                            <p:selectOneMenu id="idArea" value="#{itemController.selectedArea}" 
-                                             required="true" requiredMessage="Por favor elija el area a la que pertenece el item">
-                                <f:selectItems value="#{areaController.itemsAvailableSelectOne}"/>
-                                <f:ajax />
-                            </p:selectOneMenu>
-                        </h:panelGrid>
+                        <p:panelGrid >
+                            <p:row>
+                                <p:column>
+                                    <h:outputLabel value="Area" for="idArea" style="font-weight:bold"/>
+                                </p:column>
+                                <p:column>
+                                    <p:selectOneMenu id="idArea" value="#{itemController.selectedArea}" 
+                                                     required="true" requiredMessage="Por favor elija el area a la que pertenece el item">
+                                        <f:selectItems value="#{areaController.itemsAvailableSelectOne}"/>
+                                        <f:ajax />
+                                    </p:selectOneMenu>
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column>
+                                    <h:outputLabel value="Archivo txt:" for="nombre" style="font-weight:bold"/>
+                                </p:column>
+                                <p:column>
+                                    <h:outputText value="archivo debe tener id;nombre&lt;br/&gt;en caso de ser hijo debe ser idpadre.id;nombre"
+                                                  escape="false"
+                                                  style="font-weight: lighter; font-size: small !important;"/>
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column colspan="2">
+                                    <p:fileUpload id="filename" fileUploadListener="#{itemController.handleFileUpload}" mode="advanced" auto="true"
+                                                  update=":formadmincat"/>
+
+                                </p:column>
+                            </p:row>
+                        </p:panelGrid>
 
                         <f:facet name="footer">
                             <p:commandButton onclick="PF('crearItemsDialog').hide()" value="Cancelar"/>

@@ -388,14 +388,14 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
                     //Check whether match is found
                     boolean matchFound = m.matches();
 
-                    if (matchFound && UtilesRut.validar(formattedRut)) {
+                    //if (matchFound && UtilesRut.validar(formattedRut)) {
                         EmailCliente ec = new EmailCliente(moreValidEmail);
                         addClientTo(formattedRut, ec, apellidos, direccion1, nombres, sexo, bulkLoadedClientsMap);
 
-                    } else {
-                        EmailCliente ec = new EmailCliente(correo);
-                        addClientTo(rut, ec, apellidos, direccion1, nombres, sexo, bulkLoadedClientsErrorMap);
-                    }
+//                    } else {
+//                        EmailCliente ec = new EmailCliente(correo);
+//                        addClientTo(rut, ec, apellidos, direccion1, nombres, sexo, bulkLoadedClientsErrorMap);
+//                    }
 
                 }
 
@@ -418,7 +418,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
     }
 
     private void addClientTo(String rut, EmailCliente ec, String apellidos, String direccion1, String nombres, String sexo, Map<String, Cliente> map) {
-        if (map.containsKey(rut)) {
+        if ((!rut.isEmpty()) && map.containsKey(rut)) {
 
             List<EmailCliente> emails = map.get(rut).getEmailClienteList();
             if (!emails.contains(ec)) {
@@ -433,7 +433,9 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
             cl.setRut(rut);
             if (sexo != null && (sexo.equalsIgnoreCase("Hombre") || sexo.equalsIgnoreCase("Mujer"))) {
                 cl.setSexo(sexo);
-            } else {
+            } else if (sexo != null && (sexo.equalsIgnoreCase("M") || sexo.equalsIgnoreCase("F"))) {
+                cl.setSexo(sexo.equalsIgnoreCase("M")?"Hombre":"Mujer");
+            }else{
                 cl.setSexo("Desconocido");
             }
             ec.setCliente(cl);

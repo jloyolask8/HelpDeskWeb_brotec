@@ -6,6 +6,7 @@ import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Area;
 import com.itcs.helpdesk.persistence.entities.Item;
 import com.itcs.helpdesk.persistence.entities.Usuario;
+import com.itcs.helpdesk.persistence.jpa.exceptions.RollbackFailureException;
 import com.itcs.helpdesk.util.Log;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -62,8 +63,6 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
         super(Item.class);
         emptyList = new LinkedList<Item>();
     }
-
-   
 
     public String getTextoFiltro() {
         return textoFiltro;
@@ -391,44 +390,30 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
     public void handleFileUpload(FileUploadEvent event) {
         InputStream is = null;
         String str = "";
+        LinkedHashMap<String, Item> mapaItems = new LinkedHashMap<>();
         try {
             is = event.getFile().getInputstream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
             if (is != null) {
                 while ((str = reader.readLine()) != null) {
-                    String valores[] = str.split("/");
-                    Item itemPadre = null;
-                    for (String string : valores) {
+                    String valores[] = str.split(";");
+                    if (valores.length == 2) {
+                        Item itemPadre = null;
+                        //es un item hijo
+                        if (valores[0].indexOf('.') > 0) {
+                            String idPadre = valores[0].substring(0, valores[0].lastIndexOf('.'));
+                            //buscar en el map item padre
+                            itemPadre = mapaItems.get(idPadre);
+                        }
                         Item nuevoItem = new Item();
                         nuevoItem.setEditable(true);
                         nuevoItem.setIdArea(selectedArea);
                         nuevoItem.setIdItemPadre(itemPadre);
-                        nuevoItem.setNombre(string);
+                        nuevoItem.setNombre(valores[1]);
                         nuevoItem.setOrden(ordenMayor + 1);
-                        try {
-                            List<Item> lista = getJpaController().getItemFindByNombreLike(string);
-                            if (lista.isEmpty()) {
-                                throw new NoResultException();
-                            }
-                            boolean itemAlreadyExists = false;
-                            for (Item item : lista) {
-                                if (itemsAreEquals(item, nuevoItem)) {
-                                    itemAlreadyExists = true;
-                                    itemPadre = item;
-                                    break;
-                                }
-                            }
-                            if (!itemAlreadyExists) {
-                                getJpaController().persistItem(nuevoItem);
-                                itemPadre = nuevoItem;
-                            }
-                        } catch (NoResultException ex) {
-                            getJpaController().persistItem(nuevoItem);
-                            itemPadre = nuevoItem;
-                        }
-
+                        getJpaController().persistItem(nuevoItem);
+                        mapaItems.put(valores[0], nuevoItem);
                     }
-
                 }
             }
 
@@ -474,11 +459,29 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
 
     public void eliminaItem(ActionEvent actionEvent) {
         current = (Item) itemNode.getData();
-        performDestroy();
+        deleteItemAndSubItems(current);
+        JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ItemDeleted"));
+//        performDestroy();
         current = null;
         itemsTree = null;
         portapapeles = null;
         setItem(null);
+    }
+
+    private void deleteItemAndSubItems(Item item) {
+        if (item.getItemList() != null) {
+            while (!item.getItemList().isEmpty()) {
+                deleteItemAndSubItems(item.getItemList().get(0));
+                item.getItemList().remove(0);
+            }
+        }
+        try {
+            getJpaController().removeItem(item);
+        } catch (RollbackFailureException ex) {
+            Logger.getLogger(ItemController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(ItemController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void pegarItem(ActionEvent actionEvent) {
@@ -514,13 +517,7 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
         if (!selected.isEditable()) {
             return false;
         }
-        if (selected.getItemList().size() > 0) {
-            return false;
-        }
-//        if (selected.getCasoList().size() > 0) {
-//            return false;
-//        }
-        return true;
+        return selected.getCasoList().size() <= 0;
     }
 
 //    public boolean puedeCrearItem() {
@@ -891,7 +888,6 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
         this.selectedArea = selectedArea;
     }
 
-  
     /**
      * @param casoController the casoController to set
      */

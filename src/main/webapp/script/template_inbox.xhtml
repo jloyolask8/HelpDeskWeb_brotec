@@ -194,6 +194,10 @@
                                                  rendered="#{filtroAcceso.verificarAccesoAFuncionAgregarCaso()}">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
+                                    <p:menuitem value="Crear Nuevo Caso de Postventa" action="#{casoController.prepareCreateCasoReparacion()}" ajax="false" icon="fa fa-wrench"
+                                                rendered="#{filtroAcceso.verificarAccesoAFuncionAgregarCaso()}">  
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
                                     <p:menuitem value="Crear Nuevo Caso de Entrega" action="#{casoController.prepareCreateCasoPreentrega}" ajax="false" icon="fa fa-briefcase"
                                                 rendered="#{filtroAcceso.verificarAccesoAFuncionAgregarCaso()}">  
                                         <p:resetInput target="@form" />

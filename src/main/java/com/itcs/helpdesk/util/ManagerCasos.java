@@ -736,6 +736,66 @@ public class ManagerCasos implements Serializable {
 //            }
 //        }
 //    }
+    public Nota clonarNota(Nota notaOriginal){
+        Nota nuevaNota = new Nota();
+        nuevaNota.setAttachmentList(notaOriginal.getAttachmentList());
+        nuevaNota.setCreadaPor(notaOriginal.getCreadaPor());
+        nuevaNota.setEnviado(notaOriginal.getEnviado());
+        nuevaNota.setEnviadoA(notaOriginal.getEnviadoA());
+        nuevaNota.setEnviadoPorQuartzJobId(notaOriginal.getEnviadoPorQuartzJobId());
+        nuevaNota.setFechaCreacion(notaOriginal.getFechaCreacion());
+        nuevaNota.setFechaEnvio(notaOriginal.getFechaEnvio());
+        nuevaNota.setFechaModificacion(notaOriginal.getFechaModificacion());
+        nuevaNota.setHasAttachments(notaOriginal.isHasAttachments());
+        //nuevaNota.setIdCaso(notaOriginal.getIdCaso());
+        nuevaNota.setTexto(notaOriginal.getTexto());
+        nuevaNota.setTipoNota(notaOriginal.getTipoNota());
+        nuevaNota.setVisible(notaOriginal.getVisible());
+        return nuevaNota;
+    }
+    
+    public Nota crearNotaDesdeCaso(Caso casoFrom, Caso casoTo) throws Exception {
+//        boolean retorno = false;
+//        StringBuilder listIdAtt = new StringBuilder();
+
+        Nota nota = new Nota();
+        if (casoFrom != null) {
+            //FIRST QUESTION IS WHO IS THE SENDER?
+            //OPTIONS ARE: AGENT OR CLIENT. AND OWNER OR NOT OWNER.
+            String emailSender = "";
+            if (casoFrom.getEmailCliente() != null) {
+                emailSender = casoFrom.getEmailCliente().getEmailCliente();
+            }
+
+//            nota.setAttachmentList(new LinkedList<Attachment>());
+            nota.setVisible(true);//nota publica
+            nota.setIdCaso(casoTo);
+
+            //we need to check if the sender is an agent or a client
+            //doing a quick check on the caso.owner may improve response time
+            if (casoFrom.getOwner() != null && casoFrom.getOwner().getEmail() != null && casoFrom.getOwner().getEmail().equalsIgnoreCase(emailSender)) {
+                //bingo its the owner
+                nota.setCreadaPor(casoFrom.getOwner());
+                nota.setTipoNota(EnumTipoNota.RESPUESTA_A_CLIENTE.getTipoNota());
+                nota.setEnviado(false);
+                
+            } else if (casoFrom.getEmailCliente() != null && casoFrom.getEmailCliente().getEmailCliente().equalsIgnoreCase(emailSender)) {
+                //its a client
+//                caso.setRevisarActualizacion(true);
+                nota.setTipoNota(EnumTipoNota.RESPUESTA_DE_CLIENTE.getTipoNota());
+                nota.setEnviadoPor(emailSender);
+
+            }
+
+            nota.setTexto(casoFrom.getDescripcion());
+
+            nota.setFechaCreacion(casoFrom.getFechaCreacion());
+
+            getJpaController().persist(nota);
+        }
+        return nota;
+    }
+
     public boolean crearNotaDesdeEmail(Caso caso, Canal canal, EmailMessage item) throws Exception {
         boolean retorno = false;
         StringBuilder listIdAtt = new StringBuilder();
