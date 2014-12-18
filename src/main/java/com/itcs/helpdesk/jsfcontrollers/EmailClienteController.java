@@ -53,6 +53,8 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
     private String cellPositionCorreo = "I";
     private String cellPositionSexo = "J";
     private String cellPositionDireccion1 = "K";
+    private String cellPositionFono1 = "L";
+    private String cellPositionFono2 = "M";
     private List<ProductoContratado> bulkLoadedProductoContratado;
     private String bulkLoadedProductoContratadoTipoAsoc;
     private List<Cliente> bulkLoadedClients;
@@ -86,8 +88,9 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
 
     /**
      * devuelve la lista de emails de clientes como lista<strings>
+     *
      * @param query
-     * @return 
+     * @return
      */
     public List<String> completeEmailClienteString(String query) {
         System.out.println(query);
@@ -98,7 +101,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
             for (EmailCliente emailCliente : emailClientes) {
                 results.add(emailCliente.getEmailCliente());
             }
-        } 
+        }
 //        else {
 ////            emailCliente_wizard_existeEmail = false;
 //            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "No existe el email:" + query, "No existe el Cliente con email:" + query);
@@ -184,8 +187,8 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
     }
 
     public void handleFileUploadClienteProd(FileUploadEvent event) {
-        
-        System.out.println("bulkLoadedProductoContratadoTipoAsoc:"+bulkLoadedProductoContratadoTipoAsoc);
+
+        System.out.println("bulkLoadedProductoContratadoTipoAsoc:" + bulkLoadedProductoContratadoTipoAsoc);
 
 //        String email_regexp = "[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?";
         if (event != null) {
@@ -204,7 +207,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
                 Sheet sheet = w.getSheet(0);
                 // Loop over first 10 column and lines
 
-                Map<String, ProductoContratado> map = new HashMap<String, ProductoContratado>();
+                Map<String, ProductoContratado> map = new HashMap<>();
 //                Map<String, ProductoContratado> mapWithError = new HashMap<String, ProductoContratado>();
 
 //                Map<String, Cliente> bulkLoadedClientsNotExists = new HashMap<String, Cliente>();
@@ -221,7 +224,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
 
                 }
 
-                bulkLoadedProductoContratado = new ArrayList<ProductoContratado>(map.values());
+                bulkLoadedProductoContratado = new ArrayList<>(map.values());
                 addInfoMessage("Archivo " + fileClients.getFileName() + "cargado exitósamente");
             } catch (Exception e) {
                 addErrorMessage(e.getMessage());
@@ -312,7 +315,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
 //                        System.out.println("PUT");
                             pc = new ProductoContratado(productoContratadoPK);
                             pc.setCliente(c);
-                             pc.setTipoAsociacion(bulkLoadedProductoContratadoTipoAsoc);
+                            pc.setTipoAsociacion(bulkLoadedProductoContratadoTipoAsoc);
 //                        pc.setProducto(subComponent.getIdComponente().getIdProducto());
 //                        pc.setComponente(subComponent.getIdComponente());
 //                        pc.setSubComponente(subComponent);
@@ -367,8 +370,8 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
                 Sheet sheet = w.getSheet(0);
                 // Loop over first 10 column and lines
 
-                Map<String, Cliente> bulkLoadedClientsMap = new HashMap<String, Cliente>();
-                Map<String, Cliente> bulkLoadedClientsErrorMap = new HashMap<String, Cliente>();
+                Map<String, Cliente> bulkLoadedClientsMap = new HashMap<>();
+                Map<String, Cliente> bulkLoadedClientsErrorMap = new HashMap<>();
 
                 for (int rowIndex = 1; rowIndex < sheet.getRows(); rowIndex++) {
 
@@ -379,6 +382,9 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
                     String sexo = sheet.getCell(CellReferenceHelper.getColumn(cellPositionSexo), rowIndex).getContents();
                     String direccion1 = sheet.getCell(CellReferenceHelper.getColumn(cellPositionDireccion1), rowIndex).getContents();
 
+                    String fono1 = sheet.getCell(CellReferenceHelper.getColumn(cellPositionFono1), rowIndex).getContents();
+                    String fono2 = sheet.getCell(CellReferenceHelper.getColumn(cellPositionFono2), rowIndex).getContents();
+
                     String moreValidEmail = StringUtils.isEmpty(correo) ? "" : correo.toLowerCase().trim();
                     String formattedRut = StringUtils.isEmpty(rut) ? "" : UtilesRut.formatear(rut);
 
@@ -388,19 +394,18 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
                     //Check whether match is found
                     boolean matchFound = m.matches();
 
-                    //if (matchFound && UtilesRut.validar(formattedRut)) {
-                        EmailCliente ec = new EmailCliente(moreValidEmail);
-                        addClientTo(formattedRut, ec, apellidos, direccion1, nombres, sexo, bulkLoadedClientsMap);
+                    if (matchFound) {
+                    EmailCliente ec = new EmailCliente(moreValidEmail);
+                    addClientTo(formattedRut, ec, apellidos, direccion1, nombres, sexo, bulkLoadedClientsMap, fono1, fono2);
 
-//                    } else {
-//                        EmailCliente ec = new EmailCliente(correo);
-//                        addClientTo(rut, ec, apellidos, direccion1, nombres, sexo, bulkLoadedClientsErrorMap);
-//                    }
-
+                    } else {
+                        EmailCliente ec = new EmailCliente(correo);
+                        addClientTo(rut, ec, apellidos, direccion1, nombres, sexo, bulkLoadedClientsErrorMap, fono1, fono2);
+                    }
                 }
 
-                bulkLoadedClients = new ArrayList<Cliente>(bulkLoadedClientsMap.values());
-                bulkLoadedClientsErrors = new ArrayList<Cliente>(bulkLoadedClientsErrorMap.values());
+                bulkLoadedClients = new ArrayList<>(bulkLoadedClientsMap.values());
+                bulkLoadedClientsErrors = new ArrayList<>(bulkLoadedClientsErrorMap.values());
                 addInfoMessage("Archivo " + fileClients.getFileName() + "cargado exitósamente");
             } catch (Exception e) {
                 addErrorMessage(e.getMessage());
@@ -417,7 +422,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
 
     }
 
-    private void addClientTo(String rut, EmailCliente ec, String apellidos, String direccion1, String nombres, String sexo, Map<String, Cliente> map) {
+    private void addClientTo(String rut, EmailCliente ec, String apellidos, String direccion1, String nombres, String sexo, Map<String, Cliente> map, String fono1, String fono2) {
         if ((!rut.isEmpty()) && map.containsKey(rut)) {
 
             List<EmailCliente> emails = map.get(rut).getEmailClienteList();
@@ -428,18 +433,20 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
         } else {
             Cliente cl = new Cliente();
             cl.setApellidos(apellidos);
+            cl.setFono1(fono1);
+            cl.setFono2(fono2);
             cl.setDirParticular(direccion1);
             cl.setNombres(nombres);
             cl.setRut(rut);
             if (sexo != null && (sexo.equalsIgnoreCase("Hombre") || sexo.equalsIgnoreCase("Mujer"))) {
                 cl.setSexo(sexo);
             } else if (sexo != null && (sexo.equalsIgnoreCase("M") || sexo.equalsIgnoreCase("F"))) {
-                cl.setSexo(sexo.equalsIgnoreCase("M")?"Hombre":"Mujer");
-            }else{
+                cl.setSexo(sexo.equalsIgnoreCase("M") ? "Hombre" : "Mujer");
+            } else {
                 cl.setSexo("Desconocido");
             }
             ec.setCliente(cl);
-            List<EmailCliente> emails = new ArrayList<EmailCliente>();
+            List<EmailCliente> emails = new ArrayList<>();
             emails.add(ec);
             cl.setEmailClienteList(emails);
             map.put(cl.getRut(), cl);
@@ -524,7 +531,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
                                 count = getJpaController().getEmailClienteJpaController().getEmailClienteCount();
                             }
                         }
-                        
+
                         return count;
 
                     } catch (Exception ex) {
@@ -581,7 +588,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
         try {
             int total = bulkLoadedClients != null ? bulkLoadedClients.size() : 0;
             Integer[] results = getJpaController().getClienteJpaController().persistManyClients(bulkLoadedClients);
-            JsfUtil.addSuccessMessage(results[0] + " Clientes fueron guardados exitosamente, "+results[1] + " Clientes ya existian en la BBDD, "+results[2] + " Clientes con error al guardar. De un total de " + total);
+            JsfUtil.addSuccessMessage(results[0] + " Clientes fueron guardados exitosamente, " + results[1] + " Clientes ya existian en la BBDD, " + results[2] + " Clientes con error al guardar. De un total de " + total);
             return null;
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e.getMessage());
@@ -987,10 +994,39 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
     }
 
     /**
-     * @param bulkLoadedProductoContratadoTipoAsoc the bulkLoadedProductoContratadoTipoAsoc to set
+     * @param bulkLoadedProductoContratadoTipoAsoc the
+     * bulkLoadedProductoContratadoTipoAsoc to set
      */
     public void setBulkLoadedProductoContratadoTipoAsoc(String bulkLoadedProductoContratadoTipoAsoc) {
         this.bulkLoadedProductoContratadoTipoAsoc = bulkLoadedProductoContratadoTipoAsoc;
+    }
+
+    /**
+     * @return the cellPositionFono1
+     */
+    public String getCellPositionFono1() {
+        return cellPositionFono1;
+    }
+
+    /**
+     * @param cellPositionFono1 the cellPositionFono1 to set
+     */
+    public void setCellPositionFono1(String cellPositionFono1) {
+        this.cellPositionFono1 = cellPositionFono1;
+    }
+
+    /**
+     * @return the cellPositionFono2
+     */
+    public String getCellPositionFono2() {
+        return cellPositionFono2;
+    }
+
+    /**
+     * @param cellPositionFono2 the cellPositionFono2 to set
+     */
+    public void setCellPositionFono2(String cellPositionFono2) {
+        this.cellPositionFono2 = cellPositionFono2;
     }
 
     @FacesConverter(forClass = EmailCliente.class)

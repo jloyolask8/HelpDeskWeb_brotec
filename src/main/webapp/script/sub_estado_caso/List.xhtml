@@ -12,17 +12,20 @@
             <p:outputLabel value="#{bundle.ListSubEstadoCasoTitle}"/>
         </ui:define>
         <ui:define name="west">
-            <p:accordionPanel multiple="true" cache="true" id="accionesaccordion1">
-                <p:tab title="Sub Estados" id="accionestab1">
-                    <h:outputLabel escape="false" value="#{bundle.ayudaSubestados}"/>
-                </p:tab>
-            </p:accordionPanel>
+
+            <go:vistasList id="vistasList" update=":vistasList:vistasForm :mainform:messages :form" 
+                           controllerMBean="#{subEstadoCasoController}"
+                           user="#{UserSessionBean.current}"/>
+
+            <br/>
+
+            <h:outputLabel escape="false" value="#{bundle.ayudaSubestados}"/>
         </ui:define>
         <ui:define name="body">
             <h:form id="form">
 
                 <go:filterView controllerMBean="#{subEstadoCasoController}" 
-                                vista="#{subEstadoCasoController.vista}"
+                               vista="#{subEstadoCasoController.vista}"
                                filterHelper="#{subEstadoCasoController.filterHelper}" 
                                vistaControllerBackOutcome="/script/sub_estado_caso/List"/>
 
