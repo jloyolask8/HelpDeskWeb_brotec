@@ -73,7 +73,7 @@
 
                                         <p:outputLabel value="#{bundle.CreateClienteLabel_apellidos}" for="apellidos" style="font-weight:bold"/>
                                         <p:inputText id="apellidos" value="#{casoController.selected.idCliente.apellidos}" 
-                                                     title="#{bundle.CreateClienteTitle_apellidos}" required="true" requiredMessage="Los Apellidos son un dato requerido." size="40"/>
+                                                     title="#{bundle.CreateClienteTitle_apellidos}" size="40"/>
                                         <p:message display="both" for="apellidos"/>
 
                                         <p:outputLabel value="Sexo:" for="sexo" style="font-weight:bold"/>
@@ -122,6 +122,9 @@
                             <go:casoListNoForm casosList="#{casoController.selected.idCliente.casoList}" 
                                                      header="Historial de casos del Cliente #{casoController.selected.clientName} (#{casoController.selected.idCliente.casoList.size()})"/>
 
+                            
+                            <p:outputLabel value="El cliente no tiene casos previos asociados."
+                                           rendered="#{empty casoController.selected.idCliente.casoList}"/>
                         </p:tab>
                         <p:tab id="producto" title="Datos Producto">
 

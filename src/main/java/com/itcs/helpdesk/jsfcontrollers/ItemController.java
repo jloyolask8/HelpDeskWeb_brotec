@@ -18,7 +18,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -27,7 +26,6 @@ import javax.faces.convert.FacesConverter;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
-import javax.persistence.NoResultException;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.model.DefaultTreeNode;
@@ -38,15 +36,6 @@ import org.primefaces.model.TreeNode;
 @SessionScoped
 public class ItemController extends AbstractManagedBean<Item> implements Serializable {
 
-    @ManagedProperty(value = "#{UserSessionBean}")
-    private UserSessionBean userSessionBean;
-
-    @ManagedProperty(value = "#{casoController}")
-    private CasoController casoController;
-//    private Item current;
-//    private Item[] selectedItems;
-//    private transient DataModel items = null;
-//    private transient PaginationHelper pagination;
     private int selectedItemIndex;
     private transient TreeNode itemsTree;
     private transient TreeNode selectedNode;
@@ -816,59 +805,6 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
         this.selectedNode = selectedNode;
     }
 
-//    /**
-//     * @return the selectedItems
-//     */
-//    public Item[] getSelectedItems() {
-//        return selectedItems;
-//    }
-//
-//    /**
-//     * @param selectedItems the selectedItems to set
-//     */
-//    public void setSelectedItems(Item[] selectedItems) {
-//        this.selectedItems = selectedItems;
-//    }
-//    private void recreateModel() {
-//        items = null;
-//    }
-//    public String next() {
-//        getPagination().nextPage();
-//        recreateModel();
-//        return "/script/item/AdminItems";
-//    }
-//
-//    public String previous() {
-//        getPagination().previousPage();
-//        recreateModel();
-//        return "/script/item/AdminItems";
-//    }
-//
-//    public String last() {
-//        getPagination().lastPage();
-//        recreateModel();
-//        return "List";
-//    }
-//
-//    public String first() {
-//        getPagination().firstPage();
-//        recreateModel();
-//        return "List";
-//    }
-//    public SelectItem[] getItemsAvailableSelectMany() {
-//        return JsfUtil.getSelectItems(getJpaController().getItemFindAll(), false);
-//    }
-//
-//    public SelectItem[] getItemsAvailableSelectOne() {
-//        return JsfUtil.getSelectItems(getJpaController().getItemFindAll(), true);
-//    }
-    /**
-     * @param userSessionBean the userSessionBean to set
-     */
-    public void setUserSessionBean(UserSessionBean userSessionBean) {
-        this.userSessionBean = userSessionBean;
-    }
-
     @Override
     public Class getDataModelImplementationClass() {
         throw new UnsupportedOperationException("Not supported yet.");
@@ -888,12 +824,7 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
         this.selectedArea = selectedArea;
     }
 
-    /**
-     * @param casoController the casoController to set
-     */
-    public void setCasoController(CasoController casoController) {
-        this.casoController = casoController;
-    }
+  
 
     @FacesConverter(value = "ItemConverter", forClass = Item.class)
     public static class ItemControllerConverter implements Converter, Serializable {
