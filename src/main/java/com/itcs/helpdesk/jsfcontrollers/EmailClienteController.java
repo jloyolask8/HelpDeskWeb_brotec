@@ -46,15 +46,15 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
     private int selectedItemIndex;
     private boolean canCreate = false;
     private transient UploadedFile fileClients;
-    private String cellPositionSubComponentId = "F";
-    private String cellPositionRut = "C";
-    private String cellPositionNombre = "D";
-    private String cellPositionApellidos = "E";
-    private String cellPositionCorreo = "I";
-    private String cellPositionSexo = "J";
-    private String cellPositionDireccion1 = "K";
-    private String cellPositionFono1 = "L";
-    private String cellPositionFono2 = "M";
+    private String cellPositionSubComponentId = "";
+    private String cellPositionRut = "";
+    private String cellPositionNombre = "";
+    private String cellPositionApellidos = "";
+    private String cellPositionCorreo = "";
+    private String cellPositionSexo = "";
+    private String cellPositionDireccion1 = "";
+    private String cellPositionFono1 = "";
+    private String cellPositionFono2 = "";
     private List<ProductoContratado> bulkLoadedProductoContratado;
     private String bulkLoadedProductoContratadoTipoAsoc;
     private List<Cliente> bulkLoadedClients;
@@ -373,38 +373,75 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
                 Map<String, Cliente> bulkLoadedClientsMap = new HashMap<>();
                 Map<String, Cliente> bulkLoadedClientsErrorMap = new HashMap<>();
 
+                String rut = "";
+                String nombres = "";
+                String apellidos = "";
+                String correo = "";
+                String sexo = "";
+                String direccion1 = "";
+                String fono1 = "";
+                String fono2 = "";
+
                 for (int rowIndex = 1; rowIndex < sheet.getRows(); rowIndex++) {
 
                     try {
-                        String rut = sheet.getCell(CellReferenceHelper.getColumn(cellPositionRut), rowIndex).getContents();
-                        String nombres = sheet.getCell(CellReferenceHelper.getColumn(cellPositionNombre), rowIndex).getContents();
-                        String apellidos = sheet.getCell(CellReferenceHelper.getColumn(cellPositionApellidos), rowIndex).getContents();
-                        String correo = sheet.getCell(CellReferenceHelper.getColumn(cellPositionCorreo), rowIndex).getContents();
-                        String sexo = sheet.getCell(CellReferenceHelper.getColumn(cellPositionSexo), rowIndex).getContents();
-                        String direccion1 = sheet.getCell(CellReferenceHelper.getColumn(cellPositionDireccion1), rowIndex).getContents();
-
-                        String fono1 = sheet.getCell(CellReferenceHelper.getColumn(cellPositionFono1), rowIndex).getContents();
-                        String fono2 = sheet.getCell(CellReferenceHelper.getColumn(cellPositionFono2), rowIndex).getContents();
-
-                        String moreValidEmail = StringUtils.isEmpty(correo) ? "" : correo.toLowerCase().trim();
-                        String formattedRut = StringUtils.isEmpty(rut) ? "" : UtilesRut.formatear(rut);
-
-                        //Match the given string with the pattern
-                        Matcher m = p.matcher(moreValidEmail);
-
-                        //Check whether match is found
-                        boolean matchFound = m.matches();
-
-                        if (matchFound) {
-                            EmailCliente ec = new EmailCliente(moreValidEmail);
-                            addClientTo(formattedRut, ec, apellidos, direccion1, nombres, sexo, bulkLoadedClientsMap, fono1, fono2);
-
-                        } else {
-                            EmailCliente ec = new EmailCliente(correo);
-                            addClientTo(rut, ec, apellidos, direccion1, nombres, sexo, bulkLoadedClientsErrorMap, fono1, fono2);
-                        }
+                        rut = sheet.getCell(CellReferenceHelper.getColumn(cellPositionRut), rowIndex).getContents();
                     } catch (Exception e) {
                         System.out.println("Error: " + e.getMessage());
+                    }
+                    try {
+                        nombres = sheet.getCell(CellReferenceHelper.getColumn(cellPositionNombre), rowIndex).getContents();
+                    } catch (Exception e) {
+                        System.out.println("Error: " + e.getMessage());
+                    }
+                    try {
+                        apellidos = sheet.getCell(CellReferenceHelper.getColumn(cellPositionApellidos), rowIndex).getContents();
+                    } catch (Exception e) {
+                        System.out.println("Error: " + e.getMessage());
+                    }
+                    try {
+                        correo = sheet.getCell(CellReferenceHelper.getColumn(cellPositionCorreo), rowIndex).getContents();
+                    } catch (Exception e) {
+                        System.out.println("Error: " + e.getMessage());
+                    }
+                    try {
+                        sexo = sheet.getCell(CellReferenceHelper.getColumn(cellPositionSexo), rowIndex).getContents();
+                    } catch (Exception e) {
+                        System.out.println("Error: " + e.getMessage());
+                    }
+                    try {
+                        direccion1 = sheet.getCell(CellReferenceHelper.getColumn(cellPositionDireccion1), rowIndex).getContents();
+                    } catch (Exception e) {
+                        System.out.println("Error: " + e.getMessage());
+                    }
+
+                    try {
+                        fono1 = sheet.getCell(CellReferenceHelper.getColumn(cellPositionFono1), rowIndex).getContents();
+                    } catch (Exception e) {
+                        System.out.println("Error: " + e.getMessage());
+                    }
+                    try {
+                        fono2 = sheet.getCell(CellReferenceHelper.getColumn(cellPositionFono2), rowIndex).getContents();
+                    } catch (Exception e) {
+                        System.out.println("Error: " + e.getMessage());
+                    }
+
+                    String moreValidEmail = StringUtils.isEmpty(correo) ? "" : correo.toLowerCase().trim();
+                    String formattedRut = StringUtils.isEmpty(rut) ? "" : UtilesRut.formatear(rut);
+
+                    //Match the given string with the pattern
+                    Matcher m = p.matcher(moreValidEmail);
+
+                    //Check whether match is found
+                    boolean matchFound = m.matches();
+
+                    if (matchFound) {
+                        EmailCliente ec = new EmailCliente(moreValidEmail);
+                        addClientTo(formattedRut, ec, apellidos, direccion1, nombres, sexo, bulkLoadedClientsMap, fono1, fono2);
+
+                    } else {
+                        EmailCliente ec = new EmailCliente(correo);
+                        addClientTo(rut, ec, apellidos, direccion1, nombres, sexo, bulkLoadedClientsErrorMap, fono1, fono2);
                     }
 
                 }
