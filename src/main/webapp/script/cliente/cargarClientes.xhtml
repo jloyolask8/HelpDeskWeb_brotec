@@ -28,13 +28,15 @@
                     <h:panelGroup id="main-nav-holder" layout="block">  
 
                         <h:outputText value="Especifique las posiciones de las Columnas de cada dato dentro del Achivo Excel:"/>
-                        <h:panelGrid columns="6">
+                        <h:panelGrid columns="8">
                             <p:outputLabel value="Rut"/>
                             <p:outputLabel value="Nombres"/>
                             <p:outputLabel value="Apellidos"/>
                             <p:outputLabel value="Email"/>
                             <p:outputLabel value="Sexo"/>
                             <p:outputLabel value="Direccion"/>
+                             <p:outputLabel value="Fono 1"/>
+                              <p:outputLabel value="Fono 2"/>
                             <p:inputText value="#{emailClienteController.cellPositionRut}" required="true">
                                 <pe:keyFilter mask="alpha"/>
                             </p:inputText>
@@ -51,6 +53,12 @@
                                 <pe:keyFilter mask="alpha"/>
                             </p:inputText>
                             <p:inputText value="#{emailClienteController.cellPositionDireccion1}" required="true">
+                                <pe:keyFilter mask="alpha"/>
+                            </p:inputText>
+                            <p:inputText value="#{emailClienteController.cellPositionFono1}" required="true">
+                                <pe:keyFilter mask="alpha"/>
+                            </p:inputText>
+                            <p:inputText value="#{emailClienteController.cellPositionFono2}" required="true">
                                 <pe:keyFilter mask="alpha"/>
                             </p:inputText>
                         </h:panelGrid>

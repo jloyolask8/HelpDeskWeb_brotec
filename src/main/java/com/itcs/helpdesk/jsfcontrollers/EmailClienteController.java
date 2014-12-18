@@ -375,33 +375,38 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
 
                 for (int rowIndex = 1; rowIndex < sheet.getRows(); rowIndex++) {
 
-                    String rut = sheet.getCell(CellReferenceHelper.getColumn(cellPositionRut), rowIndex).getContents();
-                    String nombres = sheet.getCell(CellReferenceHelper.getColumn(cellPositionNombre), rowIndex).getContents();
-                    String apellidos = sheet.getCell(CellReferenceHelper.getColumn(cellPositionApellidos), rowIndex).getContents();
-                    String correo = sheet.getCell(CellReferenceHelper.getColumn(cellPositionCorreo), rowIndex).getContents();
-                    String sexo = sheet.getCell(CellReferenceHelper.getColumn(cellPositionSexo), rowIndex).getContents();
-                    String direccion1 = sheet.getCell(CellReferenceHelper.getColumn(cellPositionDireccion1), rowIndex).getContents();
+                    try {
+                        String rut = sheet.getCell(CellReferenceHelper.getColumn(cellPositionRut), rowIndex).getContents();
+                        String nombres = sheet.getCell(CellReferenceHelper.getColumn(cellPositionNombre), rowIndex).getContents();
+                        String apellidos = sheet.getCell(CellReferenceHelper.getColumn(cellPositionApellidos), rowIndex).getContents();
+                        String correo = sheet.getCell(CellReferenceHelper.getColumn(cellPositionCorreo), rowIndex).getContents();
+                        String sexo = sheet.getCell(CellReferenceHelper.getColumn(cellPositionSexo), rowIndex).getContents();
+                        String direccion1 = sheet.getCell(CellReferenceHelper.getColumn(cellPositionDireccion1), rowIndex).getContents();
 
-                    String fono1 = sheet.getCell(CellReferenceHelper.getColumn(cellPositionFono1), rowIndex).getContents();
-                    String fono2 = sheet.getCell(CellReferenceHelper.getColumn(cellPositionFono2), rowIndex).getContents();
+                        String fono1 = sheet.getCell(CellReferenceHelper.getColumn(cellPositionFono1), rowIndex).getContents();
+                        String fono2 = sheet.getCell(CellReferenceHelper.getColumn(cellPositionFono2), rowIndex).getContents();
 
-                    String moreValidEmail = StringUtils.isEmpty(correo) ? "" : correo.toLowerCase().trim();
-                    String formattedRut = StringUtils.isEmpty(rut) ? "" : UtilesRut.formatear(rut);
+                        String moreValidEmail = StringUtils.isEmpty(correo) ? "" : correo.toLowerCase().trim();
+                        String formattedRut = StringUtils.isEmpty(rut) ? "" : UtilesRut.formatear(rut);
 
-                    //Match the given string with the pattern
-                    Matcher m = p.matcher(moreValidEmail);
+                        //Match the given string with the pattern
+                        Matcher m = p.matcher(moreValidEmail);
 
-                    //Check whether match is found
-                    boolean matchFound = m.matches();
+                        //Check whether match is found
+                        boolean matchFound = m.matches();
 
-                    if (matchFound) {
-                    EmailCliente ec = new EmailCliente(moreValidEmail);
-                    addClientTo(formattedRut, ec, apellidos, direccion1, nombres, sexo, bulkLoadedClientsMap, fono1, fono2);
+                        if (matchFound) {
+                            EmailCliente ec = new EmailCliente(moreValidEmail);
+                            addClientTo(formattedRut, ec, apellidos, direccion1, nombres, sexo, bulkLoadedClientsMap, fono1, fono2);
 
-                    } else {
-                        EmailCliente ec = new EmailCliente(correo);
-                        addClientTo(rut, ec, apellidos, direccion1, nombres, sexo, bulkLoadedClientsErrorMap, fono1, fono2);
+                        } else {
+                            EmailCliente ec = new EmailCliente(correo);
+                            addClientTo(rut, ec, apellidos, direccion1, nombres, sexo, bulkLoadedClientsErrorMap, fono1, fono2);
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Error: " + e.getMessage());
                     }
+
                 }
 
                 bulkLoadedClients = new ArrayList<>(bulkLoadedClientsMap.values());
