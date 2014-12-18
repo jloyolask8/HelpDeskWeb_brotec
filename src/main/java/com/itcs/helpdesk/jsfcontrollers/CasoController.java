@@ -296,6 +296,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 casoBase.getCasosRelacionadosList().remove(casoBase);
                 casoToMerge.setIdCasoCombinado(casoBase);
                 casoToMerge.setIdEstado(EnumEstadoCaso.CERRADO.getEstado());
+                casoToMerge.setFechaCierre(applicationBean.getNow());
                 casoToMerge.setIdSubEstado((casoToMerge.getTipoCaso().equals(EnumTipoCaso.CONTACTO.getTipoCaso()) ? EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()
                         : (casoToMerge.getTipoCaso().equals(EnumTipoCaso.COTIZACION.getTipoCaso()) ? EnumSubEstadoCaso.COTIZACION_DUPLICADO.getSubEstado()
                                 : (casoToMerge.getTipoCaso().equals(EnumTipoCaso.CONTACTO.getTipoCaso()) ? EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()
@@ -1948,6 +1949,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             }
 
         }
+        
+    }
 
     /**
      * Crea un filtro para mostrar los casos con el flag revisar actualizacion
