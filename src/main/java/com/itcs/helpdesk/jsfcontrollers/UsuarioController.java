@@ -325,7 +325,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
 
             updatedUser.setGrupoList(getGruposDualListModel().getTarget());
             if (updateFull) {
-                getJpaController().merge(updatedUser);
+                getJpaController().mergeUsuarioFull(updatedUser);
             } else {
                 getJpaController().merge(updatedUser);
             }
