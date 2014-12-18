@@ -433,17 +433,15 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
                     Matcher m = p.matcher(moreValidEmail);
 
                     //Check whether match is found
-                    boolean matchFound = m.matches();
+//                    boolean matchFound = m.matches();
+//                    if (matchFound) {
+                    EmailCliente ec = new EmailCliente(moreValidEmail);
+                    addClientTo(formattedRut, ec, apellidos, direccion1, nombres, sexo, bulkLoadedClientsMap, fono1, fono2);
 
-                    if (matchFound) {
-                        EmailCliente ec = new EmailCliente(moreValidEmail);
-                        addClientTo(formattedRut, ec, apellidos, direccion1, nombres, sexo, bulkLoadedClientsMap, fono1, fono2);
-
-                    } else {
-                        EmailCliente ec = new EmailCliente(correo);
-                        addClientTo(rut, ec, apellidos, direccion1, nombres, sexo, bulkLoadedClientsErrorMap, fono1, fono2);
-                    }
-
+//                    } else {
+//                        EmailCliente ec = new EmailCliente(correo);
+//                        addClientTo(rut, ec, apellidos, direccion1, nombres, sexo, bulkLoadedClientsErrorMap, fono1, fono2);
+//                    }
                 }
 
                 bulkLoadedClients = new ArrayList<>(bulkLoadedClientsMap.values());
@@ -465,14 +463,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
     }
 
     private void addClientTo(String rut, EmailCliente ec, String apellidos, String direccion1, String nombres, String sexo, Map<String, Cliente> map, String fono1, String fono2) {
-        if ((!rut.isEmpty()) && map.containsKey(rut)) {
-
-            List<EmailCliente> emails = map.get(rut).getEmailClienteList();
-            if (!emails.contains(ec)) {
-                emails.add(ec);
-            }
-
-        } else {
+        if (ec == null) {
             Cliente cl = new Cliente();
             cl.setApellidos(apellidos);
             cl.setFono1(fono1);
@@ -487,12 +478,40 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
             } else {
                 cl.setSexo("Desconocido");
             }
-            ec.setCliente(cl);
-            List<EmailCliente> emails = new ArrayList<>();
-            emails.add(ec);
-            cl.setEmailClienteList(emails);
+            
             map.put(cl.getRut(), cl);
+            
+        } else {
+            if ((!StringUtils.isEmpty(rut)) && map.containsKey(rut)) {
+
+                List<EmailCliente> emails = map.get(rut).getEmailClienteList();
+                if (!emails.contains(ec)) {
+                    emails.add(ec);
+                }
+
+            } else {
+                Cliente cl = new Cliente();
+                cl.setApellidos(apellidos);
+                cl.setFono1(fono1);
+                cl.setFono2(fono2);
+                cl.setDirParticular(direccion1);
+                cl.setNombres(nombres);
+                cl.setRut(rut);
+                if (sexo != null && (sexo.equalsIgnoreCase("Hombre") || sexo.equalsIgnoreCase("Mujer"))) {
+                    cl.setSexo(sexo);
+                } else if (sexo != null && (sexo.equalsIgnoreCase("M") || sexo.equalsIgnoreCase("F"))) {
+                    cl.setSexo(sexo.equalsIgnoreCase("M") ? "Hombre" : "Mujer");
+                } else {
+                    cl.setSexo("Desconocido");
+                }
+                ec.setCliente(cl);
+                List<EmailCliente> emails = new ArrayList<>();
+                emails.add(ec);
+                cl.setEmailClienteList(emails);
+                map.put(cl.getRut(), cl);
+            }
         }
+
     }
 
     public void onBlurRutInput() {
