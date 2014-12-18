@@ -20,7 +20,7 @@
                                 <ui:repeat value="#{vistaController.vistasCustomersItems}" var="vista1">
                                     <li title="#{vista1.descripcion}" class="#{casoCustomerController.selectedViewId eq vista1.idVista ? 'active':''}" >
                                         <h:commandLink action="#{casoCustomerController.applyViewFilter(vista1)}"  immediate="true" value="#{vista1.nombre}">
-                                            <span class="badge pull-right">#{vistaController.countCasosForView(vista1)}</span>
+                                            <span class="badge pull-right">#{vistaController.countItemsVista(vista1)}</span>
                                         </h:commandLink>                                   
                                     </li>
                                 </ui:repeat>
@@ -44,33 +44,11 @@
                                     <h:dataTable id="ID_TABLA" value="#{casoCustomerController.items}" var="item" rendered="#{casoCustomerController.items.rowCount gt 0}"                                            
                                                  styleClass="table table-striped">
 
-                                        <h:column>
-                                            <f:facet name="header"></f:facet>
-                                            <h:commandLink id="prio">
-                                                <p:graphicImage library="images" name="#{item.esPrioritario ? 'starEnabled.png':'starDisabled.png'}" title="Prioritario"/>
-                                                <p:ajax id="aj2" listener="#{casoCustomerController.changePriority(item, item.esPrioritario)}" update="prio"/>
-                                            </h:commandLink>
-                                        </h:column>
-
-                                        <h:column>
-                                            <f:facet name="header"></f:facet>
-                                            <h:graphicImage value="/images/user-available.png" title="Caso pendiente (entre 0 y 50% del tiempo asignado)" rendered="#{item.estadoAlerta.idalerta eq 1 and item.idEstado.idEstado eq 'abierto'}"/>
-                                            <h:graphicImage value="/images/dialog-warning-3.png" title="Caso por vencer (mas del 50% del tiempo asignado)" rendered="#{item.estadoAlerta.idalerta eq 2 and item.idEstado.idEstado eq 'abierto'}"/>
-                                            <h:graphicImage value="/images/software-update-urgent-2.png" title="Caso vencido (mas del 100% del tiempo asignado)" rendered="#{item.estadoAlerta.idalerta eq 3 and item.idEstado.idEstado eq 'abierto'}"/>
-                                            <h:graphicImage value="/images/locked.png" title="Caso cerrado" rendered="#{item.idEstado.idEstado eq 'cerrado'}"/>
-                                        </h:column>
-
                                         <h:column> 
                                             <f:facet name="header">#</f:facet>
-                                            <h:commandLink id="editBtn"  action="#{casoCustomerController.prepareCustomerViewCaso(item)}"
+                                            <h:commandLink id="editBtn"  action="#{casoCustomerController.prepareEdit(item)}"
                                                            value="#{item.idCaso}"  title="Abrir" immediate="true"/>
                                         </h:column>  
-
-                                        <h:column>
-                                            <f:facet name="header">Estado</f:facet>
-                                            <span class="label" style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};">#{item.idSubEstado.nombre}</span>
-
-                                        </h:column>
 
                                         <h:column>  
                                             <f:facet name="header">Tipo</f:facet>
@@ -86,12 +64,17 @@
 
                                         </h:column>
 
-                                        <h:column>   
-                                            <f:facet name="header">Creado</f:facet>
-                                            <h:outputText value="#{item.fechaCreacion}" >
-                                                <f:convertDateTime pattern="#{bundle.dateFormatShortTime}"/>
-                                            </h:outputText>
+                                        <h:column>
+                                            <f:facet name="header">Estado</f:facet>
+                                            <span class="label" style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};">#{item.idSubEstado.nombre}</span>
+
                                         </h:column>
+
+                                        <p:column sortBy="#{item.fechaCreacion}">
+                                            <f:facet name="header">Creado</f:facet>
+                                            <h:outputText id="fechaCreacion" value="#{casoController.formatShortDate(item.fechaCreacion)}" />
+                                            <p:tooltip for="fechaCreacion" value="Creado: #{casoController.formatDate(item.fechaCreacion)} (#{casoController.prettyDate(item.fechaCreacion)})"  />
+                                        </p:column>
 
                                         <h:column>   
                                             <f:facet name="header">SLA</f:facet>

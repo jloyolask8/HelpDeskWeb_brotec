@@ -60,7 +60,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     protected UserTransaction utx = null;
     @PersistenceUnit(unitName = "helpdeskPU")
     protected EntityManagerFactory emf = null;
-    
+
     //go back button
 //    private String backOutcome;
     protected static final Locale LOCALE_ES_CL = new Locale("es", "CL");
@@ -73,7 +73,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     protected static final SimpleDateFormat yearDateFormatWTime = new SimpleDateFormat("dd/MM/yy HH:mm", LOCALE_ES_CL);
 
     private final Class<E> entityClass;
-    
+
     protected transient JPAServiceFacade jpaController = null;
     protected transient ManagerCasos managerCasos;
     protected transient DataModel items = null;
@@ -447,7 +447,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
                     //System.out.println("added filtro " + fCopy);
                 }
             }
-            
+
             if(copy.getFiltrosVistaList().isEmpty()){
                 copy.addNewFiltroVista();
             }
@@ -653,9 +653,9 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     protected void beforeSetSelected() {
 
     }
-    
+
     protected void beforePrepareList(){
-    
+
     }
 
     protected void afterSetSelected() {
@@ -799,14 +799,15 @@ public abstract class AbstractManagedBean<E> implements Serializable {
      * @param user
      * @return
      */
-    public List<Vista> getAllVistasItems(Usuario user) {
+    public List<Vista> getAllAgentVistasItems() {
 
         if (allMyVistas == null) {
             List<Vista> lista = new ArrayList<>();
-            final List<Vista> visibleForAllItems = getVisibleForAllItems(this.entityClass.getName());
-            final List<Vista> visibleForMeOnlyItems = getVisibleForMeOnlyItems(user, this.entityClass.getName());
-            final List<Vista> visibleForMyGroupsItems = getVisibleForMyGroupsItems(user, this.entityClass.getName());
-            final List<Vista> visibleForMyAreasItems = getVisibleForMyAreasItems(user, this.entityClass.getName());
+            final List<Vista> visibleForAllItems = getVisibleForAllItems(getEntityClass().getName());
+            final UserSessionBean userSessionBean = getUserSessionBean();
+            final List<Vista> visibleForMeOnlyItems = getVisibleForMeOnlyItems(userSessionBean.getCurrent(), getEntityClass().getName());
+            final List<Vista> visibleForMyGroupsItems = getVisibleForMyGroupsItems(userSessionBean.getCurrent(), getEntityClass().getName());
+            final List<Vista> visibleForMyAreasItems = getVisibleForMyAreasItems(userSessionBean.getCurrent(), getEntityClass().getName());
 
             if (visibleForAllItems != null) {
                 for (Vista v : visibleForAllItems) {
@@ -889,7 +890,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
 
         if (vista == null) {
             vista = new Vista(entityClass);
-            if(vista.getFiltrosVistaList() == null || vista.getFiltrosVistaList().isEmpty()){
+            if (vista.getFiltrosVistaList() == null || vista.getFiltrosVistaList().isEmpty()) {
                 vista.addNewFiltroVista();
             }
         }

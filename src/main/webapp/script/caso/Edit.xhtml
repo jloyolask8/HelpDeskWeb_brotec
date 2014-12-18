@@ -360,11 +360,11 @@
                     </p:scrollPanel>
 
                 </p:tab>
-                
+
                 <p:tab id="tabMerge" title="Combinar casos" closable="true">
-                    
+
                 </p:tab>
-                
+
                 <p:tab id="tabEditarEvento" title="Detalles del Evento" closable="true" 
                        rendered="#{casoScheduleController.event ne null}">
 
@@ -859,22 +859,16 @@
 
                     <h:panelGrid columns="3">
 
-                        <p:outputLabel value="Tipo:" style="font-weight:bold" rendered="#{casoController.selected.tipoCaso eq null}"/>
-                        <p:selectOneMenu id="idTipoCaso" rendered="#{casoController.selected.tipoCaso eq null}" converter="TipoCasoControllerConverter"
-                                         required="true" requiredMessage="El tipo de caso es requerido."
-                                         filter="true" filterMatchMode="contains"
-                                         value="#{casoController.selected.tipoCaso}" >                                  
-                            <f:selectItems value="#{applicationBean.tipoCasoAvailableList}" var="tipo" 
-                                           itemLabel="#{tipo.nombre}" itemValue="#{tipo.idTipoCaso}" itemDescription="#{tipo.descripcion}"/>
-                            <p:ajax update="idSubEstado2"/>
-                        </p:selectOneMenu>
-                        <p:message for="idTipoCaso"/>
-
-                        <p:outputLabel for="idSubEstado2"  value="Seleccione causal de cierre del caso:" style="font-weight: bold;"/>
+                        <p:outputLabel for="idSubEstado2"  value="Causa de cierre del caso:" style="font-weight: bold;"/>
                         <p:selectOneMenu id="idSubEstado2" value="#{casoController.selected.idSubEstado}" >
-                            <f:selectItems value="#{casoController.itemsSubEstadoCasoAvailableSelectOneCasoCerrado}" var="subEstad" itemDescription="#{subEstad.description}"/>
+                            <f:selectItems value="#{casoController.itemsSubEstadoCasoAvailableSelectOneCasoCerrado}" 
+                                           var="subEstad" itemDescription="#{subEstad.description}"/>
                         </p:selectOneMenu>
-                        <p:message for="idSubEstado2" />                            
+                        <p:message for="idSubEstado2" />  
+
+                        <p:outputLabel for="nota"  value="Nota de cierre:" style="font-weight: bold;"/>
+                        <p:inputTextarea id="nota" value="#{casoController.textoNota}" />
+                        <p:message for="nota" />  
 
                     </h:panelGrid>
 

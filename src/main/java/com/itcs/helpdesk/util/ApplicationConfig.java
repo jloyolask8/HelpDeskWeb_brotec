@@ -381,6 +381,10 @@ public class ApplicationConfig {
     public static boolean isAreaRequired() {
         return getBooleanPropertyValue(EnumSettingsBase.AREA_IS_REQUIRED.getAppSetting().getSettingKey());
     }
+    
+    public static boolean isCustomerSurveyEnabled() {
+        return getBooleanPropertyValue(EnumSettingsBase.SURVEY_ENABLED.getAppSetting().getSettingKey());
+    }
 
     public static boolean isProductoRequired() {
         return getBooleanPropertyValue(EnumSettingsBase.PRODUCT_IS_REQUIRED.getAppSetting().getSettingKey());
@@ -446,6 +450,14 @@ public class ApplicationConfig {
     public static String getNotificationClientBodyText() {
         return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_UPDATE_CLIENT_BODY_TEXT.getAppSetting().getSettingKey());
     }
+    
+    public static String getCustomerSurveySubjectText() {
+        return ApplicationConfig.getProperty(EnumSettingsBase.CUSTOMER_SURVEY_SUBJECT_TEXT.getAppSetting().getSettingKey());
+    }
+
+    public static String getCustomerSurveyBodyText() {
+        return ApplicationConfig.getProperty(EnumSettingsBase.CUSTOMER_SURVEY_BODY_TEXT.getAppSetting().getSettingKey());
+    }
 
     public static String getProductDescription() {
         return ApplicationConfig.getProperty(EnumSettingsBase.PRODUCT_DESCRIPTION.getAppSetting().getSettingKey());
@@ -457,6 +469,10 @@ public class ApplicationConfig {
 
     public static String getProductSubComponentDescription() {
         return ApplicationConfig.getProperty(EnumSettingsBase.PRODUCT_SUBCOMP_DESCRIPTION.getAppSetting().getSettingKey());
+    }
+    
+    public static String getDiagnosticScripts() {
+        return ApplicationConfig.getProperty(EnumSettingsBase.DIAGNOSTIC_SCRIPT.getAppSetting().getSettingKey(), "");
     }
 
     public static boolean isSendNotificationOnTransfer() {

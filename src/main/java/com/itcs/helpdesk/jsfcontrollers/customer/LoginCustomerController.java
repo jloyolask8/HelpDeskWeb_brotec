@@ -34,13 +34,14 @@ public class LoginCustomerController extends AbstractManagedBean<Cliente> implem
     private ApplicationBean applicationBean;
     @ManagedProperty(value = "#{UserSessionBean}")
     private UserSessionBean userSessionBean;
-    @ManagedProperty(value = "#{customerCasoController}")
+    @ManagedProperty(value = "#{casoCustomerController}")
     private CustomerCasoController customerCasoController;
     private String emailCliente;
     private Long numCaso;
 
     /**
-     * <p>Construct a new request data bean instance.</p>
+     * <p>
+     * Construct a new request data bean instance.</p>
      */
     public LoginCustomerController() {
         super(Cliente.class);
@@ -58,21 +59,22 @@ public class LoginCustomerController extends AbstractManagedBean<Cliente> implem
 //            customerCasoController.prepareCustomerViewCaso(caso);
                 customerCasoController.openCase(caso);
 //            customerCasoController.prepareDynamicCaseData(caso);
-                
+
                 String channel = "/" + UUID.randomUUID().toString();
                 userSessionBean.setChannel(channel);
                 applicationBean.addChannel(emailCliente, channel);
-                return "ticket";
+                return "customer/ticket";
             } catch (Exception ex) {
+                addErrorMessage("Lo sentimos, en este momento no podemos atenderle.");
                 Logger.getLogger(LoginCustomerController.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
             //No se encontro un caso
             FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "El Email y número de caso no coinciden con ningún caso en nuestros sistemas", "Favor revisar el email o número de caso");
             FacesContext.getCurrentInstance().addMessage(null, msg);
-            
+
         }
-        
+
         return null;
 
     }
@@ -129,6 +131,8 @@ public class LoginCustomerController extends AbstractManagedBean<Cliente> implem
 
     }
 
+    
+
     public void prepareCreateTicket(javax.faces.event.ComponentSystemEvent event) {
         System.out.println("initializeData()...");
         HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
@@ -161,7 +165,6 @@ public class LoginCustomerController extends AbstractManagedBean<Cliente> implem
         String email = getEmailCliente();
 
 //        List<Usuario> usuarios = getJpaController().getUsuarioFindByEmail(getEmailCliente());
-
         EmailCliente emailCliente_ = getJpaController().find(EmailCliente.class, email);
 
         if (emailCliente_ == null || (emailCliente_.getCasoList() == null || emailCliente_.getCasoList().isEmpty())) {
@@ -184,7 +187,7 @@ public class LoginCustomerController extends AbstractManagedBean<Cliente> implem
             String html = "<html>"
                     + "<h1>Resumen de sus Casos</h1><br/>" + sb.toString()
                     + "<br/></html>";
-                    NoReplySystemMailSender.sendHTML(email, "Resumen de sus Casos", html, null);
+            NoReplySystemMailSender.sendHTML(email, "Resumen de sus Casos", html, null);
         } catch (Exception ex) {
             Log.createLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
         }
