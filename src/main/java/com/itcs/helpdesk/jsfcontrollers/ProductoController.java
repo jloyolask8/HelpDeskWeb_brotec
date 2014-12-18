@@ -43,6 +43,7 @@ import jxl.CellReferenceHelper;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.WorkbookSettings;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.SelectableDataModel;
@@ -63,11 +64,11 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
 //    private transient PaginationHelper pagination;
     private int selectedItemIndex;
     //cell postion, for buld load.
-    private String cellPositionProduct = "A";
-    private String cellPositionComponent = "B";
-    private String cellPositionSubComponentId = "C";
-    private String cellPositionSubComponentName = "D";
-    private String cellPositionSubComponentDesc = "E";
+    private String cellPositionProduct = "";
+    private String cellPositionComponent = "";
+    private String cellPositionSubComponentId = "";
+    private String cellPositionSubComponentName = "";
+    private String cellPositionSubComponentDesc = "";
     private transient UploadedFile uploadFile;
     private List<Producto> bulkLoadedProductos;
     private List<Producto> bulkLoadedProductosWithErrors;
@@ -99,6 +100,13 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
 //        current = item;
 //    }
     public String prepareCreateMasivo() {
+        bulkLoadedProductosWithErrors = null;
+        bulkLoadedSubComponenteWithErrors = null;
+        bulkLoadedComponentesWithErrors = null;
+
+        bulkLoadedProductoMap = new HashMap<>();
+        bulkLoadedComponenteMap = new HashMap<>();
+        bulkLoadedSubComponenteMap = new HashMap<>();
         return "/script/producto/bulkLoad";
     }
 
@@ -119,7 +127,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
 
     public StreamedContent findLogoStreamedContent(Long idLogo) {
 
-        System.out.println("idLogo:"+idLogo);
+        System.out.println("idLogo:" + idLogo);
         FacesContext context = FacesContext.getCurrentInstance();
         if (context.getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
             // So, we're rendering the view. Return a stub StreamedContent so that it will generate right URL.
@@ -128,7 +136,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
             Archivo archivo = getJpaController().getArchivoFindByIdAttachment(idLogo);
             if (archivo != null) {
                 return new DefaultStreamedContent(
-                        new ByteArrayInputStream(archivo.getArchivo()), archivo.getContentType(), archivo.getFileName() + "/"+ archivo.getContentType());
+                        new ByteArrayInputStream(archivo.getArchivo()), archivo.getContentType(), archivo.getFileName() + "/" + archivo.getContentType());
             } else {
                 return new DefaultStreamedContent();
             }
@@ -317,7 +325,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
 
     public void handleFileUpload(FileUploadEvent event) {
 
-        persistentProductsMap = new HashMap<String, Producto>();
+        persistentProductsMap = new HashMap<>();
         int countSubComp = 0;
 //        uploadFile = event.getFile();
 
@@ -337,19 +345,45 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
                 Sheet sheet = w.getSheet(0);
                 // Loop over first 10 column and lines
 
-                bulkLoadedProductoMap = new HashMap<String, Producto>();
+                bulkLoadedProductoMap = new HashMap<>();
 
-                bulkLoadedComponenteMap = new HashMap<String, Componente>();
+                bulkLoadedComponenteMap = new HashMap<>();
 
-                bulkLoadedSubComponenteMap = new HashMap<String, SubComponente>();
+                bulkLoadedSubComponenteMap = new HashMap<>();
 
                 for (int rowIndex = 1; rowIndex < sheet.getRows(); rowIndex++) {
 
-                    String nombreProducto = sheet.getCell(CellReferenceHelper.getColumn(cellPositionProduct), rowIndex).getContents();
-                    String idComponente = sheet.getCell(CellReferenceHelper.getColumn(cellPositionComponent), rowIndex).getContents();
-                    String subComponentId = sheet.getCell(CellReferenceHelper.getColumn(cellPositionSubComponentId), rowIndex).getContents();
-                    String subComponentName = sheet.getCell(CellReferenceHelper.getColumn(cellPositionSubComponentName), rowIndex).getContents();
-                    String subComponentDesc = sheet.getCell(CellReferenceHelper.getColumn(cellPositionSubComponentDesc), rowIndex).getContents();
+                    String nombreProducto = "";
+                    String idComponente = "";
+                    String subComponentId = "";
+                    String subComponentName = "";
+                    String subComponentDesc = "";
+
+                    try {
+                        nombreProducto = sheet.getCell(CellReferenceHelper.getColumn(cellPositionProduct), rowIndex).getContents().trim();
+                    } catch (Exception e) {
+                        System.out.println("Error on cell " + cellPositionSubComponentDesc);
+                    }
+                    try {
+                        idComponente = sheet.getCell(CellReferenceHelper.getColumn(cellPositionComponent), rowIndex).getContents().trim();
+                    } catch (Exception e) {
+                        System.out.println("Error on cell " + cellPositionSubComponentDesc);
+                    }
+                    try {
+                        subComponentId = sheet.getCell(CellReferenceHelper.getColumn(cellPositionSubComponentId), rowIndex).getContents().trim();
+                    } catch (Exception e) {
+                        System.out.println("Error on cell " + cellPositionSubComponentDesc);
+                    }
+                    try {
+                        subComponentName = sheet.getCell(CellReferenceHelper.getColumn(cellPositionSubComponentName), rowIndex).getContents().trim();
+                    } catch (Exception e) {
+                        System.out.println("Error on cell " + cellPositionSubComponentDesc);
+                    }
+                    try {
+                        subComponentDesc = sheet.getCell(CellReferenceHelper.getColumn(cellPositionSubComponentDesc), rowIndex).getContents().trim();
+                    } catch (Exception e) {
+                        System.out.println("Error on cell " + cellPositionSubComponentDesc);
+                    }
 
                     Producto producto;
                     try {
@@ -414,11 +448,11 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
 
                 }
 
-                bulkLoadedProductos = new ArrayList<Producto>(bulkLoadedProductoMap.values());
+                bulkLoadedProductos = new ArrayList<>(bulkLoadedProductoMap.values());
 
-                bulkLoadedComponentes = new ArrayList<Componente>(bulkLoadedComponenteMap.values());
+                bulkLoadedComponentes = new ArrayList<>(bulkLoadedComponenteMap.values());
 
-                bulkLoadedSubComponentes = new ArrayList<SubComponente>(bulkLoadedSubComponenteMap.values());
+                bulkLoadedSubComponentes = new ArrayList<>(bulkLoadedSubComponenteMap.values());
 
                 System.out.println("countSubComp:" + countSubComp);
 
@@ -495,7 +529,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
 //        Map<String, SubComponente> bulkLoadedSubComponenteErrorMap = new HashMap<String, SubComponente>();
 
         //--------
-        bulkLoadedProductosWithErrors = new ArrayList<Producto>();
+        bulkLoadedProductosWithErrors = new ArrayList<>();
 
         int counterproducto = 0;
 
@@ -508,6 +542,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
                 counterproducto++;
             } catch (Exception e) {
                 bulkLoadedProductosWithErrors.add(producto);
+                System.out.println("****** Error creating product:");
                 e.printStackTrace();
             }
         }
@@ -518,45 +553,55 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
         }
 
 //        --------
-        bulkLoadedComponentesWithErrors = new ArrayList<Componente>();
+        bulkLoadedComponentesWithErrors = new ArrayList<>();
 
         int counterComponente = 0;
 
-        final ComponenteJpaController cJpaController = getJpaController().getComponenteJpaController();
+//        final ComponenteJpaController cJpaController = getJpaController().getComponenteJpaController();
 
         for (Componente componente : bulkLoadedComponentes) {
             try {
-                final Componente find = getJpaController().find(Componente.class, componente.getIdComponente());
-                if (find == null) {
-                    cJpaController.create(componente);
-                    counterComponente++;
+                if (!StringUtils.isEmpty(componente.getIdComponente())) {
+                    final Componente find = getJpaController().find(Componente.class, componente.getIdComponente());
+                    if (find == null) {
+                        getJpaController().persist(componente);
+                        counterComponente++;
+                    }
                 }
 
             } catch (Exception e) {
                 bulkLoadedComponentesWithErrors.add(componente);
+                System.out.println("****** Error creating component:");
                 e.printStackTrace();
             }
         }
 
         JsfUtil.addSuccessMessage(counterComponente + " " + ApplicationConfig.getProductComponentDescription() + "(s) fueron guardados de un total de " + bulkLoadedComponentes.size());
 //        --------
-        bulkLoadedSubComponenteWithErrors = new ArrayList<SubComponente>();
+        bulkLoadedSubComponenteWithErrors = new ArrayList<>();
 
         int counterSubComponente = 0;
 
-        final SubComponenteJpaController scJpaController = getJpaController().getSubComponenteJpaController();
+//        final SubComponenteJpaController scJpaController = getJpaController().getSubComponenteJpaController();
 
         for (SubComponente subComponente : bulkLoadedSubComponentes) {
             try {
-                final SubComponente find = scJpaController.findSubComponente(subComponente.getIdSubComponente());
+                if (!StringUtils.isEmpty(subComponente.getIdSubComponente())) {
+                    if(StringUtils.isEmpty(subComponente.getNombre())){
+                        subComponente.setNombre(subComponente.getIdComponente().getNombre());
+                    }
+                    final SubComponente find = getJpaController().find(SubComponente.class, subComponente.getIdSubComponente());
+                            //scJpaController.findSubComponente(subComponente.getIdSubComponente());
 
-                if (find == null) {
-                    scJpaController.create(subComponente);
-                    counterSubComponente++;
+                    if (find == null) {
+                        getJpaController().persist(subComponente);
+                        counterSubComponente++;
+                    }
                 }
 
             } catch (Exception e) {
                 bulkLoadedSubComponenteWithErrors.add(subComponente);
+                System.out.println("****** Error creating subComponent:");
                 e.printStackTrace();
             }
         }
@@ -779,8 +824,6 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
             current = (Producto) getJpaController().queryByRange(Producto.class, 1, selectedItemIndex).get(0);
         }
     }
-
-    
 
     /**
      * @param componenteController the componenteController to set

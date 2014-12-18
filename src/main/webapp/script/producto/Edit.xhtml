@@ -293,11 +293,11 @@
                             </p:overlayPanel>
                         </p:column>
 
-                        <p:column filterBy="direccionMunicipal" filterMatchMode="contains">
+                        <p:column filterBy="direccion" filterMatchMode="contains">
                             <f:facet name="header">
-                                <h:outputText value="Dirección Municipal"/>
+                                <h:outputText value="Dirección"/>
                             </f:facet>
-                            <h:outputText value="#{subitem.direccionMunicipal}"/>
+                            <h:outputText value="#{subitem.direccion}"/>
                         </p:column>
 
                         <p:column>
@@ -433,8 +433,8 @@
                         <p:inputText id="nombreSubComponente" value="#{productoController.currentSubComponente.nombre}" title="#{bundle.CreateSubComponenteTitle_nombre}" 
                                      maxlength="40"/>
 
-                        <h:outputLabel value="Dirección Municip:" for="direccionMunicipal" style="font-weight: bold"/>
-                        <p:inputTextarea id="direccionMunicipal" value="#{productoController.currentSubComponente.direccionMunicipal}" 
+                        <h:outputLabel value="Dirección:" for="direccion" style="font-weight: bold"/>
+                        <p:inputTextarea id="direccion" value="#{productoController.currentSubComponente.direccion}" 
                                          title="#{bundle.CreateSubComponenteTitle_nombre}" 
                                          style="width: 100%;"/>
 
