@@ -234,7 +234,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public static final String HEADER_HISTORY = "<br/><hr/><b>HISTORIA DEL CASO</b><hr/><br/>";
     public static final String HEADER_HISTORY_NOTA = "<p><strong>HISTORIA DEL CASO</strong></p>";
     public static final String HEADER_HISTORY_NOTA_ALT = "<b>HISTORIA DEL CASO</b>";
-    public static final String FOOTER_HISTORY_NOTA =">FIN MENSAJE ORIGINAL";
+    public static final String FOOTER_HISTORY_NOTA = ">FIN MENSAJE ORIGINAL";
 
     private Comparator<Caso> comparadorCasosPorFechaCreacion = new Comparator<Caso>() {
         @Override
@@ -299,8 +299,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 casoToMerge.setFechaCierre(applicationBean.getNow());
                 casoToMerge.setIdSubEstado((casoToMerge.getTipoCaso().equals(EnumTipoCaso.CONTACTO.getTipoCaso()) ? EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()
                         : (casoToMerge.getTipoCaso().equals(EnumTipoCaso.COTIZACION.getTipoCaso()) ? EnumSubEstadoCaso.COTIZACION_DUPLICADO.getSubEstado()
-                                : (casoToMerge.getTipoCaso().equals(EnumTipoCaso.CONTACTO.getTipoCaso()) ? EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()
-                                        : EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()))));
+                        : (casoToMerge.getTipoCaso().equals(EnumTipoCaso.CONTACTO.getTipoCaso()) ? EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()
+                        : EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()))));
                 getManagerCasos().mergeCaso(casoToMerge,
                         ManagerCasos.createLogComment(casoToMerge, "Se combina con el caso " + casoBase.getIdCaso()));
                 sb.append(casoToMerge.getIdCaso());
@@ -366,7 +366,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     protected String getListPage() {
         return "inbox";
     }
-  
+
     public void enableReplyMode() {
 
         if (validateEdit()) {
@@ -1084,9 +1084,17 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public void formateaRut() {
 //        System.out.println("formateaRut");
-        String rutFormateado = UtilesRut.formatear(getSelected().getIdCliente().getRut());
-        getSelected().getIdCliente().setRut(rutFormateado);
-        validaRut();
+        if (getSelected().getIdCliente() == null) {
+            return;
+        }
+        if (getSelected().getIdCliente() != null && StringUtils.isEmpty(getSelected().getIdCliente().getRut())) {
+            return;
+        } else {
+            String rutFormateado = UtilesRut.formatear(getSelected().getIdCliente().getRut());
+            getSelected().getIdCliente().setRut(rutFormateado);
+            validaRut();
+        }
+
     }
 
     public void validaRut() {
@@ -1620,23 +1628,23 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         String ret = nota.getTexto();
         int headerStartIndex = nota.getTexto().indexOf(HEADER_HISTORY_NOTA);
         int historyEndIndex = nota.getTexto().lastIndexOf(FOOTER_HISTORY_NOTA);
-        headerStartIndex = (headerStartIndex > 0)?headerStartIndex:nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT);
+        headerStartIndex = (headerStartIndex > 0) ? headerStartIndex : nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT);
         if (headerStartIndex > 0) {
             ret = nota.getTexto().substring(0, headerStartIndex);
-            if((!debeMostrarContenidoReducido(nota))&&(historyEndIndex>headerStartIndex)){
-                ret+=ret = nota.getTexto().substring(historyEndIndex+FOOTER_HISTORY_NOTA.length());
+            if ((!debeMostrarContenidoReducido(nota)) && (historyEndIndex > headerStartIndex)) {
+                ret += ret = nota.getTexto().substring(historyEndIndex + FOOTER_HISTORY_NOTA.length());
             }
         }
         return ret;
     }
-    
-    public boolean existsNotaHistoryPart(Nota nota){
-        return (nota.getTexto().indexOf(HEADER_HISTORY_NOTA)>0)||(nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT)>0);
+
+    public boolean existsNotaHistoryPart(Nota nota) {
+        return (nota.getTexto().indexOf(HEADER_HISTORY_NOTA) > 0) || (nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT) > 0);
     }
 
     public String extractNotaHistoryPart(Nota nota) {
         int headerStartIndex = nota.getTexto().indexOf(HEADER_HISTORY_NOTA);
-        headerStartIndex = (headerStartIndex > 0)?headerStartIndex:nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT);
+        headerStartIndex = (headerStartIndex > 0) ? headerStartIndex : nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT);
         if (headerStartIndex > 0) {
             return nota.getTexto().substring(headerStartIndex);
         }
@@ -1949,7 +1957,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             }
 
         }
-        
+
     }
 
     /**
@@ -2841,8 +2849,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         if (caso.getOwner() != null) {
             if (nota.getCreadaPor() != null && nota.getCreadaPor().getIdUsuario() != null && !nota.getCreadaPor().getIdUsuario().equals(caso.getOwner().getIdUsuario())) {
                 caso.setRevisarActualizacion(true);
-            }else{
-                if(!StringUtils.isEmpty(nota.getEnviadoPor())){
+            } else {
+                if (!StringUtils.isEmpty(nota.getEnviadoPor())) {
                     caso.setRevisarActualizacion(true);
                 }
             }

@@ -435,12 +435,10 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
                     //Check whether match is found
                     boolean matchFound = m.matches();
                     if (!matchFound) {
-                        ec=null;
+                        ec = null;
                     }
-                    if(UtilesRut.validar(rut)){
-                        
+                    if (UtilesRut.validar(rut)) {
                         addClientTo(formattedRut, ec, apellidos, direccion1, nombres, sexo, bulkLoadedClientsMap, fono1, fono2);
-
                     } else {
                         addClientTo(rut, ec, apellidos, direccion1, nombres, sexo, bulkLoadedClientsErrorMap, fono1, fono2);
                     }
