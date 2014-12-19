@@ -428,20 +428,22 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
 
                     String moreValidEmail = StringUtils.isEmpty(correo) ? "" : correo.toLowerCase().trim();
                     String formattedRut = StringUtils.isEmpty(rut) ? "" : UtilesRut.formatear(rut);
-
+                    EmailCliente ec = new EmailCliente(moreValidEmail);
                     //Match the given string with the pattern
                     Matcher m = p.matcher(moreValidEmail);
 
                     //Check whether match is found
-//                    boolean matchFound = m.matches();
-//                    if (matchFound) {
-                    EmailCliente ec = new EmailCliente(moreValidEmail);
-                    addClientTo(formattedRut, ec, apellidos, direccion1, nombres, sexo, bulkLoadedClientsMap, fono1, fono2);
+                    boolean matchFound = m.matches();
+                    if (!matchFound) {
+                        ec=null;
+                    }
+                    if(UtilesRut.validar(rut)){
+                        
+                        addClientTo(formattedRut, ec, apellidos, direccion1, nombres, sexo, bulkLoadedClientsMap, fono1, fono2);
 
-//                    } else {
-//                        EmailCliente ec = new EmailCliente(correo);
-//                        addClientTo(rut, ec, apellidos, direccion1, nombres, sexo, bulkLoadedClientsErrorMap, fono1, fono2);
-//                    }
+                    } else {
+                        addClientTo(rut, ec, apellidos, direccion1, nombres, sexo, bulkLoadedClientsErrorMap, fono1, fono2);
+                    }
                 }
 
                 bulkLoadedClients = new ArrayList<>(bulkLoadedClientsMap.values());
@@ -475,12 +477,14 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
                 cl.setSexo(sexo);
             } else if (sexo != null && (sexo.equalsIgnoreCase("M") || sexo.equalsIgnoreCase("F"))) {
                 cl.setSexo(sexo.equalsIgnoreCase("M") ? "Hombre" : "Mujer");
+            } else if (sexo != null && (sexo.equalsIgnoreCase("MASCULINO") || sexo.equalsIgnoreCase("FEMENINO"))) {
+                cl.setSexo(sexo.equalsIgnoreCase("MASCULINO") ? "Hombre" : "Mujer");
             } else {
                 cl.setSexo("Desconocido");
             }
-            
+
             map.put(cl.getRut(), cl);
-            
+
         } else {
             if ((!StringUtils.isEmpty(rut)) && map.containsKey(rut)) {
 
@@ -501,6 +505,8 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
                     cl.setSexo(sexo);
                 } else if (sexo != null && (sexo.equalsIgnoreCase("M") || sexo.equalsIgnoreCase("F"))) {
                     cl.setSexo(sexo.equalsIgnoreCase("M") ? "Hombre" : "Mujer");
+                } else if (sexo != null && (sexo.equalsIgnoreCase("MASCULINO") || sexo.equalsIgnoreCase("FEMENINO"))) {
+                    cl.setSexo(sexo.equalsIgnoreCase("MASCULINO") ? "Hombre" : "Mujer");
                 } else {
                     cl.setSexo("Desconocido");
                 }
