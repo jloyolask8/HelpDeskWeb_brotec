@@ -20,7 +20,6 @@ import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.MailClientFactory;
 import com.itcs.helpdesk.util.ManagerCasos;
 import com.itcs.helpdesk.util.RulesEngine;
-import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;

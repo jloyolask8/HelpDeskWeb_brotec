@@ -52,10 +52,10 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
     /**
      * {0} = idArea,
      */
-    public static final String JOB_ID = "%s_SendEmail_%s_#%s_to_%s";
+    public static final String JOB_ID = "%s_SendEmail_%s_%s_to_%s";
 
-    public static String formatJobId(String idCanal, String idCaso, String to, String desc) {
-        return String.format(JOB_ID, new Object[]{idCanal, desc, idCaso, to});
+    public static String formatJobId(String idCanal, String idCaso, String to, String subject) {
+        return String.format(JOB_ID, new Object[]{idCanal, subject, idCaso, to});
     }
 
     @Override
@@ -72,11 +72,11 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
             //---
             String subject = (String) map.get(EMAIL_SUBJECT);
             String email_text = (String) map.get(EMAIL_TEXT);
-            String email_desc = (String) map.get(EMAIL_DESCRIPTION);
+//            String email_desc = (String) map.get(EMAIL_DESCRIPTION);
 
             emails_to = emails_to.trim().replace(" ", "");
 
-            final String formatJobId = formatJobId(idCanal, email_desc, idCaso, emails_to);
+            final String formatJobId = formatJobId(idCanal, subject, idCaso, emails_to);
             if (!StringUtils.isEmpty(idCanal) && !StringUtils.isEmpty(emails_to)) {
                 try {
                     final EmailClient instance = MailClientFactory.getInstance(idCanal);
@@ -85,6 +85,8 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
                         //SEND THE EMAIL!
                         Logger.getLogger(SendMailJob.class.getName()).log(Level.INFO, "SendMailJob sending email to {0}", split_emails);
                         instance.sendHTML(split_emails, subject, email_text, null);
+                        //if sent ok, then forget about it
+                        unschedule(formatJobId);
                         //crear una nota de envio de email en el caso!
                         EntityManagerFactory emf = createEntityManagerFactory();
                         UserTransaction utx = UserTransactionHelper.lookupUserTransaction();
@@ -121,7 +123,7 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
                             caso.getNotaList().add(nota);
 
                             List<AuditLog> changeLog = new ArrayList<>();
-                            changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "Se envía correo '" + email_desc + "' a: " + nota.getEnviadoA(), ""));
+                            changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "Se envía correo, subject:'" + subject + "' a: " + nota.getEnviadoA(), ""));
 
                             for (AuditLog auditLog : changeLog) {
                                 em.persist(auditLog);
@@ -129,9 +131,6 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
 
                             caso.setFechaModif(Calendar.getInstance().getTime());
                             em.merge(caso);
-
-                            //if sent ok, then forget about it
-                            unschedule(formatJobId);
 
                             utx.commit();
                             UserTransactionHelper.returnUserTransaction(utx);
