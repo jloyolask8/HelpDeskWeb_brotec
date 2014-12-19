@@ -15,7 +15,7 @@
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
             <title>#{applicationBean.helpdeskTitle}</title>      
             
-            <ui:include src="newRelicScript.xhtml"/>
+            <ui:include src="diagnosticScripts.xhtml"/>
 
             <h:outputStylesheet library="css" name="jsfcrud.css"/>
             <h:outputStylesheet library="awesome" name="css/font-awesome.css"/>
@@ -218,7 +218,7 @@
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
                                     
-                                    <p:menuitem value="Reports" ajax="false" action="#{reportChartController.prepareList()}" icon="fa fa-bar-chart-o">
+                                    <p:menuitem value="Reports" ajax="false" action="#{reportChartController.prepareList()}" icon="fa fa-bar-chart-o" rendered="false">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
                                 </p:submenu>

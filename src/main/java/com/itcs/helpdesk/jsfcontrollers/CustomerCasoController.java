@@ -7,12 +7,20 @@ package com.itcs.helpdesk.jsfcontrollers;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Cliente;
 import com.itcs.helpdesk.persistence.entities.EmailCliente;
+import com.itcs.helpdesk.persistence.entities.Nota;
 import com.itcs.helpdesk.persistence.entities.ProductoContratado;
 import com.itcs.helpdesk.persistence.entityenums.EnumCanal;
+import com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta;
+import com.itcs.helpdesk.persistence.entityenums.EnumTipoNota;
+import com.itcs.helpdesk.persistence.jpa.exceptions.NonexistentEntityException;
 import com.itcs.helpdesk.persistence.jpa.exceptions.RollbackFailureException;
+import com.itcs.helpdesk.quartz.HelpDeskScheluder;
 import com.itcs.helpdesk.util.Log;
+import com.itcs.helpdesk.util.ManagerCasos;
+import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +35,49 @@ public class CustomerCasoController extends CasoController {
 
     //customer
     private int stepNewCasoIndex;
+
+    @Override
+    protected String getListPage() {
+         return "/customer/casos";
+    }
+
+    @Override
+    protected String getEditPage() {
+        return "/customer/ticket";
+    }
+
+    @Override
+    protected String getViewPage() {
+        return getEditPage();
+    }
+    
+    public String customerCreateNota(){
+        
+        if (StringUtils.isEmpty(textoNota)) {
+            addErrorMessage("Su comentario no tiene texto, verifíque e intente nuevamente");
+            return null;
+        }
+
+        try {
+            Nota nota = buildNewNota(current, textoNotaVisibilidadPublica, textoNota,
+                    EnumTipoNota.NOTA.getTipoNota(), true);
+            addNotaToCaso(current, nota);
+          
+            getJpaController().mergeCaso(current, ManagerCasos.createLogReg(current, "Cliente agrega comentarios", "Cliente agrega comentarios tipo " + nota.getTipoNota().getNombre(), ""));
+          
+
+        } catch (NonexistentEntityException ex) {
+            Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (RollbackFailureException ex) {
+            Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            resetNotaForm();
+        }
+
+        return getEditPage();
+    }
 
     public String prepareCreateCasoFromCustomer() {
         try {

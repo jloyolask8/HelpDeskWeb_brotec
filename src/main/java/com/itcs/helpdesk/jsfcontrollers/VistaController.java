@@ -17,6 +17,8 @@ import com.itcs.helpdesk.persistence.utils.OrderBy;
 import com.itcs.helpdesk.util.Constants;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,6 +45,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
     private FiltroAcceso filtroAcceso;
     private int selectedItemIndex;
 
+   
     //---
     private Integer visibilityOption = 1;
     //--
@@ -101,7 +104,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
     }
 
     public String prepareCreate(Vista newVista, String backOutcome) {
-        System.out.println("prepareCreate("+newVista+")");
+        System.out.println("prepareCreate(" + newVista + ")");
         current = newVista;
         this.filterHelper2 = null;//recreate filter helper
         visibilityOption = determineVisibility(current);
@@ -110,8 +113,6 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         this.backOutcome = backOutcome;
         return "/script/vista/Create";
     }
-    
-    
 
     public String prepareEdit(Integer idVista) {
         current = getJpaController().find(Vista.class, idVista);
@@ -133,7 +134,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
     protected void afterSetSelected() {
         this.filterHelper2 = null;//recreate filter helper
         visibilityOption = determineVisibility(current);
-        if(current.getFiltrosVistaList() == null || current.getFiltrosVistaList().isEmpty()){
+        if (current.getFiltrosVistaList() == null || current.getFiltrosVistaList().isEmpty()) {
             current.addNewFiltroVista();
         }
     }
@@ -306,6 +307,8 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
             current = (Vista) getJpaController().queryByRange(Vista.class, selectedItemIndex, selectedItemIndex + 1).get(0);
         }
     }
+
+    
 
     public List<Vista> getVistasCustomersItems() {
         List<Vista> lista = new ArrayList<>();

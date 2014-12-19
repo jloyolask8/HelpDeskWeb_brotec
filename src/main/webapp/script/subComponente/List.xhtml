@@ -77,6 +77,10 @@
                             <h:outputText value="#{item.modelo}"/>
                         </p:column>
                         
+                        <p:column headerText="#{applicationBean.productComponentDescription}">
+                            <h:outputText value="#{item.idComponente}"/>
+                        </p:column>
+                        
                           <p:column headerText="productoContratadoList">
                               <h:outputText rendered="#{item.productoContratadoList.size() gt 0}" value="#{item.productoContratadoList}"/>
                         </p:column>

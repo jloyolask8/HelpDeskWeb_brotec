@@ -254,6 +254,10 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
     public String getCompanyName() {
         return ApplicationConfig.getCompanyName();
     }
+    
+      public String getDiagnosticScripts() {
+        return ApplicationConfig.getDiagnosticScripts();
+    }
 
     public String getCompanyLogo() {
         return ApplicationConfig.getCompanyLogo();
@@ -312,6 +316,10 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
 
     public boolean isAreaRequired() {
         return ApplicationConfig.isAreaRequired();
+    }
+    
+     public boolean isCustomerSurveyEnabled() {
+        return ApplicationConfig.isCustomerSurveyEnabled();
     }
 
     public boolean isProductoRequired() {

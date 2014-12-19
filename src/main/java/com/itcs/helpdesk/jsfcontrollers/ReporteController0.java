@@ -13,7 +13,10 @@ import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Caso_;
 import com.itcs.helpdesk.persistence.entities.EstadoCaso;
 import com.itcs.helpdesk.persistence.entities.FiltroVista;
+import com.itcs.helpdesk.persistence.entities.Grupo;
+import com.itcs.helpdesk.persistence.entities.Producto;
 import com.itcs.helpdesk.persistence.entities.SubEstadoCaso;
+import com.itcs.helpdesk.persistence.entities.TipoAlerta;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.entityenums.EnumEstadoCaso;
@@ -45,7 +48,6 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
 import javax.resource.NotSupportedException;
-import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.Days;
@@ -1045,57 +1047,190 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
             ArrayList<Vista> vistaItems = new ArrayList<>();
 //            vistaItems.add(vista0);
 
+            if (rangeStartDates != null) {
+                for (Interval interval : rangeStartDates) {
 
-                if (rangeStartDates != null) {
-                    for (Interval interval : rangeStartDates) {
+                    final Date startDate = interval.getStart().toDate();
+                    final Date endDate = interval.getEnd().toDate();
 
-                        final Date startDate = interval.getStart().toDate();
-                        final Date endDate = interval.getEnd().toDate();
+                    String fecha_from = format.format(startDate);//ok to start any day i want for any period.
+                    String fecha_to = format.format(endDate);//ok to start any day i want for any period.
+                    String label = dateFormat.format(startDate);
 
-                        String fecha_from = format.format(startDate);//ok to start any day i want for any period.
-                        String fecha_to = format.format(endDate);//ok to start any day i want for any period.
-                        String label = dateFormat.format(startDate);
-
-                        //Create Vista to count items
-                        Vista vista1 = new Vista(Caso.class);
-                        if (vista1.getFiltrosVistaList() == null) {
-                            vista1.setFiltrosVistaList(new ArrayList<FiltroVista>());
-                        }
-
-                        //==================FECHA_CREACION/FECHA_X
-                        FiltroVista filtroFecha1 = new FiltroVista();
-                        filtroFecha1.setIdCampo(Caso_.FECHA_CREACION_FIELD_NAME);
-                        filtroFecha1.setIdComparador(EnumTipoComparacion.BW.getTipoComparacion());
-                        filtroFecha1.setValor(fecha_from);
-                        filtroFecha1.setValorLabel(fecha_from);
-                        filtroFecha1.setValor2(fecha_to);
-                        filtroFecha1.setValor2Label(fecha_to);
-                        filtroFecha1.setIdVista(vista1);
-                        vista1.getFiltrosVistaList().add(filtroFecha1);
-
-                        //============= Y AXIS
-                        FiltroVista filtroEntityY = new FiltroVista();
-                        filtroEntityY.setIdCampo(Caso_.ESTADO_FIELD_NAME);
-                        filtroEntityY.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
-                        filtroEntityY.setValor(estado.getIdEstado());
-                        filtroEntityY.setValorLabel(estado.getNombre());
-                        filtroEntityY.setIdVista(vista1);
-                        vista1.getFiltrosVistaList().add(filtroEntityY);
-
-                        //====== DATA FILTERS
-                        vista1.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
-                        final int countCasosForView = vistaController.countItemsVista(vista1);
-                        serieEstado.set(label, countCasosForView);
-                        addTwoDimTableValue(label, serieEstado.getLabel(), countCasosForView);
-                        vistaItems.add(vista1);
+                    //Create Vista to count items
+                    Vista vista1 = new Vista(Caso.class);
+                    if (vista1.getFiltrosVistaList() == null) {
+                        vista1.setFiltrosVistaList(new ArrayList<FiltroVista>());
                     }
+
+                    //==================FECHA_CREACION/FECHA_X
+                    FiltroVista filtroFecha1 = new FiltroVista();
+                    filtroFecha1.setIdCampo(Caso_.FECHA_CREACION_FIELD_NAME);
+                    filtroFecha1.setIdComparador(EnumTipoComparacion.BW.getTipoComparacion());
+                    filtroFecha1.setValor(fecha_from);
+                    filtroFecha1.setValorLabel(fecha_from);
+                    filtroFecha1.setValor2(fecha_to);
+                    filtroFecha1.setValor2Label(fecha_to);
+                    filtroFecha1.setIdVista(vista1);
+                    vista1.getFiltrosVistaList().add(filtroFecha1);
+
+                    //============= Y AXIS
+                    FiltroVista filtroEntityY = new FiltroVista();
+                    filtroEntityY.setIdCampo(Caso_.ESTADO_FIELD_NAME);
+                    filtroEntityY.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+                    filtroEntityY.setValor(estado.getIdEstado());
+                    filtroEntityY.setValorLabel(estado.getNombre());
+                    filtroEntityY.setIdVista(vista1);
+                    vista1.getFiltrosVistaList().add(filtroEntityY);
+
+                    //====== DATA FILTERS
+                    vista1.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
+                    final int countCasosForView = vistaController.countItemsVista(vista1);
+                    serieEstado.set(label, countCasosForView);
+                    addTwoDimTableValue(label, serieEstado.getLabel(), countCasosForView);
+                    vistaItems.add(vista1);
                 }
+            }
 
             categoryModel.addSeries(serieEstado);
             viewMatrix.put(seriesIndex, vistaItems);
             seriesIndex++;
         }
         setChartModelTitle("Casos Abiertos v/s Cerrados última semana");
+        return "reports";
+    }
+
+    /**
+     * Casos criticos
+     *
+     * @return
+     */
+    public String prepareCategoryModelCasosAbiertosPorEstadoAlerta() {
+        this.setShowFilter(false);
+        variables = 2;
+        twoDimData = new HashMap<>();
+        pieModel = null;//Hide Pie chart
+        categoryModel = new CartesianChartModel();
+        setTipoGraficoSelected("barChart");
+        setXaxisLabel("Ejecutivos");
+
+//      List<SubEstadoCaso> subestados = (List<SubEstadoCaso>)getJpaController().findAll(SubEstadoCaso.class);//Y
+        List<TipoAlerta> alertas = (List<TipoAlerta>) getJpaController().findAll(TipoAlerta.class);
+
+        List<Producto> productos = (List<Producto>) getJpaController().findAll(Producto.class);//X
+
+        viewMatrix = new HashMap<>();
+        int seriesIndex = 0;
+
+        for (TipoAlerta tipoAlerta : alertas) {
+
+            ChartSeries seriey = new ChartSeries();
+            seriey.setLabel(tipoAlerta.getNombre());
+
+            ArrayList<Vista> vistaItems = new ArrayList<>();
+
+            for (Producto prod : productos) {
+
+                Vista vista1 = new Vista(Caso.class);
+                FiltroVista filtro = new FiltroVista();
+                filtro.setIdCampo(Caso_.PRODUCTO_FIELD_NAME);
+                filtro.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+                filtro.setValor(prod.getIdProducto());
+                filtro.setValorLabel(prod.getNombre());
+                filtro.setIdVista(vista1);
+                if (vista1.getFiltrosVistaList() == null) {
+                    vista1.setFiltrosVistaList(new ArrayList<FiltroVista>());
+
+                }
+                vista1.getFiltrosVistaList().add(filtro);
+
+                FiltroVista filtroEstado1 = new FiltroVista();
+                filtroEstado1.setIdCampo(Caso_.ESTADO_ALERTA_FIELD_NAME);
+                filtroEstado1.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+                filtroEstado1.setValor(tipoAlerta.getIdalerta().toString());
+                filtroEstado1.setValorLabel(tipoAlerta.getNombre());
+                filtroEstado1.setIdVista(vista1);
+                vista1.getFiltrosVistaList().add(filtroEstado1);
+
+                vista1.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
+                final int countCasosForView = vistaController.countItemsVista(vista1);
+                seriey.set(prod.getNombre(), countCasosForView);
+                addTwoDimTableValue(prod.getNombre(), tipoAlerta.getNombre(), countCasosForView);
+
+                vistaItems.add(vista1);
+
+            }
+            categoryModel.addSeries(seriey);
+            viewMatrix.put(seriesIndex, vistaItems);
+            seriesIndex++;
+        }
+        setChartModelTitle("Estado de Alerta de casos por Producto");
+        return "reports";
+    }
+
+    /**
+     * Casos criticos
+     *
+     * @return
+     */
+    public String prepareCategoryModelCasosPorProductos() {
+        this.setShowFilter(false);
+        variables = 2;
+        twoDimData = new HashMap<>();
+        pieModel = null;//Hide Pie chart
+        categoryModel = new CartesianChartModel();
+        setTipoGraficoSelected("barChart");
+        setXaxisLabel("Ejecutivos");
+
+        List<EstadoCaso> estados = (List<EstadoCaso>) getJpaController().findAll(EstadoCaso.class);//Y
+        List<Producto> productos = (List<Producto>) getJpaController().findAll(Producto.class);//X
+
+        viewMatrix = new HashMap<>();
+        int seriesIndex = 0;
+
+        for (EstadoCaso estado : estados) {
+
+            ChartSeries seriey = new ChartSeries();
+            seriey.setLabel(estado.getNombre());
+
+            ArrayList<Vista> vistaItems = new ArrayList<>();
+
+            for (Producto prod : productos) {
+
+                Vista vista1 = new Vista(Caso.class);
+                FiltroVista filtro = new FiltroVista();
+                filtro.setIdCampo(Caso_.PRODUCTO_FIELD_NAME);
+                filtro.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+                filtro.setValor(prod.getIdProducto());
+                filtro.setValorLabel(prod.getNombre());
+                filtro.setIdVista(vista1);
+                if (vista1.getFiltrosVistaList() == null) {
+                    vista1.setFiltrosVistaList(new ArrayList<FiltroVista>());
+
+                }
+                vista1.getFiltrosVistaList().add(filtro);
+
+                FiltroVista filtroEstado1 = new FiltroVista();
+                filtroEstado1.setIdCampo(Caso_.ESTADO_FIELD_NAME);
+                filtroEstado1.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+                filtroEstado1.setValor(estado.getIdEstado());
+                filtroEstado1.setValorLabel(estado.getNombre());
+                filtroEstado1.setIdVista(vista1);
+                vista1.getFiltrosVistaList().add(filtroEstado1);
+
+                vista1.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
+                final int countCasosForView = vistaController.countItemsVista(vista1);
+                seriey.set(prod.getNombre(), countCasosForView);
+                addTwoDimTableValue(prod.getNombre(), estado.getNombre(), countCasosForView);
+
+                vistaItems.add(vista1);
+
+            }
+            categoryModel.addSeries(seriey);
+            viewMatrix.put(seriesIndex, vistaItems);
+            seriesIndex++;
+        }
+        setChartModelTitle("Casos Abiertos v/s Cerrados por Producto");
         return "reports";
     }
 
@@ -1165,6 +1300,69 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         return "reports";
     }
 
+    public String prepareCategoryModelCasosPorGrupo() {
+        this.setShowFilter(false);
+        variables = 2;
+        twoDimData = new HashMap<>();
+        pieModel = null;//Hide Pie chart
+        categoryModel = new CartesianChartModel();
+        setTipoGraficoSelected("barChart");
+        setXaxisLabel("Areas");
+
+        List<EstadoCaso> estados = getJpaController().getEstadoCasoFindAll();//Y-axis
+        List<Grupo> grupos = (List<Grupo>) getJpaController().findAll(Grupo.class);//X-axix
+
+        viewMatrix = new HashMap<>();
+        int seriesIndex = 0;
+
+        for (EstadoCaso estado : estados) {//series index
+
+            ChartSeries serieEstado = new ChartSeries();
+            serieEstado.setLabel(estado.getIdEstado());
+
+            ArrayList<Vista> vistaItems = new ArrayList<>();
+
+            for (Grupo obj : grupos) {//item index
+
+                Vista vista1 = new Vista(Caso.class);
+                if (vista1.getFiltrosVistaList() == null) {
+                    vista1.setFiltrosVistaList(new ArrayList<FiltroVista>());
+                }
+
+                FiltroVista filtroArea = new FiltroVista();
+                filtroArea.setIdCampo(Caso_.GRUPO_FIELD_NAME);
+                filtroArea.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+                filtroArea.setValor(obj.getIdGrupo());
+                filtroArea.setValorLabel(obj.getNombre());
+                filtroArea.setIdVista(vista1);
+
+                vista1.getFiltrosVistaList().add(filtroArea);
+
+                FiltroVista filtroEstado1 = new FiltroVista();
+                filtroEstado1.setIdCampo(Caso_.ESTADO_FIELD_NAME);
+                filtroEstado1.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+                filtroEstado1.setValor(estado.getIdEstado());
+                filtroEstado1.setValorLabel(estado.getNombre());
+                filtroEstado1.setIdVista(vista1);
+                vista1.getFiltrosVistaList().add(filtroEstado1);
+
+                vistaItems.add(vista1);
+
+                vista1.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
+                final int countCasosForView = vistaController.countItemsVista(vista1);
+                serieEstado.set(obj.getIdGrupo(), countCasosForView);
+                addTwoDimTableValue(obj.getIdGrupo(), estado.getNombre(), countCasosForView);
+
+            }
+
+            categoryModel.addSeries(serieEstado);
+            viewMatrix.put(seriesIndex, vistaItems);
+            seriesIndex++;
+        }
+        setChartModelTitle("Estado de Casos por Grupos de Agentes");
+        return "reports";
+    }
+
     public String prepareCategoryModelCasosPorAgente() {
         this.setShowFilter(false);
         variables = 2;
@@ -1175,7 +1373,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         setXaxisLabel("Ejecutivos");
 
         List<EstadoCaso> estados = getJpaController().getEstadoCasoFindAll();//Y
-       List<Usuario> agents = (List<Usuario>) getJpaController().findAll(Usuario.class);//X
+        List<Usuario> agents = (List<Usuario>) getJpaController().findAll(Usuario.class);//X
 
         try {
             if (agents.contains(EnumUsuariosBase.SISTEMA.getUsuario())) {

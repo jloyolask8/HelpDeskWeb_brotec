@@ -180,6 +180,26 @@ public class MailNotifier {
         }
         return null;
     }
+    
+    public static String emailClientCustomerSurvey(Caso current) throws MailNotConfiguredException, EmailException, NoOutChannelException {
+        //TODO: use configure texts.
+        if (current != null && current.getEmailCliente() != null && current.getEmailCliente().getEmailCliente() != null) {
+            String asunto = ApplicationConfig.getCustomerSurveySubjectText(); //may contain place holders
+            String newAsunto = ManagerCasos.formatIdCaso(current.getIdCaso()) + " " + ClippingsPlaceHolders.buildFinalText(asunto, current);
+            String texto = ClippingsPlaceHolders.buildFinalText(ApplicationConfig.getCustomerSurveyBodyText(), current);//may contain place holders 
+
+            Canal canal = chooseDefaultCanalToSendMail(current);
+
+            EmailClient ec = MailClientFactory.getInstance(canal.getIdCanal());
+
+            if (ec != null) {
+                ec.sendHTML(current.getEmailCliente().getEmailCliente(), newAsunto,
+                        texto, null);
+                return texto;
+            }
+        }
+        return null;
+    }
 
     public static void sendEmailRecoverPassword(Usuario usuario, String newPassword) {
         if (usuario == null) {

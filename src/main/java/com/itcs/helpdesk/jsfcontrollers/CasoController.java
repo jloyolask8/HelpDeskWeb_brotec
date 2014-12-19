@@ -40,6 +40,7 @@ import com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoNota;
+import com.itcs.helpdesk.persistence.jpa.AbstractJPAController;
 import com.itcs.helpdesk.persistence.jpa.custom.CasoJPACustomController;
 import com.itcs.helpdesk.persistence.jpa.exceptions.IllegalOrphanException;
 import com.itcs.helpdesk.persistence.jpa.exceptions.NonexistentEntityException;
@@ -295,6 +296,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 casoBase.getCasosRelacionadosList().remove(casoBase);
                 casoToMerge.setIdCasoCombinado(casoBase);
                 casoToMerge.setIdEstado(EnumEstadoCaso.CERRADO.getEstado());
+                casoToMerge.setFechaCierre(applicationBean.getNow());
                 casoToMerge.setIdSubEstado((casoToMerge.getTipoCaso().equals(EnumTipoCaso.CONTACTO.getTipoCaso()) ? EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()
                         : (casoToMerge.getTipoCaso().equals(EnumTipoCaso.COTIZACION.getTipoCaso()) ? EnumSubEstadoCaso.COTIZACION_DUPLICADO.getSubEstado()
                                 : (casoToMerge.getTipoCaso().equals(EnumTipoCaso.CONTACTO.getTipoCaso()) ? EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()
@@ -364,7 +366,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     protected String getListPage() {
         return "inbox";
     }
-
+  
     public void enableReplyMode() {
 
         if (validateEdit()) {
@@ -1782,7 +1784,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public String prepareEdit() throws Exception {
         prepareEditIndex(null);
-        return "/script/caso/Edit";
+        return getEditPage();
     }
 
     public String prepareEditCaso() {
@@ -1810,7 +1812,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
             if (caso != null) {
                 openCase(caso);
-                return "/script/caso/Edit";
+                return getEditPage();
             } else {
                 addErrorMessage("Caso " + idCaso + " no encontrado! Favor verifique que este exista.");
             }
@@ -1896,41 +1898,58 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public void prepareCasoFilterForInbox() {
-//        //System.out.println("prepareCasoFilterForInbox");
-        List<Vista> vistas = getAllVistasItems(userSessionBean.getCurrent());
 
-        if (vistas != null && !vistas.isEmpty()) {
-            //there are vistas, lets select the first one as the user inbox
-            setVista(vistas.get(0));
-        } else {
-            //damn there are no vistas for this madafaka, lets give him some default shit
-            Vista vista1 = new Vista(Caso.class);
-            vista1.setIdUsuarioCreadaPor(userSessionBean.getCurrent());
-            vista1.setNombre("Inbox");
+        if (userSessionBean.isValidatedCustomerSession()) {
+            //customer view!
 
-            FiltroVista filtroOwner = new FiltroVista(-1);
-            filtroOwner.setIdFiltro(1);//otherwise i dont know what to remove dude.
-            filtroOwner.setIdCampo(Caso_.OWNER_FIELD_NAME);
-            filtroOwner.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
-            filtroOwner.setValor(CasoJPACustomController.PLACE_HOLDER_CURRENT_USER);
-            filtroOwner.setValorLabel(JPAFilterHelper.PLACE_HOLDER_CURRENT_USER_LABEL);
-            filtroOwner.setIdVista(vista1);
+            List<Vista> vistas = vistaController.getVistasCustomersItems();
 
-            vista1.getFiltrosVistaList().add(filtroOwner);
+            if (vistas != null && !vistas.isEmpty()) {
+                final Vista vista0 = vistas.get(0);
+                //there are vistas, lets select the first one as the user inbox
+                setVista(vista0);
+                setSelectedViewId(vista0.getIdVista());
+            }
 
-            FiltroVista filtroEstado = new FiltroVista(-2);
-            filtroEstado.setIdFiltro(2);//otherwise i dont know what to remove dude.
-            filtroEstado.setIdCampo(Caso_.ESTADO_FIELD_NAME);
-            filtroEstado.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
-            filtroEstado.setValor(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
-            filtroEstado.setValorLabel(EnumEstadoCaso.ABIERTO.getEstado().getNombre());
-            filtroEstado.setIdVista(vista1);
+        } else if (userSessionBean.isValidatedSession()) {
 
-            vista1.getFiltrosVistaList().add(filtroEstado);
+            List<Vista> vistas = getAllAgentVistasItems();
 
-            setVista(vista1);
+            if (vistas != null && !vistas.isEmpty()) {
+                final Vista vista0 = vistas.get(0);
+                //there are vistas, lets select the first one as the user inbox
+                setVista(vista0);
+                setSelectedViewId(vista0.getIdVista());
+            } else {
+                //damn, there are no vistas for this madafaka, lets give him some default shit
+                Vista vista1 = new Vista(Caso.class);
+                vista1.setIdVista(1);
+                vista1.setNombre("Inbox");
+
+                vista1.setIdUsuarioCreadaPor(userSessionBean.getCurrent());
+
+                FiltroVista filtroOwner = new FiltroVista();
+                filtroOwner.setIdFiltro(1);//otherwise i dont know what to remove dude.
+                filtroOwner.setIdCampo("owner");
+                filtroOwner.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+                filtroOwner.setValor(AbstractJPAController.PLACE_HOLDER_CURRENT_USER);
+                filtroOwner.setIdVista(vista1);
+                vista1.getFiltrosVistaList().add(filtroOwner);
+
+                FiltroVista filtroEstado = new FiltroVista();
+                filtroEstado.setIdFiltro(2);//otherwise i dont know what to remove dude.
+                filtroEstado.setIdCampo("idEstado");
+                filtroEstado.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+                filtroEstado.setValor(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
+                filtroEstado.setIdVista(vista1);
+                vista1.getFiltrosVistaList().add(filtroEstado);
+
+                setVista(vista1);
+                setSelectedViewId(vista1.getIdVista());
+            }
+
         }
-
+        
     }
 
     /**
@@ -2237,26 +2256,37 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     private boolean cierraCaso() {
 
-        List<AuditLog> changeLog = new ArrayList<AuditLog>();
+        List<AuditLog> changeLog = new ArrayList<>();
 
         try {
             current.setIdEstado(EnumEstadoCaso.CERRADO.getEstado());
             current.setFechaCierre(Calendar.getInstance().getTime());
 
-            JsfUtil.addSuccessMessage(resourceBundle.getString("caso.cerrar.ok"));
-            changeLog.add(ManagerCasos.createLogReg(current, "Estado", userSessionBean.getCurrent().getIdUsuario() + " cerró el caso", ""));
+            Nota nota = createNota(current, false, textoNota.trim(),
+                    EnumTipoNota.NOTA_CIERRE.getTipoNota(), false, null);
+            addNotaToCaso(current, nota);
+
             getJpaController().mergeCaso(current, changeLog);
+
+            JsfUtil.addSuccessMessage(resourceBundle.getString("caso.cerrar.ok"));
+            changeLog.add(ManagerCasos.createLogReg(current, "Estado", userSessionBean.getCurrent().getCapitalName() + " cerró el caso.", ""));
 
             HelpDeskScheluder.unscheduleCambioAlertas(current.getIdCaso());
 
             if (current.getCasosHijosList() != null) {
                 for (Caso casoHijo : current.getCasosHijosList()) {
                     if (casoHijo.isOpen()) {
+                        changeLog = new ArrayList<>();
+
                         casoHijo.setIdEstado(EnumEstadoCaso.CERRADO.getEstado());
                         casoHijo.setFechaCierre(Calendar.getInstance().getTime());
 
-                        JsfUtil.addSuccessMessage(resourceBundle.getString("caso.cerrar.ok"));
-                        changeLog.add(ManagerCasos.createLogReg(casoHijo, "Estado", "Cerrado", ""));
+                        Nota nota2 = createNota(casoHijo, false, textoNota.trim(),
+                                EnumTipoNota.NOTA_CIERRE.getTipoNota(), false, null);
+                        addNotaToCaso(casoHijo, nota2);
+
+                        JsfUtil.addSuccessMessage(resourceBundle.getString("caso.cerrar.ok") + "(" + casoHijo.getIdCaso() + ")");
+                        changeLog.add(ManagerCasos.createLogReg(casoHijo, "Estado", userSessionBean.getCurrent().getCapitalName() + " cerró el caso.", ""));
                         getJpaController().mergeCaso(casoHijo, changeLog);
 
                         HelpDeskScheluder.unscheduleCambioAlertas(casoHijo.getIdCaso());
@@ -2265,6 +2295,10 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             }
 
             refreshCurrentCaso();
+
+            if (ApplicationConfig.isCustomerSurveyEnabled()) {
+                MailNotifier.emailClientCustomerSurvey(current);
+            }
 
         } catch (Exception e) {
             JsfUtil.addErrorMessage(resourceBundle.getString("caso.cerrar.nook"));
@@ -2500,7 +2534,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             JsfUtil.addErrorMessage(resourceBundle.getString("caso.abrir.nook"));
         }
 
-        return "/script/caso/Edit";
+        return getEditPage();
     }
 
     public String guardarBorrador() {
@@ -2514,6 +2548,11 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             JsfUtil.addErrorMessage(e, "No se ha guardado el borrador");
         }
 
+        return getEditPage();
+    }
+
+    @Override
+    protected String getEditPage() {
         return "/script/caso/Edit";
     }
 
@@ -2707,9 +2746,10 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     }
                     attachment.getNotaList().add(nota);
                 }
+
+                nota.setAttachmentList(attachmentList);
+                getJpaController().merge(nota);
             }
-            nota.setAttachmentList(attachmentList);
-            getJpaController().merge(nota);
 
             return nota;
         } catch (Exception e) {
@@ -2725,7 +2765,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      *
      * @return
      */
-    private Nota buildNewNota(Caso caso, boolean publica, String texto, TipoNota tipo, boolean customer/*, List<Attachment> attachmentList*/) {
+    protected Nota buildNewNota(Caso caso, boolean publica, String texto, TipoNota tipo, boolean customer/*, List<Attachment> attachmentList*/) {
 //        boolean guardarNota = true;
         try {
             Nota nota = new Nota();
@@ -2767,7 +2807,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
     }
 
-    private void resetNotaForm() {
+    protected void resetNotaForm() {
         this.textoNota = null;
         this.replyMode = false;
         this.replyByEmail = false;//default option
@@ -2791,7 +2831,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     }
 
-    private void addNotaToCaso(Caso caso, Nota nota) {
+    protected void addNotaToCaso(Caso caso, Nota nota) {
 
         if (caso.getNotaList() == null) {
             caso.setNotaList(new ArrayList<Nota>());
@@ -2799,8 +2839,12 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         caso.getNotaList().add(0, nota);
 
         if (caso.getOwner() != null) {
-            if (!nota.getCreadaPor().getIdUsuario().equals(caso.getOwner().getIdUsuario())) {
+            if (nota.getCreadaPor() != null && nota.getCreadaPor().getIdUsuario() != null && !nota.getCreadaPor().getIdUsuario().equals(caso.getOwner().getIdUsuario())) {
                 caso.setRevisarActualizacion(true);
+            }else{
+                if(!StringUtils.isEmpty(nota.getEnviadoPor())){
+                    caso.setRevisarActualizacion(true);
+                }
             }
         }
     }
@@ -2899,7 +2943,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             resetNotaForm();
         }
 
-        return "/script/caso/Edit";
+        return getEditPage();
     }
 
     private void notifyClient() {
@@ -2952,7 +2996,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     .getLogger(CasoController.class
                             .getName()).log(Level.SEVERE, null, ex);
         }
-        return "/script/caso/Edit";
+        return getEditPage();
     }
 
     /**
@@ -3490,7 +3534,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             }
 
             update(current);
-            return "/script/caso/Edit";
+            return getEditPage();
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).log(Level.SEVERE, resourceBundle.getString("PersistenceErrorOccured"), e);
             JsfUtil.addErrorMessage(e, e.getMessage());

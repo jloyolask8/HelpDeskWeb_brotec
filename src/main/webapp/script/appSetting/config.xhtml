@@ -16,24 +16,24 @@
         <ui:define name="westHeader">
             <h:outputText value="..." style="font-weight: bold"></h:outputText>
         </ui:define>
-        
-        <ui:define name="head">
-              <style type="text/css">
 
-               .ui-datatable thead th, .ui-datatable tbody td, .ui-datatable tfoot td {
+        <ui:define name="head">
+            <style type="text/css">
+
+                .ui-datatable thead th, .ui-datatable tbody td, .ui-datatable tfoot td {
                     border-width: 0px  !important;
-                     border : 0px !important;
+                    border : 0px !important;
                 }
-                
-                 .no-border.ui-widget-content.ui-datatable table, .no-border{
+
+                .no-border.ui-widget-content.ui-datatable table, .no-border{
                     border-width: 0px  !important;
-                     border : 0px !important;
+                    border : 0px !important;
                 }
             </style>
         </ui:define>
 
         <ui:define name="body">
-           
+
 
             <h:form id="form" enctype="multipart/form-data">
 
@@ -47,72 +47,85 @@
 
                     <p:column>
 
-                            <p:inputText id="txt" value="#{data.settingValue}" size="60" required="#{data.required}" 
-                                         rendered="#{data.type eq 'input'}"/> 
+                        <p:inputText id="txt" value="#{data.settingValue}" size="60" required="#{data.required}" 
+                                     rendered="#{data.type eq 'input'}"/> 
 
 
-                            <h:panelGrid columns="1" rendered="#{data.type eq 'inputhtml'}">
+                        <h:panelGrid columns="1" rendered="#{data.type eq 'inputhtml'}">
 
-                                <p:inplace editor="true">
-                                    <f:facet name="output">
-                                        <h:outputText value="#{data.settingValue}" escape="false"/>
+                            <p:inplace editor="true">
+                                <f:facet name="output">
+                                    <h:outputText value="#{data.settingValue}" escape="false"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <pe:ckEditor id="settingValue" value="#{data.settingValue}" required="#{data.required}" width="560" height="210" language="es"
+                                                 toolbar="#{applicationBean.ckEditorToolbar}"
+                                                 customConfig="#{request.contextPath}/resources/js/ckeditor.js"/>
+                                    <p:watermark for="settingValue" value="#{data.descripcion}"/>
+
+                                </f:facet>
+                            </p:inplace>
+
+                            <p:commandLink id="overlayBtn" value="Marcadores" />
+                            <p:overlayPanel id="MarcadoresPanel" for="overlayBtn" hideEffect="fade" dynamic="true"> 
+                                <p:dataTable value="#{clippingController.availablePlaceHolders}" var="holder" 
+                                             emptyMessage="No hay placeholders disponibles.">
+                                    <p:column headerText="Marcadores de posición">
+                                        <h:outputText value="\${#{holder}}"/>
+                                    </p:column>
+                                    <f:facet name="footer">
+                                        <h:outputText value="Utilice marcadores de posición para insertar información (del caso) usada con frecuencia fácilmente en el texto."/>
                                     </f:facet>
-                                    <f:facet name="input">
-                                        <pe:ckEditor id="settingValue" value="#{data.settingValue}" required="#{data.required}" width="560" height="210" language="es"
-                                                     toolbar="#{applicationBean.ckEditorToolbar}"
-                                                     customConfig="#{request.contextPath}/resources/js/ckeditor.js"/>
-                                        <p:watermark for="settingValue" value="Descripción del caso"/>
+                                </p:dataTable>
+                            </p:overlayPanel>
 
-                                    </f:facet>
-                                </p:inplace>
+                        </h:panelGrid>
 
-                                <p:commandLink id="overlayBtn" value="Marcadores" />
-                                <p:overlayPanel id="MarcadoresPanel" for="overlayBtn" hideEffect="fade" dynamic="true"> 
-                                    <p:dataTable value="#{clippingController.availablePlaceHolders}" var="holder" 
-                                                 emptyMessage="No hay placeholders disponibles.">
-                                        <p:column headerText="Marcadores de posición">
-                                            <h:outputText value="\${#{holder}}"/>
-                                        </p:column>
-                                        <f:facet name="footer">
-                                            <h:outputText value="Utilice marcadores de posición para insertar información (del caso) usada con frecuencia fácilmente en el texto."/>
-                                        </f:facet>
-                                    </p:dataTable>
-                                </p:overlayPanel>
+                        <h:panelGrid columns="1" rendered="#{data.type eq 'inputtextarea'}">
+                            <p:inplace editor="true" rendered="#{not empty data.settingValue}">
+                                <f:facet name="output">
+                                    <h:outputText value="#{data.settingValue}" escape="false"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputTextarea  value="#{data.settingValue}" required="#{data.required}" />
+                                </f:facet>
+                            </p:inplace>
+                            
+                              <p:inputTextarea  value="#{data.settingValue}" required="#{data.required}" rendered="#{empty data.settingValue}"/>
+                        </h:panelGrid>
+
+
+
+                        <h:panelGrid columns="3"  rendered="#{data.type eq 'inputfile'}">
+
+                            <h:panelGrid columns="2">
+                                <p:row>
+                                    <p:graphicImage id="imageLogoPreview0" value="#{applicationBean.logo}" cache="false" width="200"/>
+
+                                </p:row>
+
+                                <p:row>
+                                    <p:fileUpload id="logo" value="#{appSettingController.logoUploadFile}" uploadLabel="envia" 
+                                                  mode="simple" update=":form"/>  
+
+                                </p:row>
+
+
+
 
                             </h:panelGrid>
+                        </h:panelGrid>  
 
+                        <p:selectOneButton value="#{data.settingValue}" required="#{data.required}"   rendered="#{data.type eq 'booleanchoice'}"
+                                           style="vertical-align:middle;">
+                            <f:selectItem itemLabel="Habilitado" itemValue="true"/>
+                            <f:selectItem itemLabel="Desabilitado" itemValue="false"/>
+                        </p:selectOneButton>
 
+                        <br/>
+                        <h:outputText value="#{data.descripcion}" style="color: #666666;line-height: 17px;margin: 5px 0 0;padding-bottom: 3px;"/>  
 
-                            <h:panelGrid columns="3"  rendered="#{data.type eq 'inputfile'}">
-
-                                <h:panelGrid columns="2">
-                                    <p:row>
-                                        <p:graphicImage id="imageLogoPreview0" value="#{applicationBean.logo}" cache="false" width="200"/>
-
-                                    </p:row>
-
-                                    <p:row>
-                                        <p:fileUpload id="logo" value="#{appSettingController.logoUploadFile}" uploadLabel="envia" 
-                                                      mode="simple" update=":form"/>  
-
-                                    </p:row>
-
-
-
-
-                                </h:panelGrid>
-                            </h:panelGrid>  
-
-                            <p:selectOneButton value="#{data.settingValue}" required="#{data.required}"   rendered="#{data.type eq 'booleanchoice'}"
-                                               style="vertical-align:middle;">
-                                <f:selectItem itemLabel="Habilitado" itemValue="true"/>
-                                <f:selectItem itemLabel="Desabilitado" itemValue="false"/>
-                            </p:selectOneButton>
-
-                            <br/>
-                            <h:outputText value="#{data.descripcion}" style="color: #666666;line-height: 17px;margin: 5px 0 0;padding-bottom: 3px;"/>  
-
-                             <br/>
+                        <br/>
                     </p:column>
 
 

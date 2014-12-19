@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition  template="/customer/template_index.xhtml">
+        <ui:define name="page_content">    
+
+            <div class="container" role="main">
+
+
+                <div class="page-header">
+                    <h1>#{applicationBean.helpdeskTitle}</h1>
+                </div>
+
+                <div class="alert alert-warning">
+                    <h:outputText value="#{satisfactionController.msg}" style="font-weight: bold"/>
+                </div>
+
+                <h:panelGroup rendered="#{satisfactionController.selected ne null}">
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                #{satisfactionController.selected.tipoCaso.nombre} \##{satisfactionController.selected.idCaso} #{satisfactionController.selected.tema} <span class="label label-#{satisfactionController.selected.open ? 'success':'default'}">#{satisfactionController.selected.idEstado.nombre}</span>
+                            </h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <p:graphicImage rendered="#{satisfactionController.selected.customerSatisfied ne null}"
+                                                    library="images" name="#{satisfactionController.selected.customerSatisfied eq true ? 'satisfied.png':'unsatisfied.png'}"/>
+                                </div>
+                                <div class="col-md-10">
+                                    <h:outputText value="#{satisfactionController.selected.descripcionTxt}"/>
+                                    <h:panelGroup rendered="#{satisfactionController.selected.open}">
+                                        <br/>
+                                        <h:outputText styleClass="label" style="background: \##{satisfactionController.selected.idSubEstado.backgroundColor}; color: \##{satisfactionController.selected.idSubEstado.fontColor};" value="#{satisfactionController.selected.idSubEstado.nombre}"/>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </h:panelGroup>
+
+
+
+
+
+            </div>
+        </ui:define>
+    </ui:composition>
+</html>

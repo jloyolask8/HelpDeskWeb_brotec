@@ -58,6 +58,13 @@
         </profile>  
         
         <profile>
+            <id>betterlife</id>
+            <properties>
+                <rp.build.warname>betterlife</rp.build.warname>
+            </properties>
+        </profile>  
+        
+        <profile>
             <id>beltec</id>
             <properties>
                 <rp.build.warname>beltec</rp.build.warname>
