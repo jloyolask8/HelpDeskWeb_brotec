@@ -146,7 +146,7 @@
 
                             <p:treeNode type="agentes" >  
                                 <i class="fa fa-user"></i>&nbsp;
-                                <p:outputLabel value="#{item.capitalName}"/>                                 
+                                <p:commandLink ajax="false" action="#{usuarioController.prepareEdit(item)}" value="#{item.capitalName}"/>
                                 <i class="fa #{item.activo ? 'fa-check':'fa-times'}"></i>                                
                             </p:treeNode>
                         </p:tree> 
@@ -157,6 +157,9 @@
 
                         <p:commandButton id="refreshTree" value="Actualizar" actionListener="#{areaController.refreshTree()}" immediate="true"
                                          update=":form:tabs:tree" />
+                        
+                          <p:commandButton ajax="false" action="#{areaController.prepareCreate}" immediate="true"
+                                                     rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" value="#{bundle.ListAreaCreateLink}" icon="fa fa-plus-circle" />
 
 
                     </p:tab>

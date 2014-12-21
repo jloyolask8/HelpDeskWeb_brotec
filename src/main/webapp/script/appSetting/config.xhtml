@@ -90,8 +90,8 @@
                                     <p:inputTextarea  value="#{data.settingValue}" required="#{data.required}" />
                                 </f:facet>
                             </p:inplace>
-                            
-                              <p:inputTextarea  value="#{data.settingValue}" required="#{data.required}" rendered="#{empty data.settingValue}"/>
+
+                            <p:inputTextarea  value="#{data.settingValue}" required="#{data.required}" rendered="#{empty data.settingValue}"/>
                         </h:panelGrid>
 
 
@@ -129,7 +129,9 @@
                     </p:column>
 
 
-
+                    <p:column>
+                        <p:outputLabel value="#{data.grupo}" style="font-weight: bold;"/>
+                    </p:column>
 
 
                 </p:dataTable>

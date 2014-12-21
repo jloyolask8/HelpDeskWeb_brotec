@@ -382,54 +382,21 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                             vista1.getFiltrosVistaList().add(filtroEntityY);
 
                             //====== DATA FILTERS
-                            vista1.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
+                            if (showFilter) {
+                                vista1.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
+                            }
                             final int countCasosForView = vistaController.countItemsVista(vista1);
-                            serie_y.set(label, countCasosForView);
-                            addTwoDimTableValue(label, serie_y.getLabel(), countCasosForView);
-                            items_eje_x.add(vista1);
+                            if (countCasosForView > 0) {
+                                serie_y.set(label, countCasosForView);
+                                addTwoDimTableValue(label, serie_y.getLabel(), countCasosForView);
+                                items_eje_x.add(vista1);
+                                categoryModel.addSeries(serie_y);
+                                seriesIndex++;
+                            }
+
                         }
                     }
 
-//                    while (from_date.before(to_date)) {
-//                        String fecha_from = format.format(from_date);//ok to start any day i want for any period.
-//                        Date fecha_from_plus_periodDays = null;
-//                        String fecha_to = "";
-//                        String label = "";
-//                        if (period == 1) {
-//                            fecha_from_plus_periodDays = new Date(from_date.getTime() + (period * 24 * 60 * 60 * 1000)); //here i add the days of the period, i can increase by days, weeks, months or years.
-//                            fecha_to = format.format(fecha_from_plus_periodDays);
-//                            label = sdfDay.format(from_date);
-//                        } else if (period == 7) {
-//                            fecha_from_plus_periodDays = new Date(from_date.getTime() + ((period * 24 * 60 * 60 * 1000) - 1/**
-//                                     * one fucking millisecond to rule them all
-//                                     */
-//                                    ));
-//                            fecha_to = format.format(fecha_from_plus_periodDays);
-//                            label = "[" + sdfDay.format(from_date) + " - " + sdfDay.format(fecha_from_plus_periodDays) + "[";
-//                        } else if (period == 30) {
-//
-//                            calendar_to.set(Calendar.DATE, 1);
-//                            calendar_to.set(Calendar.MONTH, calendar_from.get(Calendar.MONTH) + 1);
-//                            fecha_from_plus_periodDays = calendar_to.getTime();//here i add the days of the period, i can increase by days, weeks, months or years.
-//                            fecha_to = format.format(fecha_from_plus_periodDays);
-//                            label = sdfMonth.format(from_date);
-//
-//                        } else if (period == 365) {
-//
-//                            calendar_to.set(Calendar.YEAR, calendar_from.get(Calendar.YEAR) + 1);
-//                            calendar_to.set(Calendar.MONTH, Calendar.JANUARY);
-//                            calendar_to.set(Calendar.DATE, 1);
-//                            fecha_from_plus_periodDays = calendar_to.getTime();//here i add the days of the period, i can increase by days, weeks, months or years.
-//                            fecha_to = format.format(fecha_from_plus_periodDays);
-//                            label = sdfYear.format(from_date);
-//                        }
-//
-//                        from_date = fecha_from_plus_periodDays;
-//                        calendar_from.setTime(from_date);
-//
-//                        
-//
-//                    }
                 } else if (comparableFieldX.getFieldTypeId().getFieldTypeId().equalsIgnoreCase(EnumFieldType.CHECKBOX.getFieldType().getFieldTypeId())) {
 
                     for (SelectItem x : getFilterHelper().findPosibleOptions(comparableFieldX.getIdCampo(), userSessionBean.getCurrent())) {
@@ -454,13 +421,18 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                         filtroEntityY.setIdVista(vista1);
                         vista1.getFiltrosVistaList().add(filtroEntityY);
 
-                        vista1.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
+                        if (showFilter) {
+                            vista1.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
+                        }
                         final int countCasosForView = vistaController.countItemsVista(vista1);
-                        serie_y.set(x.getLabel(), countCasosForView);
 
-                        addTwoDimTableValue(x.getLabel(), serie_y.getLabel(), countCasosForView);
-
-                        items_eje_x.add(vista1);
+                        if (countCasosForView > 0) {
+                            serie_y.set(x.getLabel(), countCasosForView);
+                            addTwoDimTableValue(x.getLabel(), serie_y.getLabel(), countCasosForView);
+                            items_eje_x.add(vista1);
+                            categoryModel.addSeries(serie_y);
+                            seriesIndex++;
+                        }
 
                     }
 
@@ -505,20 +477,17 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                             filtroEntityY.setIdVista(vista1);
                             vista1.getFiltrosVistaList().add(filtroEntityY);
 
-                            if (tipoGraficoSelected.equalsIgnoreCase("pieChart")) {
+                            if (showFilter) {
                                 vista1.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
-                                final int countCasosForView = vistaController.countItemsVista(vista1);
-                                pieModel.set(label, countCasosForView);
-                                addTwoDimTableValue(label, serie_y.getLabel(), countCasosForView);
-
-                            } else if (tipoGraficoSelected.equalsIgnoreCase("barChart") || tipoGraficoSelected.equalsIgnoreCase("lineChart")) {
-                                vista1.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
-                                final int countCasosForView = vistaController.countItemsVista(vista1);
+                            }
+                            final int countCasosForView = vistaController.countItemsVista(vista1);
+                            if (countCasosForView > 0) {
                                 serie_y.set(label, countCasosForView);
                                 addTwoDimTableValue(label, serie_y.getLabel(), countCasosForView);
+                                items_eje_x.add(vista1);
+                                categoryModel.addSeries(serie_y);
+                                seriesIndex++;
                             }
-
-                            items_eje_x.add(vista1);
 
                         }
 
@@ -558,20 +527,18 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                         filtroEntityY.setIdVista(vista1);
                         vista1.getFiltrosVistaList().add(filtroEntityY);
 
-                        if (tipoGraficoSelected.equalsIgnoreCase("pieChart")) {
+                        if (showFilter) {
                             vista1.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
-                            final int countCasosForView = vistaController.countItemsVista(vista1);
-                            pieModel.set(label, countCasosForView);
-                            addTwoDimTableValue(label, serie_y.getLabel(), countCasosForView);
+                        }
+                        final int countCasosForView = vistaController.countItemsVista(vista1);
 
-                        } else if (tipoGraficoSelected.equalsIgnoreCase("barChart") || tipoGraficoSelected.equalsIgnoreCase("lineChart")) {
-                            vista1.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
-                            final int countCasosForView = vistaController.countItemsVista(vista1);
+                        if (countCasosForView > 0) {
                             serie_y.set(label, countCasosForView);
                             addTwoDimTableValue(label, serie_y.getLabel(), countCasosForView);
+                            items_eje_x.add(vista1);
+                            categoryModel.addSeries(serie_y);
+                            seriesIndex++;
                         }
-
-                        items_eje_x.add(vista1);
 
                     }
 
@@ -579,14 +546,20 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                     throw new NotSupportedException("Aun no se implementa esta funcionalidad, sorry!");
                 }
 
-                categoryModel.addSeries(serie_y);
                 viewMatrix.put(seriesIndex, items_eje_x);
-                seriesIndex++;
+
             }
 
             setChartModelTitle(comparableFieldX.getLabel() + " v/s N° de Casos por " + comparableFieldY.getLabel());
 
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
+
+            if (categoryModel.getSeries() == null || categoryModel.getSeries().isEmpty()) {
+                categoryModel = null;
+            }
+
             em.close();
         }
     }
@@ -668,85 +641,24 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
 
                         //Create Vista to count items
                         Vista vista1 = generarFiltroVistaFechas(fecha_from, fecha_to);
-
-                        if (tipoGraficoSelected.equalsIgnoreCase("pieChart")) {
+                        if (showFilter) {
                             vista1.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
-                            final int countCasosForView = vistaController.countItemsVista(vista1);
-                            pieModel.set(label, vistaController.countItemsVista(vista1));
-                            addOneDimTableValue(label, countCasosForView);
-
-                        } else if (tipoGraficoSelected.equalsIgnoreCase("barChart") || tipoGraficoSelected.equalsIgnoreCase("lineChart")) {
-                            vista1.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
-                            final int countCasosForView = vistaController.countItemsVista(vista1);
-                            serie.set(label, countCasosForView);
-                            addOneDimTableValue(label, countCasosForView);
                         }
-
-                        vistaItems.add(vista1);
+                        final int countCasosForView = vistaController.countItemsVista(vista1);
+                        if (countCasosForView > 0) {
+                            if (tipoGraficoSelected.equalsIgnoreCase("pieChart")) {
+                                pieModel.set(label, vistaController.countItemsVista(vista1));
+                                addOneDimTableValue(label, countCasosForView);
+                            } else if (tipoGraficoSelected.equalsIgnoreCase("barChart") || tipoGraficoSelected.equalsIgnoreCase("lineChart")) {
+                                serie.set(label, countCasosForView);
+                                addOneDimTableValue(label, countCasosForView);
+                            }
+                            vistaItems.add(vista1);
+                        }
 
                     }
                 }
 
-//                Calendar calendar_from = Calendar.getInstance();
-//                calendar_from.setTime(from_date);
-//
-//                Calendar calendar_to = Calendar.getInstance();
-//
-//                while (from_date.before(to_date)) {
-//
-//                    String fecha_from = format.format(from_date);//ok to start any day i want for any period.
-//                    Date fecha_from_plus_periodDays = null;
-//                    String fecha_to = "";
-//
-//                    String label = "";
-//                    if (period == 1) {
-//                        fecha_from_plus_periodDays = new Date(from_date.getTime() + (period * 24 * 60 * 60 * 1000)); //here i add the days of the period, i can increase by days, weeks, months or years.
-//                        fecha_to = format.format(fecha_from_plus_periodDays);
-//                        label = sdfDay.format(from_date);
-//                    } else if (period == 7) {
-//                        fecha_from_plus_periodDays = new Date(from_date.getTime() + ((period * 24 * 60 * 60 * 1000) - 1/**
-//                                 * one fucking millisecond to rule them all
-//                                 */
-//                                ));
-//                        fecha_to = format.format(fecha_from_plus_periodDays);
-//                        label = "[" + sdfDay.format(from_date) + " - " + sdfDay.format(fecha_from_plus_periodDays) + "[";
-//                    } else if (period == 30) {
-//
-//                        calendar_to.set(Calendar.DATE, 1);
-//                        calendar_to.set(Calendar.MONTH, calendar_from.get(Calendar.MONTH) + 1);
-//                        fecha_from_plus_periodDays = calendar_to.getTime();//here i add the days of the period, i can increase by days, weeks, months or years.
-//                        fecha_to = format.format(fecha_from_plus_periodDays);
-//                        label = sdfMonth.format(from_date);
-//
-//                    } else if (period == 365) {
-//
-//                        calendar_to.set(Calendar.YEAR, calendar_from.get(Calendar.YEAR) + 1);
-//                        calendar_to.set(Calendar.MONTH, Calendar.JANUARY);
-//                        calendar_to.set(Calendar.DATE, 1);
-//                        fecha_from_plus_periodDays = calendar_to.getTime();//here i add the days of the period, i can increase by days, weeks, months or years.
-//                        fecha_to = format.format(fecha_from_plus_periodDays);
-//                        label = sdfYear.format(from_date);
-//                    }
-//
-//                    Vista vista1 = generarFiltroVistaFechas(fecha_from, fecha_to);
-//
-//                    if (tipoGraficoSelected.equalsIgnoreCase("pieChart")) {
-//                        vista1.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
-//                        final int countCasosForView = vistaController.countItemsVista(vista1);
-//                        pieModel.set(label, vistaController.countItemsVista(vista1));
-//                        addOneDimTableValue(label, countCasosForView);
-//
-//                    } else if (tipoGraficoSelected.equalsIgnoreCase("barChart") || tipoGraficoSelected.equalsIgnoreCase("lineChart")) {
-//                        vista1.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
-//                        final int countCasosForView = vistaController.countItemsVista(vista1);
-//                        serie.set(label, countCasosForView);
-//                        addOneDimTableValue(label, countCasosForView);
-//                    }
-//
-//                    vistaItems.add(vista1);
-//                    from_date = fecha_from_plus_periodDays;
-//                    calendar_from.setTime(from_date);
-//                }
             } else if (comparableFieldX.getFieldTypeId().getFieldTypeId().equalsIgnoreCase(EnumFieldType.CHECKBOX.getFieldType().getFieldTypeId())) {
 
                 for (SelectItem x : getFilterHelper().findPosibleOptions(comparableFieldX.getIdCampo(), userSessionBean.getCurrent())) {
@@ -764,20 +676,23 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                     filtroEntity.setIdVista(vista1);
                     vista1.getFiltrosVistaList().add(filtroEntity);
 
-                    if (tipoGraficoSelected.equalsIgnoreCase("pieChart")) {
+                    if (showFilter) {
                         vista1.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
-                        final int countCasosForView = vistaController.countItemsVista(vista1);
-                        pieModel.set(x.getLabel(), countCasosForView);
-                        addOneDimTableValue(x.getLabel(), countCasosForView);
+                    }
+                    final int countCasosForView = vistaController.countItemsVista(vista1);
+                    if (countCasosForView > 0) {
+                        if (tipoGraficoSelected.equalsIgnoreCase("pieChart")) {
+                            pieModel.set(x.getLabel(), countCasosForView);
+                            addOneDimTableValue(x.getLabel(), countCasosForView);
 
-                    } else if (tipoGraficoSelected.equalsIgnoreCase("barChart") || tipoGraficoSelected.equalsIgnoreCase("lineChart")) {
-                        vista1.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
-                        final int countCasosForView = vistaController.countItemsVista(vista1);
-                        serie.set(x.getLabel(), countCasosForView);
-                        addOneDimTableValue(x.getLabel(), countCasosForView);
+                        } else if (tipoGraficoSelected.equalsIgnoreCase("barChart") || tipoGraficoSelected.equalsIgnoreCase("lineChart")) {
+                            serie.set(x.getLabel(), countCasosForView);
+                            addOneDimTableValue(x.getLabel(), countCasosForView);
+                        }
+
+                        vistaItems.add(vista1);
                     }
 
-                    vistaItems.add(vista1);
                 }
 
             } else if (comparableFieldX.getFieldTypeId().getFieldTypeId().equalsIgnoreCase(EnumFieldType.SELECTONE_ENTITY.getFieldType().getFieldTypeId())) {
@@ -813,22 +728,21 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                         filtroEntity.setIdVista(vista1);
                         vista1.getFiltrosVistaList().add(filtroEntity);
 
-                        if (tipoGraficoSelected.equalsIgnoreCase("pieChart")) {
-//                            pieModel.set(x.getLabel(), vistaController.countCasosForView(vista1));
+                        if (showFilter) {
                             vista1.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
-                            final int countCasosForView = vistaController.countItemsVista(vista1);
-                            pieModel.set(label, countCasosForView);
-                            addOneDimTableValue(label, countCasosForView);
-
-                        } else if (tipoGraficoSelected.equalsIgnoreCase("barChart") || tipoGraficoSelected.equalsIgnoreCase("lineChart")) {
-//                            serie.set(x.getLabel(), vistaController.countCasosForView(vista1));
-                            vista1.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
-                            final int countCasosForView = vistaController.countItemsVista(vista1);
-                            serie.set(label, countCasosForView);
-                            addOneDimTableValue(label, countCasosForView);
                         }
+                        final int countCasosForView = vistaController.countItemsVista(vista1);
+                        if (countCasosForView > 0) {
+                            if (tipoGraficoSelected.equalsIgnoreCase("pieChart")) {
+                                pieModel.set(label, countCasosForView);
+                                addOneDimTableValue(label, countCasosForView);
 
-                        vistaItems.add(vista1);
+                            } else if (tipoGraficoSelected.equalsIgnoreCase("barChart") || tipoGraficoSelected.equalsIgnoreCase("lineChart")) {
+                                serie.set(label, countCasosForView);
+                                addOneDimTableValue(label, countCasosForView);
+                            }
+                            vistaItems.add(vista1);
+                        }
 
                     }
 
@@ -860,22 +774,23 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                     filtroEntity.setIdVista(vista1);
                     vista1.getFiltrosVistaList().add(filtroEntity);
 
-                    if (tipoGraficoSelected.equalsIgnoreCase("pieChart")) {
-//                            pieModel.set(x.getLabel(), vistaController.countCasosForView(vista1));
+                    if (showFilter) {
                         vista1.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
-                        final int countCasosForView = vistaController.countItemsVista(vista1);
-                        pieModel.set(label, countCasosForView);
-                        addOneDimTableValue(label, countCasosForView);
-
-                    } else if (tipoGraficoSelected.equalsIgnoreCase("barChart") || tipoGraficoSelected.equalsIgnoreCase("lineChart")) {
-//                            serie.set(x.getLabel(), vistaController.countCasosForView(vista1));
-                        vista1.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
-                        final int countCasosForView = vistaController.countItemsVista(vista1);
-                        serie.set(label, countCasosForView);
-                        addOneDimTableValue(label, countCasosForView);
                     }
 
-                    vistaItems.add(vista1);
+                    final int countCasosForView = vistaController.countItemsVista(vista1);
+                    if (countCasosForView > 0) {
+                        if (tipoGraficoSelected.equalsIgnoreCase("pieChart")) {
+                            pieModel.set(label, countCasosForView);
+                            addOneDimTableValue(label, countCasosForView);
+
+                        } else if (tipoGraficoSelected.equalsIgnoreCase("barChart") || tipoGraficoSelected.equalsIgnoreCase("lineChart")) {
+                            serie.set(label, countCasosForView);
+                            addOneDimTableValue(label, countCasosForView);
+                        }
+                        vistaItems.add(vista1);
+                    }
+
                 }
 
             } else {
@@ -885,7 +800,21 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
             viewMatrix.put(seriesIndex, vistaItems);
             setChartModelTitle("N° de Casos por " + comparableFieldX.getLabel());
 
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
+
+            if (tipoGraficoSelected.equalsIgnoreCase("pieChart")) {
+                if (pieModel.getData() == null || pieModel.getData().isEmpty()) {
+                    pieModel = null;
+                }
+
+            } else if (tipoGraficoSelected.equalsIgnoreCase("barChart") || tipoGraficoSelected.equalsIgnoreCase("lineChart")) {
+                if (categoryModel.getSeries() == null || categoryModel.getSeries().isEmpty()) {
+                    categoryModel = null;
+                }
+            }
+
             em.close();
         }
 
@@ -1004,7 +933,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         final DateTime input = new DateTime();
         System.out.println(input);
         final DateTime startOfLastWeek
-                = new DateTime(input.minusWeeks(1).withDayOfWeek(DateTimeConstants.MONDAY).withTimeAtStartOfDay());
+                = new DateTime(input.minusWeeks(0).withDayOfWeek(DateTimeConstants.MONDAY).withTimeAtStartOfDay());
         System.out.println(startOfLastWeek);
         final DateTime endOfLastWeek = startOfLastWeek.plusDays(6).withTime(23, 59, 59, 0);
         System.out.println(startOfLastWeek + "---" + endOfLastWeek);

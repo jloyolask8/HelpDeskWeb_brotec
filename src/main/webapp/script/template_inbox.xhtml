@@ -241,20 +241,23 @@
                                     <p:menuitem value="Grupos de Agentes" action="#{grupoController.prepareList}" ajax="false" icon="fa fa-users">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
-                                    <p:separator/>
-                                    <p:menuitem ajax="false" action="#{vistaController.prepareList()}" value="Vistas" icon="fa fa-filter"
-                                                disabled="#{not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}">
+                                   <p:separator/>
+                                     <p:menuitem value="Tipos de Casos" action="#{tipoCasoController.prepareList}" ajax="false" icon="fa fa-exclamation">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
-
                                     <p:menuitem value="Sub Estados de Casos" action="#{subEstadoCasoController.prepareList}" ajax="false" icon="fa fa-bookmark">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
-                                    <p:menuitem value="Tipos de Casos" action="#{tipoCasoController.prepareList}" ajax="false" icon="fa fa-exclamation">
+                                    <p:menuitem value="SLA y Prioridad de Casos" action="#{prioridadController.prepareList}" ajax="false" icon="fa fa-bell">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
-                                    <p:separator/>
-                                    <p:menuitem value="SLA y Prioridad de Casos" action="#{prioridadController.prepareList}" ajax="false" icon="fa fa-bell">
+                                     <p:menuitem value="Campos personalizados de casos" 
+                                                action="/script/customField/List.xhtml" ajax="false" icon="fa fa-puzzle-piece" >
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+                                      <p:separator/>
+                                    <p:menuitem ajax="false" action="#{vistaController.prepareList()}" value="Vistas" icon="fa fa-filter"
+                                                disabled="#{not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
                                     <p:menuitem value="Reglas de Negocio" action="#{reglaTriggerController.prepareList()}" ajax="false" icon="fa fa-cogs">
@@ -270,10 +273,7 @@
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
 
-                                    <p:menuitem value="Campos personalizados (Casos)" 
-                                                action="/script/customField/List.xhtml" ajax="false" icon="fa fa-puzzle-piece" >
-                                        <p:resetInput target="@form" />
-                                    </p:menuitem>
+                                  
 
                                     <p:menuitem value="Configuración" action="#{appSettingController.goToConfigPage}" ajax="false" icon="fa fa-wrench" >
                                         <p:resetInput target="@form" />
