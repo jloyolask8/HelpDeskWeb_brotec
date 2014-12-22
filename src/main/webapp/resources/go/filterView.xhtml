@@ -34,7 +34,6 @@
 
                     <p:commandButton id="simpleSearchBtn" ajax="true" update="#{cc.attrs.update}" icon="fa fa-search" 
                                      title="" 
-                                     disabled="#{not cc.attrs.canChangeFilters}"
                                      iconPos="notext"
                                      actionListener="#{cc.attrs.controllerMBean.filter()}"/>
 

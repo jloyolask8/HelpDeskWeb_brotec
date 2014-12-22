@@ -933,7 +933,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         final DateTime input = new DateTime();
         System.out.println(input);
         final DateTime startOfLastWeek
-                = new DateTime(input.minusWeeks(0).withDayOfWeek(DateTimeConstants.MONDAY).withTimeAtStartOfDay());
+                = new DateTime(input.withDayOfWeek(DateTimeConstants.MONDAY).withTimeAtStartOfDay());
         System.out.println(startOfLastWeek);
         final DateTime endOfLastWeek = startOfLastWeek.plusDays(6).withTime(23, 59, 59, 0);
         System.out.println(startOfLastWeek + "---" + endOfLastWeek);
