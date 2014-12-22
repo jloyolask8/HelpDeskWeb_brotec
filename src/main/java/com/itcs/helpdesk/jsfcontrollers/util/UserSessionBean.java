@@ -215,7 +215,7 @@ public class UserSessionBean extends AbstractManagedBean<Usuario> implements Ser
     @PostConstruct
     public void init() {
 
-        advancedThemes = new ArrayList<Theme>();
+        advancedThemes = new ArrayList<>();
         advancedThemes.add(new Theme("itcs-theme", ""));
         advancedThemes.add(new Theme("itcs-theme2", ""));
         advancedThemes.add(new Theme("godesk-theme1", ""));
@@ -258,7 +258,7 @@ public class UserSessionBean extends AbstractManagedBean<Usuario> implements Ser
         advancedThemes.add(new Theme("ui-lightness", "ui-lightness.png"));
         advancedThemes.add(new Theme("vader", "vader.png"));
 
-        themes = new TreeMap<String, String>();
+        themes = new TreeMap<>();
         themes.put("Afterdark", "afterdark");
         themes.put("Afternoon", "afternoon");
         themes.put("Afterwork", "afterwork");

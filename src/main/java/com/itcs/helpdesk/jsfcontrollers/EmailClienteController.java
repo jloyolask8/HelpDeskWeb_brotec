@@ -292,8 +292,9 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
 
         if (subComponentId != null) {
             try {
-                subComponent = getJpaController().getReference(SubComponente.class, subComponentId);
+                subComponent = getJpaController().find(SubComponente.class, subComponentId);
             } catch (Exception e) {
+                subComponent = null;
                 System.out.println("component not found!");
             }
         }
@@ -301,7 +302,8 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
         if (c != null) {
             if (subComponent != null) {
                 ProductoContratadoPK productoContratadoPK = new ProductoContratadoPK(c.getIdCliente(),
-                        subComponent.getIdComponente().getIdProducto().getIdProducto(), subComponent.getIdComponente().getIdComponente(), subComponent.getIdSubComponente());
+                        subComponent.getIdComponente().getIdProducto().getIdProducto(), 
+                        subComponent.getIdComponente().getIdComponente(), subComponent.getIdSubComponente());
 
                 try {
                     ProductoContratado pc = getJpaController().find(ProductoContratado.class, productoContratadoPK);

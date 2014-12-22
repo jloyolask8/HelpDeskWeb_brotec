@@ -3586,7 +3586,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
 
         if (cambiaArea) {
-            casoToUpdate.setOwner(null);
             getJpaController().mergeCasoWithoutNotify(casoToUpdate, lista);
             getJpaController().notifyCasoEventListeners(casoToUpdate, true, lista);
         } else {
