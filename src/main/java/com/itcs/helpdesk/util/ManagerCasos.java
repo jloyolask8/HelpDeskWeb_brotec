@@ -134,7 +134,7 @@ public class ManagerCasos implements Serializable {
 
     public void asignarCasoAUsuarioConMenosCasos(Grupo grupo, Caso caso) throws Exception {
 
-        String oldOwner = caso.getOwner().getCapitalName();
+        String oldOwner = caso.getOwner() != null ? caso.getOwner().getCapitalName() : "";
 //        System.out.println("asignarCasoAUsuarioConMenosCasos..." + grupo.getUsuarioList());
         caso.setIdGrupo(grupo);
         Usuario usuarioConMenosCasos = null;

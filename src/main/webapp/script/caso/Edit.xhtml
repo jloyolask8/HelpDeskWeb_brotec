@@ -814,7 +814,7 @@
                     <p:commandButton action="#{clienteController.prepareView(casoController.selected.idCliente, '/script/caso/Edit')}"
                                      value="Ver detalle" immediate="true" ajax="false" icon="ui-icon-circle-zoomin"/> 
                     <p:commandButton action="#{clienteController.prepareList}" value="Lista de clientes" immediate="true" ajax="false" icon="ui-icon-folder-open"/>          
-                    <p:commandButton value="Cerrar" onclick="PF('dialogClient').hide()" icon="ui-icon-close" type="button"/>
+                    <p:commandButton value="Cerrar" immediate="true" onclick="PF('dialogClient').hide()" icon="ui-icon-close" type="button"/>
                 </h:form>
             </p:dialog>
 

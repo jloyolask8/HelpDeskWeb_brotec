@@ -210,9 +210,9 @@
                             <h:outputText value="Tipo de Gráfico" style="font-weight: bold;"/>
                             <p:selectOneMenu id="chartType"  value="#{reporteController.tipoGraficoSelected}" 
                                              required="true" requiredMessage="Favor Seleccione el tipo de Chart que desea desplegar en el reporte.">
-                                <f:selectItem itemLabel="Torta" itemValue="pieChart" rendered="#{reporteController.variables eq 1}"/>
-                                <f:selectItem itemLabel="Barras" itemValue="barChart" rendered="#{reporteController.variables eq 2}"/>
-                                <f:selectItem itemLabel="Lineas" itemValue="lineChart" rendered="#{reporteController.variables eq 2}"/>
+                                <f:selectItem itemLabel="Torta" itemValue="pieChart" rendered="#{reporteController.variables eq '1'}"/>
+                                <f:selectItem itemLabel="Barras" itemValue="barChart" rendered="#{reporteController.variables eq '2'}"/>
+                                <f:selectItem itemLabel="Lineas" itemValue="lineChart" rendered="#{reporteController.variables eq '2'}"/>
                                 <p:ajax update=":advancedReportForm:accordion1" listener="#{vistaController.handleAnyChangeEvent()}" process="@form"/>
                             </p:selectOneMenu>
 
@@ -324,7 +324,7 @@
 
                 <h:panelGroup layout="block" rendered="#{reporteController.variables eq 1}">
 
-                    <p:dataTable id="oneDimTable" value="#{reporteController.oneDimList}" var="entry1">
+                    <p:dataTable id="oneDimTable" value="#{reporteController.oneDimList}" var="entry1" emptyMessage="No se encontraron datos">
                         <f:facet name="header">  
                             Estadísticas  
                         </f:facet> 
@@ -356,7 +356,7 @@
 
                 <h:panelGroup layout="block" rendered="#{reporteController.variables eq 2}">
 
-                    <p:dataTable id="twoDimTable" value="#{reporteController.twoDimList}" var="entry">
+                    <p:dataTable id="twoDimTable" value="#{reporteController.twoDimList}" var="entry" emptyMessage="No se encontraron datos">
 
                         <f:facet name="header">  
                             Estadísticas  

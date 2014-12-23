@@ -197,11 +197,15 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
 
     public String logout_action() {
         HttpServletRequest request = (HttpServletRequest) JsfUtil.getRequest();
-//        getApplicationBean().removeChannel(getUserSessionBean().getCurrent().getIdUsuario());
-        final UsuarioSessionLog currentSessionLog = getUserSessionBean().getCurrentSessionLog();
-        currentSessionLog.setTimestampLogout(new Date());
         try {
-            getJpaController().merge(currentSessionLog);
+
+//        getApplicationBean().removeChannel(getUserSessionBean().getCurrent().getIdUsuario());
+            final UsuarioSessionLog currentSessionLog = getUserSessionBean().getCurrentSessionLog();
+            if (currentSessionLog != null) {
+                currentSessionLog.setTimestampLogout(new Date());
+                getJpaController().merge(currentSessionLog);
+            }
+            
         } catch (Exception ex) {
             Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
         }

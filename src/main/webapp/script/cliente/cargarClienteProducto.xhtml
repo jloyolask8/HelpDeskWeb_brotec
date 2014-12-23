@@ -27,7 +27,6 @@
 
                     <p:messages id="messages" globalOnly="true"/>
 
-
                         <p:outputLabel value="Especifique las posiciones de las Columnas de cada dato dentro del Achivo Excel que contiene la información a cargar:"/>
                         <br/>
                         <h:panelGrid columns="3">
@@ -63,7 +62,7 @@
                         <p:toolbar>
                             
                              <p:toolbarGroup align="left">
-                                 <p:commandButton value="#{bundle.goBack}" ajax="false"  icon="fa fa-chevron-left"
+                                 <p:commandButton value="#{bundle.goBack}" ajax="false"  icon="fa fa-chevron-left" immediate="true"
                                                   action="#{clienteController.prepareList()}"/>     
                             </p:toolbarGroup>
                             

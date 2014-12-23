@@ -52,7 +52,7 @@ public class AppStarter implements ServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         try {
-            Log.createLogger(this.getClass().getName()).logInfo("stopping HelpDesk Scheluder");
+            Log.createLogger(this.getClass().getName()).logInfo("stopping GoDesk Scheluder");
             HelpDeskScheluder.stop();
         } catch (SchedulerException ex) {
             Logger.getLogger(AppStarter.class.getName()).log(Level.SEVERE, null, ex);

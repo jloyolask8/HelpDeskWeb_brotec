@@ -292,8 +292,9 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
 
         if (subComponentId != null) {
             try {
-                subComponent = getJpaController().getReference(SubComponente.class, subComponentId);
+                subComponent = getJpaController().find(SubComponente.class, subComponentId);
             } catch (Exception e) {
+                subComponent = null;
                 System.out.println("component not found!");
             }
         }
@@ -301,7 +302,8 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
         if (c != null) {
             if (subComponent != null) {
                 ProductoContratadoPK productoContratadoPK = new ProductoContratadoPK(c.getIdCliente(),
-                        subComponent.getIdComponente().getIdProducto().getIdProducto(), subComponent.getIdComponente().getIdComponente(), subComponent.getIdSubComponente());
+                        subComponent.getIdComponente().getIdProducto().getIdProducto(), 
+                        subComponent.getIdComponente().getIdComponente(), subComponent.getIdSubComponente());
 
                 try {
                     ProductoContratado pc = getJpaController().find(ProductoContratado.class, productoContratadoPK);
@@ -435,12 +437,10 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
                     //Check whether match is found
                     boolean matchFound = m.matches();
                     if (!matchFound) {
-                        ec=null;
+                        ec = null;
                     }
-                    if(UtilesRut.validar(rut)){
-                        
+                    if (UtilesRut.validar(rut)) {
                         addClientTo(formattedRut, ec, apellidos, direccion1, nombres, sexo, bulkLoadedClientsMap, fono1, fono2);
-
                     } else {
                         addClientTo(rut, ec, apellidos, direccion1, nombres, sexo, bulkLoadedClientsErrorMap, fono1, fono2);
                     }

@@ -404,6 +404,10 @@ public class ApplicationConfig {
     public static String getCompanyLoginBackground() {
         return ApplicationConfig.getProperty(EnumSettingsBase.COMPANY_LOGIN_BACKGROUND_URL.getAppSetting().getSettingKey());
     }
+    
+    public static String getCompanyContextURL() {
+        return ApplicationConfig.getProperty(EnumSettingsBase.COMPANY_HELPDESK_SITE_URL.getAppSetting().getSettingKey());
+    }
 
     public static int getCompanyLogoSize() {
         int value = 100;

@@ -437,11 +437,11 @@
 
             <p:dialog  widgetVar="deleteSelectedCasos" header="Confirmar" resizable="false" closeOnEscape="true" modal="true" appendTo="@(body)" dynamic="true">  
                 <h:form id="formdeleteSelectedCasos">
-                    <h:outputFormat value="#{bundle.confirmDeleteCasos}">
+                    <h:outputFormat value="#{bundle.confirmDeleteCasos}" style="font-weight: bold;">
                         <f:param value="#{casoController.selectedItemsCount}" />
                     </h:outputFormat>
 
-                    <p:panel style="border-color: window;">
+                        <p:scrollPanel id="scrollpaneActividades" mode="native" style="height: 300px;border-color: window;border: 0;">
                         <h:panelGrid columns="1">
                             <c:forEach items="#{casoController.selectedItems}" var="item" >
                                 <h:commandLink action="#{casoController.filterByIdCaso(item.idCaso)}" >
@@ -452,7 +452,7 @@
                                 </h:commandLink>
                             </c:forEach>
                         </h:panelGrid>
-                    </p:panel>
+                    </p:scrollPanel>
 
                     <p:separator/>
                     <p:commandButton value="#{bundle.decline}" onclick="PF('deleteSelectedCasos').hide()" type="button" /> 

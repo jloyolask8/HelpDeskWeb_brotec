@@ -657,7 +657,7 @@ public class RulesEngine implements CasoChangeListener {
 
     private void asignarCasoArea(Accion accion, Caso caso) {
         try {
-            String oldArea = caso.getIdArea().getIdArea();
+            String oldArea = caso.getIdArea() != null ? caso.getIdArea().getIdArea() : null;
             Area area = getJpaController().find(Area.class, accion.getParametros());
             caso.setIdArea(area);
 
@@ -679,7 +679,7 @@ public class RulesEngine implements CasoChangeListener {
 
     private void definirTipoCaso(Accion accion, Caso caso) {
         try {
-            String old = caso.getTipoCaso().getNombre();
+            String old = caso.getTipoCaso() != null ? caso.getTipoCaso().getNombre() : null;
             TipoCaso tipoCaso = getJpaController().find(TipoCaso.class, accion.getParametros());
             caso.setTipoCaso(tipoCaso);
             getJpaController().mergeCasoWithoutNotify(caso);
@@ -713,7 +713,7 @@ public class RulesEngine implements CasoChangeListener {
 
     private void cambiarPrioridad(Accion accion, Caso caso) {
         try {
-            String old = caso.getIdPrioridad().getNombre();
+            String old = caso.getIdPrioridad() != null ? caso.getIdPrioridad().getNombre() : null;
             Prioridad prioridad = getJpaController().getPrioridadFindByIdPrioridad(accion.getParametros());
             caso.setIdPrioridad(prioridad);
             getJpaController().mergeCasoWithoutNotify(caso);

@@ -113,6 +113,11 @@
                                 #{g.nombre}
                             </p:dataList>
                         </p:column>
+                        
+                        <p:column headerText="#{bundle.ListUsuarioTitle_activo}" sortBy="#{item.activo}">
+
+                            <h:outputText value="#{item.activo ? 'Si':'No'}"/>
+                        </p:column>
 
                         <p:column headerText="Acción">
                             <p:commandButton id="viewBtn" ajax="false" action="#{usuarioController.prepareView(item)}" disabled="#{not usuarioController.puedeEditar(item)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" title="Ver" icon="ui-icon ui-icon-document"/>

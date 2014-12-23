@@ -41,6 +41,7 @@ public class ClippingsPlaceHolders {
     public static final String tipoCaso = "tipoCaso.nombre";
     //--
     public static final String SALUDO_CLIENTE = "SaludoCliente";
+    public static final String GODESK_CONTEXT_URL = "ContextUrl";
     public static final String NUMERO_CASO = "NumeroCaso";
 
     static {
@@ -83,6 +84,8 @@ public class ClippingsPlaceHolders {
         } catch (Exception e) {
             valuesMap.put(SALUDO_CLIENTE, ApplicationConfig.getSaludoClienteUnknown());
         }
+        
+        valuesMap.put(GODESK_CONTEXT_URL, ApplicationConfig.getCompanyContextURL());
 
         StrSubstitutor sub = new StrSubstitutor(valuesMap);
         final String replace = sub.replace(templateString);
