@@ -315,7 +315,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             setSelectedItems(null);
             showMessageInDialog(FacesMessage.SEVERITY_INFO, "Combinación finalizada",
                     "El caso " + casoBase.getIdCaso() + " " + comment);
-            FacesContext.getCurrentInstance().getExternalContext().redirect("Edit.xhtml");
+            redirect("/script/caso/Edit.xhtml");
         }
     }
 
@@ -914,7 +914,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     FacesContext.getCurrentInstance().getExternalContext().redirect("../index.xhtml");
                 } else {
                     setSelected(casoRequested);
-                    FacesContext.getCurrentInstance().getExternalContext().redirect("Edit.xhtml");
+                    redirect("/script/caso/Edit.xhtml");
                 }
 
             } catch (Exception ex) {
