@@ -196,21 +196,33 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
     }
 
     public String logout_action() {
-        HttpServletRequest request = (HttpServletRequest) JsfUtil.getRequest();
-        try {
 
-//        getApplicationBean().removeChannel(getUserSessionBean().getCurrent().getIdUsuario());
+        try {
+            getApplicationBean().removeChannel(getUserSessionBean().getCurrent().getIdUsuario());
+        } catch (Exception ex) {
+            Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, "removeChannel", ex);
+        }
+
+        try {
             final UsuarioSessionLog currentSessionLog = getUserSessionBean().getCurrentSessionLog();
             if (currentSessionLog != null) {
                 currentSessionLog.setTimestampLogout(new Date());
                 getJpaController().merge(currentSessionLog);
             }
-            
+
         } catch (Exception ex) {
-            Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, "currentSessionLog", ex);
         }
+        HttpServletRequest request = (HttpServletRequest) JsfUtil.getRequest();
         request.getSession().invalidate();
-        return "/script/login.xhtml?faces-redirect=true";
+
+        if (isThisRequestCommingFromAMobileDevice(JsfUtil.getRequest())) {
+            return "/mobile/login.xhtml?faces-redirect=true";
+        } else {
+            return "/script/login.xhtml?faces-redirect=true";
+
+        }
+
     }
 
 //    protected UserSessionBean getUserSessionBean() {

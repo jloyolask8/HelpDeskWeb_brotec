@@ -3185,7 +3185,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         StringBuilder sbuilder = new StringBuilder(HEADER_HISTORY);
         if (current != null && current.getNotaList() != null) {
             for (Nota nota : current.getNotaList()) {
-                sbuilder.append(creaMensajeOriginal(nota));
+                if(nota.getVisible() != null && nota.getVisible()){
+                    sbuilder.append(creaMensajeOriginal(nota));
+                }
             }
         }
 
