@@ -736,7 +736,7 @@ public class ManagerCasos implements Serializable {
 //            }
 //        }
 //    }
-    public Nota clonarNota(Nota notaOriginal){
+    public Nota clonarNota(Nota notaOriginal) {
         Nota nuevaNota = new Nota();
         nuevaNota.setAttachmentList(notaOriginal.getAttachmentList());
         nuevaNota.setCreadaPor(notaOriginal.getCreadaPor());
@@ -753,7 +753,7 @@ public class ManagerCasos implements Serializable {
         nuevaNota.setVisible(notaOriginal.getVisible());
         return nuevaNota;
     }
-    
+
     public Nota crearNotaDesdeCaso(Caso casoFrom, Caso casoTo) throws Exception {
 //        boolean retorno = false;
 //        StringBuilder listIdAtt = new StringBuilder();
@@ -778,7 +778,7 @@ public class ManagerCasos implements Serializable {
                 nota.setCreadaPor(casoFrom.getOwner());
                 nota.setTipoNota(EnumTipoNota.RESPUESTA_A_CLIENTE.getTipoNota());
                 nota.setEnviado(false);
-                
+
             } else if (casoFrom.getEmailCliente() != null && casoFrom.getEmailCliente().getEmailCliente().equalsIgnoreCase(emailSender)) {
                 //its a client
 //                caso.setRevisarActualizacion(true);
@@ -862,9 +862,10 @@ public class ManagerCasos implements Serializable {
             String textoBody = item.getText();
 //          textoBody = parseHtmlToText(textoBody);
             if (textoBody != null) {
-                nota.setTexto(HtmlUtils.removeScriptsAndStyles(textoBody));
+                nota.setTextoOriginal(textoBody);
+                final String removeScriptsAndStyles = HtmlUtils.removeScriptsAndStyles(textoBody);
+                nota.setTexto(HtmlUtils.stripInvalidMarkup(removeScriptsAndStyles));
             }
-
             nota.setFechaCreacion(Calendar.getInstance().getTime());
             if (item.getSubject().startsWith("Undeliverable:")) {
                 nota.setTipoNota(EnumTipoNota.RESPUESTA_SERVIDOR.getTipoNota());
@@ -1047,7 +1048,7 @@ public class ManagerCasos implements Serializable {
                         AuditLog audit = null;
                         if (((oldValue == null) && (newValue != null)) || ((oldValue != null) && (newValue == null))) {
                             if (method.getName().contains("List")) {
-                               
+
                                 int oldListSize = oldValue != null ? ((Collection) oldValue).size() : 0;
                                 int newListSize = newValue != null ? ((Collection) newValue).size() : 0;
 

@@ -330,10 +330,12 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public List<Caso> getMergeCandidatesList() {
         if (mergeCandidatesList == null) {
             mergeCandidatesList = new LinkedList<>();
-            List<Caso> tmpList = getSelected().getIdCliente().getCasoList();
-            for (Caso tmpList1 : tmpList) {
-                addToMergeCandidatesList(tmpList1);
-            }
+            List<Caso> tmpList;
+            //comentado a peticion de betterlife
+//          tmpList = getSelected().getIdCliente().getCasoList();
+//            for (Caso tmpList1 : tmpList) {
+//                addToMergeCandidatesList(tmpList1);
+//            }
             tmpList = getSelected().getCasosRelacionadosList();
             for (Caso tmpList1 : tmpList) {
                 addToMergeCandidatesList(tmpList1);
@@ -3185,7 +3187,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         StringBuilder sbuilder = new StringBuilder(HEADER_HISTORY);
         if (current != null && current.getNotaList() != null) {
             for (Nota nota : current.getNotaList()) {
-                sbuilder.append(creaMensajeOriginal(nota));
+                if(nota.getVisible() != null && nota.getVisible()){
+                    sbuilder.append(creaMensajeOriginal(nota));
+                }
             }
         }
 

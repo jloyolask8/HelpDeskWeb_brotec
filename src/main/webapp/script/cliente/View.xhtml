@@ -22,129 +22,134 @@
             <pe:importEnum type="com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta" var="EnumTipoAlerta" allSuffix="ALL_ENUM_VALUES" />
 
             <h:form id="form">
-                    <p:messages globalOnly="true"/>
+                <p:messages globalOnly="true"/>
 
-                    <p:tabView id="tabs" activeIndex="#{areaController.editActiveIndex}" dynamic="true">
-                        <p:tab id="tab1" title="Datos del Cliente" >
+                <p:tabView id="tabs" activeIndex="#{areaController.editActiveIndex}" dynamic="true">
+                    <p:tab id="tab1" title="Datos del Cliente" >
 
-                            <h:panelGrid columns="2" cellspacing="6">
+                        <h:panelGrid columns="2" cellspacing="6">
 
-                                <h:outputLabel value="#{bundle.CreateEmailClienteLabel_idCliente}" for="idCliente" style="font-weight:bold"/>
-                                <h:outputText id="idCliente" value="#{clienteController.selected.idCliente}" title="#{bundle.CreateEmailClienteTitle_idCliente}" />  
+                            <h:outputLabel value="#{bundle.CreateEmailClienteLabel_idCliente}" for="idCliente" style="font-weight:bold"/>
+                            <h:outputText id="idCliente" value="#{clienteController.selected.idCliente}" title="#{bundle.CreateEmailClienteTitle_idCliente}" />  
 
-                                <h:outputLabel value="Email:" for="emailCliente" style="font-weight:bold"/>
+                            <h:outputLabel value="Email:" for="emailCliente" style="font-weight:bold"/>
 
-                                <h:panelGrid>
-                                    <ui:repeat  id="emailCliente" value="#{clienteController.selected.emailClienteList}"  var="email">  
-                                        <h:outputText value="#{email.emailCliente}"/>
-                                        <br/>                                
-                                    </ui:repeat>  
+                            <h:panelGrid>
+                                <ui:repeat  id="emailCliente" value="#{clienteController.selected.emailClienteList}"  var="email">  
+                                    <h:outputText value="#{email.emailCliente}"/>
+                                    <br/>                                
+                                </ui:repeat>  
 
-                                </h:panelGrid>
-
-                                <h:outputLabel value="#{bundle.CreateClienteLabel_rut}" for="rut" style="font-weight:bold"/>
-                                <h:outputText id="rut" value="#{clienteController.selected.rut}" title="#{bundle.CreateClienteTitle_rut}"/>                    
-
-                                <h:outputLabel value="#{bundle.CreateClienteLabel_nombres}" for="nombres" style="font-weight:bold"/>
-                                <h:outputText id="nombres" value="#{clienteController.selected.nombres}" title="#{bundle.CreateClienteTitle_nombres}" />
-
-                                <h:outputLabel value="#{bundle.CreateClienteLabel_apellidos}" for="apellidos" style="font-weight:bold"/>
-                                <h:outputText id="apellidos" value="#{clienteController.selected.apellidos}" title="#{bundle.CreateClienteTitle_apellidos}" />
-
-                                <p:outputLabel value="Sexo:" for="sexo" style="font-weight:bold"/>
-                                <h:outputText id="sexo" value="#{clienteController.selected.sexo}" />
-
-
-                                <h:outputLabel value="#{bundle.CreateClienteLabel_fono1}" for="fono1" style="font-weight:bold"/>
-                                <h:outputText id="fono1" value="#{clienteController.selected.fono1}" title="#{bundle.CreateClienteTitle_fono1}" />
-
-                                <h:outputLabel value="#{bundle.CreateClienteLabel_fono2}" for="fono2" style="font-weight:bold"/>
-                                <h:outputText id="fono2" value="#{clienteController.selected.fono2}" title="#{bundle.CreateClienteTitle_fono2}" />
-
-                                <h:outputLabel value="#{bundle.CreateClienteLabel_dirParticular}" for="dirParticular" style="font-weight:bold"/>
-                                <h:outputText id="dirParticular" value="#{clienteController.selected.dirParticular}" title="#{bundle.CreateClienteTitle_dirParticular}" />
-
-                                <h:outputLabel value="#{bundle.CreateClienteLabel_dirComercial}" for="dirComercial" style="font-weight:bold"/>
-                                <h:outputText id="dirComercial" value="#{clienteController.selected.dirComercial}" title="#{bundle.CreateClienteTitle_dirComercial}" />
                             </h:panelGrid>
 
+                            <h:outputLabel value="#{bundle.CreateClienteLabel_rut}" for="rut" style="font-weight:bold"/>
+                            <h:outputText id="rut" value="#{clienteController.selected.rut}" title="#{bundle.CreateClienteTitle_rut}"/>                    
+
+                            <h:outputLabel value="#{bundle.CreateClienteLabel_nombres}" for="nombres" style="font-weight:bold"/>
+                            <h:outputText id="nombres" value="#{clienteController.selected.nombres}" title="#{bundle.CreateClienteTitle_nombres}" />
+
+                            <h:outputLabel value="#{bundle.CreateClienteLabel_apellidos}" for="apellidos" style="font-weight:bold"/>
+                            <h:outputText id="apellidos" value="#{clienteController.selected.apellidos}" title="#{bundle.CreateClienteTitle_apellidos}" />
+
+                            <p:outputLabel value="Sexo:" for="sexo" style="font-weight:bold"/>
+                            <h:outputText id="sexo" value="#{clienteController.selected.sexo}" />
+
+
+                            <h:outputLabel value="#{bundle.CreateClienteLabel_fono1}" for="fono1" style="font-weight:bold"/>
+                            <h:outputText id="fono1" value="#{clienteController.selected.fono1}" title="#{bundle.CreateClienteTitle_fono1}" />
+
+                            <h:outputLabel value="#{bundle.CreateClienteLabel_fono2}" for="fono2" style="font-weight:bold"/>
+                            <h:outputText id="fono2" value="#{clienteController.selected.fono2}" title="#{bundle.CreateClienteTitle_fono2}" />
+
+                            <h:outputLabel value="#{bundle.CreateClienteLabel_dirParticular}" for="dirParticular" style="font-weight:bold"/>
+                            <h:outputText id="dirParticular" value="#{clienteController.selected.dirParticular}" title="#{bundle.CreateClienteTitle_dirParticular}" />
+
+                            <h:outputLabel value="#{bundle.CreateClienteLabel_dirComercial}" for="dirComercial" style="font-weight:bold"/>
+                            <h:outputText id="dirComercial" value="#{clienteController.selected.dirComercial}" title="#{bundle.CreateClienteTitle_dirComercial}" />
+                        </h:panelGrid>
+
+                        <br/>
+                        <h:outputText value="Nota: Un Cliente puede tener mas de una direccion de correo asociada." style="color: #999"/>
+
+                    </p:tab>
+
+                    <p:tab id="tab2" title="#{applicationBean.productSubComponentDescription}(s) Asociado(s)" >
+                        <h:panelGrid> 
+                            <p:dataTable id="dataList" rendered="#{clienteController.selected ne null and clienteController.selected ne null}" 
+                                         value="#{clienteController.selected.productoContratadoList}" var="prod_cont" emptyMessage="El Cliente no tiene #{applicationBean.productDescription} asociado.">
+
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{applicationBean.productDescription}"/>
+                                    </f:facet>
+                                    <h:outputText id="prod" value="#{prod_cont.producto.nombre}"/>
+                                    <p:tooltip for="prod" value="#{prod_cont.observaciones}"/>
+                                </p:column>
+
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{applicationBean.productComponentDescription}"/>
+                                    </f:facet>
+                                    <h:outputText value="#{prod_cont.componente.nombre}"/>
+                                </p:column>
+
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{applicationBean.productSubComponentDescription}"/>
+                                    </f:facet>
+                                    <h:outputText value="#{prod_cont.subComponente.nombre}"/>
+                                </p:column>
+
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Relación"/>
+                                    </f:facet>
+                                    <h:outputText value="#{prod_cont.tipoAsociacion}"/>
+                                </p:column>
+
+
+                            </p:dataTable>
+
+                        </h:panelGrid>
+
+                    </p:tab>
+
+                    <p:tab id="tab3" title="Histórico de Casos" >
+
+                        <go:casoListNoForm casosList="#{clienteController.selected.casoList}" header="Histórico de Casos asociados al cliente"/>
+
+                        <ui:repeat value="#{clienteController.selected.emailClienteList}" var="r" >
                             <br/>
-                            <h:outputText value="Nota: Un Cliente puede tener mas de una direccion de correo asociada." style="color: #999"/>
+                            <go:casoListNoForm casosList="#{r.casoList}" header="Histórico de Casos asociados al email #{r.emailCliente}"/>
+                        </ui:repeat>
 
-                        </p:tab>
+                    </p:tab>
 
-                        <p:tab id="tab2" title="#{applicationBean.productSubComponentDescription}(s) Asociado(s)" >
-                            <h:panelGrid> 
-                                <p:dataTable id="dataList" rendered="#{clienteController.selected ne null and clienteController.selected ne null}" 
-                                             value="#{clienteController.selected.productoContratadoList}" var="prod_cont" emptyMessage="El Cliente no tiene #{applicationBean.productDescription} asociado.">
-
-                                    <p:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="#{applicationBean.productDescription}"/>
-                                        </f:facet>
-                                        <h:outputText id="prod" value="#{prod_cont.producto.nombre}"/>
-                                        <p:tooltip for="prod" value="#{prod_cont.observaciones}"/>
-                                    </p:column>
-
-                                    <p:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="#{applicationBean.productComponentDescription}"/>
-                                        </f:facet>
-                                        <h:outputText value="#{prod_cont.componente.nombre}"/>
-                                    </p:column>
-
-                                    <p:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="#{applicationBean.productSubComponentDescription}"/>
-                                        </f:facet>
-                                        <h:outputText value="#{prod_cont.subComponente.nombre}"/>
-                                    </p:column>
-
-                                    <p:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Relación"/>
-                                        </f:facet>
-                                        <h:outputText value="#{prod_cont.tipoAsociacion}"/>
-                                    </p:column>
-
-
-                                </p:dataTable>
-
-                            </h:panelGrid>
-
-                        </p:tab>
-
-                        <p:tab id="tab3" title="Histórico de Casos" >
-
-                            <go:casoList casosList="#{clienteController.selected.casoList}" header="Histórico de Casos"/>
-
-                        </p:tab>
-
-                    </p:tabView>
+                </p:tabView>
 
 
 
 
-                    <br/>
+                <br/>
 
 
 
-                        <p:toolbar>  
-                            <p:toolbarGroup align="left">   
-                                <p:commandButton action="#{clienteController.goBack}" value="#{bundle.goBack}" icon="fa fa-chevron-left" ajax="false"/>
-                                <p:separator/>
-                                <p:commandButton action="#{clienteController.prepareEdit(clienteController.selected)}" ajax="false"
-                                                 value="#{bundle.edit}" icon="ui-icon ui-icon-pencil" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/> 
-                                <p:separator/>
-                                <p:commandButton id="showDialogButton" value="#{bundle.destroy}" onclick="PF('confirmation').show()" 
-                                                 rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" 
-                                                 icon="ui-icon ui-icon-trash" disabled="#{not clienteController.puedeEliminar(clienteController.selected)}"/> 
-                            </p:toolbarGroup>
-
-                         
+                <p:toolbar>  
+                    <p:toolbarGroup align="left">   
+                        <p:commandButton action="#{clienteController.goBack}" value="#{bundle.goBack}" icon="fa fa-chevron-left" ajax="false" immediate="true"/>
+                        <p:separator/>
+                        <p:commandButton action="#{clienteController.prepareEdit(clienteController.selected)}" ajax="false"
+                                         value="#{bundle.edit}" icon="ui-icon ui-icon-pencil" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/> 
+                        <p:separator/>
+                        <p:commandButton id="showDialogButton" value="#{bundle.destroy}" onclick="PF('confirmation').show()" 
+                                         rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" 
+                                         icon="ui-icon ui-icon-trash" disabled="#{not clienteController.puedeEliminar(clienteController.selected)}"/> 
+                    </p:toolbarGroup>
 
 
-                        </p:toolbar>
+
+
+                </p:toolbar>
 
 
 

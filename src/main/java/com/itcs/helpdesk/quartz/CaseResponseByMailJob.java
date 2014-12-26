@@ -100,18 +100,22 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
                     if (!idAtts.isEmpty()) {
                         attachments = new LinkedList<>();
                         for (Long idAtt : idAtts) {
-
-                            Attachment att = jpaController.getReference(Attachment.class, idAtt);
+                            try {
+                                Attachment att = jpaController.getReference(Attachment.class, idAtt);
 //                        Attachment att = getJpaController().getAttachmentFindByIdAttachment(idatt);}
-                            Archivo archivo = jpaController.getArchivoFindByIdAttachment(idAtt);
+                                Archivo archivo = jpaController.getArchivoFindByIdAttachment(idAtt);
 //                        Archivo archivo = getJpaController().getArchivoFindByIdAttachment(att.getIdAttachment());
-                            EmailAttachment emailAttachment = new EmailAttachment();
-                            emailAttachment.setData(archivo.getArchivo());
-                            emailAttachment.setMimeType(att.getMimeType());
-                            emailAttachment.setName(att.getNombreArchivo());
-                            emailAttachment.setPath(att.getNombreArchivo());
-                            emailAttachment.setSize(archivo.getArchivo().length);
-                            attachments.add(emailAttachment);
+                                EmailAttachment emailAttachment = new EmailAttachment();
+                                emailAttachment.setData(archivo.getArchivo());
+                                emailAttachment.setMimeType(att.getMimeType());
+                                emailAttachment.setName(att.getNombreArchivo());
+                                emailAttachment.setPath(att.getNombreArchivo());
+                                emailAttachment.setSize(archivo.getArchivo().length);
+                                attachments.add(emailAttachment);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
                         }
                     }
                     final String[] split = emails_to.split(",");

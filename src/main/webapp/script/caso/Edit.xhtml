@@ -311,7 +311,7 @@
 
                 </p:tab>
 
-                <p:tab id="tabCasosRelacionados" title="Casos relacionados (#{casoController.selected.casosRelacionadosList.size() + casoController.selected.casosHijosList.size() + casoController.selected.idCliente.casoList.size()})" >
+                <p:tab id="tabCasosRelacionados" title="Casos relacionados (#{casoController.selected.casosRelacionadosList.size() + casoController.selected.casosHijosList.size()})" >
                     <p:scrollPanel id="scrollpaneCasosRel" mode="native" style="border: 0; height: 500px;">
 
                         <div align="right">
@@ -336,10 +336,7 @@
                                      casosList="#{casoController.mergeCandidatesList}"
                                      header="Candidatos para combinar (#{casoController.mergeCandidatesList.size()}) con caso N°#{casoController.selected.idCaso}"/>
 
-                        <go:casoList id="casosCliente" rendered="#{not casoController.mergeHabilitado}"
-                                     casosList="#{casoController.selected.idCliente.casoList}"
-                                     header="Historial de casos del Cliente #{casoController.selected.clientName} (#{casoController.selected.idCliente.casoList.size()})"/>
-
+                       
                         <go:casoList id="casosRel" rendered="#{not casoController.mergeHabilitado}"
                                      casosList="#{casoController.selected.casosRelacionadosList}"
                                      header="Casos relacionados (#{casoController.selected.casosRelacionadosList.size()})"/>
