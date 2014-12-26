@@ -76,8 +76,12 @@
 
                         <p:column headerText="Email">
                             <ui:repeat value="#{item.emailClienteList}" var="r" >
-                                <p:outputLabel value="#{r.emailCliente} "/>
+                                <p:outputLabel value="#{r.emailCliente} (#{r.casoList.size()} casos)"/>
                             </ui:repeat>
+                        </p:column>
+
+                        <p:column headerText="Casos">
+                             <p:outputLabel value="#{item.casoList.size()} "/>
                         </p:column>
 
                         <p:column headerText="TPC" >
@@ -87,7 +91,11 @@
                         <p:column headerText="Acción">
                             <p:commandButton id="viewBtn" ajax="false" action="#{clienteController.prepareView(item)}" title="Ver" icon="ui-icon ui-icon-document"/>
                             <p:commandButton id="editBtn" ajax="false" action="#{clienteController.prepareEdit(item)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" title="Editar" icon="ui-icon ui-icon-pencil"/>
-                            <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" action="#{clienteController.setSelected(item)}" oncomplete="PF('confirmation').show()" disabled="#{not clienteController.puedeEliminar(item)}" icon="ui-icon ui-icon-trash"/>
+                            <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" 
+                                             rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" 
+                                             actionListener="#{clienteController.prepareEditPK(item.idCliente)}" 
+                                             oncomplete="PF('confirmation').show()" 
+                                             disabled="#{not clienteController.puedeEliminar(item)}" icon="ui-icon ui-icon-trash"/>
                         </p:column>
 
 
@@ -104,10 +112,40 @@
                           header="Iniciando proceso de eliminación" widgetVar="confirmation">
 
                     <h:outputText value="Está seguro de eliminar al cliente #{clienteController.selected.nombres} #{clienteController.selected.apellidos}?"/>
+                    <br/>
+                    <p:outputLabel value="Casos asociados al cliente:"/>
+                    <p:scrollPanel mode="native" style="height: 100px;border-color: window;border: 0;">
+                        <h:panelGrid columns="1">
+                            <c:forEach items="#{clienteController.selected.casoList}" var="item" >
+                                <h:commandLink action="#{casoController.filterByIdCaso(item.idCaso)}" >
+                                    <h:outputText styleClass="ticket-status" 
+                                                  style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};" value="#{item.idSubEstado.nombre}"
+                                                  />
+                                    <h:outputText value=" #{item.tipoCaso.nombre} N°#{item.idCaso} - #{item.tema}"/>
+                                </h:commandLink>
+                            </c:forEach>
+                        </h:panelGrid>
+                    </p:scrollPanel>
+
+                    <p:outputLabel value="Casos asociados a cada email del cliente:"/>
+                    <p:scrollPanel mode="native" style="height: 100px;border-color: window;border: 0;">
+                        <h:panelGrid columns="1">
+                            <c:forEach items="#{clienteController.selected.emailClienteList}" var="email" >
+                                <c:forEach items="#{email.casoList}" var="item" >
+                                    <h:commandLink action="#{casoController.filterByIdCaso(item.idCaso)}" >
+                                        <h:outputText styleClass="ticket-status" 
+                                                      style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};" value="#{item.idSubEstado.nombre}"
+                                                      />
+                                        <h:outputText value=" #{item.tipoCaso.nombre} N°#{item.idCaso} - #{item.tema}"/>
+                                    </h:commandLink>
+                                </c:forEach>
+                            </c:forEach>
+                        </h:panelGrid>
+                    </p:scrollPanel>
 
                     <f:facet name="footer">
                         <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{clienteController.destroy()}" 
-                                         ajax="false"/>
+                                         ajax="false" />
                         <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
                     </f:facet>
 

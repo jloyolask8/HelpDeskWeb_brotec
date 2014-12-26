@@ -34,11 +34,11 @@
                         <p:message display="both" for="nombres"/>
 
                         <p:outputLabel value="#{bundle.CreateClienteLabel_apellidos}" for="apellidos" style="font-weight:bold"/>
-                        <p:inputText disabled="#{not clienteController.canEdit}" id="apellidos" value="#{clienteController.selected.apellidos}" title="#{bundle.CreateClienteTitle_apellidos}" required="true" requiredMessage="Los Apellidos son un dato requerido."/>
+                        <p:inputText disabled="#{not clienteController.canEdit}" id="apellidos" value="#{clienteController.selected.apellidos}" title="#{bundle.CreateClienteTitle_apellidos}" />
                         <p:message display="both" for="apellidos"/>
 
                         <p:outputLabel value="Sexo:" for="sexo" style="font-weight:bold"/>
-                        <p:selectOneButton disabled="#{not clienteController.canEdit}" id="sexo" value="#{clienteController.selected.sexo}" required="true" requiredMessage="Seleccione un sexo.">  
+                        <p:selectOneButton disabled="#{not clienteController.canEdit}" id="sexo" value="#{clienteController.selected.sexo}" >  
                             <f:selectItem itemLabel="Hombre" itemValue="Hombre" />  
                             <f:selectItem itemLabel="Mujer" itemValue="Mujer" />  
                         </p:selectOneButton> 

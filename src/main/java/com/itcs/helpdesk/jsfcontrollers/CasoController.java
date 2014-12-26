@@ -330,10 +330,12 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public List<Caso> getMergeCandidatesList() {
         if (mergeCandidatesList == null) {
             mergeCandidatesList = new LinkedList<>();
-            List<Caso> tmpList = getSelected().getIdCliente().getCasoList();
-            for (Caso tmpList1 : tmpList) {
-                addToMergeCandidatesList(tmpList1);
-            }
+            List<Caso> tmpList = new LinkedList<>();
+            //comentado a peticion de betterlife
+//          tmpList = getSelected().getIdCliente().getCasoList();
+//            for (Caso tmpList1 : tmpList) {
+//                addToMergeCandidatesList(tmpList1);
+//            }
             tmpList = getSelected().getCasosRelacionadosList();
             for (Caso tmpList1 : tmpList) {
                 addToMergeCandidatesList(tmpList1);
