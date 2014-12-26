@@ -22,8 +22,7 @@
                 <h:panelGrid id="datosDelCliente" columns="3">
                     <p:outputLabel id="rutLbl" value="#{bundle.CreateClienteLabel_rut}" for="rut" style="font-weight:bold"/>
                     <p:inputText id="rut" value="#{clienteController.selected.rut}" 
-                                 title="#{bundle.CreateClienteTitle_rut}" validator="#{inputValidationBean.validarRut}"
-                                 required="true" requiredMessage="Es necesario el RUT del cliente">
+                                 title="#{bundle.CreateClienteTitle_rut}" validator="#{inputValidationBean.validarRut}">
                         <p:ajax event="blur" listener="#{clienteController.onBlurRutInput}" update=":form"/>
                     </p:inputText>
                     <p:message id="rutMsg" display="both" for="rut"/>
@@ -130,8 +129,14 @@
 
 
                     </p:dataTable>
+
+                    <p:commandButton value="Agregar" icon="ui-icon-extlink" style="float: right"
+                                     actionListener="#{clienteController.chooseSubComponente}">
+                        <p:ajax event="dialogReturn" listener="#{clienteController.onSubComponenteChosen}" update=":form:productos :mainform:messages" />
+                    </p:commandButton>
+<br/>
                 </p:outputPanel>
-                
+
                 <br/>
 
                 <p:toolbar>  

@@ -4,8 +4,7 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:pe="http://primefaces.org/ui/extensions">
+      xmlns:f="http://java.sun.com/jsf/core">
 
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
@@ -293,12 +292,7 @@
                             </p:overlayPanel>
                         </p:column>
 
-                        <p:column filterBy="direccion" filterMatchMode="contains">
-                            <f:facet name="header">
-                                <h:outputText value="Dirección"/>
-                            </f:facet>
-                            <h:outputText value="#{subitem.direccion}"/>
-                        </p:column>
+                      
 
                         <p:column>
                             <f:facet name="header">

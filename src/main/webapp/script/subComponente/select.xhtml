@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>#{applicationBean.productSubComponentDescription}s</title>
+        <style type="text/css">
+            .ui-widget {
+                font-size: 90%;
+            }
+        </style>
+    </h:head>
+
+    <h:body>
+        <h:form>
+            <p:dataTable var="subitem" value="#{subComponenteController.itemsAvailableForSelect}"
+                         emptyMessage="No se encontró ningún #{applicationBean.productSubComponentDescription}"
+                         scrollRows="20" scrollable="true" liveScroll="true" scrollHeight="450">
+
+                <p:column filterBy="idSubComponente" filterMatchMode="contains">
+                    <f:facet name="header">
+                        <h:outputText value="Código #{applicationBean.productSubComponentDescription}"/>
+                    </f:facet>
+                    <h:outputText value="#{subitem.idSubComponente}"/>
+                </p:column>
+                <p:column filterBy="nombre" filterMatchMode="contains">
+                    <f:facet name="header">
+                        <h:outputText value="#{bundle.ListSubComponenteTitle_nombre}"/>
+                    </f:facet>
+                    <h:outputText id="nombreSubComponente" value="#{subitem.nombre}"/>
+                    <p:overlayPanel for="nombreSubComponente" hideEffect="fade"> 
+                        <h:outputText value="#{item.descripcion}"/>
+                    </p:overlayPanel>
+                </p:column>
+
+                <p:column filterBy="#{subitem.idComponente.nombre}" filterMatchMode="contains">
+                    <f:facet name="header">
+                        <h:outputText value="#{applicationBean.productComponentDescription}"/>
+                    </f:facet>
+                    <h:outputText value="#{subitem.idComponente.nombre}"/>
+                </p:column>
+                
+                  <p:column filterBy="#{subitem.idComponente.idProducto.nombre}" filterMatchMode="contains">
+                    <f:facet name="header">
+                        <h:outputText value="#{applicationBean.productDescription}"/>
+                    </f:facet>
+                    <h:outputText value="#{subitem.idComponente.idProducto.nombre}"/>
+                </p:column>
+
+                <p:column >
+                    <f:facet name="header">
+                        <h:outputText value="Relación Cliente(s)"/>
+                    </f:facet>
+                    <h:outputText rendered="#{not empty subitem.productoContratadoList}" value="#{subitem.productoContratadoList}" title="#{subitem.productoContratadoList}"/>
+                </p:column>
+
+                <p:column headerText="Select">
+                    <p:commandButton icon="ui-icon-search" actionListener="#{subComponenteController.selectEntityFromDialog(subitem)}" />
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </h:body>
+
+</html>
