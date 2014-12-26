@@ -386,6 +386,9 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
                     }
 
                     Producto producto;
+                    if ((StringUtils.isEmpty(nombreProducto)) || (StringUtils.isEmpty(idComponente))){
+                        continue;
+                    }
                     try {
                         producto = getJpaController().getProductoFindByNombre(nombreProducto);
                         if (producto != null) {
@@ -558,7 +561,6 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
         int counterComponente = 0;
 
 //        final ComponenteJpaController cJpaController = getJpaController().getComponenteJpaController();
-
         for (Componente componente : bulkLoadedComponentes) {
             try {
                 if (!StringUtils.isEmpty(componente.getIdComponente())) {
@@ -583,15 +585,14 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
         int counterSubComponente = 0;
 
 //        final SubComponenteJpaController scJpaController = getJpaController().getSubComponenteJpaController();
-
         for (SubComponente subComponente : bulkLoadedSubComponentes) {
             try {
                 if (!StringUtils.isEmpty(subComponente.getIdSubComponente())) {
-                    if(StringUtils.isEmpty(subComponente.getNombre())){
+                    if (StringUtils.isEmpty(subComponente.getNombre())) {
                         subComponente.setNombre(subComponente.getIdComponente().getNombre());
                     }
                     final SubComponente find = getJpaController().find(SubComponente.class, subComponente.getIdSubComponente());
-                            //scJpaController.findSubComponente(subComponente.getIdSubComponente());
+                    //scJpaController.findSubComponente(subComponente.getIdSubComponente());
 
                     if (find == null) {
                         getJpaController().persist(subComponente);
