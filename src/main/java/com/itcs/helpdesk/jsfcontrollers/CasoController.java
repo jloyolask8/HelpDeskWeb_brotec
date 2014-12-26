@@ -234,7 +234,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public static final String HEADER_HISTORY = "<br/><hr/><b>HISTORIA DEL CASO</b><hr/><br/>";
     public static final String HEADER_HISTORY_NOTA = "<p><strong>HISTORIA DEL CASO</strong></p>";
     public static final String HEADER_HISTORY_NOTA_ALT = "<b>HISTORIA DEL CASO</b>";
-    public static final String FOOTER_HISTORY_NOTA = ">FIN MENSAJE ORIGINAL";
+    public static final String FOOTER_HISTORY_NOTA = "> FIN MENSAJE ORIGINAL";
+    public static final String FOOTER_HISTORY_NOTA_ALT = "> FIN MENSAJE ORIGINAL";
 
     private Comparator<Caso> comparadorCasosPorFechaCreacion = new Comparator<Caso>() {
         @Override
@@ -1631,6 +1632,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         int headerStartIndex = nota.getTexto().indexOf(HEADER_HISTORY_NOTA);
         int historyEndIndex = nota.getTexto().lastIndexOf(FOOTER_HISTORY_NOTA);
         headerStartIndex = (headerStartIndex > 0) ? headerStartIndex : nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT);
+        historyEndIndex = (historyEndIndex > 0) ? historyEndIndex : nota.getTexto().indexOf(FOOTER_HISTORY_NOTA_ALT);
         if (headerStartIndex > 0) {
             ret = nota.getTexto().substring(0, headerStartIndex);
             if ((!debeMostrarContenidoReducido(nota)) && (historyEndIndex > headerStartIndex)) {
