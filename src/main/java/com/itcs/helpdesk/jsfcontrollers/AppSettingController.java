@@ -4,8 +4,10 @@ import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.AppSetting;
 import com.itcs.helpdesk.persistence.entities.Archivo;
+import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entityenums.EnumFieldType;
 import com.itcs.helpdesk.persistence.entityenums.EnumSettingsBase;
+import com.itcs.helpdesk.persistence.utils.OrderBy;
 import com.itcs.helpdesk.util.ApplicationConfig;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -31,6 +33,7 @@ import org.imgscalr.Scalr;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.SelectableDataModel;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.UploadedFile;
 
@@ -38,12 +41,9 @@ import org.primefaces.model.UploadedFile;
 @SessionScoped
 public class AppSettingController extends AbstractManagedBean<AppSetting> implements Serializable {
 
-//    private AppSetting current;
-//    private transient DataModel items = null;
-//    private transient PaginationHelper pagination;
     private int selectedItemIndex;
     //------------------------------------
-    private List<AppSetting> settings;
+//    private List<AppSetting> settings;
     private transient UploadedFile logoUploadFile = null;
 //    private StreamedContent currentLogoStreamedContent;
     private transient StreamedContent newLogoStreamedContent;
@@ -53,16 +53,23 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
         super(AppSetting.class);
     }
 
-    @PostConstruct
-    protected void initialize() {
-
-        try {
-            this.settings = (List<AppSetting>) getJpaController().findAll(AppSetting.class, new String[]{"grupo", "orderView"});
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+    @Override
+    public OrderBy getDefaultOrderBy() {
+        return new OrderBy("orderView");
     }
+    
+    
+
+//    @PostConstruct
+//    protected void initialize() {
+//
+//        try {
+//            this.settings = (List<AppSetting>) getJpaController().findAll(AppSetting.class, new String[]{"grupo", "orderView"});
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
 
     public void handleFileUpload() {
         handleFileUpload(null);
@@ -114,7 +121,7 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
         RequestContext requestContext = RequestContext.getCurrentInstance();
         requestContext.addCallbackParam("isValid", !hasErrors);
 
-        for (AppSetting appSetting : settings) {
+        for (AppSetting appSetting : (List<AppSetting>)items.getWrappedData()) {
             try {
                 getJpaController().getAppSettingJpaController().edit(appSetting);
                 ApplicationConfig.getInstance().getConfiguration().put(appSetting.getSettingKey(), appSetting.getSettingValue());
@@ -169,86 +176,22 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
 
         }
 
-//        if (newLogoStreamedContent != null) {
-//
-//
-//
-////                Iterator<ImageWriter> it = ImageIO.getImageWritersByMIMEType(logoUploadFile.getContentType());
-////                while (it.hasNext()) {
-////                    System.out.println(it.next().toString());
-////                }
-//
-////                String ext = logoUploadFile.getFileName().substring(logoUploadFile.getFileName().indexOf(".") + 1);
-//
-////                if (ext != null && (ext.equalsIgnoreCase("jpg") || ext.equalsIgnoreCase("jpeg") || ext.equalsIgnoreCase("png"))) {
-//
-//            try {
-//                final String contentType = "image/png";
-//                final String format = "png";
-////
-////
-//                BufferedImage resizedImage = ImageIO.read(newLogoStreamedContent.getStream());
-//////                    BufferedImage resizedImage = Scalr.resize(originalImage, ApplicationConfig.getCompanyLogoSize());
-//////
-//                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//                ImageIO.write(resizedImage, format, baos);
-//                baos.flush();
-//                byte[] imageInByte = /*IOUtils.toByteArray(newLogoStreamedContent.getStream());*/ baos.toByteArray();
-//                baos.close();
-////
-////                newLogoStreamedContent = new DefaultStreamedContent(new ByteArrayInputStream(imageInByte), contentType);
-//
-//                try {
-//                    getJpaController().getArchivoJpaController().destroy(0L);
-//                    Archivo archivo = new Archivo();
-//                    archivo.setIdAttachment(0L);
-//                    archivo.setArchivo(imageInByte);
-//                    archivo.setContentType(contentType);
-//                    archivo.setFormat(format);
-//                    getJpaController().persistArchivo(archivo);
-//                } catch (Exception e) {
-//                    //e.printStackTrace();
-//                }
-////                Archivo existente = getJpaController().getArchivoFindByIdAttachment(0L);
-////                if (existente != null) {
-////                    existente.setArchivo(imageInByte);
-////                    existente.setFormat(format);
-////                    existente.setContentType(contentType);
-////                    getJpaController().merge(existente);
-////                } else {
-////                    Archivo archivo = new Archivo();
-////                    archivo.setIdAttachment(0L);
-////                    archivo.setArchivo(imageInByte);
-////                    archivo.setContentType(contentType);
-////                    archivo.setFormat(format);
-////                    getJpaController().persistArchivo(archivo);
-////                }
-//
-//                newLogoStreamedContent = new DefaultStreamedContent();
-//
-////                    currentLogoStreamedContent = new DefaultStreamedContent(new ByteArrayInputStream(logoUploadFile.getContents()), logoUploadFile.getContentType());
-//            } catch (Exception e) {
-//                addMessage(FacesMessage.SEVERITY_ERROR, e.getMessage());
-//                e.printStackTrace();
-//            }
-//
-////                } else {
-////                    addMessage(FacesMessage.SEVERITY_ERROR, "Formato de imagen no soportado. Formatos soportados: png y jpg.");
-////                    hasErrors = true;
-////                }
-//
-//
-//        } 
-//        else {
-//            JsfUtil.addErrorMessage("Debe seleccionar una imagen.");
-//            hasErrors = true;
-//        }
         if (!hasErrors) {
             addMessage(FacesMessage.SEVERITY_INFO, "Configuración guardada exitosamente.");
 
         }
 
         return null;
+    }
+
+    @Override
+    protected String getEditPage() {
+         return "/script/appSetting/Edit";
+    }
+
+    @Override
+    protected String getViewPage() {
+        return "/script/appSetting/View";
     }
 
 
@@ -259,13 +202,14 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
 
     @Override
     protected String getListPage() {
-        return "/script/appSetting/List";
+        return "/script/appSetting/config";
     }
 
     public String prepareView() {
         current = (AppSetting) getItems().getRowData();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "View";
+        return getViewPage();
+        
     }
 
     public String prepareCreate() {
@@ -288,7 +232,8 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
     public String prepareEdit() {
         current = (AppSetting) getItems().getRowData();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "Edit";
+        return getEditPage();
+        
     }
 
     public String update() {
@@ -296,7 +241,7 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
             getJpaController().getAppSettingJpaController().edit(current);
             ApplicationConfig.getInstance().getConfiguration().put(current.getSettingKey(), current.getSettingValue());
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AppSettingUpdated"));
-            return "View";
+            return getViewPage();
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
             return null;
@@ -309,7 +254,8 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
         performDestroy();
         recreatePagination();
         recreateModel();
-        return "List";
+        return getListPage();
+        
     }
 
     public String destroyAndView() {
@@ -317,11 +263,11 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
         recreateModel();
         updateCurrentItem();
         if (selectedItemIndex >= 0) {
-            return "View";
+            return getViewPage();
         } else {
             // all items were removed - go back to list
             recreateModel();
-            return "List";
+            return getListPage();
         }
     }
 
@@ -419,24 +365,25 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
         this.newLogoStreamedContent = newLogoStreamedContent;
     }
 
-    /**
-     * @return the settings
-     */
-    public List<AppSetting> getSettings() {
-        initialize();
-        return settings;
-    }
-
-    /**
-     * @param settings the settings to set
-     */
-    public void setSettings(List<AppSetting> settings) {
-        this.settings = settings;
-    }
+//    /**
+//     * @return the settings
+//     */
+//    public List<AppSetting> getSettings() {
+//        initialize();
+//        return settings;
+//    }
+//
+//    /**
+//     * @param settings the settings to set
+//     */
+//    public void setSettings(List<AppSetting> settings) {
+//        this.settings = settings;
+//    }
 
     @Override
     public Class getDataModelImplementationClass() {
-        throw new UnsupportedOperationException("Not supported yet.");
+//        throw new UnsupportedOperationException("Not supported yet.");
+        return AppSettingDataModel.class;
     }
 
     @FacesConverter(forClass = AppSetting.class)
@@ -476,5 +423,37 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
                 throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + AppSetting.class.getName());
             }
         }
+    }
+}
+
+class AppSettingDataModel extends ListDataModel<AppSetting> implements SelectableDataModel<AppSetting>, Serializable {
+
+    public AppSettingDataModel() {
+        //nothing
+    }
+
+    public AppSettingDataModel(List<AppSetting> data) {
+        super(data);
+    }
+
+    @Override
+    public AppSetting getRowData(String rowKey) {
+        List<AppSetting> list = (List<AppSetting>) getWrappedData();
+
+        if (list != null) {
+            for (AppSetting obj : list) {
+                if (obj.getSettingKey()!= null) {
+                    if (obj.getSettingKey().equals(rowKey)) {
+                        return obj;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Object getRowKey(AppSetting classname) {
+        return classname.getSettingKey();
     }
 }

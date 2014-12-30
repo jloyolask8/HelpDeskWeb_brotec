@@ -116,7 +116,7 @@
                     <h:panelGrid columns="2" >
                         <p:outputLabel for="listaadjuntosrespuesta" value="Seleccione adjuntos" style="font-weight:bold"/>
 
-                        <p:selectManyCheckbox id="listaadjuntosrespuesta" value="#{casoController.selectedAttachmensForMail}" layout="grid" columns="3"
+                        <p:selectManyCheckbox id="listaadjuntosrespuesta" value="#{casoController.selectedAttachmensForMail}" layout="grid" columns="2"
                                               converter="attachmentConverter">
                             <f:selectItems value="#{casoController.selected.attachmentsNotEmbedded}" 
                                            var="item" itemLabel="${item.nombreArchivo}" itemValue="${item}" />

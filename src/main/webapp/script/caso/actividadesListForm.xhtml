@@ -18,7 +18,7 @@
                         <p:commandButton actionListener="#{casoController.prepareEditNota(item)}" style="float: right"
                                          update=":formEditNota"
                                          onsuccess="PF('Nota').show();" rendered="#{casoController.notaEditable(item)}" value="Editar" />
-                        <p:commandButton rendered="false"
+                        <p:commandButton rendered="true"
                                          actionListener="#{casoController.prepareViewHtml(item.texto)}" value="ver mensaje HTML" style="float: right"/>
 
 
@@ -72,6 +72,29 @@
             <p:tab id="tabDesc" title="#{bundle.CreateCasoTitle_descripcion}" >  
 
                 <p:panel id="panelDesc" style="border-color: window;">
+                    
+                    <p:panelGrid id="link" styleClass="filtersGrid" style="width: 100%;">
+                        <p:row>
+                            <p:column >
+                                <i class="fa fa-picture-o" style="float: right;"></i>
+                            </p:column>
+                            <p:column >
+                                <div align="left" style="font-size: x-small;">
+                                    <i>Oprima sobre la descripción si desea editar. La descripción del caso se muestra en texto plano por seguridad, para ver el original haz click en 
+                                    ver mensaje HTML</i>
+                                </div>
+                            </p:column>
+                            <p:column>
+                                  <p:commandButton rendered="true"
+                                         actionListener="#{casoController.prepareViewHtml(casoController.selected.descripcion)}" value="ver mensaje HTML" style="float: right"/>
+                                  
+                            
+                            </p:column>
+
+                        </p:row>
+                    </p:panelGrid>
+                    
+                    <p:separator/>
 
                     <p:inplace editor="true" disabled="#{casoController.selected.closed}">
                         <f:facet name="output">
@@ -88,26 +111,7 @@
                     </p:inplace>
 
 
-                    <p:separator/>
-                    <p:panelGrid id="link" styleClass="filtersGrid" style="width: 100%;">
-                        <p:row>
-                            <p:column >
-                                <i class="fa fa-picture-o" style="float: right;"></i>
-                            </p:column>
-                            <p:column >
-                                <div align="left" style="font-size: x-small;">
-                                    <i>Oprima sobre la descripción si desea editar. La descripción del caso se muestra en texto plano por seguridad, para ver el original haz click en 
-                                    </i>
-                                </div>
-                            </p:column>
-                            <p:column>
-                                <p:commandLink actionListener="#{casoController.prepareViewHtml(casoController.selected.descripcion)}" 
-                                               style="color: #15c;font-size: x-small;"
-                                               value="ver mensaje HTML" />
-                            </p:column>
-
-                        </p:row>
-                    </p:panelGrid>
+                    
 
                     <pe:importEnum type="com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso" var="EnumTipoCaso" allSuffix="ALL_ENUM_VALUES" />
 

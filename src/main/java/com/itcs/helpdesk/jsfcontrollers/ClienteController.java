@@ -4,6 +4,9 @@ import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.Cliente;
 import com.itcs.helpdesk.persistence.entities.EmailCliente;
+import com.itcs.helpdesk.persistence.entities.ProductoContratado;
+import com.itcs.helpdesk.persistence.entities.ProductoContratadoPK;
+import com.itcs.helpdesk.persistence.entities.SubComponente;
 import com.itcs.helpdesk.persistence.jpa.exceptions.PreexistingEntityException;
 import com.itcs.helpdesk.util.UtilesRut;
 import java.io.Serializable;
@@ -19,6 +22,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.model.ListDataModel;
+import org.primefaces.context.RequestContext;
+import org.primefaces.event.SelectEvent;
 import org.primefaces.model.SelectableDataModel;
 
 @ManagedBean(name = "clienteController")
@@ -33,84 +38,50 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
     private boolean canCreate = false;
     private boolean canEdit;
 
-    
-
     public ClienteController() {
         super(Cliente.class);
     }
 
-//    public Cliente getSelected() {
-//        if (current == null) {
-//            current = new Cliente();
-//            selectedItemIndex = -1;
-//        }
-//        return current;
-//    }
-//    @Override
-//    public PaginationHelper getPagination() {
-//        if (pagination == null) {
-//            pagination = new PaginationHelper(getPaginationPageSize()) {
-//
-//                private Integer count = null;
-//
-//                @Override
-//                public int getItemsCount() {
-//                    try {
-//                        if (count == null) {
-//                            if (searchPattern != null && !searchPattern.trim().isEmpty()) {
-//                                count = getJpaController().getClienteJpaController().countSearchEntities(searchPattern).intValue();
-//                            } else {
-////                                count = getJpaController().getClienteJpaController().getClienteCount();
-//                                count = getJpaController().countEntities(getFilterHelper().getVista(), getDefaultUserWho(), null).intValue();
-//                            }
-//                        }
-//
-//                        return count;
-//
-//                    } catch (Exception ex) {
-//                        Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "getItemsCount", ex);
-//                    }
-//                    return 0;
-//                }
-//
-//                @Override
-//                public DataModel createPageDataModel() {
-//                    if (searchPattern != null && !searchPattern.trim().isEmpty()) {
-//                        return new ClienteDataModel(getJpaController().getClienteJpaController().searchEntities(searchPattern, false, getPageSize(), getPageFirstItem()));
-//                    } else {
-////                        return new ClienteDataModel((List<Cliente>) getJpaController().findEntities(Cliente.class, false, getPageSize(), getPageFirstItem(),"nombres","apellidos"));
-//                        try {
-//                            ClienteDataModel dataModel = new ClienteDataModel();
-//                            dataModel.setWrappedData(getJpaController().findEntities(Cliente.class, getFilterHelper().getVista(), getPageSize(), getPageFirstItem(), getDefaultOrderBy(), getDefaultUserWho()));
-//                            return dataModel;
-//                        } catch (IllegalStateException ex) {//error en el filtro
-//                            JsfUtil.addErrorMessage(ex, "Existe un problema con el filtro. Favor corregir e intentar nuevamente.");
-//                        } catch (ClassNotFoundException ex) {
-//                            JsfUtil.addErrorMessage(ex, "Lo sentimos, ocurrió un error inesperado. Favor contactar a soporte.");
-//                            Logger.getLogger(AbstractManagedBean.class.getName()).log(Level.SEVERE, "ClassNotFoundException createPageDataModel", ex);
-//                        } catch (NotSupportedException ex) {
-//                            addWarnMessage("Lo sentimos, ocurrió un error inesperado. La acción que desea realizar aún no esta soportada por el sistema.");
-//                        }
-//                    }
-//                    return null;
-//                }
-//            };
-//        }
-//        return pagination;
-//    }
+    public void chooseSubComponente() {
+        RequestContext.getCurrentInstance().openDialog("/script/subComponente/select");
+    }
 
-//    public String prepareList() {
-//        recreateModel();
-//        recreatePagination();
-//        return "/script/cliente/List";
-//    }
+    public void onSubComponenteChosen(SelectEvent event) {
+        SubComponente subComponente = (SubComponente) event.getObject();
+        ProductoContratado currentProductoContratado = new ProductoContratado();
+        currentProductoContratado.setCliente(current);
+        currentProductoContratado.setFechaCompra(null);
+        currentProductoContratado.setSubComponente(subComponente);
+        currentProductoContratado.setComponente(subComponente.getIdComponente());
+        currentProductoContratado.setProducto(subComponente.getIdComponente().getIdProducto());
+        currentProductoContratado.setProductoContratadoPK(new ProductoContratadoPK(current.getIdCliente(), subComponente.getIdComponente().getIdProducto().getIdProducto(), subComponente.getIdComponente().getIdComponente(), subComponente.getIdSubComponente()));
+
+        if (current.getProductoContratadoList() == null) {
+            current.setProductoContratadoList(new LinkedList<ProductoContratado>());
+        }
+
+        if (!this.current.getProductoContratadoList().contains(currentProductoContratado)) {
+            current.getProductoContratadoList().add(currentProductoContratado);
+            try {
+                getJpaController().persist(currentProductoContratado);
+                getJpaController().merge(current);
+                addInfoMessage("OK");
+            } catch (Exception ex) {
+                JsfUtil.addWarningMessage("No se puede asociar: " + ex.getMessage());
+                Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            
+        } else {
+            JsfUtil.addWarningMessage("No se puede asociar, el cliente ya tiene asociado el mismo item.");
+        }
+
+    }
 
     @Override
     protected String getListPage() {
         return "/script/cliente/List";
     }
-    
-  
 
 //    public String prepareView() {
 //        if (getSelectedItems().length != 1) {
@@ -183,13 +154,10 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
 //            
 //        }
 //    }
-
     @Override
     protected String getViewPage() {
         return "/script/cliente/View";
     }
-    
-    
 
 //    public String prepareView(Cliente c) {
 //        if (c != null) {
@@ -207,7 +175,6 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
 //        this.backOutcome = backOutcome;
 //        return "/script/cliente/View";
 //    }
-
     @Override
     public String prepareEdit(Cliente item) {
         try {
@@ -330,7 +297,6 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
 //        }
 //        return items;
 //    }
-
     @Override
     public Class getDataModelImplementationClass() {
         return ClienteDataModel.class;

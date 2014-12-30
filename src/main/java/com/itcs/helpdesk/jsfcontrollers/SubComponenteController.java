@@ -12,6 +12,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.model.ListDataModel;
+import org.primefaces.context.RequestContext;
 import org.primefaces.model.SelectableDataModel;
 
 @ManagedBean(name = "subComponenteController")
@@ -20,6 +21,10 @@ public class SubComponenteController extends AbstractManagedBean<SubComponente> 
 
     public SubComponenteController() {
         super(SubComponente.class);
+    }
+    
+    public void selectEntityFromDialog(SubComponente subComponente) {
+        RequestContext.getCurrentInstance().closeDialog(subComponente);
     }
 
     @Override
