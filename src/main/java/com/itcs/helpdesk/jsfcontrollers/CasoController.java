@@ -54,6 +54,7 @@ import com.itcs.helpdesk.rules.Action;
 import com.itcs.helpdesk.rules.ActionExecutionException;
 import com.itcs.helpdesk.rules.actionsimpl.CrearCasoVisitaRepSellosAction;
 import com.itcs.helpdesk.util.ApplicationConfig;
+import com.itcs.helpdesk.util.ClassUtils;
 import com.itcs.helpdesk.util.ClippingsPlaceHolders;
 import com.itcs.helpdesk.util.HtmlUtils;
 import com.itcs.helpdesk.util.Log;
@@ -102,6 +103,8 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.jsoup.Jsoup;
+import org.jsoup.select.Elements;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.FlowEvent;
@@ -232,10 +235,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private Map<Integer, Boolean> showReducedContentMap;
 
     public static final String HEADER_HISTORY = "<br/><hr/><b>HISTORIA DEL CASO</b><hr/><br/>";
-    public static final String HEADER_HISTORY_NOTA = "<p><strong>HISTORIA DEL CASO</strong></p>";
-    public static final String HEADER_HISTORY_NOTA_ALT = "<b>HISTORIA DEL CASO</b>";
-    public static final String FOOTER_HISTORY_NOTA = "> FIN MENSAJE ORIGINAL";
-    public static final String FOOTER_HISTORY_NOTA_ALT = "> FIN MENSAJE ORIGINAL";
+    public static final String HEADER_HISTORY_NOTA_ALT = "HISTORIA DEL CASO";
+    public static final String FOOTER_HISTORY_NOTA = "FIN MENSAJE ORIGINAL";
+    public static int MEGABYTE = (1024*1024);
 
     private Comparator<Caso> comparadorCasosPorFechaCreacion = new Comparator<Caso>() {
         @Override
@@ -291,8 +293,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     casoBase.getNotaList().add(nuevaNota);
                 }
                 casoBase.getCasosHijosList().addAll(casoToMerge.getCasosHijosList());
-                casoBase.getAttachmentList().addAll(casoToMerge.getAttachmentList());
-                casoBase.getAttachmentsNotEmbedded().addAll(casoToMerge.getAttachmentsNotEmbedded());
+                casoBase.getAttachmentList().addAll(cloneAttachments(casoToMerge.getAttachmentList(), casoBase));
                 mergeList(casoBase.getCasosRelacionadosList(), casoToMerge.getCasosRelacionadosList());
                 casoBase.getCasosRelacionadosList().remove(casoBase);
                 casoToMerge.setIdCasoCombinado(casoBase);
@@ -300,8 +301,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 casoToMerge.setFechaCierre(applicationBean.getNow());
                 casoToMerge.setIdSubEstado((casoToMerge.getTipoCaso().equals(EnumTipoCaso.CONTACTO.getTipoCaso()) ? EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()
                         : (casoToMerge.getTipoCaso().equals(EnumTipoCaso.COTIZACION.getTipoCaso()) ? EnumSubEstadoCaso.COTIZACION_DUPLICADO.getSubEstado()
-                        : (casoToMerge.getTipoCaso().equals(EnumTipoCaso.CONTACTO.getTipoCaso()) ? EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()
-                        : EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()))));
+                                : (casoToMerge.getTipoCaso().equals(EnumTipoCaso.CONTACTO.getTipoCaso()) ? EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()
+                                        : EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()))));
                 getManagerCasos().mergeCaso(casoToMerge,
                         ManagerCasos.createLogComment(casoToMerge, "Se combina con el caso " + casoBase.getIdCaso()));
                 sb.append(casoToMerge.getIdCaso());
@@ -318,6 +319,31 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     "El caso " + casoBase.getIdCaso() + " " + comment);
             redirect("/script/caso/Edit.xhtml");
         }
+    }
+
+    private List<Attachment> cloneAttachments(List<Attachment> attachments, Caso casoBase) {
+        System.out.println("clone Attachments size list: " + attachments.size());
+        System.out.println("Caso base attachment list size: " + casoBase.getAttachmentList().size());
+        System.out.println("Caso base attachmentNotEmbedded list size: " + casoBase.getAttachmentsNotEmbedded().size());
+        List<Attachment> clonedElements = new ArrayList<>(attachments.size());
+        for (Attachment attachment : attachments) {
+            Archivo archivo = getJpaController().getArchivoFindByIdAttachment(attachment.getIdAttachment());
+            if (archivo != null) {
+                try {
+                    Attachment nuevoAttachment = (Attachment) ClassUtils.clone(attachment);
+                    nuevoAttachment.setIdAttachment(null);
+                    nuevoAttachment.setIdCaso(casoBase);
+                    getJpaController().persist(nuevoAttachment);
+                    Archivo nuevoArchivo = (Archivo) ClassUtils.clone(archivo);
+                    nuevoArchivo.setIdAttachment(nuevoAttachment.getIdAttachment());
+                    getJpaController().persist(nuevoArchivo);
+                    clonedElements.add(nuevoAttachment);
+                } catch (Exception ex) {
+                    Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return clonedElements;
     }
 
     private void mergeList(List listaOriginal, List lista) {
@@ -1629,25 +1655,33 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public String extractNotaNewPart(Nota nota) {
         String ret = nota.getTexto();
-        int headerStartIndex = nota.getTexto().indexOf(HEADER_HISTORY_NOTA);
-        int historyEndIndex = nota.getTexto().lastIndexOf(FOOTER_HISTORY_NOTA);
-        headerStartIndex = (headerStartIndex > 0) ? headerStartIndex : nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT);
-        historyEndIndex = (historyEndIndex > 0) ? historyEndIndex : nota.getTexto().indexOf(FOOTER_HISTORY_NOTA_ALT);
+
+        int headerStartIndex = ret.indexOf(HEADER_HISTORY_NOTA_ALT);
+        int historyEndIndex = ret.lastIndexOf(FOOTER_HISTORY_NOTA);
+        headerStartIndex = (headerStartIndex > 0) ? headerStartIndex : ret.indexOf(HEADER_HISTORY_NOTA_ALT);
+        historyEndIndex = (historyEndIndex > 0) ? historyEndIndex : ret.indexOf(FOOTER_HISTORY_NOTA);
         if (headerStartIndex > 0) {
-            ret = nota.getTexto().substring(0, headerStartIndex);
+            ret = ret.substring(0, headerStartIndex);
             if ((!debeMostrarContenidoReducido(nota)) && (historyEndIndex > headerStartIndex)) {
-                ret += ret = nota.getTexto().substring(historyEndIndex + FOOTER_HISTORY_NOTA.length());
+                ret += nota.getTexto().substring(historyEndIndex + FOOTER_HISTORY_NOTA.length());
             }
         }
+        org.jsoup.nodes.Document doc = Jsoup.parse(ret);
+        Elements strongTag = doc.getElementsByTag("strong");
+        for (org.jsoup.nodes.Element style : strongTag) {
+            style.remove();
+        }
+        ret = doc.toString();
+        System.out.println("html ret:\n"+ret);
         return ret;
     }
 
     public boolean existsNotaHistoryPart(Nota nota) {
-        return (nota.getTexto().indexOf(HEADER_HISTORY_NOTA) > 0) || (nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT) > 0);
+        return (nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT) > 0) || (nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT) > 0);
     }
 
     public String extractNotaHistoryPart(Nota nota) {
-        int headerStartIndex = nota.getTexto().indexOf(HEADER_HISTORY_NOTA);
+        int headerStartIndex = nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT);
         headerStartIndex = (headerStartIndex > 0) ? headerStartIndex : nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT);
         if (headerStartIndex > 0) {
             return nota.getTexto().substring(headerStartIndex);
@@ -3189,13 +3223,22 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         StringBuilder sbuilder = new StringBuilder(HEADER_HISTORY);
         if (current != null && current.getNotaList() != null) {
             for (Nota nota : current.getNotaList()) {
-                if(nota.getVisible() != null && nota.getVisible()){
+                if (nota.getVisible() != null && nota.getVisible()) {
                     sbuilder.append(creaMensajeOriginal(nota));
                 }
             }
         }
 
         sbuilder.append(creaMensajeOriginal(current));
+        if(sbuilder.length()>MEGABYTE)
+        {
+            String onlyText = HtmlUtils.extractText(sbuilder.toString());
+            if(onlyText.length()>MEGABYTE){
+                return onlyText.substring(0, MEGABYTE);
+            }else{
+                return onlyText;
+            }
+        }
         return sbuilder.toString();
     }
 
@@ -3218,7 +3261,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         sbuilder.append("<br/>");
         sbuilder.append(replaceEmbeddedImages(caso.getDescripcion()));
         sbuilder.append("<br/>");
-        sbuilder.append("FIN MENSAJE ORIGINAL");
+        sbuilder.append(FOOTER_HISTORY_NOTA);
         sbuilder.append("<hr/>");
         return sbuilder.toString();
     }
@@ -3241,7 +3284,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         sbuilder.append("<br/>");
         sbuilder.append("<b>Mensaje: </b>");
         sbuilder.append("<br/>");
-        sbuilder.append(replaceEmbeddedImages(nota.getTexto() != null ? nota.getTexto() : "<texto vacío>"));
+        sbuilder.append(replaceEmbeddedImages(extractNotaNewPart(nota)));
         sbuilder.append("<hr/>");
         return sbuilder.toString();
     }
