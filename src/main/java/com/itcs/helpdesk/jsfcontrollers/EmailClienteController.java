@@ -219,7 +219,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
                 for (int rowIndex = 1; rowIndex < sheet.getRows(); rowIndex++) {
 
                     String rut = sheet.getCell(CellReferenceHelper.getColumn(cellPositionRut), rowIndex).getContents();
-                    String subComponentId = sheet.getCell(CellReferenceHelper.getColumn(cellPositionSubComponentId), rowIndex).getContents();
+                    String subComponentId = sheet.getCell(CellReferenceHelper.getColumn(cellPositionSubComponentId), rowIndex).getContents().trim();
                     avoidLeak(rut, subComponentId, map, bulkLoadedSubComponentNotExists, bulkLoadedClientsNotExists);
 
                 }
@@ -250,43 +250,6 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
             if (UtilesRut.validar(rut)) {
                 rut = UtilesRut.formatear(rut);
                 c = getJpaController().getClienteJpaController().findByRut(rut);
-//                            if (createClientIfNotExist && c == null) {
-//                                //must create client dude.
-//
-//                                String nombres = sheet.getCell(CellReferenceHelper.getColumn(cellPositionNombre), rowIndex).getContents();
-//                                String apellidos = sheet.getCell(CellReferenceHelper.getColumn(cellPositionApellidos), rowIndex).getContents();
-//                                String correo = sheet.getCell(CellReferenceHelper.getColumn(cellPositionCorreo), rowIndex).getContents();
-//                                String sexo = sheet.getCell(CellReferenceHelper.getColumn(cellPositionSexo), rowIndex).getContents();
-//                                String direccion1 = sheet.getCell(CellReferenceHelper.getColumn(cellPositionDireccion1), rowIndex).getContents();
-//
-//                                //Match the given string with the pattern
-//                                Matcher emailMatcher = p.matcher(correo);
-//
-//                                EmailCliente ec = new EmailCliente(correo);                            
-//
-//                                c = new Cliente();                                
-//                                c.setIdCliente(UtilesRut.getAsNumber(rut));
-//                                c.setApellidos(apellidos);
-//                                c.setDirParticular(direccion1);
-//                                c.setNombres(nombres);
-//                                c.setRut(rut);
-//                                if (sexo != null && (sexo.equalsIgnoreCase("Hombre") || sexo.equalsIgnoreCase("Mujer"))) {
-//                                    c.setSexo(sexo);
-//                                } else {
-//                                    c.setSexo("Desconocido");
-//                                }
-//                                ec.setCliente(c);
-//                                List<EmailCliente> emails = new ArrayList<EmailCliente>();
-//                                emails.add(ec);
-//                                c.setEmailClienteList(emails);                                
-//                                
-//                                    //Check whether match is found
-//
-////                                if (!emailMatcher.matches()) {                                   
-////                                   JsfUtil.addWarningMessage("Email " + correo + " es inválido.");
-////                                }
-//
-//                            }
             }
         }
 
