@@ -12,7 +12,7 @@ import com.itcs.helpdesk.persistence.entities.Attachment;
 import com.itcs.helpdesk.persistence.entities.AuditLog;
 import com.itcs.helpdesk.persistence.entities.Canal;
 import com.itcs.helpdesk.persistence.entities.Caso;
-import com.itcs.helpdesk.persistence.entities.Caso_;
+import com.itcs.helpdesk.persistence.entities.metadata.Caso_;
 import com.itcs.helpdesk.persistence.entities.Cliente;
 import com.itcs.helpdesk.persistence.entities.EmailCliente;
 import com.itcs.helpdesk.persistence.entities.FiltroVista;
@@ -37,7 +37,6 @@ import com.itcs.helpdesk.persistence.entityenums.EnumTipoNota;
 import com.itcs.helpdesk.persistence.entityenums.EnumUsuariosBase;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.quartz.HelpDeskScheluder;
-import com.itcs.helpdesk.quartz.TicketAlertStateChangeJob;
 import com.itcs.helpdesk.webservices.DatosCaso;
 import java.io.File;
 import java.io.Serializable;
@@ -253,7 +252,7 @@ public class ManagerCasos implements Serializable {
             audit.setNewValue(newValue);
             audit.setOldValue(oldValue);
             audit.setIdCaso(casoActual.getIdCaso());
-            getJpaController().persistAuditLog(audit);
+            getJpaController().persist(audit);
         } catch (Exception ex) {
             Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "createLogReg", ex);
 
@@ -263,7 +262,7 @@ public class ManagerCasos implements Serializable {
     private Cliente createOrUpdateCliente(DatosCaso datos) throws Exception {
         Cliente cliente = null;
         if (!StringUtils.isEmpty(datos.getRut())) {
-            cliente = getJpaController().getClienteJpaController().findByRut(UtilesRut.formatear(datos.getRut()));
+            cliente = getJpaController().findClienteByRut(UtilesRut.formatear(datos.getRut()));
         }
 
         if (cliente == null) {
@@ -279,7 +278,7 @@ public class ManagerCasos implements Serializable {
             newClientRecord.setFono1(datos.getTelefono());
             newClientRecord.setFono2(datos.getTelefono2());
             newClientRecord.setDirParticular(datos.getComuna());
-            getJpaController().persistCliente(newClientRecord);
+            getJpaController().persist(newClientRecord);
             cliente = newClientRecord;
         }
         return cliente;
@@ -466,17 +465,17 @@ public class ManagerCasos implements Serializable {
     public EmailCliente createOrUpdateEmailCliente(DatosCaso datos) throws NoResultException, Exception {
         String address = datos.getEmail().toLowerCase().trim();
         //Se busca el email del cliente
-        EmailCliente existentEmailClient = getJpaController().getEmailClienteFindByEmail(address);
+        EmailCliente existentEmailClient = getJpaController().find(EmailCliente.class, address);
 
-        EmailCliente emailClient;
+        EmailCliente emailClientee;
 
         //Si emailCliente no existe
         if (existentEmailClient == null) {
             EmailCliente newEmailCliente = new EmailCliente(address);
             Cliente cliente = createOrUpdateCliente(datos);
             newEmailCliente.setCliente(cliente);
-            getJpaController().persistEmailCliente(newEmailCliente);
-            emailClient = newEmailCliente;
+            getJpaController().persist(newEmailCliente);
+            emailClientee = newEmailCliente;
         } else //Si emailCliente ya existe
         {
             if (existentEmailClient.getCliente() == null) //Email no está asociado a un cliente
@@ -484,19 +483,19 @@ public class ManagerCasos implements Serializable {
                 Cliente cliente = createOrUpdateCliente(datos);
                 existentEmailClient.setCliente(cliente);
 //                caso.setIdCliente(cliente_record);
-                getJpaController().mergeEmailCliente(existentEmailClient);
+                getJpaController().merge(existentEmailClient);
             }
             //Se setea nuevamente en el caso el emailClient
-            emailClient = existentEmailClient;
+            emailClientee = existentEmailClient;
         }
 
         if (!StringUtils.isEmpty(datos.getTelefono()))//Se actualiza el telefono
         {
-            emailClient.getCliente().setFono1(datos.getTelefono().trim());
+            emailClientee.getCliente().setFono1(datos.getTelefono().trim());
         }
-        getJpaController().merge(emailClient.getCliente()); //Se realiza el merge del cliente
+        getJpaController().merge(emailClientee.getCliente()); //Se realiza el merge del cliente
 
-        return emailClient;
+        return emailClientee;
     }
 
     public boolean crearCasoDesdeEmail(Canal canal, EmailMessage item) {
@@ -624,21 +623,21 @@ public class ManagerCasos implements Serializable {
                 if (caso.getOwner() != null) {
                     email = caso.getOwner().getEmail();
                     uCliente = caso.getOwner();
-                    emailCliente = getJpaController().getEmailClienteFindByEmail(email);
+                    emailCliente = getJpaController().find(EmailCliente.class, email);
 
                 } else {
                     //creador del caso pasaria a ser el cliente de los subcasos
                     UserSessionBean userSessionBean = (UserSessionBean) JsfUtil.getManagedBean("UserSessionBean");
                     email = userSessionBean.getCurrent().getEmail();
                     uCliente = userSessionBean.getCurrent();
-                    emailCliente = getJpaController().getEmailClienteFindByEmail(email);
+                    emailCliente = getJpaController().find(EmailCliente.class, email);
 
                 }
 
                 if (emailCliente == null) {
                     emailCliente = new EmailCliente(email);
 
-                    Cliente persistentClientByRut = getJpaController().getClienteJpaController().findByRut(uCliente.getRut());
+                    Cliente persistentClientByRut = getJpaController().findClienteByRut(uCliente.getRut());
 
                     if (persistentClientByRut == null) {
                         Cliente cliente_record = new Cliente();
@@ -647,10 +646,10 @@ public class ManagerCasos implements Serializable {
                         cliente_record.setApellidos(uCliente.getApellidos());
                         cliente_record.setFono1(uCliente.getTelFijo());
                         emailCliente.setCliente(cliente_record);
-                        getJpaController().persistEmailCliente(emailCliente);
+                        getJpaController().persist(emailCliente);
                     } else {
                         emailCliente.setCliente(persistentClientByRut);
-                        getJpaController().persistEmailCliente(emailCliente);
+                        getJpaController().persist(emailCliente);
                     }
 
                 }
@@ -1154,13 +1153,13 @@ public class ManagerCasos implements Serializable {
         attach.setMimeType(mimeType);
         attach.setContentId(contentId);
 
-        getJpaController().persistAttachment(attach);
+        getJpaController().persist(attach);
         col.add(attach);
         caso.setAttachmentList(col);
         if (archivo != null) {
             archivo.setIdAttachment(attach.getIdAttachment());
-            getJpaController().persistArchivo(archivo);
-            getJpaController().persistAuditLog(createLogReg(caso, "Archivo subido", "archivo atachado: " + fileName, ""));
+            getJpaController().persist(archivo);
+            getJpaController().persist(createLogReg(caso, "Archivo subido", "archivo atachado: " + fileName, ""));
         }
         return attach;
     }

@@ -27,7 +27,7 @@ public class RolConverter implements Converter {
         
         RolController controller = (RolController) facesContext.getApplication().getELResolver().
                 getValue(facesContext.getELContext(), null, "rolController");
-        return controller.getJpaController().getRolFindByIdRol(getKey(value));
+        return controller.getJpaController().find(Rol.class, getKey(value));
     }
 
     java.lang.String getKey(String value) {

@@ -44,7 +44,7 @@ public class TipoNotaController extends AbstractManagedBean<TipoNota> implements
 
     public String create() {
         try {
-            getJpaController().persistTipoNota(current);
+            getJpaController().persist(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("TipoNotaCreated"));
             return prepareCreate();
         } catch (Exception e) {
@@ -57,7 +57,7 @@ public class TipoNotaController extends AbstractManagedBean<TipoNota> implements
 
     public String update() {
         try {
-            getJpaController().mergeTipoNota(current);
+            getJpaController().merge(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("TipoNotaUpdated"));
             return "View";
         } catch (Exception e) {
@@ -93,7 +93,7 @@ public class TipoNotaController extends AbstractManagedBean<TipoNota> implements
 
     private void performDestroy() {
         try {
-            getJpaController().removeTipoNota(current);
+            getJpaController().remove(TipoNota.class, current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("TipoNotaDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -159,7 +159,7 @@ public class TipoNotaController extends AbstractManagedBean<TipoNota> implements
             }
             TipoNotaController controller = (TipoNotaController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "tipoNotaController");
-            return controller.getJpaController().getTipoNotaFindById(getKey(value));
+            return controller.getJpaController().find(TipoNota.class, getKey(value));
         }
 
         java.lang.Integer getKey(String value) {

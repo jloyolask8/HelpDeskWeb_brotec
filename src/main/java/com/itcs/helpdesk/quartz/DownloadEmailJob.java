@@ -79,7 +79,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
 
     private String getValueOfCanalSetting(JPAServiceFacade jpaController, Canal canal, EnumEmailSettingKeys settingKey) {
         try {
-            String value = jpaController.getCanalSettingJpaController().findCanalSetting(
+            String value = jpaController.find(CanalSetting.class,
                     new CanalSettingPK(canal.getIdCanal(), settingKey.getKey())).getCanalSettingValue();
             return value;
         } catch (Exception ex) {

@@ -30,7 +30,7 @@ public class RemoveDuplicatedCasoPreventaAction extends Action {
     public void execute(Caso caso) throws ActionExecutionException {
         if (caso.getTipoCaso().equals(EnumTipoCaso.PREVENTA.getTipoCaso())) {
             Cliente cliente = caso.getEmailCliente().getCliente();
-            List<Caso> lista = getJpaController().getCasoJpa().findDuplicatedCasosPreventaByClient(cliente);
+            List<Caso> lista = getJpaController().findDuplicatedCasosPreventaByClient(cliente);
             if (lista == null) {
                 return;
             }
@@ -63,7 +63,7 @@ public class RemoveDuplicatedCasoPreventaAction extends Action {
                 casoPreventa.setCasosHijosList(null);
                 try {
                     getJpaController().mergeCasoWithoutNotify(casoPreventa);
-                    getJpaController().getCasoJpa().destroy(casoPreventa.getIdCaso());
+                    getJpaController().remove(Caso.class, casoPreventa.getIdCaso());
                 } catch (Exception ex) {
                     Logger.getLogger(RemoveDuplicatedCasoPreventaAction.class.getName()).log(Level.SEVERE, null, ex);
                 }

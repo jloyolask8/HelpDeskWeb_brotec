@@ -103,7 +103,7 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
                             try {
                                 Attachment att = jpaController.getReference(Attachment.class, idAtt);
 //                        Attachment att = getJpaController().getAttachmentFindByIdAttachment(idatt);}
-                                Archivo archivo = jpaController.getArchivoFindByIdAttachment(idAtt);
+                                Archivo archivo = jpaController.find(Archivo.class, idAtt);
 //                        Archivo archivo = getJpaController().getArchivoFindByIdAttachment(att.getIdAttachment());
                                 EmailAttachment emailAttachment = new EmailAttachment();
                                 emailAttachment.setData(archivo.getArchivo());

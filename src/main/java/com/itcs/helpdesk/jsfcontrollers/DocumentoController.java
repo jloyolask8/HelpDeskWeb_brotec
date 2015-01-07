@@ -70,7 +70,7 @@ public class DocumentoController extends AbstractManagedBean<Documento> implemen
 
     public String create() {
         try {
-            getJpaController().persistDocumento(current);
+            getJpaController().persist(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("DocumentoCreated"));
             return prepareCreate();
         } catch (Exception e) {
@@ -83,7 +83,7 @@ public class DocumentoController extends AbstractManagedBean<Documento> implemen
 
     public String update() {
         try {
-            getJpaController().mergeDocumento(current);
+            getJpaController().merge(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("DocumentoUpdated"));
             return "View";
         } catch (Exception e) {
@@ -119,7 +119,7 @@ public class DocumentoController extends AbstractManagedBean<Documento> implemen
 
     private void performDestroy() {
         try {
-            getJpaController().removeDocumento(current);
+            getJpaController().remove(Documento.class, current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("DocumentoDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -185,7 +185,7 @@ public class DocumentoController extends AbstractManagedBean<Documento> implemen
             }
             DocumentoController controller = (DocumentoController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "documentoController");
-            return controller.getJpaController().getDocumentoFindByPK(getKey(value));
+            return controller.getJpaController().find(Documento.class, getKey(value));
         }
 
         java.lang.Integer getKey(String value) {

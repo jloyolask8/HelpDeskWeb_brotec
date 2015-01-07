@@ -1,7 +1,6 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Cliente;
 import com.itcs.helpdesk.persistence.entities.EmailCliente;
@@ -249,7 +248,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
 
             if (UtilesRut.validar(rut)) {
                 rut = UtilesRut.formatear(rut);
-                c = getJpaController().getClienteJpaController().findByRut(rut);
+                c = getJpaController().findClienteByRut(rut);
 //                            if (createClientIfNotExist && c == null) {
 //                                //must create client dude.
 //
@@ -525,7 +524,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
         String rutFormateado = UtilesRut.formatear(getSelected().getCliente().getRut());
         getSelected().getCliente().setRut(rutFormateado);
 
-        Cliente c = getJpaController().getClienteJpaController().findByRut(rutFormateado);
+        Cliente c = getJpaController().findClienteByRut(rutFormateado);
         if (c != null) {//this client exists
 
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "El rut " + rutFormateado + " pertenece a un cliente existente, favor verificar que el cliente ya exista.", null);
@@ -542,7 +541,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
     public String actualizarEmailSeleccionado() {
         System.out.println("actualizarEmailSeleccionado pressed!!");
         String email = getSelected().getEmailCliente();
-        EmailCliente emailCliente = getJpaController().getEmailClienteFindByEmail(email);
+        EmailCliente emailCliente = getJpaController().find(EmailCliente.class, email);
         if (emailCliente != null) {
             current = emailCliente;
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Email: " + emailCliente.getEmailCliente() + " ya existe en los registros de clientes.", "");
@@ -570,55 +569,6 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
         return null;
     }
 
-//    public EmailCliente getSelected() {
-//        if (current == null) {
-//            current = new EmailCliente();
-//            selectedItemIndex = -1;
-//        }
-//        return current;
-//    }
-//
-//    public void setSelected(EmailCliente item) {
-//        current = item;
-//    }
-    @Override
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(getPaginationPageSize()) {
-
-                private Integer count = null;
-
-                @Override
-                public int getItemsCount() {
-                    try {
-                        if (count == null) {
-                            if (searchPattern != null && !searchPattern.trim().isEmpty()) {
-                                count = getJpaController().getEmailClienteJpaController().countSearchEntities(searchPattern).intValue();
-                            } else {
-                                count = getJpaController().getEmailClienteJpaController().getEmailClienteCount();
-                            }
-                        }
-
-                        return count;
-
-                    } catch (Exception ex) {
-                        Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "getItemsCount", ex);
-                    }
-                    return 0;
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    if (searchPattern != null && !searchPattern.trim().isEmpty()) {
-                        return new EmailClienteDataModel(getJpaController().getEmailClienteJpaController().searchEntities(searchPattern, false, getPageSize(), getPageFirstItem()));
-                    } else {
-                        return new EmailClienteDataModel(getJpaController().queryByRange(EmailCliente.class, getPageSize(), getPageFirstItem()));
-                    }
-                }
-            };
-        }
-        return pagination;
-    }
 
     public String prepareList() {
         recreateModel();
@@ -654,7 +604,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
     public String saveBulkImport() {
         try {
             int total = bulkLoadedClients != null ? bulkLoadedClients.size() : 0;
-            Integer[] results = getJpaController().getClienteJpaController().persistManyClients(bulkLoadedClients);
+            Integer[] results = getJpaController().persistManyClients(bulkLoadedClients);
             JsfUtil.addSuccessMessage(results[0] + " Clientes fueron guardados exitosamente, " + results[1] + " Clientes ya existian en la BBDD, " + results[2] + " Clientes con error al guardar. De un total de " + total);
             return null;
         } catch (Exception e) {
@@ -666,7 +616,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
     public String create() {
         try {
             current.setEmailCliente(current.getEmailCliente().toLowerCase().trim());
-            getJpaController().persistEmailCliente(current);
+            getJpaController().persist(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("EmailClienteCreated"));
             return prepareCreate();
         } catch (Exception e) {
@@ -683,6 +633,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
         return item.getCasoList().isEmpty();
     }
 
+    @Override
     public String prepareEdit(EmailCliente item) {
         try {
             EmailCliente i = getJpaController().find(EmailCliente.class, item.getEmailCliente());
@@ -721,7 +672,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
     public void updateListener() {
         try {
 //            getJpaController().merge(current.getCliente());
-            getJpaController().mergeEmailCliente(current);
+            getJpaController().merge(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("EmailClienteUpdated"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -769,7 +720,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
 
     private void performDestroy() {
         try {
-            getJpaController().removeEmailCliente(current);
+            getJpaController().remove(EmailCliente.class, current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("EmailClienteDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -1106,7 +1057,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
             }
             EmailClienteController controller = (EmailClienteController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "emailClienteController");
-            return controller.getJpaController().getEmailClienteFindByEmail(getKey(value));
+            return controller.getJpaController().find(EmailCliente.class, getKey(value));
         }
 
         java.lang.String getKey(String value) {

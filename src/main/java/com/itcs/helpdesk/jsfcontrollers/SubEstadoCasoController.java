@@ -75,7 +75,7 @@ public class SubEstadoCasoController extends AbstractManagedBean<SubEstadoCaso> 
     public String create() {
         try {
             current.setEditable(true);
-            getJpaController().persistSubEstadoCaso(current);
+            getJpaController().persist(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("SubEstadoCasoCreated"));
             return prepareCreate();
         } catch (Exception e) {
@@ -105,7 +105,7 @@ public class SubEstadoCasoController extends AbstractManagedBean<SubEstadoCaso> 
 
     public String update() {
         try {
-            getJpaController().mergeSubEstadoCaso(current);
+            getJpaController().merge(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("SubEstadoCasoUpdated"));
             return "/script/sub_estado_caso/View";
         } catch (Exception e) {
@@ -149,7 +149,7 @@ public class SubEstadoCasoController extends AbstractManagedBean<SubEstadoCaso> 
 
     private void performDestroy() {
         try {
-            getJpaController().removeSubEstadoCaso(current);
+            getJpaController().remove(SubEstadoCaso.class, current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("SubEstadoCasoDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -238,7 +238,7 @@ public class SubEstadoCasoController extends AbstractManagedBean<SubEstadoCaso> 
             }
             SubEstadoCasoController controller = (SubEstadoCasoController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "subEstadoCasoController");
-            return controller.getJpaController().getSubEstadoCasoFindByIdSubEstadoCaso(getKey(value));
+            return controller.getJpaController().find(SubEstadoCaso.class, getKey(value));
         }
 
         java.lang.String getKey(String value) {

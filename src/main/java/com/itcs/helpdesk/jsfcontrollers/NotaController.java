@@ -13,7 +13,7 @@ import javax.faces.convert.FacesConverter;
 import javax.faces.model.ListDataModel;
 import org.primefaces.model.SelectableDataModel;
 
-
+//TODO move all notas logic from casoController to this class!!
 @ManagedBean(name = "notaController")
 @SessionScoped
 public class NotaController extends AbstractManagedBean<Nota> implements Serializable {
@@ -42,7 +42,7 @@ public class NotaController extends AbstractManagedBean<Nota> implements Seriali
             }
             NotaController controller = (NotaController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "notaController");
-            return controller.getJpaController().getNotaFindByIdNota(getKey(value));
+            return controller.getJpaController().find(Nota.class, getKey(value));
         }
 
         java.lang.Integer getKey(String value) {

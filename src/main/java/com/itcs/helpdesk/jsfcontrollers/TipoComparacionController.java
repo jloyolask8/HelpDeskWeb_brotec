@@ -42,7 +42,7 @@ public class TipoComparacionController extends AbstractManagedBean<TipoComparaci
             }
             TipoComparacionController controller = (TipoComparacionController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "tipoComparacionController");
-            return controller.getJpaController().getTipoComparacionFindByIdComparador(value);
+            return controller.getJpaController().find(TipoComparacion.class, value);
         }
 
         java.lang.Integer getKey(String value) {

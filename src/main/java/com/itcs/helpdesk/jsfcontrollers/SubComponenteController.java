@@ -90,7 +90,7 @@ public class SubComponenteController extends AbstractManagedBean<SubComponente> 
             }
             SubComponenteController controller = (SubComponenteController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "subComponenteController");
-            return controller.getJpaController().getSubComponenteFindByIdSubComponente(getKey(value));
+            return controller.getJpaController().find(SubComponente.class, getKey(value));
         }
 
         java.lang.String getKey(String value) {

@@ -205,7 +205,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
 
     public JPAFilterHelper getFilterHelper() {
         if (filterHelper == null) {
-            filterHelper = new JPAFilterHelper((entityClass).getName(), emf) {
+            filterHelper = new JPAFilterHelper((entityClass).getName()) {
                 @Override
                 public JPAServiceFacade getJpaService() {
                     return getJpaController();
@@ -217,7 +217,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
 
     public JPAFilterHelper getCasoFilterHelper() {
         if (casoFilterHelper == null) {
-            casoFilterHelper = new JPAFilterHelper((Caso.class).getName(), emf) {
+            casoFilterHelper = new JPAFilterHelper((Caso.class).getName()) {
                 @Override
                 public JPAServiceFacade getJpaService() {
                     return getJpaController();
@@ -853,7 +853,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
      * @deprecated @return
      */
     public List<Vista> getVisibleForAllItems(String baseEntityType) {
-        return getJpaController().getVistaJpaController().findVistaEntitiesVisibleForAll(baseEntityType);
+        return getJpaController().findVistaEntitiesVisibleForAll(baseEntityType);
     }
 
     /**
@@ -862,7 +862,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
      * @deprecated @return
      */
     public List<Vista> getVisibleForMeOnlyItems(Usuario user, String baseEntityType) {
-        return getJpaController().getVistaJpaController().findVistaEntitiesCreatedByUser(user, baseEntityType);
+        return getJpaController().findVistaEntitiesCreatedByUser(user, baseEntityType);
     }
 
     /**
@@ -871,7 +871,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
      * @deprecated @return
      */
     public List<Vista> getVisibleForMyGroupsItems(Usuario user, String baseEntityType) {
-        return getJpaController().getVistaJpaController().findVistaEntitiesVisibleForGroupsOfUser(user, baseEntityType);
+        return getJpaController().findVistaEntitiesVisibleForGroupsOfUser(user, baseEntityType);
     }
 
     /**
@@ -880,7 +880,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
      * @deprecated @return
      */
     public List<Vista> getVisibleForMyAreasItems(Usuario user, String baseEntityType) {
-        return getJpaController().getVistaJpaController().findVistaEntitiesVisibleForAreasOfUser(user, baseEntityType);
+        return getJpaController().findVistaEntitiesVisibleForAreasOfUser(user, baseEntityType);
     }
 
     /**

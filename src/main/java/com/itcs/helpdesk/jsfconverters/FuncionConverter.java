@@ -27,7 +27,7 @@ public class FuncionConverter implements Converter {
 
             FuncionController controller = (FuncionController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "funcionController");
-            return controller.getJpaController().getFuncionFindByIdFuncion(getKey(value));
+            return controller.getJpaController().find(Funcion.class, getKey(value));
     }
 
     java.lang.Integer getKey(String value) {

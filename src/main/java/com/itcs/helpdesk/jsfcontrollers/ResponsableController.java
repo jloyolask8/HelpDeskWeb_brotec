@@ -1,7 +1,6 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.Responsable;
 import java.io.Serializable;
 import java.util.List;
@@ -11,7 +10,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 import org.primefaces.model.SelectableDataModel;
@@ -26,33 +24,8 @@ public class ResponsableController extends AbstractManagedBean<Responsable> impl
     }
 
     @Override
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(getPaginationPageSize()) {
-                @Override
-                public int getItemsCount() {
-                    return getJpaController().count(Responsable.class).intValue();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ResponsableDataModel(getJpaController().queryByRange(Responsable.class, getPageSize(), getPageFirstItem()));
-                }
-            };
-        }
-        return pagination;
-    }
-
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
-
-    @Override
     public Class getDataModelImplementationClass() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return ResponsableDataModel.class;
     }
 
     @Override

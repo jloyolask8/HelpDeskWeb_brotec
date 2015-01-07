@@ -1,7 +1,6 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.Prioridad;
 import com.itcs.helpdesk.persistence.entityenums.EnumPrioridad;
 import java.io.Serializable;
@@ -16,7 +15,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 import org.primefaces.model.SelectableDataModel;
@@ -30,14 +28,19 @@ public class PrioridadController extends AbstractManagedBean<Prioridad> implemen
         super(Prioridad.class);
     }
 
-    public String prepareList() {
-        recreateModel();
-        return "/script/prioridad/List";
+    @Override
+    protected String getListPage() {
+         return "/script/prioridad/List";
     }
 
-    public String prepareView(Prioridad item) {
-        current = item;
-        return "/script/prioridad/View";
+    @Override
+    protected String getViewPage() {
+       return "/script/prioridad/View";
+    }
+    
+    @Override
+    protected String getEditPage() {
+        return "/script/prioridad/Edit";
     }
 
     public String prepareCreate() {
@@ -57,7 +60,7 @@ public class PrioridadController extends AbstractManagedBean<Prioridad> implemen
 
     public String create() {
         try {
-            getJpaController().persistPrioridad(current);
+            getJpaController().persist(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("PrioridadCreated"));
             return prepareCreate();
         } catch (Exception e) {
@@ -66,22 +69,9 @@ public class PrioridadController extends AbstractManagedBean<Prioridad> implemen
         }
     }
 
-//    @Override
-//    public String prepareEdit(Prioridad item)  {
-//        current = (item);
-//        return "/script/prioridad/Edit";
-//    }
-
-    @Override
-    protected String getEditPage() {
-        return "/script/prioridad/Edit";
-    }
-    
-    
-
     public String update() {
         try {
-            getJpaController().mergePrioridad(current);
+            getJpaController().merge(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("PrioridadUpdated"));
             return "/script/prioridad/View";
         } catch (Exception e) {
@@ -117,23 +107,17 @@ public class PrioridadController extends AbstractManagedBean<Prioridad> implemen
 
     private void performDestroy() {
         try {
-            getJpaController().removePrioridad(current);
+            getJpaController().remove(Prioridad.class, current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("PrioridadDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
         }
     }
 
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
     
     public SelectItem[] getStringItemsAvailableSelectOne() {
         List<Prioridad> lista = (List<Prioridad>) getJpaController().findAll(Prioridad.class);
-        List<String> ids = new LinkedList<String>();
+        List<String> ids = new LinkedList<>();
         for (Prioridad prioridad : lista) {
             ids.add(prioridad.getIdPrioridad());
         }
@@ -155,7 +139,7 @@ public class PrioridadController extends AbstractManagedBean<Prioridad> implemen
             }
             PrioridadController controller = (PrioridadController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "prioridadController");
-            return controller.getJpaController().getPrioridadFindByIdPrioridad(getKey(value));
+            return controller.getJpaController().find(Prioridad.class, getKey(value));
         }
 
         java.lang.String getKey(String value) {

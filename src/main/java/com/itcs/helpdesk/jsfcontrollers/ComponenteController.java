@@ -1,7 +1,6 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.Componente;
 import java.io.Serializable;
 import java.util.List;
@@ -12,7 +11,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import org.primefaces.model.SelectableDataModel;
 
@@ -52,7 +50,7 @@ public class ComponenteController extends AbstractManagedBean<Componente> implem
 
     public String create() {
         try {
-            getJpaController().persistComponente(current);
+            getJpaController().persist(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ComponenteCreated"));
             return prepareCreate();
         } catch (Exception e) {
@@ -89,7 +87,7 @@ public class ComponenteController extends AbstractManagedBean<Componente> implem
 
     public String update() {
         try {
-            getJpaController().mergeComponente(current);
+            getJpaController().merge(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ComponenteUpdated"));
             return "View";
         } catch (Exception e) {
@@ -103,7 +101,7 @@ public class ComponenteController extends AbstractManagedBean<Componente> implem
             return;
         }
         try {
-            getJpaController().removeComponente(item);
+            getJpaController().remove(Componente.class, item);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ComponenteDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -151,7 +149,7 @@ public class ComponenteController extends AbstractManagedBean<Componente> implem
 
     private void performDestroy() {
         try {
-            getJpaController().removeComponente(current);
+            getJpaController().remove(Componente.class, current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ComponenteDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));

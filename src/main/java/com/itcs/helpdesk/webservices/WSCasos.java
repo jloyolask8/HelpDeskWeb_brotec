@@ -120,7 +120,7 @@ public class WSCasos {
             caso.setRevisarActualizacion(true);
             caso.setIdEstado(ec);
 
-            Cliente c = getJpaController().getClienteJpaController().findByRut(rut);
+            Cliente c = getJpaController().findClienteByRut(rut);
             if (c != null) {
                 for (EmailCliente emailCliente : c.getEmailClienteList()) {
                     caso.setEmailCliente(emailCliente);
@@ -129,7 +129,7 @@ public class WSCasos {
 
             if (idProducto != null) {
                 try {
-                    Producto prod = getJpaController().getProductoFindByIdProducto(idProducto);
+                    Producto prod = getJpaController().find(Producto.class, idProducto);
                     caso.setIdProducto(prod);
                     caso.setTema("[" + prod.getNombre() + "] ");
                 } catch (NoResultException ex) {

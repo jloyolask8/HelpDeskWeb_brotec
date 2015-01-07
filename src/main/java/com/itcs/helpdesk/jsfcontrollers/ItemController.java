@@ -2,11 +2,9 @@ package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
-import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Area;
 import com.itcs.helpdesk.persistence.entities.Item;
 import com.itcs.helpdesk.persistence.entities.Usuario;
-import com.itcs.helpdesk.persistence.jpa.exceptions.RollbackFailureException;
 import com.itcs.helpdesk.util.Log;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -121,7 +119,7 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
                 current.setIdItemPadre(selected);
             }
             current.setOrden(ordenMayor + 1);
-            getJpaController().persistItem(current);
+            getJpaController().persist(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ItemCreated"));
             itemsTree = null;
             setItem(null);
@@ -135,7 +133,7 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
     }
 
     public String prepareEdit(Integer idItem) {
-        current = getJpaController().getItemFindByIdItem(idItem);
+        current = getJpaController().find(Item.class, idItem);
         return "/script/item/AdminItems";
     }
 
@@ -152,7 +150,7 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
 
     public String update() {
         try {
-            getJpaController().mergeItem(current);
+            getJpaController().merge(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ItemUpdated"));
             itemsTree = null;
             return "/script/item/AdminItems";
@@ -203,7 +201,7 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
 
     private void performDestroy() {
         try {
-            getJpaController().removeItem(current);
+            getJpaController().remove(Item.class, current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ItemDeleted"));
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
@@ -241,7 +239,7 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
 
     public List<Item> getItemsForUser(Usuario usuario, String textFiltro) {
 
-        List<Item> lista = getJpaController().getItemFindAll();
+        List<Item> lista = (List<Item>)getJpaController().findAll(Item.class);
 
         if ((textFiltro != null) && (!textFiltro.trim().isEmpty())) {
             List<Item> filteredList = new LinkedList<Item>();
@@ -301,7 +299,7 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
                     itemActual = itemActual.getIdItemPadre();
                 }
             }
-            lista = new LinkedList<Item>();
+            lista = new LinkedList<>();
 
             for (Item root : roots) {
                 removeNotListedNodes(listaNodos, root);
@@ -309,7 +307,7 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
             }
 
         } else {
-            lista = getJpaController().getItemFindAll();
+            lista = (List<Item>)getJpaController().findAll(Item.class);
         }
 
         items = new ListDataModel(lista);
@@ -400,7 +398,7 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
                         nuevoItem.setIdItemPadre(itemPadre);
                         nuevoItem.setNombre(valores[1]);
                         nuevoItem.setOrden(ordenMayor + 1);
-                        getJpaController().persistItem(nuevoItem);
+                        getJpaController().persist(nuevoItem);
                         mapaItems.put(valores[0], nuevoItem);
                     }
                 }
@@ -436,7 +434,7 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
             current.setIdItemPadre(itemPadre);
             current.setOrden(ordenMayor + 1);
             current.setEditable(true);
-            getJpaController().persistItem(current);
+            getJpaController().persist(current);
             JsfUtil.addSuccessMessage("Item creado con exito");
             itemsTree = null;
             setItem(null);
@@ -465,9 +463,7 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
             }
         }
         try {
-            getJpaController().removeItem(item);
-        } catch (RollbackFailureException ex) {
-            Logger.getLogger(ItemController.class.getName()).log(Level.SEVERE, null, ex);
+            getJpaController().remove(Item.class, item);
         } catch (Exception ex) {
             Logger.getLogger(ItemController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -477,7 +473,7 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
         Item selected = (Item) itemNode.getData();
         portapapeles.setIdItemPadre(selected);
         try {
-            getJpaController().mergeItem(portapapeles);
+            getJpaController().merge(portapapeles);
             itemsTree = null;
             portapapeles = null;
             setItem(null);
@@ -589,8 +585,8 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
                 int ordenB = catAbajo.getOrden();
                 selected.setOrden(ordenB);
                 catAbajo.setOrden(ordenA);
-                getJpaController().mergeItem(selected);
-                getJpaController().mergeItem(catAbajo);
+                getJpaController().merge(selected);
+                getJpaController().merge(catAbajo);
                 itemsTree = null;
                 setItem(null);
                 break;
@@ -620,7 +616,7 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
         try {
             Item selected = (Item) itemNode.getData();
             selected.setNombre(current.getNombre());
-            getJpaController().mergeItem(selected);
+            getJpaController().merge(selected);
             JsfUtil.addSuccessMessage("Item renombrado con exito");
             itemsTree = null;
             setItem(null);
@@ -646,8 +642,8 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
                 int ordenB = catArriba.getOrden();
                 selected.setOrden(ordenB);
                 catArriba.setOrden(ordenA);
-                getJpaController().mergeItem(selected);
-                getJpaController().mergeItem(catArriba);
+                getJpaController().merge(selected);
+                getJpaController().merge(catArriba);
                 itemsTree = null;
                 setItem(null);
                 break;
@@ -837,7 +833,7 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
             }
             ItemController controller = (ItemController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "itemController");
-            return controller.getJpaController().getItemFindByIdItem(getKey(value));
+            return controller.getJpaController().find(Item.class, getKey(value));
         }
 
         java.lang.Integer getKey(String value) {

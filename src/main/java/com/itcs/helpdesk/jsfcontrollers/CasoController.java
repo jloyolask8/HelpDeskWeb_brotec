@@ -11,7 +11,7 @@ import com.itcs.helpdesk.persistence.entities.AuditLog;
 import com.itcs.helpdesk.persistence.entities.BlackListEmail;
 import com.itcs.helpdesk.persistence.entities.Canal;
 import com.itcs.helpdesk.persistence.entities.Caso;
-import com.itcs.helpdesk.persistence.entities.Caso_;
+import com.itcs.helpdesk.persistence.entities.metadata.Caso_;
 import com.itcs.helpdesk.persistence.entities.Cliente;
 import com.itcs.helpdesk.persistence.entities.Clipping;
 import com.itcs.helpdesk.persistence.entities.EmailCliente;
@@ -22,6 +22,7 @@ import com.itcs.helpdesk.persistence.entities.Item;
 import com.itcs.helpdesk.persistence.entities.ModeloProducto;
 import com.itcs.helpdesk.persistence.entities.TipoAccion;
 import com.itcs.helpdesk.persistence.entities.Nota;
+import com.itcs.helpdesk.persistence.entities.Prioridad;
 import com.itcs.helpdesk.persistence.entities.Recinto;
 import com.itcs.helpdesk.persistence.entities.ReglaTrigger;
 import com.itcs.helpdesk.persistence.entities.ScheduleEvent;
@@ -41,7 +42,6 @@ import com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoNota;
 import com.itcs.helpdesk.persistence.jpa.AbstractJPAController;
-import com.itcs.helpdesk.persistence.jpa.custom.CasoJPACustomController;
 import com.itcs.helpdesk.persistence.jpa.exceptions.IllegalOrphanException;
 import com.itcs.helpdesk.persistence.jpa.exceptions.NonexistentEntityException;
 import com.itcs.helpdesk.persistence.jpa.exceptions.PreexistingEntityException;
@@ -287,7 +287,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 for (Nota item : listaNotas) {
                     Nota nuevaNota = getManagerCasos().clonarNota(item);
                     nuevaNota.setIdCaso(casoBase);
-                    getJpaController().getNotaJpaController().create(nuevaNota);
+                    getJpaController().persist(nuevaNota);
                     casoBase.getNotaList().add(nuevaNota);
                 }
                 casoBase.getCasosHijosList().addAll(casoToMerge.getCasosHijosList());
@@ -756,7 +756,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public void handleEmailSelect(SelectEvent event) {
 
 //        EmailCliente emailCliente = getJpaController().getEmailClienteFindByEmail(event.getObject().toString());
-        EmailCliente emailCliente = getJpaController().getEmailClienteFindByEmail(getEmailCliente_wizard());
+        EmailCliente emailCliente = getJpaController().find(EmailCliente.class, getEmailCliente_wizard(), true);
 
 //        //System.out.println("emailCliente_wizard:" + emailCliente_wizard);
 //        //System.out.println("event.getObject().toString():" + event.getObject().toString());
@@ -786,7 +786,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             if (rutCliente_wizard != null) {
                 //user already entered rut, so its posible there is a cliente selected.
                 //if i change the email, to an email that is not in database, it means i want to add a new email to an existent client.
-                Cliente existentClient = getJpaController().getClienteJpaController().findByRut(rutCliente_wizard);
+                Cliente existentClient = getJpaController().findClienteByRut(rutCliente_wizard);
                 if (existentClient == null) {
                     //not exists
                     Cliente cliente = new Cliente();
@@ -817,7 +817,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 rutCliente_wizard = UtilesRut.formatear(rutCliente_wizard);
 
                 if (!emailCliente_wizard_existeCliente) {
-                    Cliente c = getJpaController().getClienteJpaController().findByRut(rutCliente_wizard);
+                    Cliente c = getJpaController().findClienteByRut(rutCliente_wizard);
                     if (c != null) {//this client exists
                         rutCliente_wizard = c.getRut();
                         setEmailCliente_wizard_existeCliente(true);
@@ -891,7 +891,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
 
         if (!emailCliente_wizard_existeEmail && !StringUtils.isEmpty(emailCliente_wizard)) {
-            getJpaController().persistEmailCliente(newCaso.getEmailCliente());
+            getJpaController().persist(newCaso.getEmailCliente());
         }
 
         getManagerCasos().persistCaso(newCaso, ManagerCasos.createLogReg(newCaso, "Caso", "Se crea caso manual", ""));
@@ -1067,14 +1067,13 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
     }
 
-    public int cantidadAttachmentEmbedded() {
-        try {
-            return getJpaController().countAttachmentWContentId(current).intValue();
-        } catch (Exception e) {
-            return 0;
-        }
-    }
-
+//    public int cantidadAttachmentEmbedded() {
+//        try {
+//            return getJpaController().countAttachmentWContentId(current).intValue();
+//        } catch (Exception e) {
+//            return 0;
+//        }
+//    }
     public String nombreArchivoParaDesplegar(String nombreOriginal) {
         int max = 22;
         if (nombreOriginal.length() >= max) {
@@ -1322,7 +1321,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             current.setRevisarActualizacion(false);
             current.setIdCasoPadre(casoTmp);
             Usuario usr = casoTmp.getOwner();
-            EmailCliente cliente = getJpaController().getEmailClienteFindByEmail(usr.getEmail());
+            EmailCliente cliente = getJpaController().find(EmailCliente.class, usr.getEmail());
             current.setIdCliente(casoTmp.getIdCliente());
             rutCliente_wizard = casoTmp.getIdCliente().getRut();
             emailCliente_wizard_existeCliente = true;
@@ -1353,7 +1352,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
             current.setTipoCaso(EnumTipoCaso.INTERNO.getTipoCaso());
             current.setIdSubEstado(EnumSubEstadoCaso.INTERNO_NUEVO.getSubEstado());
-            current.setIdPrioridad(getJpaController().getPrioridadFindByIdPrioridad(EnumPrioridad.MEDIA.getPrioridad().getIdPrioridad()));
+            current.setIdPrioridad(getJpaController().find(Prioridad.class, EnumPrioridad.MEDIA.getPrioridad().getIdPrioridad()));
 
             current.setIdEstado(ec);
             selectedItemIndex = -1;
@@ -1990,7 +1989,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         FiltroVista filtroOwner = new FiltroVista(-1);
         filtroOwner.setIdCampo(Caso_.OWNER_FIELD_NAME);
         filtroOwner.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
-        filtroOwner.setValor(CasoJPACustomController.PLACE_HOLDER_CURRENT_USER);
+        filtroOwner.setValor(AbstractJPAController.PLACE_HOLDER_CURRENT_USER);
         filtroOwner.setValorLabel(JPAFilterHelper.PLACE_HOLDER_CURRENT_USER_LABEL);
         filtroOwner.setIdVista(vista1);
 
@@ -2031,7 +2030,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         FiltroVista filtroOwner = new FiltroVista(-1);
         filtroOwner.setIdCampo(Caso_.OWNER_FIELD_NAME);
         filtroOwner.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
-        filtroOwner.setValor(CasoJPACustomController.PLACE_HOLDER_CURRENT_USER);
+        filtroOwner.setValor(AbstractJPAController.PLACE_HOLDER_CURRENT_USER);
         filtroOwner.setValorLabel(JPAFilterHelper.PLACE_HOLDER_CURRENT_USER_LABEL);
         filtroOwner.setIdVista(vista1);
         vista1.getFiltrosVistaList().add(filtroOwner);
@@ -2062,7 +2061,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         FiltroVista filtroOwner = new FiltroVista(-1);
         filtroOwner.setIdCampo(Caso_.OWNER_FIELD_NAME);
         filtroOwner.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
-        filtroOwner.setValor(CasoJPACustomController.PLACE_HOLDER_CURRENT_USER);
+        filtroOwner.setValor(AbstractJPAController.PLACE_HOLDER_CURRENT_USER);
         filtroOwner.setValorLabel(JPAFilterHelper.PLACE_HOLDER_CURRENT_USER_LABEL);
         filtroOwner.setIdVista(vista1);
         vista1.getFiltrosVistaList().add(filtroOwner);
@@ -2099,7 +2098,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         FiltroVista filtroOwner = new FiltroVista(-1);
         filtroOwner.setIdCampo(Caso_.OWNER_FIELD_NAME);
         filtroOwner.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
-        filtroOwner.setValor(CasoJPACustomController.PLACE_HOLDER_CURRENT_USER);
+        filtroOwner.setValor(AbstractJPAController.PLACE_HOLDER_CURRENT_USER);
         filtroOwner.setValorLabel(JPAFilterHelper.PLACE_HOLDER_CURRENT_USER_LABEL);
         filtroOwner.setIdVista(vista1);
         vista1.getFiltrosVistaList().add(filtroOwner);
@@ -3189,7 +3188,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         StringBuilder sbuilder = new StringBuilder(HEADER_HISTORY);
         if (current != null && current.getNotaList() != null) {
             for (Nota nota : current.getNotaList()) {
-                if(nota.getVisible() != null && nota.getVisible()){
+                if (nota.getVisible() != null && nota.getVisible()) {
                     sbuilder.append(creaMensajeOriginal(nota));
                 }
             }
@@ -3248,15 +3247,15 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public void deleteAttachment(ActionEvent actionEvent) {
         try {
-            Attachment att = getJpaController().getAttachmentFindByIdAttachment(new Long(idFileDelete));
+            Attachment att = getJpaController().find(Attachment.class, new Long(idFileDelete), true);
             String nombre = att.getNombreArchivo();
-            Archivo archivo = getJpaController().getArchivoFindByIdAttachment(att.getIdAttachment());
-            getJpaController().removeArchivo(archivo);
-            getJpaController().removeAttachment(att);
+            Archivo archivo = getJpaController().find(Archivo.class, att.getIdAttachment(), true);
+            getJpaController().remove(Archivo.class, archivo);
+            getJpaController().remove(Attachment.class, att);
 
             current = getJpaController().find(Caso.class, current.getIdCaso());
             JsfUtil.addSuccessMessage("Archivo " + nombre + " borrado");
-            getJpaController().persistAuditLog(ManagerCasos.createLogReg(current, "Archivo borrado", "Archivo borrado: " + nombre, ""));
+            getJpaController().persist(ManagerCasos.createLogReg(current, "Archivo borrado", "Archivo borrado: " + nombre, ""));
 
         } catch (Exception e) {
             JsfUtil.addSuccessMessage("No se ha podido borrar el archivo");
@@ -3291,9 +3290,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      */
     public StreamedContent bajarArchivo(String id) {
         try {
-            Attachment att = getJpaController().getAttachmentFindByIdAttachment(new Long(id));
+            Attachment att = getJpaController().find(Attachment.class, new Long(id));
 
-            Archivo archivo = getJpaController().getArchivoFindByIdAttachment(att.getIdAttachment());
+            Archivo archivo = getJpaController().find(Archivo.class, att.getIdAttachment());
             return new DefaultStreamedContent(
                     new ByteArrayInputStream(archivo.getArchivo()), att.getMimeType(), att.getNombreArchivo());
         } catch (Exception e) {
@@ -3530,7 +3529,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public String mergeCliente() {
         try {
-            getJpaController().mergeCliente(current.getIdCliente());
+            getJpaController().merge(current.getIdCliente());
             executeInClient("PF('dialogClient').hide()");
             JsfUtil.addSuccessMessage("Cliente actualizado exitosamente.");
 
@@ -3638,7 +3637,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         try {
             if (getSelectedItems() != null) {
                 int countDeleted = 0;
-                ArrayList<Caso> notDeleted = new ArrayList<Caso>();
+                ArrayList<Caso> notDeleted = new ArrayList<>();
                 if (getSelectedItems().size() <= 0) {
                     JsfUtil.addErrorMessage("Debe seleccionar al menos un caso.");
                 } else {
@@ -3670,7 +3669,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     private boolean performDestroy(Caso caso) {
         try {
-            getJpaController().persistAuditLog(ManagerCasos.createLogReg(caso, "Eliminar", userSessionBean.getCurrent().getIdUsuario() + " elimina el caso manualmente", ""));
+            getJpaController().persist(ManagerCasos.createLogReg(caso, "Eliminar", userSessionBean.getCurrent().getIdUsuario() + " elimina el caso manualmente", ""));
             getJpaController().remove(Caso.class, caso);
             return true;
         } catch (Exception e) {
@@ -3705,7 +3704,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public SelectItem[] getClippingsItemsAvailableSelectOne() {
-        return JsfUtil.getSelectItems(getJpaController().getClippingJpaController().findClippingEntities(), true);
+        return JsfUtil.getSelectItems(getJpaController().findAll(Clipping.class), true);
     }
 
     public void handleClippingSelectChangeEvent() {
@@ -3722,7 +3721,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public SelectItem[] getItemsSubEstadoCasoAvailableSelectOneCasoCerrado() {
-        List<SubEstadoCaso> lista = new ArrayList<SubEstadoCaso>();
+        List<SubEstadoCaso> lista = new ArrayList<>();
         try {
             if (current.getTipoCaso() != null) {
                 final List<SubEstadoCaso> subEstadoCasofindByIdEstadoAndTipoCaso = getJpaController().getSubEstadoCasofindByIdEstadoAndTipoCaso(EnumEstadoCaso.CERRADO.getEstado(), current.getTipoCaso());
@@ -3857,8 +3856,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     private String createEmbeddedImage(String contentId) {
         try {
-            Attachment att = getJpaController().getAttachmentFindByContentId('<' + contentId + '>', current);
-            Archivo archivo = getJpaController().getArchivoFindByIdAttachment(att.getIdAttachment());
+            Attachment att = getJpaController().findAttachmentByContentId('<' + contentId + '>', current);
+
+            Archivo archivo = getJpaController().find(Archivo.class, att.getIdAttachment());
             if (archivo != null) {
                 String base64Image = Base64.encodeBase64String(archivo.getArchivo());
                 return base64Image;

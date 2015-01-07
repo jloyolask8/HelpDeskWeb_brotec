@@ -36,7 +36,7 @@ public class AccionController extends AbstractManagedBean<Accion>  implements Se
 
     public String create() {
         try {
-            getJpaController().persistAccion(current);
+            getJpaController().persist(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AccionCreated"));
             return prepareCreate();
         } catch (Exception e) {
@@ -47,7 +47,7 @@ public class AccionController extends AbstractManagedBean<Accion>  implements Se
 
     public String update() {
         try {
-            getJpaController().mergeAccion(current);
+            getJpaController().merge(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AccionUpdated"));
             return "View";
         } catch (Exception e) {
@@ -81,7 +81,7 @@ public class AccionController extends AbstractManagedBean<Accion>  implements Se
 
     private void performDestroy() {
         try {
-            getJpaController().removeAccion(current);
+            getJpaController().remove(Accion.class, current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AccionDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -158,7 +158,7 @@ public class AccionController extends AbstractManagedBean<Accion>  implements Se
             }
             AccionController controller = (AccionController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "accionController");
-            return controller.getJpaController().getAccionFindById(getKey(value));
+            return controller.getJpaController().find(Accion.class, getKey(value));
         }
 
         java.lang.Integer getKey(String value) {

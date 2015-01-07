@@ -8,7 +8,7 @@ import com.itcs.helpdesk.jsfcontrollers.AbstractManagedBean;
 import com.itcs.helpdesk.persistence.entities.Archivo;
 import com.itcs.helpdesk.persistence.entities.Area;
 import com.itcs.helpdesk.persistence.entities.Caso;
-import com.itcs.helpdesk.persistence.entities.Caso_;
+import com.itcs.helpdesk.persistence.entities.metadata.Caso_;
 import com.itcs.helpdesk.persistence.entities.Etiqueta;
 import com.itcs.helpdesk.persistence.entities.FieldType;
 import com.itcs.helpdesk.persistence.entities.FiltroVista;
@@ -21,7 +21,7 @@ import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.entityenums.EnumEstadoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
-import com.itcs.helpdesk.persistence.jpa.custom.CasoJPACustomController;
+import com.itcs.helpdesk.persistence.jpa.AbstractJPAController;
 import com.itcs.helpdesk.rules.Action;
 import com.itcs.helpdesk.rules.actionsimpl.NotifyGroupCasoReceivedAction;
 import com.itcs.helpdesk.rules.actionsimpl.SendCaseByEmailAction;
@@ -131,7 +131,7 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
         filtroOwner.setIdFiltro(-1);
         filtroOwner.setIdCampo(Caso_.OWNER_FIELD_NAME);
         filtroOwner.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
-        filtroOwner.setValor(CasoJPACustomController.PLACE_HOLDER_CURRENT_USER);
+        filtroOwner.setValor(AbstractJPAController.PLACE_HOLDER_CURRENT_USER);
         filtroOwner.setIdVista(vista1);
 
         vista1.getFiltrosVistaList().add(filtroOwner);
@@ -157,7 +157,7 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
         filtroOwner.setIdFiltro(-1);
         filtroOwner.setIdCampo(Caso_.OWNER_FIELD_NAME);
         filtroOwner.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
-        filtroOwner.setValor(CasoJPACustomController.PLACE_HOLDER_CURRENT_USER);
+        filtroOwner.setValor(AbstractJPAController.PLACE_HOLDER_CURRENT_USER);
         filtroOwner.setIdVista(vista1);
 
         vista1.getFiltrosVistaList().add(filtroOwner);
@@ -333,7 +333,7 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
             // So, we're rendering the view. Return a stub StreamedContent so that it will generate right URL.
             return new DefaultStreamedContent();
         } else {
-            Archivo archivo = getJpaController().getArchivoFindByIdAttachment(0L);
+            Archivo archivo = getJpaController().find(Archivo.class, 0L);
             if (archivo != null) {
                 return new DefaultStreamedContent(
                         new ByteArrayInputStream(archivo.getArchivo()), archivo.getContentType(), "logo");

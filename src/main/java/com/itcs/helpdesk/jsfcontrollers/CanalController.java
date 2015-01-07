@@ -3,7 +3,6 @@ package com.itcs.helpdesk.jsfcontrollers;
 import com.itcs.commons.email.EmailAutoconfigClient;
 import com.itcs.commons.email.EnumEmailSettingKeys;
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.Canal;
 import com.itcs.helpdesk.persistence.entities.CanalSetting;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoCanal;
@@ -16,10 +15,8 @@ import com.itcs.helpdesk.util.MailClientFactory;
 import com.itcs.jpautils.EasyCriteriaQuery;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -31,7 +28,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 import org.primefaces.context.RequestContext;
@@ -309,7 +305,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
                 current.reloadSettings();
                 current.setNombre(tmpEmailCorreoElectronico);
                 current.setDescripcion("Canal email, para la cuenta " + tmpEmailCorreoElectronico);
-                getJpaController().mergeCanal(current);
+                getJpaController().merge(current);
 //                current.setCanalSettingList(new LinkedList<CanalSetting>());
                 Map<String, String> settingsMap = createEmailSettingsMap();
                 Iterator it = settingsMap.entrySet().iterator();
@@ -321,7 +317,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
                     current.getCanalSettingList().add(canalSetting);
                     it.remove(); // avoids a ConcurrentModificationException
                 }
-                getJpaController().mergeCanal(current);
+                getJpaController().merge(current);
                 MailClientFactory.createInstance(current);
             } else {
                 current.setIdCanal(tmpEmailCorreoElectronico);
@@ -329,7 +325,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
                 current.setEnabled(true);
                 current.setNombre(tmpEmailCorreoElectronico);
                 current.setDescripcion("Canal email, para la cuenta " + tmpEmailCorreoElectronico);
-                getJpaController().persistCanal(current);
+                getJpaController().persist(current);
 //                current.setCanalSettingList(new LinkedList<CanalSetting>());
                 Map<String, String> settingsMap = createEmailSettingsMap();
                 Iterator it = settingsMap.entrySet().iterator();
@@ -342,7 +338,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
                     current.getCanalSettingList().add(canalSetting);
                     it.remove(); // avoids a ConcurrentModificationException
                 }
-                getJpaController().mergeCanal(current);
+                getJpaController().merge(current);
             }
 
             recreateModel();
@@ -379,7 +375,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
     public void update(Canal canal) {
         try {
             System.out.println(canal + " canal estado:" + canal.getEnabled());
-            getJpaController().mergeCanal(canal);
+            getJpaController().merge(canal);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("CanalUpdated"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -403,7 +399,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
 
     public void update() {
         try {
-            getJpaController().mergeCanal(current);
+            getJpaController().merge(current);
             executeInClient("PF('addEditDialog').hide()");
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("CanalUpdated"));
 //            return "View";
@@ -438,7 +434,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
 
     private void performDestroy() {
         try {
-            getJpaController().removeCanal(current);
+            getJpaController().remove(Canal.class, current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("CanalDeleted"));
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
@@ -757,7 +753,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
             }
             CanalController controller = (CanalController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "canalController");
-            return controller.getJpaController().getCanalFindByIdCanal(getKey(value));
+            return controller.getJpaController().find(Canal.class, getKey(value));
         }
 
         java.lang.String getKey(String value) {

@@ -2,7 +2,6 @@ package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JPAFilterHelper;
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.Accion;
 import com.itcs.helpdesk.persistence.entities.Area;
 import com.itcs.helpdesk.persistence.entities.Caso;
@@ -13,7 +12,6 @@ import com.itcs.helpdesk.persistence.entities.Prioridad;
 import com.itcs.helpdesk.persistence.entities.ReglaTrigger;
 import com.itcs.helpdesk.persistence.entities.TipoComparacion;
 import com.itcs.helpdesk.persistence.entities.Usuario;
-import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.entityenums.EnumFieldType;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoAccion;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
@@ -49,9 +47,7 @@ import java.lang.reflect.Modifier;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
-import javax.faces.model.DataModel;
 import javax.faces.model.SelectItem;
-import javax.resource.NotSupportedException;
 
 @ManagedBean(name = "reglaTriggerController")
 @SessionScoped
@@ -156,64 +152,64 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 ////        }  
 //
 //    }
-    @Override
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(getPaginationPageSize()) {
-
-                private Integer count = null;
-
-                @Override
-                public int getItemsCount() {
-                    try {
-                        if (count == null) {
-                            if (searchPattern != null && !searchPattern.trim().isEmpty()) {
-                                count = getJpaController().getReglaTriggerJpaController().countSearchEntities(searchPattern).intValue();
-                            } else {
-                                count = getJpaController().getReglaTriggerJpaController().getReglaTriggerCount();
-                            }
-                        }
-
-                        return count;
-
-                    } catch (Exception ex) {
-                        Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "getItemsCount", ex);
-                    }
-                    return 0;
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    if (searchPattern != null && !searchPattern.trim().isEmpty()) {
-                        return new ReglaTriggerDataModel(getJpaController().getReglaTriggerJpaController().searchEntities(searchPattern, false, getPageSize(), getPageFirstItem()));
-                    } else {
-//                        return new ReglaTriggerDataModel(getJpaController().queryByRange(ReglaTrigger.class, getPageSize(), getPageFirstItem()));
-
-                        try {
-                            DataModel<ReglaTrigger> dataModel = (DataModel) getDataModelImplementationClass().newInstance();
-                            dataModel.setWrappedData(getJpaController().findEntities(getVista(), getPageSize(), getPageFirstItem(), getDefaultOrderBy(), getDefaultUserWho()));
-                            return dataModel;
-                        } catch (IllegalStateException ex) {//error en el filtro
-                            JsfUtil.addErrorMessage(ex, "Existe un problema con el filtro. Favor corregir e intentar nuevamente.");
-                        } catch (ClassNotFoundException ex) {
-                            JsfUtil.addErrorMessage(ex, "Lo sentimos, ocurrió un error inesperado. Favor contactar a soporte.");
-                            Logger.getLogger(AbstractManagedBean.class.getName()).log(Level.SEVERE, "ClassNotFoundException createPageDataModel", ex);
-                        } catch (IllegalAccessException ex) {
-                            JsfUtil.addErrorMessage(ex, "Lo sentimos, ocurrió un error inesperado. Favor contactar a soporte.");
-                            Logger.getLogger(AbstractManagedBean.class.getName()).log(Level.SEVERE, "IllegalAccessException createPageDataModel", ex);
-                        } catch (InstantiationException ex) {
-                            JsfUtil.addErrorMessage(ex, "Lo sentimos, ocurrió un error inesperado. Favor contactar a soporte.");
-                            Logger.getLogger(AbstractManagedBean.class.getName()).log(Level.SEVERE, "InstantiationException createPageDataModel", ex);
-                        } catch (NotSupportedException ex) {
-                            addWarnMessage("Lo sentimos, ocurrió un error inesperado. La acción que desea realizar aún no esta soportada por el sistema.");
-                        }
-                        return null;
-                    }
-                }
-            };
-        }
-        return pagination;
-    }
+//    @Override
+//    public PaginationHelper getPagination() {
+//        if (pagination == null) {
+//            pagination = new PaginationHelper(getPaginationPageSize()) {
+//
+//                private Integer count = null;
+//
+//                @Override
+//                public int getItemsCount() {
+//                    try {
+//                        if (count == null) {
+//                            if (searchPattern != null && !searchPattern.trim().isEmpty()) {
+//                                count = getJpaController().getReglaTriggerJpaController().countSearchEntities(searchPattern).intValue();
+//                            } else {
+//                                count = getJpaController().getReglaTriggerJpaController().getReglaTriggerCount();
+//                            }
+//                        }
+//
+//                        return count;
+//
+//                    } catch (Exception ex) {
+//                        Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "getItemsCount", ex);
+//                    }
+//                    return 0;
+//                }
+//
+//                @Override
+//                public DataModel createPageDataModel() {
+//                    if (searchPattern != null && !searchPattern.trim().isEmpty()) {
+//                        return new ReglaTriggerDataModel(getJpaController().getReglaTriggerJpaController().searchEntities(searchPattern, false, getPageSize(), getPageFirstItem()));
+//                    } else {
+////                        return new ReglaTriggerDataModel(getJpaController().queryByRange(ReglaTrigger.class, getPageSize(), getPageFirstItem()));
+//
+//                        try {
+//                            DataModel<ReglaTrigger> dataModel = (DataModel) getDataModelImplementationClass().newInstance();
+//                            dataModel.setWrappedData(getJpaController().findEntities(getVista(), getPageSize(), getPageFirstItem(), getDefaultOrderBy(), getDefaultUserWho()));
+//                            return dataModel;
+//                        } catch (IllegalStateException ex) {//error en el filtro
+//                            JsfUtil.addErrorMessage(ex, "Existe un problema con el filtro. Favor corregir e intentar nuevamente.");
+//                        } catch (ClassNotFoundException ex) {
+//                            JsfUtil.addErrorMessage(ex, "Lo sentimos, ocurrió un error inesperado. Favor contactar a soporte.");
+//                            Logger.getLogger(AbstractManagedBean.class.getName()).log(Level.SEVERE, "ClassNotFoundException createPageDataModel", ex);
+//                        } catch (IllegalAccessException ex) {
+//                            JsfUtil.addErrorMessage(ex, "Lo sentimos, ocurrió un error inesperado. Favor contactar a soporte.");
+//                            Logger.getLogger(AbstractManagedBean.class.getName()).log(Level.SEVERE, "IllegalAccessException createPageDataModel", ex);
+//                        } catch (InstantiationException ex) {
+//                            JsfUtil.addErrorMessage(ex, "Lo sentimos, ocurrió un error inesperado. Favor contactar a soporte.");
+//                            Logger.getLogger(AbstractManagedBean.class.getName()).log(Level.SEVERE, "InstantiationException createPageDataModel", ex);
+//                        } catch (NotSupportedException ex) {
+//                            addWarnMessage("Lo sentimos, ocurrió un error inesperado. La acción que desea realizar aún no esta soportada por el sistema.");
+//                        }
+//                        return null;
+//                    }
+//                }
+//            };
+//        }
+//        return pagination;
+//    }
 
     public void valueChangeListener(ValueChangeEvent e) {
         System.out.println(" valueChangeListener() event:" + e);
@@ -226,12 +222,12 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         }
 //        System.out.println("idRegla:" + idRegla);
 //        System.out.println("valor:" + valor);
-        ReglaTrigger regla = getJpaController().getReglaTriggerFindByIdTrigger(idRegla);
+        ReglaTrigger regla = getJpaController().find(ReglaTrigger.class, idRegla);
         regla.setReglaActiva(Boolean.valueOf(valor));
         try {
-            getJpaController().mergeReglaTrigger(regla);
+            getJpaController().merge(regla);
             JsfUtil.addSuccessMessage("Regla " + idRegla + " actualizada");
-            System.out.println("regla " + idRegla + " actualizada");
+//            System.out.println("regla " + idRegla + " actualizada");
             recreateModel();
         } catch (Exception ex) {
             Logger.getLogger(ReglaTriggerController.class.getName()).log(Level.SEVERE, null, ex);
@@ -360,7 +356,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 
     public JPAFilterHelper getFilterHelperForConditions() {
         if (filterHelperForConditions == null) {
-            filterHelperForConditions = new JPAFilterHelper((Caso.class).getName(), emf) {
+            filterHelperForConditions = new JPAFilterHelper((Caso.class).getName()) {
                 @Override
                 public JPAServiceFacade getJpaService() {
                     return getJpaController();
@@ -483,7 +479,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
             Date now = new Date();
             current.setFechaCreacion(now);
 
-            getJpaController().persistReglaTrigger(current);
+            getJpaController().persist(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ReglaTriggerCreated"));
             return prepareList();
         } catch (Exception e) {
@@ -529,7 +525,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
             Date now = new Date();
              current.setFechaModif(now);
              
-            getJpaController().mergeReglaTrigger(current);
+            getJpaController().merge(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ReglaTriggerUpdated"));
         } catch (Exception e) {
             e.printStackTrace();
@@ -658,7 +654,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 
     private void performDestroy() {
         try {
-            getJpaController().removeReglaTrigger(current);
+            getJpaController().remove(ReglaTrigger.class, current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ReglaTriggerDeleted"));
         } catch (Exception e) {
             e.printStackTrace();
@@ -787,7 +783,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
             }
             ReglaTriggerController controller = (ReglaTriggerController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "reglaTriggerController");
-            return controller.getJpaController().getReglaTriggerFindByIdTrigger(getKey(value));
+            return controller.getJpaController().find(ReglaTrigger.class, getKey(value));
         }
 
         java.lang.String getKey(String value) {

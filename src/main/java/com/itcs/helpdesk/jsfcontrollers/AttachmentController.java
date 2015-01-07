@@ -99,7 +99,7 @@ public class AttachmentController extends AbstractManagedBean<Attachment> implem
 
     public String create() {
         try {
-            getJpaController().persistAttachment(current);
+            getJpaController().persist(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AttachmentCreated"));
             return prepareCreate();
         } catch (Exception e) {
@@ -122,7 +122,7 @@ public class AttachmentController extends AbstractManagedBean<Attachment> implem
 
     public String update() {
         try {
-            getJpaController().mergeAttachment(current);
+            getJpaController().merge(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AttachmentUpdated"));
             return "View";
         } catch (Exception e) {
@@ -172,7 +172,7 @@ public class AttachmentController extends AbstractManagedBean<Attachment> implem
 
     private void performDestroy() {
         try {
-            getJpaController().removeAttachment(current);
+            getJpaController().remove(Attachment.class, current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AttachmentDeleted"));
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
@@ -262,7 +262,7 @@ public class AttachmentController extends AbstractManagedBean<Attachment> implem
             }
             AttachmentController controller = (AttachmentController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "attachmentController");
-            return controller.getJpaController().getAttachmentFindByIdAttachment(getKey(value));
+            return controller.getJpaController().find(Attachment.class, getKey(value));
         }
 
         java.lang.Long getKey(String value) {

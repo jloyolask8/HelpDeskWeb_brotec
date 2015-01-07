@@ -82,7 +82,7 @@ public class GrupoController extends AbstractManagedBean<Grupo> implements Seria
             current.setProductoList(getProductoDualListModel().getTarget());
             
 
-            getJpaController().persistGrupo(current);
+            getJpaController().persist(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("GrupoCreated"));
             return prepareCreate();
         } catch (Exception e) {
@@ -197,7 +197,7 @@ public class GrupoController extends AbstractManagedBean<Grupo> implements Seria
             current.setUsuarioList(getUsuariosDualListModel().getTarget());
             current.setProductoList(getProductoDualListModel().getTarget());
 
-            getJpaController().mergeGrupo(current);
+            getJpaController().merge(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("GrupoUpdated"));
             return "/script/grupo/Edit";
         } catch (Exception e) {
@@ -239,7 +239,7 @@ public class GrupoController extends AbstractManagedBean<Grupo> implements Seria
                 JsfUtil.addErrorMessage("No se puede eliminar, el grupo aun tiene usuarios asociados");
                 return false;
             }
-            getJpaController().removeGrupo(current);
+            getJpaController().remove(Grupo.class, current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("GrupoDeleted"));
             return true;
         } catch (Exception e) {
@@ -309,7 +309,7 @@ public class GrupoController extends AbstractManagedBean<Grupo> implements Seria
             }
             GrupoController controller = (GrupoController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "grupoController");
-            return controller.getJpaController().getGrupoFindByIdGrupo(getKey(value));
+            return controller.getJpaController().find(Grupo.class, getKey(value));
         }
 
         java.lang.String getKey(String value) {

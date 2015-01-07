@@ -1,11 +1,9 @@
 package com.itcs.helpdesk.webapputils;
 
 import com.itcs.helpdesk.persistence.entities.ArchivoNa;
-import com.itcs.helpdesk.persistence.entities.Attachment;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Map;
 import java.util.regex.Pattern;
 import javax.annotation.Resource;
 import javax.persistence.EntityManagerFactory;
@@ -19,9 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.transaction.UserTransaction;
 import org.apache.commons.fileupload.FileItem;
 
-import org.apache.commons.fileupload.FileItemIterator;
-import org.apache.commons.fileupload.FileItemStream;
-import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;

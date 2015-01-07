@@ -5,30 +5,50 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:pe="http://primefaces.org/ui/extensions">
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:go="http://java.sun.com/jsf/composite/go">
 
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
             <p:outputLabel value="Reglas de negocio"/>
         </ui:define>
         <ui:define name="west">
+
+            <go:vistasList id="vistasList" update=":vistasList:vistasForm :mainform:messages :formfilter:panelFilter0:panelFilter :form" 
+                           controllerMBean="#{reglaTriggerController}"
+                           user="#{UserSessionBean.current}"/>
+
+
+            <br/>
+
             <p:panel>
-                    <h:outputLabel escape="false" value="#{bundle.ayudaReglas}"/>
-                    <br/>
-                    <h:outputLabel value="Ordering triggers" style="font-weight: bold"/>
-                    <h:outputLabel value="When a ticket is created or updated, Itcs helpdesk runs through all the triggers in order. 
-                                   So it's important to make sure your triggers are in the right order.                                   
-                                   New triggers are added to the bottom of the triggers list. "/>
+                <h:outputLabel escape="false" value="#{bundle.ayudaReglas}"/>
+                <br/>
+                <h:outputLabel value="Ordering triggers" style="font-weight: bold"/>
+                <h:outputLabel value="When a ticket is created or updated, Itcs helpdesk runs through all the triggers in order. 
+                               So it's important to make sure your triggers are in the right order.                                   
+                               New triggers are added to the bottom of the triggers list. "/>
             </p:panel>
         </ui:define>
         <ui:define name="body">
+
+            <h:form id="formfilter">
+                <go:filterView id="panelFilter0" titleIconClass="fa fa-filter page-header-icon"
+                               controllerMBean="#{reglaTriggerController}" 
+                               vista="#{reglaTriggerController.vista}"
+                               filterHelper="#{reglaTriggerController.filterHelper}" 
+                               canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
+                               update=":mainform:messages :form" vistaControllerBackOutcome="/script/reglaTrigger/List"/>
+
+            </h:form>
+
             <style type="text/css">
                 .ui-tooltip {
                     width: 500px;
                     max-width: 500px;
                 }
             </style>
-           
+
             <h:form id="form">
                 <script type="text/javascript">
                     jQuery(function() {
@@ -47,25 +67,33 @@
                     });
                 </script>
 
+
+                <p:toolbar>
+
+
+
+                    <p:toolbarGroup align="right">
+
+                        <go:paginatorButtons controllerMBean="#{reglaTriggerController}" update=":form"/>
+                        <p:separator/>
+
+                        <p:commandButton ajax="false" action="#{reglaTriggerController.prepareCreate}" immediate="true"
+                                         value="Crear regla" icon="ui-icon ui-icon-plus" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" />
+                        <p:separator/>
+                        <p:commandButton ajax="false" action="#{reglaTriggerController.updateAllJustToFixLabels()}" 
+                                         value="UPDATE LABELS" rendered="#{filtroAcceso.esUsuarioSistema()}" />
+
+
+                    </p:toolbarGroup>  
+
+                </p:toolbar>
+
                 <p:dataTable id="tablareglas" value="#{reglaTriggerController.items}" var="item"                                     
                              emptyMessage="#{bundle.ListReglaEmpty}" 
                              rowKey="#{item.idTrigger}">
 
-                    <f:facet name="header">
-                        <h:outputText value="&nbsp;" style="float: left;"></h:outputText>
-                        <div align="right" >
-                            <p:outputPanel style="margin-top: -2px">  
-                                <p:inputText id="globalFilter" value="#{reglaTriggerController.searchPattern}"
-                                             style="width:250px;height:12px; border-radius: 4em; text-align: left; padding-left: 10px;" />  
-                                <p:watermark for="globalFilter" value="buscar" id="watermark"/>
-                                <p:commandButton value="" icon="fa fa-search"
-                                                 style="float: right; background: none; border: 0px !important;top: 4px;"
-                                                 actionListener="#{reglaTriggerController.prepareList()}" update=":form"/>
-                            </p:outputPanel>
-                        </div>
-                    </f:facet>
 
-                    
+
 
                     <p:column >
                         <f:facet name="header">
@@ -73,8 +101,8 @@
                         </f:facet>
                         <h:panelGroup id="nombreDescripcion">
                             <i class="fa fa-bars" style="cursor: move;"> &nbsp; </i>
-                            
-                              &nbsp;
+
+                            &nbsp;
                             <h:outputText id="Nombre" value="#{item.idTrigger}" style="font-weight: bold;"/>
                             &nbsp;
                             <h:outputText id="evento" title=""
@@ -82,8 +110,8 @@
                         </h:panelGroup>
                         <pe:tooltip for="nombreDescripcion" value="#{item.toString()}" />
                     </p:column>
-                    
-                     <p:column headerText="Estado" exportable="false">
+
+                    <p:column headerText="Estado" exportable="false">
                         <p:selectBooleanButton style="width: 50px; height: 20px;" id="EstadoRegla" value="#{item.reglaActiva}" onLabel="ON" offLabel="OFF" onIcon="ui-icon-check" offIcon="ui-icon-close">  
                             <p:ajax update=":form" listener="#{reglaTriggerController.update(item)}"/>  
                         </p:selectBooleanButton>  
@@ -99,31 +127,7 @@
                     </p:column>
 
                     <f:facet name="footer">
-                        <p:toolbar style="border: none;">
-                           <p:toolbarGroup align="left">
 
-                                <p:outputLabel value="Páginas de "/>
-                                <p:selectOneMenu id="cant" value="#{reglaTriggerController.paginationPageSize}" style="top: 7px" >
-                                    <p:ajax event="change" listener="#{reglaTriggerController.filter()}" update=":form"/>
-                                    <f:selectItems value="#{reglaTriggerController.pagination.pageSizesAvailable}"/>
-                                </p:selectOneMenu>
-
-                                <p:separator/>
-                                <h:outputText value="#{reglaTriggerController.pagination.pageFirstItem + 1}-#{reglaTriggerController.pagination.pageLastItem + 1} de #{reglaTriggerController.pagination.itemsCount}" rendered="#{reglaTriggerController.pagination.itemsCount gt 0}"></h:outputText>
-                                <p:separator/>
-                                <p:commandButton action="#{reglaTriggerController.first}" update=":form" disabled="#{not reglaTriggerController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{reglaTriggerController.pagination.itemsCount > 0}"/>
-                                <p:commandButton action="#{reglaTriggerController.previous}" update=":form" disabled="#{not reglaTriggerController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{reglaTriggerController.pagination.itemsCount > 0}"/>
-                                <p:commandButton action="#{reglaTriggerController.next}" update=":form" disabled="#{not reglaTriggerController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{reglaTriggerController.pagination.itemsCount > 0}"/>
-                                <p:commandButton action="#{reglaTriggerController.last}" update=":form" disabled="#{not reglaTriggerController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{reglaTriggerController.pagination.itemsCount > 0}"/>
-                                <p:separator/>
-
-                                <p:commandButton ajax="false" action="#{reglaTriggerController.prepareCreate}" value="Crear regla" icon="ui-icon ui-icon-plus" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" />
-
-                                <p:commandButton ajax="false" action="#{reglaTriggerController.updateAllJustToFixLabels()}" 
-                                                 value="UPDATE LABELS" rendered="#{filtroAcceso.esUsuarioSistema()}" />
-
-                           </p:toolbarGroup>
-                        </p:toolbar>
                     </f:facet>
 
 

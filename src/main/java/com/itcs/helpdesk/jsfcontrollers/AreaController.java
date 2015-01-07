@@ -86,14 +86,14 @@ public class AreaController extends AbstractManagedBean<Area> implements Seriali
     }
 
     public String prepareView(String idArea) {
-        current = getJpaController().getAreaFindByIdArea(idArea);
+        current = getJpaController().find(Area.class, idArea);
         editActiveIndex = 0;
         return "/script/area/View";
     }
 
     public SelectItem[] getStringItemsAvailableSelectOne() {
         List<Area> lista = (List<Area>) getJpaController().findAll(Area.class);
-        List<String> ids = new LinkedList<String>();
+        List<String> ids = new LinkedList<>();
         for (Area area : lista) {
             ids.add(area.getIdArea());
         }
@@ -109,7 +109,7 @@ public class AreaController extends AbstractManagedBean<Area> implements Seriali
     public String create() {
         try {
             current.setEditable(true);
-            getJpaController().persistArea(current);
+            getJpaController().persist(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AreaCreated"));
             return prepareEdit(current.getIdArea());
         } catch (Exception e) {
@@ -120,7 +120,7 @@ public class AreaController extends AbstractManagedBean<Area> implements Seriali
     }
 
     public String prepareEdit(String idArea) {
-        current = getJpaController().getAreaFindByIdArea(idArea);
+        current = getJpaController().find(Area.class, idArea);
         editActiveIndex = 0;
         return "/script/area/Edit";
     }
@@ -182,7 +182,7 @@ public class AreaController extends AbstractManagedBean<Area> implements Seriali
 
     private void performDestroy() {
         try {
-            getJpaController().removeArea(current);
+            getJpaController().remove(Area.class, current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AreaDeleted"));
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
@@ -245,7 +245,7 @@ public class AreaController extends AbstractManagedBean<Area> implements Seriali
             root = new DefaultTreeNode("Áreas", null);
 //        TreeNode areasNode = new DefaultTreeNode("Areas", root); 
 
-            List<Area> areas = getJpaController().getAreaFindAll();
+            List<Area> areas = (List<Area>) getJpaController().findAll(Area.class);
             for (Area area : areas) {
                 TreeNode areaNode = new DefaultTreeNode("areas", area, root);
 //                TreeNode gruposNode = new DefaultTreeNode("Grupos", areaNode);
@@ -344,7 +344,7 @@ public class AreaController extends AbstractManagedBean<Area> implements Seriali
             }
             AreaController controller = (AreaController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "areaController");
-            return controller.getJpaController().getAreaFindByIdArea(getKey(value));
+            return controller.getJpaController().find(Area.class, getKey(value));
         }
 
         java.lang.String getKey(String value) {

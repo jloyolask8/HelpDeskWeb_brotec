@@ -5,11 +5,8 @@
 package com.itcs.helpdesk.webapputils;
 
 import com.itcs.helpdesk.persistence.entities.Caso;
-import com.itcs.helpdesk.persistence.entities.Nota;
 import com.itcs.helpdesk.persistence.entityenums.EnumCanal;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso;
-import com.itcs.helpdesk.persistence.entityenums.EnumTipoNota;
-import com.itcs.helpdesk.persistence.entityenums.EnumUsuariosBase;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.util.ApplicationConfig;
 import com.itcs.helpdesk.util.Log;
@@ -25,7 +22,6 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;

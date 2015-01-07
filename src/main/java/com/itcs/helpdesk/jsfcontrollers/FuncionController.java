@@ -19,7 +19,6 @@ import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import org.primefaces.model.SelectableDataModel;
 
-
 @ManagedBean(name = "funcionController")
 @SessionScoped
 public class FuncionController extends AbstractManagedBean<Funcion> implements Serializable {
@@ -40,7 +39,6 @@ public class FuncionController extends AbstractManagedBean<Funcion> implements S
 //        }
 //        return current;
 //    }
-
     @Override
     public PaginationHelper getPagination() {
         if (pagination == null) {
@@ -59,6 +57,7 @@ public class FuncionController extends AbstractManagedBean<Funcion> implements S
         return pagination;
     }
 
+    @Override
     public String prepareList() {
         recreateModel();
         return "/script/funcion/List";
@@ -72,7 +71,7 @@ public class FuncionController extends AbstractManagedBean<Funcion> implements S
 
     public String create() {
         try {
-            getJpaController().persistFuncion(current);
+            getJpaController().persist(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("FuncionCreated"));
             return prepareCreate();
         } catch (Exception e) {
@@ -84,46 +83,13 @@ public class FuncionController extends AbstractManagedBean<Funcion> implements S
 
     public String update() {
         try {
-            getJpaController().mergeFuncion(current);
+            getJpaController().merge(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("FuncionUpdated"));
             return "/script/funcion/View";
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
             return null;
-        }
-    }
-
-    public String destroy() {
-        if (current == null) {
-            return "";
-        }
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        performDestroy();
-        recreateModel();
-        return "/script/funcion/List";
-    }
-
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "/script/funcion/View";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "/script/funcion/List";
-        }
-    }
-
-    private void performDestroy() {
-        try {
-            getJpaController().removeFuncion(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("FuncionDeleted"));
-        } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
         }
     }
 
@@ -160,8 +126,6 @@ public class FuncionController extends AbstractManagedBean<Funcion> implements S
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-
-
 //    public SelectItem[] getItemsAvailableSelectMany() {
 //        return JsfUtil.getSelectItems(getJpaController().getFuncionFindAll(), false);
 //    }
@@ -169,7 +133,6 @@ public class FuncionController extends AbstractManagedBean<Funcion> implements S
 //    public SelectItem[] getItemsAvailableSelectOne() {
 //        return JsfUtil.getSelectItems(getJpaController().getFuncionFindAll(), true);
 //    }
-
     @FacesConverter(forClass = Funcion.class)
     public static class FuncionControllerConverter implements Converter {
 
@@ -180,7 +143,7 @@ public class FuncionController extends AbstractManagedBean<Funcion> implements S
             }
             FuncionController controller = (FuncionController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "funcionController");
-            return controller.getJpaController().getFuncionFindByIdFuncion(getKey(value));
+            return controller.getJpaController().find(Funcion.class, getKey(value));
         }
 
         java.lang.Integer getKey(String value) {
@@ -209,6 +172,7 @@ public class FuncionController extends AbstractManagedBean<Funcion> implements S
         }
     }
 }
+
 class FuncionDataModel extends ListDataModel<Funcion> implements SelectableDataModel<Funcion> {
 
     public FuncionDataModel() {

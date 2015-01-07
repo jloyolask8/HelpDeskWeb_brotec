@@ -6,24 +6,29 @@ package com.itcs.helpdesk.webapputils;
 
 import com.itcs.commons.email.EnumEmailSettingKeys;
 import com.itcs.helpdesk.persistence.entities.AppSetting;
+import com.itcs.helpdesk.persistence.entities.Area;
 import com.itcs.helpdesk.persistence.entities.Canal;
-import com.itcs.helpdesk.persistence.jpa.AppSettingJpaController;
-import com.itcs.helpdesk.persistence.jpa.CanalJpaController;
+import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.quartz.HelpDeskScheluder;
 import com.itcs.helpdesk.util.ApplicationConfig;
 import com.itcs.helpdesk.util.AutomaticOpsExecutor;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.MailClientFactory;
+import com.itcs.helpdesk.util.RulesEngine;
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
+import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.sql.DataSource;
 import javax.transaction.UserTransaction;
 import org.quartz.SchedulerException;
 
@@ -52,7 +57,7 @@ public class AppStarter implements ServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         try {
-            Log.createLogger(this.getClass().getName()).logInfo("stopping GoDesk Scheluder");
+            Log.createLogger(this.getClass().getName()).logInfo("*** Stopping GoDesk-Quartz Scheluder ***");
             HelpDeskScheluder.stop();
         } catch (SchedulerException ex) {
             Logger.getLogger(AppStarter.class.getName()).log(Level.SEVERE, null, ex);
@@ -60,14 +65,14 @@ public class AppStarter implements ServletContextListener {
     }
 
     private void inicializar() throws SchedulerException {
-        Log.createLogger(this.getClass().getName()).logInfo("Inicializando GoDesk");
+        Log.createLogger(this.getClass().getName()).logInfo("Initializing GoDesk Application... ");
 
         AutomaticOpsExecutor autoOpsExec = new AutomaticOpsExecutor(utx, emf);
         autoOpsExec.verificaDatosBase();
 
         //1. Load Settings FROM APP_SETTING Table
-        AppSettingJpaController appSettingJpaController = new AppSettingJpaController(utx, emf);
-        List<AppSetting> appSettings = appSettingJpaController.findAppSettingEntities();
+        JPAServiceFacade appSettingJpaController = new JPAServiceFacade(utx, emf);
+        List<AppSetting> appSettings = (List<AppSetting>) appSettingJpaController.findAll(AppSetting.class);
         Properties props = new Properties();
         for (AppSetting appSetting : appSettings) {
             if (appSetting != null) {
@@ -85,7 +90,7 @@ public class AppStarter implements ServletContextListener {
 
         //done
         //2. Load Areas, and configuration of each Area. Each Area will have its own email configuration to send and read emails.
-        CanalJpaController canalJpaController = new CanalJpaController(utx, emf);
+        JPAServiceFacade canalJpaController = new JPAServiceFacade(utx, emf);
         List<Canal> canales = canalJpaController.findCanalTipoEmail();
 //        AreaJpaController areaJpaController = new AreaJpaController(utx, emf);
 //        List<Area> areas = areaJpaController.findAreaEntities();
@@ -99,12 +104,14 @@ public class AppStarter implements ServletContextListener {
                         MailClientFactory.createInstance(canal);
                         String freqStr = canal.getSetting(EnumEmailSettingKeys.CHECK_FREQUENCY.getKey());
                         int freq = HelpDeskScheluder.DEFAULT_CHECK_EMAIL_INTERVAL;
-                        try{
-                            if(freqStr != null){
+                        try {
+                            if (freqStr != null) {
                                 freq = Integer.parseInt(freqStr);
                             }
-                        }catch(NumberFormatException ex){/*probably a weird value*/}
-                        
+                        } catch (NumberFormatException ex) {/*probably a weird value*/
+
+                        }
+
                         HelpDeskScheluder.scheduleRevisarCorreo(canal.getIdCanal(), freq);//5 minutes fixed
 
                     } catch (SchedulerException ex) {
@@ -119,5 +126,24 @@ public class AppStarter implements ServletContextListener {
 
 //        autoOpsExec.agendarAlertasForAllCasos();
 //        autoOpsExec.agendarAgendarAlertas();
+    }
+
+    static Connection lookupConnection() {
+        String DATASOURCE_CONTEXT = "jdbc/godesk_db_ds";
+
+        Connection result = null;
+        try {
+            Context initialContext = new InitialContext();
+            DataSource datasource = (DataSource) initialContext.lookup(DATASOURCE_CONTEXT);
+            if (datasource != null) {
+                result = datasource.getConnection();
+                System.out.println("DataSource Connection:" + result);
+            } else {
+                System.out.println("Failed to lookup datasource.");
+            }
+        } catch (Exception ex) {
+            System.out.println("Cannot get connection: " + ex);
+        }
+        return result;
     }
 }

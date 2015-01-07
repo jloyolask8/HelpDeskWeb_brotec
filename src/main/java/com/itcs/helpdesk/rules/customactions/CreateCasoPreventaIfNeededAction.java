@@ -56,7 +56,7 @@ public class CreateCasoPreventaIfNeededAction extends Action{
             //La Cotizacion queda atachada al caso de preventa, si llegan nuevas cotizaciones se atachan al caso de preventa abierto para ese cliente.
             //select caso from caso where caso.idcliente = cliente and estado = abierto and tipo = preventa
             //se agrega filtro por producto!
-            Caso padre = getJpaController().getCasoJpa().findCasoBy(casoOrigen.getEmailCliente()/*, casoOrigen.getIdProducto()*/,
+            Caso padre = getJpaController().findCasoBy(casoOrigen.getEmailCliente()/*, casoOrigen.getIdProducto()*/,
                     EnumEstadoCaso.ABIERTO.getEstado(), EnumTipoCaso.PREVENTA.getTipoCaso());
             if (padre == null) {
                 padre = new Caso();

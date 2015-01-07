@@ -1,7 +1,6 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.Cliente;
 import com.itcs.helpdesk.persistence.entities.EmailCliente;
 import com.itcs.helpdesk.persistence.entities.ProductoContratado;
@@ -114,7 +113,7 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
         try {
             List<EmailCliente> listaEmails = current.getEmailClienteList();
             current.setEmailClienteList(null);
-            getJpaController().persistCliente(current);
+            getJpaController().persist(current);
             for (EmailCliente emailCliente : listaEmails) {
                 EmailCliente oldEmailCliente = getJpaController().find(EmailCliente.class, emailCliente.getEmailCliente());
                 if (null == oldEmailCliente) {
@@ -220,7 +219,7 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
                     getJpaController().persist(emailCliente);
                 }
             }
-            getJpaController().mergeCliente(current);
+            getJpaController().merge(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ClienteUpdated"));
             return "/script/cliente/View";
         } catch (Exception e) {
@@ -269,7 +268,7 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
 
     private void performDestroy() {
         try {
-            getJpaController().removeCliente(current);
+            getJpaController().remove(Cliente.class, current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ClienteDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -320,7 +319,7 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
         String rutFormateado = UtilesRut.formatear(getSelected().getRut());
         getSelected().setRut(rutFormateado);
 
-        Cliente c = getJpaController().getClienteJpaController().findByRut(rutFormateado);
+        Cliente c = getJpaController().findClienteByRut(rutFormateado);
         if (c != null) {//this client exists
             setSelected(c);
             setCanCreate(false);
@@ -377,7 +376,7 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
             }
             ClienteController controller = (ClienteController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "clienteController");
-            return controller.getJpaController().findCliente(getKey(value));
+            return controller.getJpaController().find(Cliente.class, getKey(value));
         }
 
         java.lang.Integer getKey(String value) {

@@ -5,7 +5,7 @@ import com.itcs.helpdesk.jsfcontrollers.util.JPAFilterHelper;
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Caso;
-import com.itcs.helpdesk.persistence.entities.Caso_;
+import com.itcs.helpdesk.persistence.entities.metadata.Caso_;
 import com.itcs.helpdesk.persistence.entities.FiltroVista;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entities.Vista;
@@ -17,10 +17,7 @@ import com.itcs.helpdesk.persistence.utils.OrderBy;
 import com.itcs.helpdesk.util.Constants;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -74,7 +71,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
      */
     public JPAFilterHelper getFilterHelper2() {
         if (filterHelper2 == null) {
-            filterHelper2 = new JPAFilterHelper(getSelected().getBaseEntityType(), emf) {
+            filterHelper2 = new JPAFilterHelper(getSelected().getBaseEntityType()) {
                 @Override
                 public JPAServiceFacade getJpaService() {
                     return getJpaController();
@@ -172,7 +169,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         view.setFechaCreacion(now);
         view.setFechaModif(now);
 
-        getJpaController().getVistaJpaController().create(view);
+        getJpaController().persist(view);
         resetVistas();
 
         JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("VistaCreated"));
@@ -244,7 +241,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
 
                 Date now = new Date();
                 current.setFechaModif(now);
-                getJpaController().getVistaJpaController().edit(current);
+                getJpaController().merge(current);
                 JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("VistaUpdated"));
                 return prepareList();
             } else {
@@ -286,7 +283,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
 
     private void performDestroy() {
         try {
-            getJpaController().getVistaJpaController().destroy(current.getIdVista());
+            getJpaController().remove(Vista.class, current.getIdVista());
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("VistaDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));

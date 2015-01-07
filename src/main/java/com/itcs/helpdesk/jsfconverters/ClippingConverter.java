@@ -24,7 +24,7 @@ public class ClippingConverter implements Converter {
         }
             CasoController controller = (CasoController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "casoController");
-            return controller.getJpaController().getClippingJpaController().findClipping(getKey(value));
+            return controller.getJpaController().find(Clipping.class, getKey(value));
     }
 
     java.lang.Integer getKey(String value) {

@@ -1,19 +1,15 @@
 package com.itcs.helpdesk.jsfcontrollers.util;
 
-import com.itcs.helpdesk.persistence.entities.EmailCliente;
 import com.itcs.helpdesk.persistence.entities.FieldType;
 import com.itcs.helpdesk.persistence.entities.FiltroVista;
 import com.itcs.helpdesk.persistence.entities.TipoComparacion;
 import com.itcs.helpdesk.persistence.entities.Usuario;
-import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.entityenums.EnumFieldType;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
 import com.itcs.helpdesk.persistence.jpa.AbstractJPAController;
-import com.itcs.helpdesk.persistence.jpa.custom.CasoJPACustomController;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.persistence.utils.ComparableField;
 import java.io.Serializable;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -21,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -46,11 +41,12 @@ public abstract class JPAFilterHelper implements Serializable {
     public List<ComparableField> comparableFields;
     private Map<String, ComparableField> comparableFieldsMap;
 
-    private final transient EntityManagerFactory emf;
+//    private final transient EntityManagerFactory emf;
+//    private final transient JPAServiceFacade jpaService;
 
-    public JPAFilterHelper(String baseEntityClassName, EntityManagerFactory emf) {
+    public JPAFilterHelper(String baseEntityClassName) {
         this.baseEntityClassName = baseEntityClassName;
-        this.emf = emf;
+//        this.jpaService = jpaService;
     }
 
 //    public Long count(Usuario who) throws IllegalStateException, ClassNotFoundException {
@@ -153,7 +149,7 @@ public abstract class JPAFilterHelper implements Serializable {
             }
 
             for (Object o : entities) {
-                selectItems.add(new SelectItem(emf.getPersistenceUnitUtil().getIdentifier(o), o.toString()));
+                selectItems.add(new SelectItem(getJpaService().getIdentifier(o), o.toString()));
             }
 
             return (selectItems);
@@ -175,13 +171,13 @@ public abstract class JPAFilterHelper implements Serializable {
     private List<SelectItem> getPlaceHolderItems(boolean includeAny, boolean includeNull, boolean includeCurrentUser, ComparableField comparableField) {
         List<SelectItem> selectItems = new ArrayList<>();
         if (includeAny) {
-            selectItems.add(new SelectItem(CasoJPACustomController.PLACE_HOLDER_ANY, PLACE_HOLDER_ANY_LABEL));
+            selectItems.add(new SelectItem(AbstractJPAController.PLACE_HOLDER_ANY, PLACE_HOLDER_ANY_LABEL));
         }
         if (includeNull) {
-            selectItems.add(new SelectItem(CasoJPACustomController.PLACE_HOLDER_NULL, PLACE_HOLDER_NULL_LABEL));
+            selectItems.add(new SelectItem(AbstractJPAController.PLACE_HOLDER_NULL, PLACE_HOLDER_NULL_LABEL));
         }
         if (includeCurrentUser && comparableField.getTipo().equals(Usuario.class)) {
-            selectItems.add(new SelectItem(CasoJPACustomController.PLACE_HOLDER_CURRENT_USER, PLACE_HOLDER_CURRENT_USER_LABEL));
+            selectItems.add(new SelectItem(AbstractJPAController.PLACE_HOLDER_CURRENT_USER, PLACE_HOLDER_CURRENT_USER_LABEL));
         }
         return selectItems;
     }
@@ -204,7 +200,7 @@ public abstract class JPAFilterHelper implements Serializable {
             List<SelectItem> selectItems = getPlaceHolderItems(includeAny, includeNull, includeCurrentUser, comparableField);
 
             for (Object o : entities) {
-                selectItems.add(new SelectItem(emf.getPersistenceUnitUtil().getIdentifier(o), o.toString()));
+                selectItems.add(new SelectItem(getJpaService().getIdentifier(o), o.toString()));
             }
 
             SelectItem[] selectArray = new SelectItem[selectItems.size()];
@@ -259,8 +255,8 @@ public abstract class JPAFilterHelper implements Serializable {
         if (comparableField.getFieldTypeId().equals(EnumFieldType.SELECTONE_PLACE_HOLDER.getFieldType())) {
             //El valor es el id de un entity, que tipo de Entity?= comparableField.tipo
             List<SelectItem> selectItems = new ArrayList<>(2);
-            selectItems.add(new SelectItem(CasoJPACustomController.PLACE_HOLDER_ANY, PLACE_HOLDER_ANY_LABEL));
-            selectItems.add(new SelectItem(CasoJPACustomController.PLACE_HOLDER_NULL, PLACE_HOLDER_NULL_LABEL));
+            selectItems.add(new SelectItem(AbstractJPAController.PLACE_HOLDER_ANY, PLACE_HOLDER_ANY_LABEL));
+            selectItems.add(new SelectItem(AbstractJPAController.PLACE_HOLDER_NULL, PLACE_HOLDER_NULL_LABEL));
             SelectItem[] selectArray = new SelectItem[selectItems.size()];
             return selectItems.toArray(selectArray);
 

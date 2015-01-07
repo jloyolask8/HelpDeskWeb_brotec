@@ -85,7 +85,7 @@ public class RecintoController extends AbstractManagedBean<Recinto> implements S
 
     public String create() {
         try {
-            getJpaController().persistRecinto(current);
+            getJpaController().persist(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("RecintoCreated"));
             return prepareCreate();
         } catch (Exception e) {
@@ -108,7 +108,7 @@ public class RecintoController extends AbstractManagedBean<Recinto> implements S
 
     public String update() {
         try {
-            getJpaController().mergeRecinto(current);
+            getJpaController().merge(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("RecintoUpdated"));
             return "/script/estado_caso/View";
         } catch (Exception e) {
@@ -158,7 +158,7 @@ public class RecintoController extends AbstractManagedBean<Recinto> implements S
 
     private void performDestroy() {
         try {
-            getJpaController().removeRecinto(current);
+            getJpaController().remove(Recinto.class, current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("RecintoDeleted"));
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());

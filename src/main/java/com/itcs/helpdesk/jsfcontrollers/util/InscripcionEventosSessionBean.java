@@ -85,7 +85,7 @@ public class InscripcionEventosSessionBean extends AbstractManagedBean<Caso> imp
             if (rutCliente_wizard != null && !org.apache.commons.lang3.StringUtils.isEmpty(rutCliente_wizard)) {
                 String formattedRut = UtilesRut.formatear(rutCliente_wizard);
                 getDatos().setRut(formattedRut);
-                Cliente c = getJpaController().getClienteJpaController().findByRut(formattedRut);
+                Cliente c = getJpaController().findClienteByRut(formattedRut);
                 if (c != null) {//this client exists
                     if (c.getEmailClienteList() != null && !c.getEmailClienteList().isEmpty()) {
                         EmailCliente emailCliente = c.getEmailClienteList().get(0);
@@ -193,7 +193,7 @@ public class InscripcionEventosSessionBean extends AbstractManagedBean<Caso> imp
 //        EmailCliente emailClienteEntity = getJpaController().getEmailClienteFindByEmail(datos.getEmail());
 //        if (emailClienteEntity == null) {
             //no existe el email, puede ser que con el rut lo encontremos.
-            Cliente clienteEntity = getJpaController().getClienteJpaController().findByRut(datos.getRut());
+            Cliente clienteEntity = getJpaController().findClienteByRut(datos.getRut());
             if (clienteEntity == null) {
                 //this dude is not a client!
                 addWarnMessage("Lo sentimos este evento es sólo para clientes, Ud. no está registrado como cliente de la Inmobiliaria. Si ésta información es incorrecta favor notifíquenos enviando un mail a sac@brotec-icafal.cl.");

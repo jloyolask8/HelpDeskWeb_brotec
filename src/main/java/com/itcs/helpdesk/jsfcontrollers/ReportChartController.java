@@ -194,7 +194,7 @@ public class ReportChartController extends AbstractManagedBean<ReportChart> impl
         
         if (filterHelperForSelectedEntityType == null) {
             if (getSelected().getBaseEntityType() != null) {
-                filterHelperForSelectedEntityType = new JPAFilterHelper(getSelected().getBaseEntityType(), emf) {
+                filterHelperForSelectedEntityType = new JPAFilterHelper(getSelected().getBaseEntityType()) {
                     @Override
                     public JPAServiceFacade getJpaService() {
                         return getJpaController();
@@ -204,7 +204,7 @@ public class ReportChartController extends AbstractManagedBean<ReportChart> impl
 
         } else {
             if (getSelected().getBaseEntityType() != null && !filterHelperForSelectedEntityType.getBaseEntityClassName().equals(getSelected().getBaseEntityType())) {
-                filterHelperForSelectedEntityType = new JPAFilterHelper(getSelected().getBaseEntityType(), emf) {
+                filterHelperForSelectedEntityType = new JPAFilterHelper(getSelected().getBaseEntityType()) {
                     @Override
                     public JPAServiceFacade getJpaService() {
                         return getJpaController();

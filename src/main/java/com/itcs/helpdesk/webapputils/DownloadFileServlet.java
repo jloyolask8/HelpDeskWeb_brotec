@@ -57,7 +57,7 @@ public class DownloadFileServlet extends HttpServlet {
             if (fileId == null || "".equals(fileId)) {
                 response.sendError(404, "Debe especificar el id del archivo.");
             }
-            Archivo existente = getJpaController().getArchivoFindByIdAttachment(Long.parseLong(fileId));
+            Archivo existente = getJpaController().find(Archivo.class, Long.parseLong(fileId));
             if (existente != null) {
                 System.out.println("existe archivo con id " + fileId);
                 System.out.println(existente.getContentType());

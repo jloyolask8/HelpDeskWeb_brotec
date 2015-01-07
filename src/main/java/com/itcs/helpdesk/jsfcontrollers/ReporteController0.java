@@ -10,7 +10,7 @@ import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Area;
 import com.itcs.helpdesk.persistence.entities.Caso;
-import com.itcs.helpdesk.persistence.entities.Caso_;
+import com.itcs.helpdesk.persistence.entities.metadata.Caso_;
 import com.itcs.helpdesk.persistence.entities.EstadoCaso;
 import com.itcs.helpdesk.persistence.entities.FiltroVista;
 import com.itcs.helpdesk.persistence.entities.Grupo;
@@ -24,7 +24,7 @@ import com.itcs.helpdesk.persistence.entityenums.EnumFieldType;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
 import com.itcs.helpdesk.persistence.entityenums.EnumUsuariosBase;
-import com.itcs.helpdesk.persistence.jpa.custom.CasoJPACustomController;
+import com.itcs.helpdesk.persistence.jpa.AbstractJPAController;
 import com.itcs.helpdesk.persistence.utils.ComparableField;
 import com.itcs.helpdesk.util.DateUtils;
 import java.io.Serializable;
@@ -446,7 +446,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                         for (String value : campoCompCasoEjeXSeriesEntity.getValoresList()) {
 
                             String label;
-                            if (value.equalsIgnoreCase(CasoJPACustomController.PLACE_HOLDER_NULL)) {
+                            if (value.equalsIgnoreCase(AbstractJPAController.PLACE_HOLDER_NULL)) {
                                 label = JPAFilterHelper.PLACE_HOLDER_NULL_LABEL;
                             } else {
                                 try {
@@ -495,7 +495,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                         //SELECTED VALUE
 
                         String label;
-                        if (campoCompCasoEjeXSeriesEntity.getValor().equalsIgnoreCase(CasoJPACustomController.PLACE_HOLDER_NULL)) {
+                        if (campoCompCasoEjeXSeriesEntity.getValor().equalsIgnoreCase(AbstractJPAController.PLACE_HOLDER_NULL)) {
                             label = JPAFilterHelper.PLACE_HOLDER_NULL_LABEL;
                         } else {
                             try {
@@ -704,7 +704,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                     for (String value : campoCompCasoEjeXSeriesEntity.getValoresList()) {
 
                         String label;
-                        if (value.equalsIgnoreCase(CasoJPACustomController.PLACE_HOLDER_NULL)) {
+                        if (value.equalsIgnoreCase(AbstractJPAController.PLACE_HOLDER_NULL)) {
                             label = JPAFilterHelper.PLACE_HOLDER_NULL_LABEL;
                         } else {
                             try {
@@ -750,7 +750,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                     //SELECTED VALUE
 
                     String label;
-                    if (campoCompCasoEjeXSeriesEntity.getValor().equalsIgnoreCase(CasoJPACustomController.PLACE_HOLDER_NULL)) {
+                    if (campoCompCasoEjeXSeriesEntity.getValor().equalsIgnoreCase(AbstractJPAController.PLACE_HOLDER_NULL)) {
                         label = JPAFilterHelper.PLACE_HOLDER_NULL_LABEL;
                     } else {
                         try {
@@ -852,7 +852,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
             FiltroVista filtroNotAssigned = new FiltroVista();
             filtroNotAssigned.setIdCampo(Caso_.AREA_FIELD_NAME);
             filtroNotAssigned.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
-            filtroNotAssigned.setValor(CasoJPACustomController.PLACE_HOLDER_NULL);
+            filtroNotAssigned.setValor(AbstractJPAController.PLACE_HOLDER_NULL);
             filtroNotAssigned.setValorLabel("SIN AREA");
             filtroNotAssigned.setIdVista(vista0);
             if (vista0.getFiltrosVistaList() == null) {
@@ -943,7 +943,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
 
         List<Interval> rangeStartDates = DateUtils.getRangeStartDates(startOfLastWeek.toDate(), endOfLastWeek.toDate(), Calendar.DAY_OF_MONTH);
 
-        List<EstadoCaso> estados = getJpaController().getEstadoCasoFindAll();//Y-axis
+        List<EstadoCaso> estados = (List<EstadoCaso>) getJpaController().findAll(EstadoCaso.class);//Y-axis
         for (EstadoCaso estado : estados) {
 
             ChartSeries serieEstado = new ChartSeries();
@@ -953,7 +953,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
 //            FiltroVista filtroNull = new FiltroVista();
 //            filtroNull.setIdCampo(Caso_.ESTADO_FIELD_NAME);
 //            filtroNull.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
-//            filtroNull.setValor(CasoJPACustomController.PLACE_HOLDER_NULL);
+//            filtroNull.setValor(AbstractJPAController.PLACE_HOLDER_NULL);
 //            filtroNull.setValorLabel("SIN ESTADO!");
 //            filtroNull.setIdVista(vista0);
 //            if (vista0.getFiltrosVistaList() == null) {
@@ -1175,8 +1175,8 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         setTipoGraficoSelected("barChart");
         setXaxisLabel("Areas");
 
-        List<EstadoCaso> estados = getJpaController().getEstadoCasoFindAll();//Y-axis
-        List<Area> areas = getJpaController().getAreaFindAll();//X-axix
+        List<EstadoCaso> estados = (List<EstadoCaso>) getJpaController().findAll(EstadoCaso.class);//Y-axis
+        List<Area> areas = (List<Area>) getJpaController().findAll(Area.class);//X-axix
 
         viewMatrix = new HashMap<>();
         int seriesIndex = 0;
@@ -1238,7 +1238,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         setTipoGraficoSelected("barChart");
         setXaxisLabel("Areas");
 
-        List<EstadoCaso> estados = getJpaController().getEstadoCasoFindAll();//Y-axis
+        List<EstadoCaso> estados = (List<EstadoCaso>) getJpaController().findAll(EstadoCaso.class);//Y-axis
         List<Grupo> grupos = (List<Grupo>) getJpaController().findAll(Grupo.class);//X-axix
 
         viewMatrix = new HashMap<>();
@@ -1301,7 +1301,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         setTipoGraficoSelected("barChart");
         setXaxisLabel("Ejecutivos");
 
-        List<EstadoCaso> estados = getJpaController().getEstadoCasoFindAll();//Y
+        List<EstadoCaso> estados = (List<EstadoCaso>) getJpaController().findAll(EstadoCaso.class);//Y-axis
         List<Usuario> agents = (List<Usuario>) getJpaController().findAll(Usuario.class);//X
 
         try {
@@ -1325,7 +1325,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
             FiltroVista filtroNotAssigned = new FiltroVista();
             filtroNotAssigned.setIdCampo(Caso_.OWNER_FIELD_NAME);
             filtroNotAssigned.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
-            filtroNotAssigned.setValor(CasoJPACustomController.PLACE_HOLDER_NULL);
+            filtroNotAssigned.setValor(AbstractJPAController.PLACE_HOLDER_NULL);
             filtroNotAssigned.setValorLabel("sin asignar");
             filtroNotAssigned.setIdVista(vista0);
             if (vista0.getFiltrosVistaList() == null) {
@@ -1467,7 +1467,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         FiltroVista filtroNotAssigned = new FiltroVista();
         filtroNotAssigned.setIdCampo(Caso_.OWNER_FIELD_NAME);
         filtroNotAssigned.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
-        filtroNotAssigned.setValor(CasoJPACustomController.PLACE_HOLDER_NULL);
+        filtroNotAssigned.setValor(AbstractJPAController.PLACE_HOLDER_NULL);
         filtroNotAssigned.setValorLabel("sin asignar");
         filtroNotAssigned.setIdVista(vista0);
         if (vista0.getFiltrosVistaList() == null) {
@@ -1523,7 +1523,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         ArrayList<Vista> vistaItems = new ArrayList<>();
 
         //1.Que quiero mostrar en el eje x ???  = Areas.
-        List<Area> areas = getJpaController().getAreaFindAll();
+        List<Area> areas = (List<Area>) getJpaController().findAll(Area.class);//X-axix
         //2. Para cada elemento del eje x, como calculo el numero?? = varios filtros. por defecto hay un filtro que siempre va = el exe x.
         for (Area area : areas) {
             Vista vista1 = new Vista(Caso.class);
@@ -1604,10 +1604,10 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
             filtroAsignadoAgente.setIdCampo(Caso_.OWNER_FIELD_NAME);
             filtroAsignadoAgente.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
             if (asignados) {
-                filtroAsignadoAgente.setValor(CasoJPACustomController.PLACE_HOLDER_ANY);
+                filtroAsignadoAgente.setValor(AbstractJPAController.PLACE_HOLDER_ANY);
                 filtroAsignadoAgente.setValorLabel(JPAFilterHelper.PLACE_HOLDER_ANY_LABEL);
             } else {
-                filtroAsignadoAgente.setValor(CasoJPACustomController.PLACE_HOLDER_NULL);
+                filtroAsignadoAgente.setValor(AbstractJPAController.PLACE_HOLDER_NULL);
                 filtroAsignadoAgente.setValorLabel(JPAFilterHelper.PLACE_HOLDER_NULL_LABEL);
             }
 

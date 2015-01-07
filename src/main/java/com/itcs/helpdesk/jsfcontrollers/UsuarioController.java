@@ -2,9 +2,15 @@ package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
+import com.itcs.helpdesk.persistence.entities.Caso;
+import com.itcs.helpdesk.persistence.entities.metadata.Caso_;
+import com.itcs.helpdesk.persistence.entities.FiltroVista;
 import com.itcs.helpdesk.persistence.entities.Grupo;
 import com.itcs.helpdesk.persistence.entities.Rol;
 import com.itcs.helpdesk.persistence.entities.Usuario;
+import com.itcs.helpdesk.persistence.entities.Vista;
+import com.itcs.helpdesk.persistence.entityenums.EnumEstadoCaso;
+import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
 import com.itcs.helpdesk.persistence.entityenums.EnumUsuariosBase;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.UtilSecurity;
@@ -17,6 +23,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
@@ -75,8 +83,9 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
 
     public MeterGaugeChartModel getMeterGaugeModel() {
 
+        Long count = 0L;
         List<Number> intervals = new ArrayList<Number>() {
-            {
+             {
                 add(15);
                 add(30);
                 add(45);
@@ -84,7 +93,34 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
             }
         };
 
-        return new MeterGaugeChartModel(getJpaController().getCasoCountOpen(current), intervals);
+        try {
+
+            Vista vista1 = new Vista(Caso.class);
+            vista1.setNombre("Count Casos open by user");
+
+            FiltroVista filtroOwner = new FiltroVista();
+            filtroOwner.setIdFiltro(1);//otherwise i dont know what to remove dude.
+            filtroOwner.setIdCampo(Caso_.OWNER_FIELD_NAME);
+            filtroOwner.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+            filtroOwner.setValor(userSessionBean.getCurrent().getIdUsuario());
+            filtroOwner.setIdVista(vista1);
+            vista1.getFiltrosVistaList().add(filtroOwner);
+
+            FiltroVista filtroEstado = new FiltroVista();
+            filtroEstado.setIdFiltro(2);//otherwise i dont know what to remove dude.
+            filtroEstado.setIdCampo(Caso_.ESTADO_FIELD_NAME);
+            filtroEstado.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+            filtroEstado.setValor(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
+            filtroEstado.setIdVista(vista1);
+            vista1.getFiltrosVistaList().add(filtroEstado);
+
+            count = getJpaController().countEntities(vista1);
+
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, "ClassNotFoundException", ex);
+        }
+
+        return new MeterGaugeChartModel(count, intervals);
     }
 
 //    public Usuario getSelected() {
@@ -156,7 +192,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
         current = new Usuario();
         current.setSupervisor(userSessionBean.getCurrent());
         selectedItemIndex = -1;
-        setGruposDualListModel(new DualListModel<>(getJpaController().getGrupoFindAll(), new ArrayList<Grupo>()));
+        setGruposDualListModel(new DualListModel<>((List<Grupo>) getJpaController().findAll(Grupo.class), new ArrayList<Grupo>()));
 
         return "/script/usuario/Create";
     }
@@ -251,7 +287,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
         current.setPass("");
         roles = (List<Rol>) current.getRolList();
 
-        setGruposDualListModel(new DualListModel<>(getJpaController().getGrupoFindAll(), current.getGrupoList()));
+        setGruposDualListModel(new DualListModel<>((List<Grupo>) getJpaController().findAll(Grupo.class), current.getGrupoList()));
         for (Grupo grup : current.getGrupoList()) {
             if (getGruposDualListModel().getSource().contains(grup)) {
                 getGruposDualListModel().getSource().remove(grup);

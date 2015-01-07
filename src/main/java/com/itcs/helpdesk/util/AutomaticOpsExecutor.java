@@ -1,14 +1,23 @@
 package com.itcs.helpdesk.util;
 
+import com.itcs.helpdesk.persistence.entities.AppSetting;
+import com.itcs.helpdesk.persistence.entities.Canal;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Cliente;
-import com.itcs.helpdesk.persistence.entities.Cliente_;
+import com.itcs.helpdesk.persistence.entities.metadata.Cliente_;
+import com.itcs.helpdesk.persistence.entities.EstadoCaso;
 import com.itcs.helpdesk.persistence.entities.FieldType;
+import com.itcs.helpdesk.persistence.entities.Funcion;
 import com.itcs.helpdesk.persistence.entities.TipoAccion;
 import com.itcs.helpdesk.persistence.entities.Prioridad;
 import com.itcs.helpdesk.persistence.entities.Responsable;
+import com.itcs.helpdesk.persistence.entities.Rol;
+import com.itcs.helpdesk.persistence.entities.SubEstadoCaso;
+import com.itcs.helpdesk.persistence.entities.TipoAlerta;
 import com.itcs.helpdesk.persistence.entities.TipoCanal;
 import com.itcs.helpdesk.persistence.entities.TipoCaso;
+import com.itcs.helpdesk.persistence.entities.TipoComparacion;
+import com.itcs.helpdesk.persistence.entities.TipoNota;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entityenums.EnumCanal;
 import com.itcs.helpdesk.persistence.entityenums.EnumEstadoCaso;
@@ -111,7 +120,7 @@ public class AutomaticOpsExecutor {
         verificarUsuarios(controller);
         verificarFunciones(controller);
         verificarRoles(controller);
-        
+
         verificarEstadosCaso(controller);
         verificarSubEstadosCaso(controller);
 
@@ -134,7 +143,7 @@ public class AutomaticOpsExecutor {
     }
 
     private void fixClientesCasos(JPAServiceFacade jpaController) {
-        EasyCriteriaQuery<Caso> ecq = new EasyCriteriaQuery<Caso>(emf, Caso.class);
+        EasyCriteriaQuery<Caso> ecq = new EasyCriteriaQuery<>(emf, Caso.class);
         ecq.addEqualPredicate("idCliente", null);
         ecq.addDistinctPredicate("emailCliente", null);
         List<Caso> casosToFix = ecq.getAllResultList();
@@ -150,7 +159,7 @@ public class AutomaticOpsExecutor {
     }
 
     private void fixNombreCliente(JPAServiceFacade jpaController) {
-        EasyCriteriaQuery<Cliente> ecq = new EasyCriteriaQuery<Cliente>(emf, Cliente.class);
+        EasyCriteriaQuery<Cliente> ecq = new EasyCriteriaQuery<>(emf, Cliente.class);
         ecq.addLikePredicate(Cliente_.nombres.getName(), "%=?ISO-8859-1%");
         List<Cliente> clientsToFix = ecq.getAllResultList();
 
@@ -197,13 +206,13 @@ public class AutomaticOpsExecutor {
     private void verificarSettingsBase(JPAServiceFacade jpaController) {
         for (EnumSettingsBase enumSettingsBase : EnumSettingsBase.values()) {
             try {
-                if (null == jpaController.getAppSettingJpaController().findAppSetting(enumSettingsBase.getAppSetting().getSettingKey())) {
+                if (null == jpaController.find(AppSetting.class, enumSettingsBase.getAppSetting().getSettingKey())) {
                     throw new NoResultException();
                 }
             } catch (NoResultException ex) {
                 Log.createLogger(this.getClass().getName()).logSevere("No existen settings " + enumSettingsBase.getAppSetting().getSettingKey() + ", se creara ahora");
                 try {
-                    jpaController.persistSetting(enumSettingsBase.getAppSetting());
+                    jpaController.persist(enumSettingsBase.getAppSetting());
                 } catch (PreexistingEntityException pre) {
                     //ignore if already exists
                 } catch (Exception e) {
@@ -253,14 +262,14 @@ public class AutomaticOpsExecutor {
     private void verificarTiposAlerta(JPAServiceFacade jpaController) {
         for (EnumTipoAlerta tipoAlerta : EnumTipoAlerta.values()) {
             try {
-                if (null == jpaController.getTipoAlertaFindByIdTipoAlerta(tipoAlerta.getTipoAlerta().getIdalerta())) {
+                if (null == jpaController.find(TipoAlerta.class, tipoAlerta.getTipoAlerta().getIdalerta())) {
                     throw new NoResultException();
                 }
 
             } catch (NoResultException ex) {
                 Log.createLogger(this.getClass().getName()).logSevere("No existe tipo alerta " + tipoAlerta.getTipoAlerta().getNombre() + ", se creara ahora");
                 try {
-                    jpaController.persistTipoAlerta(tipoAlerta.getTipoAlerta());
+                    jpaController.persist(tipoAlerta.getTipoAlerta());
                 } catch (Exception e) {
                     Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
                 }
@@ -271,10 +280,10 @@ public class AutomaticOpsExecutor {
     private void verificarFunciones(JPAServiceFacade jpaController) {
         for (EnumFunciones funcion : EnumFunciones.values()) {
 
-            if (null == jpaController.getFuncionFindByIdFuncion(funcion.getFuncion().getIdFuncion())) {
+            if (null == jpaController.find(Funcion.class, funcion.getFuncion().getIdFuncion())) {
                 try {
                     Log.createLogger(this.getClass().getName()).logSevere("No existe funcion " + funcion.getFuncion().getNombre() + ", se creara ahora");
-                    jpaController.persistFuncion(funcion.getFuncion());
+                    jpaController.persist(funcion.getFuncion());
                 } catch (PreexistingEntityException ex) {
                     Logger.getLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (RollbackFailureException ex) {
@@ -290,13 +299,13 @@ public class AutomaticOpsExecutor {
     private void verificarRoles(JPAServiceFacade jpaController) {
         for (EnumRoles enumRol : EnumRoles.values()) {
             try {
-                if (null == jpaController.getRolFindByIdRol(enumRol.getRol().getIdRol())) {
+                if (null == jpaController.find(Rol.class, enumRol.getRol().getIdRol())) {
                     throw new NoResultException();
                 }
             } catch (NoResultException ex) {
                 Log.createLogger(this.getClass().getName()).logSevere("No existe rol " + enumRol.getRol().getNombre() + ", se creara ahora");
                 try {
-                    jpaController.persistRol(enumRol.getRol());
+                    jpaController.persist(enumRol.getRol());
                 } catch (Exception e) {
                     e.getCause().printStackTrace();
                     Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
@@ -304,8 +313,6 @@ public class AutomaticOpsExecutor {
             }
         }
     }
-
-   
 
     private void verificarResponsables(JPAServiceFacade jpaController) {
         for (EnumResponsables enumResponsables : EnumResponsables.values()) {
@@ -324,20 +331,16 @@ public class AutomaticOpsExecutor {
         }
     }
 
-    
-
-    
-
     private void verificarEstadosCaso(JPAServiceFacade jpaController) {
         for (EnumEstadoCaso enumEstado : EnumEstadoCaso.values()) {
             try {
-                if (null == jpaController.getEstadoCasoFindByIdEstado(enumEstado.getEstado().getIdEstado())) {
+                if (null == jpaController.find(EstadoCaso.class, enumEstado.getEstado().getIdEstado())) {
                     throw new NoResultException();
                 }
             } catch (NoResultException ex) {
                 Log.createLogger(this.getClass().getName()).logSevere("No existe estado " + enumEstado.getEstado().getNombre() + ", se creara ahora");
                 try {
-                    jpaController.persistEstadoCaso(enumEstado.getEstado());
+                    jpaController.persist(enumEstado.getEstado());
                 } catch (Exception e) {
                     Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
                 }
@@ -348,13 +351,13 @@ public class AutomaticOpsExecutor {
     private void verificarSubEstadosCaso(JPAServiceFacade jpaController) {
         for (EnumSubEstadoCaso enumSubEstado : EnumSubEstadoCaso.values()) {
             try {
-                if (null == jpaController.getSubEstadoCasoFindByIdSubEstadoCaso(enumSubEstado.getSubEstado().getIdSubEstado())) {
+                if (null == jpaController.find(SubEstadoCaso.class, enumSubEstado.getSubEstado().getIdSubEstado())) {
                     throw new NoResultException();
                 }
             } catch (NoResultException ex) {
                 Log.createLogger(this.getClass().getName()).logSevere("No existe sub estado !!!, se creara ahora");
                 try {
-                    jpaController.persistSubEstadoCaso(enumSubEstado.getSubEstado());
+                    jpaController.persist(enumSubEstado.getSubEstado());
                 } catch (Exception e) {
                     Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
                 }
@@ -382,13 +385,13 @@ public class AutomaticOpsExecutor {
     private void verificarCanales(JPAServiceFacade jpaController) {
         for (EnumCanal enumCanal : EnumCanal.values()) {
             try {
-                if (null == jpaController.getCanalFindByIdCanal(enumCanal.getCanal().getIdCanal())) {
+                if (null == jpaController.find(Canal.class, enumCanal.getCanal().getIdCanal())) {
                     throw new NoResultException();
                 }
             } catch (NoResultException ex) {
                 Log.createLogger(this.getClass().getName()).logSevere("No existe canal " + enumCanal.getCanal().getNombre() + ", se creara ahora");
                 try {
-                    jpaController.persistCanal(enumCanal.getCanal());
+                    jpaController.persist(enumCanal.getCanal());
                 } catch (Exception e) {
                     Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
                 }
@@ -399,14 +402,14 @@ public class AutomaticOpsExecutor {
     private void verificarPrioridades(JPAServiceFacade jpaController) {
         for (EnumPrioridad enumPrioridad : EnumPrioridad.values()) {
             try {
-                Prioridad prioridad = jpaController.getPrioridadFindByIdPrioridad(enumPrioridad.getPrioridad().getIdPrioridad());
+                Prioridad prioridad = jpaController.find(Prioridad.class, enumPrioridad.getPrioridad().getIdPrioridad());
                 if (prioridad == null) {
                     throw new NoResultException();
                 }
             } catch (NoResultException ex) {
                 Log.createLogger(this.getClass().getName()).logSevere("No existe prioridad " + enumPrioridad.getPrioridad().getNombre() + ", se creara ahora");
                 try {
-                    jpaController.persistPrioridad(enumPrioridad.getPrioridad());
+                    jpaController.persist(enumPrioridad.getPrioridad());
                 } catch (Exception e) {
                     Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
                 }
@@ -417,15 +420,15 @@ public class AutomaticOpsExecutor {
     private void verificarTiposNota(JPAServiceFacade jpaController) {
         for (EnumTipoNota enumTipoNota : EnumTipoNota.values()) {
             try {
-                if (null == jpaController.getTipoNotaFindById(enumTipoNota.getTipoNota().getIdTipoNota())) {
+                if (null == jpaController.find(TipoNota.class, enumTipoNota.getTipoNota().getIdTipoNota())) {
                     throw new NoResultException();
                 } else {
-                    jpaController.getTipoNotaJpaController().edit(enumTipoNota.getTipoNota());
+                    jpaController.merge(enumTipoNota.getTipoNota());
                 }
             } catch (NoResultException ex) {
                 Log.createLogger(this.getClass().getName()).logSevere("No existe tipo nota " + enumTipoNota.getTipoNota().getNombre() + ", se creara ahora");
                 try {
-                    jpaController.persistTipoNota(enumTipoNota.getTipoNota());
+                    jpaController.persist(enumTipoNota.getTipoNota());
                 } catch (Exception e) {
                     Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
                 }
@@ -472,13 +475,13 @@ public class AutomaticOpsExecutor {
     private void verificarTipoComparacion(JPAServiceFacade jpaController) {
         for (EnumTipoComparacion enumTipoComparacion : EnumTipoComparacion.values()) {
             try {
-                if (null == jpaController.getTipoComparacionFindByIdComparador(enumTipoComparacion.getTipoComparacion().getIdComparador())) {
+                if (null == jpaController.find(TipoComparacion.class, enumTipoComparacion.getTipoComparacion().getIdComparador())) {
                     throw new NoResultException();
                 }
             } catch (NoResultException ex) {
                 Log.createLogger(this.getClass().getName()).logSevere("No existe nombre de tipo comparacion " + enumTipoComparacion.getTipoComparacion().getIdComparador() + ", se creara ahora");
                 try {
-                    jpaController.persistTipoComparacion(enumTipoComparacion.getTipoComparacion());
+                    jpaController.persist(enumTipoComparacion.getTipoComparacion());
                 } catch (Exception e) {
                     Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
                 }

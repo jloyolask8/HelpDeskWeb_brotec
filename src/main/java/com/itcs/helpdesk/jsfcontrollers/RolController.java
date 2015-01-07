@@ -97,7 +97,7 @@ public class RolController extends AbstractManagedBean<Rol> implements Serializa
     public String create() {
         try {
             current.setEditable(true);
-            getJpaController().persistRol(current);
+            getJpaController().persist(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("RolCreated"));
             return prepareList();
         } catch (Exception e) {
@@ -134,7 +134,7 @@ public class RolController extends AbstractManagedBean<Rol> implements Serializa
             if (EnumRoles.ADMINISTRADOR.getRol().getIdRol().equalsIgnoreCase(idRol)) {
                 JsfUtil.addErrorMessage("No se puede modificar este rol.");
             } else {
-                getJpaController().mergeRol(current);
+                getJpaController().merge(current);
                 JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("RolUpdated"));
             }
             return "View";
@@ -194,7 +194,7 @@ public class RolController extends AbstractManagedBean<Rol> implements Serializa
             if (EnumRoles.ADMINISTRADOR.getRol().getIdRol().equalsIgnoreCase(idRol)) {
                 JsfUtil.addErrorMessage("No se puede modificar este rol.");
             } else {
-                getJpaController().removeRol(current);
+                getJpaController().remove(Rol.class, current);
                 JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("RolDeleted").replace("{1}", idRol));
             }
 
@@ -234,7 +234,7 @@ public class RolController extends AbstractManagedBean<Rol> implements Serializa
             }
             RolController controller = (RolController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "rolController");
-            return controller.getJpaController().getRolFindByIdRol(getKey(value));
+            return controller.getJpaController().find(Rol.class, getKey(value));
         }
 
         java.lang.String getKey(String value) {

@@ -184,7 +184,7 @@ public abstract class ParseCotizacionAction extends Action {
                     //email exists but client may not exists
                     //check if rut exists in client table first
                     if (datos.getRut() != null && !StringUtils.isEmpty(datos.getRut())) {
-                        persistentClient = getJpaController().getClienteJpaController().findByRut(datos.getRut());
+                        persistentClient = getJpaController().findClienteByRut(datos.getRut());
                     }
                     if (persistentClient != null) {
 
@@ -203,16 +203,13 @@ public abstract class ParseCotizacionAction extends Action {
                 getJpaController().merge(persistentEmailCliente);
                 caso.setEmailCliente(persistentEmailCliente);
 
-            }
-            //No existe email cliente
+            } //No existe email cliente
             else {
                 //Si no viene con correo del cliente
-                if (StringUtils.isEmpty(datos.getEmail())) 
-                {
+                if (StringUtils.isEmpty(datos.getEmail())) {
                     Cliente cliente = obtenerCliente(datos);
                     caso.setIdCliente(cliente);
-                }
-                //Si es que viene correo de cliente
+                } //Si es que viene correo de cliente
                 else {
                     //email not exist, will create email.
                     EmailCliente newEmailCliente = new EmailCliente(datos.getEmail());
@@ -229,7 +226,7 @@ public abstract class ParseCotizacionAction extends Action {
         } else {
             //check if only client rut is util to identify the user
             //check if rut exists in client table first
-            Cliente persistentClient = getJpaController().getClienteJpaController().findByRut(datos.getRut());
+            Cliente persistentClient = getJpaController().findClienteByRut(datos.getRut());
             if (persistentClient != null) {
                 final List<EmailCliente> emailClienteList = persistentClient.getEmailClienteList();
                 if (emailClienteList != null && !emailClienteList.isEmpty()) {
@@ -239,8 +236,8 @@ public abstract class ParseCotizacionAction extends Action {
                     //ERROR HORROR
                     //Will use the suposed bad email.
                     if (!StringUtils.isEmpty(datos.getEmail())) {
-                    caso.setEmailCliente(new EmailCliente(datos.getEmail()));//just use the first available
-                }
+                        caso.setEmailCliente(new EmailCliente(datos.getEmail()));//just use the first available
+                    }
                 }
             } else {
                 //rut not present, must create the client. but wait not possible to associate this man with the case since there is no email
@@ -257,7 +254,7 @@ public abstract class ParseCotizacionAction extends Action {
         Cliente persistentClient = null;
         //Datos trae el rut
         if (datos.getRut() != null && !StringUtils.isEmpty(datos.getRut())) {
-            persistentClient = getJpaController().getClienteJpaController().findByRut(datos.getRut());
+            persistentClient = getJpaController().findClienteByRut(datos.getRut());
         }
         //Si el cliente no existe se debe crear
         if (persistentClient == null) {
@@ -267,7 +264,7 @@ public abstract class ParseCotizacionAction extends Action {
         }
         return persistentClient;
     }
-    
+
     protected void handleModeloData(DatosCaso datos, Caso caso) throws NotSupportedException, ClassNotFoundException {
 
         try {
@@ -311,39 +308,39 @@ public abstract class ParseCotizacionAction extends Action {
         filter1.setIdCampo("nombre");
         filter1.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
         filter1.setValor(datos.getModelo());
-        
+
         if (vista.getFiltrosVistaList() == null) {
             vista.setFiltrosVistaList(new ArrayList<FiltroVista>());
         }
         vista.getFiltrosVistaList().add(filter1);
-        
+
         List<ModeloProducto> modelos = (List<ModeloProducto>) getJpaController().findAllEntities(vista, new OrderBy("nombre"), null);
-        
+
 //                System.out.println("modelos:" + modelos);
         if (modelos != null) {
             for (ModeloProducto modelObject : modelos) {
                 final Producto idProducto = modelObject.getProducto();
                 if (idProducto != null) {
 //                            System.out.println("Posible Proyecto:" + idProducto.getNombre());
-                    
+
                     if ((datos.getProducto() != null && datos.getProducto().equalsIgnoreCase(idProducto.getIdProducto()))
                             || caso.getDescripcion().contains(idProducto.getNombre())) {
-                        
+
 //                                System.out.println("Match!!! Proyecto:" + idProducto.getNombre());
                         caso.setIdComponente(modelObject.getIdComponente());
                         caso.setIdModelo(modelObject);
                         caso.setIdProducto(idProducto);
                         break;
-                        
+
                     }
                 }
             }
 
         }
     }
-    
+
     protected void extractEmail(String txt, DatosCaso datos) throws ActionExecutionException {
-        
+
         String email = findPattern(txt, "(Email:\\s*?)([a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)", 2);
         if (StringUtils.isEmpty(email)) {
             email = findPattern(txt, "(E-mail:\\s*?)([a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)", 2);
@@ -402,7 +399,7 @@ public abstract class ParseCotizacionAction extends Action {
         }
 
         if (proyecto == null) {
-            List<Producto> lista = getJpaController().getProductoFindAll();
+            List<Producto> lista = (List<Producto>) getJpaController().findAll(Producto.class);
             for (Producto producto : lista) {
                 if (findPattern(txt, "(" + producto.getNombre() + ")(\\W*?)(\\n)", 1) != null) {
                     proyecto = producto;
@@ -424,7 +421,7 @@ public abstract class ParseCotizacionAction extends Action {
         if (!StringUtils.isEmpty(nombre)) {
             datos.parseNombre(nombre);
         }
-        
+
     }
 
     protected void extractTelefono(DatosCaso datos, String txt) {

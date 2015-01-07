@@ -175,7 +175,7 @@ public class AuditLogController extends AbstractManagedBean<AuditLog> implements
 
     public String create() {
         try {
-            getJpaController().persistAuditLog(current);
+            getJpaController().persist(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AuditLogCreated"));
             return prepareCreate();
         } catch (Exception e) {
@@ -198,7 +198,7 @@ public class AuditLogController extends AbstractManagedBean<AuditLog> implements
 
     public String update() {
         try {
-            getJpaController().mergeAuditLog(current);
+            getJpaController().merge(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AuditLogUpdated"));
             return "/script/audit_log/View";
         } catch (Exception e) {
@@ -302,7 +302,7 @@ public class AuditLogController extends AbstractManagedBean<AuditLog> implements
 
     private void performDestroy() {
         try {
-            getJpaController().removeAuditLog(current);
+            getJpaController().remove(AuditLog.class, current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AuditLogDeleted"));
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
@@ -442,7 +442,7 @@ public class AuditLogController extends AbstractManagedBean<AuditLog> implements
             }
             AuditLogController controller = (AuditLogController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "auditLogController");
-            return controller.getJpaController().getAuditLogFindByIdLog(Long.valueOf(value));
+            return controller.getJpaController().find(AuditLog.class, Long.valueOf(value));
         }
 
         String getStringKey(java.lang.Long value) {

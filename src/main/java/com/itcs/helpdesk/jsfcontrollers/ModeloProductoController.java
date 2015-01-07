@@ -1,7 +1,6 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.ModeloProducto;
 import com.itcs.helpdesk.persistence.entities.ModeloProductoPK;
 import com.itcs.helpdesk.persistence.entities.Producto;
@@ -14,8 +13,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 import org.primefaces.model.UploadedFile;
 
@@ -23,7 +20,6 @@ import org.primefaces.model.UploadedFile;
 @SessionScoped
 public class ModeloProductoController extends AbstractManagedBean<ModeloProducto> implements Serializable {
 
-//    private ModeloProducto current;
     private transient UploadedFile fileUpload;//not in use yet
 
     public ModeloProductoController() {
@@ -31,35 +27,20 @@ public class ModeloProductoController extends AbstractManagedBean<ModeloProducto
     }
     
      public SelectItem[] getItemsAvailableSelectOneByProduct(String idProducto) {        
-        Producto p = getJpaController().getProductoFindByIdProducto(idProducto);
+        Producto p = getJpaController().find(Producto.class, idProducto);
         return JsfUtil.getSelectItems(p.getModeloProductoList(), true);
     }
 
-//    public ModeloProducto getSelected() {
-//        if (current == null) {
-//            current = new ModeloProducto();
-////            selectedItemIndex = -1;
-//        }
-//        return current;
-//    }
+    @Override
+    protected String getListPage() {
+        return "List";
+    }
 
     @Override
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(getPaginationPageSize()) {
-                @Override
-                public int getItemsCount() {
-                    return getJpaController().count(ModeloProducto.class).intValue();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getJpaController().queryByRange(ModeloProducto.class, getPageSize(), getPageFirstItem()));
-                }
-            };
-        }
-        return pagination;
+    protected String getEditPage() {
+        return "Edit";
     }
+ 
 
     public void uploadModelosFile() {
         if (fileUpload != null) {
@@ -68,11 +49,6 @@ public class ModeloProductoController extends AbstractManagedBean<ModeloProducto
     }
 
     public void prepareCreateMany() {
-    }
-
-    public String prepareList() {
-        recreateModel();
-        return "List";
     }
 
     public void prepareView() {
@@ -118,10 +94,7 @@ public class ModeloProductoController extends AbstractManagedBean<ModeloProducto
 ////        mode = "Edit";
 //    }
 
-    @Override
-    protected String getEditPage() {
-        return super.getEditPage(); //To change body of generated methods, choose Tools | Templates.
-    }
+    
     
     
 
@@ -171,38 +144,6 @@ public class ModeloProductoController extends AbstractManagedBean<ModeloProducto
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
         }
     }
-
-//    private void updateCurrentItem() {
-//        int count = getJpaController().count(ModeloProducto.class).intValue();
-//        if (selectedItemIndex >= count) {
-//            // selected index cannot be bigger than number of items:
-//            selectedItemIndex = count - 1;
-//            // go to previous page if last page disappeared:
-//            if (pagination.getPageFirstItem() >= count) {
-//                pagination.previousPage();
-//            }
-//        }
-//        if (selectedItemIndex >= 0) {
-//            current = (ModeloProducto) getJpaController().queryByRange(ModeloProducto.class, selectedItemIndex + 1, selectedItemIndex).get(0);
-//            //findRange(new int[]{selectedItemIndex, selectedItemIndex + 1}).get(0);
-//        }
-//    }
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
-
-//    public SelectItem[] getItemsAvailableSelectMany() {
-//        return JsfUtil.getSelectItems(getJpaController().findAll(ModeloProducto.class), false);
-//    }
-//
-//    public SelectItem[] getItemsAvailableSelectOne() {
-//        return JsfUtil.getSelectItems(getJpaController().findAll(ModeloProducto.class), true);
-//    }
-
-    
 
     /**
      * @return the fileUpload

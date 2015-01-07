@@ -2,15 +2,9 @@ package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.persistence.entities.Producto;
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.Archivo;
-import com.itcs.helpdesk.persistence.entities.Attachment;
-import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Componente;
 import com.itcs.helpdesk.persistence.entities.SubComponente;
-import com.itcs.helpdesk.persistence.jpa.ComponenteJpaController;
-import com.itcs.helpdesk.persistence.jpa.ProductoJpaController;
-import com.itcs.helpdesk.persistence.jpa.SubComponenteJpaController;
 import com.itcs.helpdesk.persistence.jpa.exceptions.RollbackFailureException;
 import java.io.Serializable;
 import java.util.List;
@@ -36,7 +30,6 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.PhaseId;
-import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.persistence.NoResultException;
 import jxl.CellReferenceHelper;
@@ -116,7 +109,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
 
     public String getFileName(Long id) {
         try {
-            Archivo archivo = getJpaController().getArchivoFindByIdAttachment(id);
+            Archivo archivo = getJpaController().find(Archivo.class, id);
             return archivo.getFileName();
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
@@ -133,7 +126,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
             // So, we're rendering the view. Return a stub StreamedContent so that it will generate right URL.
             return new DefaultStreamedContent();
         } else {
-            Archivo archivo = getJpaController().getArchivoFindByIdAttachment(idLogo);
+            Archivo archivo = getJpaController().find(Archivo.class, idLogo);
             if (archivo != null) {
                 return new DefaultStreamedContent(
                         new ByteArrayInputStream(archivo.getArchivo()), archivo.getContentType(), archivo.getFileName() + "/" + archivo.getContentType());
@@ -150,7 +143,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
     public void deleteLogoProducto(ActionEvent actionEvent) {
         try {
 
-            Archivo archivo = getJpaController().getArchivoFindByIdAttachment(idFileDelete);
+            Archivo archivo = getJpaController().find(Archivo.class, idFileDelete);
             if (archivo != null) {
                 getJpaController().remove(Archivo.class, archivo);
                 getSelected().setIdLogo(null);
@@ -171,8 +164,8 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
     public void deleteArchivoActaEntrega(ActionEvent actionEvent) {
         try {
 
-            Archivo archivo = getJpaController().getArchivoFindByIdAttachment(idFileDelete);
-            getJpaController().removeArchivo(archivo);
+            Archivo archivo = getJpaController().find(Archivo.class, idFileDelete);
+            getJpaController().remove(Archivo.class, archivo);
             currentSubComponente.setIdArchivoActaEntrega(null);
 
             JsfUtil.addSuccessMessage("Archivo " + archivo.getFileName() + " borrado correctamente.");
@@ -188,8 +181,8 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
     public void deleteArchivoActaPreEntrega(ActionEvent actionEvent) {
         try {
 
-            Archivo archivo = getJpaController().getArchivoFindByIdAttachment(idFileDelete);
-            getJpaController().removeArchivo(archivo);
+            Archivo archivo = getJpaController().find(Archivo.class, idFileDelete);
+            getJpaController().remove(Archivo.class, archivo);
             currentSubComponente.setIdArchivoActaPreEntrega(null);
 
             JsfUtil.addSuccessMessage("Archivo " + archivo.getFileName() + " borrado correctamente.");
@@ -205,8 +198,8 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
     public void deleteArchivoCartaEntrega(ActionEvent actionEvent) {
         try {
 
-            Archivo archivo = getJpaController().getArchivoFindByIdAttachment(idFileDelete);
-            getJpaController().removeArchivo(archivo);
+            Archivo archivo = getJpaController().find(Archivo.class, idFileDelete);
+            getJpaController().remove(Archivo.class, archivo);
             currentSubComponente.setIdArchivoCartaEntrega(null);
 
             JsfUtil.addSuccessMessage("Archivo " + archivo.getFileName() + " borrado correctamente.");
@@ -221,7 +214,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
 
     public StreamedContent downloadArchivo(Long id) {
         try {
-            Archivo archivo = getJpaController().getArchivoFindByIdAttachment(id);
+            Archivo archivo = getJpaController().find(Archivo.class, id);
             return new DefaultStreamedContent(
                     new ByteArrayInputStream(archivo.getArchivo()), archivo.getContentType(), archivo.getFileName());
         } catch (Exception e) {
@@ -251,7 +244,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
         archivo.setContentType(event.getFile().getContentType());
         archivo.setFileName(fileName);
         archivo.setFormat(fileName.substring(fileName.lastIndexOf(".") + 1));
-        getJpaController().persistArchivo(archivo);
+        getJpaController().persist(archivo);
         return archivo;
     }
 
@@ -277,7 +270,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
             Archivo archivo = persistArchivo(event);
             if (archivo != null && this.currentSubComponente != null) {
                 currentSubComponente.setIdArchivoActaEntrega(archivo.getIdAttachment());
-                getJpaController().getSubComponenteJpaController().edit(currentSubComponente);
+                getJpaController().merge(currentSubComponente);
                 JsfUtil.addSuccessMessage("Archivo " + archivo.getFileName() + " subido con exito");
                 executeInClient("PF('uploadDialogidArchivoActaEntrega').hide()");
             } else {
@@ -294,7 +287,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
             Archivo archivo = persistArchivo(event);
             if (archivo != null && this.currentSubComponente != null) {
                 currentSubComponente.setIdArchivoActaPreEntrega(archivo.getIdAttachment());
-                getJpaController().getSubComponenteJpaController().edit(currentSubComponente);
+                getJpaController().merge(currentSubComponente);
                 JsfUtil.addSuccessMessage("Archivo " + archivo.getFileName() + " subido con exito");
                 executeInClient("PF('uploadDialogidArchivoActaPreEntrega').hide()");
             } else {
@@ -311,7 +304,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
             Archivo archivo = persistArchivo(event);
             if (archivo != null && this.currentSubComponente != null) {
                 currentSubComponente.setIdArchivoCartaEntrega(archivo.getIdAttachment());
-                getJpaController().getSubComponenteJpaController().edit(currentSubComponente);
+                getJpaController().merge(currentSubComponente);
                 JsfUtil.addSuccessMessage("Archivo " + archivo.getFileName() + " subido con exito");
                 executeInClient("PF('uploadDialogidArchivoCartaEntrega').hide()");
             } else {
@@ -536,12 +529,12 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
 
         int counterproducto = 0;
 
-        final ProductoJpaController pJpaController = getJpaController().getProductoJpaController();
+//        final ProductoJpaController pJpaController = getJpaController().getProductoJpaController();
 
         for (Producto producto : bulkLoadedProductos) {
 
             try {
-                pJpaController.createOrMerge(producto);
+                getJpaController().createOrMergeProducto(producto);
                 counterproducto++;
             } catch (Exception e) {
                 bulkLoadedProductosWithErrors.add(producto);
@@ -666,7 +659,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
 
     public String create() {
         try {
-            getJpaController().persistProducto(current);
+            getJpaController().persist(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ProductoCreated"));
             return prepareEdit();
         } catch (Exception e) {
@@ -804,7 +797,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
 
     private void performDestroy() {
         try {
-            getJpaController().removeProducto(current);
+            getJpaController().remove(Producto.class, current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ProductoDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -1078,7 +1071,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
             }
             ProductoController controller = (ProductoController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "productoController");
-            return controller.getJpaController().getProductoFindByIdProducto(getKey(value));
+            return controller.getJpaController().find(Producto.class, getKey(value));
         }
 
         java.lang.String getKey(String value) {

@@ -1,10 +1,8 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.AppSetting;
 import com.itcs.helpdesk.persistence.entities.Archivo;
-import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entityenums.EnumFieldType;
 import com.itcs.helpdesk.persistence.entityenums.EnumSettingsBase;
 import com.itcs.helpdesk.persistence.utils.OrderBy;
@@ -17,7 +15,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -123,7 +120,7 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
 
         for (AppSetting appSetting : (List<AppSetting>)items.getWrappedData()) {
             try {
-                getJpaController().getAppSettingJpaController().edit(appSetting);
+                getJpaController().merge(appSetting);
                 ApplicationConfig.getInstance().getConfiguration().put(appSetting.getSettingKey(), appSetting.getSettingValue());
             } catch (Exception ex) {
                 Logger.getLogger(AppSettingController.class.getName()).log(Level.SEVERE, null, ex);
@@ -150,13 +147,13 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
                     this.newLogoStreamedContent = new DefaultStreamedContent(new ByteArrayInputStream(imageInByte), contentType);
 
                     try {
-                        getJpaController().getArchivoJpaController().destroy(0L);
+                        getJpaController().remove(Archivo.class, 0L);
                         Archivo archivo = new Archivo();
                         archivo.setIdAttachment(0L);
                         archivo.setArchivo(imageInByte);
                         archivo.setContentType(contentType);
                         archivo.setFormat(format);
-                        getJpaController().persistArchivo(archivo);
+                        getJpaController().persist(archivo);
                     } catch (Exception e) {
                         //e.printStackTrace();
                     }
@@ -220,7 +217,7 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
 
     public String create() {
         try {
-            getJpaController().getAppSettingJpaController().create(current);
+            getJpaController().persist(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AppSettingCreated"));
             return prepareCreate();
         } catch (Exception e) {
@@ -238,7 +235,7 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
 
     public String update() {
         try {
-            getJpaController().getAppSettingJpaController().edit(current);
+            getJpaController().merge(current);
             ApplicationConfig.getInstance().getConfiguration().put(current.getSettingKey(), current.getSettingValue());
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AppSettingUpdated"));
             return getViewPage();
@@ -273,7 +270,7 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
 
     private void performDestroy() {
         try {
-            getJpaController().getAppSettingJpaController().destroy(current.getSettingKey());
+            getJpaController().remove(AppSetting.class, current.getSettingKey());
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AppSettingDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -396,7 +393,7 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
             }
             AppSettingController controller = (AppSettingController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "appSettingController");
-            return controller.getJpaController().getAppSettingJpaController().findAppSetting(getKey(value));
+            return controller.getJpaController().find(AppSetting.class, getKey(value));
         }
 
         java.lang.String getKey(String value) {

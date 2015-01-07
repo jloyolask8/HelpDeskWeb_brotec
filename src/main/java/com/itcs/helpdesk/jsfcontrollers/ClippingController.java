@@ -104,7 +104,7 @@ public class ClippingController extends AbstractManagedBean<Clipping> implements
 
             }
 
-            getJpaController().getClippingJpaController().create(current);
+            getJpaController().persist(current);
             addInfoMessage(ResourceBundle.getBundle("/Bundle").getString("ClippingCreated"));
             getPrimefacesRequestContext().execute("PF('editCreateDialog').hide()");
             getPrimefacesRequestContext().update("form:panelG1");
@@ -147,7 +147,7 @@ public class ClippingController extends AbstractManagedBean<Clipping> implements
                     break;//Error
 
             }
-            getJpaController().getClippingJpaController().edit(current);
+            getJpaController().merge(current);
             addInfoMessage(ResourceBundle.getBundle("/Bundle").getString("ClippingUpdated"));
             getPrimefacesRequestContext().execute("PF('editCreateDialog').hide()");
             getPrimefacesRequestContext().update("form:panelG1");
@@ -181,7 +181,7 @@ public class ClippingController extends AbstractManagedBean<Clipping> implements
 
     private void performDestroy() {
         try {
-            getJpaController().getClippingJpaController().destroy(current.getIdClipping());
+            getJpaController().remove(Clipping.class, current.getIdClipping());
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ClippingDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -244,9 +244,9 @@ public class ClippingController extends AbstractManagedBean<Clipping> implements
             }
             ClippingController controller = (ClippingController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "clippingController");
-            System.out.println("converting clipping id " + getKey(value).toString());
-            final Clipping clip = controller.getJpaController().getClippingJpaController().findClipping(getKey(value));
-            System.out.println("Found " + clip);
+//            System.out.println("converting clipping id " + getKey(value).toString());
+            final Clipping clip = controller.getJpaController().find(Clipping.class, getKey(value));
+//            System.out.println("Found " + clip);
             return clip;
         }
 

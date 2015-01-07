@@ -23,8 +23,7 @@ import com.itcs.helpdesk.persistence.entityenums.EnumTipoAccion;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoCanal;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
 import com.itcs.helpdesk.persistence.entityenums.EnumUsuariosBase;
-import com.itcs.helpdesk.persistence.jpa.custom.CasoJPACustomController;
-import com.itcs.helpdesk.persistence.jpa.exceptions.RollbackFailureException;
+import com.itcs.helpdesk.persistence.jpa.AbstractJPAController;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.persistence.utils.CasoChangeListener;
 import com.itcs.helpdesk.persistence.utils.ComparableField;
@@ -116,7 +115,7 @@ public class RulesEngine implements CasoChangeListener {
 
         try {
             AuditLog auditLog = ManagerCasos.createLogComment(caso, "Reglas aplicadas en la creación del caso: " + rulesThatApply.toString());
-            getJpaController().persistAuditLog(auditLog);
+            getJpaController().persist(auditLog);
         } catch (Exception ex) {
             Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "RulesEngine.casoCreated", ex);
         }
@@ -150,7 +149,7 @@ public class RulesEngine implements CasoChangeListener {
 
         try {
             AuditLog auditLog = ManagerCasos.createLogComment(caso, "Reglas aplicadas en la modificación del caso: " + rulesThatApply.toString());
-            getJpaController().persistAuditLog(auditLog);
+            getJpaController().persist(auditLog);
         } catch (Exception ex) {
             Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "RulesEngine.casoChanged", ex);
         }
@@ -332,7 +331,7 @@ public class RulesEngine implements CasoChangeListener {
                 }
             } catch (ParseException ex) {
                 //ignore and do not add this filter to the query
-                Logger.getLogger(CasoJPACustomController.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
             }
 
         } else if (fieldType.equals(EnumFieldType.SELECTONE_ENTITY.getFieldType())) {
@@ -358,7 +357,7 @@ public class RulesEngine implements CasoChangeListener {
 
                 } else {
 
-                    if (CasoJPACustomController.PLACE_HOLDER_ANY.equalsIgnoreCase(valorAttributo)) {
+                    if (AbstractJPAController.PLACE_HOLDER_ANY.equalsIgnoreCase(valorAttributo)) {
                         if (operador.equals(EnumTipoComparacion.EQ.getTipoComparacion())) {
                             return (oneEntity != null);
                         } else if (operador.equals(EnumTipoComparacion.NE.getTipoComparacion())) {
@@ -376,7 +375,7 @@ public class RulesEngine implements CasoChangeListener {
                         } else {
                             throw new NotSupportedException("Regla " + reglaTrigger.getIdTrigger() + ", Tipo comparacion " + operador.getIdComparador() + " is not supported here!!");
                         }
-                    } else if (CasoJPACustomController.PLACE_HOLDER_NULL.equalsIgnoreCase(valorAttributo)) {
+                    } else if (AbstractJPAController.PLACE_HOLDER_NULL.equalsIgnoreCase(valorAttributo)) {
                         if (operador.equals(EnumTipoComparacion.EQ.getTipoComparacion())) {
                             return (oneEntity == null);
                         } else if (operador.equals(EnumTipoComparacion.NE.getTipoComparacion())) {
@@ -394,7 +393,7 @@ public class RulesEngine implements CasoChangeListener {
                         } else {
                             throw new NotSupportedException("Regla " + reglaTrigger.getIdTrigger() + ", Tipo comparacion " + operador.getIdComparador() + " is not supported here!!");
                         }
-                    } else if (CasoJPACustomController.PLACE_HOLDER_CURRENT_USER.equalsIgnoreCase(valorAttributo)) {
+                    } else if (AbstractJPAController.PLACE_HOLDER_CURRENT_USER.equalsIgnoreCase(valorAttributo)) {
 
                         if (userSessionBean != null && userSessionBean.getCurrent() != null) {
                             if (operador.equals(EnumTipoComparacion.EQ.getTipoComparacion())) {
@@ -468,7 +467,7 @@ public class RulesEngine implements CasoChangeListener {
 
             Object oneEntity = value;
 
-            if (CasoJPACustomController.PLACE_HOLDER_ANY.equalsIgnoreCase(valorAttributo)) {
+            if (AbstractJPAController.PLACE_HOLDER_ANY.equalsIgnoreCase(valorAttributo)) {
                 if (operador.equals(EnumTipoComparacion.EQ.getTipoComparacion())) {
                     return (oneEntity != null);
                 } else if (operador.equals(EnumTipoComparacion.NE.getTipoComparacion())) {
@@ -476,7 +475,7 @@ public class RulesEngine implements CasoChangeListener {
                 } else {
                     throw new NotSupportedException("Regla " + reglaTrigger.getIdTrigger() + ", Tipo comparacion " + operador.getIdComparador() + " is not supported here!!");
                 }
-            } else if (CasoJPACustomController.PLACE_HOLDER_NULL.equalsIgnoreCase(valorAttributo)) {
+            } else if (AbstractJPAController.PLACE_HOLDER_NULL.equalsIgnoreCase(valorAttributo)) {
                 if (operador.equals(EnumTipoComparacion.EQ.getTipoComparacion())) {
                     return (oneEntity == null);
                 } else if (operador.equals(EnumTipoComparacion.NE.getTipoComparacion())) {
@@ -614,7 +613,7 @@ public class RulesEngine implements CasoChangeListener {
 
     private void asignarCasoAGrupo(Accion accion, Caso caso) {
         try {
-            Grupo grupo = getJpaController().getGrupoFindByIdGrupo(accion.getParametros());
+            Grupo grupo = getJpaController().find(Grupo.class, accion.getParametros());
             ManagerCasos manager = new ManagerCasos(getJpaController());
             manager.asignarCasoAUsuarioConMenosCasos(grupo, caso);
         } catch (Exception ex) {
@@ -691,7 +690,7 @@ public class RulesEngine implements CasoChangeListener {
             audit.setNewValue(tipoCaso != null ? tipoCaso.getIdTipoCaso() : "Sin tipo de caso.");
             audit.setOldValue(old);
             audit.setIdCaso(caso.getIdCaso());
-            getJpaController().persistAuditLog(audit);
+            getJpaController().persist(audit);
         } catch (Exception ex) {
             Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "definirTipoCaso", ex);
         }
@@ -714,7 +713,7 @@ public class RulesEngine implements CasoChangeListener {
     private void cambiarPrioridad(Accion accion, Caso caso) {
         try {
             String old = caso.getIdPrioridad() != null ? caso.getIdPrioridad().getNombre() : null;
-            Prioridad prioridad = getJpaController().getPrioridadFindByIdPrioridad(accion.getParametros());
+            Prioridad prioridad = getJpaController().find(Prioridad.class, accion.getParametros());
             caso.setIdPrioridad(prioridad);
             getJpaController().mergeCasoWithoutNotify(caso);
 
@@ -726,7 +725,7 @@ public class RulesEngine implements CasoChangeListener {
             audit.setNewValue(prioridad != null ? prioridad.getNombre() : "Sin prioridad.");
             audit.setOldValue(old);
             audit.setIdCaso(caso.getIdCaso());
-            getJpaController().persistAuditLog(audit);
+            getJpaController().persist(audit);
 
         } catch (Exception ex) {
             Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "cambiarPrioridad", ex);
