@@ -2612,7 +2612,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             }
             if (casorel != null) {
                 current = getJpaController().find(Caso.class, current.getIdCaso());
-                casorel.getCasosRelacionadosList().add(current);
+                casorel.getCasosRelacionadosList().add(current);               
                 getJpaController().mergeCaso(casorel, getManagerCasos().verificaCambios(casorel));
                 current.getCasosRelacionadosList().add(casorel);
                 getJpaController().mergeCaso(current, getManagerCasos().verificaCambios(current));
@@ -2633,7 +2633,48 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         current = getJpaController().find(Caso.class, current.getIdCaso());
         return "/script/caso/Edit";
     }
+    
+    public String eliminarRelacionado() {
 
+        try {
+
+            Caso casorel = getJpaController().find(Caso.class, new Long(idCaserel));
+            if (casorel == null){
+                JsfUtil.addErrorMessage(resourceBundle.getString("DeletecasoRel.notfound"));
+                return null;
+            }
+            
+            if (!casorel.getCasosRelacionadosList().contains(current)){
+                JsfUtil.addErrorMessage(resourceBundle.getString("DeletecasoRel.notfound"));
+                return null;
+            }
+            
+            if (new Long(idCaserel).equals(current.getIdCaso())) {
+                throw new Exception();
+            }
+//            if (casorel != null) {
+                current = getJpaController().find(Caso.class, current.getIdCaso());
+                casorel.getCasosRelacionadosList().remove(current);               
+                getJpaController().mergeCaso(casorel, getManagerCasos().verificaCambios(casorel));
+                current.getCasosRelacionadosList().remove(casorel);
+                getJpaController().mergeCaso(current, getManagerCasos().verificaCambios(current));
+
+                idCaserel = "";
+                current = getJpaController().find(Caso.class, current.getIdCaso());
+                JsfUtil.addSuccessMessage(resourceBundle.getString("DeletecasoRel.ok"));
+                //ManagerCasos.createLogReg(current, "Casos Relacionados", idCaserel, "");
+//            } else {
+//                idCaserel = "";
+//                JsfUtil.addErrorMessage(resourceBundle.getString("DeletecasoRel.notfound"));
+//            }
+        } catch (Exception e) {
+            idCaserel = "";
+            current = getJpaController().find(Caso.class, current.getIdCaso());
+            JsfUtil.addErrorMessage(resourceBundle.getString("DeletecasoRel.nook"));
+        }
+        current = getJpaController().find(Caso.class, current.getIdCaso());
+        return "/script/caso/Edit";
+    }
     public void asignarCaso() {
 
         List<AuditLog> changeLog = new ArrayList<>();
