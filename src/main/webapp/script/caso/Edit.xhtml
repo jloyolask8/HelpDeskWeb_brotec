@@ -267,7 +267,7 @@
                             <c:forEach items="#{casoController.selected.attachmentsNotEmbedded}" var="caso_attachment" >
                                 <h:panelGrid columns="6">
                                     <p:graphicImage name="file_extension_#{caso_attachment.fileExtension}.png" library="file_extension_icons" />
-                                    <p:commandLink ajax="false" value="#{caso_attachment.nombreArchivoOriginal}" 
+                                    <p:commandLink ajax="false" value="#{caso_attachment.nombreArchivo}" 
                                                    title="Descargar #{caso_attachment.nombreArchivo} (#{caso_attachment.mimeType})">
                                         <p:fileDownload value="#{casoController.bajarArchivo(caso_attachment.idAttachment)}" />
                                     </p:commandLink>
