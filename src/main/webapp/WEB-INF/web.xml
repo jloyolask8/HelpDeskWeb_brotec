@@ -2,6 +2,10 @@
 <web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
     <distributable/>
     <context-param>
+        <param-name>facelets.SKIP_COMMENTS</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
         <param-name>javax.faces.PROJECT_STAGE</param-name>
         <param-value>Production</param-value>
     </context-param>
@@ -14,7 +18,7 @@
         <filter-name>LoginFilter</filter-name>
         <filter-class>com.itcs.helpdesk.jsfcontrollers.util.LoginFilter</filter-class>
     </filter>
-     <filter>
+    <filter>
         <filter-name>LoginCustomerFilter</filter-name>
         <filter-class>com.itcs.helpdesk.jsfcontrollers.util.LoginCustomerFilter</filter-class>
         <async-supported>true</async-supported>
@@ -107,7 +111,7 @@
         <filter-name>LoginFilter</filter-name>
         <url-pattern>/faces/script/*</url-pattern>
     </filter-mapping>
-     <filter-mapping>
+    <filter-mapping>
         <filter-name>LoginCustomerFilter</filter-name>
         <url-pattern>/faces/customer/*</url-pattern>
     </filter-mapping>
