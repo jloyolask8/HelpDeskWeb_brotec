@@ -1,6 +1,7 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.TipoNota;
 import java.io.Serializable;
 import java.util.List;
@@ -157,9 +158,9 @@ public class TipoNotaController extends AbstractManagedBean<TipoNota> implements
             if (value == null || value.length() == 0) {
                 return null;
             }
-            TipoNotaController controller = (TipoNotaController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "tipoNotaController");
-            return controller.getJpaController().find(TipoNota.class, getKey(value));
+            UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
+        return controller.getJpaController().find(TipoNota.class, getKey(value));
         }
 
         java.lang.Integer getKey(String value) {

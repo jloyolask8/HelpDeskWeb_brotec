@@ -782,18 +782,18 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
         return "/script/producto/List";
     }
 
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "/script/producto/View";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "/script/producto/List";
-        }
-    }
+//    public String destroyAndView() {
+//        performDestroy();
+//        recreateModel();
+//        updateCurrentItem();
+//        if (selectedItemIndex >= 0) {
+//            return "/script/producto/View";
+//        } else {
+//            // all items were removed - go back to list
+//            recreateModel();
+//            return "/script/producto/List";
+//        }
+//    }
 
     private void performDestroy() {
         try {
@@ -804,20 +804,20 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
         }
     }
 
-    private void updateCurrentItem() {
-        int count = getJpaController().count(Producto.class).intValue();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = (Producto) getJpaController().queryByRange(Producto.class, 1, selectedItemIndex).get(0);
-        }
-    }
+//    private void updateCurrentItem() {
+//        int count = getJpaController().count(Producto.class).intValue();
+//        if (selectedItemIndex >= count) {
+//            // selected index cannot be bigger than number of items:
+//            selectedItemIndex = count - 1;
+//            // go to previous page if last page disappeared:
+//            if (pagination.getPageFirstItem() >= count) {
+//                pagination.previousPage();
+//            }
+//        }
+//        if (selectedItemIndex >= 0) {
+//            current = (Producto) getJpaController().queryByRange(Producto.class, 1, selectedItemIndex).get(0);
+//        }
+//    }
 
     /**
      * @param componenteController the componenteController to set

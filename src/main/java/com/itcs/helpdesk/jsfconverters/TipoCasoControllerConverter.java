@@ -5,6 +5,7 @@
 package com.itcs.helpdesk.jsfconverters;
 
 import com.itcs.helpdesk.jsfcontrollers.TipoCasoController;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.TipoCaso;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -23,8 +24,8 @@ public class TipoCasoControllerConverter implements Converter {
         if (value == null || value.length() == 0) {
             return null;
         }
-        TipoCasoController controller = (TipoCasoController) facesContext.getApplication().getELResolver().
-                getValue(facesContext.getELContext(), null, "tipoCasoController");
+         UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
         return controller.getJpaController().find(TipoCaso.class, getKey(value));
     }
 

@@ -5,6 +5,7 @@
 package com.itcs.helpdesk.jsfconverters;
 
 import com.itcs.helpdesk.jsfcontrollers.RolController;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Rol;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -18,6 +19,7 @@ import javax.faces.convert.FacesConverter;
 @FacesConverter(forClass = Rol.class)
 public class RolConverter implements Converter {
 
+    @Override
     public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
         if (value == null || value.length() == 0) {
             return null;
@@ -25,8 +27,8 @@ public class RolConverter implements Converter {
 //          final JPAServiceFacade jpaController = new JPAServiceFacade();
 //        return jpaController.getRolFindByIdRol(getKey(value));
         
-        RolController controller = (RolController) facesContext.getApplication().getELResolver().
-                getValue(facesContext.getELContext(), null, "rolController");
+         UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
         return controller.getJpaController().find(Rol.class, getKey(value));
     }
 

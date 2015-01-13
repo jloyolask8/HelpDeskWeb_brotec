@@ -1,6 +1,7 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.AppSetting;
 import com.itcs.helpdesk.persistence.entities.Archivo;
 import com.itcs.helpdesk.persistence.entityenums.EnumFieldType;
@@ -255,18 +256,18 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
         
     }
 
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return getViewPage();
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return getListPage();
-        }
-    }
+//    public String destroyAndView() {
+//        performDestroy();
+//        recreateModel();
+//        updateCurrentItem();
+//        if (selectedItemIndex >= 0) {
+//            return getViewPage();
+//        } else {
+//            // all items were removed - go back to list
+//            recreateModel();
+//            return getListPage();
+//        }
+//    }
 
     private void performDestroy() {
         try {
@@ -277,27 +278,27 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
         }
     }
 
-    private void updateCurrentItem() {
-        int count = getJpaController().count(AppSetting.class).intValue();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = (AppSetting) getJpaController().queryByRange(AppSetting.class, selectedItemIndex + 1, selectedItemIndex).get(0);
-        }
-    }
-
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
+//    private void updateCurrentItem() {
+//        int count = getJpaController().count(AppSetting.class).intValue();
+//        if (selectedItemIndex >= count) {
+//            // selected index cannot be bigger than number of items:
+//            selectedItemIndex = count - 1;
+//            // go to previous page if last page disappeared:
+//            if (pagination.getPageFirstItem() >= count) {
+//                pagination.previousPage();
+//            }
+//        }
+//        if (selectedItemIndex >= 0) {
+//            current = (AppSetting) getJpaController().queryByRange(AppSetting.class, selectedItemIndex + 1, selectedItemIndex).get(0);
+//        }
+//    }
+//
+//    public DataModel getItems() {
+//        if (items == null) {
+//            items = getPagination().createPageDataModel();
+//        }
+//        return items;
+//    }
 
 //    public SelectItem[] getItemsAvailableSelectMany() {
 //        return JsfUtil.getSelectItems(getJpaController().getAppSettingJpaController().findAppSettingEntities(), false);
@@ -391,9 +392,9 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
             if (value == null || value.length() == 0) {
                 return null;
             }
-            AppSettingController controller = (AppSettingController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "appSettingController");
-            return controller.getJpaController().find(AppSetting.class, getKey(value));
+          UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
+        return controller.getJpaController().find(AppSetting.class, getKey(value));
         }
 
         java.lang.String getKey(String value) {

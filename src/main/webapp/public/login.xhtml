@@ -1,0 +1,173 @@
+<!DOCTYPE html [
+    <!ENTITY nbsp "&#160;"> 
+    ]>
+    <!--[if IE 8]>         <html class="ie8"> <![endif]-->
+    <!--[if IE 9]>         <html class="ie9 gt-ie8"> <![endif]-->
+    <!--[if gt IE 9]><!-->    
+    <html class="gt-ie8 gt-ie9 not-ie" xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:ui="http://java.sun.com/jsf/facelets"
+          xmlns:p="http://primefaces.org/ui"
+          xmlns:h="http://java.sun.com/jsf/html"
+          xmlns:f="http://java.sun.com/jsf/core">
+        <!--<![endif]-->
+        <f:view contentType="text/html" encoding="UTF-8">
+            <h:head>
+                <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+                <meta http-equiv="Pragma" content="no-cache" />
+                <meta http-equiv="Expires" content="0" />
+                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+                <meta charset="utf-8"/>
+                <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+                <title><ui:insert name="title">#{applicationBean.helpdeskTitle}</ui:insert></title>           
+
+
+
+                <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&amp;subset=latin" rel="stylesheet" type="text/css"></link>
+                <!-- Pixel Admin's stylesheets -->
+
+                <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+                <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/pixel-admin.min.css" rel="stylesheet" type="text/css"/>
+                <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/pages.min.css" rel="stylesheet" type="text/css"/>
+                <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/themes.min.css" rel="stylesheet" type="text/css"/>
+                <link href="#{facesContext.externalContext.requestContextPath}/resources/css/custom.css" rel="stylesheet" type="text/css"/>
+
+                <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet"/>
+
+              
+
+                <h:outputScript name="jsf.js" library="javax.faces"/>
+
+                <ui:insert name="head"></ui:insert>
+                <ui:insert name="scripts"></ui:insert>
+            </h:head>
+
+            <h:body id="mainbody" styleClass="theme-default page-signin-alt">   
+
+
+                <div class="signin-header">
+                    <a href="#" class="logo">
+                        <div class="demo-logo bg-primary">
+                          <p:graphicImage library="images" name="LogoGODesk.png" title="GoDesk"/>
+                        </div>&nbsp;
+                        <strong>Go</strong>Desk
+                    </a> <!-- / .logo -->
+                    <a href="signup.xhtml" class="btn btn-primary">Registrarse</a>
+                </div> <!-- / .header -->
+
+                <h1 class="form-header">Inicia Sesión en GoDesk</h1>
+                <!-- Form -->
+                <h:form id="form-signin" styleClass="panel">
+                    
+                    <h:messages globalOnly="true" errorClass="text-danger"/>
+                    
+                    <div class="form-group">
+                        <h:inputText id="usuario" required="true" requiredMessage="Introduce tu nombre de usuario."
+                                     styleClass="form-control input-lg"  
+                                     value="#{loginController.username}" title="#{bundle.EditUsuarioTitle_idUsuario}" 
+                                     />
+                        <p:watermark for="usuario" value="Nombre de Usuario"/>
+                    </div> <!-- / Username -->
+                    
+                     <div class="form-group">
+                        <h:inputText id="tenantId" required="true" requiredMessage="Introduce tu #{bundle.tenantLabel}"
+                                     styleClass="form-control input-lg"  
+                                     value="#{loginController.tenantId}" 
+                                     />
+                        <p:watermark for="tenantId" value="#{bundle.tenantLabel}"/>
+                    </div> <!-- / Tenant -->
+
+                    <div class="form-group signin-password">
+                        <h:inputSecret id="pass" required="true" requiredMessage="Introduce tu contraseña."
+                                       value="#{loginController.password}"   label="Password" styleClass="form-control input-lg">
+                            <a href="forgot.xhtml" class="forgot">Forgot?</a>
+                        </h:inputSecret> 
+                        <p:watermark for="pass" value="Contraseña"/>
+
+
+                    </div> <!-- / Password -->
+
+                    <h:message for="usuario" errorClass="text-danger"/>
+                    <h:message for="pass" errorClass="text-danger" infoClass="text-info"/>
+                    
+
+                    <div class="form-actions">
+                        
+                        
+                         <p:commandButton type="submit" action="#{loginController.loginAction}" 
+                                             update=":form-signin"
+                                             styleClass="btn btn-primary btn-block btn-lg"
+                                             value="#{bundle.LoginUsuario}" 
+                                             onclick="jQuery(this).addClass('ui-state-disabled')"/>
+                         
+
+                    </div> <!-- / .form-actions -->
+                </h:form>
+                <!-- / Form -->
+
+                <div class="signin-with">
+                    <div class="header">o entra con</div>
+                    <a href="#" class="btn btn-lg btn-facebook rounded"><i class="fa fa-facebook"></i></a>&nbsp;&nbsp;
+                    <a href="#" class="btn btn-lg btn-info rounded"><i class="fa fa-twitter"></i></a>&nbsp;&nbsp;
+                    <a href="#" class="btn btn-lg btn-danger rounded"><i class="fa fa-google-plus"></i></a>
+                </div>
+
+
+
+
+
+
+                <div id="footer">
+                    <div class="container">
+                        <p class="text-muted" align="center">Powered by Go Desk Chile Ltda. <a href="http://www.godesk.cl">www.godesk.cl</a>.</p>
+                    </div>
+                </div>
+
+
+                <!-- Pixel Admin's javascripts -->
+               <script src="#{facesContext.externalContext.requestContextPath}/resources/javascripts/bootstrap.min.js"></script>
+
+                <script src="#{facesContext.externalContext.requestContextPath}/resources/javascripts/pixel-admin.min.js"></script>
+
+                <!-- Get jQuery from Google CDN -->
+                <!--[if !IE]> -->
+                <script type="text/javascript">
+                    //<![CDATA[
+                    window.jQuery || document.write('<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js">' + "<" + "/script>");
+                    //]]>
+                </script>
+
+                <!-- <![endif]-->
+                <!--[if lte IE 9]>
+                 <script type="text/javascript">
+                    //<![CDATA[
+                    window.jQuery || document.write('<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js">'+"<"+"/script>");
+                    //]]>
+               </script>
+                <![endif]-->
+
+                <script type="text/javascript">
+                    window.PixelAdmin.start([
+                        function() {
+                            $("#form-signin").validate({focusInvalid: true, errorPlacement: function() {
+                                }});
+
+                            // Validate username
+                            $("#username_id").rules("add", {
+                                required: true,
+                                minlength: 3
+                            });
+
+                            // Validate password
+                            $("#password_id").rules("add", {
+                                required: true,
+                                minlength: 6
+                            });
+                        }
+                    ]);
+                </script>
+
+
+            </h:body>
+        </f:view>
+    </html>

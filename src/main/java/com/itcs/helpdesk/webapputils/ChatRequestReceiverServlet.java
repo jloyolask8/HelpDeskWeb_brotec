@@ -7,6 +7,7 @@ package com.itcs.helpdesk.webapputils;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entityenums.EnumCanal;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso;
+import com.itcs.helpdesk.persistence.jpa.AbstractJPAController;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.util.ApplicationConfig;
 import com.itcs.helpdesk.util.Log;
@@ -42,15 +43,8 @@ import org.apache.commons.lang3.StringUtils;
  *
  * @author jonathan
  */
-public class ChatRequestReceiverServlet extends HttpServlet
+public class ChatRequestReceiverServlet extends AbstractServlet
 {
-
-    @Resource
-    private UserTransaction utx = null;
-    @PersistenceUnit(unitName = "helpdeskPU")
-    private EntityManagerFactory emf = null;
-    private JPAServiceFacade jpaController = null;
-    private ManagerCasos managerCasos;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -61,14 +55,16 @@ public class ChatRequestReceiverServlet extends HttpServlet
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    @Override
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
+        
+        String schema = request.getParameter(AbstractJPAController.TENANT_PROP_NAME);
         try
         {
-
             final StringBuilder xml = new StringBuilder();
             final Reader reader = request.getReader();
 
@@ -261,7 +257,10 @@ public class ChatRequestReceiverServlet extends HttpServlet
             
             datos.setDescripcion( sb.toString() );
             
-            Caso newCaso = getManagerCasos().crearCaso(datos, EnumCanal.CHAT.getCanal(), fechaCreacion);
+            JPAServiceFacade aServiceFacade = new JPAServiceFacade(utx, emf, schema);
+            ManagerCasos managerCasos = new ManagerCasos(aServiceFacade);
+            
+            Caso newCaso = managerCasos.crearCaso(datos, EnumCanal.CHAT.getCanal(), fechaCreacion);
 
             Log.createLogger(this.getClass().getName()).logInfo("CASO CREADO OK DESDE CHAT:" + newCaso.toString());
 
@@ -321,69 +320,9 @@ public class ChatRequestReceiverServlet extends HttpServlet
         return sb.toString();
     }
 
-    private ManagerCasos getManagerCasos()
-    {
-        if (null == managerCasos)
-        {
-            managerCasos = new ManagerCasos(getJpaController());
-        }
-        return managerCasos;
-    }
+   
 
-    public JPAServiceFacade getJpaController()
-    {
-        if (jpaController == null)
-        {
-            jpaController = new JPAServiceFacade(utx, emf);
-            RulesEngine rulesEngine = new RulesEngine(emf, jpaController);
-            jpaController.setCasoChangeListener(rulesEngine);
-        }
-        return jpaController;
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException
-    {
-        System.out.println("Processing GET!!!");
-        processRequest(request, response);
-    }
-
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException
-    {
-        Log.createLogger(this.getClass().getName()).logInfo("Processing POST!");
-        processRequest(request, response);
-    }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo()
-    {
-        return "Short description";
-    }// </editor-fold>
+   
 }
 
 @XStreamAlias("transcript")

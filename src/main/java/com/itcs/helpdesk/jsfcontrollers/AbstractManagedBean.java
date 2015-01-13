@@ -73,6 +73,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     protected static final SimpleDateFormat yearDateFormatWTime = new SimpleDateFormat("dd/MM/yy HH:mm", LOCALE_ES_CL);
 
     private final Class<E> entityClass;
+    private final String schemaName;
 
     protected transient JPAServiceFacade jpaController = null;
     protected transient ManagerCasos managerCasos;
@@ -111,7 +112,8 @@ public abstract class AbstractManagedBean<E> implements Serializable {
 
     public AbstractManagedBean(Class<E> entityClass) {
         this.entityClass = entityClass;
-        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "{0} for {1} created", new Object[]{this.getClass().getSimpleName(), entityClass.getSimpleName()});
+        this.schemaName = getUserSessionBean().getCurrent().getTenantId();
+        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "{0} for {1} created in {2}", new Object[]{this.getClass().getSimpleName(), entityClass.getSimpleName(), schemaName});
     }
 
     public void showMessageInDialog(FacesMessage.Severity severity, String msg, String detail) {
@@ -292,10 +294,17 @@ public abstract class AbstractManagedBean<E> implements Serializable {
         recreatePagination();
         recreateModel();
     }
+    
+//    public JPAServiceFacade getJpaController(String schema) {
+//        if (jpaController == null) {
+//            jpaController = new JPAServiceFacade(utx, emf, schema);
+//        }
+//        return jpaController;
+//    }
 
     public JPAServiceFacade getJpaController() {
         if (jpaController == null) {
-            jpaController = new JPAServiceFacade(utx, emf);
+            jpaController = new JPAServiceFacade(utx, emf, schemaName);
         }
         return jpaController;
     }
@@ -369,7 +378,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
         return getJpaController().findAll(entityClass);
     }
 
-    protected UserSessionBean getUserSessionBean() {
+    protected final UserSessionBean getUserSessionBean() {
         return (UserSessionBean) JsfUtil.getManagedBean("UserSessionBean");
     }
 

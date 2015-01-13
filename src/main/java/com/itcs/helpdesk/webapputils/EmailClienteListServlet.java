@@ -9,12 +9,14 @@ import com.itcs.helpdesk.persistence.entities.EmailCliente;
 import com.itcs.helpdesk.persistence.entities.FiltroVista;
 import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
+import com.itcs.helpdesk.persistence.jpa.AbstractJPAController;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.persistence.utils.OrderBy;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,59 +36,54 @@ import org.primefaces.json.JSONArray;
  *
  * @author jonathan
  */
-public class EmailClienteListServlet extends HttpServlet {
+public class EmailClienteListServlet extends AbstractServlet {
 
-    @Resource
-    private UserTransaction utx = null;
-    @PersistenceUnit(unitName = "helpdeskPU")
-    private EntityManagerFactory emf = null;
-    private JPAServiceFacade jpaController = null;
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    @Override
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         try {
-            /* TODO output your page here. You may use following sample code. */
-            String q = request.getParameter("q");
-            String p = request.getParameter("p");
+            String schema = request.getParameter(AbstractJPAController.TENANT_PROP_NAME);
 
-            if (p != null) {
-                if (q != null && !StringUtils.isEmpty(q)) {
-                    out.println(getGSonList(q));
-                } else {
-                    out.println(getGSonList());
-                }
-            } else {
-                if (q != null && !StringUtils.isEmpty(q)) {
-                    out.println(getJSonList(q));
-                } else {
-                    out.println(getJSonList());
+            if (!StringUtils.isEmpty(schema)) {
+
+                /* TODO output your page here. You may use following sample code. */
+                String q = request.getParameter("q");
+                if (!StringUtils.isEmpty(schema)) {
+                    if (!StringUtils.isEmpty(q)) {
+                        out.println(getGSonList(schema, q));
+                    } else {
+                        out.println(getGSonList(schema));
+                    }
                 }
             }
+        } finally {
+            out.close();
+        }
 
+        try {
+            /* TODO output your page here. You may use following sample code. */
 
 //            System.out.println("getTagJSonList(" + q + ")");
-
-
         } finally {
             out.close();
         }
     }
 
-    private List<EmailCliente> getDataList(String q) throws NotSupportedException, ClassNotFoundException {
+    private List<EmailCliente> getDataList(String schema, String q) throws NotSupportedException, ClassNotFoundException {
         if (q == null) {
-            return (List<EmailCliente>) getJpaController().findAll(EmailCliente.class);
+            return (List<EmailCliente>) new LinkedList<EmailCliente>();//empty getJpaController(schema).findAll(EmailCliente.class);
         } else {
             Vista vista = new Vista(EmailCliente.class);
             FiltroVista filter1 = new FiltroVista(1);
@@ -98,23 +95,24 @@ public class EmailClienteListServlet extends HttpServlet {
                 vista.setFiltrosVistaList(new ArrayList<FiltroVista>());
             }
             vista.getFiltrosVistaList().add(filter1);
+            return (List<EmailCliente>) getJpaController(schema).findEntities(vista, 10, 0, new OrderBy("emailCliente"), null);
 
-            return (List<EmailCliente>) getJpaController().findEntities(vista, 10, 0, new OrderBy("emailCliente"), null);
+//            return (List<EmailCliente>) getJpaController(schema).findEntities(EmailCliente.class, vista, 10, 0, new OrderBy("emailCliente"), null);
         }
 
     }
 
-    public String getGSonList() {
-        return getGSonList(null);
+    private String getGSonList(String schema) {
+        return getGSonList(schema, null);
     }
 
-    public String getGSonList(String pattern) {
+    private String getGSonList(String schema, String pattern) {
         Gson gson = new Gson();
         try {
 
             //JSONArray list = new JSONArray();
             List<SimpleEmailCliente> lista = new ArrayList();
-            for (EmailCliente emailCliente : getDataList(pattern)) {
+            for (EmailCliente emailCliente : getDataList(schema, pattern)) {
 
                 lista.add(new SimpleEmailCliente(emailCliente.getEmailCliente(), emailCliente.getCliente() != null ? emailCliente.getCliente().getCapitalName() : ""));
             }
@@ -128,9 +126,9 @@ public class EmailClienteListServlet extends HttpServlet {
         return gson.toJson(Collections.EMPTY_LIST);
     }
 
-    public String getJSonList(String pattern) {
+    private String getJSonList(String schema, String pattern) {
         try {
-            JSONArray list = new JSONArray(getDataList(pattern));
+            JSONArray list = new JSONArray(getDataList(schema, pattern));
             return list.toString();
         } catch (NotSupportedException ex) {
             Logger.getLogger(EmailClienteListServlet.class.getName()).log(Level.SEVERE, null, ex);
@@ -140,58 +138,12 @@ public class EmailClienteListServlet extends HttpServlet {
         return new JSONArray().toString();
     }
 
-    public String getJSonList() {
-        JSONArray list = new JSONArray((List<EmailCliente>) getJpaController().findAll(EmailCliente.class));
+    private String getJSonList(String schema) {
+        JSONArray list = new JSONArray((List<EmailCliente>) getJpaController(schema).findAll(EmailCliente.class));
         return list.toString();
     }
 
-    public JPAServiceFacade getJpaController() {
-        if (jpaController == null) {
-            jpaController = new JPAServiceFacade(utx, emf);
-        }
-        return jpaController;
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP
-     * <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-    }
-
-    /**
-     * Handles the HTTP
-     * <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-    }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
+   
 }
 
 class SimpleEmailCliente {

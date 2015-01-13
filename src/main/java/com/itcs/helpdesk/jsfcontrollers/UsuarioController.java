@@ -11,7 +11,6 @@ import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.entityenums.EnumEstadoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
-import com.itcs.helpdesk.persistence.entityenums.EnumUsuariosBase;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.UtilSecurity;
 import com.itcs.helpdesk.util.UtilesRut;
@@ -53,8 +52,8 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
     private UserSessionBean userSessionBean;
     private int selectedItemIndex;
     private Rol rol = new Rol();
-    private List<Rol> roles = new ArrayList<Rol>();
-    private transient DualListModel<Grupo> gruposDualListModel = new DualListModel<Grupo>();
+    private List<Rol> roles = new ArrayList<>();
+    private transient DualListModel<Grupo> gruposDualListModel = new DualListModel<>();
 //    private MeterGaugeChartModel meterGaugeModel;
     private String idUsuarioDelete;
     private transient CartesianChartModel casosClosedVsOpenModel;
@@ -85,7 +84,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
 
         Long count = 0L;
         List<Number> intervals = new ArrayList<Number>() {
-             {
+            {
                 add(15);
                 add(30);
                 add(45);
@@ -419,19 +418,18 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
         return "List";
     }
 
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "View";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "List";
-        }
-    }
-
+//    public String destroyAndView() {
+//        performDestroy();
+//        recreateModel();
+//        updateCurrentItem();
+//        if (selectedItemIndex >= 0) {
+//            return "View";
+//        } else {
+//            // all items were removed - go back to list
+//            recreateModel();
+//            return "List";
+//        }
+//    }
     private void performDestroy() {
         try {
             getJpaController().remove(Usuario.class, current);
@@ -442,22 +440,21 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
         }
     }
 
-    private void updateCurrentItem() {
-        System.out.println("updateCurrentItem");
-        int count = getJpaController().count(Usuario.class).intValue();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = (Usuario) getJpaController().queryByRange(Usuario.class, 1, selectedItemIndex).get(0);
-        }
-    }
-
+//    private void updateCurrentItem() {
+//        System.out.println("updateCurrentItem");
+//        int count = getJpaController().count(Usuario.class).intValue();
+//        if (selectedItemIndex >= count) {
+//            // selected index cannot be bigger than number of items:
+//            selectedItemIndex = count - 1;
+//            // go to previous page if last page disappeared:
+//            if (pagination.getPageFirstItem() >= count) {
+//                pagination.previousPage();
+//            }
+//        }
+//        if (selectedItemIndex >= 0) {
+//            current = (Usuario) getJpaController().queryByRange(Usuario.class, 1, selectedItemIndex).get(0);
+//        }
+//    }
 //    public DataModel getItems() {
 //        if (items == null) {
 //            items = getPagination().createPageDataModel();
@@ -500,13 +497,13 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
 //    }
     public SelectItem[] getItemsAvailableSelectOneNoSystem() {
         List<Usuario> lista = (List<Usuario>) getJpaController().findAll(Usuario.class);
-        lista.remove(EnumUsuariosBase.SISTEMA.getUsuario());
+//        lista.remove(EnumUsuariosBase.SISTEMA.getUsuario());
         return JsfUtil.getSelectItems(lista, true);
     }
 
     public SelectItem[] getStringItemsAvailableSelectOneNoSystem() {
         List<Usuario> lista = (List<Usuario>) getJpaController().findAll(Usuario.class);
-        lista.remove(EnumUsuariosBase.SISTEMA.getUsuario());
+//        lista.remove(EnumUsuariosBase.SISTEMA.getUsuario());
         List<String> ids = new LinkedList<>();
         for (Usuario usuario : lista) {
             ids.add(usuario.getIdUsuario());
@@ -516,7 +513,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
 
     public SelectItem[] getItemsAvailableSelectOneNoPropietario() {
         List<Usuario> lista = (List<Usuario>) getJpaController().findAll(Usuario.class);
-        lista.remove(EnumUsuariosBase.SISTEMA.getUsuario());
+//        lista.remove(EnumUsuariosBase.SISTEMA.getUsuario());
         lista.add(new Usuario(UsuarioController.SIN_PROPIETARIO, "Sin", "Propietario"));
         return JsfUtil.getSelectItems(lista, true);
     }
@@ -722,8 +719,8 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
             if (UsuarioController.SIN_PROPIETARIO.equals(value)) {
                 return new Usuario(UsuarioController.SIN_PROPIETARIO, "Sin", "Propietario");
             }
-            UsuarioController controller = (UsuarioController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "usuarioController");
+            UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                    getValue(facesContext.getELContext(), null, "UserSessionBean");
             return controller.getJpaController().find(Usuario.class, getKey(value));
         }
 

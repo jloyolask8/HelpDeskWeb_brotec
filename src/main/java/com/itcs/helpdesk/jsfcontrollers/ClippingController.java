@@ -242,12 +242,10 @@ public class ClippingController extends AbstractManagedBean<Clipping> implements
             if (value == null || value.length() == 0) {
                 return null;
             }
-            ClippingController controller = (ClippingController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "clippingController");
-//            System.out.println("converting clipping id " + getKey(value).toString());
-            final Clipping clip = controller.getJpaController().find(Clipping.class, getKey(value));
-//            System.out.println("Found " + clip);
-            return clip;
+           UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
+        return controller.getJpaController().find(Clipping.class, getKey(value));
+
         }
 
         java.lang.Integer getKey(String value) {

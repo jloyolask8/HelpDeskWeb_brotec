@@ -9,6 +9,8 @@ import java.util.List;
  * @author jorge
  */
 public class DatosCaso {
+    
+    private String tenantId;//id of the account
 
     private String idArea;//id del producto
     private String idPrioridad;//id del producto
@@ -398,6 +400,20 @@ public class DatosCaso {
      */
     public void setFechaEstimadaCompra(Date fechaEstimadaCompra) {
         this.fechaEstimadaCompra = fechaEstimadaCompra;
+    }
+
+    /**
+     * @return the tenantId
+     */
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    /**
+     * @param tenantId the tenantId to set
+     */
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
     }
 
     public static class CustomField {

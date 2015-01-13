@@ -5,6 +5,7 @@
 package com.itcs.helpdesk.jsfconverters;
 
 import com.itcs.helpdesk.jsfcontrollers.CasoController;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Clipping;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -22,9 +23,9 @@ public class ClippingConverter implements Converter {
         if (value == null || value.length() == 0) {
             return null;
         }
-            CasoController controller = (CasoController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "casoController");
-            return controller.getJpaController().find(Clipping.class, getKey(value));
+             UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
+        return controller.getJpaController().find(Clipping.class, getKey(value));
     }
 
     java.lang.Integer getKey(String value) {

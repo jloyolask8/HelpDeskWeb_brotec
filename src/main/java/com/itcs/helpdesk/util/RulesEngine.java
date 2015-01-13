@@ -46,7 +46,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.faces.bean.ManagedProperty;
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.resource.NotSupportedException;
 import org.apache.commons.lang3.StringUtils;
@@ -55,6 +54,9 @@ import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.mail.EmailException;
 
 /**
+ * changed to be multitenant
+ */
+/**
  *
  * @author jorge
  * @author jonathan
@@ -62,14 +64,14 @@ import org.apache.commons.mail.EmailException;
 public class RulesEngine implements CasoChangeListener {
 
     private final JPAServiceFacade jpaController;
-    private EntityManagerFactory emf = null;
+//    private EntityManagerFactory emf = null;
     @ManagedProperty(value = "#{UserSessionBean}")
     private UserSessionBean userSessionBean;
 
-    public RulesEngine(EntityManagerFactory emf, JPAServiceFacade jpaController) {
+    public RulesEngine(JPAServiceFacade jpaController) {
         this.jpaController = jpaController;
 //        this.managerCasos = managerCasos;
-        this.emf = emf;
+//        this.emf = emf;
     }
 
     private JPAServiceFacade getJpaController() {
@@ -336,7 +338,7 @@ public class RulesEngine implements CasoChangeListener {
 
         } else if (fieldType.equals(EnumFieldType.SELECTONE_ENTITY.getFieldType())) {
 
-            EntityManager em = emf.createEntityManager();
+//            EntityManager em = emf.createEntityManager();
             try {
 
                 //El valor es el id de un entity, que tipo de Entity?= comparableField.tipo
@@ -349,7 +351,7 @@ public class RulesEngine implements CasoChangeListener {
                     List<String> valores = condicion.getValoresList();
 
                     if (oneEntity != null && valores != null) {
-                        return valores.contains(emf.getPersistenceUnitUtil().getIdentifier(oneEntity).toString());
+                        return valores.contains(getJpaController().getIdentifier(oneEntity).toString());
 
                     } else {
                         return false;
@@ -422,7 +424,7 @@ public class RulesEngine implements CasoChangeListener {
                     } else {
                         if (operador.equals(EnumTipoComparacion.EQ.getTipoComparacion())) {
                             try {
-                                final Object find = em.find(class_, valorAttributo);
+                                final Object find = getJpaController().find(class_, valorAttributo);
                                 if (find != null) {
                                     return find.equals(oneEntity);
                                 } else {
@@ -430,13 +432,13 @@ public class RulesEngine implements CasoChangeListener {
                                 }
 
                             } catch (java.lang.IllegalArgumentException e) {
-                                return em.find(class_, Integer.valueOf(valorAttributo)).equals(oneEntity);
+                                return getJpaController().find(class_, Integer.valueOf(valorAttributo)).equals(oneEntity);
                             }
                         } else if (operador.equals(EnumTipoComparacion.NE.getTipoComparacion())) {
                             try {
-                                return !em.find(class_, valorAttributo).equals(oneEntity);
+                                return !getJpaController().find(class_, valorAttributo).equals(oneEntity);
                             } catch (java.lang.IllegalArgumentException e) {
-                                return !em.find(class_, Integer.valueOf(valorAttributo)).equals(oneEntity);
+                                return !getJpaController().find(class_, Integer.valueOf(valorAttributo)).equals(oneEntity);
                             }
 
                         } else if (operador.equals(EnumTipoComparacion.CT.getTipoComparacion())) {//Changed TO =)
@@ -445,9 +447,9 @@ public class RulesEngine implements CasoChangeListener {
                                 for (AuditLog auditLog : changeList) {
                                     if (comparableField.getIdCampo().equalsIgnoreCase(auditLog.getCampo())) {
                                         try {
-                                            return em.find(class_, valorAttributo).equals(oneEntity);
+                                            return getJpaController().find(class_, valorAttributo).equals(oneEntity);
                                         } catch (java.lang.IllegalArgumentException e) {
-                                            return em.find(class_, Integer.valueOf(valorAttributo)).equals(oneEntity);
+                                            return getJpaController().find(class_, Integer.valueOf(valorAttributo)).equals(oneEntity);
                                         }
                                     }
                                 }
@@ -460,7 +462,7 @@ public class RulesEngine implements CasoChangeListener {
                 }
 
             } finally {
-                em.close();
+//                em.close();
             }
 
         } else if (fieldType.equals(EnumFieldType.SELECTONE_PLACE_HOLDER.getFieldType())) {

@@ -9,12 +9,11 @@
         <param-name>javax.faces.DEFAULT_SUFFIX</param-name>
         <param-value>.xhtml</param-value>
     </context-param>
-    
     <filter>
         <filter-name>LoginFilter</filter-name>
         <filter-class>com.itcs.helpdesk.jsfcontrollers.util.LoginFilter</filter-class>
     </filter>
-     <filter>
+    <filter>
         <filter-name>LoginCustomerFilter</filter-name>
         <filter-class>com.itcs.helpdesk.jsfcontrollers.util.LoginCustomerFilter</filter-class>
         <async-supported>true</async-supported>
@@ -34,7 +33,7 @@
         <filter-class>com.itcs.helpdesk.util.ClientAgentDetectorFilter</filter-class>
         <init-param>
             <param-name>loginPage</param-name>
-            <param-value>/faces/script/login.xhtml</param-value>
+            <param-value>/faces/public/login.xhtml</param-value>
         </init-param>
         <init-param>
             <param-name>mobileLoginPage</param-name>
@@ -74,6 +73,10 @@
             <file-size-threshold>1048576</file-size-threshold>
         </multipart-config>
     </servlet>
+    <servlet>
+        <servlet-name>AbstractServlet</servlet-name>
+        <servlet-class>com.itcs.helpdesk.webapputils.AbstractServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>CKEditorUploadServlet</servlet-name>
         <url-pattern>/ckeditor/uploadimage</url-pattern>
@@ -96,7 +99,7 @@
     </servlet-mapping>
     <filter-mapping>
         <filter-name>ClientAgentDetectorFilter</filter-name>
-        <url-pattern>/faces/script/login.xhtml</url-pattern>
+        <url-pattern>/faces/public/login.xhtml</url-pattern>
     </filter-mapping>
     <filter-mapping>
         <filter-name>Character Encoding Filter</filter-name>
@@ -107,7 +110,7 @@
         <filter-name>LoginFilter</filter-name>
         <url-pattern>/faces/script/*</url-pattern>
     </filter-mapping>
-     <filter-mapping>
+    <filter-mapping>
         <filter-name>LoginCustomerFilter</filter-name>
         <url-pattern>/faces/customer/*</url-pattern>
     </filter-mapping>
@@ -121,7 +124,6 @@
     <listener>
         <listener-class>com.itcs.helpdesk.webapputils.UserSessionListener</listener-class>
     </listener>
-    
     <servlet-mapping>
         <servlet-name>TagListServlet</servlet-name>
         <url-pattern>/TagListServlet</url-pattern>
@@ -129,7 +131,7 @@
     <servlet-mapping>
         <servlet-name>ChatRequestReceiverServlet</servlet-name>
         <url-pattern>/ChatRequestReceiverServlet</url-pattern>
-    </servlet-mapping>    
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>EmailClienteListServlet</servlet-name>
         <url-pattern>/EmailClienteListServlet</url-pattern>
@@ -138,12 +140,16 @@
         <servlet-name>DownloadFileServlet</servlet-name>
         <url-pattern>/DownloadFileServlet</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AbstractServlet</servlet-name>
+        <url-pattern>/AbstractServlet</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
     <error-page>
         <exception-type>javax.faces.application.ViewExpiredException</exception-type>
-        <location>/faces/script/login.xhtml</location>
+        <location>/faces/public/login.xhtml</location>
     </error-page>
     <welcome-file-list>
         <welcome-file>faces/script/index.xhtml</welcome-file>

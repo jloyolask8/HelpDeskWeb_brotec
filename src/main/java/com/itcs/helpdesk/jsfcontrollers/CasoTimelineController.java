@@ -4,7 +4,6 @@
  */
 package com.itcs.helpdesk.jsfcontrollers;
 
-import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.AuditLog;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.FiltroVista;

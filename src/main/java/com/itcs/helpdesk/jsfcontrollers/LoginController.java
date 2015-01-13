@@ -5,6 +5,7 @@ import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entities.UsuarioSessionLog;
+import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.MailNotifier;
 import com.itcs.helpdesk.util.UtilSecurity;
@@ -32,6 +33,8 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
     //private LengthValidator passwordLengthValidator = new LengthValidator();
     private String username;
     private String password;
+    private String tenantId;
+    
     private Usuario usuario;
 //    private SesionesJpaController sesionesJpaController;
     //change pass
@@ -49,6 +52,7 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
 
     public String changePass() {
         try {
+            final JPAServiceFacade jpaController1 = new JPAServiceFacade(utx, emf, tenantId);
             if (passwordCurrent != null) {
                 Usuario user = getUserSessionBean().getCurrent();
                 String passMD5 = UtilSecurity.getMD5(passwordCurrent);
@@ -57,7 +61,7 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
                     if (passwordNew1 != null && passwordNew1.equals(passwordNew2)) {
                         //So change it
                         user.setPass(UtilSecurity.getMD5(passwordNew1));
-                        getJpaController().merge(user);
+                        jpaController1.merge(user);
                         JsfUtil.addSuccessMessage("La contraseña ha sido cambiada exitósamente.");
                         executeInClient("PF('panelChangePass').hide()");
                     } else {
@@ -87,13 +91,14 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
     public String resetPassAction() {
         if (!getUserSessionBean().isValidatedSession()) {
             try {
-                usuario = getJpaController().find(Usuario.class, username);
+                final JPAServiceFacade jpaController1 = new JPAServiceFacade(utx, emf, tenantId);
+                usuario = jpaController1.find(Usuario.class, username);
                 if (usuario == null) {
                     throw new NoResultException();
                 } else if (usuario.getPass() != null) {
                     String randomPass = RandomStringUtils.randomAlphanumeric(8);
                     usuario.setPass(UtilSecurity.getMD5(randomPass));//encript the password
-                    getJpaController().merge(usuario);
+                    jpaController1.merge(usuario);
                     MailNotifier.sendEmailRecoverPassword(usuario, randomPass);
                     JsfUtil.addSuccessMessage("Revise su casilla de correo. La contraseña será enviada a su dirección " + usuario.getEmail());
                     return null;
@@ -118,7 +123,8 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
 
         if (!getUserSessionBean().isValidatedSession()) {
             try {
-                usuario = getJpaController().find(Usuario.class, username);
+                final JPAServiceFacade jpaController1 = new JPAServiceFacade(utx, emf, tenantId);
+                usuario = jpaController1.find(Usuario.class, username);
                 if (usuario == null) {
                     JsfUtil.addErrorMessage("El nombre de usuario ingresado no está registrado en el sistema.");
 //                    return null;
@@ -136,7 +142,8 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
                         sessionLog.setTimestampLogin(new Date());
                         sessionLog.setUserAgent(request.getHeader(HttpHeaders.USER_AGENT));
                         sessionLog.setLanguages(request.getHeader(HttpHeaders.ACCEPT_LANGUAGE));
-                        getJpaController().persist(sessionLog);
+                        
+                        jpaController1.persist(sessionLog);
                         usuario.addUsuarioSessionLog(sessionLog);
                         getUserSessionBean().setCurrent(usuario);
                         getUserSessionBean().setCurrentSessionLog(sessionLog);
@@ -186,7 +193,7 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
                 return "/mobile/login.xhtml?faces-redirect=true";
             } else {
 //                            nav.performNavigation("inbox");//DeskTop Version
-                return "/script/login.xhtml?faces-redirect=true";
+                return "/public/login.xhtml?faces-redirect=true";
 
             }
         }
@@ -197,6 +204,8 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
 
     public String logout_action() {
 
+        final JPAServiceFacade jpaController1 = new JPAServiceFacade(utx, emf, tenantId);
+        
         try {
             getApplicationBean().removeChannel(getUserSessionBean().getCurrent().getIdUsuario());
         } catch (Exception ex) {
@@ -207,7 +216,7 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
             final UsuarioSessionLog currentSessionLog = getUserSessionBean().getCurrentSessionLog();
             if (currentSessionLog != null) {
                 currentSessionLog.setTimestampLogout(new Date());
-                getJpaController().merge(currentSessionLog);
+                jpaController1.merge(currentSessionLog);
             }
 
         } catch (Exception ex) {
@@ -219,7 +228,7 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
         if (isThisRequestCommingFromAMobileDevice(JsfUtil.getRequest())) {
             return "/mobile/login.xhtml?faces-redirect=true";
         } else {
-            return "/script/login.xhtml?faces-redirect=true";
+            return "/public/login.xhtml?faces-redirect=true";
 
         }
 
@@ -308,5 +317,19 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
      */
     public void setApplicationBean(ApplicationBean applicationBean) {
         this.applicationBean = applicationBean;
+    }
+
+    /**
+     * @return the tenantId
+     */
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    /**
+     * @param tenantId the tenantId to set
+     */
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
     }
 }

@@ -5,6 +5,7 @@
 package com.itcs.helpdesk.webapputils;
 
 import com.itcs.helpdesk.persistence.entities.Archivo;
+import com.itcs.helpdesk.persistence.jpa.AbstractJPAController;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -23,20 +24,9 @@ import javax.transaction.UserTransaction;
  *
  * @author Jonathan
  */
-public class DownloadFileServlet extends HttpServlet {
+public class DownloadFileServlet extends AbstractServlet {
 
-    @Resource
-    private UserTransaction utx = null;
-    @PersistenceUnit(unitName = "helpdeskPU")
-    private EntityManagerFactory emf = null;
-    private JPAServiceFacade jpaController = null;
-
-    private JPAServiceFacade getJpaController() {
-        if (jpaController == null) {
-            jpaController = new JPAServiceFacade(utx, emf);
-        }
-        return jpaController;
-    }
+   
 
     /**
      * Processes requests for both HTTP
@@ -48,16 +38,18 @@ public class DownloadFileServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    @Override
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         String fileId = request.getParameter("id");
+         String schema = request.getParameter(AbstractJPAController.TENANT_PROP_NAME);
 
         try {
             if (fileId == null || "".equals(fileId)) {
                 response.sendError(404, "Debe especificar el id del archivo.");
             }
-            Archivo existente = getJpaController().find(Archivo.class, Long.parseLong(fileId));
+            Archivo existente = getJpaController(schema).find(Archivo.class, Long.parseLong(fileId));
             if (existente != null) {
                 System.out.println("existe archivo con id " + fileId);
                 System.out.println(existente.getContentType());
@@ -83,44 +75,4 @@ public class DownloadFileServlet extends HttpServlet {
 
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP
-     * <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-    }
-
-    /**
-     * Handles the HTTP
-     * <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-    }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
 }

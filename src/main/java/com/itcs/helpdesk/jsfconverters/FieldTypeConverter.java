@@ -5,6 +5,7 @@
 package com.itcs.helpdesk.jsfconverters;
 
 import com.itcs.helpdesk.jsfcontrollers.util.ApplicationBean;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.FieldType;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -23,8 +24,8 @@ public class FieldTypeConverter implements Converter {
         if (value == null || value.length() == 0) {
             return null;
         }
-        ApplicationBean controller = (ApplicationBean) facesContext.getApplication().getELResolver().
-                getValue(facesContext.getELContext(), null, "applicationBean");
+        UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
         return controller.getJpaController().find(FieldType.class, (value));
     }
 

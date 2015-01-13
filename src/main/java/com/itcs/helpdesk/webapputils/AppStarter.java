@@ -6,15 +6,12 @@ package com.itcs.helpdesk.webapputils;
 
 import com.itcs.commons.email.EnumEmailSettingKeys;
 import com.itcs.helpdesk.persistence.entities.AppSetting;
-import com.itcs.helpdesk.persistence.entities.Area;
 import com.itcs.helpdesk.persistence.entities.Canal;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.quartz.HelpDeskScheluder;
 import com.itcs.helpdesk.util.ApplicationConfig;
-import com.itcs.helpdesk.util.AutomaticOpsExecutor;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.MailClientFactory;
-import com.itcs.helpdesk.util.RulesEngine;
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.List;
@@ -57,7 +54,7 @@ public class AppStarter implements ServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         try {
-            Log.createLogger(this.getClass().getName()).logInfo("*** Stopping GoDesk-Quartz Scheluder ***");
+            Log.createLogger(this.getClass().getName()).logInfo("*** contextDestroyed - Stopping GoDesk-Quartz Scheluder ***");
             HelpDeskScheluder.stop();
         } catch (SchedulerException ex) {
             Logger.getLogger(AppStarter.class.getName()).log(Level.SEVERE, null, ex);
@@ -65,14 +62,14 @@ public class AppStarter implements ServletContextListener {
     }
 
     private void inicializar() throws SchedulerException {
-        Log.createLogger(this.getClass().getName()).logInfo("Initializing GoDesk Application... ");
+        Log.createLogger(this.getClass().getName()).logInfo("*** contextInitialized - Initializing GoDesk Application... *** ");
 
-        AutomaticOpsExecutor autoOpsExec = new AutomaticOpsExecutor(utx, emf);
-        autoOpsExec.verificaDatosBase();
+        JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf);
 
+//        AutomaticOpsExecutor autoOpsExec = new AutomaticOpsExecutor(utx, emf);
+//        autoOpsExec.verificaDatosBase();
         //1. Load Settings FROM APP_SETTING Table
-        JPAServiceFacade appSettingJpaController = new JPAServiceFacade(utx, emf);
-        List<AppSetting> appSettings = (List<AppSetting>) appSettingJpaController.findAll(AppSetting.class);
+        List<AppSetting> appSettings = (List<AppSetting>) jpaController.findAll(AppSetting.class);
         Properties props = new Properties();
         for (AppSetting appSetting : appSettings) {
             if (appSetting != null) {
@@ -90,8 +87,7 @@ public class AppStarter implements ServletContextListener {
 
         //done
         //2. Load Areas, and configuration of each Area. Each Area will have its own email configuration to send and read emails.
-        JPAServiceFacade canalJpaController = new JPAServiceFacade(utx, emf);
-        List<Canal> canales = canalJpaController.findCanalTipoEmail();
+        List<Canal> canales = jpaController.findCanalTipoEmail();
 //        AreaJpaController areaJpaController = new AreaJpaController(utx, emf);
 //        List<Area> areas = areaJpaController.findAreaEntities();
         if (canales != null && !canales.isEmpty()) {

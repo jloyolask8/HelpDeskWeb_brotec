@@ -1,21 +1,15 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
-import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Attachment;
-import com.itcs.helpdesk.util.Log;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ResourceBundle;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import org.primefaces.model.SelectableDataModel;
 import org.primefaces.model.UploadedFile;
@@ -24,10 +18,6 @@ import org.primefaces.model.UploadedFile;
 @ManagedBean(name = "attachmentController")
 @SessionScoped
 public class AttachmentController extends AbstractManagedBean<Attachment> implements Serializable {
-
-//    private Attachment current;
-//    private Attachment[] selectedItems;   
-    private int selectedItemIndex;
 
     private transient UploadedFile file;
 
@@ -47,166 +37,54 @@ public class AttachmentController extends AbstractManagedBean<Attachment> implem
         super(Attachment.class);
     }
 
-//    public Attachment getSelected() {
+// 
+//    public String create() {
+//        try {
+//            getJpaController().persist(current);
+//            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AttachmentCreated"));
+//            return prepareCreate();
+//        } catch (Exception e) {
+//            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
+//            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
+//            return null;
+//        }
+//    }
+
+
+//    public String update() {
+//        try {
+//            getJpaController().merge(current);
+//            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AttachmentUpdated"));
+//            return "View";
+//        } catch (Exception e) {
+//            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
+//            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
+//            return null;
+//        }
+//    }
+
+//    public String destroy() {
 //        if (current == null) {
-//            current = new Attachment();
-//            selectedItemIndex = -1;
-//        }
-//        return current;
-//    }
-
-
-    @Override
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper() {
-
-                @Override
-                public int getItemsCount() {
-                    return getJpaController().count(Attachment.class).intValue();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getJpaController().queryByRange(Attachment.class, getPageSize(), getPageFirstItem()));
-                }
-            };
-        }
-        return pagination;
-    }
-
-    public String prepareList() {
-        recreateModel();
-        return "List";
-    }
-
-//    public String prepareView() {
-//        if (getSelectedItems().length != 1) {
-//            JsfUtil.addSuccessMessage("Es requerido que seleccione una fila para visualizar.");
 //            return "";
-//        } else {
-//            current = getSelectedItems()[0];
 //        }
 //        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-//        return "View";
-//    }
-
-    public String prepareCreate() {
-        current = new Attachment();
-        selectedItemIndex = -1;
-        return "Create";
-    }
-
-    public String create() {
-        try {
-            getJpaController().persist(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AttachmentCreated"));
-            return prepareCreate();
-        } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
-            return null;
-        }
-    }
-
-//    public String prepareEdit() {
-//        if (getSelectedItems().length != 1) {
-//            JsfUtil.addSuccessMessage("Se requiere que seleccione una fila para editar.");
-//            return "";
-//        } else {
-//            current = getSelectedItems()[0];
-//        }
-//        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-//        return "Edit";
-//    }
-
-    public String update() {
-        try {
-            getJpaController().merge(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AttachmentUpdated"));
-            return "View";
-        } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
-            return null;
-        }
-    }
-
-    public String destroy() {
-        if (current == null) {
-            return "";
-        }
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        performDestroy();
-        recreateModel();
-        return "List";
-    }
-
-//    public String destroySelected() {
-//
-//        if (getSelectedItems().length <= 0) {
-//            return "";
-//        } else {
-//            for (int i = 0; i < getSelectedItems().length; i++) {
-//                current = getSelectedItems()[i];
-//                performDestroy();
-//            }
-//        }
-//        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
+//        performDestroy();
 //        recreateModel();
 //        return "List";
 //    }
 
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "View";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "List";
-        }
-    }
 
-    private void performDestroy() {
-        try {
-            getJpaController().remove(Attachment.class, current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AttachmentDeleted"));
-        } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
-        }
-    }
+//    private void performDestroy() {
+//        try {
+//            getJpaController().remove(Attachment.class, current);
+//            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AttachmentDeleted"));
+//        } catch (Exception e) {
+//            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
+//            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
+//        }
+//    }
 
-    private void updateCurrentItem() {
-        int count = getJpaController().count(Attachment.class).intValue();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = (Attachment)getJpaController().queryByRange(Attachment.class, 1, selectedItemIndex).get(0);
-        }
-    }
-
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        Iterator iter = items.iterator();
-        List<Attachment> listOfAttachment = new ArrayList<Attachment>();
-        while (iter.hasNext()) {
-            listOfAttachment.add((Attachment) iter.next());
-        }
-
-        return new AttachmentDataModel(listOfAttachment);
-    }
+   
 
     @Override
     public Class getDataModelImplementationClass() {
@@ -260,9 +138,9 @@ public class AttachmentController extends AbstractManagedBean<Attachment> implem
             if (value == null || value.length() == 0) {
                 return null;
             }
-            AttachmentController controller = (AttachmentController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "attachmentController");
-            return controller.getJpaController().find(Attachment.class, getKey(value));
+           UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
+        return controller.getJpaController().find(Attachment.class, getKey(value));
         }
 
         java.lang.Long getKey(String value) {

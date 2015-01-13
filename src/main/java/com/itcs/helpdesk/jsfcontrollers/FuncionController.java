@@ -1,21 +1,15 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
-import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Funcion;
-import com.itcs.helpdesk.util.Log;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ResourceBundle;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import org.primefaces.model.SelectableDataModel;
 
@@ -26,7 +20,7 @@ public class FuncionController extends AbstractManagedBean<Funcion> implements S
 //    private Funcion current;
 //    private transient DataModel items = null;
 //    private transient PaginationHelper pagination;
-    private int selectedItemIndex;
+//    private int selectedItemIndex;
 
     public FuncionController() {
         super(Funcion.class);
@@ -39,87 +33,87 @@ public class FuncionController extends AbstractManagedBean<Funcion> implements S
 //        }
 //        return current;
 //    }
-    @Override
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(getPaginationPageSize()) {
-                @Override
-                public int getItemsCount() {
-                    return getJpaController().count(Funcion.class).intValue();
-                }
+//    @Override
+//    public PaginationHelper getPagination() {
+//        if (pagination == null) {
+//            pagination = new PaginationHelper(getPaginationPageSize()) {
+//                @Override
+//                public int getItemsCount() {
+//                    return getJpaController().count(Funcion.class).intValue();
+//                }
+//
+//                @Override
+//                public DataModel createPageDataModel() {
+//                    return new ListDataModel(getJpaController().queryByRange(Funcion.class, getPageSize(), getPageFirstItem()));
+//                }
+//            };
+//        }
+//        return pagination;
+//    }
+//
+//    @Override
+//    public String prepareList() {
+//        recreateModel();
+//        return "/script/funcion/List";
+//    }
+//
+//    public String prepareCreate() {
+//        current = new Funcion();
+//        selectedItemIndex = -1;
+//        return "/script/funcion/Create";
+//    }
+//
+//    public String create() {
+//        try {
+//            getJpaController().persist(current);
+//            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("FuncionCreated"));
+//            return prepareCreate();
+//        } catch (Exception e) {
+//            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
+//            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
+//            return null;
+//        }
+//    }
+//
+//    public String update() {
+//        try {
+//            getJpaController().merge(current);
+//            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("FuncionUpdated"));
+//            return "/script/funcion/View";
+//        } catch (Exception e) {
+//            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
+//            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
+//            return null;
+//        }
+//    }
 
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getJpaController().queryByRange(Funcion.class, getPageSize(), getPageFirstItem()));
-                }
-            };
-        }
-        return pagination;
-    }
-
-    @Override
-    public String prepareList() {
-        recreateModel();
-        return "/script/funcion/List";
-    }
-
-    public String prepareCreate() {
-        current = new Funcion();
-        selectedItemIndex = -1;
-        return "/script/funcion/Create";
-    }
-
-    public String create() {
-        try {
-            getJpaController().persist(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("FuncionCreated"));
-            return prepareCreate();
-        } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
-            return null;
-        }
-    }
-
-    public String update() {
-        try {
-            getJpaController().merge(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("FuncionUpdated"));
-            return "/script/funcion/View";
-        } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
-            return null;
-        }
-    }
-
-    private void updateCurrentItem() {
-        int count = getJpaController().count(Funcion.class).intValue();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = (Funcion) getJpaController().queryByRange(Funcion.class, 1, selectedItemIndex).get(0);
-        }
-    }
-
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        Iterator iter = items.iterator();
-        List<Funcion> listOfFuncion = new ArrayList<Funcion>();
-        while (iter.hasNext()) {
-            listOfFuncion.add((Funcion) iter.next());
-        }
-
-        return new FuncionDataModel(listOfFuncion);
-    }
+//    private void updateCurrentItem() {
+//        int count = getJpaController().count(Funcion.class).intValue();
+//        if (selectedItemIndex >= count) {
+//            // selected index cannot be bigger than number of items:
+//            selectedItemIndex = count - 1;
+//            // go to previous page if last page disappeared:
+//            if (pagination.getPageFirstItem() >= count) {
+//                pagination.previousPage();
+//            }
+//        }
+//        if (selectedItemIndex >= 0) {
+//            current = (Funcion) getJpaController().queryByRange(Funcion.class, 1, selectedItemIndex).get(0);
+//        }
+//    }
+//
+//    public DataModel getItems() {
+//        if (items == null) {
+//            items = getPagination().createPageDataModel();
+//        }
+//        Iterator iter = items.iterator();
+//        List<Funcion> listOfFuncion = new ArrayList<Funcion>();
+//        while (iter.hasNext()) {
+//            listOfFuncion.add((Funcion) iter.next());
+//        }
+//
+//        return new FuncionDataModel(listOfFuncion);
+//    }
 
     @Override
     public Class getDataModelImplementationClass() {
@@ -141,9 +135,9 @@ public class FuncionController extends AbstractManagedBean<Funcion> implements S
             if (value == null || value.length() == 0) {
                 return null;
             }
-            FuncionController controller = (FuncionController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "funcionController");
-            return controller.getJpaController().find(Funcion.class, getKey(value));
+            UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
+        return controller.getJpaController().find(Funcion.class, getKey(value));
         }
 
         java.lang.Integer getKey(String value) {

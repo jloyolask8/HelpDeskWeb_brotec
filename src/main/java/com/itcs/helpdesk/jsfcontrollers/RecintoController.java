@@ -1,13 +1,11 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.Recinto;
+import com.itcs.helpdesk.persistence.jpa.EasyCriteriaQuery;
 import com.itcs.helpdesk.util.Log;
-import com.itcs.jpautils.EasyCriteriaQuery;
+
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -19,7 +17,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.model.SelectableDataModel;
@@ -36,6 +33,13 @@ public class RecintoController extends AbstractManagedBean<Recinto> implements S
         super(Recinto.class);
     }
 
+    @Override
+    protected String getListPage() {
+        return "/script/estado_caso/List";
+    }
+    
+    
+
 //    public Recinto getSelected() {
 //        if (current == null) {
 //            current = new Recinto();
@@ -43,28 +47,28 @@ public class RecintoController extends AbstractManagedBean<Recinto> implements S
 //        }
 //        return current;
 //    }
-    @Override
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(getPaginationPageSize()) {
-                @Override
-                public int getItemsCount() {
-                    return getJpaController().count(Recinto.class).intValue();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getJpaController().queryByRange(Recinto.class, getPageSize(), getPageFirstItem()));
-                }
-            };
-        }
-        return pagination;
-    }
-
-    public String prepareList() {
-        recreateModel();
-        return "/script/estado_caso/List";
-    }
+//    @Override
+//    public PaginationHelper getPagination() {
+//        if (pagination == null) {
+//            pagination = new PaginationHelper(getPaginationPageSize()) {
+//                @Override
+//                public int getItemsCount() {
+//                    return getJpaController().count(Recinto.class).intValue();
+//                }
+//
+//                @Override
+//                public DataModel createPageDataModel() {
+//                    return new ListDataModel(getJpaController().queryByRange(Recinto.class, getPageSize(), getPageFirstItem()));
+//                }
+//            };
+//        }
+//        return pagination;
+//    }
+//
+//    public String prepareList() {
+//        recreateModel();
+//        return "/script/estado_caso/List";
+//    }
 
     public String prepareView() {
         if (getSelectedItems().size() != 1) {
@@ -143,18 +147,18 @@ public class RecintoController extends AbstractManagedBean<Recinto> implements S
         return "/script/estado_caso/List";
     }
 
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "/script/estado_caso/View";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "/script/estado_caso/List";
-        }
-    }
+//    public String destroyAndView() {
+//        performDestroy();
+//        recreateModel();
+//        updateCurrentItem();
+//        if (selectedItemIndex >= 0) {
+//            return "/script/estado_caso/View";
+//        } else {
+//            // all items were removed - go back to list
+//            recreateModel();
+//            return "/script/estado_caso/List";
+//        }
+//    }
 
     private void performDestroy() {
         try {
@@ -166,36 +170,36 @@ public class RecintoController extends AbstractManagedBean<Recinto> implements S
         }
     }
 
-    private void updateCurrentItem() {
-        int count = getJpaController().count(Recinto.class).intValue();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = (Recinto) getJpaController().queryByRange(Recinto.class, 1, selectedItemIndex).get(0);
-        }
-    }
-
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        Iterator iter = items.iterator();
-        List<Recinto> listOfRecinto = new ArrayList<Recinto>();
-        while (iter.hasNext()) {
-            listOfRecinto.add((Recinto) iter.next());
-        }
-
-        return new RecintoDataModel(listOfRecinto);
-    }
+//    private void updateCurrentItem() {
+//        int count = getJpaController().count(Recinto.class).intValue();
+//        if (selectedItemIndex >= count) {
+//            // selected index cannot be bigger than number of items:
+//            selectedItemIndex = count - 1;
+//            // go to previous page if last page disappeared:
+//            if (pagination.getPageFirstItem() >= count) {
+//                pagination.previousPage();
+//            }
+//        }
+//        if (selectedItemIndex >= 0) {
+//            current = (Recinto) getJpaController().queryByRange(Recinto.class, 1, selectedItemIndex).get(0);
+//        }
+//    }
+//
+//    public DataModel getItems() {
+//        if (items == null) {
+//            items = getPagination().createPageDataModel();
+//        }
+//        Iterator iter = items.iterator();
+//        List<Recinto> listOfRecinto = new ArrayList<Recinto>();
+//        while (iter.hasNext()) {
+//            listOfRecinto.add((Recinto) iter.next());
+//        }
+//
+//        return new RecintoDataModel(listOfRecinto);
+//    }
 
     public List<Recinto> autocompleteValues(String queryValue) {
-        EasyCriteriaQuery<Recinto> ecq = new EasyCriteriaQuery<Recinto>(emf, Recinto.class);
+        EasyCriteriaQuery<Recinto> ecq = new EasyCriteriaQuery<Recinto>(getJpaController(), Recinto.class);
         ecq.addLikePredicate("nombre", "%" + queryValue.trim() + "%");
         ecq.setMaxResults(10);
         ecq.setFirstResult(0);

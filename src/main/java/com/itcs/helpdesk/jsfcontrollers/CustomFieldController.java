@@ -2,6 +2,7 @@ package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.CasoCustomField;
 import com.itcs.helpdesk.persistence.entities.CustomField;
@@ -256,9 +257,9 @@ public class CustomFieldController extends AbstractManagedBean<CustomField> impl
             if (value == null || value.length() == 0) {
                 return null;
             }
-            CustomFieldController controller = (CustomFieldController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "customFieldController");
-            return controller.getJpaController().find(CustomField.class, getKey(value));
+            UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
+        return controller.getJpaController().find(CustomField.class, getKey(value));
         }
 
         java.lang.Long getKey(String value) {

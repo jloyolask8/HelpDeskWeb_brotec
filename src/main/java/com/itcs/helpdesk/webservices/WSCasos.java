@@ -42,24 +42,18 @@ public class WSCasos {
     private UserTransaction utx = null;
     @PersistenceUnit(unitName = "helpdeskPU")
     private EntityManagerFactory emf = null;
-    private JPAServiceFacade jpaController;
 //    private Properties properties;
-    private ManagerCasos managerCasos;
 //    private ResourceBundle resourceBundle;
 
-    private JPAServiceFacade getJpaController() {
-        if (null == jpaController) {
-            jpaController = new JPAServiceFacade(utx, emf);
-            RulesEngine rulesEngine = new RulesEngine(emf, jpaController);
-            jpaController.setCasoChangeListener(rulesEngine);
-        }
+    private JPAServiceFacade getJpaController(String schema) {
+        JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf, schema);
+        RulesEngine rulesEngine = new RulesEngine(jpaController);
+        jpaController.setCasoChangeListener(rulesEngine);
         return jpaController;
     }
 
-    private ManagerCasos getManagerCasos() {
-        if (null == managerCasos) {
-            managerCasos = new ManagerCasos(getJpaController());
-        }
+    private ManagerCasos getManagerCasos(String schema) {
+        ManagerCasos managerCasos = new ManagerCasos(getJpaController(schema));
         return managerCasos;
     }
 
@@ -80,7 +74,7 @@ public class WSCasos {
         response.setCodigo("0");
         response.setMensaje("Error al intentar crear el caso");
         try {
-            Caso caso = getManagerCasos().crearCaso(datos, EnumCanal.WEBSERVICE.getCanal());
+            Caso caso = getManagerCasos(datos.getTenantId()).crearCaso(datos, EnumCanal.WEBSERVICE.getCanal());
             response.setCodigo("1");
 //            response.setMensaje("Caso creado con exito, ID CASO[" + caso.getIdCaso() + "]");
             response.setMensaje("Caso creado con éxito. ID caso " + caso.getIdCaso() + ". Revisaremos su consulta y lo contactaremos a la brevedad.");
@@ -103,7 +97,9 @@ public class WSCasos {
      * Web service operation
      */
     @WebMethod(operationName = "crearCasoCliente")
-    public WSResponse crearCasoCliente(@WebParam(name = "rut") final String rut,
+    public WSResponse crearCasoCliente(
+            @WebParam(name = "tenantid") final String tenantid,
+            @WebParam(name = "rut") final String rut,
             @WebParam(name = "tema") final String tema,
             @WebParam(name = "tipo") final String tipoCaso,
             @WebParam(name = "idProducto") final String idProducto,
@@ -113,6 +109,9 @@ public class WSCasos {
         response.setMensaje("Error al intentar crear el caso");
         try {
 
+           JPAServiceFacade jpacontroller = getJpaController(tenantid);
+           ManagerCasos managercasos = getManagerCasos(tenantid);
+            
             EstadoCaso ec = new EstadoCaso();
             ec.setIdEstado(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
 
@@ -120,7 +119,7 @@ public class WSCasos {
             caso.setRevisarActualizacion(true);
             caso.setIdEstado(ec);
 
-            Cliente c = getJpaController().findClienteByRut(rut);
+            Cliente c = jpacontroller.findClienteByRut(rut);
             if (c != null) {
                 for (EmailCliente emailCliente : c.getEmailClienteList()) {
                     caso.setEmailCliente(emailCliente);
@@ -129,7 +128,7 @@ public class WSCasos {
 
             if (idProducto != null) {
                 try {
-                    Producto prod = getJpaController().find(Producto.class, idProducto);
+                    Producto prod = jpacontroller.find(Producto.class, idProducto);
                     caso.setIdProducto(prod);
                     caso.setTema("[" + prod.getNombre() + "] ");
                 } catch (NoResultException ex) {
@@ -140,7 +139,7 @@ public class WSCasos {
             //Tipo de caso:
             if (tipoCaso != null && !tipoCaso.isEmpty()) {
                 try {
-                    TipoCaso tipo = getJpaController().find(TipoCaso.class, tipoCaso);
+                    TipoCaso tipo = jpacontroller.find(TipoCaso.class, tipoCaso);
                     if (tipo != null) {
                         caso.setTipoCaso(tipo);
                         for (SubEstadoCaso subEstadoCaso : tipo.getSubEstadoCasoList()) {
@@ -148,7 +147,7 @@ public class WSCasos {
                                 caso.setIdSubEstado(subEstadoCaso);
                             }
                         }
-                          caso.setIdPrioridad(EnumPrioridad.MEDIA.getPrioridad());
+                        caso.setIdPrioridad(EnumPrioridad.MEDIA.getPrioridad());
 //                        if (tipo.getPrioridadList() != null && !tipo.getPrioridadList().isEmpty()) {
 //                            caso.setIdPrioridad(tipo.getPrioridadList().get(0));//calculate prio based on some facts please
 //                        }
@@ -180,9 +179,8 @@ public class WSCasos {
             caso.setEstadoAlerta(EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta());
 
 //            caso.setIdArea(EnumAreas.DEFAULT_AREA.getArea());//This is important to know what email received the ticket, but in WS there is no specific email.
-
-            getManagerCasos().persistCaso(caso, getManagerCasos().createLogReg(caso, "Crear", "se crea caso desde WEB SERVICE.", ""));
-            getManagerCasos().createLogReg("Crear", "se crea caso desde canal " + caso.getIdCanal().getNombre(), "", caso);
+            managercasos.persistCaso(caso, ManagerCasos.createLogReg(caso, "Crear", "se crea caso desde canal " + caso.getIdCanal().getNombre(), ""));
+            managercasos.createLogReg("Crear", "se crea caso desde canal " + caso.getIdCanal().getNombre(), "", caso);
             response.setCodigo("" + caso.getIdCaso());
             response.setMensaje("Caso #" + caso.getIdCaso() + " creado exitósamente.");
 

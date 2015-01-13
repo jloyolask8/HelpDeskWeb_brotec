@@ -1,6 +1,7 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.TipoComparacion;
 import java.io.Serializable;
 import java.util.List;
@@ -40,9 +41,9 @@ public class TipoComparacionController extends AbstractManagedBean<TipoComparaci
             if (value == null || value.length() == 0) {
                 return null;
             }
-            TipoComparacionController controller = (TipoComparacionController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "tipoComparacionController");
-            return controller.getJpaController().find(TipoComparacion.class, value);
+            UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
+        return controller.getJpaController().find(TipoComparacion.class, value);
         }
 
         java.lang.Integer getKey(String value) {

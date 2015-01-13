@@ -1,6 +1,7 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Cliente;
 import com.itcs.helpdesk.persistence.entities.EmailCliente;
@@ -26,7 +27,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import jxl.CellReferenceHelper;
 import jxl.Sheet;
@@ -570,12 +570,14 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
     }
 
 
+    @Override
     public String prepareList() {
         recreateModel();
         recreatePagination();
         return "/script/emailCliente/List";
     }
 
+    @Override
     public String prepareView(EmailCliente c) {
         current = c;
         return "/script/emailCliente/View";
@@ -705,18 +707,18 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
         return "/script/emailCliente/List";
     }
 
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "/script/emailCliente/View";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "/script/emailCliente/List";
-        }
-    }
+//    public String destroyAndView() {
+//        performDestroy();
+//        recreateModel();
+//        updateCurrentItem();
+//        if (selectedItemIndex >= 0) {
+//            return "/script/emailCliente/View";
+//        } else {
+//            // all items were removed - go back to list
+//            recreateModel();
+//            return "/script/emailCliente/List";
+//        }
+//    }
 
     private void performDestroy() {
         try {
@@ -727,27 +729,27 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
         }
     }
 
-    private void updateCurrentItem() {
-        int count = getJpaController().count(EmailCliente.class).intValue();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = (EmailCliente) getJpaController().queryByRange(EmailCliente.class, 1, selectedItemIndex).get(0);
-        }
-    }
-
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
+//    private void updateCurrentItem() {
+//        int count = getJpaController().count(EmailCliente.class).intValue();
+//        if (selectedItemIndex >= count) {
+//            // selected index cannot be bigger than number of items:
+//            selectedItemIndex = count - 1;
+//            // go to previous page if last page disappeared:
+//            if (pagination.getPageFirstItem() >= count) {
+//                pagination.previousPage();
+//            }
+//        }
+//        if (selectedItemIndex >= 0) {
+//            current = (EmailCliente) getJpaController().queryByRange(EmailCliente.class, 1, selectedItemIndex).get(0);
+//        }
+//    }
+//
+//    public DataModel getItems() {
+//        if (items == null) {
+//            items = getPagination().createPageDataModel();
+//        }
+//        return items;
+//    }
 
 //    private void recreateModel() {
 //        items = null;
@@ -1055,9 +1057,9 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
             if (value == null || value.length() == 0) {
                 return null;
             }
-            EmailClienteController controller = (EmailClienteController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "emailClienteController");
-            return controller.getJpaController().find(EmailCliente.class, getKey(value));
+           UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
+        return controller.getJpaController().find(EmailCliente.class, getKey(value));
         }
 
         java.lang.String getKey(String value) {

@@ -1,6 +1,7 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Componente;
 import java.io.Serializable;
 import java.util.List;
@@ -134,18 +135,18 @@ public class ComponenteController extends AbstractManagedBean<Componente> implem
 //        return "List";
 //    }
 
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "View";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "List";
-        }
-    }
+//    public String destroyAndView() {
+//        performDestroy();
+//        recreateModel();
+//        updateCurrentItem();
+//        if (selectedItemIndex >= 0) {
+//            return "View";
+//        } else {
+//            // all items were removed - go back to list
+//            recreateModel();
+//            return "List";
+//        }
+//    }
 
     private void performDestroy() {
         try {
@@ -156,20 +157,20 @@ public class ComponenteController extends AbstractManagedBean<Componente> implem
         }
     }
 
-    private void updateCurrentItem() {
-        int count = getJpaController().count(Componente.class).intValue();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = (Componente) getJpaController().queryByRange(Componente.class, 1, selectedItemIndex).get(0);
-        }
-    }
+//    private void updateCurrentItem() {
+//        int count = getJpaController().count(Componente.class).intValue();
+//        if (selectedItemIndex >= count) {
+//            // selected index cannot be bigger than number of items:
+//            selectedItemIndex = count - 1;
+//            // go to previous page if last page disappeared:
+//            if (pagination.getPageFirstItem() >= count) {
+//                pagination.previousPage();
+//            }
+//        }
+//        if (selectedItemIndex >= 0) {
+//            current = (Componente) getJpaController().queryByRange(Componente.class, 1, selectedItemIndex).get(0);
+//        }
+//    }
 
     
 
@@ -210,9 +211,9 @@ public class ComponenteController extends AbstractManagedBean<Componente> implem
             if (value == null || value.length() == 0) {
                 return null;
             }
-            ComponenteController controller = (ComponenteController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "componenteController");
-            return controller.getJpaController().find(Componente.class, getKey(value));
+           UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
+        return controller.getJpaController().find(Componente.class, getKey(value));
         }
 
         java.lang.String getKey(String value) {

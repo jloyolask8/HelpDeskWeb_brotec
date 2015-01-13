@@ -269,17 +269,17 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         return prepareList();
     }
 
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "/script/vista/View";
-        } else {
-            // all items were removed - go back to list
-            return prepareList();
-        }
-    }
+//    public String destroyAndView() {
+//        performDestroy();
+//        recreateModel();
+//        updateCurrentItem();
+//        if (selectedItemIndex >= 0) {
+//            return "/script/vista/View";
+//        } else {
+//            // all items were removed - go back to list
+//            return prepareList();
+//        }
+//    }
 
     private void performDestroy() {
         try {
@@ -290,20 +290,20 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         }
     }
 
-    private void updateCurrentItem() {
-        int count = getJpaController().count(Vista.class).intValue();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = (Vista) getJpaController().queryByRange(Vista.class, selectedItemIndex, selectedItemIndex + 1).get(0);
-        }
-    }
+//    private void updateCurrentItem() {
+//        int count = getJpaController().count(Vista.class).intValue();
+//        if (selectedItemIndex >= count) {
+//            // selected index cannot be bigger than number of items:
+//            selectedItemIndex = count - 1;
+//            // go to previous page if last page disappeared:
+//            if (pagination.getPageFirstItem() >= count) {
+//                pagination.previousPage();
+//            }
+//        }
+//        if (selectedItemIndex >= 0) {
+//            current = (Vista) getJpaController().queryByRange(Vista.class, selectedItemIndex, selectedItemIndex + 1).get(0);
+//        }
+//    }
 
     
 
@@ -404,9 +404,9 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
             if (value == null || value.length() == 0) {
                 return null;
             }
-            VistaController controller = (VistaController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "vistaController");
-            return controller.getJpaController().find(Vista.class, getKey(value));
+            UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
+        return controller.getJpaController().find(Vista.class, getKey(value));
         }
 
         java.lang.Integer getKey(String value) {

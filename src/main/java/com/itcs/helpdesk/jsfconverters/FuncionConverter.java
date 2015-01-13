@@ -5,6 +5,7 @@
 package com.itcs.helpdesk.jsfconverters;
 
 import com.itcs.helpdesk.jsfcontrollers.FuncionController;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Funcion;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -25,9 +26,9 @@ public class FuncionConverter implements Converter {
 //        final JPAServiceFacade jpaController = new JPAServiceFacade();
 //        return jpaController.getFuncionFindByIdFuncion(getKey(value));
 
-            FuncionController controller = (FuncionController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "funcionController");
-            return controller.getJpaController().find(Funcion.class, getKey(value));
+            UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
+        return controller.getJpaController().find(Funcion.class, getKey(value));
     }
 
     java.lang.Integer getKey(String value) {

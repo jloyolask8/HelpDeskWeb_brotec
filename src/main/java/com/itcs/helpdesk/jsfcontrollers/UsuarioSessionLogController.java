@@ -5,6 +5,7 @@
  */
 package com.itcs.helpdesk.jsfcontrollers;
 
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.UsuarioSessionLog;
 import com.itcs.helpdesk.persistence.utils.OrderBy;
 import java.io.Serializable;
@@ -55,9 +56,9 @@ public class UsuarioSessionLogController extends AbstractManagedBean<UsuarioSess
             if (value == null || value.length() == 0) {
                 return null;
             }
-            UsuarioSessionLogController controller = (UsuarioSessionLogController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "usuarioSessionLogController");
-            return controller.getJpaController().find(UsuarioSessionLog.class, getKey(value));
+            UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
+        return controller.getJpaController().find(UsuarioSessionLog.class, getKey(value));
         }
 
         java.lang.Integer getKey(String value) {

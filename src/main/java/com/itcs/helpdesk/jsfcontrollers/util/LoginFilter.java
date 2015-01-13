@@ -63,24 +63,24 @@ public class LoginFilter implements Filter {
                     }
                 } else {
                     if (userSessionBean == null) {
-                        System.out.println("userSessionBean == null LoginFilter.sendRedirect:/script/login.xhtml");
+                        System.out.println("userSessionBean == null LoginFilter.sendRedirect:/public/login.xhtml");
                         if (isAjax(req)) {
-                            res.getWriter().print(xmlPartialRedirectToPage(req, "/script/login.xhtml"));
+                            res.getWriter().print(xmlPartialRedirectToPage(req, "/public/login.xhtml"));
                             res.flushBuffer();
                         } else {
-                            System.out.println("redirecting... LoginFilter.sendRedirect:/script/login.xhtml");
-                            res.sendRedirect(req.getContextPath() + req.getServletPath() + "/script/login.xhtml");
+                            System.out.println("redirecting... LoginFilter.sendRedirect:/public/login.xhtml");
+                            res.sendRedirect(req.getContextPath() + req.getServletPath() + "/public/login.xhtml");
                         }
 
                         return;
                     } else {
                         if (!userSessionBean.isValidatedSession()) {
-                            System.out.println("userSessionBean is not ValidatedSession LoginFilter.sendRedirect:" + "/script/login.xhtml");
+                            System.out.println("userSessionBean is not ValidatedSession LoginFilter.sendRedirect:" + "/public/login.xhtml");
                             if (isAjax(req)) {
-                                res.getWriter().print(xmlPartialRedirectToPage(req, "/script/login.xhtml"));
+                                res.getWriter().print(xmlPartialRedirectToPage(req, "/public/login.xhtml"));
                                 res.flushBuffer();
                             } else {
-                                res.sendRedirect(req.getContextPath() + req.getServletPath() + "/script/login.xhtml");
+                                res.sendRedirect(req.getContextPath() + req.getServletPath() + "/public/login.xhtml");
                             }
                             return;
                         }
@@ -90,10 +90,10 @@ public class LoginFilter implements Filter {
         } catch (Exception e) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "LoginFilter.doFilter", e);
             if (isAjax(req)) {
-                res.getWriter().print(xmlPartialRedirectToPage(req, "/script/login.xhtml"));
+                res.getWriter().print(xmlPartialRedirectToPage(req, "/public/login.xhtml"));
                 res.flushBuffer();
             } else {
-                res.sendRedirect(req.getContextPath() + "/faces/script/login.xhtml");
+                res.sendRedirect(req.getContextPath() + "/faces/public/login.xhtml");
                 return;
             }
         }

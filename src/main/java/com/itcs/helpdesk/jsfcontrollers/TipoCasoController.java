@@ -3,7 +3,8 @@ package com.itcs.helpdesk.jsfcontrollers;
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.TipoCaso;
-import com.itcs.jpautils.EasyCriteriaQuery;
+import com.itcs.helpdesk.persistence.jpa.EasyCriteriaQuery;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -107,7 +108,7 @@ public class TipoCasoController extends AbstractManagedBean<TipoCaso> implements
     }
 
     public Long countCasosByTipo(TipoCaso tipo) {
-        EasyCriteriaQuery<Caso> c = new EasyCriteriaQuery<Caso>(emf, Caso.class);
+        EasyCriteriaQuery<Caso> c = new EasyCriteriaQuery<Caso>(getJpaController(), Caso.class);
         c.addEqualPredicate("tipoCaso", tipo);
         return c.count();
     }

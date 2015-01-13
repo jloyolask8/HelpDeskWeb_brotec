@@ -440,9 +440,9 @@ public class AuditLogController extends AbstractManagedBean<AuditLog> implements
             if (value == null || value.length() == 0) {
                 return null;
             }
-            AuditLogController controller = (AuditLogController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "auditLogController");
-            return controller.getJpaController().find(AuditLog.class, Long.valueOf(value));
+            UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
+        return controller.getJpaController().find(AuditLog.class, Long.valueOf(value));
         }
 
         String getStringKey(java.lang.Long value) {

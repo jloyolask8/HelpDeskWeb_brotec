@@ -1,6 +1,7 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.BlackListEmail;
 import com.itcs.helpdesk.util.Log;
 import java.io.Serializable;
@@ -159,9 +160,9 @@ public class BlackListController extends AbstractManagedBean<BlackListEmail> imp
             if (value == null || value.length() == 0) {
                 return null;
             }
-            BlackListController controller = (BlackListController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "blackListController");
-            return controller.getJpaController().find(BlackListEmail.class, getKey(value));
+            UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
+        return controller.getJpaController().find(BlackListEmail.class, getKey(value));
         }
 
         java.lang.String getKey(String value) {

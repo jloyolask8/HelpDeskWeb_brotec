@@ -1,7 +1,7 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Documento;
 import java.io.Serializable;
 import java.util.List;
@@ -12,7 +12,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import org.primefaces.model.SelectableDataModel;
 
@@ -37,28 +36,28 @@ public class DocumentoController extends AbstractManagedBean<Documento> implemen
 //        return current;
 //    }
 
-    @Override
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(getPaginationPageSize()) {
-                @Override
-                public int getItemsCount() {
-                    return getJpaController().count(Documento.class).intValue();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    return new DocumentoDataModel(getJpaController().queryByRange(Documento.class, getPageSize(), getPageFirstItem()));
-                }
-            };
-        }
-        return pagination;
-    }
-
-    public String prepareList() {
-        recreateModel();
-        return "List";
-    }
+//    @Override
+//    public PaginationHelper getPagination() {
+//        if (pagination == null) {
+//            pagination = new PaginationHelper(getPaginationPageSize()) {
+//                @Override
+//                public int getItemsCount() {
+//                    return getJpaController().count(Documento.class).intValue();
+//                }
+//
+//                @Override
+//                public DataModel createPageDataModel() {
+//                    return new DocumentoDataModel(getJpaController().queryByRange(Documento.class, getPageSize(), getPageFirstItem()));
+//                }
+//            };
+//        }
+//        return pagination;
+//    }
+//
+//    public String prepareList() {
+//        recreateModel();
+//        return "List";
+//    }
 
   
 
@@ -104,18 +103,18 @@ public class DocumentoController extends AbstractManagedBean<Documento> implemen
 
    
 
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "View";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "List";
-        }
-    }
+//    public String destroyAndView() {
+//        performDestroy();
+//        recreateModel();
+//        updateCurrentItem();
+//        if (selectedItemIndex >= 0) {
+//            return "View";
+//        } else {
+//            // all items were removed - go back to list
+//            recreateModel();
+//            return "List";
+//        }
+//    }
 
     private void performDestroy() {
         try {
@@ -126,27 +125,27 @@ public class DocumentoController extends AbstractManagedBean<Documento> implemen
         }
     }
 
-    private void updateCurrentItem() {
-        int count = getJpaController().count(Documento.class).intValue();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = (Documento) getJpaController().queryByRange(Documento.class, 1, selectedItemIndex).get(0);
-        }
-    }
+//    private void updateCurrentItem() {
+//        int count = getJpaController().count(Documento.class).intValue();
+//        if (selectedItemIndex >= count) {
+//            // selected index cannot be bigger than number of items:
+//            selectedItemIndex = count - 1;
+//            // go to previous page if last page disappeared:
+//            if (pagination.getPageFirstItem() >= count) {
+//                pagination.previousPage();
+//            }
+//        }
+//        if (selectedItemIndex >= 0) {
+//            current = (Documento) getJpaController().queryByRange(Documento.class, 1, selectedItemIndex).get(0);
+//        }
+//    }
 
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
+//    public DataModel getItems() {
+//        if (items == null) {
+//            items = getPagination().createPageDataModel();
+//        }
+//        return items;
+//    }
 
     @Override
     public Class getDataModelImplementationClass() {
@@ -183,9 +182,9 @@ public class DocumentoController extends AbstractManagedBean<Documento> implemen
             if (value == null || value.length() == 0) {
                 return null;
             }
-            DocumentoController controller = (DocumentoController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "documentoController");
-            return controller.getJpaController().find(Documento.class, getKey(value));
+           UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
+        return controller.getJpaController().find(Documento.class, getKey(value));
         }
 
         java.lang.Integer getKey(String value) {

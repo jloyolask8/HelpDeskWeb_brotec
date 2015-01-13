@@ -1,0 +1,29 @@
+/*
+Any customization to the template goes here.
+*/
+/* 
+    Created on : May 5, 2014, 1:41:27 PM
+    Author     : jonathan
+*/
+
+
+.ui-datatable thead th, .ui-datatable tbody td, .ui-datatable tfoot td {
+    border-width: 0px  !important;
+}
+
+.ui-widget {
+    font-size: 98% !important;
+}
+
+.ui-growl {
+    top:46px !important;
+    left: auto;
+}
+
+.updated
+{
+    font-weight: bold !important;
+}
+
+
+

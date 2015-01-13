@@ -8,6 +8,7 @@ import com.itcs.helpdesk.jsfcontrollers.AbstractManagedBean;
 import com.itcs.helpdesk.persistence.entities.EmailCliente;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entities.UsuarioSessionLog;
+import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.UtilesRut;
 import com.itcs.helpdesk.webapputils.Theme;
@@ -17,12 +18,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
+import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
+import org.quartz.ee.jta.UserTransactionHelper;
 
 /**
  *
@@ -49,6 +52,21 @@ public class UserSessionBean extends AbstractManagedBean<Usuario> implements Ser
         super(Usuario.class);
     }
 
+   
+    @Override
+    public JPAServiceFacade getJpaController() {
+        System.out.println("UserSessionBean.getJpaController():" + UserTransactionHelper.getUserTxLocation() + ":" + utx);//DEBUG
+        if (getCurrent() != null && !StringUtils.isEmpty( getCurrent().getTenantId()) ) {
+            if (jpaController == null) {
+                jpaController = new JPAServiceFacade(utx, emf, getCurrent().getTenantId());//TODO Change schema dynamic
+            }
+        } else {
+            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "getTenantId is null", null);
+            return null;
+        }
+        return jpaController;
+    }
+    
     public boolean isValidatedSession() {
         if (this.getCurrent() != null) {
             return true;

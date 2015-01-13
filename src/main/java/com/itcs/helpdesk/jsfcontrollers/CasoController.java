@@ -300,8 +300,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 casoToMerge.setFechaCierre(applicationBean.getNow());
                 casoToMerge.setIdSubEstado((casoToMerge.getTipoCaso().equals(EnumTipoCaso.CONTACTO.getTipoCaso()) ? EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()
                         : (casoToMerge.getTipoCaso().equals(EnumTipoCaso.COTIZACION.getTipoCaso()) ? EnumSubEstadoCaso.COTIZACION_DUPLICADO.getSubEstado()
-                        : (casoToMerge.getTipoCaso().equals(EnumTipoCaso.CONTACTO.getTipoCaso()) ? EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()
-                        : EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()))));
+                                : (casoToMerge.getTipoCaso().equals(EnumTipoCaso.CONTACTO.getTipoCaso()) ? EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()
+                                        : EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()))));
                 getManagerCasos().mergeCaso(casoToMerge,
                         ManagerCasos.createLogComment(casoToMerge, "Se combina con el caso " + casoBase.getIdCaso()));
                 sb.append(casoToMerge.getIdCaso());
@@ -495,8 +495,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     @Override
     public JPAServiceFacade getJpaController() {
         if (jpaController == null) {
-            jpaController = new JPAServiceFacade(utx, emf);
-            RulesEngine rulesEngine = new RulesEngine(emf, jpaController);
+            jpaController = new JPAServiceFacade(utx, emf, getUserSessionBean().getCurrent().getTenantId());
+            RulesEngine rulesEngine = new RulesEngine(jpaController);
             jpaController.setCasoChangeListener(rulesEngine);
         }
         return jpaController;
@@ -576,7 +576,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public void applyReglaToSelectedCasos() {
-        RulesEngine rulesEngine = new RulesEngine(emf, jpaController);
+        RulesEngine rulesEngine = new RulesEngine(jpaController);
         List<Caso> casosToSend = Collections.EMPTY_LIST;
         if (getSelectedItemsCount() > 0) {
             casosToSend = getSelectedItems();
@@ -4338,8 +4338,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             if (value == null || value.length() == 0) {
                 return null;
             }
-            CasoController controller = (CasoController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "casoController");
+            UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                    getValue(facesContext.getELContext(), null, "UserSessionBean");
             return controller.getJpaController().find(Caso.class, getKey(value));
         }
 

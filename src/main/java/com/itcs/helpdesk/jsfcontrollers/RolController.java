@@ -169,24 +169,24 @@ public class RolController extends AbstractManagedBean<Rol> implements Serializa
         return "List";
     }
 
-    public String destroyAndView() {
-        String idRol = current.getIdRol();
-        if (EnumRoles.ADMINISTRADOR.getRol().getIdRol().equalsIgnoreCase(idRol)) {
-            JsfUtil.addErrorMessage("No se puede modificar este rol.");
-        } else {
-            performDestroy();
-            recreateModel();
-            updateCurrentItem();
-            if (selectedItemIndex >= 0) {
-                return "View";
-            } else {
-                // all items were removed - go back to list
-                recreateModel();
-                return "List";
-            }
-        }
-        return null;
-    }
+//    public String destroyAndView() {
+//        String idRol = current.getIdRol();
+//        if (EnumRoles.ADMINISTRADOR.getRol().getIdRol().equalsIgnoreCase(idRol)) {
+//            JsfUtil.addErrorMessage("No se puede modificar este rol.");
+//        } else {
+//            performDestroy();
+//            recreateModel();
+//            updateCurrentItem();
+//            if (selectedItemIndex >= 0) {
+//                return "View";
+//            } else {
+//                // all items were removed - go back to list
+//                recreateModel();
+//                return "List";
+//            }
+//        }
+//        return null;
+//    }
 
     private void performDestroy() {
         try {
@@ -204,20 +204,20 @@ public class RolController extends AbstractManagedBean<Rol> implements Serializa
         }
     }
 
-    private void updateCurrentItem() {
-        int count = getJpaController().count(Rol.class).intValue();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = (Rol) getJpaController().queryByRange(Rol.class, 1, selectedItemIndex).get(0);
-        }
-    }
+//    private void updateCurrentItem() {
+//        int count = getJpaController().count(Rol.class).intValue();
+//        if (selectedItemIndex >= count) {
+//            // selected index cannot be bigger than number of items:
+//            selectedItemIndex = count - 1;
+//            // go to previous page if last page disappeared:
+//            if (pagination.getPageFirstItem() >= count) {
+//                pagination.previousPage();
+//            }
+//        }
+//        if (selectedItemIndex >= 0) {
+//            current = (Rol) getJpaController().queryByRange(Rol.class, 1, selectedItemIndex).get(0);
+//        }
+//    }
 
     @Override
     public Class getDataModelImplementationClass() {

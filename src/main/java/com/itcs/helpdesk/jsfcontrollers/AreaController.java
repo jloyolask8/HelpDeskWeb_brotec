@@ -1,19 +1,18 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Area;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Grupo;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entityenums.EnumEstadoCaso;
+import com.itcs.helpdesk.persistence.jpa.EasyCriteriaQuery;
 import com.itcs.helpdesk.quartz.DownloadEmailJob;
 import com.itcs.helpdesk.quartz.HelpDeskScheluder;
 import com.itcs.helpdesk.util.Log;
-import com.itcs.jpautils.EasyCriteriaQuery;
+
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -25,7 +24,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.event.ActionEvent;
-import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 import org.primefaces.model.DefaultTreeNode;
@@ -61,28 +59,27 @@ public class AreaController extends AbstractManagedBean<Area> implements Seriali
     public void handleMailStoreProtocolChange() {
     }
 
-    @Override
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(getPaginationPageSize()) {
-                @Override
-                public int getItemsCount() {
-                    return getJpaController().count(Area.class).intValue();
-                }
+//    @Override
+//    public PaginationHelper getPagination() {
+//        if (pagination == null) {
+//            pagination = new PaginationHelper(getPaginationPageSize()) {
+//                @Override
+//                public int getItemsCount() {
+//                    return getJpaController().count(Area.class).intValue();
+//                }
+//
+//                @Override
+//                public DataModel createPageDataModel() {
+//                    return new ListDataModel(getJpaController().queryByRange(Area.class, getPageSize(), getPageFirstItem()));
+//                }
+//            };
+//        }
+//        return pagination;
+//    }
 
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getJpaController().queryByRange(Area.class, getPageSize(), getPageFirstItem()));
-                }
-            };
-        }
-        return pagination;
-    }
-
     @Override
-    public String prepareList() {
-        recreateModel();
-        return "/script/area/List";
+    protected String getListPage() {
+       return "/script/area/List";
     }
 
     public String prepareView(String idArea) {
@@ -167,18 +164,18 @@ public class AreaController extends AbstractManagedBean<Area> implements Seriali
         return "/script/area/List";
     }
 
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "/script/area/View";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "/script/area/List";
-        }
-    }
+//    public String destroyAndView() {
+//        performDestroy();
+//        recreateModel();
+//        updateCurrentItem();
+//        if (selectedItemIndex >= 0) {
+//            return "/script/area/View";
+//        } else {
+//            // all items were removed - go back to list
+//            recreateModel();
+//            return "/script/area/List";
+//        }
+//    }
 
     private void performDestroy() {
         try {
@@ -190,33 +187,33 @@ public class AreaController extends AbstractManagedBean<Area> implements Seriali
         }
     }
 
-    private void updateCurrentItem() {
-        long count = getJpaController().count(Area.class);
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = (Area) getJpaController().queryByRange(Area.class, 1, (int) selectedItemIndex).get(0);
-        }
-    }
-
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        Iterator iter = items.iterator();
-        List<Area> listOfArea = new ArrayList<Area>();
-        while (iter.hasNext()) {
-            listOfArea.add((Area) iter.next());
-        }
-
-        return new AreaDataModel(listOfArea);
-    }
+//    private void updateCurrentItem() {
+//        long count = getJpaController().count(Area.class);
+//        if (selectedItemIndex >= count) {
+//            // selected index cannot be bigger than number of items:
+//            selectedItemIndex = count - 1;
+//            // go to previous page if last page disappeared:
+//            if (pagination.getPageFirstItem() >= count) {
+//                pagination.previousPage();
+//            }
+//        }
+//        if (selectedItemIndex >= 0) {
+//            current = (Area) getJpaController().queryByRange(Area.class, 1, (int) selectedItemIndex).get(0);
+//        }
+//    }
+//
+//    public DataModel getItems() {
+//        if (items == null) {
+//            items = getPagination().createPageDataModel();
+//        }
+//        Iterator iter = items.iterator();
+//        List<Area> listOfArea = new ArrayList<Area>();
+//        while (iter.hasNext()) {
+//            listOfArea.add((Area) iter.next());
+//        }
+//
+//        return new AreaDataModel(listOfArea);
+//    }
 
     public void toggleAllTree() {
         setExpanded(!isExpanded());
@@ -303,7 +300,7 @@ public class AreaController extends AbstractManagedBean<Area> implements Seriali
 
     @Override
     public Class getDataModelImplementationClass() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return AreaDataModel.class;
     }
 
     /**
@@ -321,14 +318,14 @@ public class AreaController extends AbstractManagedBean<Area> implements Seriali
     }
 
     public Long countCasosAbiertos(Area area) {
-        EasyCriteriaQuery<Caso> c = new EasyCriteriaQuery<Caso>(emf, Caso.class);
+        EasyCriteriaQuery<Caso> c = new EasyCriteriaQuery<Caso>(getJpaController(), Caso.class);
         c.addEqualPredicate("idArea", area);
         c.addEqualPredicate("idEstado", EnumEstadoCaso.ABIERTO.getEstado());
         return c.count();
     }
 
     public Long countCasosCerrados(Area area) {
-        EasyCriteriaQuery<Caso> c = new EasyCriteriaQuery<Caso>(emf, Caso.class);
+        EasyCriteriaQuery<Caso> c = new EasyCriteriaQuery<Caso>(getJpaController(), Caso.class);
         c.addEqualPredicate("idArea", area);
         c.addEqualPredicate("idEstado", EnumEstadoCaso.CERRADO.getEstado());
         return c.count();
@@ -342,9 +339,9 @@ public class AreaController extends AbstractManagedBean<Area> implements Seriali
             if (value == null || value.length() == 0) {
                 return null;
             }
-            AreaController controller = (AreaController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "areaController");
-            return controller.getJpaController().find(Area.class, getKey(value));
+            UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
+        return controller.getJpaController().find(Area.class, getKey(value));
         }
 
         java.lang.String getKey(String value) {

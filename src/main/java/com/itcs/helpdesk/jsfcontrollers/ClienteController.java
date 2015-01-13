@@ -1,6 +1,7 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Cliente;
 import com.itcs.helpdesk.persistence.entities.EmailCliente;
 import com.itcs.helpdesk.persistence.entities.ProductoContratado;
@@ -253,18 +254,18 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
         return "/script/cliente/List";
     }
 
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "/script/cliente/View";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "/script/cliente/List";
-        }
-    }
+//    public String destroyAndView() {
+//        performDestroy();
+//        recreateModel();
+//        updateCurrentItem();
+//        if (selectedItemIndex >= 0) {
+//            return "/script/cliente/View";
+//        } else {
+//            // all items were removed - go back to list
+//            recreateModel();
+//            return "/script/cliente/List";
+//        }
+//    }
 
     private void performDestroy() {
         try {
@@ -275,20 +276,20 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
         }
     }
 
-    private void updateCurrentItem() {
-        int count = getJpaController().count(Cliente.class).intValue();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = (Cliente) getJpaController().queryByRange(Cliente.class, 1, selectedItemIndex).get(0);
-        }
-    }
+//    private void updateCurrentItem() {
+//        int count = getJpaController().count(Cliente.class).intValue();
+//        if (selectedItemIndex >= count) {
+//            // selected index cannot be bigger than number of items:
+//            selectedItemIndex = count - 1;
+//            // go to previous page if last page disappeared:
+//            if (pagination.getPageFirstItem() >= count) {
+//                pagination.previousPage();
+//            }
+//        }
+//        if (selectedItemIndex >= 0) {
+//            current = (Cliente) getJpaController().queryByRange(Cliente.class, 1, selectedItemIndex).get(0);
+//        }
+//    }
 
 //    public DataModel getItems() {
 //        if (items == null) {
@@ -374,9 +375,9 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
             if (value == null || value.length() == 0) {
                 return null;
             }
-            ClienteController controller = (ClienteController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "clienteController");
-            return controller.getJpaController().find(Cliente.class, getKey(value));
+           UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
+        return controller.getJpaController().find(Cliente.class, getKey(value));
         }
 
         java.lang.Integer getKey(String value) {

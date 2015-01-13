@@ -35,10 +35,10 @@ import com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoNota;
 import com.itcs.helpdesk.persistence.entityenums.EnumUsuariosBase;
+import com.itcs.helpdesk.persistence.jpa.EasyCriteriaQuery;
 import com.itcs.helpdesk.persistence.jpa.exceptions.PreexistingEntityException;
 import com.itcs.helpdesk.persistence.jpa.exceptions.RollbackFailureException;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
-import com.itcs.jpautils.EasyCriteriaQuery;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.logging.Level;
@@ -65,13 +65,13 @@ public class AutomaticOpsExecutor {
         this.emf = emf;
     }
 
-    protected ManagerCasos getManagerCasos() {
-        if (null == managerCasos) {
-            managerCasos = new ManagerCasos();
-            managerCasos.setJpaController(getJpaController());
-        }
-        return managerCasos;
-    }
+//    protected ManagerCasos getManagerCasos() {
+//        if (null == managerCasos) {
+//            managerCasos = new ManagerCasos();
+//            managerCasos.setJpaController(getJpaController());
+//        }
+//        return managerCasos;
+//    }
 
 //    public void agendarAgendarAlertas() throws SchedulerException {
 //        Calendar calendario = Calendar.getInstance();
@@ -143,23 +143,25 @@ public class AutomaticOpsExecutor {
     }
 
     private void fixClientesCasos(JPAServiceFacade jpaController) {
-        EasyCriteriaQuery<Caso> ecq = new EasyCriteriaQuery<>(emf, Caso.class);
+        EasyCriteriaQuery<Caso> ecq = new EasyCriteriaQuery<>(getJpaController(), Caso.class);
         ecq.addEqualPredicate("idCliente", null);
         ecq.addDistinctPredicate("emailCliente", null);
         List<Caso> casosToFix = ecq.getAllResultList();
+        
+        
 
         for (Caso caso : casosToFix) {
             caso.setIdCliente(caso.getEmailCliente().getCliente());
             try {
                 jpaController.merge(caso);
             } catch (Exception ex) {
-                Logger.getLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
 
     private void fixNombreCliente(JPAServiceFacade jpaController) {
-        EasyCriteriaQuery<Cliente> ecq = new EasyCriteriaQuery<>(emf, Cliente.class);
+        EasyCriteriaQuery<Cliente> ecq = new EasyCriteriaQuery<>(getJpaController(), Cliente.class);
         ecq.addLikePredicate(Cliente_.nombres.getName(), "%=?ISO-8859-1%");
         List<Cliente> clientsToFix = ecq.getAllResultList();
 
@@ -178,10 +180,10 @@ public class AutomaticOpsExecutor {
                 try {
                     jpaController.merge(cliente);
                 } catch (Exception ex) {
-                    Logger.getLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
                 }
             } catch (UnsupportedEncodingException ex) {
-                Logger.getLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -216,7 +218,7 @@ public class AutomaticOpsExecutor {
                 } catch (PreexistingEntityException pre) {
                     //ignore if already exists
                 } catch (Exception e) {
-                    Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
+                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
                 }
             }
         }
@@ -236,7 +238,7 @@ public class AutomaticOpsExecutor {
                 } catch (PreexistingEntityException pre) {
                     //ignore if already exists
                 } catch (Exception e) {
-                    Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
+                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
                 }
             }
         }
@@ -254,7 +256,7 @@ public class AutomaticOpsExecutor {
                 Log.createLogger(this.getClass().getName()).logSevere("No existe usuario SISTEMA, se creara ahora");
                 jpaController.persist(EnumUsuariosBase.SISTEMA.getUsuario());
             } catch (Exception e) {
-                Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
+                Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
             }
         }
     }
@@ -271,7 +273,7 @@ public class AutomaticOpsExecutor {
                 try {
                     jpaController.persist(tipoAlerta.getTipoAlerta());
                 } catch (Exception e) {
-                    Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
+                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
                 }
             }
         }
@@ -285,11 +287,11 @@ public class AutomaticOpsExecutor {
                     Log.createLogger(this.getClass().getName()).logSevere("No existe funcion " + funcion.getFuncion().getNombre() + ", se creara ahora");
                     jpaController.persist(funcion.getFuncion());
                 } catch (PreexistingEntityException ex) {
-                    Logger.getLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
                 } catch (RollbackFailureException ex) {
-                    Logger.getLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
                 } catch (Exception ex) {
-                    Logger.getLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
                 }
             }
 
@@ -308,7 +310,7 @@ public class AutomaticOpsExecutor {
                     jpaController.persist(enumRol.getRol());
                 } catch (Exception e) {
                     e.getCause().printStackTrace();
-                    Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
+                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
                 }
             }
         }
@@ -325,7 +327,7 @@ public class AutomaticOpsExecutor {
                 try {
                     jpaController.persist(enumResponsables.getResponsable());
                 } catch (Exception e) {
-                    Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, "verificarResponsables", e);
+                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "verificarResponsables", e);
                 }
             }
         }
@@ -342,7 +344,7 @@ public class AutomaticOpsExecutor {
                 try {
                     jpaController.persist(enumEstado.getEstado());
                 } catch (Exception e) {
-                    Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
+                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
                 }
             }
         }
@@ -359,7 +361,7 @@ public class AutomaticOpsExecutor {
                 try {
                     jpaController.persist(enumSubEstado.getSubEstado());
                 } catch (Exception e) {
-                    Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
+                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
                 }
             }
         }
@@ -376,7 +378,7 @@ public class AutomaticOpsExecutor {
                 try {
                     jpaController.persist(enumTipoCaso.getTipoCaso());
                 } catch (Exception e) {
-                    Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, "verificarTipoCaso", e);
+                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "verificarTipoCaso", e);
                 }
             }
         }
@@ -393,7 +395,7 @@ public class AutomaticOpsExecutor {
                 try {
                     jpaController.persist(enumCanal.getCanal());
                 } catch (Exception e) {
-                    Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
+                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
                 }
             }
         }
@@ -411,7 +413,7 @@ public class AutomaticOpsExecutor {
                 try {
                     jpaController.persist(enumPrioridad.getPrioridad());
                 } catch (Exception e) {
-                    Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
+                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
                 }
             }
         }
@@ -430,10 +432,10 @@ public class AutomaticOpsExecutor {
                 try {
                     jpaController.persist(enumTipoNota.getTipoNota());
                 } catch (Exception e) {
-                    Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
+                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
                 }
             } catch (Exception ex) {
-                Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, ex);
+                Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -449,7 +451,7 @@ public class AutomaticOpsExecutor {
                 try {
                     jpaController.persist(enumNombreAccion.getNombreAccion());
                 } catch (Exception e) {
-                    Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
+                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
                 }
             }
         }
@@ -466,7 +468,7 @@ public class AutomaticOpsExecutor {
                 try {
                     jpaController.persist(fieldType.getFieldType());
                 } catch (Exception e) {
-                    Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
+                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
                 }
             }
         }
@@ -483,16 +485,20 @@ public class AutomaticOpsExecutor {
                 try {
                     jpaController.persist(enumTipoComparacion.getTipoComparacion());
                 } catch (Exception e) {
-                    Log.createLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, e);
+                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
                 }
             }
         }
     }
 
+    /**
+     * @deprecated not works
+     * @return 
+     */
     protected JPAServiceFacade getJpaController() {
         if (jpaController == null) {
             jpaController = new JPAServiceFacade(utx, emf);
-            RulesEngine rulesEngine = new RulesEngine(emf, jpaController);
+            RulesEngine rulesEngine = new RulesEngine(jpaController);
             jpaController.setCasoChangeListener(rulesEngine);
         }
         return jpaController;

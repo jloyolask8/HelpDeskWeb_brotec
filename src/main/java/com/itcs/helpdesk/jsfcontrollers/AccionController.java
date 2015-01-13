@@ -1,18 +1,15 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
-import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Accion;
 import java.io.Serializable;
 import java.util.List;
-import java.util.ResourceBundle;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import org.primefaces.model.SelectableDataModel;
 
@@ -22,131 +19,14 @@ import org.primefaces.model.SelectableDataModel;
 public class AccionController extends AbstractManagedBean<Accion>  implements Serializable {
 
 
-    private int selectedItemIndex;
-
     public AccionController() {
         super(Accion.class);
     }
-
-    public String prepareCreate() {
-        current = new Accion();
-        selectedItemIndex = -1;
-        return "Create";
-    }
-
-    public String create() {
-        try {
-            getJpaController().persist(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AccionCreated"));
-            return prepareCreate();
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
-            return null;
-        }
-    }
-
-    public String update() {
-        try {
-            getJpaController().merge(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AccionUpdated"));
-            return "View";
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
-            return null;
-        }
-    }
-
-    public String destroy() {
-        if (current == null) {
-            return "";
-        }
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        performDestroy();
-        recreateModel();
-        return "List";
-    }
-
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "View";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "List";
-        }
-    }
-
-    private void performDestroy() {
-        try {
-            getJpaController().remove(Accion.class, current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AccionDeleted"));
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
-        }
-    }
-
-    private void updateCurrentItem() {
-        int count = getJpaController().count(Accion.class).intValue();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = (Accion)getJpaController().queryByRange(Accion.class, 1, selectedItemIndex).get(0);
-        }
-    }
-
-   
 
     @Override
     public Class getDataModelImplementationClass() {
         return AccionDataModel.class;
     }
-
-//    /**
-//     * @return the selectedItems
-//     */
-//    public Accion[] getSelectedItems() {
-//        return selectedItems;
-//    }
-//
-//    /**
-//     * @param selectedItems the selectedItems to set
-//     */
-//    public void setSelectedItems(Accion[] selectedItems) {
-//        this.selectedItems = selectedItems;
-//    }
-
-//    private void recreateModel() {
-//        items = null;
-//    }
-//
-//    public String next() {
-//        getPagination().nextPage();
-//        recreateModel();
-//        return "List";
-//    }
-//
-//    public String previous() {
-//        getPagination().previousPage();
-//        recreateModel();
-//        return "List";
-//    }
-
-//    public SelectItem[] getItemsAvailableSelectMany() {
-//        return JsfUtil.getSelectItems(getJpaController().getAccionFindAll(), false);
-//    }
-//
-//    public SelectItem[] getItemsAvailableSelectOne() {
-//        return JsfUtil.getSelectItems(getJpaController().getAccionFindAll(), true);
-//    }
 
     @FacesConverter(forClass = Accion.class)
     public static class AccionControllerConverter implements Converter {
@@ -156,9 +36,9 @@ public class AccionController extends AbstractManagedBean<Accion>  implements Se
             if (value == null || value.length() == 0) {
                 return null;
             }
-            AccionController controller = (AccionController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "accionController");
-            return controller.getJpaController().find(Accion.class, getKey(value));
+            UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
+        return controller.getJpaController().find(Accion.class, getKey(value));
         }
 
         java.lang.Integer getKey(String value) {

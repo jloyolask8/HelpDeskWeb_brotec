@@ -5,6 +5,7 @@
 package com.itcs.helpdesk.webapputils;
 
 import com.itcs.helpdesk.persistence.entities.Etiqueta;
+import com.itcs.helpdesk.persistence.jpa.AbstractJPAController;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -24,13 +25,7 @@ import org.primefaces.json.JSONArray;
  *
  * @author jonathan
  */
-public class TagListServlet extends HttpServlet {
-
-    @Resource
-    private UserTransaction utx = null;
-    @PersistenceUnit(unitName = "helpdeskPU")
-    private EntityManagerFactory emf = null;
-    private JPAServiceFacade jpaController = null;
+public class TagListServlet extends AbstractServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -41,79 +36,42 @@ public class TagListServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    @Override
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         try {
-            /* TODO output your page here. You may use following sample code. */
-            String q = request.getParameter("q");
-            String u = request.getParameter("u");
-            if (q != null && !StringUtils.isEmpty(q)) {
-                out.println(getTagJSonList(q, u));
-            } else {
-                out.println(getTagJSonList());
-            }
-            System.out.println("getTagJSonList(" + q + ")");
+            String schema = request.getParameter(AbstractJPAController.TENANT_PROP_NAME);
 
+            if (!StringUtils.isEmpty(schema)) {
+
+                /* TODO output your page here. You may use following sample code. */
+                String q = request.getParameter("q");
+                String user = request.getParameter("u");
+                if (q != null && !StringUtils.isEmpty(q)) {
+                    out.println(getTagJSonList(schema, q, user));
+                } else {
+                    out.println(getTagJSonList(schema));
+                }
+                System.out.println("getTagJSonList(" + q + ")");
+            }
         } finally {
             out.close();
         }
+
     }
 
-    public String getTagJSonList(String pattern, String idUsuario) {
-        JSONArray list = new JSONArray((List<Etiqueta>) getJpaController().findEtiquetasLike(pattern, idUsuario));
+    public String getTagJSonList(String schema, String pattern, String idUsuario) {
+        JSONArray list = new JSONArray((List<Etiqueta>) getJpaController(schema).findEtiquetasLike(pattern, idUsuario));
         return list.toString();
     }
 
-    public String getTagJSonList() {
-        JSONArray list = new JSONArray((List<Etiqueta>) getJpaController().findAll(Etiqueta.class));
+    public String getTagJSonList(String schema) {
+        JSONArray list = new JSONArray((List<Etiqueta>) getJpaController(schema).findAll(Etiqueta.class));
         return list.toString();
     }
 
-    public JPAServiceFacade getJpaController() {
-        if (jpaController == null) {
-            jpaController = new JPAServiceFacade(utx, emf);
-        }
-        return jpaController;
-    }
+  
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-    }
-
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-    }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
 }

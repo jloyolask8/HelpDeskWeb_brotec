@@ -2,6 +2,7 @@ package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.TipoAccion;
 import java.io.Serializable;
 import java.util.LinkedList;
@@ -56,9 +57,9 @@ public class NombreAccionController extends AbstractManagedBean<TipoAccion> impl
             if (value == null || value.length() == 0) {
                 return null;
             }
-            NombreAccionController controller = (NombreAccionController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "nombreAccionController");
-            return controller.getJpaController().find(TipoAccion.class, getKey(value));
+            UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
+        return controller.getJpaController().find(TipoAccion.class, getKey(value));
         }
 
         java.lang.String getKey(String value) {

@@ -33,7 +33,7 @@
         <Node id="script/tipoCaso/Edit.xhtml" x="400" y="1350" zoom="true"/>
         <Node id="script/prioridad/Edit.xhtml" x="900" y="150" zoom="true"/>
         <Node id="script/appSetting/config.xhtml" x="400" y="1800" zoom="true"/>
-        <Node id="script/login.xhtml" x="900" y="750" zoom="true"/>
+        <Node id="public/login.xhtml" x="900" y="750" zoom="true"/>
         <Node id="script/usuario/myAccount.xhtml" x="3150" y="300" zoom="true"/>
         <Node id="script/tipoCaso/Create.xhtml" x="1400" y="1200" zoom="true"/>
         <Node id="script/area/Create.xhtml" x="900" y="1200" zoom="true"/>

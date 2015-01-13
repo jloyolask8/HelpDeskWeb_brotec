@@ -6,7 +6,6 @@ package com.itcs.helpdesk.jsfcontrollers.util;
 
 import com.itcs.helpdesk.jsfcontrollers.AbstractManagedBean;
 import com.itcs.helpdesk.persistence.entities.Etiqueta;
-import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import java.io.Serializable;
 import java.util.List;
 import javax.faces.application.FacesMessage;

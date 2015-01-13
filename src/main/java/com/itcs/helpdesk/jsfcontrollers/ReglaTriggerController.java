@@ -639,18 +639,18 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         return "/script/reglaTrigger/List";
     }
 
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "/script/reglaTrigger/View";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "/script/reglaTrigger/List";
-        }
-    }
+//    public String destroyAndView() {
+//        performDestroy();
+//        recreateModel();
+//        updateCurrentItem();
+//        if (selectedItemIndex >= 0) {
+//            return "/script/reglaTrigger/View";
+//        } else {
+//            // all items were removed - go back to list
+//            recreateModel();
+//            return "/script/reglaTrigger/List";
+//        }
+//    }
 
     private void performDestroy() {
         try {
@@ -662,20 +662,20 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         }
     }
 
-    private void updateCurrentItem() {
-        int count = getJpaController().count(ReglaTrigger.class).intValue();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = (ReglaTrigger) getJpaController().queryByRange(ReglaTrigger.class, 1, selectedItemIndex).get(0);
-        }
-    }
+//    private void updateCurrentItem() {
+//        int count = getJpaController().count(ReglaTrigger.class).intValue();
+//        if (selectedItemIndex >= count) {
+//            // selected index cannot be bigger than number of items:
+//            selectedItemIndex = count - 1;
+//            // go to previous page if last page disappeared:
+//            if (pagination.getPageFirstItem() >= count) {
+//                pagination.previousPage();
+//            }
+//        }
+//        if (selectedItemIndex >= 0) {
+//            current = (ReglaTrigger) getJpaController().queryByRange(ReglaTrigger.class, 1, selectedItemIndex).get(0);
+//        }
+//    }
 
 //    public List<ReglaTrigger> getItems() {
 //        if (reglaItems == null) {

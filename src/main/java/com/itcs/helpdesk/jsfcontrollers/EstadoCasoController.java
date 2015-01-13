@@ -1,5 +1,6 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.EstadoCaso;
 import java.io.Serializable;
 import java.util.List;
@@ -34,9 +35,9 @@ public class EstadoCasoController extends AbstractManagedBean<EstadoCaso> implem
             if (value == null || value.length() == 0) {
                 return null;
             }
-            EstadoCasoController controller = (EstadoCasoController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "estadoCasoController");
-            return controller.getJpaController().getReference(EstadoCaso.class, getKey(value));
+           UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
+        return controller.getJpaController().find(EstadoCaso.class, getKey(value));
         }
 
         java.lang.String getKey(String value) {

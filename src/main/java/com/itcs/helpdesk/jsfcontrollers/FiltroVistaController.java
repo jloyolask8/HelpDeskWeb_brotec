@@ -1,5 +1,6 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.FiltroVista;
 import java.io.Serializable;
 import javax.faces.bean.ManagedBean;
@@ -32,9 +33,9 @@ public class FiltroVistaController extends AbstractManagedBean<FiltroVista> impl
             if (value == null || value.length() == 0) {
                 return null;
             }
-            FiltroVistaController controller = (FiltroVistaController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "filtroVistaController");
-            return controller.getJpaController().find(FiltroVista.class, getKey(value));
+          UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
+        return controller.getJpaController().find(FiltroVista.class, getKey(value));
         }
 
         java.lang.Integer getKey(String value) {

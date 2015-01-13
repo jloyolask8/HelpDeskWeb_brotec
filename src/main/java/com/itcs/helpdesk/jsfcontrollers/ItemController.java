@@ -2,6 +2,7 @@ package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Area;
 import com.itcs.helpdesk.persistence.entities.Item;
 import com.itcs.helpdesk.persistence.entities.Usuario;
@@ -48,7 +49,7 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
 
     public ItemController() {
         super(Item.class);
-        emptyList = new LinkedList<Item>();
+        emptyList = new LinkedList<>();
     }
 
     public String getTextoFiltro() {
@@ -68,24 +69,25 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
         return current;
     }
 
+//    @Override
+//    public PaginationHelper getPagination() {
+//        if (pagination == null) {
+//            pagination = new PaginationHelper(getPaginationPageSize()) {
+//                @Override
+//                public int getItemsCount() {
+//                    return getJpaController().count(Item.class).intValue();
+//                }
+//
+//                @Override
+//                public DataModel createPageDataModel() {
+//                    return new ListDataModel(getJpaController().queryByRange(Item.class, getPageSize(), getPageFirstItem()));
+//                }
+//            };
+//        }
+//        return pagination;
+//    }
+
     @Override
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(getPaginationPageSize()) {
-                @Override
-                public int getItemsCount() {
-                    return getJpaController().count(Item.class).intValue();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getJpaController().queryByRange(Item.class, getPageSize(), getPageFirstItem()));
-                }
-            };
-        }
-        return pagination;
-    }
-
     public String prepareList() {
         textoFiltro = null;
         itemsTree = null;
@@ -186,18 +188,18 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
         return "/script/item/AdminItems";
     }
 
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "/script/item/AdminItems";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "/script/item/AdminItems";
-        }
-    }
+//    public String destroyAndView() {
+//        performDestroy();
+//        recreateModel();
+//        updateCurrentItem();
+//        if (selectedItemIndex >= 0) {
+//            return "/script/item/AdminItems";
+//        } else {
+//            // all items were removed - go back to list
+//            recreateModel();
+//            return "/script/item/AdminItems";
+//        }
+//    }
 
     private void performDestroy() {
         try {
@@ -209,33 +211,33 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
         }
     }
 
-    private void updateCurrentItem() {
-        long count = getJpaController().count(Item.class);
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = (int) count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = (Item) getJpaController().queryByRange(Item.class, 1, selectedItemIndex).get(0);
-        }
-    }
-
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        Iterator iter = items.iterator();
-        List<Item> listOfItem = new ArrayList<Item>();
-        while (iter.hasNext()) {
-            listOfItem.add((Item) iter.next());
-        }
-
-        return new ItemDataModel(listOfItem);
-    }
+//    private void updateCurrentItem() {
+//        long count = getJpaController().count(Item.class);
+//        if (selectedItemIndex >= count) {
+//            // selected index cannot be bigger than number of items:
+//            selectedItemIndex = (int) count - 1;
+//            // go to previous page if last page disappeared:
+//            if (pagination.getPageFirstItem() >= count) {
+//                pagination.previousPage();
+//            }
+//        }
+//        if (selectedItemIndex >= 0) {
+//            current = (Item) getJpaController().queryByRange(Item.class, 1, selectedItemIndex).get(0);
+//        }
+//    }
+//
+//    public DataModel getItems() {
+//        if (items == null) {
+//            items = getPagination().createPageDataModel();
+//        }
+//        Iterator iter = items.iterator();
+//        List<Item> listOfItem = new ArrayList<Item>();
+//        while (iter.hasNext()) {
+//            listOfItem.add((Item) iter.next());
+//        }
+//
+//        return new ItemDataModel(listOfItem);
+//    }
 
     public List<Item> getItemsForUser(Usuario usuario, String textFiltro) {
 
@@ -831,9 +833,9 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
             if (value == null || value.length() == 0) {
                 return null;
             }
-            ItemController controller = (ItemController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "itemController");
-            return controller.getJpaController().find(Item.class, getKey(value));
+           UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
+        return controller.getJpaController().find(Item.class, getKey(value));
         }
 
         java.lang.Integer getKey(String value) {

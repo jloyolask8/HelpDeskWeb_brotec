@@ -13,37 +13,14 @@ import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Cliente;
 import com.itcs.helpdesk.persistence.entities.metadata.Cliente_;
-import com.itcs.helpdesk.persistence.entities.FieldType;
-import com.itcs.helpdesk.persistence.entities.TipoAccion;
-import com.itcs.helpdesk.persistence.entities.Prioridad;
-import com.itcs.helpdesk.persistence.entities.Responsable;
-import com.itcs.helpdesk.persistence.entities.TipoCanal;
-import com.itcs.helpdesk.persistence.entities.TipoCaso;
-import com.itcs.helpdesk.persistence.entities.Usuario;
-import com.itcs.helpdesk.persistence.entityenums.EnumCanal;
 import com.itcs.helpdesk.persistence.entityenums.EnumEstadoCaso;
-import com.itcs.helpdesk.persistence.entityenums.EnumFieldType;
-import com.itcs.helpdesk.persistence.entityenums.EnumFunciones;
-import com.itcs.helpdesk.persistence.entityenums.EnumTipoAccion;
-import com.itcs.helpdesk.persistence.entityenums.EnumPrioridad;
-import com.itcs.helpdesk.persistence.entityenums.EnumResponsables;
-import com.itcs.helpdesk.persistence.entityenums.EnumRoles;
-import com.itcs.helpdesk.persistence.entityenums.EnumSettingsBase;
-import com.itcs.helpdesk.persistence.entityenums.EnumSubEstadoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta;
-import com.itcs.helpdesk.persistence.entityenums.EnumTipoCanal;
-import com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso;
-import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
-import com.itcs.helpdesk.persistence.entityenums.EnumTipoNota;
-import com.itcs.helpdesk.persistence.entityenums.EnumUsuariosBase;
-import com.itcs.helpdesk.persistence.jpa.exceptions.PreexistingEntityException;
-import com.itcs.helpdesk.persistence.jpa.exceptions.RollbackFailureException;
+import com.itcs.helpdesk.persistence.jpa.EasyCriteriaQuery;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.quartz.HelpDeskScheluder;
-import com.itcs.helpdesk.util.AutomaticOpsExecutor;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.ManagerCasos;
-import com.itcs.jpautils.EasyCriteriaQuery;
+
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -55,7 +32,6 @@ import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.mail.internet.MimeUtility;
-import javax.persistence.NoResultException;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -213,6 +189,11 @@ public class SchedulerBean extends AbstractManagedBean<Object> implements Serial
         }
     }
     
+    /**
+     * remove this duplicated code
+     * @param jpaController 
+     */
+    
     //Nada que ver con el codigo
     public void verificaDatosBase() {
         JPAServiceFacade controller = getJpaController();
@@ -221,8 +202,13 @@ public class SchedulerBean extends AbstractManagedBean<Object> implements Serial
         fixNombreCliente(controller);
     }
 
+    /**
+     * remove this duplicated code
+     * @param jpaController 
+     */
+    
     private void fixClientesCasos(JPAServiceFacade jpaController) {
-        EasyCriteriaQuery<Caso> ecq = new EasyCriteriaQuery<>(emf, Caso.class);
+        EasyCriteriaQuery<Caso> ecq = new EasyCriteriaQuery<>(getJpaController(), Caso.class);
         ecq.addEqualPredicate("idCliente", null);
         ecq.addDistinctPredicate("emailCliente", null);
         List<Caso> casosToFix = ecq.getAllResultList();
@@ -232,13 +218,17 @@ public class SchedulerBean extends AbstractManagedBean<Object> implements Serial
             try {
                 jpaController.merge(caso);
             } catch (Exception ex) {
-                Logger.getLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
 
+    /**
+     * remove this duplicated code
+     * @param jpaController 
+     */
     private void fixNombreCliente(JPAServiceFacade jpaController) {
-        EasyCriteriaQuery<Cliente> ecq = new EasyCriteriaQuery<>(emf, Cliente.class);
+        EasyCriteriaQuery<Cliente> ecq = new EasyCriteriaQuery<>(getJpaController(), Cliente.class);
         ecq.addLikePredicate(Cliente_.nombres.getName(), "%=?ISO-8859-1%");
         List<Cliente> clientsToFix = ecq.getAllResultList();
 
@@ -257,10 +247,10 @@ public class SchedulerBean extends AbstractManagedBean<Object> implements Serial
                 try {
                     jpaController.merge(cliente);
                 } catch (Exception ex) {
-                    Logger.getLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
                 }
             } catch (UnsupportedEncodingException ex) {
-                Logger.getLogger(AutomaticOpsExecutor.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
             }
         }
     }

@@ -37,10 +37,9 @@ public class SubEstadoCasoController extends AbstractManagedBean<SubEstadoCaso> 
     public void handleChange() {
     }
 
-    public String prepareList() {
-        recreateModel();
+    @Override
+    protected String getListPage() {
         return "/script/sub_estado_caso/List";
-        //return "List";
     }
 
     public void onRowSelect(SelectEvent event) {
@@ -84,6 +83,7 @@ public class SubEstadoCasoController extends AbstractManagedBean<SubEstadoCaso> 
         }
     }
 
+    @Override
     public String prepareEdit(SubEstadoCaso item) {
         setSelected(item);
         return prepareEdit();
@@ -134,18 +134,7 @@ public class SubEstadoCasoController extends AbstractManagedBean<SubEstadoCaso> 
         destroySelected();
     }
 
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "/script/sub_estado_caso/View";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "/script/sub_estado_caso/List";
-        }
-    }
+  
 
     private void performDestroy() {
         try {
@@ -156,27 +145,7 @@ public class SubEstadoCasoController extends AbstractManagedBean<SubEstadoCaso> 
         }
     }
 
-    private void updateCurrentItem() {
-        int count = getJpaController().count(SubEstadoCaso.class).intValue();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = (SubEstadoCaso) getJpaController().queryByRange(SubEstadoCaso.class, 1, selectedItemIndex).get(0);
-        }
-    }
-
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
+   
 //
 //    private void recreateModel() {
 //        items = null;

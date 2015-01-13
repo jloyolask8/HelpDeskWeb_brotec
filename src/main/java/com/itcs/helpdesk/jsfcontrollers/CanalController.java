@@ -3,16 +3,18 @@ package com.itcs.helpdesk.jsfcontrollers;
 import com.itcs.commons.email.EmailAutoconfigClient;
 import com.itcs.commons.email.EnumEmailSettingKeys;
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Canal;
 import com.itcs.helpdesk.persistence.entities.CanalSetting;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoCanal;
+import com.itcs.helpdesk.persistence.jpa.EasyCriteriaQuery;
 import com.itcs.helpdesk.persistence.utils.OrderBy;
 import com.itcs.helpdesk.quartz.DownloadEmailJob;
 import com.itcs.helpdesk.quartz.HelpDeskScheluder;
 import com.itcs.helpdesk.util.ApplicationConfig;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.MailClientFactory;
-import com.itcs.jpautils.EasyCriteriaQuery;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -198,7 +200,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
     }
 
     public SelectItem[] getEmailsAvailableSelectOne() {
-        EasyCriteriaQuery<Canal> ecq = new EasyCriteriaQuery<>(emf, Canal.class);
+        EasyCriteriaQuery<Canal> ecq = new EasyCriteriaQuery<>(getJpaController(), Canal.class);
         ecq.addEqualPredicate("idTipoCanal", EnumTipoCanal.EMAIL.getTipoCanal());
         return JsfUtil.getSelectItems(ecq.getAllResultList(), true);
     }
@@ -751,9 +753,9 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
             if (value == null || value.length() == 0) {
                 return null;
             }
-            CanalController controller = (CanalController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "canalController");
-            return controller.getJpaController().find(Canal.class, getKey(value));
+          UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
+        return controller.getJpaController().find(Canal.class, getKey(value));
         }
 
         java.lang.String getKey(String value) {

@@ -1,6 +1,7 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.ModeloProducto;
 import com.itcs.helpdesk.persistence.entities.ModeloProductoPK;
 import com.itcs.helpdesk.persistence.entities.Producto;
@@ -175,9 +176,9 @@ public class ModeloProductoController extends AbstractManagedBean<ModeloProducto
             if (value == null || value.length() == 0) {
                 return null;
             }
-            ModeloProductoController controller = (ModeloProductoController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "modeloProductoController");
-            return controller.getJpaController().find(ModeloProducto.class, getKey(value));
+           UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
+        return controller.getJpaController().find(ModeloProducto.class, getKey(value));
         }
 
         ModeloProductoPK getKey(String value) {

@@ -1,6 +1,7 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Grupo;
 import com.itcs.helpdesk.persistence.entities.Producto;
 import com.itcs.helpdesk.persistence.entities.Usuario;
@@ -220,18 +221,18 @@ public class GrupoController extends AbstractManagedBean<Grupo> implements Seria
         return null;
     }
 
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "/script/grupo/View";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "/script/grupo/List";
-        }
-    }
+//    public String destroyAndView() {
+//        performDestroy();
+//        recreateModel();
+//        updateCurrentItem();
+//        if (selectedItemIndex >= 0) {
+//            return "/script/grupo/View";
+//        } else {
+//            // all items were removed - go back to list
+//            recreateModel();
+//            return "/script/grupo/List";
+//        }
+//    }
 
     private boolean performDestroy() {
         try {
@@ -249,20 +250,20 @@ public class GrupoController extends AbstractManagedBean<Grupo> implements Seria
         return false;
     }
 
-    private void updateCurrentItem() {
-        int count = getJpaController().count(Grupo.class).intValue();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = (Grupo) getJpaController().queryByRange(Grupo.class, 1, selectedItemIndex).get(0);
-        }
-    }
+//    private void updateCurrentItem() {
+//        int count = getJpaController().count(Grupo.class).intValue();
+//        if (selectedItemIndex >= count) {
+//            // selected index cannot be bigger than number of items:
+//            selectedItemIndex = count - 1;
+//            // go to previous page if last page disappeared:
+//            if (pagination.getPageFirstItem() >= count) {
+//                pagination.previousPage();
+//            }
+//        }
+//        if (selectedItemIndex >= 0) {
+//            current = (Grupo) getJpaController().queryByRange(Grupo.class, 1, selectedItemIndex).get(0);
+//        }
+//    }
 
    
 
@@ -307,9 +308,9 @@ public class GrupoController extends AbstractManagedBean<Grupo> implements Seria
             if (value == null || value.length() == 0) {
                 return null;
             }
-            GrupoController controller = (GrupoController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "grupoController");
-            return controller.getJpaController().find(Grupo.class, getKey(value));
+          UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                getValue(facesContext.getELContext(), null, "UserSessionBean");
+        return controller.getJpaController().find(Grupo.class, getKey(value));
         }
 
         java.lang.String getKey(String value) {
