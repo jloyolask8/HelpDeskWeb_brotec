@@ -105,7 +105,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
 //        System.out.println(UserTransactionHelper.getUserTxLocation() + ":" + utx);//DEBUG
 
         JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf);
-        RulesEngine rulesEngine = new RulesEngine(emf, jpaController);
+        RulesEngine rulesEngine = new RulesEngine(jpaController);
         jpaController.setCasoChangeListener(rulesEngine);
         ManagerCasos managerCasos = new ManagerCasos(jpaController);
 

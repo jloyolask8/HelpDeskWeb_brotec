@@ -1,18 +1,15 @@
 package com.itcs.helpdesk.webapputils;
 
 import com.itcs.helpdesk.persistence.entities.ArchivoNa;
+import com.itcs.helpdesk.persistence.jpa.AbstractJPAController;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import java.io.IOException;
 import java.util.Date;
-import javax.annotation.Resource;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.UserTransaction;
+import org.apache.commons.lang3.StringUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,13 +21,8 @@ import org.slf4j.LoggerFactory;
  * @author mcristea
  *
  */
-public class CKEditorGetImageServlet extends HttpServlet {
+public class CKEditorGetImageServlet extends AbstractServlet {
 
-    @Resource
-    private UserTransaction utx = null;
-    @PersistenceUnit(unitName = "helpdeskPU")
-    private EntityManagerFactory emf = null;
-    
     private static final long serialVersionUID = -7570633768412575697L;
 
     private static final Logger LOG = LoggerFactory.getLogger(CKEditorGetImageServlet.class);
@@ -46,38 +38,38 @@ public class CKEditorGetImageServlet extends HttpServlet {
     private JPAServiceFacade jpaController;
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+       
         Integer imageId = null;
         String parameterId = request.getParameter(IMAGE_PARAMETER_NAME);
 
         try {
-            imageId = Integer.valueOf(parameterId);
-            ArchivoNa uploadedFile = getJpaController().find(ArchivoNa.class, imageId);
-            if (uploadedFile != null && uploadedFile.getContent().length > 0) {
-                byte[] rb = uploadedFile.getContent();
-                long expiry = new Date().getTime() + CACHE_AGE_MILISECONDS_TWO_WEEKS;
-                response.setDateHeader(CKEDITOR_CONTENT_EXPIRE, expiry);
-                response.setHeader(CKEDITOR_HEADER_NAME, "max-age=" + CACHE_AGE_MILISECONDS_TWO_WEEKS);
-                response.setHeader(CKEDITOR_CONTENT_TYPE, uploadedFile.getContentType());
-                response.setHeader(CKEDITOR_CONTENT_LENGTH, String.valueOf(rb.length));
-                response.setHeader(CKEDITOR_CONTENT_DISPOSITION,
-                        CKEDITOR_CONTENT_DISPOSITION_VALUE + uploadedFile.getFileName() + "\"");
-                response.getOutputStream().write(rb, 0, rb.length);
-                response.getOutputStream().flush();
-                response.getOutputStream().close();
+            String schema = request.getParameter(AbstractJPAController.TENANT_PROP_NAME);
+
+            if (!StringUtils.isEmpty(schema)) {
+                imageId = Integer.valueOf(parameterId);
+                ArchivoNa uploadedFile = getJpaController(schema).find(ArchivoNa.class, imageId);
+                if (uploadedFile != null && uploadedFile.getContent().length > 0) {
+                    byte[] rb = uploadedFile.getContent();
+                    long expiry = new Date().getTime() + CACHE_AGE_MILISECONDS_TWO_WEEKS;
+                    response.setDateHeader(CKEDITOR_CONTENT_EXPIRE, expiry);
+                    response.setHeader(CKEDITOR_HEADER_NAME, "max-age=" + CACHE_AGE_MILISECONDS_TWO_WEEKS);
+                    response.setHeader(CKEDITOR_CONTENT_TYPE, uploadedFile.getContentType());
+                    response.setHeader(CKEDITOR_CONTENT_LENGTH, String.valueOf(rb.length));
+                    response.setHeader(CKEDITOR_CONTENT_DISPOSITION,
+                            CKEDITOR_CONTENT_DISPOSITION_VALUE + uploadedFile.getFileName() + "\"");
+                    response.getOutputStream().write(rb, 0, rb.length);
+                    response.getOutputStream().flush();
+                    response.getOutputStream().close();
+                }
             }
         } catch (Exception e) {
             response.getOutputStream().close();
             LOG.error(ERROR_FILE_DOWNLOAD + parameterId, e);
         }
     }
-    
-    public JPAServiceFacade getJpaController()
-    {
-        if (jpaController == null)
-        {
-            jpaController = new JPAServiceFacade(utx, emf);
-        }
-        return jpaController;
-    }
+
+   
+
+   
 }

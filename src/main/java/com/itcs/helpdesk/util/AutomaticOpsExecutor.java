@@ -49,7 +49,7 @@ import javax.persistence.NoResultException;
 import javax.transaction.UserTransaction;
 
 /**
- *
+ * @deprecated 
  * @author jorge
  */
 public class AutomaticOpsExecutor {
@@ -64,443 +64,443 @@ public class AutomaticOpsExecutor {
         this.utx = utx;
         this.emf = emf;
     }
-
-//    protected ManagerCasos getManagerCasos() {
-//        if (null == managerCasos) {
-//            managerCasos = new ManagerCasos();
-//            managerCasos.setJpaController(getJpaController());
-//        }
-//        return managerCasos;
+//
+////    protected ManagerCasos getManagerCasos() {
+////        if (null == managerCasos) {
+////            managerCasos = new ManagerCasos();
+////            managerCasos.setJpaController(getJpaController());
+////        }
+////        return managerCasos;
+////    }
+//
+////    public void agendarAgendarAlertas() throws SchedulerException {
+////        Calendar calendario = Calendar.getInstance();
+////        calendario.add(Calendar.SECOND, 10);
+////        HelpDeskScheluder.scheduleTask("agendarAgendarAlertas", HelpDeskScheluder.GRUPO_ALERTAS, new UnimailTask() {
+////            public void execute() {
+////                agendarAlertas();
+////            }
+////        }, calendario.getTime());
+////
+////    }
+////    private void agendarAlertas() {
+////        System.out.println("calcularAlertas");
+////        if (!alertasAgendadas) {
+////            alertasAgendadas = true;
+////
+////            List<Caso> casos = getJpaController().getCasoFindByEstadoAndAlerta(EnumEstadoCaso.ABIERTO.getEstado(),
+////                    EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta());
+//////            System.out.println("encontrados "+casos.size()+" casos "+EnumTipoAlerta.TIPO_ALERTA_PENDIENTE+" que se debe agendar cambio de alerta");
+////
+////            for (Caso caso : casos) {
+////                try {
+////                    getManagerCasos().agendarAlertas(caso);
+////                } catch (SchedulerException ex) {
+////                    Log.createLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
+////                }
+////            }
+////
+////            casos = getJpaController().getCasoFindByEstadoAndAlerta(EnumEstadoCaso.ABIERTO.getEstado(),
+////                    EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta());
+//////            System.out.println("encontrados "+casos.size()+" casos "+EnumTipoAlerta.TIPO_ALERTA_POR_VENCER+" que se debe agendar cambio de alerta");
+////            for (Caso caso : casos) {
+////                try {
+////                    getManagerCasos().agendarAlertas(caso);
+////                } catch (SchedulerException ex) {
+////                    Log.createLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
+////                }
+////            }
+////        }
+////    }
+//    public void verificaDatosBase() {
+//        JPAServiceFacade controller = getJpaController();
+//        System.out.println("verificaDatosBase()...");
+//
+//        verificarTipoCaso(controller);
+//        verificarUsuarios(controller);
+//        verificarFunciones(controller);
+//        verificarRoles(controller);
+//
+//        verificarEstadosCaso(controller);
+//        verificarSubEstadosCaso(controller);
+//
+//        verificarTipoCanal(controller);
+//        verificarTiposAlerta(controller);
+//        verificarTiposNota(controller);
+//        verificarTipoComparacion(controller);
+//
+//        verificarPrioridades(controller);
+//
+//        verificarFieldTypes(controller);
+//
+//        verificarNombreAcciones(controller);
+//        verificarSettingsBase(controller);
+//
+//        verificarCanales(controller);
+//        fixClientesCasos(controller);
+//        fixNombreCliente(controller);
+//        verificarResponsables(controller);
 //    }
-
-//    public void agendarAgendarAlertas() throws SchedulerException {
-//        Calendar calendario = Calendar.getInstance();
-//        calendario.add(Calendar.SECOND, 10);
-//        HelpDeskScheluder.scheduleTask("agendarAgendarAlertas", HelpDeskScheluder.GRUPO_ALERTAS, new UnimailTask() {
-//            public void execute() {
-//                agendarAlertas();
+//
+//    private void fixClientesCasos(JPAServiceFacade jpaController) {
+//        EasyCriteriaQuery<Caso> ecq = new EasyCriteriaQuery<>(getJpaController(), Caso.class);
+//        ecq.addEqualPredicate("idCliente", null);
+//        ecq.addDistinctPredicate("emailCliente", null);
+//        List<Caso> casosToFix = ecq.getAllResultList();
+//        
+//        
+//
+//        for (Caso caso : casosToFix) {
+//            caso.setIdCliente(caso.getEmailCliente().getCliente());
+//            try {
+//                jpaController.merge(caso);
+//            } catch (Exception ex) {
+//                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
 //            }
-//        }, calendario.getTime());
-//
+//        }
 //    }
-//    private void agendarAlertas() {
-//        System.out.println("calcularAlertas");
-//        if (!alertasAgendadas) {
-//            alertasAgendadas = true;
 //
-//            List<Caso> casos = getJpaController().getCasoFindByEstadoAndAlerta(EnumEstadoCaso.ABIERTO.getEstado(),
-//                    EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta());
-////            System.out.println("encontrados "+casos.size()+" casos "+EnumTipoAlerta.TIPO_ALERTA_PENDIENTE+" que se debe agendar cambio de alerta");
+//    private void fixNombreCliente(JPAServiceFacade jpaController) {
+//        EasyCriteriaQuery<Cliente> ecq = new EasyCriteriaQuery<>(getJpaController(), Cliente.class);
+//        ecq.addLikePredicate(Cliente_.nombres.getName(), "%=?ISO-8859-1%");
+//        List<Cliente> clientsToFix = ecq.getAllResultList();
 //
-//            for (Caso caso : casos) {
+//        for (Cliente cliente : clientsToFix) {
+//            try {
+//                String from = MimeUtility.decodeText(cliente.getNombres().replace("\"", ""));
+//                String[] nombres = from.split(" ");
+//                if (nombres.length > 0) {
+//                    cliente.setNombres(nombres[0]);
+//                }
+//                if (nombres.length > 2) {
+//                    cliente.setApellidos(nombres[1] + " " + nombres[2]);
+//                } else if (nombres.length > 1) {
+//                    cliente.setApellidos(nombres[1]);
+//                }
 //                try {
-//                    getManagerCasos().agendarAlertas(caso);
-//                } catch (SchedulerException ex) {
-//                    Log.createLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
+//                    jpaController.merge(cliente);
+//                } catch (Exception ex) {
+//                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+//                }
+//            } catch (UnsupportedEncodingException ex) {
+//                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+//            }
+//        }
+//    }
+//
+////    private void printOutContraintViolation(ConstraintViolationException ex, String classname) {
+////        Set<ConstraintViolation<?>> set = (ex).getConstraintViolations();
+////        for (ConstraintViolation<?> constraintViolation : set) {
+////            Log.createLogger(classname).logInfo("leafBean class: " + constraintViolation.getLeafBean().getClass());
+////            Log.createLogger(classname).logInfo("anotacion: " + constraintViolation.getConstraintDescriptor().getAnnotation().toString() + " value:" + constraintViolation.getInvalidValue());
+////        }
+////    }
+////
+////    public void exceptionThreatment(Exception ex, String classname) {
+////        if (ex instanceof ConstraintViolationException) {
+////            printOutContraintViolation((ConstraintViolationException) ex, classname);
+////        }
+////        if (ex.getCause() instanceof ConstraintViolationException) {
+////            printOutContraintViolation((ConstraintViolationException) (ex.getCause()), classname);
+////        }
+////        Log.createLogger(classname).log(Level.SEVERE, "exceptionThreatment", ex);
+////    }
+//    private void verificarSettingsBase(JPAServiceFacade jpaController) {
+//        for (EnumSettingsBase enumSettingsBase : EnumSettingsBase.values()) {
+//            try {
+//                if (null == jpaController.find(AppSetting.class, enumSettingsBase.getAppSetting().getSettingKey())) {
+//                    throw new NoResultException();
+//                }
+//            } catch (NoResultException ex) {
+//                Log.createLogger(this.getClass().getName()).logSevere("No existen settings " + enumSettingsBase.getAppSetting().getSettingKey() + ", se creara ahora");
+//                try {
+//                    jpaController.persist(enumSettingsBase.getAppSetting());
+//                } catch (PreexistingEntityException pre) {
+//                    //ignore if already exists
+//                } catch (Exception e) {
+//                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+//                }
+//            }
+//        }
+//    }
+//
+//    private void verificarTipoCanal(JPAServiceFacade jpaController) {
+//        for (EnumTipoCanal enumTipoCanal : EnumTipoCanal.values()) {
+//            try {
+//                TipoCanal tipoCanal = jpaController.find(TipoCanal.class, enumTipoCanal.getTipoCanal().getIdTipo());
+//                if (null == tipoCanal) {
+//                    throw new NoResultException();
+//                }
+//            } catch (Exception ex) {
+//                Log.createLogger(this.getClass().getName()).logSevere("No existe tipo canal " + enumTipoCanal.getTipoCanal().getIdTipo() + ", se creara ahora");
+//                try {
+//                    jpaController.persist(enumTipoCanal.getTipoCanal());
+//                } catch (PreexistingEntityException pre) {
+//                    //ignore if already exists
+//                } catch (Exception e) {
+//                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+//                }
+//            }
+//        }
+//    }
+//
+//    private void verificarUsuarios(JPAServiceFacade jpaController) {
+//        try {
+//            Usuario usuarioSistema = jpaController.find(Usuario.class, EnumUsuariosBase.SISTEMA.getUsuario().getIdUsuario());
+//            //getUsuarioFindByIdUsuario(EnumUsuariosBase.SISTEMA.getUsuario().getIdUsuario());
+//            if (null == usuarioSistema) {
+//                throw new NoResultException("No existe usuario SISTEMA");
+//            }
+//        } catch (NoResultException ex) {
+//            try {
+//                Log.createLogger(this.getClass().getName()).logSevere("No existe usuario SISTEMA, se creara ahora");
+//                jpaController.persist(EnumUsuariosBase.SISTEMA.getUsuario());
+//            } catch (Exception e) {
+//                Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+//            }
+//        }
+//    }
+//
+//    private void verificarTiposAlerta(JPAServiceFacade jpaController) {
+//        for (EnumTipoAlerta tipoAlerta : EnumTipoAlerta.values()) {
+//            try {
+//                if (null == jpaController.find(TipoAlerta.class, tipoAlerta.getTipoAlerta().getIdalerta())) {
+//                    throw new NoResultException();
+//                }
+//
+//            } catch (NoResultException ex) {
+//                Log.createLogger(this.getClass().getName()).logSevere("No existe tipo alerta " + tipoAlerta.getTipoAlerta().getNombre() + ", se creara ahora");
+//                try {
+//                    jpaController.persist(tipoAlerta.getTipoAlerta());
+//                } catch (Exception e) {
+//                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+//                }
+//            }
+//        }
+//    }
+//
+//    private void verificarFunciones(JPAServiceFacade jpaController) {
+//        for (EnumFunciones funcion : EnumFunciones.values()) {
+//
+//            if (null == jpaController.find(Funcion.class, funcion.getFuncion().getIdFuncion())) {
+//                try {
+//                    Log.createLogger(this.getClass().getName()).logSevere("No existe funcion " + funcion.getFuncion().getNombre() + ", se creara ahora");
+//                    jpaController.persist(funcion.getFuncion());
+//                } catch (PreexistingEntityException ex) {
+//                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+//                } catch (RollbackFailureException ex) {
+//                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+//                } catch (Exception ex) {
+//                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
 //                }
 //            }
 //
-//            casos = getJpaController().getCasoFindByEstadoAndAlerta(EnumEstadoCaso.ABIERTO.getEstado(),
-//                    EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta());
-////            System.out.println("encontrados "+casos.size()+" casos "+EnumTipoAlerta.TIPO_ALERTA_POR_VENCER+" que se debe agendar cambio de alerta");
-//            for (Caso caso : casos) {
+//        }
+//    }
+//
+//    private void verificarRoles(JPAServiceFacade jpaController) {
+//        for (EnumRoles enumRol : EnumRoles.values()) {
+//            try {
+//                if (null == jpaController.find(Rol.class, enumRol.getRol().getIdRol())) {
+//                    throw new NoResultException();
+//                }
+//            } catch (NoResultException ex) {
+//                Log.createLogger(this.getClass().getName()).logSevere("No existe rol " + enumRol.getRol().getNombre() + ", se creara ahora");
 //                try {
-//                    getManagerCasos().agendarAlertas(caso);
-//                } catch (SchedulerException ex) {
-//                    Log.createLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
+//                    jpaController.persist(enumRol.getRol());
+//                } catch (Exception e) {
+//                    e.getCause().printStackTrace();
+//                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
 //                }
 //            }
 //        }
 //    }
-    public void verificaDatosBase() {
-        JPAServiceFacade controller = getJpaController();
-        System.out.println("verificaDatosBase()...");
-
-        verificarTipoCaso(controller);
-        verificarUsuarios(controller);
-        verificarFunciones(controller);
-        verificarRoles(controller);
-
-        verificarEstadosCaso(controller);
-        verificarSubEstadosCaso(controller);
-
-        verificarTipoCanal(controller);
-        verificarTiposAlerta(controller);
-        verificarTiposNota(controller);
-        verificarTipoComparacion(controller);
-
-        verificarPrioridades(controller);
-
-        verificarFieldTypes(controller);
-
-        verificarNombreAcciones(controller);
-        verificarSettingsBase(controller);
-
-        verificarCanales(controller);
-        fixClientesCasos(controller);
-        fixNombreCliente(controller);
-        verificarResponsables(controller);
-    }
-
-    private void fixClientesCasos(JPAServiceFacade jpaController) {
-        EasyCriteriaQuery<Caso> ecq = new EasyCriteriaQuery<>(getJpaController(), Caso.class);
-        ecq.addEqualPredicate("idCliente", null);
-        ecq.addDistinctPredicate("emailCliente", null);
-        List<Caso> casosToFix = ecq.getAllResultList();
-        
-        
-
-        for (Caso caso : casosToFix) {
-            caso.setIdCliente(caso.getEmailCliente().getCliente());
-            try {
-                jpaController.merge(caso);
-            } catch (Exception ex) {
-                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
-
-    private void fixNombreCliente(JPAServiceFacade jpaController) {
-        EasyCriteriaQuery<Cliente> ecq = new EasyCriteriaQuery<>(getJpaController(), Cliente.class);
-        ecq.addLikePredicate(Cliente_.nombres.getName(), "%=?ISO-8859-1%");
-        List<Cliente> clientsToFix = ecq.getAllResultList();
-
-        for (Cliente cliente : clientsToFix) {
-            try {
-                String from = MimeUtility.decodeText(cliente.getNombres().replace("\"", ""));
-                String[] nombres = from.split(" ");
-                if (nombres.length > 0) {
-                    cliente.setNombres(nombres[0]);
-                }
-                if (nombres.length > 2) {
-                    cliente.setApellidos(nombres[1] + " " + nombres[2]);
-                } else if (nombres.length > 1) {
-                    cliente.setApellidos(nombres[1]);
-                }
-                try {
-                    jpaController.merge(cliente);
-                } catch (Exception ex) {
-                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
-                }
-            } catch (UnsupportedEncodingException ex) {
-                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
-
-//    private void printOutContraintViolation(ConstraintViolationException ex, String classname) {
-//        Set<ConstraintViolation<?>> set = (ex).getConstraintViolations();
-//        for (ConstraintViolation<?> constraintViolation : set) {
-//            Log.createLogger(classname).logInfo("leafBean class: " + constraintViolation.getLeafBean().getClass());
-//            Log.createLogger(classname).logInfo("anotacion: " + constraintViolation.getConstraintDescriptor().getAnnotation().toString() + " value:" + constraintViolation.getInvalidValue());
+//
+//    private void verificarResponsables(JPAServiceFacade jpaController) {
+//        for (EnumResponsables enumResponsables : EnumResponsables.values()) {
+//            try {
+//                if (null == jpaController.find(Responsable.class, enumResponsables.getResponsable().getIdResponsable())) {
+//                    throw new NoResultException();
+//                }
+//            } catch (NoResultException ex) {
+//                Log.createLogger(this.getClass().getName()).logSevere("No existe el responsable " + enumResponsables.getResponsable().getNombreResponsable() + ", se creara ahora");
+//                try {
+//                    jpaController.persist(enumResponsables.getResponsable());
+//                } catch (Exception e) {
+//                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "verificarResponsables", e);
+//                }
+//            }
 //        }
 //    }
 //
-//    public void exceptionThreatment(Exception ex, String classname) {
-//        if (ex instanceof ConstraintViolationException) {
-//            printOutContraintViolation((ConstraintViolationException) ex, classname);
+//    private void verificarEstadosCaso(JPAServiceFacade jpaController) {
+//        for (EnumEstadoCaso enumEstado : EnumEstadoCaso.values()) {
+//            try {
+//                if (null == jpaController.find(EstadoCaso.class, enumEstado.getEstado().getIdEstado())) {
+//                    throw new NoResultException();
+//                }
+//            } catch (NoResultException ex) {
+//                Log.createLogger(this.getClass().getName()).logSevere("No existe estado " + enumEstado.getEstado().getNombre() + ", se creara ahora");
+//                try {
+//                    jpaController.persist(enumEstado.getEstado());
+//                } catch (Exception e) {
+//                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+//                }
+//            }
 //        }
-//        if (ex.getCause() instanceof ConstraintViolationException) {
-//            printOutContraintViolation((ConstraintViolationException) (ex.getCause()), classname);
-//        }
-//        Log.createLogger(classname).log(Level.SEVERE, "exceptionThreatment", ex);
 //    }
-    private void verificarSettingsBase(JPAServiceFacade jpaController) {
-        for (EnumSettingsBase enumSettingsBase : EnumSettingsBase.values()) {
-            try {
-                if (null == jpaController.find(AppSetting.class, enumSettingsBase.getAppSetting().getSettingKey())) {
-                    throw new NoResultException();
-                }
-            } catch (NoResultException ex) {
-                Log.createLogger(this.getClass().getName()).logSevere("No existen settings " + enumSettingsBase.getAppSetting().getSettingKey() + ", se creara ahora");
-                try {
-                    jpaController.persist(enumSettingsBase.getAppSetting());
-                } catch (PreexistingEntityException pre) {
-                    //ignore if already exists
-                } catch (Exception e) {
-                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
-                }
-            }
-        }
-    }
-
-    private void verificarTipoCanal(JPAServiceFacade jpaController) {
-        for (EnumTipoCanal enumTipoCanal : EnumTipoCanal.values()) {
-            try {
-                TipoCanal tipoCanal = jpaController.find(TipoCanal.class, enumTipoCanal.getTipoCanal().getIdTipo());
-                if (null == tipoCanal) {
-                    throw new NoResultException();
-                }
-            } catch (Exception ex) {
-                Log.createLogger(this.getClass().getName()).logSevere("No existe tipo canal " + enumTipoCanal.getTipoCanal().getIdTipo() + ", se creara ahora");
-                try {
-                    jpaController.persist(enumTipoCanal.getTipoCanal());
-                } catch (PreexistingEntityException pre) {
-                    //ignore if already exists
-                } catch (Exception e) {
-                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
-                }
-            }
-        }
-    }
-
-    private void verificarUsuarios(JPAServiceFacade jpaController) {
-        try {
-            Usuario usuarioSistema = jpaController.find(Usuario.class, EnumUsuariosBase.SISTEMA.getUsuario().getIdUsuario());
-            //getUsuarioFindByIdUsuario(EnumUsuariosBase.SISTEMA.getUsuario().getIdUsuario());
-            if (null == usuarioSistema) {
-                throw new NoResultException("No existe usuario SISTEMA");
-            }
-        } catch (NoResultException ex) {
-            try {
-                Log.createLogger(this.getClass().getName()).logSevere("No existe usuario SISTEMA, se creara ahora");
-                jpaController.persist(EnumUsuariosBase.SISTEMA.getUsuario());
-            } catch (Exception e) {
-                Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
-            }
-        }
-    }
-
-    private void verificarTiposAlerta(JPAServiceFacade jpaController) {
-        for (EnumTipoAlerta tipoAlerta : EnumTipoAlerta.values()) {
-            try {
-                if (null == jpaController.find(TipoAlerta.class, tipoAlerta.getTipoAlerta().getIdalerta())) {
-                    throw new NoResultException();
-                }
-
-            } catch (NoResultException ex) {
-                Log.createLogger(this.getClass().getName()).logSevere("No existe tipo alerta " + tipoAlerta.getTipoAlerta().getNombre() + ", se creara ahora");
-                try {
-                    jpaController.persist(tipoAlerta.getTipoAlerta());
-                } catch (Exception e) {
-                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
-                }
-            }
-        }
-    }
-
-    private void verificarFunciones(JPAServiceFacade jpaController) {
-        for (EnumFunciones funcion : EnumFunciones.values()) {
-
-            if (null == jpaController.find(Funcion.class, funcion.getFuncion().getIdFuncion())) {
-                try {
-                    Log.createLogger(this.getClass().getName()).logSevere("No existe funcion " + funcion.getFuncion().getNombre() + ", se creara ahora");
-                    jpaController.persist(funcion.getFuncion());
-                } catch (PreexistingEntityException ex) {
-                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
-                } catch (RollbackFailureException ex) {
-                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
-                } catch (Exception ex) {
-                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-
-        }
-    }
-
-    private void verificarRoles(JPAServiceFacade jpaController) {
-        for (EnumRoles enumRol : EnumRoles.values()) {
-            try {
-                if (null == jpaController.find(Rol.class, enumRol.getRol().getIdRol())) {
-                    throw new NoResultException();
-                }
-            } catch (NoResultException ex) {
-                Log.createLogger(this.getClass().getName()).logSevere("No existe rol " + enumRol.getRol().getNombre() + ", se creara ahora");
-                try {
-                    jpaController.persist(enumRol.getRol());
-                } catch (Exception e) {
-                    e.getCause().printStackTrace();
-                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
-                }
-            }
-        }
-    }
-
-    private void verificarResponsables(JPAServiceFacade jpaController) {
-        for (EnumResponsables enumResponsables : EnumResponsables.values()) {
-            try {
-                if (null == jpaController.find(Responsable.class, enumResponsables.getResponsable().getIdResponsable())) {
-                    throw new NoResultException();
-                }
-            } catch (NoResultException ex) {
-                Log.createLogger(this.getClass().getName()).logSevere("No existe el responsable " + enumResponsables.getResponsable().getNombreResponsable() + ", se creara ahora");
-                try {
-                    jpaController.persist(enumResponsables.getResponsable());
-                } catch (Exception e) {
-                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "verificarResponsables", e);
-                }
-            }
-        }
-    }
-
-    private void verificarEstadosCaso(JPAServiceFacade jpaController) {
-        for (EnumEstadoCaso enumEstado : EnumEstadoCaso.values()) {
-            try {
-                if (null == jpaController.find(EstadoCaso.class, enumEstado.getEstado().getIdEstado())) {
-                    throw new NoResultException();
-                }
-            } catch (NoResultException ex) {
-                Log.createLogger(this.getClass().getName()).logSevere("No existe estado " + enumEstado.getEstado().getNombre() + ", se creara ahora");
-                try {
-                    jpaController.persist(enumEstado.getEstado());
-                } catch (Exception e) {
-                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
-                }
-            }
-        }
-    }
-
-    private void verificarSubEstadosCaso(JPAServiceFacade jpaController) {
-        for (EnumSubEstadoCaso enumSubEstado : EnumSubEstadoCaso.values()) {
-            try {
-                if (null == jpaController.find(SubEstadoCaso.class, enumSubEstado.getSubEstado().getIdSubEstado())) {
-                    throw new NoResultException();
-                }
-            } catch (NoResultException ex) {
-                Log.createLogger(this.getClass().getName()).logSevere("No existe sub estado !!!, se creara ahora");
-                try {
-                    jpaController.persist(enumSubEstado.getSubEstado());
-                } catch (Exception e) {
-                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
-                }
-            }
-        }
-    }
-
-    private void verificarTipoCaso(JPAServiceFacade jpaController) {
-        for (EnumTipoCaso enumTipoCaso : EnumTipoCaso.values()) {
-            try {
-                if (null == jpaController.find(TipoCaso.class, enumTipoCaso.getTipoCaso().getIdTipoCaso())) {
-                    throw new NoResultException();
-                }
-            } catch (NoResultException ex) {
-                Log.createLogger(this.getClass().getName()).logSevere("No existe el tipo caso !!!, se creara ahora");
-                try {
-                    jpaController.persist(enumTipoCaso.getTipoCaso());
-                } catch (Exception e) {
-                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "verificarTipoCaso", e);
-                }
-            }
-        }
-    }
-
-    private void verificarCanales(JPAServiceFacade jpaController) {
-        for (EnumCanal enumCanal : EnumCanal.values()) {
-            try {
-                if (null == jpaController.find(Canal.class, enumCanal.getCanal().getIdCanal())) {
-                    throw new NoResultException();
-                }
-            } catch (NoResultException ex) {
-                Log.createLogger(this.getClass().getName()).logSevere("No existe canal " + enumCanal.getCanal().getNombre() + ", se creara ahora");
-                try {
-                    jpaController.persist(enumCanal.getCanal());
-                } catch (Exception e) {
-                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
-                }
-            }
-        }
-    }
-
-    private void verificarPrioridades(JPAServiceFacade jpaController) {
-        for (EnumPrioridad enumPrioridad : EnumPrioridad.values()) {
-            try {
-                Prioridad prioridad = jpaController.find(Prioridad.class, enumPrioridad.getPrioridad().getIdPrioridad());
-                if (prioridad == null) {
-                    throw new NoResultException();
-                }
-            } catch (NoResultException ex) {
-                Log.createLogger(this.getClass().getName()).logSevere("No existe prioridad " + enumPrioridad.getPrioridad().getNombre() + ", se creara ahora");
-                try {
-                    jpaController.persist(enumPrioridad.getPrioridad());
-                } catch (Exception e) {
-                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
-                }
-            }
-        }
-    }
-
-    private void verificarTiposNota(JPAServiceFacade jpaController) {
-        for (EnumTipoNota enumTipoNota : EnumTipoNota.values()) {
-            try {
-                if (null == jpaController.find(TipoNota.class, enumTipoNota.getTipoNota().getIdTipoNota())) {
-                    throw new NoResultException();
-                } else {
-                    jpaController.merge(enumTipoNota.getTipoNota());
-                }
-            } catch (NoResultException ex) {
-                Log.createLogger(this.getClass().getName()).logSevere("No existe tipo nota " + enumTipoNota.getTipoNota().getNombre() + ", se creara ahora");
-                try {
-                    jpaController.persist(enumTipoNota.getTipoNota());
-                } catch (Exception e) {
-                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
-                }
-            } catch (Exception ex) {
-                Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
-
-    private void verificarNombreAcciones(JPAServiceFacade jpaController) {
-        for (EnumTipoAccion enumNombreAccion : EnumTipoAccion.values()) {
-            try {
-                if (null == jpaController.find(TipoAccion.class, enumNombreAccion.getNombreAccion().getIdNombreAccion())) {
-                    throw new NoResultException();
-                }
-            } catch (NoResultException ex) {
-                Log.createLogger(this.getClass().getName()).logSevere("No existe nombre de accion " + enumNombreAccion.getNombreAccion().getNombre() + ", se creara ahora");
-                try {
-                    jpaController.persist(enumNombreAccion.getNombreAccion());
-                } catch (Exception e) {
-                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
-                }
-            }
-        }
-    }
-
-    private void verificarFieldTypes(JPAServiceFacade jpaController) {
-        for (EnumFieldType fieldType : EnumFieldType.values()) {
-            try {
-                if (null == jpaController.find(FieldType.class, fieldType.getFieldType().getFieldTypeId())) {
-                    throw new NoResultException();
-                }
-            } catch (NoResultException ex) {
-                Log.createLogger(this.getClass().getName()).logSevere("No existe nombre de fieldType " + fieldType.getFieldType().getFieldTypeId() + ", se creara ahora!!");
-                try {
-                    jpaController.persist(fieldType.getFieldType());
-                } catch (Exception e) {
-                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
-                }
-            }
-        }
-    }
-
-    private void verificarTipoComparacion(JPAServiceFacade jpaController) {
-        for (EnumTipoComparacion enumTipoComparacion : EnumTipoComparacion.values()) {
-            try {
-                if (null == jpaController.find(TipoComparacion.class, enumTipoComparacion.getTipoComparacion().getIdComparador())) {
-                    throw new NoResultException();
-                }
-            } catch (NoResultException ex) {
-                Log.createLogger(this.getClass().getName()).logSevere("No existe nombre de tipo comparacion " + enumTipoComparacion.getTipoComparacion().getIdComparador() + ", se creara ahora");
-                try {
-                    jpaController.persist(enumTipoComparacion.getTipoComparacion());
-                } catch (Exception e) {
-                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
-                }
-            }
-        }
-    }
-
-    /**
-     * @deprecated not works
-     * @return 
-     */
-    protected JPAServiceFacade getJpaController() {
-        if (jpaController == null) {
-            jpaController = new JPAServiceFacade(utx, emf);
-            RulesEngine rulesEngine = new RulesEngine(jpaController);
-            jpaController.setCasoChangeListener(rulesEngine);
-        }
-        return jpaController;
-    }
+//
+//    private void verificarSubEstadosCaso(JPAServiceFacade jpaController) {
+//        for (EnumSubEstadoCaso enumSubEstado : EnumSubEstadoCaso.values()) {
+//            try {
+//                if (null == jpaController.find(SubEstadoCaso.class, enumSubEstado.getSubEstado().getIdSubEstado())) {
+//                    throw new NoResultException();
+//                }
+//            } catch (NoResultException ex) {
+//                Log.createLogger(this.getClass().getName()).logSevere("No existe sub estado !!!, se creara ahora");
+//                try {
+//                    jpaController.persist(enumSubEstado.getSubEstado());
+//                } catch (Exception e) {
+//                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+//                }
+//            }
+//        }
+//    }
+//
+//    private void verificarTipoCaso(JPAServiceFacade jpaController) {
+//        for (EnumTipoCaso enumTipoCaso : EnumTipoCaso.values()) {
+//            try {
+//                if (null == jpaController.find(TipoCaso.class, enumTipoCaso.getTipoCaso().getIdTipoCaso())) {
+//                    throw new NoResultException();
+//                }
+//            } catch (NoResultException ex) {
+//                Log.createLogger(this.getClass().getName()).logSevere("No existe el tipo caso !!!, se creara ahora");
+//                try {
+//                    jpaController.persist(enumTipoCaso.getTipoCaso());
+//                } catch (Exception e) {
+//                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "verificarTipoCaso", e);
+//                }
+//            }
+//        }
+//    }
+//
+//    private void verificarCanales(JPAServiceFacade jpaController) {
+//        for (EnumCanal enumCanal : EnumCanal.values()) {
+//            try {
+//                if (null == jpaController.find(Canal.class, enumCanal.getCanal().getIdCanal())) {
+//                    throw new NoResultException();
+//                }
+//            } catch (NoResultException ex) {
+//                Log.createLogger(this.getClass().getName()).logSevere("No existe canal " + enumCanal.getCanal().getNombre() + ", se creara ahora");
+//                try {
+//                    jpaController.persist(enumCanal.getCanal());
+//                } catch (Exception e) {
+//                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+//                }
+//            }
+//        }
+//    }
+//
+//    private void verificarPrioridades(JPAServiceFacade jpaController) {
+//        for (EnumPrioridad enumPrioridad : EnumPrioridad.values()) {
+//            try {
+//                Prioridad prioridad = jpaController.find(Prioridad.class, enumPrioridad.getPrioridad().getIdPrioridad());
+//                if (prioridad == null) {
+//                    throw new NoResultException();
+//                }
+//            } catch (NoResultException ex) {
+//                Log.createLogger(this.getClass().getName()).logSevere("No existe prioridad " + enumPrioridad.getPrioridad().getNombre() + ", se creara ahora");
+//                try {
+//                    jpaController.persist(enumPrioridad.getPrioridad());
+//                } catch (Exception e) {
+//                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+//                }
+//            }
+//        }
+//    }
+//
+//    private void verificarTiposNota(JPAServiceFacade jpaController) {
+//        for (EnumTipoNota enumTipoNota : EnumTipoNota.values()) {
+//            try {
+//                if (null == jpaController.find(TipoNota.class, enumTipoNota.getTipoNota().getIdTipoNota())) {
+//                    throw new NoResultException();
+//                } else {
+//                    jpaController.merge(enumTipoNota.getTipoNota());
+//                }
+//            } catch (NoResultException ex) {
+//                Log.createLogger(this.getClass().getName()).logSevere("No existe tipo nota " + enumTipoNota.getTipoNota().getNombre() + ", se creara ahora");
+//                try {
+//                    jpaController.persist(enumTipoNota.getTipoNota());
+//                } catch (Exception e) {
+//                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+//                }
+//            } catch (Exception ex) {
+//                Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+//            }
+//        }
+//    }
+//
+//    private void verificarNombreAcciones(JPAServiceFacade jpaController) {
+//        for (EnumTipoAccion enumNombreAccion : EnumTipoAccion.values()) {
+//            try {
+//                if (null == jpaController.find(TipoAccion.class, enumNombreAccion.getNombreAccion().getIdNombreAccion())) {
+//                    throw new NoResultException();
+//                }
+//            } catch (NoResultException ex) {
+//                Log.createLogger(this.getClass().getName()).logSevere("No existe nombre de accion " + enumNombreAccion.getNombreAccion().getNombre() + ", se creara ahora");
+//                try {
+//                    jpaController.persist(enumNombreAccion.getNombreAccion());
+//                } catch (Exception e) {
+//                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+//                }
+//            }
+//        }
+//    }
+//
+//    private void verificarFieldTypes(JPAServiceFacade jpaController) {
+//        for (EnumFieldType fieldType : EnumFieldType.values()) {
+//            try {
+//                if (null == jpaController.find(FieldType.class, fieldType.getFieldType().getFieldTypeId())) {
+//                    throw new NoResultException();
+//                }
+//            } catch (NoResultException ex) {
+//                Log.createLogger(this.getClass().getName()).logSevere("No existe nombre de fieldType " + fieldType.getFieldType().getFieldTypeId() + ", se creara ahora!!");
+//                try {
+//                    jpaController.persist(fieldType.getFieldType());
+//                } catch (Exception e) {
+//                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+//                }
+//            }
+//        }
+//    }
+//
+//    private void verificarTipoComparacion(JPAServiceFacade jpaController) {
+//        for (EnumTipoComparacion enumTipoComparacion : EnumTipoComparacion.values()) {
+//            try {
+//                if (null == jpaController.find(TipoComparacion.class, enumTipoComparacion.getTipoComparacion().getIdComparador())) {
+//                    throw new NoResultException();
+//                }
+//            } catch (NoResultException ex) {
+//                Log.createLogger(this.getClass().getName()).logSevere("No existe nombre de tipo comparacion " + enumTipoComparacion.getTipoComparacion().getIdComparador() + ", se creara ahora");
+//                try {
+//                    jpaController.persist(enumTipoComparacion.getTipoComparacion());
+//                } catch (Exception e) {
+//                    Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+//                }
+//            }
+//        }
+//    }
+//
+//    /**
+//     * @deprecated not works
+//     * @return 
+//     */
+//    protected JPAServiceFacade getJpaController() {
+//        if (jpaController == null) {
+//            jpaController = new JPAServiceFacade(utx, emf);
+//            RulesEngine rulesEngine = new RulesEngine(jpaController);
+//            jpaController.setCasoChangeListener(rulesEngine);
+//        }
+//        return jpaController;
+//    }
 }

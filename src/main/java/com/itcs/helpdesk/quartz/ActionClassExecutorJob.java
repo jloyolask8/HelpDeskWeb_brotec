@@ -57,7 +57,7 @@ public class ActionClassExecutorJob extends AbstractGoDeskJob implements Job {
                     EntityManagerFactory emf = createEntityManagerFactory();
                     UserTransaction utx = UserTransactionHelper.lookupUserTransaction();
                     JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf);
-                    RulesEngine rulesEngine = new RulesEngine(emf, jpaController);
+                    RulesEngine rulesEngine = new RulesEngine(jpaController);
                     jpaController.setCasoChangeListener(rulesEngine);
 
                     EntityManager em = emf.createEntityManager();

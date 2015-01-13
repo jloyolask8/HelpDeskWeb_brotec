@@ -73,7 +73,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     protected static final SimpleDateFormat yearDateFormatWTime = new SimpleDateFormat("dd/MM/yy HH:mm", LOCALE_ES_CL);
 
     private final Class<E> entityClass;
-    private final String schemaName;
+//    private final String schemaName;
 
     protected transient JPAServiceFacade jpaController = null;
     protected transient ManagerCasos managerCasos;
@@ -112,8 +112,8 @@ public abstract class AbstractManagedBean<E> implements Serializable {
 
     public AbstractManagedBean(Class<E> entityClass) {
         this.entityClass = entityClass;
-        this.schemaName = getUserSessionBean().getCurrent().getTenantId();
-        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "{0} for {1} created in {2}", new Object[]{this.getClass().getSimpleName(), entityClass.getSimpleName(), schemaName});
+//        this.schemaName = getUserSessionBean().getCurrent().getTenantId();
+        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "{0} for {1} created", new Object[]{this.getClass().getSimpleName(), entityClass.getSimpleName()});
     }
 
     public void showMessageInDialog(FacesMessage.Severity severity, String msg, String detail) {
@@ -304,7 +304,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
 
     public JPAServiceFacade getJpaController() {
         if (jpaController == null) {
-            jpaController = new JPAServiceFacade(utx, emf, schemaName);
+            jpaController = new JPAServiceFacade(utx, emf, getUserSessionBean().getCurrent().getTenantId());
         }
         return jpaController;
     }

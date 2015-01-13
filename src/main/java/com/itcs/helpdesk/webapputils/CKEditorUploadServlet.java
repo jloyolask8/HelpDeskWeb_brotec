@@ -1,6 +1,7 @@
 package com.itcs.helpdesk.webapputils;
 
 import com.itcs.helpdesk.persistence.entities.ArchivoNa;
+import com.itcs.helpdesk.persistence.jpa.AbstractJPAController;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,6 +20,7 @@ import org.apache.commons.fileupload.FileItem;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,14 +34,9 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings("unchecked")
 @MultipartConfig(location = "/tmp", maxFileSize = 20848820, maxRequestSize = 418018841, fileSizeThreshold = 1048576)
-public class CKEditorUploadServlet extends HttpServlet {
+public class CKEditorUploadServlet extends AbstractServlet {
 
     private static final long serialVersionUID = -7570633768412575697L;
-
-    @Resource
-    private UserTransaction utx = null;
-    @PersistenceUnit(unitName = "helpdeskPU")
-    private EntityManagerFactory emf = null;
 
     private static final Logger LOG = LoggerFactory.getLogger(CKEditorUploadServlet.class);
     private static final String ERROR_FILE_UPLOAD = "An error occurred to the file upload process.";
@@ -52,15 +49,9 @@ public class CKEditorUploadServlet extends HttpServlet {
     private static final Pattern PATTERN = Pattern.compile("[\\w\\d]*");
 
     private String errorMessage = "";
-    private JPAServiceFacade jpaController;
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doPost(request, response);
-    }
-
-    @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         ArchivoNa uploadedFile = new ArchivoNa();
         PrintWriter out = response.getWriter();
@@ -71,19 +62,23 @@ public class CKEditorUploadServlet extends HttpServlet {
 //        FileItemFactory factory = new DiskFileItemFactory();
 //        ServletFileUpload upload = new ServletFileUpload();
         try {
-            if (ServletFileUpload.isMultipartContent(request)) {
+            String schema = request.getParameter(AbstractJPAController.TENANT_PROP_NAME);
+
+            if (!StringUtils.isEmpty(schema)) {
+                if (ServletFileUpload.isMultipartContent(request)) {
 //                Map params = ((org.primefaces.webapp.MultipartRequest)request).getParameterMap();
-                FileItem file = ((org.primefaces.webapp.MultipartRequest) request).getFileItem("upload");
+                    FileItem file = ((org.primefaces.webapp.MultipartRequest) request).getFileItem("upload");
 
 //                while (items.hasNext()) {
 //                FileItemStream item = items.next();
-                if (file != null) {
-                    uploadedFile.setContent(IOUtils.toByteArray(file.getInputStream()));
-                    uploadedFile.setContentType(file.getContentType());
-                    uploadedFile.setFileName(file.getName());
-                    getJpaController().persist(uploadedFile);
-                }
+                    if (file != null) {
+                        uploadedFile.setContent(IOUtils.toByteArray(file.getInputStream()));
+                        uploadedFile.setContentType(file.getContentType());
+                        uploadedFile.setFileName(file.getName());
+                        getJpaController(schema).persist(uploadedFile);
+                    }
 //                }
+                }
             }
         } catch (Exception e) {
             errorMessage = ERROR_FILE_UPLOAD;
@@ -134,10 +129,4 @@ public class CKEditorUploadServlet extends HttpServlet {
         out.close();
     }
 
-    public JPAServiceFacade getJpaController() {
-        if (jpaController == null) {
-            jpaController = new JPAServiceFacade(utx, emf);
-        }
-        return jpaController;
-    }
 }
