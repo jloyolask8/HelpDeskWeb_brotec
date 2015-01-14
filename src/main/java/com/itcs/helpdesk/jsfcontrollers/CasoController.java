@@ -231,15 +231,15 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     //respuesta
     private boolean adjuntarArchivosARespuesta = false;
     private boolean mergeHabilitado;
-    private LinkedList<Caso> mergeCandidatesList;
-    private Map<Integer, Boolean> showReducedContentMap;
+    private transient LinkedList<Caso> mergeCandidatesList;
+    private transient Map<Integer, Boolean> showReducedContentMap;
 
     public static final String HEADER_HISTORY = "<br/><hr/><b>HISTORIA DEL CASO</b><hr/><br/>";
     public static final String HEADER_HISTORY_NOTA_ALT = "HISTORIA DEL CASO";
     public static final String FOOTER_HISTORY_NOTA = "FIN MENSAJE ORIGINAL";
-    public static int MEGABYTE = (1024*1024);
+    public static final int MEGABYTE = (1024*1024);
 
-    private Comparator<Caso> comparadorCasosPorFechaCreacion = new Comparator<Caso>() {
+    private static transient Comparator<Caso> comparadorCasosPorFechaCreacion = new Comparator<Caso>() {
         @Override
         public int compare(Caso o1, Caso o2) {
             return o1.getFechaCreacion().compareTo(o2.getFechaCreacion());
@@ -322,9 +322,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     private List<Attachment> cloneAttachments(List<Attachment> attachments, Caso casoBase) {
-        System.out.println("clone Attachments size list: " + attachments.size());
-        System.out.println("Caso base attachment list size: " + casoBase.getAttachmentList().size());
-        System.out.println("Caso base attachmentNotEmbedded list size: " + casoBase.getAttachmentsNotEmbedded().size());
+//        System.out.println("clone Attachments size list: " + attachments.size());
+//        System.out.println("Caso base attachment list size: " + casoBase.getAttachmentList().size());
+//        System.out.println("Caso base attachmentNotEmbedded list size: " + casoBase.getAttachmentsNotEmbedded().size());
         List<Attachment> clonedElements = new ArrayList<>(attachments.size());
         for (Attachment attachment : attachments) {
             Archivo archivo = getJpaController().getArchivoFindByIdAttachment(attachment.getIdAttachment());
@@ -1672,7 +1672,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             style.remove();
         }
         ret = doc.toString();
-        System.out.println("html ret:\n"+ret);
+        //System.out.println("html ret:\n"+ret);
         return ret;
     }
 
@@ -4368,9 +4368,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      * @param habilitarMerge the habilitarMerge to set
      */
     public void setMergeHabilitado(boolean habilitarMerge) {
-        System.out.println("habilitarMerge: " + habilitarMerge);
+//        System.out.println("habilitarMerge: " + habilitarMerge);
         this.mergeHabilitado = habilitarMerge;
-        System.out.println("seted habilitarMerge: " + this.mergeHabilitado);
+//        System.out.println("seted habilitarMerge: " + this.mergeHabilitado);
     }
 
     @FacesConverter(forClass = Caso.class)
