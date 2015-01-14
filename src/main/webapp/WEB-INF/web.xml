@@ -121,7 +121,9 @@
     <listener>
         <listener-class>com.itcs.helpdesk.webapputils.UserSessionListener</listener-class>
     </listener>
-    
+    <!--listener>
+        <listener-class>com.itcs.helpdesk.webapputils.SessionAttributeTracker</listener-class>
+    </listener-->
     <servlet-mapping>
         <servlet-name>TagListServlet</servlet-name>
         <url-pattern>/TagListServlet</url-pattern>
