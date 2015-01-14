@@ -165,6 +165,9 @@
 
                         <p:menuitem rendered="#{casoController.verificarRelacionarCaso()}" icon="fa fa-chain"
                                     ajax="true" value="Relacionar Otro Caso" onclick="PF('casosRela').show();"/>
+                        
+                        <p:menuitem rendered="#{casoController.verificarRelacionarCaso()}" icon="fa fa-trash-o"
+                                    ajax="true" value="Eliminar Relaci&oacute;n Caso" onclick="PF('DeleteCasosRela').show();"/>
 
                         <p:menuitem rendered="#{casoController.verificarEliminarCaso()}" icon="fa fa-trash-o"
                                     ajax="true" value="Eliminar" onclick="PF('destroyCase').show();"/>
@@ -264,7 +267,7 @@
                             <c:forEach items="#{casoController.selected.attachmentsNotEmbedded}" var="caso_attachment" >
                                 <h:panelGrid columns="6">
                                     <p:graphicImage name="file_extension_#{caso_attachment.fileExtension}.png" library="file_extension_icons" />
-                                    <p:commandLink ajax="false" value="#{caso_attachment.nombreArchivoOriginal}" 
+                                    <p:commandLink ajax="false" value="#{caso_attachment.nombreArchivo}" 
                                                    title="Descargar #{caso_attachment.nombreArchivo} (#{caso_attachment.mimeType})">
                                         <p:fileDownload value="#{casoController.bajarArchivo(caso_attachment.idAttachment)}" />
                                     </p:commandLink>
@@ -311,7 +314,7 @@
 
                 </p:tab>
 
-                <p:tab id="tabCasosRelacionados" title="Casos relacionados (#{casoController.selected.casosRelacionadosList.size() + casoController.selected.casosHijosList.size()})" >
+                <p:tab id="tabCasosRelacionados" title="Casos Relacionados (#{casoController.selected.casosRelacionadosList.size() + casoController.selected.casosHijosList.size()})" >
                     <p:scrollPanel id="scrollpaneCasosRel" mode="native" style="border: 0; height: 500px;">
 
                         <div align="right">
@@ -948,7 +951,7 @@
                 </h:form>
             </p:dialog>
 
-            <p:dialog header="Agregar Casos Relacionado" widgetVar="casosRela" modal="true" dynamic="true" closeOnEscape="true" closable="false">
+            <p:dialog header="Agregar Caso Relacionado" widgetVar="casosRela" modal="true" dynamic="true" closeOnEscape="true" closable="false">
                 <h:form>
                     <h:panelGrid columns="2">
                         <h:outputLabel value="Id Caso relacionado:" for="idcasorel" style="font-weight: bold"/>
@@ -956,6 +959,19 @@
                         <p:button value="Cancelar" onclick="PF('casosRela').hide()"   />
                         <p:commandButton value="Aceptar" ajax="true" update=":mainform:messages idcasorel"
                                          actionListener="#{casoController.agregarRelacionado}"   />
+
+                    </h:panelGrid>
+                </h:form>
+            </p:dialog>
+            
+            <p:dialog header="Eliminar Caso Relacionado" widgetVar="DeleteCasosRela" modal="true" dynamic="true" closeOnEscape="true" closable="false">
+                <h:form>
+                    <h:panelGrid columns="2">
+                        <h:outputLabel value="Id Caso relacionado:" for="idcasorel" style="font-weight: bold"/>
+                        <h:inputText value="${casoController.idCaserel}" id="idcasorel"/>
+                        <p:button value="Cancelar" onclick="PF('DeleteCasosRela').hide()"   />
+                        <p:commandButton value="Eliminar" ajax="true" update=":mainform:messages idcasorel"
+                                         actionListener="#{casoController.eliminarRelacionado()}"   />
 
                     </h:panelGrid>
                 </h:form>

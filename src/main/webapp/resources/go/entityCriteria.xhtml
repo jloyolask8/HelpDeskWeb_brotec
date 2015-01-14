@@ -29,7 +29,7 @@
                                      required="#{cc.attrs.requiredAttribute}" requiredMessage="Favor Seleccione Attributo." styleClass="full-width">
                         <f:selectItem itemLabel="seleccione un atributo" itemValue="" noSelectionOption="true"/>
                         <f:selectItems value="#{cc.attrs.filterHelper.comparableFields}" var="comparableField" itemValue="#{comparableField.idCampo}" itemLabel="#{comparableField.label}"/>
-                        <p:ajax update="@form #{cc.attrs.update}" listener="#{cc.attrs.filterHelper.handleIdCampoChangeEvent(cc.attrs.filtro)}"/>
+                        <p:ajax update="@(form :not(.noupdate)) #{cc.attrs.update}" listener="#{cc.attrs.filterHelper.handleIdCampoChangeEvent(cc.attrs.filtro)}"/>
                     </p:selectOneMenu>
                 </p:column>
                 <p:column style="width: 220px;">
@@ -38,7 +38,7 @@
                                      required="true" requiredMessage="Favor Seleccione Operador." styleClass="full-width">
                         <f:selectItem itemLabel="Operador..." itemValue="" noSelectionOption="true"/>
                         <f:selectItems value="#{cc.attrs.filterHelper.findTipoComparacionesAvailable(cc.attrs.filtro.idCampo, false)}" var="tipoComparador" itemValue="#{tipoComparador}" itemLabel="#{tipoComparador.nombre}" itemDescription="#{tipoComparador.descripcion}"/>
-                        <p:ajax update="@form #{cc.attrs.update}" listener="#{cc.attrs.filterHelper.handleOperadorChangeEvent(cc.attrs.filtro)}"/>
+                        <p:ajax update="@(form :not(.noupdate)) #{cc.attrs.update}" listener="#{cc.attrs.filterHelper.handleOperadorChangeEvent(cc.attrs.filtro)}"/>
                     </p:selectOneMenu>
                 </p:column>
                 <p:column style="width: 210px;">
@@ -53,7 +53,7 @@
                                                 cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'SELECTONE_ENTITY' and 
                                                 cc.attrs.filtro.idComparador.idComparador eq 'SC'}" style="width: 200px;">  
                         <f:attribute name="filtro" value="#{cc.attrs.filtro}" />
-                        <p:ajax event="itemSelect" update="@form #{cc.attrs.update}"/>
+                        <p:ajax event="itemSelect" update="@(form :not(.noupdate)) #{cc.attrs.update}"/>
                     </p:autoComplete>   
 
                     <p:autoComplete id="valorentity1" dropdown="true" emptyMessage="no hay objetos que mostrar"
@@ -67,18 +67,18 @@
                                                 and cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'SELECTONE_ENTITY' 
                                                 and cc.attrs.filtro.idComparador.idComparador ne 'SC'}" styleClass="full-width">  
                         <f:attribute name="filtro" value="#{cc.attrs.filtro}" />
-                        <p:ajax event="itemSelect" update="@form #{cc.attrs.update}"/>
+                        <p:ajax event="itemSelect" update="@(form :not(.noupdate)) #{cc.attrs.update}"/>
                     </p:autoComplete>    
 
                     <p:inputText id="valortext" value="#{cc.attrs.filtro.valor}" rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'TEXT'}" 
                                  required="true" requiredMessage="Se necesita un valor para comparar." disabled="#{not cc.attrs.canChangeFilters}" styleClass="full-width">
-                        <p:ajax update="@form #{cc.attrs.update}"/>
+                        <p:ajax update="@(form :not(.noupdate)) #{cc.attrs.update}"/>
                     </p:inputText>
 
                     <p:inputText id="valorNumber" value="#{cc.attrs.filtro.valor}" 
                                  rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'NUMBER'}" 
                                  required="true" requiredMessage="Se necesita un valor para comparar." disabled="#{not cc.attrs.canChangeFilters}" styleClass="full-width">
-                        <p:ajax update="@form #{cc.attrs.update}"/>
+                        <p:ajax update="@(form :not(.noupdate)) #{cc.attrs.update}"/>
                     </p:inputText>
 
                     <pe:keyFilter for="valorNumber" mask="int" rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'NUMBER'}" />
@@ -89,14 +89,14 @@
                                     completeMethod="#{applicationBean.findEtiquetasByPattern}" multiple="true"
                                     rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null 
                                                 and cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'COMMA_SEPARATED_VALUELIST'}">
-                        <p:ajax event="itemSelect" update="@form #{cc.attrs.update}"/>
+                        <p:ajax event="itemSelect" update="@(form :not(.noupdate)) #{cc.attrs.update}"/>
                     </p:autoComplete> 
 
                     <p:selectOneRadio id="valorradio" value="#{cc.attrs.filtro.valor}" disabled="#{not cc.attrs.canChangeFilters}" 
                                       required="true" requiredMessage="Se necesita un valor para comparar."
                                       rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'RADIO'}">
                         <f:selectItems value="#{cc.attrs.filterHelper.findPosibleOptionsIncludingAllPlaceHolders(cc.attrs.filtro.idCampo, UserSessionBean.current)}" />
-                        <p:ajax update="@form #{cc.attrs.update}"/>
+                        <p:ajax update="@(form :not(.noupdate)) #{cc.attrs.update}"/>
                     </p:selectOneRadio>
 
                     <p:selectOneMenu styleClass="full-width" id="placeHolder1" value="#{cc.attrs.filtro.valor}" disabled="#{not cc.attrs.canChangeFilters}" 
@@ -111,7 +111,7 @@
                                      required="true" requiredMessage="Se necesita un valor para comparar."
                                      rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'CHECKBOX'}">
                         <f:selectItems value="#{cc.attrs.filterHelper.findPosibleOptionsIncludingAllPlaceHolders(cc.attrs.filtro.idCampo, UserSessionBean.current)}" />
-                        <p:ajax update="@form #{cc.attrs.update}"/>
+                        <p:ajax update="@(form :not(.noupdate)) #{cc.attrs.update}"/>
                     </p:selectOneMenu>
                     <script>
                         $(function () {
@@ -124,25 +124,25 @@
                                  value="#{cc.attrs.filtro.valor}"  title="Desde:"
                                  required="true" requiredMessage="Se necesita un valor para comparar."
                                  rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR'}">
-                        <p:ajax update="@form #{cc.attrs.update}"/>
+                        <p:ajax update="@(form :not(.noupdate)) #{cc.attrs.update}"/>
                     </p:inputText>
                     <p:inputText id="valorcalendar2" style="width: 80px;" styleClass="datepicker" value="#{cc.attrs.filtro.valor2}" 
                                  disabled="#{not cc.attrs.canChangeFilters}"  title="Hasta:"
                                  required="true" requiredMessage="Se necesita un valor para comparar."
                                  rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR' and cc.attrs.filtro.idComparador.idComparador eq 'BW'}">
-                        <p:ajax update="@form #{cc.attrs.update}"/>
+                        <p:ajax update="@(form :not(.noupdate)) #{cc.attrs.update}"/>
                     </p:inputText>
                 </p:column>
 
                 <p:column style="width: 60px; vertical-align: middle !important;">
                     <p:commandButton icon="ui-icon-minus" actionListener="#{cc.attrs.removeActionListener}" ajax="true" immediate="false" rendered="#{not empty cc.attrs.removeActionListener}"
-                                     update="@form #{cc.attrs.update}" title="Eliminar criterio"
+                                     update="@(form :not(.noupdate)) #{cc.attrs.update}" title="Eliminar criterio"
                                      disabled="#{(not cc.attrs.canChangeFilters) or (not cc.attrs.canRemoveFilter)}" process="@this"
                                      style="border-radius: 4em; height: 20px; width: 20px; margin-right: 5px;">
                         <p:resetInput target="@form" />
                     </p:commandButton>
                     <p:commandButton icon="ui-icon-plus" actionListener="#{cc.attrs.addActionListener}" immediate="true" rendered="#{not empty cc.attrs.addActionListener}"
-                                     update="@form #{cc.attrs.update}" title="Agregar criterio"
+                                     update="@(form :not(.noupdate)) #{cc.attrs.update}" title="Agregar criterio"
                                      style="border-radius: 4em; height: 20px; width: 20px; "/>
                 </p:column>
             </p:row>
