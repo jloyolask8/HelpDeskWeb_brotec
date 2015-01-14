@@ -56,7 +56,12 @@
                 <rp.build.warname>brotec</rp.build.warname>
             </properties>
         </profile>  
-        
+        <profile>
+            <id>monte-elqui</id>
+            <properties>
+                <rp.build.warname>monte_elqui</rp.build.warname>
+            </properties>
+        </profile>
         <profile>
             <id>betterlife</id>
             <properties>
