@@ -200,7 +200,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                                             List<Usuario> users = jpaController.getUsuarioFindByEmail(emailMessage.getFromEmail());
 
                                             boolean download;
-                                            if (users != null && !users.isEmpty()) {
+                                            if ((users != null) && (!users.isEmpty())) {
                                                 Usuario user = users.get(0);
                                                 if (user.getUsuarioList() != null && !user.getUsuarioList().isEmpty()) {
                                                     //this guy is a supervisor, he can create tickets
