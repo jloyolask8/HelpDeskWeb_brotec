@@ -1580,26 +1580,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      *
      * @return
      */
-    public String createPreentregaAndView() {
-        try {
-            persist(current);
-//            listaActividadesOrdenada = null;
-            return "/script/caso/Edit";
-        } catch (PreexistingEntityException e) {
-            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
-            JsfUtil.addErrorMessage("El Caso con id " + current.getIdCaso() + " ya existe!");
-            return null;
-        } catch (RollbackFailureException e) {
-            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
-            JsfUtil.addErrorMessage(e, "Se produjo una inconsistencia de datos, favor intente mas tarde.");
-            return null;
-        } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).logInfo(resourceBundle.getString("PersistenceErrorOccured"));
-            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
-            JsfUtil.addErrorMessage(e, resourceBundle.getString("PersistenceErrorOccured"));
-            return null;
-        }
-    }
 
     public String createAndView() {
         try {
