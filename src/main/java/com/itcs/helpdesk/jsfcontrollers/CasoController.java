@@ -230,7 +230,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public static final String HEADER_HISTORY = "<br/><hr/><b>HISTORIA DEL CASO</b><hr/><br/>";
     public static final String HEADER_HISTORY_NOTA_ALT = "HISTORIA DEL CASO";
     public static final String FOOTER_HISTORY_NOTA = "FIN MENSAJE ORIGINAL";
-    public static final int MEGABYTE = (1024*1024);
+    public static final int MEGABYTE = (1024 * 1024);
 
     private static transient Comparator<Caso> comparadorCasosPorFechaCreacion = new Comparator<Caso>() {
         @Override
@@ -294,8 +294,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 casoToMerge.setFechaCierre(applicationBean.getNow());
                 casoToMerge.setIdSubEstado((casoToMerge.getTipoCaso().equals(EnumTipoCaso.CONTACTO.getTipoCaso()) ? EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()
                         : (casoToMerge.getTipoCaso().equals(EnumTipoCaso.COTIZACION.getTipoCaso()) ? EnumSubEstadoCaso.COTIZACION_DUPLICADO.getSubEstado()
-                        : (casoToMerge.getTipoCaso().equals(EnumTipoCaso.CONTACTO.getTipoCaso()) ? EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()
-                        : EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()))));
+                                : (casoToMerge.getTipoCaso().equals(EnumTipoCaso.CONTACTO.getTipoCaso()) ? EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()
+                                        : EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()))));
                 getManagerCasos().mergeCaso(casoToMerge,
                         ManagerCasos.createLogComment(casoToMerge, "Se combina con el caso " + casoBase.getIdCaso()));
                 sb.append(casoToMerge.getIdCaso());
@@ -1390,7 +1390,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             current.setFechaCreacion(Calendar.getInstance().getTime());
             current.setFechaModif(current.getFechaCreacion());
             current.setOwner(userSessionBean.getCurrent());
-            current.setTema("Postventa para " + current.getIdCliente().getCapitalName());
             current.setTipoCaso(EnumTipoCaso.POSTVENTA.getTipoCaso());
             current.setIdSubEstado(EnumSubEstadoCaso.POSTVENTA_NUEVO.getSubEstado());
             current.setIdCanal(EnumCanal.MANUAL.getCanal());
@@ -1405,6 +1404,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //            sec.setIdSubEstado(EnumSubEstadoCaso.NUEVO.getSubEstado().getIdSubEstado());
 //            current.setIdSubEstado(sec);
             current.setIdEstado(ec);
+            //current.setTema("Postventa para " + current.getIdCliente().getCapitalName());
 
             emailCliente_wizard_existeEmail = false;
             emailCliente_wizard_existeCliente = false;
@@ -1580,23 +1580,24 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      *
      * @return
      */
-
     public String createAndView() {
         try {
             System.out.println("CURRENT TEST ATACHMENT BEFORE:" + this.current.getAttachmentList());
             List<Attachment> attachmentList = current.getAttachmentList();
             current.setAttachmentList(null);
             persist(current);
-            for (Attachment attachment : attachmentList) {
-                getManagerCasos().crearAdjunto(
-                        attachment.getArchivo().getArchivo(), null,
-                        this.current, attachment.getNombreArchivo(),
-                        attachment.getMimeType(),
-                        attachment.getArchivo().getFileSize());
-                JsfUtil.addSuccessMessage("Archivo " + attachment.getNombreArchivo() + " subido con exito");
-            }
+            if (attachmentList != null) {
+                for (Attachment attachment : attachmentList) {
+                    getManagerCasos().crearAdjunto(
+                            attachment.getArchivo().getArchivo(), null,
+                            this.current, attachment.getNombreArchivo(),
+                            attachment.getMimeType(),
+                            attachment.getArchivo().getFileSize());
+                    JsfUtil.addSuccessMessage("Archivo " + attachment.getNombreArchivo() + " subido con exito");
+                }
 
-            getJpaController().merge(this.current);
+                getJpaController().merge(this.current);
+            }
 
             return "/script/caso/Edit";
         } catch (PreexistingEntityException e) {
@@ -1613,8 +1614,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             JsfUtil.addErrorMessage(e, resourceBundle.getString("PersistenceErrorOccured"));
             return null;
         }
-
-
 
     }
 
@@ -1989,8 +1988,10 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     /**
      * Crea un filtro para mostrar los casos con el flag revisar actualizacion
-     * activo. <p> Un caso cerrado puede tener actualización (Cuando un cliente
-     * responde, despues de cerrado el caso).
+     * activo.
+     * <p>
+     * Un caso cerrado puede tener actualización (Cuando un cliente responde,
+     * despues de cerrado el caso).
      *
      * @return La página inbox con el filtro ya definido.
      */
@@ -3069,7 +3070,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             JsfUtil.addSuccessMessage("El comentario no pudo ser actualizado.");
             Logger
                     .getLogger(CasoController.class
-                    .getName()).log(Level.SEVERE, null, ex);
+                            .getName()).log(Level.SEVERE, null, ex);
         }
         return getEditPage();
     }
