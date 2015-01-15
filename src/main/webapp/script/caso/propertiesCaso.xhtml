@@ -24,6 +24,19 @@
                                        update=":formDatosCliente" onclick="PF('dialogClient').show()" />
                     </p:column>
                 </p:row>
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="Email cliente" for="emailClienteA" style="font-weight:bold"/>
+                    </p:column>
+                    <p:column>
+                        <p:selectOneMenu id="emailClienteA" style="width: 180px;" disabled="#{casoController.selected.closed}"
+                                         filter="true" filterMatchMode="contains"
+                                         value="#{casoController.selected.emailCliente}" >
+                            <f:selectItems value="#{casoController.selected.idCliente.emailClienteList}" var="email" 
+                                           itemLabel="#{email.emailCliente}" itemValue="#{email}" itemDescription="#{email.emailCliente}"/>
+                        </p:selectOneMenu>
+                    </p:column>
+                </p:row>
 
 
                 <p:row>
@@ -42,11 +55,10 @@
 
                         <h:panelGrid columns="6">
 
-                            <h:outputText id="fechaCreacion" value="#{casoController.formatShortDate(casoController.selected.fechaCreacion)}"/>
-
-                            <h:outputText value=" / "/>
+                            <h:outputText id="fechaCreacion" value="#{casoController.formatShortDate(casoController.selected.fechaCreacion)} "/>
+                            <h:outputText value="/"/>
                             <h:outputText id="fechaModif" value="#{casoController.formatShortDate(casoController.selected.fechaModif)}"/>
-                            <h:outputText value=" / "/>
+                            <h:outputText value="/"/>
                             <pe:switch id="switchTicketAlertState" value="#{casoController.selected.isOpen().toString()}">  
                                 <pe:case value="true">  
                                     <pe:switch id="switchTicketAlertStateOpen" value="#{casoController.selected.estadoAlerta}">  
