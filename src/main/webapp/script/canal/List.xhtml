@@ -318,6 +318,11 @@
                     <h:panelGroup rendered="#{not canalController.tmpEmailFirstStepReady}" style="width: 97%; position: absolute; bottom: 15px;">
                         <p:separator/>
                         <div align="right" style="width: 100%;">
+                             <p:ajaxStatus style="position: absolute; top: 10px; right: 110px;">
+                                        <f:facet name="start">
+                                            <p:graphicImage library="images" name="ajax-loader_red.gif" />
+                                        </f:facet>
+                                    </p:ajaxStatus>
                             <p:commandButton value="Cancelar" oncomplete="PF('addEditEmailDialogWidget').hide()" update=":formAddEditEmail" process="@this">
                                 <p:resetInput target="@form" />
                             </p:commandButton>
@@ -331,6 +336,13 @@
                     <h:panelGroup rendered="#{canalController.tmpEmailFirstStepReady}" style="width: 97%; position: absolute; bottom: 15px;">
                         <p:separator/>
                         <div align="right">
+                            
+                             <p:ajaxStatus style="position: absolute; top: 10px; right: 110px;">
+                                        <f:facet name="start">
+                                            <p:graphicImage library="images" name="ajax-loader_red.gif" />
+                                        </f:facet>
+                                    </p:ajaxStatus>
+                            
                             <p:commandButton value="Cancelar" oncomplete="PF('addEditEmailDialogWidget').hide()" process="@this">
                                 <p:resetInput target="@form" />
                             </p:commandButton>
@@ -338,7 +350,7 @@
                             <p:commandButton value="Verificar" actionListener="#{canalController.verifyEmailAccount()}" process="@form" update=":formAddEditEmail"/>
                             &nbsp;
                             <p:commandButton action="#{canalController.createCanalEmail()}" value="Finalizado" update=":form"
-                                             oncomplete="PF('addEditEmailDialogWidget').hide()" disabled="#{not canalController.tmpEmailFinalizeReady}"/>
+                                             disabled="#{not canalController.tmpEmailFinalizeReady}"/>
                         </div>
                     </h:panelGroup>
 
@@ -367,6 +379,12 @@
                     <h:panelGroup style="width: 97%; position: absolute; bottom: 12px;">
                         <p:separator/>
                         <div align="right">
+                            
+                             <p:ajaxStatus style="position: absolute; top: 10px; right: 110px;">
+                                        <f:facet name="start">
+                                            <p:graphicImage library="images" name="ajax-loader_red.gif" />
+                                        </f:facet>
+                                    </p:ajaxStatus>
                             <p:commandButton id="canncel" value="Cancelar" onclick="PF('addEditDialog').hide()" process="@this">
                                 <p:resetInput target="@form" />
                             </p:commandButton>

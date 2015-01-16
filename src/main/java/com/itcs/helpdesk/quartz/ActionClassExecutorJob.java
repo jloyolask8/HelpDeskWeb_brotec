@@ -16,6 +16,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.transaction.UserTransaction;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.persistence.config.EntityManagerProperties;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -32,15 +33,15 @@ public class ActionClassExecutorJob extends AbstractGoDeskJob implements Job {
 
     public static final String ACTION_CLASSNAME = "actionClassName";
     public static final String ACTION_PARAMS = "actionParams";
-    public static final String ID_CASO = "idCaso";
+//    public static final String ID_CASO = "idCaso";
     public static final String ID_TIME = "idTime";
     /**
      * {0} = schema {1} = caso# {2} = actionClassName
      */
-    public static final String JOB_ID = "ActionClassExecutor_%s_%s_%s";
+    public static final String JOB_ID = "T%s_ActionClassExecutor_%s_%s_%s";
 
-    public static String formatJobId(String idCaso, String actionClassName, String idTime) {
-        return String.format(JOB_ID, new Object[]{idCaso, actionClassName, idTime});
+    public static String formatJobId(String tenant, String idCaso, String actionClassName, String idTime) {
+        return String.format(JOB_ID, new Object[]{tenant, idCaso, actionClassName, idTime});
     }
 
     @Override
@@ -52,32 +53,36 @@ public class ActionClassExecutorJob extends AbstractGoDeskJob implements Job {
                 String idCaso = (String) map.get(ID_CASO);
                 String params = (String) map.get(ACTION_PARAMS);
                 String idTime = (String) map.get(ID_TIME);
+                String tenant = (String) map.get(AbstractGoDeskJob.TENANT_ID);
                 String actionClassName = (String) map.get(ACTION_CLASSNAME);
                 if (!StringUtils.isEmpty(actionClassName) && !StringUtils.isEmpty(idCaso)) {
                     EntityManagerFactory emf = createEntityManagerFactory();
                     UserTransaction utx = UserTransactionHelper.lookupUserTransaction();
-                    JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf);
+                    JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf, tenant);
                     RulesEngine rulesEngine = new RulesEngine(jpaController);
                     jpaController.setCasoChangeListener(rulesEngine);
 
-                    EntityManager em = emf.createEntityManager();
+//                    EntityManager em = null;
                     try {
                         utx.begin();
-                        Caso caso = em.find(Caso.class, Long.valueOf(idCaso));
+//                        em = emf.createEntityManager();
+//                        em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, tenant);
+                        Caso caso = jpaController.find(Caso.class, Long.valueOf(idCaso));
 //                        final Action action = (Action) Class.forName(actionClassName.trim()).newInstance();
                         Constructor actionConstructor = Class.forName(actionClassName.trim()).getConstructor(JPAServiceFacade.class);
                         final Action action = (Action) actionConstructor.newInstance(jpaController);
                         //Action being scheduled must not Receive any parametros!!! ???
                         action.setConfig(params);
                         action.execute(caso);
-                        unschedule(formatJobId(idCaso, actionClassName, idTime));
+                        unschedule(formatJobId(tenant, idCaso, actionClassName, idTime));
                         utx.commit();
                     } catch (Exception ex) {
                         utx.rollback();
                         Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "ActionClassExecutorJob: Error trying to execute Action class::" + actionClassName, ex);
                         throw new JobExecutionException(ex);
                     } finally {
-                        em.close();
+//                        em.close();
+                        jpaController = null;
                         emf.close();
                         UserTransactionHelper.returnUserTransaction(utx);
                     }

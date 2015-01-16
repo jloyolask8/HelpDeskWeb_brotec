@@ -48,10 +48,10 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
     /**
      * {0} = idArea,
      */
-    public static final String JOB_ID = "%s_SendCaseResponseByEmail_#%s_%s";
+    public static final String JOB_ID = "%s_%s_SendCaseResponseByEmail_#%s_%s";
 
-    public static String formatJobId(String idCanal, String idCaso, String to) {
-        return String.format(JOB_ID, new Object[]{idCanal, idCaso, to});
+    public static String formatJobId(String tenant, String idCanal, String idCaso, String to) {
+        return String.format(JOB_ID, new Object[]{tenant, idCanal, idCaso, to});
     }
 
     @Override
@@ -72,6 +72,7 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
             String email_text = (String) map.get(EMAIL_TEXT);
             emails_to = emails_to.trim().replace(" ", "");
             String attachIds = (String) map.get(EMAIL_ATTACHMENTS);
+            String tenant = (String) map.get(AbstractGoDeskJob.TENANT_ID);
 
             List<Long> idAtts = new LinkedList<>();
             String ids[] = attachIds.split(";");
@@ -84,7 +85,7 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
                 }
             }
 
-            final String formatJobId = formatJobId(idCanal, idCaso, emails_to);
+            final String formatJobId = formatJobId(tenant, idCanal, idCaso, emails_to);
             if (!StringUtils.isEmpty(idCanal) && !StringUtils.isEmpty(idCaso) && !StringUtils.isEmpty(emails_to)) {
 
                 EntityManagerFactory emf = null;
@@ -94,7 +95,7 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
                 try {
                     emf = createEntityManagerFactory();
                     utx = UserTransactionHelper.lookupUserTransaction();
-                    jpaController = new JPAServiceFacade(utx, emf);
+                    jpaController = new JPAServiceFacade(utx, emf, tenant);
                     //SEND THE EMAIL!
                     List<EmailAttachment> attachments = null;
                     if (!idAtts.isEmpty()) {
@@ -129,7 +130,7 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
                     }
                     final String[] ccEmails = splitcc;
                     final String[] bccEmails = splitbcc;
-                    MailClientFactory.getInstance(idCanal).sendHTML(split, ccEmails, bccEmails, subject, email_text, attachments);
+                    MailClientFactory.getInstance(tenant, idCanal).sendHTML(split, ccEmails, bccEmails, subject, email_text, attachments);
 
                     try {
                         //if sent ok, then forget about it

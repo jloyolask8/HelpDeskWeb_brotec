@@ -20,6 +20,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.persistence.config.EntityManagerProperties;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -41,10 +42,10 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
     /**
      * {0} = schema {1} = caso# {2} = id alerta
      */
-    private static final String JOB_ID = "TicketAlertStateChange_%s_%s";
+    private static final String JOB_ID = "%s_TicketAlertStateChange_%s_%s";
 
-    public static String formatJobId(Long idCaso, Integer idalerta) {
-        return String.format(JOB_ID, new Object[]{idCaso.toString(), idalerta.toString()});
+    public static String formatJobId(String schema, Long idCaso, Integer idalerta) {
+        return String.format(JOB_ID, new Object[]{schema, idCaso.toString(), idalerta.toString()});
     }
 
     @Override
@@ -55,6 +56,7 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
             JobDataMap map = context.getMergedJobDataMap();//.getJobDetail().getJobDataMap();
             if (map != null) {
                 String idCaso = (String) map.get(ID_CASO);
+                String tenant = (String) map.get(AbstractGoDeskJob.TENANT_ID);
                 String idAlerta = (String) map.get(ID_ESTADO_ALERTA);
                 if (!StringUtils.isEmpty(idCaso) && !StringUtils.isEmpty(idAlerta)) {
                     EntityManagerFactory emf = createEntityManagerFactory();
@@ -70,6 +72,7 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
                         if (valueOfIdCaso != null && valueOfIdAlerta != null) {
                             utx.begin();
                             em = emf.createEntityManager();
+                            em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, tenant);
                             Caso caso = em.find(Caso.class, valueOfIdCaso);
                             if (caso != null) {
 
@@ -99,13 +102,13 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
                                     //End Audit Log                                    
 
                                     if (valueOfIdAlerta.equals(EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta().getIdalerta())) {
-                                        HelpDeskScheluder.scheduleAlertaVencido(valueOfIdCaso, caso.getNextResponseDue());
+                                        HelpDeskScheluder.scheduleAlertaVencido(tenant, valueOfIdCaso, caso.getNextResponseDue());
                                     }
                                     
                                     if(caso.getOwner() != null){
                                         if(caso.getOwner().getEmailNotificationsEnabled() ){
                                             if(caso.getOwner().getNotifyWhenTicketAlert()){
-                                                MailNotifier.notifyCasoOwnerAlertChanged(caso);
+                                                MailNotifier.notifyCasoOwnerAlertChanged(tenant, caso);
                                             }
                                         }
                                     }
@@ -113,7 +116,7 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
 //                                    eventNotifier.fire(new NotificationData("Estado de Alerta Caso", 
 //                                            "Estado de alerta del caso " + caso.getIdCaso() + 
 //                                                    " pasa a " + caso.getEstadoAlerta().getNombre(), audit.getOwner()));
-                                    unschedule(formatJobId(valueOfIdCaso, valueOfIdAlerta));
+                                    unschedule(formatJobId(tenant, valueOfIdCaso, valueOfIdAlerta));
                                     utx.commit();
 
                                 } else {
@@ -127,7 +130,7 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
 
                     } catch (NonexistentEntityException ex) {
                         Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "NonexistentEntityException at TicketAlertStateChangeJob.execute:{0}", ex.getMessage());
-                        unschedule(formatJobId(valueOfIdCaso, valueOfIdAlerta));
+                        unschedule(formatJobId(tenant, valueOfIdCaso, valueOfIdAlerta));
 
                     } catch (Exception ex) {
                         if (utx != null) {

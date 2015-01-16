@@ -19,6 +19,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.persistence.config.EntityManagerProperties;
 import org.joda.time.DateTime;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.quartz.Job;
@@ -48,10 +49,10 @@ public class ScheduleEventReminderJob extends AbstractGoDeskJob implements Job {
     /**
      * {0} = idArea,
      */
-    public static final String JOB_ID = "EventReminder_#%s_e%sr_%s";
+    public static final String JOB_ID = "T%s_EventReminder_#%s_e%sr_%s";
 
-    public static String formatJobId(String idCaso, String eventId, String reminderId) {
-        return String.format(JOB_ID, new Object[]{idCaso, eventId, reminderId});
+    public static String formatJobId(String tenant, String idCaso, String eventId, String reminderId) {
+        return String.format(JOB_ID, new Object[]{tenant, idCaso, eventId, reminderId});
     }
 
     @Override
@@ -65,9 +66,10 @@ public class ScheduleEventReminderJob extends AbstractGoDeskJob implements Job {
             String emails_to = (String) map.get(EMAILS_TO);
             String eventId = (String) map.get(EVENT_ID);
             String reminderId = (String) map.get(REMINDER_ID);
+            String tenant = (String) map.get(TENANT_ID);
             emails_to = emails_to.trim().replace(" ", "");
 
-            final String formatJobId = formatJobId(idCaso, eventId, reminderId);
+            final String formatJobId = formatJobId(tenant, idCaso, eventId, reminderId);
             if (!StringUtils.isEmpty(emails_to)
                     && !StringUtils.isEmpty(eventId) && !StringUtils.isEmpty(reminderId)) {
 
@@ -80,6 +82,7 @@ public class ScheduleEventReminderJob extends AbstractGoDeskJob implements Job {
                     utx = UserTransactionHelper.lookupUserTransaction();
                     utx.begin();
                     em = emf.createEntityManager();
+                    em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, tenant);
 
                     ScheduleEvent event = em.find(ScheduleEvent.class, Integer.valueOf(eventId));
                     ScheduleEventReminder eventReminder = em.find(ScheduleEventReminder.class, Integer.valueOf(reminderId));

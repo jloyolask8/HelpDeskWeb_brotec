@@ -42,7 +42,7 @@ public class SendCaseByEmailAction extends Action {
             String[] emails = destinationEmails.split(",");
             for (String email : emails) {
                 try {
-                    MailNotifier.notifyCasoAsHtmlEmail(caso, email);
+                    MailNotifier.notifyCasoAsHtmlEmail(getJpaController().getSchema(), caso, email);
                 } catch (MailClientFactory.MailNotConfiguredException ex) {
                     throw new ActionExecutionException("Error al tratar de enviar caso por email a " + destinationEmails + " favor verifique la configuración de correo.", ex);
                 } catch (EmailException ex) {

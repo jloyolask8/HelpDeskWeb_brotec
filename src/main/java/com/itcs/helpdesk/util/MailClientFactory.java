@@ -29,7 +29,7 @@ public class MailClientFactory {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public static EmailClient createInstance(Canal canal) throws FileNotFoundException, IOException {
+    public static EmailClient createInstance(String tenant, Canal canal) throws FileNotFoundException, IOException {
 //        if (instance == null) {
         EmailClient instance = null;
 //        String serverType = a.getMailServerType();//props.getProperty(ApplicationConfig.MAIL_SERVER_TYPE);
@@ -53,7 +53,7 @@ public class MailClientFactory {
      * @param idCanal
      * @return the instance
      */
-    public static EmailClient getInstance(String idCanal) throws MailNotConfiguredException{
+    public static EmailClient getInstance(String tenant, String idCanal) throws MailNotConfiguredException{
         if(clients != null && !clients.isEmpty() && clients.containsKey(idCanal)){
             return clients.get(idCanal);
         }else{

@@ -95,7 +95,6 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
 //        }
 //        return pagination;
 //    }
-
     public void verifyEmailAccount() {
         tmpEmailInfo = "Verificando configuración";
         RequestContext.getCurrentInstance().update(":formAddEditEmail");
@@ -320,7 +319,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
                     it.remove(); // avoids a ConcurrentModificationException
                 }
                 getJpaController().merge(current);
-                MailClientFactory.createInstance(current);
+                MailClientFactory.createInstance(getUserSessionBean().getTenantId(), current);
             } else {
                 current.setIdCanal(tmpEmailCorreoElectronico);
                 current.setIdTipoCanal(EnumTipoCanal.EMAIL.getTipoCanal());
@@ -342,12 +341,14 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
                 }
                 getJpaController().merge(current);
             }
+            
+            executeInClient("PF('addEditEmailDialogWidget').hide()");
 
             recreateModel();
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("CanalCreated"));
 
             initializeMailRead();
-            
+
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -356,7 +357,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
 
     private void initializeMailRead() {
         try {
-            MailClientFactory.createInstance(current);
+            MailClientFactory.createInstance(getUserSessionBean().getTenantId(), current);
             String freqStr = current.getSetting(EnumEmailSettingKeys.CHECK_FREQUENCY.getKey());
             int freq = HelpDeskScheluder.DEFAULT_CHECK_EMAIL_INTERVAL;
             try {
@@ -364,10 +365,10 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
                     freq = Integer.parseInt(freqStr);
                 }
             } catch (NumberFormatException ex) {/*probably a weird value*/
-                
+
             }
-            
-            HelpDeskScheluder.scheduleRevisarCorreo(current.getIdCanal(), freq);
+
+            HelpDeskScheluder.scheduleRevisarCorreo(getUserSessionBean().getTenantId(), current.getIdCanal(), freq);
         } catch (IOException | SchedulerException e) {
             Log.createLogger(this.getClass().getName()).logSevere("Error inicializando lectura del correo. " + e.getMessage());
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -423,7 +424,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
     public void destroySelected() {
         if (current != null) {
             try {
-                final String downloadEmailJobId = DownloadEmailJob.formatJobId(current.getIdCanal());
+                final String downloadEmailJobId = DownloadEmailJob.formatJobId(current.getIdCanal(), getUserSessionBean().getTenantId());
                 final JobKey jobKey = JobKey.jobKey(downloadEmailJobId, HelpDeskScheluder.GRUPO_CORREO);
                 HelpDeskScheluder.unschedule(jobKey);
             } catch (SchedulerException ex) {
@@ -456,7 +457,6 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
 //
 //        return new CanalDataModel(listOfCanal);
 //    }
-
     /**
      * @return the mode
      */
@@ -753,9 +753,9 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
             if (value == null || value.length() == 0) {
                 return null;
             }
-          UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
-                getValue(facesContext.getELContext(), null, "UserSessionBean");
-        return controller.getJpaController().find(Canal.class, getKey(value));
+            UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                    getValue(facesContext.getELContext(), null, "UserSessionBean");
+            return controller.getJpaController().find(Canal.class, getKey(value));
         }
 
         java.lang.String getKey(String value) {

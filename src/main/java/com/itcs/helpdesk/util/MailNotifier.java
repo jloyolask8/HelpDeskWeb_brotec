@@ -23,7 +23,7 @@ import org.quartz.SchedulerException;
  */
 public class MailNotifier {
 
-    public static void notifyCasoOwnerAlertChanged(Caso caso) throws MailNotConfiguredException, EmailException, NoOutChannelException {
+    public static void notifyCasoOwnerAlertChanged(String tenant, Caso caso) throws MailNotConfiguredException, EmailException, NoOutChannelException {
         if (caso != null) {
             String asunto = ApplicationConfig.getNotificationTicketAlertChangeSubjectText(); //may contain place holders
             String subject_ = ClippingsPlaceHolders.buildFinalText(asunto, caso);
@@ -42,12 +42,12 @@ public class MailNotifier {
                 if (ApplicationConfig.isAppDebugEnabled()) {
                     Logger.getLogger(MailNotifier.class.getName()).log(Level.INFO, "notifyCasoOwnerAlertChanged");
                 }
-                HelpDeskScheluder.scheduleSendMailNow(caso.getIdCaso(), canal.getIdCanal(), mensaje,
+                HelpDeskScheluder.scheduleSendMailNow(tenant, caso.getIdCaso(), canal.getIdCanal(), mensaje,
                         caso.getOwner().getEmail(),
                         subject);
             } catch (SchedulerException ex) {
                 Logger.getLogger(MailNotifier.class.getName()).log(Level.SEVERE, "error at scheduleSendMailNow", ex);
-                MailClientFactory.getInstance(canal.getIdCanal())
+                MailClientFactory.getInstance(tenant, canal.getIdCanal())
                         .sendHTML(caso.getOwner().getEmail(), subject,
                                 mensaje, null);
             }
@@ -55,7 +55,7 @@ public class MailNotifier {
         }
     }
 
-    public static void notifyCasoAsHtmlEmail(Caso caso, String emailTo) throws MailNotConfiguredException, EmailException {
+    public static void notifyCasoAsHtmlEmail(String tenant, Caso caso, String emailTo) throws MailNotConfiguredException, EmailException {
         if (caso != null) {
             String asunto = "HELPDESK " + (caso.getIdCanal() != null ? caso.getIdCanal().getNombre() : "")
                     + " " + (caso.getTipoCaso() != null ? caso.getTipoCaso().getNombre() : EnumTipoCaso.CONTACTO.getTipoCaso().getNombre())
@@ -68,7 +68,7 @@ public class MailNotifier {
 
 //                if (caso.getIdCanal() != null) {
                 if (caso.getIdArea() != null && caso.getIdArea().getIdCanal() != null) {
-                    MailClientFactory.getInstance(caso.getIdArea().getIdCanal().getIdCanal())
+                    MailClientFactory.getInstance(tenant, caso.getIdArea().getIdCanal().getIdCanal())
                             .sendHTML(emailTo, asunto,
                                     texto, null);
                 } else {
@@ -87,7 +87,7 @@ public class MailNotifier {
 
     }
 
-    public static void notifyCasoAssigned(Caso caso, String motivo) throws MailNotConfiguredException, EmailException, NoOutChannelException {
+    public static void notifyCasoAssigned(String tenant, Caso caso, String motivo) throws MailNotConfiguredException, EmailException, NoOutChannelException {
         if (caso != null) {
             String asunto = ApplicationConfig.getNotificationSubjectText(); //may contain place holders
             String subject_ = ClippingsPlaceHolders.buildFinalText(asunto, caso);
@@ -107,7 +107,7 @@ public class MailNotifier {
                 if (caso.getOwner() != null) {
                     if (caso.getOwner().getEmailNotificationsEnabled()) {
                         if (caso.getOwner().getNotifyWhenTicketAssigned()) {
-                            HelpDeskScheluder.scheduleSendMailNow(caso.getIdCaso(), canal.getIdCanal(), mensaje,
+                            HelpDeskScheluder.scheduleSendMailNow(tenant, caso.getIdCaso(), canal.getIdCanal(), mensaje,
                                     caso.getOwner().getEmail(),
                                     subject);
                         }
@@ -116,14 +116,14 @@ public class MailNotifier {
 
             } catch (SchedulerException ex) {
                 Logger.getLogger(MailNotifier.class.getName()).log(Level.SEVERE, "error at scheduleSendMailNow", ex);
-                MailClientFactory.getInstance(canal.getIdCanal())
+                MailClientFactory.getInstance(tenant, canal.getIdCanal())
                         .sendHTML(caso.getOwner().getEmail(), subject,
                                 mensaje, null);
             }
         }
     }
 
-    public static void notifyOwnerCasoUpdated(Caso caso, String comments, String sentBy, Date fecha) throws MailNotConfiguredException, EmailException, NoOutChannelException {
+    public static void notifyOwnerCasoUpdated(String tenant, Caso caso, String comments, String sentBy, Date fecha) throws MailNotConfiguredException, EmailException, NoOutChannelException {
         if (caso != null) {
             String asunto = ApplicationConfig.getNotificationTicketUpdatedSubjectText(); //may contain place holders
             String subject_ = ClippingsPlaceHolders.buildFinalText(asunto, caso);
@@ -145,7 +145,7 @@ public class MailNotifier {
                 if (caso.getOwner() != null) {
                     if (caso.getOwner().getEmailNotificationsEnabled()) {
                         if (caso.getOwner().getNotifyWhenTicketIsUpdated()) {
-                            HelpDeskScheluder.scheduleSendMailNow(caso.getIdCaso(), canal.getIdCanal(), mensaje,
+                            HelpDeskScheluder.scheduleSendMailNow(tenant, caso.getIdCaso(), canal.getIdCanal(), mensaje,
                                     caso.getOwner().getEmail(),
                                     subject);
                         }
@@ -154,14 +154,14 @@ public class MailNotifier {
 
             } catch (SchedulerException ex) {
                 Logger.getLogger(MailNotifier.class.getName()).log(Level.SEVERE, "error at scheduleSendMailNow", ex);
-                MailClientFactory.getInstance(canal.getIdCanal())
+                MailClientFactory.getInstance(tenant, canal.getIdCanal())
                         .sendHTML(caso.getOwner().getEmail(), subject,
                                 mensaje, null);
             }
         }
     }
 
-    public static String emailClientCasoUpdatedByAgent(Caso current) throws MailNotConfiguredException, EmailException, NoOutChannelException {
+    public static String emailClientCasoUpdatedByAgent(String tenant, Caso current) throws MailNotConfiguredException, EmailException, NoOutChannelException {
         //TODO: use configure texts.
         if (current != null && current.getEmailCliente() != null) {
             String asunto = ApplicationConfig.getNotificationClientSubjectText(); //may contain place holders
@@ -170,7 +170,7 @@ public class MailNotifier {
 
             Canal canal = chooseDefaultCanalToSendMail(current);
 
-            EmailClient ec = MailClientFactory.getInstance(canal.getIdCanal());
+            EmailClient ec = MailClientFactory.getInstance(tenant, canal.getIdCanal());
 
             if (ec != null) {
                 ec.sendHTML(current.getEmailCliente().getEmailCliente(), newAsunto,
@@ -181,7 +181,7 @@ public class MailNotifier {
         return null;
     }
     
-    public static String emailClientCustomerSurvey(Caso current) throws MailNotConfiguredException, EmailException, NoOutChannelException {
+    public static String emailClientCustomerSurvey(String tenant, Caso current) throws MailNotConfiguredException, EmailException, NoOutChannelException {
         //TODO: use configure texts.
         if (current != null && current.getEmailCliente() != null && current.getEmailCliente().getEmailCliente() != null) {
             String asunto = ApplicationConfig.getCustomerSurveySubjectText(); //may contain place holders
@@ -190,7 +190,7 @@ public class MailNotifier {
 
             Canal canal = chooseDefaultCanalToSendMail(current);
 
-            EmailClient ec = MailClientFactory.getInstance(canal.getIdCanal());
+            EmailClient ec = MailClientFactory.getInstance(tenant, canal.getIdCanal());
 
             if (ec != null) {
                 ec.sendHTML(current.getEmailCliente().getEmailCliente(), newAsunto,
@@ -220,7 +220,7 @@ public class MailNotifier {
         }
     }
 
-    public static void notifyClientCasoReceived(Caso caso) throws NoOutChannelException, SchedulerException {
+    public static void notifyClientCasoReceived(String tenant, Caso caso) throws NoOutChannelException, SchedulerException {
         //new: permit to have a global response in the config
         //new: if area is not enabled, send a receipt confirmation to client from same channel this should be the default.
         //TODO: record this notification as an activity (Nota) in the case.
@@ -260,7 +260,7 @@ public class MailNotifier {
 
                 Canal canal = chooseDefaultCanalToSendMail(caso);
 
-                HelpDeskScheluder.scheduleSendMailNow(caso.getIdCaso(), canal.getIdCanal(), mensaje,
+                HelpDeskScheluder.scheduleSendMailNow(tenant, caso.getIdCaso(), canal.getIdCanal(), mensaje,
                         caso.getEmailCliente().getEmailCliente(),
                         subject);
 
@@ -270,7 +270,7 @@ public class MailNotifier {
 
     }
 
-    public static void notifyClientConfirmedEvent(Caso caso) throws NoOutChannelException, SchedulerException {
+    public static void notifyClientConfirmedEvent(String tenant, Caso caso) throws NoOutChannelException, SchedulerException {
         //TODO: USE THIS AS EVENT CONFIRMATION NOT CASO CREATION. SOON
 
         if (ApplicationConfig.isSendNotificationOnSubscribedToEvent()) {
@@ -282,7 +282,7 @@ public class MailNotifier {
 
                 Canal canal = chooseDefaultCanalToSendMail(caso);
 
-                HelpDeskScheluder.scheduleSendMailNow(caso.getIdCaso(), canal.getIdCanal(), mensaje,
+                HelpDeskScheluder.scheduleSendMailNow(tenant, caso.getIdCaso(), canal.getIdCanal(), mensaje,
                         caso.getEmailCliente().getEmailCliente(),
                         subject);
 
@@ -296,10 +296,11 @@ public class MailNotifier {
      *
      * Use Same for all (config)
      *
+     * @param tenant
      * @param grupo
      * @param caso
      */
-    public static void notifyGroupCasoReceived(final Grupo grupo, Caso caso) {
+    public static void notifyGroupCasoReceived(String tenant, final Grupo grupo, Caso caso) {
         Logger.getLogger(MailNotifier.class.getName()).log(Level.INFO, "notifyAgentsCasoReceived:{0}", grupo);
         //TODO: use configure texts.
         if (caso != null) {
@@ -344,7 +345,7 @@ public class MailNotifier {
                         Canal canal = chooseDefaultCanalToSendMail(caso);
 
                         try {
-                            HelpDeskScheluder.scheduleNotifyAgentsCasoReceived(canal.getIdCanal(), mensajeFinal, to.toString(), subject, caso.getIdCaso());
+                            HelpDeskScheluder.scheduleNotifyAgentsCasoReceived(tenant, canal.getIdCanal(), mensajeFinal, to.toString(), subject, caso.getIdCaso());
                         } catch (SchedulerException ex) {
                             //It may fail right away, we still continue
                             Logger.getLogger(MailNotifier.class.getName()).log(Level.SEVERE, "scheduleNotifyAgentsCasoReceived failed!", ex);

@@ -5,6 +5,7 @@
  */
 package com.itcs.helpdesk.quartz;
 
+import com.itcs.commons.email.EmailClient;
 import com.itcs.helpdesk.util.MailClientFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,10 +34,10 @@ public class TicketNotifyMailToGroup implements Job {
     /**
      * {0} = idArea,
      */
-    public static final String JOB_ID = "%s_SendCasoEmailNotification_%s_%s";
+    public static final String JOB_ID = "%s_%s_SendCasoEmailNotification_%s_%s";
 
-    public static String formatJobId(String idCanal, String idCaso, String to) {
-        return String.format(JOB_ID, new Object[]{idCanal, idCaso, to});
+    public static String formatJobId(String tenant, String idCanal, String idCaso, String to) {
+        return String.format(JOB_ID, new Object[]{tenant, idCanal, idCaso, to});
     }
 
     @Override
@@ -46,24 +47,29 @@ public class TicketNotifyMailToGroup implements Job {
         if (map != null) {
             String idCanal = (String) map.get(AbstractGoDeskJob.ID_CANAL);
             String idCaso = (String) map.get(AbstractGoDeskJob.ID_CASO);
+            String tenant = (String) map.get(AbstractGoDeskJob.TENANT_ID);
             String emails_to = (String) map.get(TicketNotifyMailToGroup.EMAILS_TO);
             //---
             String subject = (String) map.get(TicketNotifyMailToGroup.EMAIL_SUBJECT);
             String email_text = (String) map.get(TicketNotifyMailToGroup.EMAIL_TEXT);
             emails_to = emails_to.trim().replace(" ", "");
 
-            final String formatJobId = formatJobId(idCanal, idCaso, emails_to);
+            final String formatJobId = formatJobId(tenant, idCanal, idCaso, emails_to);
             if (!StringUtils.isEmpty(idCanal) && !StringUtils.isEmpty(idCaso) && !StringUtils.isEmpty(emails_to)) {
                 try {
-                    //SEND THE EMAIL!
-                    MailClientFactory.getInstance(idCanal).sendHTML(emails_to.split(","), subject, email_text, null);
-                    try {
-                        //if sent ok, then forget about it
-                        unschedule(formatJobId);
-                    } catch (SchedulerException ex) {
-                        Logger.getLogger(TicketNotifyMailToGroup.class.getName()).log(Level.SEVERE, "no se pudo desagendar " + formatJobId, ex);
-                        //ignore
+                    final EmailClient instance = MailClientFactory.getInstance(tenant, idCanal);
+                    if (instance != null) {
+                        //SEND THE EMAIL!
+                        instance.sendHTML(emails_to.split(","), subject, email_text, null);
+                        try {
+                            //if sent ok, then forget about it
+                            unschedule(formatJobId);
+                        } catch (SchedulerException ex) {
+                            Logger.getLogger(TicketNotifyMailToGroup.class.getName()).log(Level.SEVERE, "no se pudo desagendar el job " + formatJobId, ex);
+                            //ignore
+                        }
                     }
+
                 } catch (MailClientFactory.MailNotConfiguredException ex) {
                     Logger.getLogger(TicketNotifyMailToGroup.class.getName()).log(Level.SEVERE, "Mail Not Configured for " + idCanal, ex);
                     try {

@@ -6,7 +6,6 @@ package com.itcs.helpdesk.quartz;
 
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta;
-import com.itcs.helpdesk.util.Log;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -23,7 +22,7 @@ import org.quartz.impl.StdSchedulerFactory;
 public class HelpDeskScheluder {
 
     public static final int DEFAULT_CHECK_EMAIL_INTERVAL = 300;// 5 MINUTES
-    
+
     /**
      * Once you obtain a scheduler using
      * StdSchedulerFactory.getDefaultScheduler(), your application will not
@@ -96,16 +95,16 @@ public class HelpDeskScheluder {
         getInstance().scheduleJob(job, trigger);
     }
 
-    public static void scheduleSendMailNow(final Long idCaso, final String idCanal, final String mensajeFinal,
+    public static void scheduleSendMailNow(String tenant, final Long idCaso, final String idCanal, final String mensajeFinal,
             final String tos, final String subject) throws SchedulerException {
-        scheduleSendMail(idCaso, idCanal, mensajeFinal, tos, subject, null);
+        scheduleSendMail(tenant, idCaso, idCanal, mensajeFinal, tos, subject, null);
     }
 
-    private static String scheduleSendMail(final Long idCaso, final String idCanal, final String mensajeFinal,
+    private static String scheduleSendMail(String tenant, final Long idCaso, final String idCanal, final String mensajeFinal,
             final String to, final String subject, final Date whenToRun) throws SchedulerException {
 
 //      System.out.println("scheduling SendMail job");
-        final String jobId = SendMailJob.formatJobId(idCanal, subject, idCaso.toString(), to);
+        final String jobId = SendMailJob.formatJobId(tenant, idCanal, subject, idCaso.toString(), to);
         final JobKey jobKey = JobKey.jobKey(jobId, HelpDeskScheluder.GRUPO_CORREO);
         if (getInstance().checkExists(jobKey)) {
             HelpDeskScheluder.unschedule(jobKey);
@@ -118,6 +117,7 @@ public class HelpDeskScheluder {
         job.getJobDataMap().put(SendMailJob.EMAILS_TO, to);
         job.getJobDataMap().put(SendMailJob.EMAIL_SUBJECT, subject);
         job.getJobDataMap().put(SendMailJob.EMAIL_TEXT, mensajeFinal);
+        job.getJobDataMap().put(SendMailJob.TENANT_ID, tenant);
 
         if (whenToRun != null) {
             HelpDeskScheluder.schedule(job, whenToRun);
@@ -128,8 +128,9 @@ public class HelpDeskScheluder {
         return jobId;
     }
 
-    public static String scheduleEventReminderJob(
-            final List<Usuario> usuarios, final Long idCaso, final String eventId, String eventReminderId, final Date whenToRun) throws SchedulerException {
+    public static String scheduleEventReminderJob(String tenant,
+            final List<Usuario> usuarios, final Long idCaso,
+            final String eventId, String eventReminderId, final Date whenToRun) throws SchedulerException {
 
         System.out.println("scheduling ScheduleEventReminderJob");
 
@@ -144,7 +145,7 @@ public class HelpDeskScheluder {
             }
         }
 
-        final String jobId = ScheduleEventReminderJob.formatJobId(idCaso.toString(), eventId, eventReminderId);
+        final String jobId = ScheduleEventReminderJob.formatJobId(tenant, idCaso.toString(), eventId, eventReminderId);
         final JobKey jobKey = JobKey.jobKey(jobId, HelpDeskScheluder.GRUPO_CORREO);
         if (getInstance().checkExists(jobKey)) {
             HelpDeskScheluder.unschedule(jobKey);
@@ -153,18 +154,19 @@ public class HelpDeskScheluder {
         JobDetail job = JobBuilder.newJob(ScheduleEventReminderJob.class).withIdentity(jobId, HelpDeskScheluder.GRUPO_CORREO).build();
 
 //        job.getJobDataMap().put(AbstractGoDeskJob.ID_CANAL, idCanal);//not needed since will send the email from a non-reply email godesk session
-        job.getJobDataMap().put(ScheduleEventReminderJob.ID_CASO, idCaso.toString());
+        job.getJobDataMap().put(AbstractGoDeskJob.ID_CASO, idCaso.toString());
         job.getJobDataMap().put(ScheduleEventReminderJob.EMAILS_TO, mailsTo);
         job.getJobDataMap().put(ScheduleEventReminderJob.EVENT_ID, eventId);
         job.getJobDataMap().put(ScheduleEventReminderJob.REMINDER_ID, eventReminderId);
+        job.getJobDataMap().put(AbstractGoDeskJob.TENANT_ID, tenant);
 
         HelpDeskScheluder.schedule(job, whenToRun);
         return jobId;
     }
 
-    public static void scheduleRevisarCorreo(String idCanal, Integer intervalInSeconds) throws SchedulerException {
+    public static void scheduleRevisarCorreo(String tenant, String idCanal, Integer intervalInSeconds) throws SchedulerException {
 
-        final String downloadEmailJobId = DownloadEmailJob.formatJobId(idCanal);
+        final String downloadEmailJobId = DownloadEmailJob.formatJobId(idCanal, tenant);
         final JobKey jobKey = JobKey.jobKey(downloadEmailJobId, HelpDeskScheluder.GRUPO_CORREO);
         if (getInstance().checkExists(jobKey)) {
             HelpDeskScheluder.unschedule(jobKey);
@@ -173,6 +175,7 @@ public class HelpDeskScheluder {
         JobDetail job = JobBuilder.newJob(DownloadEmailJob.class).withIdentity(downloadEmailJobId, HelpDeskScheluder.GRUPO_CORREO).build();
 
         job.getJobDataMap().put(DownloadEmailJob.ID_CANAL, idCanal);
+        job.getJobDataMap().put(AbstractGoDeskJob.TENANT_ID, tenant);
         job.getJobDataMap().put(DownloadEmailJob.INTERVAL_SECONDS, intervalInSeconds.toString());
 
         Calendar calendario = Calendar.getInstance();
@@ -182,14 +185,14 @@ public class HelpDeskScheluder {
         HelpDeskScheluder.schedule(job, calendario.getTime());
     }
 
-    public static void unscheduleCambioAlertas(Long idCaso) throws SchedulerException {
-        TicketAlertStateChangeJob.unschedule(TicketAlertStateChangeJob.formatJobId(idCaso, EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta().getIdalerta()));
-        TicketAlertStateChangeJob.unschedule(TicketAlertStateChangeJob.formatJobId(idCaso, EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta().getIdalerta()));
+    public static void unscheduleCambioAlertas(String tenant, Long idCaso) throws SchedulerException {
+        TicketAlertStateChangeJob.unschedule(TicketAlertStateChangeJob.formatJobId(tenant, idCaso, EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta().getIdalerta()));
+        TicketAlertStateChangeJob.unschedule(TicketAlertStateChangeJob.formatJobId(tenant, idCaso, EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta().getIdalerta()));
     }
 
-    public static String scheduleActionClassExecutorJob(final Long idCaso, final String actionClassName, final String params, final Date whenToRun) throws SchedulerException {
+    public static String scheduleActionClassExecutorJob(String tenant, final Long idCaso, final String actionClassName, final String params, final Date whenToRun) throws SchedulerException {
         final String time = String.valueOf(whenToRun.getTime());
-        final String jobId = ActionClassExecutorJob.formatJobId(idCaso.toString(), actionClassName, time);
+        final String jobId = ActionClassExecutorJob.formatJobId(tenant, idCaso.toString(), actionClassName, time);
 
         JobDetail job = JobBuilder.newJob(ActionClassExecutorJob.class)
                 .withIdentity(jobId, HelpDeskScheluder.GRUPO_CASOS).build();
@@ -197,56 +200,59 @@ public class HelpDeskScheluder {
         job.getJobDataMap().put(ActionClassExecutorJob.ACTION_CLASSNAME, actionClassName);
         job.getJobDataMap().put(ActionClassExecutorJob.ACTION_PARAMS, params);
         job.getJobDataMap().put(ActionClassExecutorJob.ID_TIME, time);
+        job.getJobDataMap().put(AbstractGoDeskJob.TENANT_ID, tenant);
 
         HelpDeskScheluder.schedule(job, whenToRun);
         return jobId;
 
     }
 
-    public static void scheduleAlertaVencido(final Long idCaso, final Date whenToRun) throws SchedulerException {
-        final String jobId = TicketAlertStateChangeJob.formatJobId(idCaso, EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta().getIdalerta());
+    public static void scheduleAlertaVencido(String tenant, final Long idCaso, final Date whenToRun) throws SchedulerException {
+        final String jobId = TicketAlertStateChangeJob.formatJobId(tenant, idCaso, EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta().getIdalerta());
 
         TicketAlertStateChangeJob.unschedule(jobId);
 
         JobDetail job = JobBuilder.newJob(TicketAlertStateChangeJob.class)
                 .withIdentity(jobId, HelpDeskScheluder.GRUPO_CASOS).build();
         job.getJobDataMap().put(TicketAlertStateChangeJob.ID_CASO, idCaso.toString());
+        job.getJobDataMap().put(AbstractGoDeskJob.TENANT_ID, tenant);
         job.getJobDataMap().put(TicketAlertStateChangeJob.ID_ESTADO_ALERTA, EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta().getIdalerta().toString());
 
         HelpDeskScheluder.schedule(job, whenToRun/*casoFinal.getNextResponseDue()*/);
 
     }
 
-    public static void scheduleAlertaPorVencer(final Long idCaso, final Date whenToRun) throws SchedulerException {
+    public static void scheduleAlertaPorVencer(String tenant, final Long idCaso, final Date whenToRun) throws SchedulerException {
 
-        unscheduleAlertasDelCaso(idCaso);
+        unscheduleAlertasDelCaso(tenant, idCaso);
 
-        final String jobIdPorVencer = TicketAlertStateChangeJob.formatJobId(idCaso, EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta().getIdalerta());
+        final String jobIdPorVencer = TicketAlertStateChangeJob.formatJobId(tenant, idCaso, EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta().getIdalerta());
 
         JobDetail job = JobBuilder.newJob(TicketAlertStateChangeJob.class)
                 .withIdentity(jobIdPorVencer, HelpDeskScheluder.GRUPO_CASOS).build();
         job.getJobDataMap().put(AbstractGoDeskJob.ID_CASO, idCaso.toString());
+        job.getJobDataMap().put(AbstractGoDeskJob.TENANT_ID, tenant);
         job.getJobDataMap().put(TicketAlertStateChangeJob.ID_ESTADO_ALERTA, EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta().getIdalerta().toString());
 
         HelpDeskScheluder.schedule(job, whenToRun);
 
     }
 
-    public static void unscheduleAlertasDelCaso(final Long idCaso) throws SchedulerException {
+    public static void unscheduleAlertasDelCaso(String tenant, final Long idCaso) throws SchedulerException {
         System.out.println("unscheduleAlertasDelCaso()");
-        final String jobIdPorVencer = TicketAlertStateChangeJob.formatJobId(idCaso, EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta().getIdalerta());
-        final String jobIdVencido = TicketAlertStateChangeJob.formatJobId(idCaso, EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta().getIdalerta());
+        final String jobIdPorVencer = TicketAlertStateChangeJob.formatJobId(tenant, idCaso, EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta().getIdalerta());
+        final String jobIdVencido = TicketAlertStateChangeJob.formatJobId(tenant, idCaso, EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta().getIdalerta());
 
         TicketAlertStateChangeJob.unschedule(jobIdPorVencer);
         TicketAlertStateChangeJob.unschedule(jobIdVencido);
     }
 
-    public static void scheduleNotifyAgentsCasoReceived(final String idCanal, final String mensajeFinal,
+    public static void scheduleNotifyAgentsCasoReceived(String tenant, final String idCanal, final String mensajeFinal,
             final String to, final String subject, final Long idCaso) throws SchedulerException {
 
         System.out.println("scheduleNotifyAgentsCasoReceived()");
         final String valueOfIdCaso = String.valueOf(idCaso);
-        final String jobId = TicketNotifyMailToGroup.formatJobId(idCanal, valueOfIdCaso, to);
+        final String jobId = TicketNotifyMailToGroup.formatJobId(tenant, idCanal, valueOfIdCaso, to);
         final JobKey jobKey = JobKey.jobKey(jobId, HelpDeskScheluder.GRUPO_CORREO);
 
         if (getInstance().checkExists(jobKey)) {
@@ -260,19 +266,21 @@ public class HelpDeskScheluder {
         job.getJobDataMap().put(TicketNotifyMailToGroup.EMAILS_TO, to);
         job.getJobDataMap().put(TicketNotifyMailToGroup.EMAIL_SUBJECT, subject);
         job.getJobDataMap().put(TicketNotifyMailToGroup.EMAIL_TEXT, mensajeFinal);
+        job.getJobDataMap().put(AbstractGoDeskJob.TENANT_ID, tenant);
 
         HelpDeskScheluder.scheduleToRunNowWithInterval(job, 600);
     }
-    
-    public static void scheduleSendMailNota(final String idCanal, final String mensajeFinal,
+
+    public static void scheduleSendMailNota(String tenant, final String idCanal, final String mensajeFinal,
             final String to, final String subject, final Long idCaso, final Integer idNota, final String attachIds) throws SchedulerException {
-        scheduleSendMailNota(idCanal, mensajeFinal, to, null, null, subject, idCaso, idNota, attachIds);
+        scheduleSendMailNota(tenant, idCanal, mensajeFinal, to, null, null, subject, idCaso, idNota, attachIds);
     }
 
     /**
      * Agendar el envio del correo de respuesta al caso cuando a partir de una
      * nota existente!
      *
+     * @param tenant
      * @param idCanal
      * @param mensajeFinal
      * @param to
@@ -284,13 +292,13 @@ public class HelpDeskScheluder {
      * @param attachIds
      * @throws SchedulerException
      */
-    public static void scheduleSendMailNota(final String idCanal, final String mensajeFinal,
+    public static void scheduleSendMailNota(String tenant, final String idCanal, final String mensajeFinal,
             final String to, final String cc, final String bcc, final String subject, final Long idCaso, final Integer idNota, final String attachIds) throws SchedulerException {
 
         System.out.println("scheduleSendMail()");
         final String valueOfIdCaso = String.valueOf(idCaso);
         final String valueOfIdNota = String.valueOf(idNota);
-        final String jobId = CaseResponseByMailJob.formatJobId(idCanal, valueOfIdCaso, to);
+        final String jobId = CaseResponseByMailJob.formatJobId(tenant, idCanal, valueOfIdCaso, to);
         final JobKey jobKey = JobKey.jobKey(jobId, HelpDeskScheluder.GRUPO_CORREO);
         if (getInstance().checkExists(jobKey)) {
             HelpDeskScheluder.unschedule(jobKey);
@@ -307,6 +315,7 @@ public class HelpDeskScheluder {
         job.getJobDataMap().put(CaseResponseByMailJob.EMAIL_SUBJECT, subject);
         job.getJobDataMap().put(CaseResponseByMailJob.EMAIL_TEXT, mensajeFinal);
         job.getJobDataMap().put(CaseResponseByMailJob.EMAIL_ATTACHMENTS, attachIds);
+        job.getJobDataMap().put(AbstractGoDeskJob.TENANT_ID, tenant);
 
         HelpDeskScheluder.scheduleToRunNowWithInterval(job, INTERVAL_10_MIN);
     }

@@ -178,7 +178,7 @@ public class ManagerCasos implements Serializable {
 
         if (ApplicationConfig.isSendNotificationOnTransfer()) {
             try {
-                MailNotifier.notifyCasoAssigned(caso, null);
+                MailNotifier.notifyCasoAssigned(getJpaController().getSchema(), caso, null);
             } catch (MailClientFactory.MailNotConfiguredException ex) {
                 Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "failed at ManagerCasos.asignarCasoAUsuarioConMenosCasos MailNotConfiguredException", ex);
             } catch (EmailException ex) {
@@ -604,12 +604,12 @@ public class ManagerCasos implements Serializable {
         if (caso.getIdArea() != null) {
             if (caso.getIdArea().getEmailAcusederecibo()) {
                 if (!caso.getTipoCaso().equals(EnumTipoCaso.PREVENTA.getTipoCaso())) {
-                    MailNotifier.notifyClientCasoReceived(caso);
+                    MailNotifier.notifyClientCasoReceived(getJpaController().getSchema(), caso);
                 }
             }
         }
 
-        HelpDeskScheluder.scheduleAlertaPorVencer(caso.getIdCaso(), calculaCuandoPasaAPorVencer(caso));
+        HelpDeskScheluder.scheduleAlertaPorVencer(getJpaController().getSchema(), caso.getIdCaso(), calculaCuandoPasaAPorVencer(caso));
 
         try {
 
@@ -688,7 +688,7 @@ public class ManagerCasos implements Serializable {
                     getJpaController().persistCaso(casoHijo, null);
                     newCasosHijosSaved.add(casoHijo);
 //                caso.getCasosHijosList().add(casoHijo);
-                    HelpDeskScheluder.scheduleAlertaPorVencer(casoHijo.getIdCaso(), calculaCuandoPasaAPorVencer(casoHijo));
+                    HelpDeskScheluder.scheduleAlertaPorVencer(getJpaController().getSchema(), casoHijo.getIdCaso(), calculaCuandoPasaAPorVencer(casoHijo));
                 }
 
                 caso.setCasosHijosList(newCasosHijosSaved);
@@ -900,7 +900,7 @@ public class ManagerCasos implements Serializable {
                 if (caso.getOwner() != null) {
                     if (caso.getOwner().getEmailNotificationsEnabled()) {
                         if (caso.getOwner().getNotifyWhenTicketIsUpdated()) {
-                            MailNotifier.notifyOwnerCasoUpdated(caso, nota.getTexto(), senderName, nota.getFechaCreacion());
+                            MailNotifier.notifyOwnerCasoUpdated(getJpaController().getSchema(), caso, nota.getTexto(), senderName, nota.getFechaCreacion());
                         }
                     }
                 }
@@ -913,7 +913,7 @@ public class ManagerCasos implements Serializable {
                     if (caso.getOwner() != null) {
                         if (caso.getOwner().getEmailNotificationsEnabled()) {
                             if (caso.getOwner().getNotifyWhenTicketIsUpdated()) {
-                                MailNotifier.notifyOwnerCasoUpdated(caso, nota.getTexto(), senderName, nota.getFechaCreacion());
+                                MailNotifier.notifyOwnerCasoUpdated(getJpaController().getSchema(), caso, nota.getTexto(), senderName, nota.getFechaCreacion());
                             }
                         }
                     }
@@ -924,7 +924,7 @@ public class ManagerCasos implements Serializable {
                     if (emailCliente != null) {
                         String subject = formatIdCaso(caso.getIdCaso()) + " " + ClippingsPlaceHolders.buildFinalText("${TipoCaso} ${Asunto}", caso);
 
-                        HelpDeskScheluder.scheduleSendMailNota(canal.getIdCanal(),
+                        HelpDeskScheluder.scheduleSendMailNota(getJpaController().getSchema(), canal.getIdCanal(),
                                 item.getText(), emailCliente, subject, caso.getIdCaso(), nota.getIdNota(), listIdAtt.toString());
                     }
                 }

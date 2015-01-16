@@ -20,7 +20,6 @@ import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.quartz.HelpDeskScheluder;
 import com.itcs.helpdesk.rules.Action;
 import com.itcs.helpdesk.rules.ActionExecutionException;
-import com.itcs.helpdesk.rules.ActionInfo;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.ManagerCasos;
 import java.io.IOException;
@@ -241,7 +240,7 @@ public class CrearCasoVisitaRepSellosAction extends Action {
                 final String eventIdString = entityEvent.getEventId().toString();
                 final String scheduleEventReminderIdString = scheduleEventReminder.getIdReminder().toString();
 
-                String jobId = HelpDeskScheluder.scheduleEventReminderJob(entityEvent.getUsuariosInvitedList(), entityEvent.getIdCaso().getIdCaso(),eventIdString, scheduleEventReminderIdString, cal.getTime());
+                String jobId = HelpDeskScheluder.scheduleEventReminderJob(getJpaController().getSchema(), entityEvent.getUsuariosInvitedList(), entityEvent.getIdCaso().getIdCaso(),eventIdString, scheduleEventReminderIdString, cal.getTime());
 
                 scheduleEventReminder.setQuartzJobId(jobId);
 

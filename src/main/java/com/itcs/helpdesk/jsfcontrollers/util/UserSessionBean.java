@@ -39,6 +39,7 @@ public class UserSessionBean extends AbstractManagedBean<Usuario> implements Ser
 //    private ApplicationBean applicationBean;
     private final String DEFAULT_THEME = "bootstrap";
     private Usuario sessionUser;
+    private String tenantId;
     private UsuarioSessionLog currentSessionLog;//intended to save all user session data
     private String channel;
     private int activeIndexOfMyAccount = 0;
@@ -52,21 +53,22 @@ public class UserSessionBean extends AbstractManagedBean<Usuario> implements Ser
         super(Usuario.class);
     }
 
-   
-    @Override
-    public JPAServiceFacade getJpaController() {
-        System.out.println("UserSessionBean.getJpaController():" + UserTransactionHelper.getUserTxLocation() + ":" + utx);//DEBUG
-        if (getCurrent() != null && !StringUtils.isEmpty( getCurrent().getTenantId()) ) {
-            if (jpaController == null) {
-                jpaController = new JPAServiceFacade(utx, emf, getCurrent().getTenantId());//TODO Change schema dynamic
-            }
-        } else {
-            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "getTenantId is null", null);
-            return null;
-        }
-        return jpaController;
-    }
-    
+//    @Override
+//    public JPAServiceFacade getJpaController() {
+//        System.out.println("*** UserSessionBean.getJpaController():" + UserTransactionHelper.getUserTxLocation() + ":" + utx);//DEBUG
+//        if (getCurrent() != null && !StringUtils.isEmpty(getTenantId())) {
+//            if (jpaController == null) {
+//                jpaController = new JPAServiceFacade(utx, emf, getTenantId());//TODO Change schema dynamic
+//                System.out.println("*** created jpa in "+ getTenantId());
+//            }
+//        } else {
+//            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "getTenantId is null", null);
+//            return null;
+//        }
+//        System.out.println("*** using session jpa in " + getTenantId());
+//        return jpaController;
+//    }
+
     public boolean isValidatedSession() {
         if (this.getCurrent() != null) {
             return true;
@@ -328,5 +330,19 @@ public class UserSessionBean extends AbstractManagedBean<Usuario> implements Ser
      */
     public void setCurrentSessionLog(UsuarioSessionLog currentSessionLog) {
         this.currentSessionLog = currentSessionLog;
+    }
+
+    /**
+     * @return the tenantId
+     */
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    /**
+     * @param tenantId the tenantId to set
+     */
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
     }
 }

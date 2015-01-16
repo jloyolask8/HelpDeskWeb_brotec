@@ -35,7 +35,7 @@ public class NotifyGroupCasoReceivedAction extends Action {
         if (caso.getIdProducto() != null) {
             for (Grupo grupo : caso.getIdProducto().getGrupoList()) {
                 try {
-                    MailNotifier.notifyGroupCasoReceived(grupo, caso);
+                    MailNotifier.notifyGroupCasoReceived(getJpaController().getSchema(), grupo, caso);
                 } catch (Exception ex) {
                     Logger.getLogger(MailNotifier.class.getName()).log(Level.SEVERE, "Error al tratar de enviar caso por email al grupo " + grupo + " favor verifique la configuración de correo.", ex);
                 }

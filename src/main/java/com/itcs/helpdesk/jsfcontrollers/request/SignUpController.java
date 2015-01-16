@@ -7,6 +7,7 @@ package com.itcs.helpdesk.jsfcontrollers.request;
 
 import com.itcs.helpdesk.jsfcontrollers.AbstractManagedBean;
 import com.itcs.helpdesk.persistence.entities.Usuario;
+import com.itcs.helpdesk.persistence.jpa.AbstractJPAController;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.persistence.jpa.service.TenantDataPopulator;
 import com.itcs.helpdesk.persistence.utils.vo.RegistrationVO;
@@ -50,7 +51,7 @@ public class SignUpController extends AbstractManagedBean<Usuario> implements Se
                  final String schemaName = registrationVO.getCompanyName().trim().toLowerCase().replace("\u0020", "_");
                 registrationVO.setCompanyName(schemaName);
                 //run this in public schema
-                final JPAServiceFacade jpaController1 = new JPAServiceFacade(utx, emf);
+                final JPAServiceFacade jpaController1 = new JPAServiceFacade(utx, emf, AbstractJPAController.PUBLIC_SCHEMA_NAME);
                 jpaController1.createTheSchema(registrationVO);
                 
                  //Insert the base data. run this in the schema just created
@@ -92,7 +93,7 @@ public class SignUpController extends AbstractManagedBean<Usuario> implements Se
         }
         
         //Public schema
-        final JPAServiceFacade jpaController1 = new JPAServiceFacade(utx, emf);
+        final JPAServiceFacade jpaController1 = new JPAServiceFacade(utx, emf, AbstractJPAController.PUBLIC_SCHEMA_NAME);
         String result = jpaController1.findSchemaByName(strValue);
 
         if (!StringUtils.isEmpty(result)) {

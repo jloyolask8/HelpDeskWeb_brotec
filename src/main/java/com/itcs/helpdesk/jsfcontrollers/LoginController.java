@@ -21,6 +21,7 @@ import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.context.RequestContext;
 
 @ManagedBean(name = "loginController")
@@ -34,7 +35,7 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
     private String username;
     private String password;
     private String tenantId;
-    
+
     private Usuario usuario;
 //    private SesionesJpaController sesionesJpaController;
     //change pass
@@ -123,56 +124,70 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
 
         if (!getUserSessionBean().isValidatedSession()) {
             try {
-                final JPAServiceFacade jpaController1 = new JPAServiceFacade(utx, emf, tenantId);
-                usuario = jpaController1.find(Usuario.class, username);
-                if (usuario == null) {
-                    JsfUtil.addErrorMessage("El nombre de usuario ingresado no está registrado en el sistema.");
+                if (!StringUtils.isEmpty(tenantId)) {
+                    final JPAServiceFacade jpaController1 = new JPAServiceFacade(utx, emf, tenantId);
+                    usuario = jpaController1.find(Usuario.class, username, true);
+                    if (usuario == null) {
+                        JsfUtil.addErrorMessage("El nombre de usuario ingresado no está registrado en el sistema.");
 //                    return null;
-                } else if (usuario.getPass() != null) {
-                    String passMD5 = UtilSecurity.getMD5(password);
+                    } else if (usuario.getPass() != null) {
+                        String inputPassMD5 = UtilSecurity.getMD5(password);
 //                    System.out.println("pass: "+password+" en MD5:"+passMD5);
 //                    System.out.println("usuario pass: "+usuario.getPass());
-                    if (usuario.getPass().equals(passMD5)) {//compare encrypted pass
+                        if (usuario.getPass().equals(inputPassMD5)) {//compare encrypted pass
 
-                        HttpServletRequest request = (HttpServletRequest) JsfUtil.getRequest();
+                            if (!StringUtils.isEmpty(usuario.getTenantId()) && usuario.getTenantId().equalsIgnoreCase(getTenantId())) {
+                                HttpServletRequest request = (HttpServletRequest) JsfUtil.getRequest();
 
-                        UsuarioSessionLog sessionLog = new UsuarioSessionLog();
-                        sessionLog.setIdUsuario(usuario);
-                        sessionLog.setIp(request.getRemoteAddr());
-                        sessionLog.setTimestampLogin(new Date());
-                        sessionLog.setUserAgent(request.getHeader(HttpHeaders.USER_AGENT));
-                        sessionLog.setLanguages(request.getHeader(HttpHeaders.ACCEPT_LANGUAGE));
-                        
-                        jpaController1.persist(sessionLog);
-                        usuario.addUsuarioSessionLog(sessionLog);
-                        getUserSessionBean().setCurrent(usuario);
-                        getUserSessionBean().setCurrentSessionLog(sessionLog);
+                                getUserSessionBean().setCurrent(usuario);
+                                getUserSessionBean().setTenantId(getTenantId());
 
-                        String channel = "/" + UUID.randomUUID().toString();
-                        getUserSessionBean().setChannel(channel);
-                        getApplicationBean().addChannel(usuario.getIdUsuario(), channel);
-                        final String sessionId = JsfUtil.getRequest().getSession().getId();
-                        System.out.println("sessionId:" + sessionId);
-                        getApplicationBean().getSessionIdMappings().put(sessionId, usuario.getIdUsuario());
-                        RequestContext requestContext = RequestContext.getCurrentInstance();
-                        requestContext.execute("PF('socketMessages').connect('/" + usuario.getIdUsuario() + "')");
+                                UsuarioSessionLog sessionLog = new UsuarioSessionLog();
+                                sessionLog.setIdUsuario(usuario);
+                                sessionLog.setIp(request.getRemoteAddr());
+                                sessionLog.setTimestampLogin(new Date());
+                                sessionLog.setUserAgent(request.getHeader(HttpHeaders.USER_AGENT));
+                                sessionLog.setLanguages(request.getHeader(HttpHeaders.ACCEPT_LANGUAGE));
+
+                                jpaController1.persist(sessionLog);
+                                usuario.addUsuarioSessionLog(sessionLog);
+
+                                getUserSessionBean().setCurrentSessionLog(sessionLog);
+
+                                String channel = "/" + UUID.randomUUID().toString();
+                                getUserSessionBean().setChannel(channel);
+                                getApplicationBean().addChannel(usuario.getIdUsuario(), channel);
+                                final String sessionId = JsfUtil.getRequest().getSession().getId();
+                                getApplicationBean().getSessionIdMappings().put(sessionId, usuario.getIdUsuario());
+                                RequestContext requestContext = RequestContext.getCurrentInstance();
+                                requestContext.execute("PF('socketMessages').connect('/" + usuario.getIdUsuario() + "')");
+                                //TODO redesign the channels for websockets
+
+                                System.out.println("sessionId:" + sessionId);
+                            } else {
+                                JsfUtil.addErrorMessage("El nombre de organización no corresponde. Por favor intenténtelo nuevamente.");
+                            }
 
 //                        ConfigurableNavigationHandler nav = (ConfigurableNavigationHandler) FacesContext.getCurrentInstance().getApplication().getNavigationHandler();
 //                        JsfUtil.addSuccessMessage("Bienvenido, " + usuario.getCapitalName());
-                        if (isThisRequestCommingFromAMobileDevice(JsfUtil.getRequest())) {
+                            if (isThisRequestCommingFromAMobileDevice(JsfUtil.getRequest())) {
 //                            nav.performNavigation("inboxMobile");//DeskTop Version
-                            return "/mobile/index.xhtml?faces-redirect=true";
-                        } else {
+                                return "/mobile/index.xhtml?faces-redirect=true";
+                            } else {
 //                            nav.performNavigation("inbox");//DeskTop Version
-                            return "/script/index.xhtml?faces-redirect=true";
+                                return "/script/index.xhtml?faces-redirect=true";
+                            }
+                        } else {
+                            JsfUtil.addErrorMessage("El nombre de usuario o la contraseña son incorrectos. Por favor intenténtelo nuevamente.");
+//                        return null;
                         }
                     } else {
-                        JsfUtil.addErrorMessage("El nombre de usuario o la contraseña son incorrectos. Por favor intenténtelo nuevamente.");
-//                        return null;
+                        JsfUtil.addErrorMessage("Ud. No tiene activada su contraseña, favor comuniquese con administración para solicitar una.");
                     }
                 } else {
-                    JsfUtil.addErrorMessage("Ud. No tiene activada su contraseña, favor comuniquese con administración para solicitar una.");
+                    JsfUtil.addErrorMessage("Error, debe proporcinar un identificador de su organizacion.");
                 }
+
             } catch (NoResultException ex) {
                 Log.createLogger(this.getClass().getName()).logSevere(ex);
                 JsfUtil.addErrorMessage("El nombre de usuario ingresado no está registrado en el sistema.");
@@ -205,7 +220,7 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
     public String logout_action() {
 
         final JPAServiceFacade jpaController1 = new JPAServiceFacade(utx, emf, tenantId);
-        
+
         try {
             getApplicationBean().removeChannel(getUserSessionBean().getCurrent().getIdUsuario());
         } catch (Exception ex) {

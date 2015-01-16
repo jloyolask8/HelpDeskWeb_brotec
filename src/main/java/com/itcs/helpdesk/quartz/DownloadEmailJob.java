@@ -43,11 +43,11 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
     /**
      * {0} = schema {1} = idArea#
      */
-    public static final String JOB_ID = "DownloadEmail_Canal_%s";
+    public static final String JOB_ID = "DownloadEmail_Canal_%s_Tenant_%s";
     public static final int N_EMAILS_FETCH = 10;
 
-    public static String formatJobId(String idCanal) {
-        return String.format(JOB_ID, new Object[]{idCanal});
+    public static String formatJobId(String idCanal, String tenant) {
+        return String.format(JOB_ID, new Object[]{idCanal, tenant});
     }
 
 //    public DownloadEmailJob(JPAServiceFacade jpaController, ManagerCasos managerCasos) {
@@ -58,18 +58,19 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
         JobDataMap map = context.getMergedJobDataMap();//.getJobDetail().getJobDataMap();
         if (map != null) {
             String idCanal = (String) map.get(ID_CANAL);
+            String tenant = (String) map.get(TENANT_ID);
             String interval = (String) map.get(INTERVAL_SECONDS);
             int secondsToNextSync = Integer.valueOf(interval);
             try {
                 if (!StringUtils.isEmpty(idCanal) && !StringUtils.isEmpty(interval)) {
-                    secondsToNextSync = revisarCorreo(idCanal);
+                    secondsToNextSync = revisarCorreo(idCanal, tenant);
                 }
             } catch (Exception ex) {
                 Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "error on execute DownloadEmailJob. Canal:" + idCanal, ex);
             } finally {
                 try {
                     //schedule to run again after that interval
-                    HelpDeskScheluder.scheduleRevisarCorreo(idCanal, secondsToNextSync);
+                    HelpDeskScheluder.scheduleRevisarCorreo(tenant, idCanal, secondsToNextSync);
                 } catch (SchedulerException ex) {
                     Logger.getLogger(DownloadEmailJob.class.getName()).log(Level.SEVERE, "ERROR TRYING TO schedule next RevisarCorreo Canal:" + idCanal, ex);
                 }
@@ -95,7 +96,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
      * @throws
      * com.itcs.helpdesk.util.MailClientFactory.MailNotConfiguredException
      */
-    private synchronized int revisarCorreo(String idCanal) throws Exception, MailClientFactory.MailNotConfiguredException {
+    private synchronized int revisarCorreo(String idCanal, String tenant) throws Exception, MailClientFactory.MailNotConfiguredException {
 
         int freq = HelpDeskScheluder.DEFAULT_CHECK_EMAIL_INTERVAL;
 
@@ -104,7 +105,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
         UserTransaction utx = UserTransactionHelper.lookupUserTransaction();
 //        System.out.println(UserTransactionHelper.getUserTxLocation() + ":" + utx);//DEBUG
 
-        JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf);
+        JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf, tenant);
         RulesEngine rulesEngine = new RulesEngine(jpaController);
         jpaController.setCasoChangeListener(rulesEngine);
         ManagerCasos managerCasos = new ManagerCasos(jpaController);
@@ -133,9 +134,9 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                     String emailReceiver = getValueOfCanalSetting(jpaController, canal, EnumEmailSettingKeys.INBOUND_USER);
                     EmailClient mailClient;
                     try {
-                        mailClient = MailClientFactory.getInstance(canal.getIdCanal());
+                        mailClient = MailClientFactory.getInstance(tenant, canal.getIdCanal());
                     } catch (MailClientFactory.MailNotConfiguredException ex) {
-                        mailClient = MailClientFactory.createInstance(canal);
+                        mailClient = MailClientFactory.createInstance(tenant, canal);
                     }
 
                     if (mailClient != null) {

@@ -70,7 +70,7 @@ public class SchedulerBean extends AbstractManagedBean<Object> implements Serial
                 try {
                     if ((caso.getEstadoAlerta().getIdalerta().equals(EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta().getIdalerta()))
                             && (caso.getNextResponseDue().after(Calendar.getInstance().getTime()))) {
-                        HelpDeskScheluder.scheduleAlertaPorVencer(caso.getIdCaso(), ManagerCasos.calculaCuandoPasaAPorVencer(caso));
+                        HelpDeskScheluder.scheduleAlertaPorVencer(getUserSessionBean().getTenantId(),caso.getIdCaso(), ManagerCasos.calculaCuandoPasaAPorVencer(caso));
                     }
 
                         //Siempre se debe agendar el cambio a caso vencido para cuando se acabe el plazo para responder el caso
@@ -89,7 +89,7 @@ public class SchedulerBean extends AbstractManagedBean<Object> implements Serial
 //            System.out.println("encontrados "+casos.size()+" casos "+EnumTipoAlerta.TIPO_ALERTA_POR_VENCER+" que se debe agendar cambio de alerta");
         for (Caso caso : casos_por_vencer) {
             try {
-                HelpDeskScheluder.scheduleAlertaVencido(caso.getIdCaso(), caso.getNextResponseDue());
+                HelpDeskScheluder.scheduleAlertaVencido(getUserSessionBean().getTenantId(),caso.getIdCaso(), caso.getNextResponseDue());
 //                    agendarCambioEstadoAlerta(schema, caso);
             } catch (SchedulerException ex) {
                 Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "agendarAlertasForAllCasos -> por vencer", ex);

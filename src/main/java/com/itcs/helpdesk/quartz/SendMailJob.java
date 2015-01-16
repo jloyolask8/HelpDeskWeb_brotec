@@ -11,7 +11,6 @@ import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Nota;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoNota;
 import com.itcs.helpdesk.persistence.entityenums.EnumUsuariosBase;
-import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.util.HtmlUtils;
 import com.itcs.helpdesk.util.MailClientFactory;
 import com.itcs.helpdesk.util.ManagerCasos;
@@ -27,6 +26,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.transaction.UserTransaction;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.mail.EmailException;
+import org.eclipse.persistence.config.EntityManagerProperties;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -52,10 +52,10 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
     /**
      * {0} = idArea,
      */
-    public static final String JOB_ID = "%s_SendEmail_%s_%s_to_%s";
+    public static final String JOB_ID = "%s_%s_SendEmail_%s_%s_to_%s";
 
-    public static String formatJobId(String idCanal, String idCaso, String to, String subject) {
-        return String.format(JOB_ID, new Object[]{idCanal, subject, idCaso, to});
+    public static String formatJobId(String tenant, String idCanal, String idCaso, String to, String subject) {
+        return String.format(JOB_ID, new Object[]{tenant, idCanal, subject, idCaso, to});
     }
 
     @Override
@@ -66,7 +66,7 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
         JobDataMap map = context.getMergedJobDataMap();//.getJobDetail().getJobDataMap();
         if (map != null) {
             String idCanal = (String) map.get(AbstractGoDeskJob.ID_CANAL);
-//            String schema = (String) map.get(ID_TENANT);
+            String tenant = (String) map.get(AbstractGoDeskJob.TENANT_ID);
             String idCaso = (String) map.get(AbstractGoDeskJob.ID_CASO);
             String emails_to = (String) map.get(EMAILS_TO);
             //---
@@ -76,10 +76,10 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
 
             emails_to = emails_to.trim().replace(" ", "");
 
-            final String formatJobId = formatJobId(idCanal, subject, idCaso, emails_to);
+            final String formatJobId = formatJobId(tenant, idCanal, subject, idCaso, emails_to);
             if (!StringUtils.isEmpty(idCanal) && !StringUtils.isEmpty(emails_to)) {
                 try {
-                    final EmailClient instance = MailClientFactory.getInstance(idCanal);
+                    final EmailClient instance = MailClientFactory.getInstance(tenant, idCanal);
                     if (instance != null) {
                         final String[] split_emails = emails_to.split(",");
                         //SEND THE EMAIL!
@@ -99,6 +99,7 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
 
                             utx.begin();
                             em = emf.createEntityManager();
+                            em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, tenant);
                             Caso caso = em.find(Caso.class, idCasoLong);
 
                             Nota nota = new Nota();

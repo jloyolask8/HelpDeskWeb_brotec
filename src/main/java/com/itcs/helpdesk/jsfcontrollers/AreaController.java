@@ -126,17 +126,6 @@ public class AreaController extends AbstractManagedBean<Area> implements Seriali
         try {
             getJpaController().merge(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AreaUpdated"));
-
-            try {
-                //disable Job revisar correo!
-                final String downloadEmailJobId = DownloadEmailJob.formatJobId(current.getIdArea());
-                final JobKey jobKey = JobKey.jobKey(downloadEmailJobId, HelpDeskScheluder.GRUPO_CORREO);
-                HelpDeskScheluder.unschedule(jobKey);
-            } catch (SchedulerException ex) {
-                JsfUtil.addWarningMessage("Error del sistema, No se pudo desabilitar La revision de correo del area " + current.getIdArea());
-                Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "No se pudo inicializar La revision de correo del area " + current.getIdArea(), ex);
-            }
-
             return prepareList();
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "update", e);

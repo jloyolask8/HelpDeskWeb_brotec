@@ -4,29 +4,12 @@
  */
 package com.itcs.helpdesk.webapputils;
 
-import com.itcs.commons.email.EnumEmailSettingKeys;
-import com.itcs.helpdesk.persistence.entities.AppSetting;
-import com.itcs.helpdesk.persistence.entities.Canal;
-import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.quartz.HelpDeskScheluder;
-import com.itcs.helpdesk.util.ApplicationConfig;
 import com.itcs.helpdesk.util.Log;
-import com.itcs.helpdesk.util.MailClientFactory;
-import java.io.IOException;
-import java.sql.Connection;
-import java.util.List;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.Resource;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.sql.DataSource;
-import javax.transaction.UserTransaction;
 import org.quartz.SchedulerException;
 
 /**
@@ -36,10 +19,10 @@ import org.quartz.SchedulerException;
 //@WebListener
 public class AppStarter implements ServletContextListener {
 
-    @Resource
-    private UserTransaction utx = null;
-    @PersistenceUnit
-    private EntityManagerFactory emf;
+//    @Resource
+//    private UserTransaction utx = null;
+//    @PersistenceUnit
+//    private EntityManagerFactory emf;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
@@ -125,22 +108,22 @@ public class AppStarter implements ServletContextListener {
 //        autoOpsExec.agendarAgendarAlertas();
     }
 
-    static Connection lookupConnection() {
-        String DATASOURCE_CONTEXT = "jdbc/godesk_db_ds";
-
-        Connection result = null;
-        try {
-            Context initialContext = new InitialContext();
-            DataSource datasource = (DataSource) initialContext.lookup(DATASOURCE_CONTEXT);
-            if (datasource != null) {
-                result = datasource.getConnection();
-                System.out.println("DataSource Connection:" + result);
-            } else {
-                System.out.println("Failed to lookup datasource.");
-            }
-        } catch (Exception ex) {
-            System.out.println("Cannot get connection: " + ex);
-        }
-        return result;
-    }
+//    static Connection lookupConnection() {
+//        String DATASOURCE_CONTEXT = "jdbc/godesk_db_ds";
+//
+//        Connection result = null;
+//        try {
+//            Context initialContext = new InitialContext();
+//            DataSource datasource = (DataSource) initialContext.lookup(DATASOURCE_CONTEXT);
+//            if (datasource != null) {
+//                result = datasource.getConnection();
+//                System.out.println("DataSource Connection:" + result);
+//            } else {
+//                System.out.println("Failed to lookup datasource.");
+//            }
+//        } catch (Exception ex) {
+//            System.out.println("Cannot get connection: " + ex);
+//        }
+//        return result;
+//    }
 }

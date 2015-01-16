@@ -285,6 +285,7 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
                 && !StringUtils.isEmpty(entityEvent.getIdTipoAccion().getImplementationClassName())) {
             //we must schedule the selected action
             String jobID = HelpDeskScheluder.scheduleActionClassExecutorJob(
+                    getUserSessionBean().getTenantId(),
                     entityEvent.getIdCaso().getIdCaso(),
                     entityEvent.getIdTipoAccion().getImplementationClassName(),
                     entityEvent.getParametrosAccion(),
@@ -311,6 +312,7 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
                 cal.add(Calendar.MINUTE, minituesAmount);
 
                 String jobId = HelpDeskScheluder.scheduleEventReminderJob(
+                        getUserSessionBean().getTenantId(),
                         entityEvent.getUsuariosInvitedList(),
                         entityEvent.getIdCaso().getIdCaso(),
                         scheduleEventReminder.getEventId().getEventId().toString(),

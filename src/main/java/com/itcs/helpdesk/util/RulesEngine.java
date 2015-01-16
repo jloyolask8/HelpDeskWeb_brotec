@@ -602,7 +602,7 @@ public class RulesEngine implements CasoChangeListener {
 
             if (canal != null && canal.getIdTipoCanal() != null && canal.getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal())
                     && !StringUtils.isEmpty(canal.getIdCanal())) {
-                HelpDeskScheluder.scheduleSendMailNow(caso.getIdCaso(), canal.getIdCanal(), emailStruct.getBody(),
+                HelpDeskScheluder.scheduleSendMailNow(getJpaController().getSchema(), caso.getIdCaso(), canal.getIdCanal(), emailStruct.getBody(),
                         emailStruct.getToAdress(),
                         emailStruct.getSubject());
             } else {
@@ -644,7 +644,7 @@ public class RulesEngine implements CasoChangeListener {
 
                 if (ApplicationConfig.isSendNotificationOnTransfer()) {
                     try {
-                        MailNotifier.notifyCasoAssigned(caso, null);
+                        MailNotifier.notifyCasoAssigned(getJpaController().getSchema(), caso, null);
                     } catch (Exception ex) {
                         Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "failed at asignarCasoAUsuario", ex);
                     }
@@ -739,7 +739,7 @@ public class RulesEngine implements CasoChangeListener {
             if (caso.getFechaEstimadaCompra() != null) {
                 caso.setNextResponseDue(caso.getFechaEstimadaCompra());
                 getJpaController().mergeCasoWithoutNotify(caso);
-                HelpDeskScheluder.scheduleAlertaPorVencer(caso.getIdCaso(), ManagerCasos.calculaCuandoPasaAPorVencer(caso));
+                HelpDeskScheluder.scheduleAlertaPorVencer(getJpaController().getSchema(), caso.getIdCaso(), ManagerCasos.calculaCuandoPasaAPorVencer(caso));
 //                HelpDeskScheluder.scheduleAlertaVencido(caso.getIdCaso(), caso.getNextResponseDue());
 //                managerCasos.agendarAlertas(caso);
             } else {
@@ -754,7 +754,7 @@ public class RulesEngine implements CasoChangeListener {
         try {
             ManagerCasos.calcularSLA(caso);
             getJpaController().mergeCasoWithoutNotify(caso);
-            HelpDeskScheluder.scheduleAlertaPorVencer(caso.getIdCaso(), ManagerCasos.calculaCuandoPasaAPorVencer(caso));
+            HelpDeskScheluder.scheduleAlertaPorVencer(getJpaController().getSchema(), caso.getIdCaso(), ManagerCasos.calculaCuandoPasaAPorVencer(caso));
 //            HelpDeskScheluder.scheduleAlertaVencido(caso.getIdCaso(), caso.getNextResponseDue());
 //            managerCasos.agendarAlertas(caso);
         } catch (Exception ex) {

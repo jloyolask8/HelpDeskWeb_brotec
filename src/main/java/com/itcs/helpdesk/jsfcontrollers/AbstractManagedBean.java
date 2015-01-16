@@ -17,6 +17,7 @@ import com.itcs.helpdesk.persistence.utils.OrderBy;
 import com.itcs.helpdesk.util.DateUtils;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.ManagerCasos;
+import com.itcs.helpdesk.util.RulesEngine;
 import com.itcs.helpdesk.webapputils.UAgentInfo;
 import java.io.IOException;
 import java.io.Serializable;
@@ -44,6 +45,7 @@ import javax.resource.NotSupportedException;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.UserTransaction;
 import javax.ws.rs.core.HttpHeaders;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.ocpsoft.prettytime.PrettyTime;
@@ -75,8 +77,8 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     private final Class<E> entityClass;
 //    private final String schemaName;
 
-    protected transient JPAServiceFacade jpaController = null;
-    protected transient ManagerCasos managerCasos;
+//    protected transient JPAServiceFacade jpaController = null;
+//    protected transient ManagerCasos managerCasos;
     protected transient DataModel items = null;
     protected transient PaginationHelper pagination;
     private int paginationPageSize = 20;
@@ -294,27 +296,62 @@ public abstract class AbstractManagedBean<E> implements Serializable {
         recreatePagination();
         recreateModel();
     }
-    
+
 //    public JPAServiceFacade getJpaController(String schema) {
 //        if (jpaController == null) {
 //            jpaController = new JPAServiceFacade(utx, emf, schema);
 //        }
 //        return jpaController;
 //    }
+    /**
+     * Override getJpaController because we Need to set a listener
+     * (CasoChangeListener) for the jpa controller
+     *
+     * @return
+     */
+    public JPAServiceFacade getJpaControllerThatListenRules() {
+//        if (jpaController == null) {
+//            jpaController = new JPAServiceFacade(utx, emf, getUserSessionBean().getTenantId());
+//            RulesEngine rulesEngine = new RulesEngine(jpaController);
+//            jpaController.setCasoChangeListener(rulesEngine);
+//            System.out.println("getJpaControllerThatListenRules() schema :" + jpaController.getSchema());
+//        }
+//        return jpaController;
+        if (!StringUtils.isEmpty(getUserSessionBean().getTenantId())) {
+            JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf, getUserSessionBean().getTenantId());
+             RulesEngine rulesEngine = new RulesEngine(jpaController);
+            jpaController.setCasoChangeListener(rulesEngine);
+            return jpaController;
+        }
+        throw new IllegalAccessError("Error al acceder al jpa");
+    }
 
     public JPAServiceFacade getJpaController() {
-        if (jpaController == null) {
-            jpaController = new JPAServiceFacade(utx, emf, getUserSessionBean().getCurrent().getTenantId());
+        System.out.println("AbstractManagedBean.getJpaController() " + getUserSessionBean().getTenantId());
+//        if (jpaController == null && !StringUtils.isEmpty(getUserSessionBean().getTenantId())) {
+//            jpaController = new JPAServiceFacade(utx, emf, getUserSessionBean().getTenantId());
+//        }
+//        return jpaController;
+        if (!StringUtils.isEmpty(getUserSessionBean().getTenantId())) {
+            JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf, getUserSessionBean().getTenantId());
+            return jpaController;
         }
-        return jpaController;
+        throw new IllegalAccessError("Error al acceder al jpa");
     }
 
     protected ManagerCasos getManagerCasos() {
-        if (null == managerCasos) {
-            managerCasos = new ManagerCasos();
+        if (!StringUtils.isEmpty(getUserSessionBean().getTenantId())) {
+            ManagerCasos managerCasos = new ManagerCasos();
             managerCasos.setJpaController(getJpaController());
+            return managerCasos;
         }
-        return managerCasos;
+        throw new IllegalAccessError("Error al acceder al ManagerCasos");
+
+//        if (null == managerCasos) {
+//            managerCasos = new ManagerCasos();
+//            managerCasos.setJpaController(getJpaController());
+//        }
+//        return managerCasos;
     }
 
     public void addMessageTo(FacesMessage.Severity sev, String clientId, String sumary) {
@@ -457,7 +494,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
                 }
             }
 
-            if(copy.getFiltrosVistaList().isEmpty()){
+            if (copy.getFiltrosVistaList().isEmpty()) {
                 copy.addNewFiltroVista();
             }
             setVista(copy);
@@ -663,7 +700,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
 
     }
 
-    protected void beforePrepareList(){
+    protected void beforePrepareList() {
 
     }
 
