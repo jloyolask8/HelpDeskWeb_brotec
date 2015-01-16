@@ -202,10 +202,11 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                                             boolean download;
                                             if ((users != null) && (!users.isEmpty())) {
                                                 Usuario user = users.get(0);
-                                                if (user.getUsuarioList() != null && !user.getUsuarioList().isEmpty()) {
+                                                //Esto debe hacerse configurable
+                                                /*if ((user.getUsuarioList() != null) && (!user.getUsuarioList().isEmpty())) {
                                                     //this guy is a supervisor, he can create tickets
                                                     download = true;
-                                                } else {
+                                                } else */{
                                                     //ignore emails from users of the system !!
                                                     //let them know that this is now allowed!!
                                                     download = false;
@@ -249,11 +250,12 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                             if (ApplicationConfig.isAppDebugEnabled()) {
                                 Log.createLogger(this.getClass().getName()).logDebug("Revisión de correo " + canal + "exitosa: " + messages.size() + " mensajes leídos. Intancia: brotec-icafal");
                             }
-
+                        }catch(Exception ex){
+                            ex.printStackTrace();
                         } finally {
                             try {
                                 if (highestUID > 0) {
-//                                    System.out.println("saving highestUID: " + highestUID);
+                                    System.out.println("saving highestUID: " + highestUID);
                                     canal.getCanalSettingList().remove(new CanalSetting(canal.getIdCanal(), EnumEmailSettingKeys.HIGHEST_UID.getKey()));
                                     canal.getCanalSettingList().add(new CanalSetting(canal, EnumEmailSettingKeys.HIGHEST_UID.getKey(), String.valueOf(highestUID), ""));
                                     jpaController.merge(canal);
