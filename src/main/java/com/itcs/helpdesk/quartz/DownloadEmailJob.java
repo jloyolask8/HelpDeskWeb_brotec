@@ -152,7 +152,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                             } else {
                                 messages = mailClient.getUnreadMessagesOnlyHeaders();
                             }
-    //                    List<EmailMessage> messages = mailClient.getUnreadMessages();
+                            //                    List<EmailMessage> messages = mailClient.getUnreadMessages();
 
                             //Waste of resources, what if we have a million of blacklisted mails??
                             //                    List<BlackListEmail> blackList = (List<BlackListEmail>) jpaController.findAll(BlackListEmail.class);//findAll(BlackListEmail.class);
@@ -195,29 +195,40 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                                             }
 
                                         } else {
+                                            boolean download;
+
+
                                             //block messages that do not ref# to a case comming from an FromEmail configured as a agent's email addresss.
                                             //NEW TICKET?
                                             List<Usuario> users = jpaController.getUsuarioFindByEmail(emailMessage.getFromEmail());
 
-                                            boolean download;
+
                                             if ((users != null) && (!users.isEmpty())) {
                                                 Usuario user = users.get(0);
+                                                download = false;
                                                 //Esto debe hacerse configurable
-                                                /*if ((user.getUsuarioList() != null) && (!user.getUsuarioList().isEmpty())) {
-                                                    //this guy is a supervisor, he can create tickets
-                                                    download = true;
-                                                } else */{
-                                                    //ignore emails from users of the system !!
-                                                    //let them know that this is now allowed!!
-                                                    download = false;
-                                                    if (ApplicationConfig.isAppDebugEnabled()) {
-                                                        Log.createLogger(this.getClass().getName()).logDebug("IGNORING MESSAGE " + emailMessage.getIdMessage() + " from user  of the system :" + users);
+
+                                                if (ApplicationConfig.createSupervisorCases()) {
+                                                    if ((user.getUsuarioList() != null) && (!user.getUsuarioList().isEmpty())) {
+                                                        //this guy is a supervisor, he can create tickets
+                                                        download = true;
+                                                    } else {
+                                                        //ignore emails from users of the system !!
+                                                        //let them know that this is now allowed!!
+                                                        download = false;
+                                                        if (ApplicationConfig.isAppDebugEnabled()) {
+                                                            Log.createLogger(this.getClass().getName()).logDebug("IGNORING MESSAGE " + emailMessage.getIdMessage() + " from user  of the system :" + users);
+                                                        }
                                                     }
                                                 }
+
 
                                             } else {
                                                 download = true;
                                             }
+
+
+
                                             if (download) {
                                                 //download message
                                                 //Si está configurado bajar attachments y el correo tiene attachments se vuelve a descargar con attachments
@@ -250,7 +261,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                             if (ApplicationConfig.isAppDebugEnabled()) {
                                 Log.createLogger(this.getClass().getName()).logDebug("Revisión de correo " + canal + "exitosa: " + messages.size() + " mensajes leídos. Intancia: brotec-icafal");
                             }
-                        }catch(Exception ex){
+                        } catch (Exception ex) {
                             ex.printStackTrace();
                         } finally {
                             try {
@@ -281,5 +292,4 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
 
         return freq;
     }
-
 }
