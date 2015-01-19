@@ -155,9 +155,7 @@ public class InscripcionEventosSessionBean extends AbstractManagedBean<Caso> imp
         } catch (ClassNotFoundException ex) {
             JsfUtil.addErrorMessage(ex, "Lo sentimos, ocurrió un error inesperado. Favor contactar a soporte.");
             Logger.getLogger(AbstractManagedBean.class.getName()).log(Level.SEVERE, "ClassNotFoundException createPageDataModel", ex);
-        } catch (NotSupportedException ex) {
-            addWarnMessage("Lo sentimos, ocurrió un error inesperado. La acción que desea realizar aún no esta soportada por el sistema.");
-        }
+        } 
 
         return Collections.EMPTY_LIST;
 

@@ -11,7 +11,7 @@ import com.itcs.helpdesk.persistence.entities.AuditLog;
 import com.itcs.helpdesk.persistence.entities.BlackListEmail;
 import com.itcs.helpdesk.persistence.entities.Canal;
 import com.itcs.helpdesk.persistence.entities.Caso;
-import com.itcs.helpdesk.persistence.entities.metadata.Caso_;
+import com.itcs.helpdesk.persistence.entities.Caso_;
 import com.itcs.helpdesk.persistence.entities.Cliente;
 import com.itcs.helpdesk.persistence.entities.Clipping;
 import com.itcs.helpdesk.persistence.entities.EmailCliente;
@@ -468,8 +468,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         try {
             return (List<AuditLog>) getJpaControllerThatListenRules()
                     .findAllEntities(vista1, new OrderBy("fecha", OrderBy.OrderType.DESC), userSessionBean.getCurrent());
-        } catch (NotSupportedException ex) {
-            Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, "NotSupportedException", ex);
+      
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, "ClassNotFoundException", ex);
         }

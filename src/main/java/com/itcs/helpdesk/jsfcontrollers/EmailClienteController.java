@@ -5,13 +5,19 @@ import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Cliente;
 import com.itcs.helpdesk.persistence.entities.EmailCliente;
+import com.itcs.helpdesk.persistence.entities.FiltroVista;
 import com.itcs.helpdesk.persistence.entities.ProductoContratado;
 import com.itcs.helpdesk.persistence.entities.ProductoContratadoPK;
 import com.itcs.helpdesk.persistence.entities.SubComponente;
+import com.itcs.helpdesk.persistence.entities.Vista;
+import com.itcs.helpdesk.persistence.entities.EmailCliente_;
+import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
+import com.itcs.helpdesk.persistence.utils.OrderBy;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.UtilesRut;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,23 +72,45 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
         super(EmailCliente.class);
     }
 
+    @Override
+    public OrderBy getDefaultOrderBy() {
+        return new OrderBy("emailCliente");
+    }
+
     public List<EmailCliente> completeEmailCliente(String query) {
         System.out.println(query);
         //List<EmailCliente> results = new ArrayList<EmailCliente>();
-        List<EmailCliente> emailClientes = getJpaController().getEmailClienteFindByEmailLike(query, 10);
+//        List<EmailCliente> emailClientes = getJpaController().getEmailClienteFindByEmailLike(query, 10);
 //        System.out.println(emailClientes);
-        if (emailClientes != null && !emailClientes.isEmpty()) {
-            return emailClientes;
-        } else {
-//            emailCliente_wizard_existeEmail = false;
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "No existe el email:" + query, "No existe el Cliente con email:" + query + ". Se creará automáticamente.");
-            FacesContext.getCurrentInstance().addMessage(null, message);
-            emailClientes = new ArrayList<EmailCliente>();
-            emailClientes.add(new EmailCliente(query));
-            System.out.println("No existe el Cliente con email" + query);
-            return emailClientes;
-        }
 
+        Vista vista1 = new Vista(EmailCliente.class);
+//            
+        FiltroVista f1 = new FiltroVista();
+        f1.setIdCampo("emailCliente");
+        f1.setIdComparador(EnumTipoComparacion.CO.getTipoComparacion());
+        f1.setValor(query);
+        f1.setIdVista(vista1);
+        vista1.getFiltrosVistaList().add(f1);
+        List<EmailCliente> emailClientes;
+        try {
+            emailClientes = (List<EmailCliente>) getJpaController().findEntitiesFirstChunk(vista1, getDefaultOrderBy(), query);
+
+            if (emailClientes != null && !emailClientes.isEmpty()) {
+                return emailClientes;
+            } else {
+//            emailCliente_wizard_existeEmail = false;
+                FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "No existe el email:" + query, "No existe el Cliente con email:" + query + ". Se creará automáticamente.");
+                FacesContext.getCurrentInstance().addMessage(null, message);
+                emailClientes = new ArrayList<>();
+                emailClientes.add(new EmailCliente(query));
+                System.out.println("No existe el Cliente con email" + query);
+                return emailClientes;
+            }
+
+        } catch (IllegalStateException | ClassNotFoundException ex) {
+            Logger.getLogger(EmailClienteController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return Collections.EMPTY_LIST;
     }
 
     /**
@@ -92,15 +120,27 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
      * @return
      */
     public List<String> completeEmailClienteString(String query) {
-        System.out.println(query);
-        List<String> results = new ArrayList<>();
-        List<EmailCliente> emailClientes = getJpaController().getEmailClienteFindByEmailLike(query, 10);
+        try {
+            System.out.println(query);
+            List<String> results = new ArrayList<>();
+            Vista vista1 = new Vista(EmailCliente.class);
+//
+            FiltroVista f1 = new FiltroVista();
+            f1.setIdCampo("emailCliente");
+            f1.setIdComparador(EnumTipoComparacion.CO.getTipoComparacion());
+            f1.setValor(query);
+            f1.setIdVista(vista1);
+            vista1.getFiltrosVistaList().add(f1);
+            List<EmailCliente> emailClientes;
+
+            emailClientes = (List<EmailCliente>) getJpaController().findEntitiesFirstChunk(vista1, getDefaultOrderBy(), query);
+//        List<EmailCliente> emailClientes = getJpaController().getEmailClienteFindByEmailLike(query, 10);
 //        System.out.println(emailClientes);
-        if (emailClientes != null && !emailClientes.isEmpty()) {
-            for (EmailCliente emailCliente : emailClientes) {
-                results.add(emailCliente.getEmailCliente());
+            if (emailClientes != null && !emailClientes.isEmpty()) {
+                for (EmailCliente emailCliente : emailClientes) {
+                    results.add(emailCliente.getEmailCliente());
+                }
             }
-        }
 //        else {
 ////            emailCliente_wizard_existeEmail = false;
 //            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "No existe el email:" + query, "No existe el Cliente con email:" + query);
@@ -108,11 +148,15 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
 //            System.out.println("No existe el Cliente con email" + query);
 //        }
 
-        if (InputValidationBean.isValidEmail(query) && !results.contains(query)) {
-            results.add(query);
-        }
+            if (InputValidationBean.isValidEmail(query) && !results.contains(query)) {
+                results.add(query);
+            }
 
-        return results;
+            return results;
+        } catch (IllegalStateException | ClassNotFoundException ex) {
+            Logger.getLogger(EmailClienteController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return Collections.EMPTY_LIST;
     }
 
     public String prepareCreateProductoContratado() {
@@ -301,7 +345,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
         if (c != null) {
             if (subComponent != null) {
                 ProductoContratadoPK productoContratadoPK = new ProductoContratadoPK(c.getIdCliente(),
-                        subComponent.getIdComponente().getIdProducto().getIdProducto(), 
+                        subComponent.getIdComponente().getIdProducto().getIdProducto(),
                         subComponent.getIdComponente().getIdComponente(), subComponent.getIdSubComponente());
 
                 try {
@@ -569,7 +613,6 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
         return null;
     }
 
-
     @Override
     public String prepareList() {
         recreateModel();
@@ -719,7 +762,6 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
 //            return "/script/emailCliente/List";
 //        }
 //    }
-
     private void performDestroy() {
         try {
             getJpaController().remove(EmailCliente.class, current);
@@ -750,7 +792,6 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
 //        }
 //        return items;
 //    }
-
 //    private void recreateModel() {
 //        items = null;
 //    }
@@ -1057,9 +1098,9 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
             if (value == null || value.length() == 0) {
                 return null;
             }
-           UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
-                getValue(facesContext.getELContext(), null, "UserSessionBean");
-        return controller.getJpaController().find(EmailCliente.class, getKey(value));
+            UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                    getValue(facesContext.getELContext(), null, "UserSessionBean");
+            return controller.getJpaController().find(EmailCliente.class, getKey(value));
         }
 
         java.lang.String getKey(String value) {

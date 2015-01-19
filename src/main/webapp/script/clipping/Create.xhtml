@@ -10,7 +10,7 @@
 
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
-            <h:outputText value="#{bundle.CreateClippingTitle}"></h:outputText>
+            <p:outputLabel value="#{bundle.CreateClippingTitle}"/>
         </ui:define>
 
         <ui:define name="west">
@@ -35,25 +35,20 @@
 
         <ui:define name="body">
 
-
-            <pe:layoutPane position="center" styleHeader="margin-top: 6px !important;">
-                <f:facet name="header">
-                    <p:outputLabel value="#{bundle.CreateClippingTitle}"/>
-                </f:facet>                
+             
 
                <h:form id="createEditform">
                     <p:messages globalOnly="true"/>
-                    <h:panelGrid columns="2">
-                        <p:outputLabel value="#{bundle.EditClippingLabel_nombre}" for="nombre" style="font-weight: bold"/>
+                    <h:panelGrid columns="1">
                         <h:panelGrid>
                             <p:inputText id="nombre" value="#{clippingController.selected.nombre}" style="width: 600px"
                                          title="#{bundle.EditClippingTitle_nombre}" required="true" 
                                          requiredMessage="#{bundle.EditClippingRequiredMessage_nombre}"/>
+                            <p:watermark for="nombre" value="#{bundle.EditClippingLabel_nombre}"/>
                             <p:message for="nombre"/>
                         </h:panelGrid>
 
 
-                        <p:outputLabel value="#{bundle.EditClippingLabel_texto}" style="font-weight: bold"/>
 
                         <h:panelGrid>
 
@@ -68,7 +63,6 @@
 
 
 
-                        <p:outputLabel value="Disponible Para:" for="VisibilidadPanel" style="font-weight: bold"/>
 
                         <go:visibility id="VisibilidadPanel" controllerMBean="#{clippingController}"/>
                          
@@ -92,7 +86,7 @@
 
 
                 </h:form>
-            </pe:layoutPane>
+         
 
         </ui:define>
 
