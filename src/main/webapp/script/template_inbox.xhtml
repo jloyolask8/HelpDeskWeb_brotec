@@ -14,7 +14,7 @@
             <meta http-equiv="Expires" content="0" />
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
             <title>#{applicationBean.helpdeskTitle}</title>      
-            
+
             <ui:include src="diagnosticScripts.xhtml"/>
 
             <h:outputStylesheet library="css" name="jsfcrud.css"/>
@@ -160,7 +160,7 @@
                         <h:form id="formTopMenu">
 
                             <p:menubar id="menubar" autoDisplay="false" >
-                                <p:menuitem action="#{casoController.inbox}" 
+                                <p:menuitem onclick="#{casoController.refresh()}" action="#{casoController.inbox}" 
                                             ajax="false" value="Inbox" icon="fa fa-inbox">
                                     <p:resetInput target="@form" />
                                 </p:menuitem>
@@ -191,7 +191,7 @@
 
                                 <p:submenu label="Casos" icon="fa fa-ticket"  rendered="#{filtroAcceso.verificarAccesoAFuncionAgregarCaso()}">
                                     <p:menuitem value="Crear Nuevo Caso" action="#{casoController.prepareCreate}" ajax="false" icon="fa fa-plus"
-                                                 rendered="#{filtroAcceso.verificarAccesoAFuncionAgregarCaso()}">
+                                                rendered="#{filtroAcceso.verificarAccesoAFuncionAgregarCaso()}">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
                                     <p:menuitem value="Crear Nuevo Caso de Postventa" action="#{casoController.prepareCreateCasoReparacion()}" ajax="false" icon="fa fa-wrench"
@@ -217,7 +217,7 @@
                                     <p:menuitem value="Reportes Gráficos" ajax="false" action="/script/report_graphs/reports" icon="fa fa-bar-chart-o">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
-                                    
+
                                     <p:menuitem value="Reports" ajax="false" action="#{reportChartController.prepareList()}" icon="fa fa-bar-chart-o" rendered="false">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
@@ -241,8 +241,8 @@
                                     <p:menuitem value="Grupos de Agentes" action="#{grupoController.prepareList}" ajax="false" icon="fa fa-users">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
-                                   <p:separator/>
-                                     <p:menuitem value="Tipos de Casos" action="#{tipoCasoController.prepareList}" ajax="false" icon="fa fa-exclamation">
+                                    <p:separator/>
+                                    <p:menuitem value="Tipos de Casos" action="#{tipoCasoController.prepareList}" ajax="false" icon="fa fa-exclamation">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
                                     <p:menuitem value="Sub Estados de Casos" action="#{subEstadoCasoController.prepareList}" ajax="false" icon="fa fa-bookmark">
@@ -251,11 +251,11 @@
                                     <p:menuitem value="SLA y Prioridad de Casos" action="#{prioridadController.prepareList}" ajax="false" icon="fa fa-bell">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
-                                     <p:menuitem value="Campos personalizados de casos" 
+                                    <p:menuitem value="Campos personalizados de casos" 
                                                 action="/script/customField/List.xhtml" ajax="false" icon="fa fa-puzzle-piece" >
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
-                                      <p:separator/>
+                                    <p:separator/>
                                     <p:menuitem ajax="false" action="#{vistaController.prepareList()}" value="Vistas" icon="fa fa-filter"
                                                 disabled="#{not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}">
                                         <p:resetInput target="@form" />
@@ -273,7 +273,7 @@
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
 
-                                  
+
 
                                     <p:menuitem value="Configuración" action="#{appSettingController.goToConfigPage}" ajax="false" icon="fa fa-wrench" >
                                         <p:resetInput target="@form" />
@@ -359,7 +359,22 @@
                                             icon="fa fa-lock">
                                     <p:resetInput target="@form" />
                                 </p:menuitem>
+                                <!--Componente De Ayuda aun en construccion ->
+                                <f:facet name="options">
+                                    <div align="right">
+                                        <p:outputPanel style="position: absolute; top: 5px; right: 100px;">  
+                                            <p:notificationBar style="margin-top: 45px;" position="top" effect="slide" styleClass="top" widgetVar="bar">
+                                                <h:outputText value="Ayuda para administración y operación de Godesk las 24 horas de dia en cantacto@Godesk.cl
+                                                              Todas sus dudas serán aclaradas al instante, documentación y manuales aquí en la palma de su mano." 
+                                                              style="font-size:25px;" />
+                                            </p:notificationBar>
 
+                                            <p:commandButton value="Show" onclick="PF('bar').show()" type="button" icon="ui-icon-arrow-1-s"/>
+                                            <p:commandButton value="Hide" onclick="PF('bar').hide()" type="button" icon="ui-icon-arrow-1-n"/>
+                                        </p:outputPanel>
+                                    </div>
+                                </f:facet-->
+                                
                                 <f:facet name="options">
                                     <p:ajaxStatus style="position: absolute; top: 10px; right: 110px;">
                                         <f:facet name="start">
@@ -379,6 +394,8 @@
                                         </p:outputPanel>
                                     </div>
                                 </f:facet>
+
+
 
 
                             </p:menubar>

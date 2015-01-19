@@ -169,7 +169,12 @@ public class HelpDeskScheluder {
         final String downloadEmailJobId = DownloadEmailJob.formatJobId(idCanal, tenant);
         final JobKey jobKey = JobKey.jobKey(downloadEmailJobId, HelpDeskScheluder.GRUPO_CORREO);
         if (getInstance().checkExists(jobKey)) {
-            HelpDeskScheluder.unschedule(jobKey);
+            try{
+                HelpDeskScheluder.unschedule(jobKey);
+            }catch(SchedulerException ex){
+                System.out.println("ERROR CONTROLADO");
+                ex.printStackTrace();
+            }
         }
 
         JobDetail job = JobBuilder.newJob(DownloadEmailJob.class).withIdentity(downloadEmailJobId, HelpDeskScheluder.GRUPO_CORREO).build();

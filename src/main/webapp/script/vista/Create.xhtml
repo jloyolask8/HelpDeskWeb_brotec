@@ -27,7 +27,7 @@
                 <p:messages id="messages"/>
                 <h:panelGrid columns="2">
                     <h:outputLabel value="#{bundle.VistaLabel_nombre}" for="nombre" style="font-weight: bold"/>
-                    <p:inputText id="nombre" value="#{vistaController.selected.nombre}" style="width: 100%;"
+                    <p:inputText styleClass="noupdate" id="nombre" value="#{vistaController.selected.nombre}" style="width: 100%;"
                                  title="#{bundle.VistaTitle_nombre}" required="true" requiredMessage="#{bundle.VistaRequiredMessage_nombre}"/>
 
 
@@ -48,7 +48,7 @@
                     <go:visibility id="VisibilidadPanel" controllerMBean="#{vistaController}"/>
 
                     <h:outputLabel value="#{bundle.VistaLabel_descripcion}" for="descripcion" style="font-weight: bold"/>
-                    <p:inputTextarea id="descripcion" value="#{vistaController.selected.descripcion}" title="#{bundle.VistaTitle_descripcion}" style="width: 100%;"/>
+                    <p:inputTextarea styleClass="noupdate" id="descripcion" value="#{vistaController.selected.descripcion}" title="#{bundle.VistaTitle_descripcion}" style="width: 100%;"/>
 
                 </h:panelGrid>
 

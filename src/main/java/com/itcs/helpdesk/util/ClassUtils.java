@@ -8,6 +8,7 @@ package com.itcs.helpdesk.util;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -47,7 +48,7 @@ public class ClassUtils {
                         classes.add(Class.forName(pckgname + '.'
                                 + file.substring(0, file.length() - 6)));
                     } catch (final NoClassDefFoundError e) {
-                    // do nothing. this class hasn't been found by the
+                        // do nothing. this class hasn't been found by the
                         // loader, and we don't care.
                     }
                 } else if ((tmpDirectory = new File(directory, file))
@@ -157,4 +158,32 @@ public class ClassUtils {
 
         return classes;
     }
+
+    public static Object clone(Object o) {
+        Object clone = null;
+        try {
+            clone = o.getClass().newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+        // Walk up the superclass hierarchy
+        for (Class obj = o.getClass(); !obj.equals(Object.class); obj = obj.getSuperclass()) {
+            Field[] fields = obj.getDeclaredFields();
+            for (int i = 0; i < fields.length; i++) {
+                fields[i].setAccessible(true);
+                try {
+                // for each class/suerclass, copy all fields
+                    // from this object to the clone
+                    fields[i].set(clone, fields[i].get(o));
+                } catch (IllegalArgumentException e) {
+                } catch (IllegalAccessException e) {
+                }
+            }
+        }
+        return clone;
+    }
+
 }

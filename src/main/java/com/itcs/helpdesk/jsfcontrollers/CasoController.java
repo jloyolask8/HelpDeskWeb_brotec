@@ -54,6 +54,7 @@ import com.itcs.helpdesk.rules.Action;
 import com.itcs.helpdesk.rules.ActionExecutionException;
 import com.itcs.helpdesk.rules.actionsimpl.CrearCasoVisitaRepSellosAction;
 import com.itcs.helpdesk.util.ApplicationConfig;
+import com.itcs.helpdesk.util.ClassUtils;
 import com.itcs.helpdesk.util.ClippingsPlaceHolders;
 import com.itcs.helpdesk.util.HtmlUtils;
 import com.itcs.helpdesk.util.Log;
@@ -102,6 +103,8 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.jsoup.Jsoup;
+import org.jsoup.select.Elements;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.FlowEvent;
@@ -184,7 +187,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //    private boolean filtrarPorCategorias;
 //    private boolean filtrarPorVista = false;
 //    private Vista vista;
-
 //    private transient JPAFilterHelper filterHelper;
     //mobile
     private String swatch = "b";
@@ -196,7 +198,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private Long idFileRemove;
     protected Integer justCreadedNotaId;
     protected Integer selectedViewId;//Vista seleccionada
-
     private String accionToRunSelected;
     private String accionToRunParametros;
 //    private int activeIndexdescOrComment;
@@ -207,7 +208,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public static final int TAB_CASOSREL_INDEX = 3;
     public static final int TAB_TIMELINE_INDEX = 4;
     public static final int TAB_EVENTO_INDEX = 5;
-
     //visitas preventivas, TODO brotec specific
     private static final int visitaPreventivaCrearCasoDiasAntes = 10;
     private static final int visitaPreventivaCrearCasoEnMeses = 6;
@@ -217,27 +217,22 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private Long casosRevisarActualizacion;
     private Long casosPrioritarios;
     private Long casosCerrados;
-
     //reply-mode
     protected boolean replyMode = false;
-
     private boolean replyByEmail = true;
-
     protected boolean searchBarVisible = true;
-
     //respuesta
     private boolean adjuntarArchivosARespuesta = false;
     private boolean mergeHabilitado;
-    private LinkedList<Caso> mergeCandidatesList;
-    private Map<Integer, Boolean> showReducedContentMap;
+    private transient LinkedList<Caso> mergeCandidatesList;
+    private transient Map<Integer, Boolean> showReducedContentMap;
 
     public static final String HEADER_HISTORY = "<br/><hr/><b>HISTORIA DEL CASO</b><hr/><br/>";
-    public static final String HEADER_HISTORY_NOTA = "<p><strong>HISTORIA DEL CASO</strong></p>";
-    public static final String HEADER_HISTORY_NOTA_ALT = "<b>HISTORIA DEL CASO</b>";
-    public static final String FOOTER_HISTORY_NOTA = "> FIN MENSAJE ORIGINAL";
-    public static final String FOOTER_HISTORY_NOTA_ALT = "> FIN MENSAJE ORIGINAL";
+    public static final String HEADER_HISTORY_NOTA_ALT = "HISTORIA DEL CASO";
+    public static final String FOOTER_HISTORY_NOTA = "FIN MENSAJE ORIGINAL";
+    public static final int MEGABYTE = (1024 * 1024);
 
-    private Comparator<Caso> comparadorCasosPorFechaCreacion = new Comparator<Caso>() {
+    private static transient Comparator<Caso> comparadorCasosPorFechaCreacion = new Comparator<Caso>() {
         @Override
         public int compare(Caso o1, Caso o2) {
             return o1.getFechaCreacion().compareTo(o2.getFechaCreacion());
@@ -291,8 +286,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     casoBase.getNotaList().add(nuevaNota);
                 }
                 casoBase.getCasosHijosList().addAll(casoToMerge.getCasosHijosList());
-                casoBase.getAttachmentList().addAll(casoToMerge.getAttachmentList());
-                casoBase.getAttachmentsNotEmbedded().addAll(casoToMerge.getAttachmentsNotEmbedded());
+                casoBase.getAttachmentList().addAll(cloneAttachments(casoToMerge.getAttachmentList(), casoBase));
                 mergeList(casoBase.getCasosRelacionadosList(), casoToMerge.getCasosRelacionadosList());
                 casoBase.getCasosRelacionadosList().remove(casoBase);
                 casoToMerge.setIdCasoCombinado(casoBase);
@@ -318,6 +312,31 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     "El caso " + casoBase.getIdCaso() + " " + comment);
             redirect("/script/caso/Edit.xhtml");
         }
+    }
+
+    private List<Attachment> cloneAttachments(List<Attachment> attachments, Caso casoBase) {
+//        System.out.println("clone Attachments size list: " + attachments.size());
+//        System.out.println("Caso base attachment list size: " + casoBase.getAttachmentList().size());
+//        System.out.println("Caso base attachmentNotEmbedded list size: " + casoBase.getAttachmentsNotEmbedded().size());
+        List<Attachment> clonedElements = new ArrayList<>(attachments.size());
+        for (Attachment attachment : attachments) {
+            Archivo archivo = getJpaController().getArchivoFindByIdAttachment(attachment.getIdAttachment());
+            if (archivo != null) {
+                try {
+                    Attachment nuevoAttachment = (Attachment) ClassUtils.clone(attachment);
+                    nuevoAttachment.setIdAttachment(null);
+                    nuevoAttachment.setIdCaso(casoBase);
+                    getJpaController().persist(nuevoAttachment);
+                    Archivo nuevoArchivo = (Archivo) ClassUtils.clone(archivo);
+                    nuevoArchivo.setIdAttachment(nuevoAttachment.getIdAttachment());
+                    getJpaController().persist(nuevoArchivo);
+                    clonedElements.add(nuevoAttachment);
+                } catch (Exception ex) {
+                    Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return clonedElements;
     }
 
     private void mergeList(List listaOriginal, List lista) {
@@ -1355,7 +1374,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             current.setFechaCreacion(Calendar.getInstance().getTime());
             current.setFechaModif(current.getFechaCreacion());
             current.setOwner(userSessionBean.getCurrent());
-            current.setTema("Postventa para " + current.getIdCliente().getCapitalName());
             current.setTipoCaso(EnumTipoCaso.POSTVENTA.getTipoCaso());
             current.setIdSubEstado(EnumSubEstadoCaso.POSTVENTA_NUEVO.getSubEstado());
             current.setIdCanal(EnumCanal.MANUAL.getCanal());
@@ -1370,6 +1388,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //            sec.setIdSubEstado(EnumSubEstadoCaso.NUEVO.getSubEstado().getIdSubEstado());
 //            current.setIdSubEstado(sec);
             current.setIdEstado(ec);
+            //current.setTema("Postventa para " + current.getIdCliente().getCapitalName());
 
             emailCliente_wizard_existeEmail = false;
             emailCliente_wizard_existeCliente = false;
@@ -1545,31 +1564,25 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      *
      * @return
      */
-    public String createPreentregaAndView() {
-        try {
-            persist(current);
-//            listaActividadesOrdenada = null;
-            return "/script/caso/Edit";
-        } catch (PreexistingEntityException e) {
-            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
-            JsfUtil.addErrorMessage("El Caso con id " + current.getIdCaso() + " ya existe!");
-            return null;
-        } catch (RollbackFailureException e) {
-            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
-            JsfUtil.addErrorMessage(e, "Se produjo una inconsistencia de datos, favor intente mas tarde.");
-            return null;
-        } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).logInfo(resourceBundle.getString("PersistenceErrorOccured"));
-            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
-            JsfUtil.addErrorMessage(e, resourceBundle.getString("PersistenceErrorOccured"));
-            return null;
-        }
-    }
-
     public String createAndView() {
         try {
+            System.out.println("CURRENT TEST ATACHMENT BEFORE:" + this.current.getAttachmentList());
+            List<Attachment> attachmentList = current.getAttachmentList();
+            current.setAttachmentList(null);
             persist(current);
-//            listaActividadesOrdenada = null;
+            if (attachmentList != null) {
+                for (Attachment attachment : attachmentList) {
+                    getManagerCasos().crearAdjunto(
+                            attachment.getArchivo().getArchivo(), null,
+                            this.current, attachment.getNombreArchivo(),
+                            attachment.getMimeType(),
+                            attachment.getArchivo().getFileSize());
+                    JsfUtil.addSuccessMessage("Archivo " + attachment.getNombreArchivo() + " subido con exito");
+                }
+
+                getJpaController().merge(this.current);
+            }
+
             return "/script/caso/Edit";
         } catch (PreexistingEntityException e) {
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
@@ -1585,6 +1598,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             JsfUtil.addErrorMessage(e, resourceBundle.getString("PersistenceErrorOccured"));
             return null;
         }
+
     }
 
     public String goOneLevelUp() {
@@ -1613,25 +1627,33 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public String extractNotaNewPart(Nota nota) {
         String ret = nota.getTexto();
-        int headerStartIndex = nota.getTexto().indexOf(HEADER_HISTORY_NOTA);
-        int historyEndIndex = nota.getTexto().lastIndexOf(FOOTER_HISTORY_NOTA);
-        headerStartIndex = (headerStartIndex > 0) ? headerStartIndex : nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT);
-        historyEndIndex = (historyEndIndex > 0) ? historyEndIndex : nota.getTexto().indexOf(FOOTER_HISTORY_NOTA_ALT);
+
+        int headerStartIndex = ret.indexOf(HEADER_HISTORY_NOTA_ALT);
+        int historyEndIndex = ret.lastIndexOf(FOOTER_HISTORY_NOTA);
+        headerStartIndex = (headerStartIndex > 0) ? headerStartIndex : ret.indexOf(HEADER_HISTORY_NOTA_ALT);
+        historyEndIndex = (historyEndIndex > 0) ? historyEndIndex : ret.indexOf(FOOTER_HISTORY_NOTA);
         if (headerStartIndex > 0) {
-            ret = nota.getTexto().substring(0, headerStartIndex);
+            ret = ret.substring(0, headerStartIndex);
             if ((!debeMostrarContenidoReducido(nota)) && (historyEndIndex > headerStartIndex)) {
-                ret += ret = nota.getTexto().substring(historyEndIndex + FOOTER_HISTORY_NOTA.length());
+                ret += nota.getTexto().substring(historyEndIndex + FOOTER_HISTORY_NOTA.length());
             }
         }
+        org.jsoup.nodes.Document doc = Jsoup.parse(ret);
+        Elements strongTag = doc.getElementsByTag("strong");
+        for (org.jsoup.nodes.Element style : strongTag) {
+            style.remove();
+        }
+        ret = doc.toString();
+        //System.out.println("html ret:\n"+ret);
         return ret;
     }
 
     public boolean existsNotaHistoryPart(Nota nota) {
-        return (nota.getTexto().indexOf(HEADER_HISTORY_NOTA) > 0) || (nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT) > 0);
+        return (nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT) > 0) || (nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT) > 0);
     }
 
     public String extractNotaHistoryPart(Nota nota) {
-        int headerStartIndex = nota.getTexto().indexOf(HEADER_HISTORY_NOTA);
+        int headerStartIndex = nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT);
         headerStartIndex = (headerStartIndex > 0) ? headerStartIndex : nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT);
         if (headerStartIndex > 0) {
             return nota.getTexto().substring(headerStartIndex);
@@ -2585,6 +2607,48 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         return "/script/caso/Edit";
     }
 
+    public String eliminarRelacionado() {
+
+        try {
+
+            Caso casorel = getJpaController().find(Caso.class, new Long(idCaserel));
+            if (casorel == null) {
+                JsfUtil.addErrorMessage(resourceBundle.getString("DeletecasoRel.notfound"));
+                return null;
+            }
+
+            if (!casorel.getCasosRelacionadosList().contains(current)) {
+                JsfUtil.addErrorMessage(resourceBundle.getString("DeletecasoRel.notfound"));
+                return null;
+            }
+
+            if (new Long(idCaserel).equals(current.getIdCaso())) {
+                throw new Exception();
+            }
+//            if (casorel != null) {
+            current = getJpaController().find(Caso.class, current.getIdCaso());
+            casorel.getCasosRelacionadosList().remove(current);
+            getJpaController().mergeCaso(casorel, getManagerCasos().verificaCambios(casorel));
+            current.getCasosRelacionadosList().remove(casorel);
+            getJpaController().mergeCaso(current, getManagerCasos().verificaCambios(current));
+
+            idCaserel = "";
+            current = getJpaController().find(Caso.class, current.getIdCaso());
+            JsfUtil.addSuccessMessage(resourceBundle.getString("DeletecasoRel.ok"));
+            //ManagerCasos.createLogReg(current, "Casos Relacionados", idCaserel, "");
+//            } else {
+//                idCaserel = "";
+//                JsfUtil.addErrorMessage(resourceBundle.getString("DeletecasoRel.notfound"));
+//            }
+        } catch (Exception e) {
+            idCaserel = "";
+            current = getJpaController().find(Caso.class, current.getIdCaso());
+            JsfUtil.addErrorMessage(resourceBundle.getString("DeletecasoRel.nook"));
+        }
+        current = getJpaController().find(Caso.class, current.getIdCaso());
+        return "/script/caso/Edit";
+    }
+
     public void asignarCaso() {
 
         List<AuditLog> changeLog = new ArrayList<>();
@@ -3183,6 +3247,14 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
 
         sbuilder.append(creaMensajeOriginal(current));
+        if (sbuilder.length() > MEGABYTE) {
+            String onlyText = HtmlUtils.extractText(sbuilder.toString());
+            if (onlyText.length() > MEGABYTE) {
+                return onlyText.substring(0, MEGABYTE);
+            } else {
+                return onlyText;
+            }
+        }
         return sbuilder.toString();
     }
 
@@ -3205,7 +3277,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         sbuilder.append("<br/>");
         sbuilder.append(replaceEmbeddedImages(caso.getDescripcion()));
         sbuilder.append("<br/>");
-        sbuilder.append("FIN MENSAJE ORIGINAL");
+        sbuilder.append(FOOTER_HISTORY_NOTA);
         sbuilder.append("<hr/>");
         return sbuilder.toString();
     }
@@ -3228,7 +3300,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         sbuilder.append("<br/>");
         sbuilder.append("<b>Mensaje: </b>");
         sbuilder.append("<br/>");
-        sbuilder.append(replaceEmbeddedImages(nota.getTexto() != null ? nota.getTexto() : "<texto vacío>"));
+        sbuilder.append(replaceEmbeddedImages(extractNotaNewPart(nota)));
         sbuilder.append("<hr/>");
         return sbuilder.toString();
     }
@@ -3302,8 +3374,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             if (getSelected().getIdProducto() != null) {
                 if (getSelected().getIdProducto().getIdLogo() != null) {
                     idLogo = getSelected().getIdProducto().getIdLogo();
-                    archivoLogo
-                            = getJpaControllerThatListenRules().find(Archivo.class, idLogo);
+                    archivoLogo = getJpaController().find(Archivo.class, idLogo);
                 }
             }
 
@@ -3361,12 +3432,10 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             List<Caso> casos = (List<Caso>) getJpaControllerThatListenRules().findAllEntities(getVista(), getDefaultOrderBy(), userSessionBean.getCurrent());//all
             OutputStream output = new ByteArrayOutputStream();
             //Se crea el libro Excel
-            WritableWorkbook workbook
-                    = Workbook.createWorkbook(output);
+            WritableWorkbook workbook = Workbook.createWorkbook(output);
 
             //Se crea una nueva hoja dentro del libro
-            WritableSheet sheet
-                    = workbook.createSheet("Casos " + getVista().toString(), 0);
+            WritableSheet sheet = workbook.createSheet("Casos " + getVista().toString(), 0);
             WritableCellFormat timesBoldUnderline;
             WritableFont times10ptBoldUnderline = new WritableFont(WritableFont.TIMES, 10, WritableFont.BOLD, false, UnderlineStyle.SINGLE);
             timesBoldUnderline = new WritableCellFormat(times10ptBoldUnderline);
@@ -3459,7 +3528,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             byte[] bytearray = new byte[(int) size];
             is.read(bytearray);
 
-//            //System.out.println("CURRENT:"+this.current);
+            //System.out.println("CURRENT:"+this.current);
             if (this.current != null) {
                 getManagerCasos().crearAdjunto(bytearray, null, this.current, nombre, event.getFile().getContentType(), event.getFile().getSize());
                 JsfUtil.addSuccessMessage("Archivo " + nombre + " subido con exito");
@@ -3493,17 +3562,23 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
             Archivo archivo = new Archivo(n);
             archivo.setArchivo(bytearray);
+            archivo.setFileSize(size);
 
             if (current.getAttachmentList() == null) {
                 current.setAttachmentList(new ArrayList<Attachment>());
+                //System.out.println("CURRENT:"+this.current);
             }
 
             Attachment attach = new Attachment(n);
             attach.setIdCaso(current);
+
             attach.setNombreArchivo(nombre);
+            attach.setNombreArchivoOriginal(nombre);
+            attach.setFileExtension(nombre.substring(nombre.lastIndexOf('.')));
             attach.setMimeType(event.getFile().getContentType());
             attach.setArchivo(archivo);
             current.getAttachmentList().add(attach);
+            //System.out.println("CURRENT:"+this.current);
 
             //getJpaControllerThatListenRules().persistAttachment(attach);//later
             //archivo.setIdAttachment(attach.getIdAttachment());run later in create
@@ -4313,9 +4388,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      * @param habilitarMerge the habilitarMerge to set
      */
     public void setMergeHabilitado(boolean habilitarMerge) {
-        System.out.println("habilitarMerge: " + habilitarMerge);
+//        System.out.println("habilitarMerge: " + habilitarMerge);
         this.mergeHabilitado = habilitarMerge;
-        System.out.println("seted habilitarMerge: " + this.mergeHabilitado);
+//        System.out.println("seted habilitarMerge: " + this.mergeHabilitado);
     }
 
     @FacesConverter(forClass = Caso.class)
@@ -4356,7 +4431,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             }
         }
     }
-
 }
 
 class CasoDataModel extends ListDataModel<Caso> implements SelectableDataModel<Caso>, Serializable {

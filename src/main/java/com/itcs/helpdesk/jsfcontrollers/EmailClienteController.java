@@ -262,7 +262,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
                 for (int rowIndex = 1; rowIndex < sheet.getRows(); rowIndex++) {
 
                     String rut = sheet.getCell(CellReferenceHelper.getColumn(cellPositionRut), rowIndex).getContents();
-                    String subComponentId = sheet.getCell(CellReferenceHelper.getColumn(cellPositionSubComponentId), rowIndex).getContents();
+                    String subComponentId = sheet.getCell(CellReferenceHelper.getColumn(cellPositionSubComponentId), rowIndex).getContents().trim();
                     avoidLeak(rut, subComponentId, map, bulkLoadedSubComponentNotExists, bulkLoadedClientsNotExists);
 
                 }

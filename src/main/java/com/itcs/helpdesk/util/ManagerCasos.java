@@ -673,16 +673,27 @@ public class ManagerCasos implements Serializable {
                     casoHijo.setIdComponente(caso.getIdComponente());
                     casoHijo.setIdSubComponente(caso.getIdSubComponente());
                     casoHijo.setIdModelo(caso.getIdModelo());
-                    ManagerCasos.calcularSLA(casoHijo);//    casoHijo.setNextResponseDue(caso.getNextResponseDue());      
+                    ManagerCasos.calcularSLA(casoHijo);//    casoHijo.setNextResponseDue(caso.getNextResponseDue());    
                     casoHijo.setEmailCliente(emailCliente);
+                    casoHijo.setIdCliente(emailCliente.getCliente());
+                    if(casoHijo.getIdCliente() == null){
+                        casoHijo.setIdCliente(caso.getIdCliente());
+                        casoHijo.setEmailCliente(caso.getEmailCliente());
+                    }
 
                     //TODO brotec-specific
                     System.out.println("persisting recinto " + casoHijo.getIdRecinto());
-                    if (null == getJpaController().find(Recinto.class, casoHijo.getIdRecinto())) {
+                    String idRecinto = casoHijo.getIdRecinto();
+                    if(casoHijo.getIdRecinto().contains("[") && casoHijo.getIdRecinto().contains("]"))
+                    {
+                         idRecinto = casoHijo.getIdRecinto().split("\\[")[1].split("\\]")[0];
+                    }
+                    if (null == getJpaController().find(Recinto.class, idRecinto)) {
                         Recinto r = new Recinto();
                         r.setIdRecinto(casoHijo.getIdRecinto());
                         r.setNombre(casoHijo.getIdRecinto());
                         getJpaController().persist(r);
+                        casoHijo.setIdRecinto(r.toString());
                     }
 
                     getJpaController().persistCaso(casoHijo, null);
