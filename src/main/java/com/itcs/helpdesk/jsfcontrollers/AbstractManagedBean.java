@@ -507,6 +507,10 @@ public abstract class AbstractManagedBean<E> implements Serializable {
         return prepareList();//"inbox";
 
     }
+    
+    public boolean isMobileClient(){
+        return isThisRequestCommingFromAMobileDevice(JsfUtil.getRequest());
+    }
 
     /**
      * mothod to determine the browser agent of client!
@@ -527,7 +531,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
         }
 
         if (detector.detectTierTablet()) {
-            return false;
+            return true;
         }
 
         return false;

@@ -42,7 +42,6 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
     private FiltroAcceso filtroAcceso;
     private int selectedItemIndex;
 
-   
     //---
     private Integer visibilityOption = 1;
     //--
@@ -140,6 +139,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
     }
 
     public void create(Vista view) throws RollbackFailureException, Exception {
+
         visibilityOption = determineVisibility(view);
 
         view.setIdUsuarioCreadaPor(userSessionBean.getCurrent());
@@ -187,8 +187,10 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
             }
 
         } catch (RollbackFailureException ex) {
+             addErrorMessage("Lo sentimos, no se puede guardar. _Error: " + ex.getMessage());
             Logger.getLogger(VistaController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
+            addErrorMessage("Lo sentimos, no se puede guardar. _Error: " + ex.getMessage());
             Logger.getLogger(VistaController.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
@@ -280,7 +282,6 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
 //            return prepareList();
 //        }
 //    }
-
     private void performDestroy() {
         try {
             getJpaController().remove(Vista.class, current.getIdVista());
@@ -304,9 +305,6 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
 //            current = (Vista) getJpaController().queryByRange(Vista.class, selectedItemIndex, selectedItemIndex + 1).get(0);
 //        }
 //    }
-
-    
-
     public List<Vista> getVistasCustomersItems() {
         List<Vista> lista = new ArrayList<>();
 
@@ -405,8 +403,8 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
                 return null;
             }
             UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
-                getValue(facesContext.getELContext(), null, "UserSessionBean");
-        return controller.getJpaController().find(Vista.class, getKey(value));
+                    getValue(facesContext.getELContext(), null, "UserSessionBean");
+            return controller.getJpaController().find(Vista.class, getKey(value));
         }
 
         java.lang.Integer getKey(String value) {

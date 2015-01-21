@@ -46,7 +46,6 @@ import com.itcs.helpdesk.persistence.jpa.exceptions.IllegalOrphanException;
 import com.itcs.helpdesk.persistence.jpa.exceptions.NonexistentEntityException;
 import com.itcs.helpdesk.persistence.jpa.exceptions.PreexistingEntityException;
 import com.itcs.helpdesk.persistence.jpa.exceptions.RollbackFailureException;
-import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.persistence.utils.OrderBy;
 import com.itcs.helpdesk.quartz.HelpDeskScheluder;
 import com.itcs.helpdesk.reports.ReportsManager;
@@ -84,7 +83,6 @@ import javax.faces.convert.FacesConverter;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
-import javax.resource.NotSupportedException;
 import javax.servlet.http.HttpServletRequest;
 import jxl.Workbook;
 import jxl.format.UnderlineStyle;
@@ -320,7 +318,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //        System.out.println("Caso base attachmentNotEmbedded list size: " + casoBase.getAttachmentsNotEmbedded().size());
         List<Attachment> clonedElements = new ArrayList<>(attachments.size());
         for (Attachment attachment : attachments) {
-            Archivo archivo = getJpaController().getArchivoFindByIdAttachment(attachment.getIdAttachment());
+            Archivo archivo = getJpaController().find(Archivo.class, attachment.getIdAttachment());
             if (archivo != null) {
                 try {
                     Attachment nuevoAttachment = (Attachment) ClassUtils.clone(attachment);
@@ -487,7 +485,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         try {
             return (List<AuditLog>) getJpaControllerThatListenRules()
                     .findAllEntities(vista1, new OrderBy("fecha", OrderBy.OrderType.DESC), userSessionBean.getCurrent());
-      
+
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, "ClassNotFoundException", ex);
         }
@@ -503,8 +501,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public void handleTagSelect() {
     }
-
-   
 
     public void addNewSubCasoToPreentrega() {
         Caso newSubCaso = new Caso();
@@ -618,7 +614,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public void tagItemSelectEvent(SelectEvent event) {
-        Object item = event.getObject();
+        System.out.println("tagItemSelectEvent");
+        String item = (String)event.getObject();
         current.setFechaModif(Calendar.getInstance().getTime());
         try {
             if (current.getEtiquetaList() != null) {
@@ -3759,9 +3756,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     @Override
-    protected void recreateModel() {
+    public void recreateModel() {
         this.items = null;
-//        this.recreatePagination();
+        this.recreatePagination();
         this.emailClienteSeleccionadoTransfer = null;
         this.usuarioSeleccionadoTransfer = null;
     }

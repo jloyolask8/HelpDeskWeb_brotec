@@ -20,7 +20,7 @@
                 <meta charset="utf-8"/>
                 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
                 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
-                <title><ui:insert name="title">Error 500 - #{applicationBean.helpdeskTitle}</ui:insert></title>           
+                <title><ui:insert name="title">Error 404 - #{applicationBean.helpdeskTitle}</ui:insert></title>           
 
                 <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&amp;subset=latin" rel="stylesheet" type="text/css"></link>
                 <!-- Pixel Admin's stylesheets -->
@@ -33,31 +33,31 @@
 
             </h:head>
 
-            <h:body id="mainbody" styleClass="page-500">      
+            <h:body id="mainbody" styleClass="page-404">   
 
                 <script>var init = [];</script>
 
                 <div class="header">
                     <a href="index.html" class="logo">
-                        <strong>GoDesk Error</strong>500
+                        <strong>Godesk Error</strong>404
                     </a> <!-- / .logo -->
                 </div> <!-- / .header -->
 
-                <div class="error-code">GoDesk Error 500</div>
+                <div class="error-code">404</div>
 
                 <div class="error-text">
-                    <span class="oops">OUCH!</span><br/>
-                        <span class="hr"></span>
-                        <br/>
-                        SOMETHING IS NOT QUITE RIGHT
-                        <br/>
-                        <span class="solve">We hope to solve it shortly</span>
-                        <br/>
-                        <p>The error message is: #{requestScope['javax.servlet.error.message']}</p>
-                        
+                    <span class="oops">OOPS!</span><br/>
+                    <span class="hr"></span>
+                    <br/>
+                    SOMETHING WENT WRONG, OR THAT PAGE DOESN'T EXIST... YET
                 </div> <!-- / .error-text -->
 
-                 <!-- Get jQuery from Google CDN -->
+                <form action="" class="search-form">
+                    <input type="text" class="search-input" name="s"/>
+                    <input type="submit" value="SEARCH" class="search-btn"/>
+                </form> <!-- / .search-form -->
+
+                <!-- Get jQuery from Google CDN -->
                 <!--[if !IE]> -->
                 <script type="text/javascript">
                     //<![CDATA[
@@ -73,8 +73,8 @@
                     //]]>
                </script>
                 <![endif]-->
-                
-                   <!-- Pixel Admin's javascripts -->
+
+                <!-- Pixel Admin's javascripts -->
                 <!-- Latest compiled and minified JavaScript -->
 
                 <script src="#{facesContext.externalContext.requestContextPath}/resources/javascripts/bootstrap.min.js"></script>

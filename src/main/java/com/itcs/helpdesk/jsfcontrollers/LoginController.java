@@ -170,13 +170,14 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
 
 //                        ConfigurableNavigationHandler nav = (ConfigurableNavigationHandler) FacesContext.getCurrentInstance().getApplication().getNavigationHandler();
 //                        JsfUtil.addSuccessMessage("Bienvenido, " + usuario.getCapitalName());
-                            if (isThisRequestCommingFromAMobileDevice(JsfUtil.getRequest())) {
-//                            nav.performNavigation("inboxMobile");//DeskTop Version
-                                return "/mobile/index.xhtml?faces-redirect=true";
-                            } else {
-//                            nav.performNavigation("inbox");//DeskTop Version
-                                return "/script/index.xhtml?faces-redirect=true";
-                            }
+//                            if (isThisRequestCommingFromAMobileDevice(JsfUtil.getRequest())) {
+////                            nav.performNavigation("inboxMobile");//DeskTop Version
+//                                return "/mobile/index.xhtml?faces-redirect=true";
+//                            } else {
+////                            nav.performNavigation("inbox");//DeskTop Version
+//                                return "/script/index.xhtml?faces-redirect=true";
+//                            }
+                            return "/script/index.xhtml?faces-redirect=true";
                         } else {
                             JsfUtil.addErrorMessage("El nombre de usuario o la contraseña son incorrectos. Por favor intenténtelo nuevamente.");
 //                        return null;
@@ -203,14 +204,15 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
             HttpServletRequest request = (HttpServletRequest) JsfUtil.getRequest();
             request.getSession().invalidate();
 //            loginAction();
-            if (isThisRequestCommingFromAMobileDevice(JsfUtil.getRequest())) {
-//                            nav.performNavigation("inboxMobile");//DeskTop Version
-                return "/mobile/login.xhtml?faces-redirect=true";
-            } else {
-//                            nav.performNavigation("inbox");//DeskTop Version
-                return "/public/login.xhtml?faces-redirect=true";
-
-            }
+//            if (isThisRequestCommingFromAMobileDevice(JsfUtil.getRequest())) {
+////                            nav.performNavigation("inboxMobile");//DeskTop Version
+//                return "/mobile/login.xhtml?faces-redirect=true";
+//            } else {
+////                            nav.performNavigation("inbox");//DeskTop Version
+//                return "/public/login.xhtml?faces-redirect=true";
+//
+//            }
+            return "/public/login.xhtml?faces-redirect=true";
         }
 
         return null;
@@ -240,12 +242,13 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
         HttpServletRequest request = (HttpServletRequest) JsfUtil.getRequest();
         request.getSession().invalidate();
 
-        if (isThisRequestCommingFromAMobileDevice(JsfUtil.getRequest())) {
-            return "/mobile/login.xhtml?faces-redirect=true";
-        } else {
-            return "/public/login.xhtml?faces-redirect=true";
-
-        }
+//        if (isThisRequestCommingFromAMobileDevice(JsfUtil.getRequest())) {
+//            return "/mobile/login.xhtml?faces-redirect=true";
+//        } else {
+//            return "/public/login.xhtml?faces-redirect=true";
+//        }
+        
+        return "/public/login.xhtml?faces-redirect=true";
 
     }
 

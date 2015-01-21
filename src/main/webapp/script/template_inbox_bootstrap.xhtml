@@ -1,0 +1,693 @@
+<!DOCTYPE html [
+    <!ENTITY nbsp "&#160;"> 
+    ]>
+    <!--[if IE 8]>         <html class="ie8"> <![endif]-->
+    <!--[if IE 9]>         <html class="ie9 gt-ie8"> <![endif]-->
+    <!--[if gt IE 9]><!-->    
+    <html class="gt-ie8 gt-ie9 not-ie" xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:ui="http://java.sun.com/jsf/facelets"
+          xmlns:p="http://primefaces.org/ui"
+          xmlns:h="http://java.sun.com/jsf/html"
+          xmlns:f="http://java.sun.com/jsf/core"
+          xmlns:pe="http://primefaces.org/ui/extensions">
+        <!--<![endif]-->
+        <f:view contentType="text/html" encoding="UTF-8">
+            <h:head>
+                <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+                <meta http-equiv="Pragma" content="no-cache" />
+                <meta http-equiv="Expires" content="0" />
+                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+                <meta charset="utf-8"/>
+                <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+                <title><ui:insert name="title">#{applicationBean.helpdeskTitle}</ui:insert></title>           
+
+
+
+                <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&amp;subset=latin" rel="stylesheet" type="text/css"></link>
+                <!-- Pixel Admin's stylesheets -->
+
+                <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+                <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/pixel-admin.min.css" rel="stylesheet" type="text/css"/>
+                <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/widgets.min.css" rel="stylesheet" type="text/css"/>
+                <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/pages.min.css" rel="stylesheet" type="text/css"/>
+                <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/themes.min.css" rel="stylesheet" type="text/css"/>
+                <link href="#{facesContext.externalContext.requestContextPath}/resources/css/custom.css" rel="stylesheet" type="text/css"/>
+                <link href="#{facesContext.externalContext.requestContextPath}/resources/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css"/>
+
+ <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet"/>
+             
+                <style type="text/css">
+                    .ui-widget-content .ui-state-error {
+                        border: 1px solid #ff0000;
+                        background: #cd0a0a url("") 50% 50% repeat-x;                        
+                    }
+                </style>
+                <script type="text/javascript">
+                    PrimeFaces.locales['es'] = {
+                        closeText: 'Cerrar',
+                        prevText: 'Anterior',
+                        nextText: 'Siguiente',
+                        currentText: 'Fecha actual',
+                        monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                        monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                        dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+                        dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+                        dayNamesMin: ['D', 'L', 'M', 'X', 'J', 'V', 'S'],
+                        weekHeader: 'Semana',
+                        firstDay: 1,
+                        isRTL: false,
+                        showMonthAfterYear: false,
+                        yearSuffix: '',
+                        timeOnlyTitle: 'Sólo hora',
+                        timeText: 'Tiempo',
+                        hourText: 'Hora',
+                        minuteText: 'Minuto',
+                        secondText: 'Segundo',
+                        ampm: false,
+                        month: 'Mes',
+                        week: 'Semana',
+                        day: 'Día',
+                        allDayText: 'Todo el día'
+                    };
+                </script>
+
+
+
+                <h:outputScript name="jsf.js" library="javax.faces"/>
+
+                <ui:insert name="head"></ui:insert>
+                <ui:insert name="scripts"></ui:insert>
+            </h:head>
+
+            <h:body id="mainbody" styleClass="theme-default main-navbar-fixed main-menu-animated">           
+
+                <pe:ajaxErrorHandler /> 
+
+                <p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();"/>
+
+                <p:idleMonitor timeout="1200000">
+                    <p:ajax event="idle" listener="#{applicationBean.onIdle}" async="true" 
+                            global="false" />
+                    <p:ajax event="active" listener="#{applicationBean.onActive}" update=":mainform:messages" />
+                </p:idleMonitor>
+
+                <script>
+                    var init = [];
+                </script>
+
+                <h:form id="mainform">
+                    <p:growl id="messages" life="10000" autoUpdate="true"  globalOnly="true" widgetVar="messages"/>
+                </h:form>
+
+                <div id="main-wrapper">
+                    <h:form id="main-navbar-form">
+
+                        <!-- 2. $MAIN_NAVIGATION ===========================================================================
+                                Main navigation
+                        -->
+                        <div id="main-navbar" class="navbar navbar-inverse" role="navigation">
+                            <!-- Main menu toggle -->
+                            <button type="button" id="main-menu-toggle"><i class="navbar-icon fa fa-bars icon"></i><span class="hide-menu-text">HIDE MENU</span></button>
+
+                            <div class="navbar-inner">
+                                <!-- Main navbar header -->
+                                <div class="navbar-header">
+
+                                    <!-- Logo -->
+                                    <a href="#" class="navbar-brand">
+                                        <p:graphicImage library="images" name="LogoGODesk.png" title="GoDesk"/>
+                                    </a>
+
+
+
+
+                                    <!-- Main navbar toggle -->
+                                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-navbar-collapse">
+                                        <i class="navbar-icon fa fa-bars"></i>
+                                    </button>
+
+                                </div> <!-- / .navbar-header -->
+
+                                <div id="main-navbar-collapse" class="collapse navbar-collapse main-navbar-collapse">
+                                    <div>
+
+                                        <div class="right clearfix">
+                                            <ul class="nav navbar-nav pull-right right-navbar-nav">
+
+                                                <!-- CASOS PENDIENTES -->
+                                                <ui:param name="casosPendientes" value="#{casoController.casosPendientes}" />
+                                                <li class="nav-icon-btn nav-icon-btn-info">
+
+                                                    <p:commandLink id="casosPendientes" styleClass="notifications-link"
+                                                                   ajax="false" immediate="true"
+                                                                   action="#{casoController.filtraPorAlertaPendiente}">
+
+                                                        <span class="label">#{casosPendientes}</span>
+                                                        <i class="nav-icon fa fa-eye"></i>
+                                                        <span class="small-screen-text">
+                                                            Casos pendientes
+                                                        </span>
+                                                    </p:commandLink>
+                                                    <p:tooltip value="Usted tiene #{casosPendientes} casos pendientes de atencion en su inbox." for="casosPendientes"/>
+
+                                                </li>
+
+                                                <!-- CASOS casosPorVencer -->
+                                                <ui:param name="casosPorVencer" value="#{casoController.casosPorVencer.toString()}" />
+                                                <li class="nav-icon-btn nav-icon-btn-warning">
+                                                    <p:commandLink id="casosPorVencer" styleClass="notifications-link"
+                                                                   ajax="false" immediate="true"
+                                                                   action="#{casoController.filtraPorAlertaPorVencer}">
+                                                        <span class="label">#{casosPorVencer}</span>
+                                                        <i class="nav-icon fa fa-exclamation-triangle"></i>
+                                                        <span class="small-screen-text">Casos por vencer</span>
+                                                    </p:commandLink>
+                                                    <p:tooltip value="Usted tiene #{casosPorVencer} casos por vencer en su inbox." for="casosPorVencer"/>
+                                                </li>
+
+                                                <ui:param name="casosVencido" value="#{casoController.casosVencidos.toString()}" />
+                                                <!-- CASOS casosVencido -->
+                                                <li class="nav-icon-btn nav-icon-btn-danger dropdown">
+                                                    <p:commandLink id="casosVencido" styleClass="notifications-link" 
+                                                                   ajax="false" immediate="true"
+                                                                   action="#{casoController.filtraPorAlertaVencido()}">
+                                                        <span class="label">#{casosVencido}</span>
+                                                        <i class="nav-icon fa fa-exclamation-triangle"></i>
+                                                        <span class="small-screen-text">Casos vencidos</span>
+                                                    </p:commandLink>
+
+                                                    <p:tooltip value="Usted tiene #{casosVencido} casos vencidos en su inbox." for="casosVencido"/>
+                                                </li>
+
+                                                <!-- CASOS countCasosRevisarActualizacion -->
+                                                <ui:param name="countCasosRevisarActualizacion" value="#{casoController.countCasosRevisarActualizacion}" />
+                                                <li class="nav-icon-btn nav-icon-btn-success dropdown">
+
+                                                    <p:commandLink id="countCasosRevisarActualizacion" styleClass="notifications-link"
+                                                                   ajax="false" immediate="true"
+                                                                   action="#{casoController.filtraRevisarActualizaciones}">
+                                                        <span class="label">#{countCasosRevisarActualizacion}</span>
+                                                        <i class="nav-icon fa fa-bullhorn"></i>
+                                                        <span class="small-screen-text">Casos actualizados</span>
+                                                    </p:commandLink>
+                                                    <p:tooltip value="Usted tiene #{countCasosRevisarActualizacion} casos que han sido actualizados en su inbox." for="countCasosRevisarActualizacion"/>
+
+                                                </li>
+                                                <!-- 3. $NAVBAR_ICON_BUTTONS =======================================================================
+                                                Navbar Icon Buttons
+    
+                                                NOTE: .nav-icon-btn triggers a dropdown menu on desktop screens only. 
+                                                On small screens .nav-icon-btn acts like a hyperlink.
+    
+                                                Classes:
+                                                * 'nav-icon-btn-info'
+                                                * 'nav-icon-btn-success'
+                                                * 'nav-icon-btn-warning'
+                                                * 'nav-icon-btn-danger' 
+                                                -->
+                                                <li class="nav-icon-btn nav-icon-btn-danger dropdown">
+                                                    <a href="#notifications" class="dropdown-toggle" data-toggle="dropdown">
+                                                        <span class="label">5</span>
+                                                        <i class="nav-icon fa fa-bell"></i>
+                                                        <span class="small-screen-text">Notificationes</span>
+                                                    </a>
+
+                                                    <!-- NOTIFICATIONS -->
+
+                                                    <!-- Javascript -->
+                                                    <script>
+
+                                                    </script>
+                                                    <!-- / Javascript -->
+
+                                                    <div class="dropdown-menu widget-notifications no-padding" style="width: 300px">
+                                                        <div class="notifications-list" id="main-navbar-notifications">
+
+                                                            <div class="notification">
+                                                                <div class="notification-title text-danger">SYSTEM</div>
+                                                                <div class="notification-description"><strong>Error 500</strong>: Syntax error in index.php at line <strong>461</strong>.</div>
+                                                                <div class="notification-ago">12h ago</div>
+                                                                <div class="notification-icon fa fa-hdd-o bg-danger"></div>
+                                                            </div> <!-- / .notification -->
+
+                                                            <!-- / .notification -->
+
+                                                        </div> <!-- / .notifications-list -->
+                                                        <a href="#" class="notifications-link">MORE NOTIFICATIONS</a>
+                                                    </div> <!-- / .dropdown-menu -->
+                                                </li>
+
+                                                <!-- /3. $END_NAVBAR_ICON_BUTTONS -->
+
+                                                <li>
+                                                    <div class="input-group">
+                                                        <div class="navbar-form pull-left">
+
+
+
+                                                            <div class="input-group input-group-sm">
+                                                                <h:inputText id="idCaso" value="#{casoController.idCaso}" styleClass="form-control searchCase"
+                                                                             style="width: 120px;border-color: #d5d5d5;background: #fff;"
+                                                                             title="#{bundle.EditCasoTitle_idCaso}" required="true" 
+                                                                             requiredMessage="#{bundle.EditCasoRequiredMessage_idCaso}"/>
+                                                                <p:watermark for="idCaso" value="#caso"/>
+                                                                <span class="input-group-btn">
+                                                                    <p:commandButton id="searchCaseBtn" iconPos="notext" icon="ui-icon ui-icon-search"
+                                                                                     action="#{casoController.prepareEditCaso}" 
+                                                                                     ajax="false"
+                                                                                     styleClass="btn">                                                                        
+                                                                    </p:commandButton>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+
+                                                <li class="dropdown">
+                                                    <a href="#" class="dropdown-toggle user-menu" data-toggle="dropdown">
+                                                        <img src="#{facesContext.externalContext.requestContextPath}/resources/images/pixel-admin/avatar.png" alt=""/>
+                                                        <span>#{UserSessionBean.current.capitalName}</span>
+                                                    </a>
+                                                    <ul class="dropdown-menu">                                                    
+                                                        <li>
+                                                            <h:commandLink immediate="true" action="myAccount"><i class="dropdown-icon fa fa-user"></i>  Perfil</h:commandLink>
+                                                        </li>
+                                                        <li>
+                                                            <p:commandLink immediate="true" onclick="panelChangePass.show()"><i class="dropdown-icon fa fa-sign-in"/>  Cambiar Contraseña</p:commandLink>
+                                                        </li>                                                 
+                                                        <li class="divider"></li>
+                                                        <li><p:commandLink action="#{loginController.logout_action}" ajax="false" immediate="true"><i class="dropdown-icon fa fa-power-off"/>  Cerrar Sesión</p:commandLink>
+                                                        </li>
+                                                    </ul>
+                                                </li>
+                                            </ul> <!-- / .navbar-nav -->
+                                        </div> <!-- / .right -->
+                                    </div>
+                                </div> <!-- / #main-navbar-collapse -->
+                            </div> <!-- / .navbar-inner -->
+                        </div> <!-- / #main-navbar -->
+                        <!-- /2. $END_MAIN_NAVIGATION -->
+                        <p:defaultCommand target="main-navbar-form:searchCaseBtn" />
+                    </h:form>
+
+
+                    <!-- 4. $MAIN_MENU =================================================================================
+                    
+                                    Main menu
+                                    
+                                    Notes:
+                                    * to make the menu item active, add a class 'active' to the <li>
+                                      example: <li class="active">...</li>
+                                    * multilevel submenu example:
+                                            <li class="mm-dropdown">
+                                              <a href="#"><span class="mm-text">Submenu item text 1</span></a>
+                                              <ul>
+                                                    <li>...</li>
+                                                    <li class="mm-dropdown">
+                                                      <a href="#"><span class="mm-text">Submenu item text 2</span></a>
+                                                      <ul>
+                                                            <li>...</li>
+                                                            ...
+                                                      </ul>
+                                                    </li>
+                                                    ...
+                                              </ul>
+                                            </li>
+                    -->
+                    <div id="main-menu" role="navigation">
+                        <h:form id="menu-form">
+                            <div id="main-menu-inner">
+                                <div class="menu-content top" id="menu-content-demo">
+                                    <!-- Menu custom content demo
+                                             CSS:        styles/pixel-admin-less/demo.less or styles/pixel-admin-scss/_demo.scss
+                                             Javascript: html/assets/demo/demo.js
+                                    -->
+                                    <div>
+                                        <div class="text-bg"><span class="text-semibold">#{UserSessionBean.current.nombres}</span></div>
+                                        <img src="#{facesContext.externalContext.requestContextPath}/resources/images/pixel-admin/avatar.png" alt=""/>
+                                        <div class="btn-group">
+
+
+
+                                            <p:commandLink ajax="false" immediate="true" action="myAccount" styleClass="btn btn-xs btn-danger btn-outline dark"><i class="fa fa-user"></i></p:commandLink>
+
+                                            <a href="#" class="btn btn-xs btn-primary btn-outline dark"><i class="fa fa-cog"></i></a>
+
+                                            <p:commandLink action="#{loginController.logout_action}" 
+                                                           ajax="false" immediate="true" styleClass="btn btn-xs btn-danger btn-outline dark"><i class="fa fa-power-off"></i></p:commandLink>
+                                        </div>
+                                        <a href="#" class="close">x</a>
+                                    </div>
+                                </div>
+                                <ul class="navigation">
+                                    <li>
+                                        <a href="#" class="disabled">
+                                            <i class="menu-icon fa fa-dashboard"></i><span class="mm-text">Dashboard</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <p:commandLink action="#{casoController.inbox}" ajax="false">
+                                            <i class="menu-icon fa fa-inbox"></i><span class="mm-text">Inbox</span>
+                                        </p:commandLink>
+                                    </li>
+
+                                    <li>
+                                        <p:commandLink title="Clientes" 
+                                                       action="#{emailClienteController.prepareList()}" ajax="false">
+                                            <i class="menu-icon fa fa-users"></i>
+                                            <span class="mm-text">Clientes</span>
+                                        </p:commandLink>
+
+                                    </li>
+
+                                    <li>
+                                        <p:commandLink title="Respuestas Predefinidas" 
+                                                       action="#{clippingController.prepareList()}" ajax="false">
+                                            <i class="menu-icon fa fa-heart-o"></i>
+                                            <span class="mm-text">Respuestas Predefinidas</span>
+                                        </p:commandLink>
+
+                                    </li>
+
+                                    <li>
+                                        <p:commandLink title="Reportes" rendered="#{filtroAcceso.verificarAccesoAFuncionSupervision()}"
+                                                       action="/script/report_graphs/reports" ajax="false">
+                                            <i class="menu-icon fa fa-bar-chart-o"></i>
+                                            <span class="mm-text">Reportes</span>
+                                        </p:commandLink>
+
+                                    </li>
+
+
+                                    <h:panelGroup rendered="#{filtroAcceso.verificarAccesoAFuncionSupervision()}">
+                                        <li class="mm-dropdown">
+                                            <a href="#"><i class="menu-icon fa fa-eye"></i><span class="mm-text">Supervisión</span></a>
+                                            <ul>
+
+
+                                                <li>
+                                                    <p:commandLink title="Logs de Casos" 
+                                                                   action="#{auditLogController.prepareList()}" ajax="false">
+                                                        <i class="menu-icon fa fa-bullhorn"></i>
+                                                        <span class="mm-text">Logs de Casos</span>
+                                                    </p:commandLink>
+
+                                                </li>
+
+                                                <li>
+                                                    <p:commandLink title="Alertas" 
+                                                                   action="#{auditLogController.alertList()}" ajax="false">
+                                                        <i class="menu-icon fa fa-exclamation-triangle"></i>
+                                                        <span class="mm-text">Alertas</span>
+                                                    </p:commandLink>
+
+                                                </li>
+                                            </ul>
+                                        </li>
+
+                                    </h:panelGroup>
+
+
+                                    <h:panelGroup rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
+                                        <li class="mm-dropdown">
+                                            <a href="#"><i class="menu-icon fa fa-cog"></i><span class="mm-text">Administración</span></a>
+                                            <ul>
+                                                <li>
+                                                    <p:commandLink title="Áreas" 
+                                                                   action="#{areaController.prepareList()}" ajax="false">
+                                                        <i class="menu-icon fa fa-building-o"></i>
+                                                        <span class="mm-text">Áreas</span>
+                                                    </p:commandLink>
+
+                                                </li>
+                                                <li>
+                                                    <p:commandLink title="Canales" 
+                                                                   action="#{canalController.prepareList()}" ajax="false">
+                                                        <i class="menu-icon fa fa-external-link"></i>
+                                                        <span class="mm-text">Canales</span>
+                                                    </p:commandLink>
+
+                                                </li>
+                                                <li>
+                                                    <p:commandLink title="Roles de Usuario" 
+                                                                   action="#{rolController.prepareList()}" ajax="false">
+                                                        <i class="menu-icon fa fa-puzzle-piece"></i>
+                                                        <span class="mm-text">Roles de Usuario</span>
+                                                    </p:commandLink>
+
+                                                </li>
+                                                <li>
+                                                    <p:commandLink title="Ejecutivos (Usuarios)" 
+                                                                   action="#{usuarioController.prepareList()}" ajax="false">
+                                                        <i class="menu-icon fa fa-users"></i>
+                                                        <span class="mm-text">Ejecutivos (Usuarios)</span>
+                                                    </p:commandLink>
+
+                                                </li>
+                                                <li>
+                                                    <p:commandLink title="Grupos de Usuarios" 
+                                                                   action="#{grupoController.prepareList()}" ajax="false">
+                                                        <i class="menu-icon fa fa-sitemap"></i>
+                                                        <span class="mm-text">Grupos de Usuarios</span>
+                                                    </p:commandLink>
+
+                                                </li>
+                                                <li>
+                                                    <p:commandLink title="#{applicationBean.productDescription}(s)" 
+                                                                   action="#{productoController.prepareList()}" ajax="false">
+                                                        <i class="menu-icon fa fa-puzzle-piece"></i>
+                                                        <span class="mm-text">#{applicationBean.productDescription}(s)</span>
+                                                    </p:commandLink>
+
+                                                </li>
+                                                <li>
+                                                    <p:commandLink title="Categorías" 
+                                                                   action="#{categoriaController.prepareList()}" ajax="false">
+                                                        <i class="menu-icon fa fa-folder"></i>
+                                                        <span class="mm-text">Categorías</span>
+                                                    </p:commandLink>
+
+                                                </li>
+                                                <li>
+                                                    <p:commandLink title="Sub Estados de Casos" 
+                                                                   action="#{subEstadoCasoController.prepareList()}" ajax="false">
+                                                        <i class="menu-icon fa fa-puzzle-piece"></i>
+                                                        <span class="mm-text">Sub Estados de Casos</span>
+                                                    </p:commandLink>
+
+                                                </li>
+                                                <li>
+                                                    <p:commandLink title="Tipos de Casos" 
+                                                                   action="#{tipoCasoController.prepareList()}" ajax="false">
+                                                        <i class="menu-icon fa fa-puzzle-piece"></i>
+                                                        <span class="mm-text">Tipos de Casos</span>
+                                                    </p:commandLink>
+
+                                                </li>
+                                                <li>
+                                                    <p:commandLink title="SLA (Tiempos de respuestas) y Prioridad de Casos" 
+                                                                   action="#{prioridadController.prepareList()}" ajax="false">
+                                                        <i class="menu-icon fa fa-clock-o"></i>
+                                                        <span class="mm-text">SLA y Prioridad de Casos</span>
+                                                    </p:commandLink>
+
+                                                </li>
+                                                <li>
+                                                    <p:commandLink title="Reglas de Negocio" 
+                                                                   action="#{reglaTriggerController.prepareList()}" ajax="false">
+                                                        <i class="menu-icon fa  fa-check-square-o"></i>
+                                                        <span class="mm-text">Reglas de Negocio</span>
+                                                    </p:commandLink>
+
+                                                </li>
+
+                                                <li>
+                                                    <p:commandLink title="Lista negra (Correos)" 
+                                                                   action="#{blackListController.prepareList()}" ajax="false">
+                                                        <i class="menu-icon fa fa-exclamation-circle"></i>
+                                                        <span class="mm-text">Lista negra (Correos)</span>
+                                                    </p:commandLink>
+
+                                                </li>
+                                                <li>
+                                                    <p:commandLink title="Campos personalizados (Casos)" 
+                                                                   action="/script/customField/List.xhtml" ajax="false">
+                                                        <i class="menu-icon fa fa-puzzle-piece"></i>
+                                                        <span class="mm-text">Campos personalizados (Casos)</span>
+                                                    </p:commandLink>
+
+                                                </li>
+                                                <li>
+                                                    <p:commandLink title="Configuración" 
+                                                                   action="#{appSettingController.goToConfigPage()}" ajax="false">
+                                                        <i class="menu-icon fa fa-cogs"></i>
+                                                        <span class="mm-text">Configuración</span>
+                                                    </p:commandLink>
+
+                                                </li>
+
+                                            </ul>
+                                        </li>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
+                                        <li class="mm-dropdown">
+                                            <a href="#"><i class="menu-icon fa fa-wrench"></i><span class="mm-text">Ajustes Sistema</span></a>
+                                            <ul>
+                                                <li>
+                                                    <p:commandLink title="Funciones del Sistema" 
+                                                                   action="#{funcionController.prepareList()}" ajax="false">
+                                                        <i class="menu-icon fa fa-th-list"></i>
+                                                        <span class="mm-text">Funciones del Sistema</span>
+                                                    </p:commandLink>
+
+                                                </li>
+                                                <li>
+                                                    <p:commandLink title="Estados de Casos" 
+                                                                   action="#{estadoCasoController.prepareList()}" ajax="false">
+                                                        <i class="menu-icon fa fa-th-list"></i>
+                                                        <span class="mm-text">Estados de Casos</span>
+                                                    </p:commandLink>
+
+                                                </li>
+                                                <li>
+                                                    <p:commandLink title="Scheduled Jobs (Quartz)" 
+                                                                   action="/script/scheduler/jobs" ajax="false" >
+                                                        <i class="menu-icon fa fa-th-list"></i>
+                                                        <span class="mm-text">Scheduled Jobs (Quartz)</span>
+                                                    </p:commandLink>
+
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </h:panelGroup>
+
+
+
+
+                                </ul> <!-- / .navigation -->
+                                <div class="menu-content">
+                                    <p:commandLink action="#{casoController.prepareCreate}" ajax="false" styleClass="btn btn-primary btn-labeled btn-block btn-outline" >
+                                        <i class="btn-label fa fa-pencil-square-o"></i>Nuevo Caso
+                                    </p:commandLink>
+                                </div>
+                            </div> <!-- / #main-menu-inner -->
+                        </h:form>
+                    </div> <!-- / #main-menu -->
+                    <!-- /4. $MAIN_MENU -->
+
+
+                    <div id="content-wrapper">
+                        <!-- 5. $CONTENT ===================================================================================
+                                        Content
+                        -->
+                        <!-- Content here -->
+                        <ui:insert name="west"/>               
+
+                        <ui:insert name="body"/>  
+
+
+                    </div> <!-- / #content-wrapper -->
+                    <div id="main-menu-bg"></div>
+                </div> <!-- / #main-wrapper -->
+
+                <!-- Get jQuery from Google CDN -->
+                <!--[if !IE]> -->
+                <script type="text/javascript">
+                    //<![CDATA[
+                    window.jQuery || document.write('<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js">' + "<" + "/script>");
+                    //]]>
+                </script>
+
+                <!-- <![endif]-->
+                <!--[if lte IE 9]>
+                 <script type="text/javascript">
+                    //<![CDATA[
+                    window.jQuery || document.write('<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js">'+"<"+"/script>");
+                    //]]>
+               </script>
+                <![endif]-->
+                
+                   <!-- Pixel Admin's javascripts -->
+                <!-- Latest compiled and minified JavaScript -->
+
+                <script src="#{facesContext.externalContext.requestContextPath}/resources/javascripts/bootstrap.min.js"></script>
+
+                <script src="#{facesContext.externalContext.requestContextPath}/resources/javascripts/pixel-admin.min.js"></script>
+                <script src="#{facesContext.externalContext.requestContextPath}/resources/js/bootstrap-datetimepicker.min.js"></script>
+                <script src="#{facesContext.externalContext.requestContextPath}/resources/js/jquery.expander.min.js"></script>
+
+                <!--[if lt IE 9]>
+                    <script src="#{facesContext.externalContext.requestContextPath}/resources/javascripts/ie.min.js"></script>
+                <![endif]-->
+
+
+                <ui:insert name="startscript">
+                    <script type="text/javascript">
+
+                        init.push(function() {
+                            $('div.notifications-list').slimScroll({height: 250});
+                            $('.nav-pills, .nav-tabs').tabdrop();
+                        });
+
+
+                        init.push(function() {
+                            $('body').addClass('mmc');
+                            $('body').addClass('main-menu-fixed');
+                            
+                        });
+
+                        window.PixelAdmin.start(init);
+                    </script>
+                </ui:insert>
+
+
+
+
+
+
+
+             <p:dialog modal="false" widgetVar="statusDialog" header="Espere..."   
+                      draggable="false" closable="false" resizable="false">  
+                <p:graphicImage library="images" name="ajaxloadingbar.gif" />
+            </p:dialog>
+
+
+
+
+
+                <p:dialog id="panelChangePassId" appendTo="@(body)" closeOnEscape="true" widgetVar="panelChangePass" header="Cambiar Contraseña" modal="true">
+                    <h:form id="changePassForm">
+                        <p:messages id="messages" showDetail="false" autoUpdate="true"/>  
+                        <h:panelGrid columns="2" id="matchGrid">                     
+                            <p:outputLabel for="pwd" value="Contraseña Actual: " style="font-weight: bold;"/>  
+                            <p:password id="pwd" value="#{loginController.passwordCurrent}" label="Contraseña Actual" required="true" />  
+
+                            <p:outputLabel for="pwd1" value="Nueva Contraseña: " style="font-weight: bold;"/>  
+                            <p:password id="pwd1" value="#{loginController.passwordNew1}" match="pwd2" label="Nueva Contraseña" required="true" feedback="true" 
+                                        promptLabel="Favor ingrese contraseña" weakLabel="Débil"  
+                                        goodLabel="Buena" strongLabel="Fuerte" />  
+
+                            <p:outputLabel for="pwd2" value="Repita Nueva Contraseña: " style="font-weight: bold;"/>  
+                            <p:password id="pwd2" value="#{loginController.passwordNew2}" label="Repita Nueva Contraseña" required="true" feedback="true"   
+                                        promptLabel="Favor repita contraseña" weakLabel="Débil"  
+                                        goodLabel="Buena" strongLabel="Fuerte"/>  
+                        </h:panelGrid> 
+                        <br/>
+                        <p:separator/>
+                        <p:commandButton id="saveButton" update=":changePassForm" value="Cambiar" action="#{loginController.changePass()}"/>  
+
+
+                    </h:form>
+                </p:dialog>
+
+
+                <ui:insert name="dialogs"/>
+
+
+            </h:body>
+        </f:view>
+    </html>
+
+
