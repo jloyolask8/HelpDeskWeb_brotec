@@ -453,11 +453,13 @@
                                                     </p:commandLink>
 
                                                 </li>
+                                                
                                                 <li>
-                                                    <p:commandLink title="#{applicationBean.productDescription}(s)" 
-                                                                   action="#{productoController.prepareList()}" ajax="false">
-                                                        <i class="menu-icon fa fa-puzzle-piece"></i>
-                                                        <span class="mm-text">#{applicationBean.productDescription}(s)</span>
+                                                    <p:commandLink title="Vistas" 
+                                                                   action="#{vistaController.prepareList()}" ajax="false"
+                                                                   disabled="#{not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}">
+                                                        <i class="menu-icon fa fa-filter"></i>
+                                                        <span class="mm-text">Vistas</span>
                                                     </p:commandLink>
 
                                                 </li>
