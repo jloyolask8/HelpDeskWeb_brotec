@@ -150,7 +150,14 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                                 //Trae los mensajes de a 10
                                 messages = mailClient.getMessagesOnlyHeaders(nextUID, nextUID + N_EMAILS_FETCH);
                             } else {
-                                messages = mailClient.getUnreadMessagesOnlyHeaders();
+                                if (canal.containsKey(EnumEmailSettingKeys.UNREAD_DOWNLOAD_LIMIT.getKey())) {
+                                    int limit = Integer.parseInt(canal.getSetting(EnumEmailSettingKeys.UNREAD_DOWNLOAD_LIMIT.getKey()));
+                                    messages = mailClient.getUnreadMessagesOnlyHeaders(limit);
+                                }else
+                                {
+                                    int limit = Integer.parseInt(ApplicationConfig.DEFAULT_UNREAD_DOWNLOAD_LIMIT);
+                                    messages = mailClient.getUnreadMessagesOnlyHeaders(limit);
+                                }
                             }
     //                    List<EmailMessage> messages = mailClient.getUnreadMessages();
 
@@ -204,9 +211,10 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                                                 Usuario user = users.get(0);
                                                 //Esto debe hacerse configurable
                                                 /*if ((user.getUsuarioList() != null) && (!user.getUsuarioList().isEmpty())) {
-                                                    //this guy is a supervisor, he can create tickets
-                                                    download = true;
-                                                } else */{
+                                                 //this guy is a supervisor, he can create tickets
+                                                 download = true;
+                                                 } else */
+                                                {
                                                     //ignore emails from users of the system !!
                                                     //let them know that this is now allowed!!
                                                     download = false;
@@ -250,7 +258,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                             if (ApplicationConfig.isAppDebugEnabled()) {
                                 Log.createLogger(this.getClass().getName()).logDebug("Revisión de correo " + canal + "exitosa: " + messages.size() + " mensajes leídos. Intancia: brotec-icafal");
                             }
-                        }catch(Exception ex){
+                        } catch (Exception ex) {
                             ex.printStackTrace();
                         } finally {
                             try {

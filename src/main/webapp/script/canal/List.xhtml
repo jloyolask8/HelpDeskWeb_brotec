@@ -138,7 +138,7 @@
 
             <p:dialog id="addEditEmailDialog" showEffect="fade" hideEffect="fade" appendTo="@(body)" modal="true"
                       header="Detalles de correo electr&oacute;nico" widgetVar="addEditEmailDialogWidget" resizable="false" closable="false"
-                      style="width: 706px; height: 374px;" width="706px" height="374px">
+                      style="width: 706px; height: 420px;" width="706px" height="420px">
                 <h:form id="formAddEditEmail">
                     <!-- panel de configuracion basico-->
                     <p:panelGrid columns="2" style="margin-bottom:10px;" styleClass="filtersGrid">
@@ -251,7 +251,7 @@
                                     <p:selectOneMenu style="width: 120px;"
                                                      required="true"
                                                      value="#{canalController.tmpEmailOutgoingSsl}" >
-                                        <f:selectItem itemLabel="NINGUNO" itemValue="Ninguno"/>
+                                        <f:selectItem itemLabel="NINGUNO" itemValue="NINGUNO"/>
                                         <f:selectItem itemLabel="STARTTLS" itemValue="STARTTLS"/>
                                         <f:selectItem itemLabel="SSL/TLS" itemValue="SSL/TLS"/>
                                     </p:selectOneMenu>
@@ -281,9 +281,8 @@
                         <p:panelGrid  style="margin-bottom:10px;" styleClass="filtersGrid">
                             <p:row>
                                 <p:column>
+                                    <p:panelGrid columns="2">
                                     <h:outputLabel value="Frecuencia de sincronizaci&oacute;n" style="font-size: smaller; color: #8C8989;"/>
-                                </p:column>
-                                <p:column width="70">
                                     <p:selectOneMenu style="width: 70px;"
                                                      required="true"
                                                      value="#{canalController.tmpFreq}" >
@@ -291,24 +290,41 @@
                                         <f:selectItem itemLabel="5 min" itemValue="300"/>
                                         <f:selectItem itemLabel="10 min" itemValue="600"/>
                                     </p:selectOneMenu>
+                                    </p:panelGrid>
+                                </p:column>
+                                
+                                <p:column>
+                                    <p:panelGrid columns="2">
+                                        <p:selectBooleanCheckbox value="#{canalController.tmpEmailDebugEnabled}" />
+                                        <h:outputLabel value="Habilitar debug" style="font-size: smaller; color: #8C8989;"/>
+                                        
+                                    </p:panelGrid>
                                 </p:column>
                                 <p:column>
-                                    <h:outputLabel value="Habilitar debug" style="font-size: smaller; color: #8C8989;"/>
+                                    <p:panelGrid columns="2">
+                                        <p:selectBooleanCheckbox value="#{canalController.tmpEmailDownloadAttachments}" />
+                                        <h:outputLabel value="Descargar adjuntos" style="font-size: smaller; color: #8C8989;"/>
+                                        
+                                    </p:panelGrid>
+                                    
                                 </p:column>
-                                <p:column width="30">
-                                    <p:selectBooleanCheckbox value="#{canalController.tmpEmailDebugEnabled}" />
-                                </p:column>
+                                
                                 <p:column>
-                                    <h:outputLabel value="Descargar adjuntos" style="font-size: smaller; color: #8C8989;"/>
+                                    <p:panelGrid columns="2">
+                                        <h:outputLabel value="Connection Timeout" style="font-size: smaller; color: #8C8989; "/>
+                                        <p:inputText value="#{canalController.tmpEmailConnectionTimeout}" size="6"/>
+                                        
+                                    </p:panelGrid>
+                                    
                                 </p:column>
-                                <p:column width="30">
-                                    <p:selectBooleanCheckbox value="#{canalController.tmpEmailDownloadAttachments}" />
-                                </p:column>
+                                
+                            </p:row>
+                            <p:row>
                                 <p:column>
-                                    <h:outputLabel value="Connection Timeout" style="font-size: smaller; color: #8C8989;"/>
-                                </p:column>
-                                <p:column width="30">
-                                    <p:inputText value="#{canalController.tmpEmailConnectionTimeout}" size="6"/>
+                                    <p:panelGrid columns="2">
+                                        <h:outputLabel value="Limite de descarga de correos no leidos (primera lectura de correo)" escape="false" style="font-size: smaller; color: #8C8989; "/>
+                                        <p:inputText value="#{canalController.tmpEmailUnreadEmailDownloadLimit}" size="3"/>
+                                    </p:panelGrid>
                                 </p:column>
                             </p:row>
                         </p:panelGrid>
