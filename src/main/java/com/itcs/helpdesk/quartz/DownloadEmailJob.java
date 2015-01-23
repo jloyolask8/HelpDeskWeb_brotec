@@ -150,7 +150,14 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                                 //Trae los mensajes de a 10
                                 messages = mailClient.getMessagesOnlyHeaders(nextUID, nextUID + N_EMAILS_FETCH);
                             } else {
-                                messages = mailClient.getUnreadMessagesOnlyHeaders();
+                                if (canal.containsKey(EnumEmailSettingKeys.UNREAD_DOWNLOAD_LIMIT.getKey())) {
+                                    int limit = Integer.parseInt(canal.getSetting(EnumEmailSettingKeys.UNREAD_DOWNLOAD_LIMIT.getKey()));
+                                    messages = mailClient.getUnreadMessagesOnlyHeaders(limit);
+                                }else
+                                {
+                                    int limit = Integer.parseInt(ApplicationConfig.DEFAULT_UNREAD_DOWNLOAD_LIMIT);
+                                    messages = mailClient.getUnreadMessagesOnlyHeaders(limit);
+                                }
                             }
                             //                    List<EmailMessage> messages = mailClient.getUnreadMessages();
 
