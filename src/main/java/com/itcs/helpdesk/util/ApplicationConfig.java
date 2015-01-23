@@ -509,6 +509,16 @@ public class ApplicationConfig {
         }
         return value;
     }
+    
+    public static boolean createSupervisorCases() {
+        boolean value = true;
+        try {
+            value = Boolean.valueOf(getProperty(EnumSettingsBase.CREATE_CASO_SUPERVISOR_ENABLED.getAppSetting().getSettingKey(), "false"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return value;
+    }
 
     public static String getNotificationClientSubjectNewTicketText() {
         return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_NEW_TICKET_CLIENT_SUBJECT_TEXT.getAppSetting().getSettingKey());
