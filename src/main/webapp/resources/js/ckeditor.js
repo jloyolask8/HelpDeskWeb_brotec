@@ -1,8 +1,11 @@
 
 CKEDITOR.editorConfig = function (config) {
     //var contextPath = '';
+    config.scayt_autoStartup = true;
+    config.scayt_sLang = 'es_ES';
     var contextPath = getContextPath();
     config.filebrowserImageUploadUrl = contextPath + '/faces/ckeditor/uploadimage';
+    
 };
 
 function getContextPath() {
