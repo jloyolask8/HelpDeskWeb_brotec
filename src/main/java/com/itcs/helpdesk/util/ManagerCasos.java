@@ -301,19 +301,20 @@ public class ManagerCasos implements Serializable {
 
     public Caso crearCaso(DatosCaso datos, Canal canal, Date fechaCreacion) throws Exception {
         Caso createdCaso = null;
-        try {
-            //TODO remove this!!!
-            createdCaso = getJpaController().getCasoFindByEmailCreationTimeAndType(datos.getEmail().trim(), fechaCreacion, EnumTipoCaso.PREVENTA.getTipoCaso());
-        } catch (Exception ex) {
-            //Do nothing if NoResultException (normal behaviour)
-            if (!(ex instanceof NoResultException)) {
-                Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "Error al buscar caso el Producto", ex);
-            }
-        }
-        if (createdCaso != null) {
-            Log.createLogger(this.getClass().getName()).logInfo("Se ha encontrado un caso " + createdCaso.getIdCaso() + " del mismo cliente generado a la misma hora");
-            return createdCaso;
-        }
+        //when this shit could happen?, shitty code.
+//        try {
+//            //TODO remove this!!!
+//            createdCaso = getJpaController().getCasoFindByEmailCreationTimeAndType(datos.getEmail().trim(), fechaCreacion, EnumTipoCaso.PREVENTA.getTipoCaso());
+//        } catch (Exception ex) {
+//            //Do nothing if NoResultException (normal behaviour)
+//            if (!(ex instanceof NoResultException)) {
+//                Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "Error al buscar caso el Producto", ex);
+//            }
+//        }
+//        if (createdCaso != null) {
+//            Log.createLogger(this.getClass().getName()).logInfo("Se ha encontrado un caso " + createdCaso.getIdCaso() + " del mismo cliente generado a la misma hora");
+//            return createdCaso;
+//        }
         if (complyWithMinimalDataRequirements(datos)) {
             Caso caso = new Caso();
 
@@ -499,14 +500,14 @@ public class ManagerCasos implements Serializable {
         return emailClient;
     }
 
-    public boolean crearCasoDesdeEmail(Canal canal, EmailMessage item) {
+    public boolean crearCasoDesdeEmail(Canal canal, EmailMessage emailMessage) {
         boolean retorno = false;
         try {
             DatosCaso datos = new DatosCaso();
-            datos.setEmail(item.getFromEmail().toLowerCase().trim());
-            if (item.getFromName() != null) {
+            datos.setEmail(emailMessage.getFromEmail().toLowerCase().trim());
+            if (emailMessage.getFromName() != null) {
 
-                String from = MimeUtility.decodeText(item.getFromName().replace("\"", ""));
+                String from = MimeUtility.decodeText(emailMessage.getFromName().replace("\"", ""));
                 String[] nombres = from.split(" ");
                 if (nombres.length > 0) {
                     datos.setNombre(nombres[0]);
@@ -518,12 +519,13 @@ public class ManagerCasos implements Serializable {
                 }
             }
             datos.setTipoCaso(EnumTipoCaso.CONTACTO.getTipoCaso().getIdTipoCaso());
-            datos.setAsunto(item.getSubject());
-            datos.setDescripcion(item.getText());
+            datos.setAsunto(emailMessage.getSubject());
+            datos.setDescripcion(emailMessage.getText());
 //          datos.setIdArea(canal.getIdArea());//This is not important anymore
-            Caso caso = crearCaso(datos, canal);
+            Caso caso = crearCaso(datos, canal, 
+                    (emailMessage.getReceivedDate()!=null)?emailMessage.getReceivedDate():new Date());
             retorno = true;
-            handleEmailAttachments(item, caso);
+            handleEmailAttachments(emailMessage, caso);
 
         } catch (Exception ex) {
             Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "crearCasoDesdeEmail fail", ex);
@@ -877,7 +879,9 @@ public class ManagerCasos implements Serializable {
                 final String removeScriptsAndStyles = HtmlUtils.removeScriptsAndStyles(textoBody);
                 nota.setTexto(HtmlUtils.stripInvalidMarkup(removeScriptsAndStyles));
             }
-            nota.setFechaCreacion(Calendar.getInstance().getTime());
+            nota.setFechaCreacion((item.getReceivedDate()!=null)?
+                    item.getReceivedDate():
+                    Calendar.getInstance().getTime());
             if (item.getSubject().startsWith("Undeliverable:")) {
                 nota.setTipoNota(EnumTipoNota.RESPUESTA_SERVIDOR.getTipoNota());
                 nota.setTexto("El servidor de correos comuníca que su respuesta "

@@ -50,9 +50,6 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
         return String.format(JOB_ID, new Object[]{idCanal});
     }
 
-//    public DownloadEmailJob(JPAServiceFacade jpaController, ManagerCasos managerCasos) {
-//        super(jpaController, managerCasos);
-//    }
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         JobDataMap map = context.getMergedJobDataMap();//.getJobDetail().getJobDataMap();
@@ -159,17 +156,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                                     messages = mailClient.getUnreadMessagesOnlyHeaders(limit);
                                 }
                             }
-                            //                    List<EmailMessage> messages = mailClient.getUnreadMessages();
-
-                            //Waste of resources, what if we have a million of blacklisted mails??
-                            //                    List<BlackListEmail> blackList = (List<BlackListEmail>) jpaController.findAll(BlackListEmail.class);//findAll(BlackListEmail.class);
-                            //                    HashMap<String, BlackListEmail> mapBlackList = new HashMap<>();
-                            //                    for (BlackListEmail blackListEmail : blackList) {
-                            //                        mapBlackList.put(blackListEmail.getEmailAddress(), blackListEmail);
-                            //                    }
-                            //                    if (ApplicationConfig.isAppDebugEnabled()) {
-                            //                        Log.createLogger(this.getClass().getName()).logDebug("Debug Email BlackList:" + mapBlackList);
-                            //                    }
+                            
                             for (EmailMessage emailMessage : messages) {
                                 try {
                                     if (emailMessage.getIdMessage() > highestUID) {
