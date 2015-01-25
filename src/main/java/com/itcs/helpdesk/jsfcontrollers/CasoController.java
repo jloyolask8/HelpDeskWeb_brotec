@@ -38,6 +38,7 @@ import com.itcs.helpdesk.persistence.entityenums.EnumTipoAccion;
 import com.itcs.helpdesk.persistence.entityenums.EnumPrioridad;
 import com.itcs.helpdesk.persistence.entityenums.EnumSubEstadoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta;
+import com.itcs.helpdesk.persistence.entityenums.EnumTipoCanal;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoNota;
@@ -4388,6 +4389,26 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //        System.out.println("habilitarMerge: " + habilitarMerge);
         this.mergeHabilitado = habilitarMerge;
 //        System.out.println("seted habilitarMerge: " + this.mergeHabilitado);
+    }
+    
+     public String getCanalStyleClass(Canal canal) {
+        if (canal != null) {
+            if (canal.getIdTipoCanal().equals(EnumTipoCanal.CHAT.getTipoCanal())) {
+                return "fa-comments";
+            } else if (canal.getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal())) {
+                return "fa-envelope";
+            } else if (canal.getIdTipoCanal().equals(EnumTipoCanal.PHONE.getTipoCanal())) {
+                return "fa-phone";
+            } else if (canal.getIdTipoCanal().equals(EnumTipoCanal.MANUAL.getTipoCanal())) {
+                return "fa-ticket";
+            } else if (canal.getIdTipoCanal().equals(EnumTipoCanal.APPLICATION.getTipoCanal())) {
+                return "fa-comment";
+            } else if (canal.getIdTipoCanal().equals(EnumTipoCanal.FORMULARIO.getTipoCanal())) {
+                return "fa-cloud";
+            }
+        }
+
+        return "fa-exclamation";
     }
 
     @FacesConverter(forClass = Caso.class)

@@ -35,8 +35,8 @@
                 <link href="#{facesContext.externalContext.requestContextPath}/resources/css/custom.css" rel="stylesheet" type="text/css"/>
                 <link href="#{facesContext.externalContext.requestContextPath}/resources/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css"/>
 
- <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet"/>
-             
+                <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet"/>
+
                 <style type="text/css">
                     .ui-widget-content .ui-state-error {
                         border: 1px solid #ff0000;
@@ -84,7 +84,11 @@
 
                 <pe:ajaxErrorHandler /> 
 
-                <p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();"/>
+                <p:ajaxStatus style="display:block;">
+                    <f:facet name="default">
+                        <h:outputText value="Por favor espere..." style="font-weight: bold;"/>
+                    </f:facet>               
+                </p:ajaxStatus>
 
                 <p:idleMonitor timeout="1200000">
                     <p:ajax event="idle" listener="#{applicationBean.onIdle}" async="true" 
@@ -119,8 +123,11 @@
                                         <p:graphicImage library="images" name="LogoGODesk.png" title="GoDesk"/>
                                     </a>
 
-
-
+                                    <p:ajaxStatus>
+                                        <f:facet name="start">
+                                            <a href="#"><span class="label label-success">Loading...</span></a>
+                                        </f:facet>
+                                    </p:ajaxStatus>
 
                                     <!-- Main navbar toggle -->
                                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-navbar-collapse">
@@ -136,20 +143,19 @@
                                             <ul class="nav navbar-nav pull-right right-navbar-nav">
 
                                                 <!-- CASOS PENDIENTES -->
-                                                <ui:param name="casosPendientes" value="#{casoController.casosPendientes}" />
                                                 <li class="nav-icon-btn nav-icon-btn-info">
 
                                                     <p:commandLink id="casosPendientes" styleClass="notifications-link"
                                                                    ajax="false" immediate="true"
                                                                    action="#{casoController.filtraPorAlertaPendiente}">
 
-                                                        <span class="label">#{casosPendientes}</span>
+                                                        <span class="label">#{casoController.casosPendientes.toString()}</span>
                                                         <i class="nav-icon fa fa-eye"></i>
                                                         <span class="small-screen-text">
                                                             Casos pendientes
                                                         </span>
                                                     </p:commandLink>
-                                                    <p:tooltip value="Usted tiene #{casosPendientes} casos pendientes de atencion en su inbox." for="casosPendientes"/>
+                                                    <p:tooltip value="Usted tiene #{casoController.casosPendientes.toString()} casos pendientes de atencion en su inbox." for="casosPendientes"/>
 
                                                 </li>
 
@@ -354,7 +360,7 @@
 
                                     <li>
                                         <p:commandLink title="Clientes" 
-                                                       action="#{emailClienteController.prepareList()}" ajax="false">
+                                                       action="#{clienteController.prepareList()}" ajax="false">
                                             <i class="menu-icon fa fa-users"></i>
                                             <span class="mm-text">Clientes</span>
                                         </p:commandLink>
@@ -531,6 +537,27 @@
                                         </li>
                                     </h:panelGroup>
 
+
+                                    <p:tab title="Usuarios Conectados (#{applicationBean.usersLoggedIn.size()})" titletip="TotalActiveSessions: #{applicationBean.totalActiveSession}" id="tabUsers">
+
+
+                                        <li class="mm-dropdown">
+                                            <a href="#"><i class="menu-icon fa fa-user"></i><span class="mm-text" title="TotalActiveSessions: #{applicationBean.totalActiveSession}">Usuarios Conectados (#{applicationBean.usersLoggedIn.size()})</span></a>
+                                            <ul>
+                                                <ui:repeat id="usersLoggedIn" value="#{applicationBean.usersLoggedIn}" var="userLoggedIn" >
+                                                    <li>
+                                                        <h:graphicImage value="/images/user-available.png" />
+                                                        <p:commandLink disabled="true" title="Chat with #{userLoggedIn}">  
+                                                            <i class="fa fa-comments"></i>#{userLoggedIn}
+                                                        </p:commandLink>
+
+                                                    </li>
+                                                </ui:repeat>
+                                            </ul>
+                                        </li>
+
+                                    </p:tab>
+
                                     <h:panelGroup rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
                                         <li class="mm-dropdown">
                                             <a href="#"><i class="menu-icon fa fa-wrench"></i><span class="mm-text">Ajustes Sistema</span></a>
@@ -608,8 +635,8 @@
                     //]]>
                </script>
                 <![endif]-->
-                
-                   <!-- Pixel Admin's javascripts -->
+
+                <!-- Pixel Admin's javascripts -->
                 <!-- Latest compiled and minified JavaScript -->
 
                 <script src="#{facesContext.externalContext.requestContextPath}/resources/javascripts/bootstrap.min.js"></script>
@@ -626,19 +653,19 @@
                 <ui:insert name="startscript">
                     <script type="text/javascript">
 
-                        init.push(function() {
-                            $('div.notifications-list').slimScroll({height: 250});
-                            $('.nav-pills, .nav-tabs').tabdrop();
-                        });
+                    init.push(function () {
+                        $('div.notifications-list').slimScroll({height: 250});
+                        $('.nav-pills, .nav-tabs').tabdrop();
+                    });
 
 
-                        init.push(function() {
-                            $('body').addClass('mmc');
-                            $('body').addClass('main-menu-fixed');
-                            
-                        });
+                    init.push(function () {
+                        $('body').addClass('mmc');
+                        $('body').addClass('main-menu-fixed');
 
-                        window.PixelAdmin.start(init);
+                    });
+
+                    window.PixelAdmin.start(init);
                     </script>
                 </ui:insert>
 
@@ -648,10 +675,10 @@
 
 
 
-             <p:dialog modal="false" widgetVar="statusDialog" header="Espere..."   
-                      draggable="false" closable="false" resizable="false">  
-                <p:graphicImage library="images" name="ajaxloadingbar.gif" />
-            </p:dialog>
+                <p:dialog modal="false" widgetVar="statusDialog" header="Espere..."   
+                          draggable="false" closable="false" resizable="false">  
+                    <p:graphicImage library="images" name="ajaxloadingbar.gif" />
+                </p:dialog>
 
 
 
