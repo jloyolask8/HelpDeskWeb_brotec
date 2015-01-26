@@ -184,7 +184,8 @@
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
 
-                                    <p:menuitem value="Agenda" action="#{globalScheduleController.prepareList}" ajax="false" icon="fa fa-calendar">
+                                    <p:menuitem value="Agenda" action="#{globalScheduleController.prepareList}" ajax="false" icon="fa fa-calendar"
+                                                rendered="#{filtroAcceso.hasAccessToViewAllCalendars()}">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
                                 </p:submenu>
@@ -361,7 +362,7 @@
                                             icon="fa fa-lock">
                                     <p:resetInput target="@form" />
                                 </p:menuitem>
-                                <!--Componente De Ayuda aun en construccion -->
+                                <!--Componente De Ayuda aun en construccion ->
                                 <f:facet name="options">
                                     <div align="right">
                                         <p:outputPanel style="position: absolute; top: 5px; right: 100px;">  
@@ -375,7 +376,7 @@
                                             <p:commandButton value="Hide" onclick="PF('bar').hide()" type="button" icon="ui-icon-arrow-1-n"/>
                                         </p:outputPanel>
                                     </div>
-                                </f:facet>
+                                </f:facet-->
                                 
                                 <f:facet name="options">
                                     <p:ajaxStatus style="position: absolute; top: 10px; right: 110px;">

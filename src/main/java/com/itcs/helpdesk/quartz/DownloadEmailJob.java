@@ -50,9 +50,6 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
         return String.format(JOB_ID, new Object[]{idCanal});
     }
 
-//    public DownloadEmailJob(JPAServiceFacade jpaController, ManagerCasos managerCasos) {
-//        super(jpaController, managerCasos);
-//    }
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         JobDataMap map = context.getMergedJobDataMap();//.getJobDetail().getJobDataMap();
@@ -150,19 +147,16 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                                 //Trae los mensajes de a 10
                                 messages = mailClient.getMessagesOnlyHeaders(nextUID, nextUID + N_EMAILS_FETCH);
                             } else {
-                                messages = mailClient.getUnreadMessagesOnlyHeaders();
+                                if (canal.containsKey(EnumEmailSettingKeys.UNREAD_DOWNLOAD_LIMIT.getKey())) {
+                                    int limit = Integer.parseInt(canal.getSetting(EnumEmailSettingKeys.UNREAD_DOWNLOAD_LIMIT.getKey()));
+                                    messages = mailClient.getUnreadMessagesOnlyHeaders(limit);
+                                }else
+                                {
+                                    int limit = Integer.parseInt(ApplicationConfig.DEFAULT_UNREAD_DOWNLOAD_LIMIT);
+                                    messages = mailClient.getUnreadMessagesOnlyHeaders(limit);
+                                }
                             }
-    //                    List<EmailMessage> messages = mailClient.getUnreadMessages();
-
-                            //Waste of resources, what if we have a million of blacklisted mails??
-                            //                    List<BlackListEmail> blackList = (List<BlackListEmail>) jpaController.findAll(BlackListEmail.class);//findAll(BlackListEmail.class);
-                            //                    HashMap<String, BlackListEmail> mapBlackList = new HashMap<>();
-                            //                    for (BlackListEmail blackListEmail : blackList) {
-                            //                        mapBlackList.put(blackListEmail.getEmailAddress(), blackListEmail);
-                            //                    }
-                            //                    if (ApplicationConfig.isAppDebugEnabled()) {
-                            //                        Log.createLogger(this.getClass().getName()).logDebug("Debug Email BlackList:" + mapBlackList);
-                            //                    }
+                            
                             for (EmailMessage emailMessage : messages) {
                                 try {
                                     if (emailMessage.getIdMessage() > highestUID) {
@@ -195,28 +189,40 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                                             }
 
                                         } else {
+                                            boolean download;
+
+
                                             //block messages that do not ref# to a case comming from an FromEmail configured as a agent's email addresss.
                                             //NEW TICKET?
                                             List<Usuario> users = jpaController.getUsuarioFindByEmail(emailMessage.getFromEmail());
 
-                                            boolean download;
-                                            if (users != null && !users.isEmpty()) {
+
+                                            if ((users != null) && (!users.isEmpty())) {
                                                 Usuario user = users.get(0);
-                                                if (user.getUsuarioList() != null && !user.getUsuarioList().isEmpty()) {
-                                                    //this guy is a supervisor, he can create tickets
-                                                    download = true;
-                                                } else {
-                                                    //ignore emails from users of the system !!
-                                                    //let them know that this is now allowed!!
-                                                    download = false;
-                                                    if (ApplicationConfig.isAppDebugEnabled()) {
-                                                        Log.createLogger(this.getClass().getName()).logDebug("IGNORING MESSAGE " + emailMessage.getIdMessage() + " from user  of the system :" + users);
+                                                download = false;
+                                                //Esto debe hacerse configurable
+
+                                                if (ApplicationConfig.createSupervisorCases()) {
+                                                    if ((user.getUsuarioList() != null) && (!user.getUsuarioList().isEmpty())) {
+                                                        //this guy is a supervisor, he can create tickets
+                                                        download = true;
+                                                    } else {
+                                                        //ignore emails from users of the system !!
+                                                        //let them know that this is now allowed!!
+                                                        download = false;
+                                                        if (ApplicationConfig.isAppDebugEnabled()) {
+                                                            Log.createLogger(this.getClass().getName()).logDebug("IGNORING MESSAGE " + emailMessage.getIdMessage() + " from user  of the system :" + users);
+                                                        }
                                                     }
                                                 }
+
 
                                             } else {
                                                 download = true;
                                             }
+
+
+
                                             if (download) {
                                                 //download message
                                                 //Si está configurado bajar attachments y el correo tiene attachments se vuelve a descargar con attachments
@@ -249,11 +255,12 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                             if (ApplicationConfig.isAppDebugEnabled()) {
                                 Log.createLogger(this.getClass().getName()).logDebug("Revisión de correo " + canal + "exitosa: " + messages.size() + " mensajes leídos. Intancia: brotec-icafal");
                             }
-
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
                         } finally {
                             try {
                                 if (highestUID > 0) {
-//                                    System.out.println("saving highestUID: " + highestUID);
+                                    System.out.println("saving highestUID: " + highestUID);
                                     canal.getCanalSettingList().remove(new CanalSetting(canal.getIdCanal(), EnumEmailSettingKeys.HIGHEST_UID.getKey()));
                                     canal.getCanalSettingList().add(new CanalSetting(canal, EnumEmailSettingKeys.HIGHEST_UID.getKey(), String.valueOf(highestUID), ""));
                                     jpaController.merge(canal);
@@ -279,5 +286,4 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
 
         return freq;
     }
-
 }

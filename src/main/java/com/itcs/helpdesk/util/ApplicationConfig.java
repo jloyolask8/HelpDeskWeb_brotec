@@ -37,6 +37,7 @@ public class ApplicationConfig {
     }
     private static Log logger = Log.createLogger(ApplicationConfig.class.getName());
     public final static String DEFAULT_CONN_TIMEOUT = "60000";
+    public final static String DEFAULT_UNREAD_DOWNLOAD_LIMIT = "10";
     public final static String DEFAULT_IO_TIMEOUT = "600000";
     public static final String MAIL_DEBUG = "mail.debug";
     public static final String MAIL_SMTP_HOST = "mail.smtp.host";
@@ -503,6 +504,16 @@ public class ApplicationConfig {
         boolean value = true;
         try {
             value = Boolean.valueOf(getProperty(EnumSettingsBase.SEND_NOTIFICATION_TOCLIENT_ON_NEW_TICKET.getAppSetting().getSettingKey(), "false"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return value;
+    }
+    
+    public static boolean createSupervisorCases() {
+        boolean value = true;
+        try {
+            value = Boolean.valueOf(getProperty(EnumSettingsBase.CREATE_CASO_SUPERVISOR_ENABLED.getAppSetting().getSettingKey(), "false"));
         } catch (Exception e) {
             e.printStackTrace();
         }
