@@ -40,6 +40,11 @@ public class FiltroAcceso implements Serializable {
     }
 
     public boolean verificaAccesoAFuncion(EnumFunciones funcion) {
+
+        if (esUsuarioSistema()) {
+            return true;
+        }
+
         Usuario user = userSessionBean.getCurrent();
         if (user != null && user.getRolList() != null) {
             for (Rol rol : user.getRolList()) {
@@ -76,7 +81,7 @@ public class FiltroAcceso implements Serializable {
     }
 
     public boolean verificarAccesoAFiltrosIndex() {
-        return verificaAccesoAFuncion(EnumFunciones.FILTROS_INBOX);
+        return verificaAccesoAFuncion(EnumFunciones.FILTROS_INBOX);//&& verificarAccesoAFuncionAdministrarVistas()
     }
 
     public boolean verificarAccesoAFuncionAdministrarItemsPreentrega() {

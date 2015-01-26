@@ -181,6 +181,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private ReglaTrigger reglaTriggerSelected;
     protected String emailCliente_wizard;
     private SubComponente subComponente_wizard;
+      private Cliente cliente_wizard;
     protected String rutCliente_wizard;
     protected boolean emailCliente_wizard_existeEmail = false;
     protected boolean emailCliente_wizard_existeCliente = false;
@@ -913,10 +914,11 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public void handleNewTicketClientSelectionChange() {
-        final Cliente c = getSelected().getIdCliente();
+        final Cliente c = getCliente_wizard();
         if (c != null) {
             setEmailCliente_wizard_existeCliente(true);
             rutCliente_wizard = c.getRut();
+            current.setIdCliente(c);
             if (c.getEmailClienteList() != null && !c.getEmailClienteList().isEmpty()) {
                 EmailCliente emailCliente = c.getEmailClienteList().get(0);
                 current.setEmailCliente(emailCliente);
@@ -927,7 +929,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 setEmailCliente_wizard_existeEmail(false);
             }
         } else {
-            getSelected().setIdCliente(null);
+            current.setIdCliente(null);
+            current.setEmailCliente(null);
             rutCliente_wizard = null;
             emailCliente_wizard = null;
             setEmailCliente_wizard_existeCliente(false);
@@ -3173,7 +3176,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         try {
             canal = MailNotifier.chooseDefaultCanalToSendMail(current);
         } catch (NoOutChannelException no) {
-            addErrorMessage("No se puede enviar la respuesta.", "Favor asignar un " + ApplicationConfig.getProductDescription() + "o Área al caso para poder determinar el canal de salida para enviar el correo.");
+            addErrorMessage("No se puede enviar la respuesta dado que el sistema no sabe por que canal responder este caso. Favor asignar un " + ApplicationConfig.getProductDescription() + " o Área al caso para poder determinar el canal de salida para enviar el correo.");
             return false;
         }
         try {
@@ -4472,6 +4475,20 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      */
     public void setSubComponente_wizard(SubComponente subComponente_wizard) {
         this.subComponente_wizard = subComponente_wizard;
+    }
+
+    /**
+     * @return the cliente_wizard
+     */
+    public Cliente getCliente_wizard() {
+        return cliente_wizard;
+    }
+
+    /**
+     * @param cliente_wizard the cliente_wizard to set
+     */
+    public void setCliente_wizard(Cliente cliente_wizard) {
+        this.cliente_wizard = cliente_wizard;
     }
 
     @FacesConverter(forClass = Caso.class)

@@ -77,12 +77,12 @@
 
                             <h:panelGrid id="datosCliente" columns="3" cellpadding="5">
 
-                                <h:outputLabel value="seleccione un cliente:" for="cliente" style="font-weight: bold"/>
+                                <h:outputLabel value="Seleccione un cliente:" for="cliente" style="font-weight: bold"/>
 
-                                <p:selectOneMenu id="cliente" value="#{casoController.selected.idCliente}" filter="true" filterMatchMode="contains"
-                                                 disabled="#{empty casoController.selected.idSubComponente}">
+                                <p:selectOneMenu id="cliente" value="#{casoController.cliente_wizard}" filter="true" filterMatchMode="contains"
+                                                 disabled="#{empty casoController.selected.idSubComponente}" >
 
-                                    <f:selectItem itemLabel="Otro..." itemValue=""/>
+                                    <f:selectItem itemLabel="Otro ..." itemValue=""/>
 
                                     <f:selectItems value="#{casoController.selected.idSubComponente.productoContratadoList}" 
                                                    var="pc" itemLabel="#{pc.cliente.capitalName} (#{pc.tipoAsociacion ne null ? pc.tipoAsociacion:''})" 

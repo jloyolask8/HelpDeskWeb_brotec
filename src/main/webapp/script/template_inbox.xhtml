@@ -190,22 +190,22 @@
                                     </p:menuitem>
                                 </p:submenu>
 
-                                <p:submenu label="Casos" icon="fa fa-ticket"  rendered="#{filtroAcceso.esUsuarioSistema() or filtroAcceso.verificarAccesoAFuncionAgregarCaso()}">
+                                <p:submenu label="Casos" icon="fa fa-ticket"  rendered="#{filtroAcceso.verificarAccesoAFuncionAgregarCaso()}">
                                     <p:menuitem value="Crear Nuevo Caso" action="#{casoController.prepareCreate}" ajax="false" icon="fa fa-plus"
-                                                rendered="#{filtroAcceso.esUsuarioSistema() or  filtroAcceso.verificarAccesoAFuncionAgregarCaso()}">
+                                                rendered="#{filtroAcceso.verificarAccesoAFuncionAgregarCaso()}">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
                                     <p:menuitem value="Crear Nuevo Caso de Postventa" action="#{casoController.prepareCreateCasoReparacion()}" ajax="false" icon="fa fa-wrench"
-                                                rendered="#{filtroAcceso.esUsuarioSistema() or  filtroAcceso.verificarAccesoAFuncionAgregarCaso()}">  
+                                                rendered="#{filtroAcceso.verificarAccesoAFuncionAgregarCaso()}">  
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
                                     <p:menuitem value="Crear Nuevo Caso de Entrega" action="#{casoController.prepareCreateCasoPreentrega}" ajax="false" icon="fa fa-briefcase"
-                                                rendered="#{filtroAcceso.esUsuarioSistema() or  filtroAcceso.verificarAccesoAFuncionAgregarCaso()}">  
+                                                rendered="#{filtroAcceso.verificarAccesoAFuncionAgregarCaso()}">  
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
                                 </p:submenu>
 
-                                <p:submenu label="Reportes" icon="fa fa-bar-chart-o" rendered="#{filtroAcceso.esUsuarioSistema() or filtroAcceso.verificarAccesoAFuncionSupervision()}">
+                                <p:submenu label="Reportes" icon="fa fa-bar-chart-o" rendered="#{filtroAcceso.verificarAccesoAFuncionSupervision()}">
                                     <p:menuitem value="Alertas" action="#{auditLogController.alertList()}" ajax="false" icon="fa fa-exclamation-triangle">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
@@ -224,7 +224,7 @@
                                     </p:menuitem>
                                 </p:submenu>
 
-                                <p:submenu label="Ajustes" icon="fa fa-wrench" rendered="#{filtroAcceso.esUsuarioSistema() or filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">                                
+                                <p:submenu label="Ajustes" icon="fa fa-wrench" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">                                
 
                                     <p:menuitem value="Áreas" action="#{areaController.prepareList}" ajax="false" icon="fa fa-sitemap">
                                         <p:resetInput target="@form" />
@@ -258,7 +258,7 @@
                                     </p:menuitem>
                                     <p:separator/>
                                     <p:menuitem ajax="false" action="#{vistaController.prepareList()}" value="Vistas" icon="fa fa-filter"
-                                                disabled="#{(not filtroAcceso.esUsuarioSistema()) and (not filtroAcceso.verificarAccesoAFuncionAdministrarVistas())}">
+                                                rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
                                     <p:menuitem value="Reglas de Negocio" action="#{reglaTriggerController.prepareList()}" ajax="false" icon="fa fa-cogs">
