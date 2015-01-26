@@ -315,6 +315,7 @@
 
                                 <p:panelGrid columns="2">
                                     <p:autoComplete id="invitados" value="#{globalScheduleController.selectedUserToAddInvited}" 
+                                                    rendered="#{filtroAcceso.hasAccessToAdminAllCalendars()}"
                                                     completeMethod="#{globalScheduleController.autoCompleteUsuario}"  
                                                     var="u"  itemValue="#{u}" itemLabel="#{u.capitalName}">  
 
@@ -348,7 +349,7 @@
                                             <h:panelGroup styleClass="ticket-status" style="background: #4abf5a; color: #FFFFFF;"
                                                           layout="block">
                                                 <h:outputText   value="#{userSelected.capitalName} (#{userSelected.idUsuario})"/>
-                                                <p:commandLink value="x" update=":createEventForm:panelUsuarios" 
+                                                <p:commandLink value="x" update=":createEventForm:panelUsuarios" rendered="#{filtroAcceso.hasAccessToAdminAllCalendars()}"
                                                                process="@this"
                                                                style="border: none !important;"
                                                                styleClass="btn btn-xs btn-danger btn-outline">
