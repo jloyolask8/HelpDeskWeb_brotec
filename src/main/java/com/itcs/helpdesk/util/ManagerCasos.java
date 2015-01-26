@@ -905,9 +905,12 @@ public class ManagerCasos implements Serializable {
 
             List<AuditLog> changeLog = new ArrayList<>();
             if (isClient) {
+                if(caso.isClosed()){
+                    caso.setIdEstado(EnumEstadoCaso.ABIERTO.getEstado());
+                }
                 changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "cliente " + senderName + " respondió el caso vía email, nota#Id:" + nota.getIdNota(), ""));
 
-                //notify the case owner
+                //notify the case owner //TODO take this 3 lines into the method notifyOwnerCasoUpdated
                 if (caso.getOwner() != null) {
                     if (caso.getOwner().getEmailNotificationsEnabled()) {
                         if (caso.getOwner().getNotifyWhenTicketIsUpdated()) {
