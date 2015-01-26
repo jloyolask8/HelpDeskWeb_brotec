@@ -184,7 +184,8 @@
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
 
-                                    <p:menuitem value="Agenda" action="#{globalScheduleController.prepareList}" ajax="false" icon="fa fa-calendar">
+                                    <p:menuitem value="Agenda" action="#{globalScheduleController.prepareList}" ajax="false" icon="fa fa-calendar"
+                                                rendered="#{filtroAcceso.hasAccessToViewAllCalendars()}">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
                                 </p:submenu>

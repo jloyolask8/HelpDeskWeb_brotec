@@ -9,7 +9,7 @@
 
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
-            <p:outputLabel value="#{bundle.agendaTitle}"/>
+            <p:outputLabel value="#{filtroAcceso.hasAccessToViewAllCalendars() ? bundle.agendaTitle:'Mi agenda'}"/>
         </ui:define>
         
          <ui:define name="menutitle">
@@ -28,8 +28,8 @@
 
         <ui:define name="west" id="west">
             <h:form id="filterSchedule">
-                <p:panelGrid columns="1" styleClass="filtersGrid">
-                    <p:row>
+                <p:panelGrid columns="1" styleClass="filtersGrid" >
+                    <p:row rendered="#{filtroAcceso.hasAccessToViewAllCalendars()}">
                         <p:column>
                             <h:outputLabel for="invitados" value="Filtrar Usuarios:" style="font-weight: bold;"/>
                         </p:column>
@@ -86,7 +86,7 @@
                                         <h:outputText   value="#{userFilter.capitalName} (#{userFilter.idUsuario})"/>
                                     </p:column>  
 
-                                    <p:column width="5%">
+                                    <p:column width="5%" rendered="#{filtroAcceso.hasAccessToViewAllCalendars()}">
                                         <p:commandLink update=":filterSchedule :formAgendarEvento" 
                                                        process="@form"
                                                        style="border: none !important;"
