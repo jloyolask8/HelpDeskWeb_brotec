@@ -93,6 +93,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
 
     public String prepareCreate() {
         filterHelper2 = null;
+        setFilterViewToggle(true);
         current = new Vista(Caso.class);
         current.addNewFiltroVista();
         selectedItemIndex = -1;
