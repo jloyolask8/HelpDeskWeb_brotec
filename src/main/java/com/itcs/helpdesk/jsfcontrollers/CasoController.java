@@ -2854,7 +2854,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             nota.setIdNota(null);
             nota.setIdCaso(caso);
             nota.setFechaCreacion(Calendar.getInstance().getTime());
-            nota.setTexto(HtmlUtils.removeScriptsAndStyles(texto));
+            nota.setTexto(HtmlUtils.stripInvalidMarkup(texto));
 //            nota.setIdCanal(EnumCanal.SISTEMA.getCanal());
             nota.setVisible(publica);
 
@@ -2906,7 +2906,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             nota.setIdNota(null);
             nota.setIdCaso(caso);
             nota.setFechaCreacion(Calendar.getInstance().getTime());
-            nota.setTexto(HtmlUtils.removeScriptsAndStyles(texto));
+            nota.setTexto(HtmlUtils.stripInvalidMarkup(texto));
 //            nota.setIdCanal(EnumCanal.SISTEMA.getCanal());
             nota.setVisible(publica);
 //            nota.setAttachmentList(attachmentList);
@@ -3318,14 +3318,14 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
 
         sbuilder.append(creaMensajeOriginal(current));
-        if (sbuilder.length() > MEGABYTE) {
-            String onlyText = HtmlUtils.extractText(sbuilder.toString());
-            if (onlyText.length() > MEGABYTE) {
-                return onlyText.substring(0, MEGABYTE);
-            } else {
-                return onlyText;
-            }
-        }
+//        if (sbuilder.length() > MEGABYTE) {
+//            String onlyText = HtmlUtils.extractText(sbuilder.toString());
+//            if (onlyText.length() > MEGABYTE) {
+//                return onlyText.substring(0, MEGABYTE);
+//            } else {
+//                return onlyText;
+//            }
+//        }
         return sbuilder.toString();
     }
 
