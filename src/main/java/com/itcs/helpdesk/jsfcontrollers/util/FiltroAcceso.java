@@ -40,6 +40,11 @@ public class FiltroAcceso implements Serializable {
     }
 
     public boolean verificaAccesoAFuncion(EnumFunciones funcion) {
+
+        if (esUsuarioSistema()) {
+            return true;
+        }
+
         Usuario user = userSessionBean.getCurrent();
         if (user != null && user.getRolList() != null) {
             for (Rol rol : user.getRolList()) {
@@ -66,9 +71,17 @@ public class FiltroAcceso implements Serializable {
     public boolean verificarAccesoAFuncionAdministrarVistas() {
         return verificaAccesoAFuncion(EnumFunciones.ADMINISTRAR_VISTAS);
     }
-    
+
+    public boolean hasAccessToAdminAllCalendars() {
+        return verificaAccesoAFuncion(EnumFunciones.ADMINISTRAR_AGENDA);
+    }
+
+    public boolean hasAccessToViewAllCalendars() {
+        return verificaAccesoAFuncion(EnumFunciones.VER_AGENDA_GLOBAL);
+    }
+
     public boolean verificarAccesoAFiltrosIndex() {
-        return verificaAccesoAFuncion(EnumFunciones.FILTROS_INBOX);
+        return verificaAccesoAFuncion(EnumFunciones.FILTROS_INBOX);//&& verificarAccesoAFuncionAdministrarVistas()
     }
 
     public boolean verificarAccesoAFuncionAdministrarItemsPreentrega() {
@@ -78,7 +91,6 @@ public class FiltroAcceso implements Serializable {
 //    public boolean verificarAccesoACrearCasoPreentrega() {
 //        return verificaAccesoAFuncion(EnumFunciones.CREAR_CASO_ENTREGA);
 //    }
-
     public boolean verificarAccesoAFuncionSupervision() {
         return verificaAccesoAFuncion(EnumFunciones.SUPERVISOR);
     }
@@ -90,8 +102,6 @@ public class FiltroAcceso implements Serializable {
     public boolean verificarAccesoAFuncionEliminarCaso() {
         return verificaAccesoAFuncion(EnumFunciones.ELIMINAR_CASO);
     }
-
-   
 
     public boolean verificarAccesoAFuncionAsignarTransferirCaso() {
         return verificaAccesoAFuncion(EnumFunciones.ASIGNAR_TRANSFERIR_CASO);

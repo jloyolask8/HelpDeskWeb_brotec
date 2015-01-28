@@ -22,9 +22,11 @@ import com.itcs.helpdesk.persistence.entities.Item;
 import com.itcs.helpdesk.persistence.entities.ModeloProducto;
 import com.itcs.helpdesk.persistence.entities.TipoAccion;
 import com.itcs.helpdesk.persistence.entities.Nota;
+import com.itcs.helpdesk.persistence.entities.ProductoContratado;
 import com.itcs.helpdesk.persistence.entities.Recinto;
 import com.itcs.helpdesk.persistence.entities.ReglaTrigger;
 import com.itcs.helpdesk.persistence.entities.ScheduleEvent;
+import com.itcs.helpdesk.persistence.entities.SubComponente;
 import com.itcs.helpdesk.persistence.entities.SubEstadoCaso;
 import com.itcs.helpdesk.persistence.entities.TipoAlerta;
 import com.itcs.helpdesk.persistence.entities.TipoNota;
@@ -178,6 +180,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //    private Integer progresoEnvioRespuesta;
     private ReglaTrigger reglaTriggerSelected;
     protected String emailCliente_wizard;
+    private SubComponente subComponente_wizard;
+      private Cliente cliente_wizard;
     protected String rutCliente_wizard;
     protected boolean emailCliente_wizard_existeEmail = false;
     protected boolean emailCliente_wizard_existeCliente = false;
@@ -772,6 +776,30 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         current.setIdModelo(modeloProducto);
     }
 
+    public void handleSubComponentSelect(SelectEvent event) {
+        SubComponente s = (SubComponente) getJpaController().find(SubComponente.class, getSubComponente_wizard().getIdSubComponente(), true);
+        if (s.getProductoContratadoList() != null && !s.getProductoContratadoList().isEmpty()) {
+            final ProductoContratado pc1 = s.getProductoContratadoList().get(0);
+
+            if (pc1.getCliente() != null) {
+                rutCliente_wizard = pc1.getCliente().getRut();
+                setEmailCliente_wizard_existeCliente(true);
+                current.setIdCliente(pc1.getCliente());
+                current.setIdProducto(pc1.getProducto());
+                current.setIdComponente(pc1.getComponente());
+                current.setIdSubComponente(pc1.getSubComponente());
+            } else {
+                addWarnMessage("ERRORCODE 2");
+            }
+
+        } else {
+
+            setEmailCliente_wizard_existeCliente(false);
+            addWarnMessage("El " + applicationBean.getProductSubComponentDescription() + " seleccionado no esta asociado a ningún cliente.");
+        }
+
+    }
+
     public void handleEmailSelect(SelectEvent event) {
 
 //        EmailCliente emailCliente = getJpaController().getEmailClienteFindByEmail(event.getObject().toString());
@@ -883,6 +911,36 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
         }
+    }
+
+    public void handleNewTicketClientSelectionChange() {
+        final Cliente c = getCliente_wizard();
+        if (c != null) {
+            setEmailCliente_wizard_existeCliente(true);
+            rutCliente_wizard = c.getRut();
+            current.setIdCliente(c);
+            if (c.getEmailClienteList() != null && !c.getEmailClienteList().isEmpty()) {
+                EmailCliente emailCliente = c.getEmailClienteList().get(0);
+                current.setEmailCliente(emailCliente);
+                emailCliente_wizard = emailCliente.getEmailCliente();
+                setEmailCliente_wizard_existeEmail(true);
+            } else {
+                emailCliente_wizard = null;
+                setEmailCliente_wizard_existeEmail(false);
+            }
+        } else {
+            current.setIdCliente(null);
+            current.setEmailCliente(null);
+            rutCliente_wizard = null;
+            emailCliente_wizard = null;
+            setEmailCliente_wizard_existeCliente(false);
+            setEmailCliente_wizard_existeEmail(false);
+        }
+    }
+
+    public void handleSubCompChange() {
+        System.out.println("handleSubCompChange...");
+        getSelected().setIdSubComponente(getJpaController().find(SubComponente.class, getSelected().getIdSubComponente().getIdSubComponente(), true));
     }
 
     protected void persist(Caso newCaso) throws PreexistingEntityException, RollbackFailureException, Exception {
@@ -3118,7 +3176,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         try {
             canal = MailNotifier.chooseDefaultCanalToSendMail(current);
         } catch (NoOutChannelException no) {
-            addErrorMessage("No se puede enviar la respuesta.", "Favor asignar un " + ApplicationConfig.getProductDescription() + "o Área al caso para poder determinar el canal de salida para enviar el correo.");
+            addErrorMessage("No se puede enviar la respuesta dado que el sistema no sabe por que canal responder este caso. Favor asignar un " + ApplicationConfig.getProductDescription() + " o Área al caso para poder determinar el canal de salida para enviar el correo.");
             return false;
         }
         try {
@@ -4403,6 +4461,34 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //        System.out.println("habilitarMerge: " + habilitarMerge);
         this.mergeHabilitado = habilitarMerge;
 //        System.out.println("seted habilitarMerge: " + this.mergeHabilitado);
+    }
+
+    /**
+     * @return the subComponente_wizard
+     */
+    public SubComponente getSubComponente_wizard() {
+        return subComponente_wizard;
+    }
+
+    /**
+     * @param subComponente_wizard the subComponente_wizard to set
+     */
+    public void setSubComponente_wizard(SubComponente subComponente_wizard) {
+        this.subComponente_wizard = subComponente_wizard;
+    }
+
+    /**
+     * @return the cliente_wizard
+     */
+    public Cliente getCliente_wizard() {
+        return cliente_wizard;
+    }
+
+    /**
+     * @param cliente_wizard the cliente_wizard to set
+     */
+    public void setCliente_wizard(Cliente cliente_wizard) {
+        this.cliente_wizard = cliente_wizard;
     }
 
     @FacesConverter(forClass = Caso.class)

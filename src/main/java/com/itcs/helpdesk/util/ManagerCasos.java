@@ -522,8 +522,8 @@ public class ManagerCasos implements Serializable {
             datos.setAsunto(emailMessage.getSubject());
             datos.setDescripcion(emailMessage.getText());
 //          datos.setIdArea(canal.getIdArea());//This is not important anymore
-            Caso caso = crearCaso(datos, canal, 
-                    (emailMessage.getReceivedDate()!=null)?emailMessage.getReceivedDate():new Date());
+            Caso caso = crearCaso(datos, canal,
+                    (emailMessage.getReceivedDate() != null) ? emailMessage.getReceivedDate() : new Date());
             retorno = true;
             handleEmailAttachments(emailMessage, caso);
 
@@ -679,7 +679,7 @@ public class ManagerCasos implements Serializable {
                     ManagerCasos.calcularSLA(casoHijo);//    casoHijo.setNextResponseDue(caso.getNextResponseDue());    
                     casoHijo.setEmailCliente(emailCliente);
                     casoHijo.setIdCliente(emailCliente.getCliente());
-                    if(casoHijo.getIdCliente() == null){
+                    if (casoHijo.getIdCliente() == null) {
                         casoHijo.setIdCliente(caso.getIdCliente());
                         casoHijo.setEmailCliente(caso.getEmailCliente());
                     }
@@ -687,9 +687,8 @@ public class ManagerCasos implements Serializable {
                     //TODO brotec-specific
                     System.out.println("persisting recinto " + casoHijo.getIdRecinto());
                     String idRecinto = casoHijo.getIdRecinto();
-                    if(casoHijo.getIdRecinto().contains("[") && casoHijo.getIdRecinto().contains("]"))
-                    {
-                         idRecinto = casoHijo.getIdRecinto().split("\\[")[1].split("\\]")[0];
+                    if (casoHijo.getIdRecinto().contains("[") && casoHijo.getIdRecinto().contains("]")) {
+                        idRecinto = casoHijo.getIdRecinto().split("\\[")[1].split("\\]")[0];
                     }
                     if (null == getJpaController().find(Recinto.class, idRecinto)) {
                         Recinto r = new Recinto();
@@ -879,9 +878,9 @@ public class ManagerCasos implements Serializable {
                 final String removeScriptsAndStyles = HtmlUtils.removeScriptsAndStyles(textoBody);
                 nota.setTexto(HtmlUtils.stripInvalidMarkup(removeScriptsAndStyles));
             }
-            nota.setFechaCreacion((item.getReceivedDate()!=null)?
-                    item.getReceivedDate():
-                    Calendar.getInstance().getTime());
+            nota.setFechaCreacion((item.getReceivedDate() != null)
+                    ? item.getReceivedDate()
+                    : Calendar.getInstance().getTime());
             if (item.getSubject().startsWith("Undeliverable:")) {
                 nota.setTipoNota(EnumTipoNota.RESPUESTA_SERVIDOR.getTipoNota());
                 nota.setTexto("El servidor de correos comuníca que su respuesta "
@@ -910,6 +909,9 @@ public class ManagerCasos implements Serializable {
 
             List<AuditLog> changeLog = new ArrayList<>();
             if (isClient) {
+                if (caso.isClosed()) {
+                    caso.setIdEstado(EnumEstadoCaso.ABIERTO.getEstado());
+                }
                 changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "cliente " + senderName + " respondió el caso vía email, nota#Id:" + nota.getIdNota(), ""));
 
                 //notify the case owner

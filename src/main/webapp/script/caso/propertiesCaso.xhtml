@@ -410,7 +410,7 @@
                 </p:row>
 
                 <p:row rendered="#{not empty casoController.selected.idCliente.productoContratadoList}">
-                    <p:column>
+                    <p:column colspan="2">
 
                         <p:dataTable 
                             value="#{casoController.selected.idCliente.productoContratadoList}" var="prod_cont" emptyMessage="El Cliente no tiene #{applicationBean.productDescription} asociado.">

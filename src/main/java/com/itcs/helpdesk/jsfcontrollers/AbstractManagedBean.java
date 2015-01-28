@@ -10,6 +10,7 @@ import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.FiltroVista;
+import com.itcs.helpdesk.persistence.entities.SubComponente;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
@@ -112,6 +113,21 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     public AbstractManagedBean(Class<E> entityClass) {
         this.entityClass = entityClass;
         Logger.getLogger(this.getClass().getName()).log(Level.INFO, "{0} for {1} created", new Object[]{this.getClass().getSimpleName(), entityClass.getSimpleName()});
+    }
+
+    /**
+     * Queries for an autocomplete List
+     *
+     * @param query
+     * @return
+     */
+    public List<E> complete(String query) {
+        System.out.println("complete...");
+        List<E> results = (List<E>)getJpaController().findEntitiesByQuery(entityClass, false, 10, query);
+        if (results == null) {
+            return Collections.EMPTY_LIST;
+        }
+        return results;
     }
 
     public void showMessageInDialog(FacesMessage.Severity severity, String msg, String detail) {
@@ -448,7 +464,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
                 }
             }
 
-            if(copy.getFiltrosVistaList().isEmpty()){
+            if (copy.getFiltrosVistaList().isEmpty()) {
                 copy.addNewFiltroVista();
             }
             setVista(copy);
@@ -654,7 +670,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
 
     }
 
-    protected void beforePrepareList(){
+    protected void beforePrepareList() {
 
     }
 

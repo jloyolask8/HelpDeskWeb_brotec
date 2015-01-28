@@ -40,7 +40,7 @@
                     <p:commandButton id="filterPanelToggle" 
                                      ajax="true"
                                      update="panelFilter"
-                                     disabled="#{not cc.attrs.canChangeFilters or not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
+                                     disabled="#{not cc.attrs.canChangeFilters}"
                                      title="#{cc.attrs.controllerMBean.filterViewToggle ? 'Ocultar filtros':'Ver filtro avanzado'}"
                                      immediate="true" icon="#{cc.attrs.controllerMBean.filterViewToggle ? 'fa fa-caret-square-o-up ':'fa fa-caret-square-o-down '}">
 
