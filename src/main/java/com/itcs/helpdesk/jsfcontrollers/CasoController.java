@@ -181,7 +181,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private ReglaTrigger reglaTriggerSelected;
     protected String emailCliente_wizard;
     private SubComponente subComponente_wizard;
-      private Cliente cliente_wizard;
+    private Cliente cliente_wizard;
     protected String rutCliente_wizard;
     protected boolean emailCliente_wizard_existeEmail = false;
     protected boolean emailCliente_wizard_existeCliente = false;
@@ -1846,14 +1846,16 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      * @return
      * @throws Exception
      */
-    public String prepareEditPreviusItem() throws Exception {
-
-        if (selectedItemIndex > pagination.getPageFirstItem()) {
-            prepareEditIndex(--selectedItemIndex);
-        } else {
-            prepareEditIndex(pagination.getPageFirstItem());
+    public String prepareEditPreviusItem() {
+        try {
+            if (selectedItemIndex > pagination.getPageFirstItem()) {
+                prepareEditIndex(--selectedItemIndex);
+            } else {
+                prepareEditIndex(pagination.getPageFirstItem());
+            }
+        } catch (Exception e) {
+            addErrorMessage("No existe el elemento.");
         }
-
         return null;
     }
 
@@ -1863,15 +1865,20 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      * @return
      * @throws Exception
      */
-    public String prepareEditNextItem() throws Exception {
+    public String prepareEditNextItem() {
 
-        if (selectedItemIndex < pagination.getPageLastItem()) {
-            prepareEditIndex(++selectedItemIndex);
-        } else {
-            prepareEditIndex(pagination.getPageFirstItem());
+        try {
+            if (selectedItemIndex < pagination.getPageLastItem()) {
+                prepareEditIndex(++selectedItemIndex);
+            } else {
+                prepareEditIndex(pagination.getPageFirstItem());
+            }
+
+        } catch (Exception e) {
+            addErrorMessage("No existe el elemento.");
         }
-
         return null;
+
     }
 
     public String prepareEdit() throws Exception {

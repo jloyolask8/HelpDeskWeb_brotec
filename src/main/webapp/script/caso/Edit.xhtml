@@ -184,7 +184,7 @@
 
                     <p:commandButton icon="ui-icon ui-icon-seek-next" ajax="false"
                                      action="#{casoController.prepareEditNextItem()}" 
-                                     title="Ir al caso siguiente"
+                                     title="Ir al caso siguiente #{casoController.selectedItemIndex} eq #{casoController.pagination.pageLastItem}"
                                      disabled="#{casoController.selectedItemIndex eq casoController.pagination.pageLastItem}"
                                      rendered="#{casoController.pagination.itemsCount > 0}"/>
                 </h:panelGrid>
