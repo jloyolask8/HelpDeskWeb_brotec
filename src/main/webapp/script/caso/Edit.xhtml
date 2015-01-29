@@ -1075,7 +1075,8 @@
                             </p:row>
                             <p:row>
                                 <p:column colspan="3">
-                                    <p:inputTextarea id="transferNote" value="#{casoController.textoNota}" style="width: 100%;" required="true" requiredMessage="El Motivo de la transferencia o asignación es requerido."/>                              
+                                    <p:inputTextarea id="transferNote" value="#{casoController.textoNota}" style="width: 100%;" required="true" requiredMessage="El Motivo de la transferencia o asignación es requerido."/> 
+                                    <p:watermark for="transferNote" value="Ingrese un motivo" />
                                 </p:column>
                             </p:row>
 
