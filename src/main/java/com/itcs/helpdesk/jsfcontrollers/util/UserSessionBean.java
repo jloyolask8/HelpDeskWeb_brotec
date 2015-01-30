@@ -34,7 +34,7 @@ public class UserSessionBean extends AbstractManagedBean<Usuario> implements Ser
 
 //    @ManagedProperty(value = "#{applicationBean}")
 //    private ApplicationBean applicationBean;
-    private final String DEFAULT_THEME = "redmond";
+    private final String DEFAULT_THEME = "bootstrap";
     private Usuario sessionUser;
     private UsuarioSessionLog currentSessionLog;//intended to save all user session data
     private String channel;

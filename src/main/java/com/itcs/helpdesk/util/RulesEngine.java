@@ -551,8 +551,13 @@ public class RulesEngine implements CasoChangeListener {
                     if (value != null) {
                         return (Long) value <= valorAtt;
                     }
+
+//                } else if (operador.equals(EnumTipoComparacion.SC.getTipoComparacion())) {
+//                    if (value != null) {
+//                        return (Long) value <= valorAtt;
+//                    }
                 } else {
-                    throw new IllegalStateException("Comparator " + operador.getIdComparador() + " is not supported!!");
+                    throw new IllegalStateException("Comparator " + operador.getIdComparador() + " is not supported here!!");
                 }
 
             } else {
