@@ -19,7 +19,7 @@
             .ui-widget {
                 font-size: 11px !important;
             }
-       </style>
+        </style>
     </h:head>
     <h:body>
 
@@ -47,49 +47,54 @@
 
             <h:form id="form">
 
-                <h2>Solicitud de Servicio </h2>
+                <p:messages globalOnly="true" rendered="#{casoCustomerController.stepNewCasoIndex eq 5}"/>
 
-                <ol class="breadcrumb">
-                    <h:panelGroup rendered="#{casoCustomerController.stepNewCasoIndex ge 1}">
-                        <li class="#{casoCustomerController.stepNewCasoIndex eq 1 ? 'active':''}">
-                            <h:commandLink action="#{casoCustomerController.setStepNewCasoIndex(1)}" 
-                                           rendered="#{casoCustomerController.stepNewCasoIndex gt 1}" immediate="true">
-                                Email
-                            </h:commandLink>
-                            <h:outputText value="Email" rendered="#{casoCustomerController.stepNewCasoIndex le 1}"/>
-                        </li>
-                    </h:panelGroup>
-                    <h:panelGroup rendered="#{casoCustomerController.stepNewCasoIndex ge 2}">
-                        <li class="#{casoCustomerController.stepNewCasoIndex eq 2 ? 'active':''}">
-                            <h:commandLink action="#{casoCustomerController.setStepNewCasoIndex(2)}" 
-                                           rendered="#{casoCustomerController.stepNewCasoIndex gt 2}"  immediate="true">
-                                Datos Solicitante
-                            </h:commandLink>
-                            <h:outputText value="Datos Solicitante" rendered="#{casoCustomerController.stepNewCasoIndex le 2}"/>
-                        </li>
+                <h:panelGroup rendered="#{casoCustomerController.stepNewCasoIndex lt 5}">
+                    <h2>Solicitud de Servicio </h2>
 
-                    </h:panelGroup>
-                    <h:panelGroup rendered="#{casoCustomerController.stepNewCasoIndex ge 3}">
-                        <li class="#{casoCustomerController.stepNewCasoIndex eq 3 ? 'active':''}">
-                            <h:commandLink action="#{casoCustomerController.setStepNewCasoIndex(3)}" immediate="true"
-                                           rendered="#{casoCustomerController.stepNewCasoIndex gt 3}">
-                                Producto
-                            </h:commandLink>
-                            <h:outputText value="Producto" rendered="#{casoCustomerController.stepNewCasoIndex le 3}"/>
-                        </li>
-                    </h:panelGroup>
-                    <h:panelGroup rendered="#{casoCustomerController.stepNewCasoIndex ge 4}">
-                        <li class="#{casoCustomerController.stepNewCasoIndex eq 4 ? 'active':''}">
-                            <h:commandLink action="#{casoCustomerController.setStepNewCasoIndex(4)}" immediate="true"
-                                           rendered="#{casoCustomerController.stepNewCasoIndex gt 4}">
-                                Descripción
-                            </h:commandLink>
-                            <h:outputText value="Descripción" rendered="#{casoCustomerController.stepNewCasoIndex le 4}"/>
-                        </li>
-                    </h:panelGroup>
-                </ol>
+                    <ol class="breadcrumb">
+                        <h:panelGroup rendered="#{casoCustomerController.stepNewCasoIndex ge 1}">
+                            <li class="#{casoCustomerController.stepNewCasoIndex eq 1 ? 'active':''}">
+                                <h:commandLink action="#{casoCustomerController.setStepNewCasoIndex(1)}" 
+                                               rendered="#{casoCustomerController.stepNewCasoIndex gt 1}" immediate="true">
+                                    Email
+                                </h:commandLink>
+                                <h:outputText value="Email" rendered="#{casoCustomerController.stepNewCasoIndex le 1}"/>
+                            </li>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{casoCustomerController.stepNewCasoIndex ge 2}">
+                            <li class="#{casoCustomerController.stepNewCasoIndex eq 2 ? 'active':''}">
+                                <h:commandLink action="#{casoCustomerController.setStepNewCasoIndex(2)}" 
+                                               rendered="#{casoCustomerController.stepNewCasoIndex gt 2}"  immediate="true">
+                                    Datos Solicitante
+                                </h:commandLink>
+                                <h:outputText value="Datos Solicitante" rendered="#{casoCustomerController.stepNewCasoIndex le 2}"/>
+                            </li>
 
-                <p:messages globalOnly="true"/>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{casoCustomerController.stepNewCasoIndex ge 3}">
+                            <li class="#{casoCustomerController.stepNewCasoIndex eq 3 ? 'active':''}">
+                                <h:commandLink action="#{casoCustomerController.setStepNewCasoIndex(3)}" immediate="true"
+                                               rendered="#{casoCustomerController.stepNewCasoIndex gt 3}">
+                                    Producto
+                                </h:commandLink>
+                                <h:outputText value="Producto" rendered="#{casoCustomerController.stepNewCasoIndex le 3}"/>
+                            </li>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{casoCustomerController.stepNewCasoIndex ge 4}">
+                            <li class="#{casoCustomerController.stepNewCasoIndex eq 4 ? 'active':''}">
+                                <h:commandLink action="#{casoCustomerController.setStepNewCasoIndex(4)}" immediate="true"
+                                               rendered="#{casoCustomerController.stepNewCasoIndex gt 4}">
+                                    Descripción
+                                </h:commandLink>
+                                <h:outputText value="Descripción" rendered="#{casoCustomerController.stepNewCasoIndex le 4}"/>
+                            </li>
+                        </h:panelGroup>
+                    </ol>
+                </h:panelGroup>
+
+
+
 
                 <p:focus context="form" />  
 
@@ -132,17 +137,7 @@
                     <span class="help-block"><h:message for="fono1" errorClass="text-danger" /></span>
                 </h:panelGroup>
 
-                <h:panelGroup layout="block" styleClass="form-group" rendered="#{casoCustomerController.stepNewCasoIndex eq 3}">
-                    <label for="idArea">Area/Departamento:</label>
-                    <h:selectOneMenu id="idArea"  value="#{casoCustomerController.selected.idArea}" 
-                                     styleClass="form-control"
-                                     required="true" requiredMessage="Seleccione el Area en la cual crear el caso.">
-                        <f:selectItems value="#{areaController.itemsAvailableSelectMany}" />
-                    </h:selectOneMenu>
-
-                    <span class="help-block"><h:message for="idArea" errorClass="text-danger" /></span>
-
-                </h:panelGroup>
+                
 
                 <h:panelGroup layout="block" styleClass="form-group" rendered="#{casoCustomerController.stepNewCasoIndex eq 3}">
                     <label for="idProducto">#{applicationBean.productDescription}:</label>
@@ -158,7 +153,7 @@
                 <h:panelGroup layout="block" styleClass="form-group" rendered="#{casoCustomerController.stepNewCasoIndex eq 3}">
                     <label for="idComponente">#{applicationBean.productComponentDescription}:</label>
                     <h:selectOneMenu id="idComponente" value="#{casoCustomerController.selected.idComponente}" 
-                                     required="true" requiredMessage="Requerido." 
+                                     required="#{not empty casoCustomerController.selected.idProducto.componenteList}" requiredMessage="favor seleccione #{applicationBean.productComponentDescription}." 
                                      styleClass="form-control"
                                      disabled="#{casoCustomerController.selected.idProducto eq null}">
                         <f:selectItem itemLabel="---" itemValue=""/>
@@ -178,6 +173,19 @@
                     </h:selectOneMenu>
                     <span class="help-block"><h:message for="idSubComponente" errorClass="text-danger" /></span>
                 </h:panelGroup>
+                
+                <h:panelGroup layout="block" styleClass="form-group" rendered="#{casoCustomerController.stepNewCasoIndex eq 4}">
+                    <label for="idArea">Area/Departamento:</label>
+                    <h:selectOneMenu id="idArea"  value="#{casoCustomerController.selected.idArea}" 
+                                     styleClass="form-control"
+                                     required="true" requiredMessage="Seleccione el Area en la cual crear el caso.">
+                        <f:selectItems value="#{areaController.itemsAvailableSelectMany}" />
+                    </h:selectOneMenu>
+
+                    <span class="help-block"><h:message for="idArea" errorClass="text-danger" /></span>
+
+                </h:panelGroup>
+                
                 <h:panelGroup layout="block" styleClass="form-group" rendered="#{casoCustomerController.stepNewCasoIndex eq 4}">
                     <label for="idTipoCaso">Tipo de solicitud</label>
                     <h:selectOneMenu id="idTipoCaso" styleClass="form-control"
