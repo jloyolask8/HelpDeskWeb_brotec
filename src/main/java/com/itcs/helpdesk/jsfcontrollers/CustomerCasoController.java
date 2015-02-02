@@ -200,7 +200,7 @@ public class CustomerCasoController extends CasoController {
             }
 
             setStepNewCasoIndex(getStepNewCasoIndex() + 1);
-            addInfoMessage("Su solicitud ha sido ingresada exitósamente. [#ref" + current.getIdCaso() + "]");
+            addInfoMessage("Su solicitud ha sido ingresada exitósamente. Un ejecutivo se contactará con usted. Número de caso:[#" + current.getIdCaso() + "]");
 
         } catch (RollbackFailureException ex) {
             addErrorMessage(resourceBundle.getString("PersistenceErrorOccured"), ex.getMessage());

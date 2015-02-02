@@ -25,7 +25,7 @@
         </composite:interface>
 
         <composite:implementation>
-            
+
             <p:panel id="panelFilter"  styleClass="panelFilter" style="border: none !important;">
 
                 <h:panelGrid columns="5" rendered="#{cc.attrs.showSearchBar}" style="padding: 0">
@@ -75,23 +75,34 @@
 
                     </h:dataTable>
                     <!--</p:fieldset>-->
-                <br/>
+                    <br/>
+
+
                     <div align="right" style="width: 730px;">
+                        <p:outputLabel for="allMustMatch" value="Cuando "/>
+                        <p:selectBooleanButton id="allMustMatch" style="height: 20px; font-size: x-small !important;"
+                                               value="#{cc.attrs.vista.allMustMatch}" 
+                                               onLabel="Todas" offLabel="Cualquiera" 
+                                               >
+                            <p:ajax update="@form #{cc.attrs.update}" listener="#{cc.attrs.controllerMBean.filter()}" />
+                        </p:selectBooleanButton>
+                        <p:outputLabel for="allMustMatch" value="se cumplan"/>
+                        &nbsp;
                         <p:commandButton value="Editar Vista" style="height: 20px; font-size: x-small !important;"
                                          rendered="#{(cc.attrs.showEdit) and (cc.attrs.vista.idUsuarioCreadaPor eq UserSessionBean.current
-                                                or filtroAcceso.administradorDelSistema)}" 
-                                    disabled="#{cc.attrs.vista.idVista eq null or not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
-                                    action="#{vistaController.prepareEditPK(cc.attrs.vista.idVista, cc.attrs.vistaControllerBackOutcome)}"                                                  
-                                    immediate="true" ajax="false"
-                                    icon="ui-icon-pencil"/>
+                                                     or filtroAcceso.administradorDelSistema)}" 
+                                         disabled="#{cc.attrs.vista.idVista eq null or not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
+                                         action="#{vistaController.prepareEditPK(cc.attrs.vista.idVista, cc.attrs.vistaControllerBackOutcome)}"                                                  
+                                         immediate="true" ajax="false"
+                                         icon="ui-icon-pencil"/>
                         &nbsp;
                         <p:commandButton id="linkGuardar" style="height: 20px; font-size: x-small !important;"
                                          rendered="#{cc.attrs.showSaveAs}"
-                                    action="#{vistaController.prepareCreate(cc.attrs.vista, cc.attrs.vistaControllerBackOutcome)}"
-                                    ajax="false"
-                                    disabled="#{not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
-                                    value="Guardar como.."
-                                    immediate="true" icon="ui-icon-disk"/>
+                                         action="#{vistaController.prepareCreate(cc.attrs.vista, cc.attrs.vistaControllerBackOutcome)}"
+                                         ajax="false"
+                                         disabled="#{not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
+                                         value="Guardar como.."
+                                         immediate="true" icon="ui-icon-disk"/>
                         &nbsp;
                         <p:commandButton id="linkAplicar" ajax="true" update="@form #{cc.attrs.update}" icon="ui-icon-play" 
                                          rendered="#{cc.attrs.showApplyAction}" style="height: 20px; font-size: x-small !important;"

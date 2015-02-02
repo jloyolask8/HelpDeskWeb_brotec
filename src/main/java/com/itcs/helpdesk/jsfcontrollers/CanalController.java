@@ -242,6 +242,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         tmpEmailFinalizeReady = false;
         tmpEmailFirstStepReady = false;
         tmpEmailDownloadAttachments = true;
+        tmpEmailUnreadEmailDownloadLimit = ApplicationConfig.DEFAULT_UNREAD_DOWNLOAD_LIMIT;
         prepareCreate();
     }
 

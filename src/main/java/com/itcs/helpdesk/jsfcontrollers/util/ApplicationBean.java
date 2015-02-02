@@ -20,6 +20,7 @@ import com.itcs.helpdesk.persistence.entities.TipoCaso;
 import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.entityenums.EnumEstadoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta;
+import com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
 import com.itcs.helpdesk.persistence.jpa.custom.CasoJPACustomController;
 import com.itcs.helpdesk.rules.Action;
@@ -292,8 +293,10 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
     }
 
     public List<TipoCaso> getTipoCasoAvailableList() {
+        final List<TipoCaso> tipos = (List<TipoCaso>) getJpaController().findAll(TipoCaso.class);
+        tipos.remove(EnumTipoCaso.INTERNO.getTipoCaso());
 //        System.out.println("*** getTipoCasoAvailableList()");
-        return (List<TipoCaso>) getJpaController().findAll(TipoCaso.class);
+        return tipos;
     }
 
     public List<Area> getAreasAvailableList() {
