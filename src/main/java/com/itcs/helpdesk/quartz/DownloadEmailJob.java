@@ -107,10 +107,6 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
         ManagerCasos managerCasos = new ManagerCasos(jpaController);
 
         try {
-
-//        JPAServiceFacade jpaController = createJpaController(schema);
-//        ManagerCasos managerCasos = new ManagerCasos();
-//        managerCasos.setJpaController(jpaController);
             Canal canal = jpaController.find(Canal.class, idCanal);
 
             if (canal != null) {

@@ -10,14 +10,11 @@ import com.itcs.helpdesk.persistence.entities.EmailCliente;
 import com.itcs.helpdesk.persistence.entities.Nota;
 import com.itcs.helpdesk.persistence.entities.ProductoContratado;
 import com.itcs.helpdesk.persistence.entityenums.EnumCanal;
-import com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoNota;
 import com.itcs.helpdesk.persistence.jpa.exceptions.NonexistentEntityException;
 import com.itcs.helpdesk.persistence.jpa.exceptions.RollbackFailureException;
-import com.itcs.helpdesk.quartz.HelpDeskScheluder;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.ManagerCasos;
-import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,10 +32,12 @@ public class CustomerCasoController extends CasoController {
 
     //customer
     private int stepNewCasoIndex;
+    private boolean embeddedFlag = false;
+     private boolean showAttachmentsFlag = false;
 
     @Override
     protected String getListPage() {
-         return "/customer/casos";
+        return "/customer/casos";
     }
 
     @Override
@@ -51,8 +50,20 @@ public class CustomerCasoController extends CasoController {
         return getEditPage();
     }
     
-    public String customerCreateNota(){
-        
+    public void toggleShowAttachments(){
+        showAttachmentsFlag = !showAttachmentsFlag;
+    }
+
+    public void initializeEmbeddedForm(javax.faces.event.ComponentSystemEvent event) {
+        System.out.println("initializeEmbeddedForm()...");
+        if (this.current == null) {
+            prepareCreateCasoFromCustomer();
+        }
+        embeddedFlag = true;
+    }
+
+    public String customerCreateNota() {
+
         if (StringUtils.isEmpty(textoNota)) {
             addErrorMessage("Su comentario no tiene texto, verifíque e intente nuevamente");
             return null;
@@ -62,9 +73,8 @@ public class CustomerCasoController extends CasoController {
             Nota nota = buildNewNota(current, textoNotaVisibilidadPublica, textoNota,
                     EnumTipoNota.NOTA.getTipoNota(), true);
             addNotaToCaso(current, nota);
-          
+
             getJpaController().mergeCaso(current, ManagerCasos.createLogReg(current, "Cliente agrega comentarios", "Cliente agrega comentarios tipo " + nota.getTipoNota().getNombre(), ""));
-          
 
         } catch (NonexistentEntityException ex) {
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
@@ -172,13 +182,26 @@ public class CustomerCasoController extends CasoController {
 
     public String createAndCustomerView() {
         try {
-            current.setIdCanal(EnumCanal.SISTEMA.getCanal());
-            persist(current);
-            openCase(current);
-            //Auto-Login customer
-            userSessionBean.setEmailCliente(current.getEmailCliente());
+
+            current.setIdCliente(current.getEmailCliente().getCliente());
+
+            if (embeddedFlag) {
+                current.setIdCanal(EnumCanal.GODESK_CUSTOMER_PORTAL_EMBEDDED_FORM.getCanal());
+                getManagerCasos().persistCaso(current, ManagerCasos.createLogReg(current, "Crear", "se crea caso desde fomulario embebido en sitio web.", ""));
+
+            } else {
+                current.setIdCanal(EnumCanal.GODESK_CUSTOMER_PORTAL.getCanal());
+                getManagerCasos().persistCaso(current, ManagerCasos.createLogReg(current, "Crear", "se crea caso desde portal del consumidor godesk web.", ""));
+                openCase(current);
+                //Auto-Login customer
+                userSessionBean.setEmailCliente(current.getEmailCliente());
 //            prepareCasoFilterForInbox();
-            return "/customer/ticket";
+                return "/customer/ticket";
+            }
+
+            setStepNewCasoIndex(getStepNewCasoIndex() + 1);
+            addInfoMessage("Su solicitud ha sido ingresada exitósamente. [#ref" + current.getIdCaso() + "]");
+
         } catch (RollbackFailureException ex) {
             addErrorMessage(resourceBundle.getString("PersistenceErrorOccured"), ex.getMessage());
             Log.createLogger(CustomerCasoController.class.getName()).log(Level.SEVERE, "persist " + current, ex);
@@ -201,5 +224,19 @@ public class CustomerCasoController extends CasoController {
      */
     public void setStepNewCasoIndex(int stepNewCasoIndex) {
         this.stepNewCasoIndex = stepNewCasoIndex;
+    }
+
+    /**
+     * @return the showAttachmentsFlag
+     */
+    public boolean isShowAttachmentsFlag() {
+        return showAttachmentsFlag;
+    }
+
+    /**
+     * @param showAttachmentsFlag the showAttachmentsFlag to set
+     */
+    public void setShowAttachmentsFlag(boolean showAttachmentsFlag) {
+        this.showAttachmentsFlag = showAttachmentsFlag;
     }
 }
