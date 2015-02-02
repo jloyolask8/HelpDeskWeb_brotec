@@ -14,10 +14,13 @@
             <p:panel style="height: 40px;">
                 <p style="color: #999;">
                     Haz click para  
-                    <strong><p:commandLink actionListener="#{casoController.enableReplyMode()}" value=" Enviar email" styleClass="fa fa-envelope"
-                                           update="formCreateNota"/></strong>
-                    o <strong><p:commandLink actionListener="#{casoController.enableCommentMode()}" value=" Agregar un Comentario"  styleClass="fa fa-comments"
+                    <strong><p:commandLink actionListener="#{casoController.enableCommentMode()}" value=" Agregar un Comentario"  styleClass="fa fa-comments"
                                              update="formCreateNota"/></strong>
+                    ,
+                    <strong><p:commandLink actionListener="#{casoController.enableReplyMode(false)}" value=" Responder" styleClass="fa fa-envelope"
+                                           update="formCreateNota"/></strong>
+                    o <strong><p:commandLink actionListener="#{casoController.enableReplyMode(true)}" value=" Responder a Todos" styleClass="fa fa-envelope"
+                                           update="formCreateNota"/></strong>
                 </p>
             </p:panel>
 
@@ -195,6 +198,7 @@
 
                                 <h:panelGroup style="float: right">
                                     <p:splitButton id="sendCommentButton" value="Enviar" actionListener="#{casoController.responder()}" 
+                                                   ajax="false"
                                                    update=":mainform:messages :formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso "
                                                    icon="fa fa-envelope"
                                                    rendered="#{casoController.replyByEmail}">

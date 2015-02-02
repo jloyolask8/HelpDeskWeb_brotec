@@ -393,7 +393,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         return "inbox";
     }
 
-    public void enableReplyMode() {
+    public void enableReplyMode(boolean all) {
 
         if (validateEdit()) {
             return;
@@ -401,8 +401,28 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         this.setReplyMode(true);
         this.setReplyByEmail(true);
+        this.ccEmail = new ArrayList<>();
 
-        //borrador
+        if (all) {
+
+            if (current.getEmailClienteCCList() != null && !current.getEmailClienteCCList().isEmpty()) {
+                this.setCc(true);
+                for (EmailCliente e : current.getEmailClienteCCList()) {
+                    ccEmail.add(e.getEmailCliente());
+                }
+            }
+
+            if (current.getUsuarioCCList() != null && !current.getUsuarioCCList().isEmpty()) {
+                this.setCc(true);
+                for (Usuario u : current.getUsuarioCCList()) {
+                    ccEmail.add(u.getEmail());
+                }
+            }
+        }else{
+            this.setCc(false);
+        }
+
+        //set borrador
         this.textoNota = current.getRespuesta();
 
         agregarHistoria();
@@ -1117,6 +1137,18 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     sbuilder.append(format.format(nota.getFechaCreacion()));
                 }
                 return sbuilder.toString();
+            } else if (EnumTipoNota.COMENTARIO_AGENTE.getTipoNota().equals(nota.getTipoNota())) {
+                StringBuilder sbuilder = new StringBuilder(nota.getTipoNota().getNombre());
+                sbuilder.append(" - creada por ");
+                sbuilder.append(nota.getCreadaPor().getIdUsuario());
+                if (nota.getEnviado() != null && nota.getEnviado()) {
+                    sbuilder.append(" - enviada el ");
+                    sbuilder.append(format.format(nota.getFechaEnvio()));
+                } else {
+                    sbuilder.append(" - creada el ");
+                    sbuilder.append(format.format(nota.getFechaCreacion()));
+                }
+                return sbuilder.toString();
             }
 
             String text = nota.getTipoNota().getNombre();
@@ -1224,10 +1256,10 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public void changeCCO(boolean cc) {
         if (cc) {
             setCc(!isCc());
-            ccEmail = null;
+//            ccEmail = null;
         } else {
             setCco(!isCco());
-            ccoEmail = null;
+//            ccoEmail = null;
         }
     }
 
