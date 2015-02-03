@@ -46,8 +46,8 @@ public class TagCloudBean extends AbstractManagedBean<Etiqueta> implements Seria
 
     public void onSelect(SelectEvent event) {
         TagCloudItem item = (TagCloudItem) event.getObject();
-        System.out.println("item:" + item.getLabel());
-        System.out.println("item_url:" + item.getUrl());
+        //System.out.println("item:" + item.getLabel());
+        //System.out.println("item_url:" + item.getUrl());
         FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Item Selected", item.getLabel());
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }

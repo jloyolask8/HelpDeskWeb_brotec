@@ -75,13 +75,13 @@ public class AutomaticOpsExecutor {
 //
 //    }
 //    private void agendarAlertas() {
-//        System.out.println("calcularAlertas");
+//        //System.out.println("calcularAlertas");
 //        if (!alertasAgendadas) {
 //            alertasAgendadas = true;
 //
 //            List<Caso> casos = getJpaController().getCasoFindByEstadoAndAlerta(EnumEstadoCaso.ABIERTO.getEstado(),
 //                    EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta());
-////            System.out.println("encontrados "+casos.size()+" casos "+EnumTipoAlerta.TIPO_ALERTA_PENDIENTE+" que se debe agendar cambio de alerta");
+////            //System.out.println("encontrados "+casos.size()+" casos "+EnumTipoAlerta.TIPO_ALERTA_PENDIENTE+" que se debe agendar cambio de alerta");
 //
 //            for (Caso caso : casos) {
 //                try {
@@ -93,7 +93,7 @@ public class AutomaticOpsExecutor {
 //
 //            casos = getJpaController().getCasoFindByEstadoAndAlerta(EnumEstadoCaso.ABIERTO.getEstado(),
 //                    EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta());
-////            System.out.println("encontrados "+casos.size()+" casos "+EnumTipoAlerta.TIPO_ALERTA_POR_VENCER+" que se debe agendar cambio de alerta");
+////            //System.out.println("encontrados "+casos.size()+" casos "+EnumTipoAlerta.TIPO_ALERTA_POR_VENCER+" que se debe agendar cambio de alerta");
 //            for (Caso caso : casos) {
 //                try {
 //                    getManagerCasos().agendarAlertas(caso);
@@ -105,7 +105,7 @@ public class AutomaticOpsExecutor {
 //    }
     public void verificaDatosBase() {
         JPAServiceFacade controller = getJpaController();
-        System.out.println("verificaDatosBase()...");
+        //System.out.println("verificaDatosBase()...");
 
         verificarTipoCaso(controller);
         verificarUsuarios(controller);

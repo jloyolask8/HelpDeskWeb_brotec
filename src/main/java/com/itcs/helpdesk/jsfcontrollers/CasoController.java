@@ -319,9 +319,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     private List<Attachment> cloneAttachments(List<Attachment> attachments, Caso casoBase) {
-//        System.out.println("clone Attachments size list: " + attachments.size());
-//        System.out.println("Caso base attachment list size: " + casoBase.getAttachmentList().size());
-//        System.out.println("Caso base attachmentNotEmbedded list size: " + casoBase.getAttachmentsNotEmbedded().size());
+//        //System.out.println("clone Attachments size list: " + attachments.size());
+//        //System.out.println("Caso base attachment list size: " + casoBase.getAttachmentList().size());
+//        //System.out.println("Caso base attachmentNotEmbedded list size: " + casoBase.getAttachmentsNotEmbedded().size());
         List<Attachment> clonedElements = new ArrayList<>(attachments.size());
         for (Attachment attachment : attachments) {
             Archivo archivo = getJpaController().getArchivoFindByIdAttachment(attachment.getIdAttachment());
@@ -559,7 +559,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         newSubCaso.setIdCasoPadre(current);
         newSubCaso.setTipoCaso(EnumTipoCaso.REPARACION_ITEM.getTipoCaso());
         newSubCaso.setIdSubEstado(EnumSubEstadoCaso.REPARACION_ITEM_NUEVO.getSubEstado());
-//        System.out.println(newSubCaso);
+//        //System.out.println(newSubCaso);
         current.getCasosHijosList().add(newSubCaso);
     }
 
@@ -579,7 +579,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public void runActionOnSelectedCasos() {
 
-//        System.out.println("accionToRunSelected:" + accionToRunSelected);
+//        //System.out.println("accionToRunSelected:" + accionToRunSelected);
         Action a = applicationBean.getPredefinedActions().get(accionToRunSelected);
         a.setConfig(accionToRunParametros);
 
@@ -825,8 +825,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //        EmailCliente emailCliente = getJpaController().getEmailClienteFindByEmail(event.getObject().toString());
         EmailCliente emailCliente = getJpaController().getEmailClienteFindByEmail(getEmailCliente_wizard());
 
-//        //System.out.println("emailCliente_wizard:" + emailCliente_wizard);
-//        //System.out.println("event.getObject().toString():" + event.getObject().toString());
+//        ////System.out.println("emailCliente_wizard:" + emailCliente_wizard);
+//        ////System.out.println("event.getObject().toString():" + event.getObject().toString());
         if (emailCliente != null) {
 
             current.setEmailCliente(emailCliente);
@@ -876,7 +876,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public void formateaRutFiltro2() {
-        //System.out.println("formateaRutFiltro2()");
+        ////System.out.println("formateaRutFiltro2()");
         try {
 //            final String rutInput = getSelected().getEmailCliente().getCliente().getRut();
 
@@ -959,7 +959,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public void handleSubCompChange() {
-        System.out.println("handleSubCompChange...");
+        //System.out.println("handleSubCompChange...");
         getSelected().setIdSubComponente(getJpaController().find(SubComponente.class, getSelected().getIdSubComponente().getIdSubComponente(), true));
     }
 
@@ -1032,7 +1032,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         if (res != null) {
             ItemController itemController = ((ItemController) res);
             Item itemSelected = (Item) itemController.getItem().getData();
-//            //System.out.println("categoria " + catSelected + " seleccionada");
+//            ////System.out.println("categoria " + catSelected + " seleccionada");
 //            current.setIdItem(itemSelected);
             current.getCasosHijosList().get(current.getCasosHijosList().size() - 1).setIdItem(itemSelected);
         }
@@ -1045,7 +1045,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         if (res != null) {
             ItemController itemController = ((ItemController) res);
             Item itemSelected = (Item) itemController.getItem().getData();
-//            //System.out.println("categoria " + catSelected + " seleccionada");
+//            ////System.out.println("categoria " + catSelected + " seleccionada");
 //            current.setIdItem(itemSelected);
             current.setIdItem(itemSelected);
         }
@@ -1067,7 +1067,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public void setIdFileDelete(String idFileDelete) {
         this.idFileDelete = idFileDelete;
-        //System.out.println("idFileDelete:" + idFileDelete);
+        ////System.out.println("idFileDelete:" + idFileDelete);
     }
     /**
      * Id Caso relacionado
@@ -1195,7 +1195,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public void formateaRut() {
-//        System.out.println("formateaRut");
+//        //System.out.println("formateaRut");
         if (getSelected().getIdCliente() == null) {
             return;
         }
@@ -1672,7 +1672,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      */
     public String createAndView() {
         try {
-            System.out.println("CURRENT TEST ATACHMENT BEFORE:" + this.current.getAttachmentList());
+            //System.out.println("CURRENT TEST ATACHMENT BEFORE:" + this.current.getAttachmentList());
             List<Attachment> attachmentList = current.getAttachmentList();
             current.setAttachmentList(null);
             persist(current);
@@ -1750,7 +1750,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             style.remove();
         }
         ret = doc.toString();
-        //System.out.println("html ret:\n"+ret);
+        ////System.out.println("html ret:\n"+ret);
         return ret;
     }
 
@@ -2101,7 +2101,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     private Vista createVistaMyReviewUpdate() {
-        //        //System.out.println("filtraRevisarActualizaciones");
+        //        ////System.out.println("filtraRevisarActualizaciones");
         Vista vista1 = new Vista(Caso.class);
         vista1.setIdUsuarioCreadaPor(userSessionBean.getCurrent());
         vista1.setNombre("Casos Actualizados por el cliente");
@@ -2143,7 +2143,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     private Vista createVistaMisCasosCerrados() {
-//        //System.out.println("filtraRevisarActualizaciones");
+//        ////System.out.println("filtraRevisarActualizaciones");
         Vista vista1 = new Vista(Caso.class);
         vista1.setIdUsuarioCreadaPor(userSessionBean.getCurrent());
         vista1.setNombre("Casos cerrados");
@@ -2174,7 +2174,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     private Vista createVistaOpenPrio() {
-//        //System.out.println("filtraPorAlerta");
+//        ////System.out.println("filtraPorAlerta");
         Vista vista1 = new Vista(Caso.class);
         vista1.setIdUsuarioCreadaPor(userSessionBean.getCurrent());
         vista1.setNombre("Mis Casos prioritarios");
@@ -2211,7 +2211,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     private Vista createVistaCurrentUserByAlert(TipoAlerta alerta, EstadoCaso estadoCaso) {
-//        //System.out.println("filtraPorAlerta");
+//        ////System.out.println("filtraPorAlerta");
         Vista vista1 = new Vista(Caso.class);
         vista1.setIdUsuarioCreadaPor(userSessionBean.getCurrent());
         vista1.setNombre("Casos con Alerta " + alerta.getNombre());
@@ -2246,7 +2246,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public void changeSearchBarVisibility() {
         setSearchBarVisible(!isSearchBarVisible());
-//        System.out.println("changeSearchBarVisibility: "+isSearchBarVisible());
+//        //System.out.println("changeSearchBarVisibility: "+isSearchBarVisible());
     }
 
 //    public void refreshNotas() {
@@ -2494,7 +2494,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
 //    public void prepareProgramarVisitaPreventiva(ActionEvent actionEvent) {
-////        //System.out.println("prepareCreateRespuesta");
+////        ////System.out.println("prepareCreateRespuesta");
 //        try {
 //
 //            if (!validarSiPuedeProgramarVP(current)) {
@@ -2864,7 +2864,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 }
             }
         } catch (Exception e) {
-//            //System.out.println("tomar caso, exception: " + e.getClass().getName());
+//            ////System.out.println("tomar caso, exception: " + e.getClass().getName());
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
             JsfUtil.addErrorMessage(e, resourceBundle.getString("tomarcasoNOOK"));
         }
@@ -3267,7 +3267,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
             StringBuilder sbuilder = new StringBuilder();
             String destinatario;
-            if (!otroEmail.isEmpty()) {
+            if (otroEmail != null && !otroEmail.isEmpty()) {
                 for (String string : otroEmail) {
                     if (sbuilder.length() > 0) {
                         sbuilder.append(',');
@@ -3279,7 +3279,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 destinatario = current.getEmailCliente().getEmailCliente();
             }
             String ccEmails = null;
-            if (isCc() && !ccEmail.isEmpty()) {
+            if (isCc() && ccEmail != null && !ccEmail.isEmpty()) {
                 sbuilder = new StringBuilder();
                 for (String string : ccEmail) {
                     if (sbuilder.length() > 0) {
@@ -3290,7 +3290,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 ccEmails = sbuilder.toString();
             }
             String ccoEmails = null;
-            if (isCco() && !ccoEmail.isEmpty()) {
+            if (isCco() && ccoEmail != null && !ccoEmail.isEmpty()) {
                 sbuilder = new StringBuilder();
                 for (String string : ccoEmail) {
                     if (sbuilder.length() > 0) {
@@ -3337,9 +3337,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //        
 //    }
     public String upload() {
-//        //System.out.println("upload()");
+//        ////System.out.println("upload()");
         if (uploadFile != null) {
-//            //System.out.println("Succesful " + uploadFile.getFileName() + " is uploaded.");
+//            ////System.out.println("Succesful " + uploadFile.getFileName() + " is uploaded.");
             FacesMessage msg = new FacesMessage("Succesful", uploadFile.getFileName() + " is uploaded.");
             FacesContext.getCurrentInstance().addMessage(null, msg);
         }
@@ -3604,9 +3604,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     }
 
 //                for (int i = 0; i <= 15; i++) {
-//                    System.out.print(sheet.getCell(i, row).getContents()+";");                    
+//                    //System.out.print(sheet.getCell(i, row).getContents()+";");                    
 //                }
-//                //System.out.println("");
+//                ////System.out.println("");
                     row++;
                 }
             }
@@ -3614,7 +3614,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             workbook.write();
             workbook.close();
             InputStream decodedInput = new ByteArrayInputStream(((ByteArrayOutputStream) output).toByteArray());
-            ////System.out.println("Ejemplo finalizado.");
+            //////System.out.println("Ejemplo finalizado.");
             return new DefaultStreamedContent(
                     decodedInput, "application/vnd.ms-excel", "casos.xls");
         } catch (Exception ex) {
@@ -3638,7 +3638,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             byte[] bytearray = new byte[(int) size];
             is.read(bytearray);
 
-            //System.out.println("CURRENT:"+this.current);
+            ////System.out.println("CURRENT:"+this.current);
             if (this.current != null) {
                 getManagerCasos().crearAdjunto(bytearray, null, this.current, nombre, event.getFile().getContentType(), event.getFile().getSize());
                 JsfUtil.addSuccessMessage("Archivo " + nombre + " subido con exito");
@@ -3676,7 +3676,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
             if (current.getAttachmentList() == null) {
                 current.setAttachmentList(new ArrayList<Attachment>());
-                //System.out.println("CURRENT:"+this.current);
+                ////System.out.println("CURRENT:"+this.current);
             }
 
             Attachment attach = new Attachment(n);
@@ -3688,7 +3688,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             attach.setMimeType(event.getFile().getContentType());
             attach.setArchivo(archivo);
             current.getAttachmentList().add(attach);
-            //System.out.println("CURRENT:"+this.current);
+            ////System.out.println("CURRENT:"+this.current);
 
             //getJpaController().persistAttachment(attach);//later
             //archivo.setIdAttachment(attach.getIdAttachment());run later in create
@@ -3979,7 +3979,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     private boolean compararStrings(String header, String value) {
         boolean resp = header.equals(value);
-        ////System.out.println("comparando "+header+" vs "+value+" resp="+resp);
+        //////System.out.println("comparando "+header+" vs "+value+" resp="+resp);
         return resp;
     }
 
@@ -4497,9 +4497,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      * @param habilitarMerge the habilitarMerge to set
      */
     public void setMergeHabilitado(boolean habilitarMerge) {
-//        System.out.println("habilitarMerge: " + habilitarMerge);
+//        //System.out.println("habilitarMerge: " + habilitarMerge);
         this.mergeHabilitado = habilitarMerge;
-//        System.out.println("seted habilitarMerge: " + this.mergeHabilitado);
+//        //System.out.println("seted habilitarMerge: " + this.mergeHabilitado);
     }
 
     /**

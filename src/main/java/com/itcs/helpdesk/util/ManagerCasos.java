@@ -136,7 +136,7 @@ public class ManagerCasos implements Serializable {
     public void asignarCasoAUsuarioConMenosCasos(Grupo grupo, Caso caso) throws Exception {
 
         String oldOwner = caso.getOwner() != null ? caso.getOwner().getCapitalName() : "";
-//        System.out.println("asignarCasoAUsuarioConMenosCasos..." + grupo.getUsuarioList());
+//        //System.out.println("asignarCasoAUsuarioConMenosCasos..." + grupo.getUsuarioList());
         caso.setIdGrupo(grupo);
         Usuario usuarioConMenosCasos = null;
         if (grupo.getUsuarioList() != null) {
@@ -148,8 +148,8 @@ public class ManagerCasos implements Serializable {
                     } else {
                         final long countCasosByUsuario = countCasosByUsuario(usuarioConMenosCasos);
                         final long countCasosByUsuario1 = countCasosByUsuario(usuario);
-//                    System.out.println("usuario " + usuarioConMenosCasos + " tiene " + countCasosByUsuario);
-//                    System.out.println("usuario " + usuario + " tiene " + countCasosByUsuario1);
+//                    //System.out.println("usuario " + usuarioConMenosCasos + " tiene " + countCasosByUsuario);
+//                    //System.out.println("usuario " + usuario + " tiene " + countCasosByUsuario1);
                         if (countCasosByUsuario > countCasosByUsuario1) {
                             usuarioConMenosCasos = usuario;
                         }
@@ -161,7 +161,7 @@ public class ManagerCasos implements Serializable {
 
 //        if (usuarioConMenosCasos != null) {
         caso.setOwner(usuarioConMenosCasos);
-//            System.out.println("asignarCaso " + caso.getIdCaso() + " A UsuarioConMenosCasos:" + usuarioConMenosCasos);
+//            //System.out.println("asignarCaso " + caso.getIdCaso() + " A UsuarioConMenosCasos:" + usuarioConMenosCasos);
 
         AuditLog auditLogAssignUser = new AuditLog();
         auditLogAssignUser.setIdUser(EnumUsuariosBase.SISTEMA.getUsuario().getIdUsuario());
@@ -621,7 +621,7 @@ public class ManagerCasos implements Serializable {
 
             if ((casosHijos != null) && (!casosHijos.isEmpty())) {
 
-//                System.out.println("pppppersisting casos hijosss");
+//                //System.out.println("pppppersisting casos hijosss");
                 EmailCliente emailCliente = null;
                 String email = null;
                 Usuario uCliente = null;
@@ -688,7 +688,7 @@ public class ManagerCasos implements Serializable {
                     }
 
                     //TODO brotec-specific
-                    System.out.println("persisting recinto " + casoHijo.getIdRecinto());
+                    //System.out.println("persisting recinto " + casoHijo.getIdRecinto());
                     String idRecinto = casoHijo.getIdRecinto();
                     if (casoHijo.getIdRecinto().contains("[") && casoHijo.getIdRecinto().contains("]")) {
                         idRecinto = casoHijo.getIdRecinto().split("\\[")[1].split("\\]")[0];
@@ -1016,7 +1016,7 @@ public class ManagerCasos implements Serializable {
             Attachment attachmentEntity = agregarAdjunto(attachment, caso);
             //intentionally. bug fix for exchange api.
             currentAttempt++;
-            System.out.println("attemptSaveAttachment(" + currentAttempt + ")");//TODO Remove
+            //System.out.println("attemptSaveAttachment(" + currentAttempt + ")");//TODO Remove
             if (attachmentEntity != null) {
                 //Lo creo ok!
                 return attachmentEntity;
@@ -1195,7 +1195,7 @@ public class ManagerCasos implements Serializable {
 
     public Attachment crearAdjunto(byte[] bytearray, String contentId, Caso caso, final String nombre, String mimeType, Long size) throws Exception {
 
-        System.out.println("crearAdjunto()");
+        //System.out.println("crearAdjunto()");
 
         String fileName = nombre.trim().replace(" ", "_");
         Archivo archivo = null;
@@ -1239,7 +1239,7 @@ public class ManagerCasos implements Serializable {
 //    }
     private void handleEmailAttachments(EmailMessage item, Caso caso) throws Exception {
         StringBuilder attachmentsNames = new StringBuilder();
-//        System.out.println("El correo viene con " + item.getAttachments().size() + " Archivos adjuntos");
+//        //System.out.println("El correo viene con " + item.getAttachments().size() + " Archivos adjuntos");
         for (EmailAttachment attachment : item.getAttachments()) {
             Attachment attachmentEntity = attemptSaveAttachment(attachment, caso);
             if (attachmentEntity != null) {

@@ -45,7 +45,7 @@ public class UtilesRut {
     }
 
 //    public static void main(String[] args) {
-//        System.out.println("Valid:" + UtilesRut.validar("96.792.430-k"));
+//        //System.out.println("Valid:" + UtilesRut.validar("96.792.430-k"));
 //    }
 
     public static boolean validar(String rut) {
@@ -68,7 +68,7 @@ public class UtilesRut {
             if (dvT == 11) {
                 dvT = 0;
             }
-//            System.out.println("dvt: " + dvT + " dvr:" + dvR);
+//            //System.out.println("dvt: " + dvT + " dvr:" + dvR);
             if (dvT == dvR) {
                 return true;
             } else {

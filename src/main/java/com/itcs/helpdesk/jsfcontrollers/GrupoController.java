@@ -152,7 +152,7 @@ public class GrupoController extends AbstractManagedBean<Grupo> implements Seria
     
 
     public void selectItem(Grupo item) {
-        //System.out.println("selectItem="+item.getIdGrupo());
+        ////System.out.println("selectItem="+item.getIdGrupo());
         current = item;
     }
     

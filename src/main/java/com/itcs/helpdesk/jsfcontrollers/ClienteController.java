@@ -192,6 +192,10 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
     public String prepareCreateMasivo() {
         return "/script/cliente/cargarClientes";
     }
+    
+    public String prepareCreateMasivoFull(){
+        return "/script/cliente/cargaClienteProductoFull";
+    }
 
     public boolean puedeEliminar(Cliente item) {
         if (item != null && item.getCasoList() != null) {

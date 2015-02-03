@@ -71,7 +71,7 @@ public class ClippingsPlaceHolders {
     }
 
     public static String buildFinalText(String templateString, Caso caso) {
-//        System.out.println("templateString:" + templateString);
+//        //System.out.println("templateString:" + templateString);
         Map<String, String> valuesMap = new HashMap<>();
         for (Object key : placeHolders.keySet()) {
             valuesMap.put(placeHolders.getProperty((String) key), StringUtils.defaultString(String.valueOf(getValueObjectFor((String) key, caso))));
@@ -89,7 +89,7 @@ public class ClippingsPlaceHolders {
 
         StrSubstitutor sub = new StrSubstitutor(valuesMap);
         final String replace = sub.replace(templateString);
-//        System.out.println("Text:" + replace);
+//        //System.out.println("Text:" + replace);
         return replace;
     }
 

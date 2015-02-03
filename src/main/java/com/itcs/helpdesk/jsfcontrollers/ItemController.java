@@ -672,7 +672,7 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
     }
 
     public void setItem(TreeNode itemTreeNode) {
-        //System.out.println(getNombreItemSeleccionada());
+        ////System.out.println(getNombreItemSeleccionada());
         this.itemNode = itemTreeNode;
     }
 
@@ -690,7 +690,7 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
 
         if (localCats != null && !localCats.isEmpty()) {
             DataModel localDataModel = new ItemDataModel(localCats);
-            //System.out.println("se reconstruye el arbol");
+            ////System.out.println("se reconstruye el arbol");
             Iterator it = localDataModel.iterator();
             itemsTree = new DefaultTreeNode("Item", null);
             itemsTree.setExpanded(true);
@@ -729,7 +729,7 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
             items = getItemsNoPagination();
 
             if (items != null) {
-                //System.out.println("se reconstruye el arbol");
+                ////System.out.println("se reconstruye el arbol");
                 Iterator it = items.iterator();
                 itemsTree = new DefaultTreeNode("Item", null);
                 itemsTree.setExpanded(true);
@@ -831,7 +831,7 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
-            //System.out.println("ItemControllerConverter.getAsObject()");
+            ////System.out.println("ItemControllerConverter.getAsObject()");
             if (value == null || value.length() == 0) {
                 return null;
             }
@@ -854,7 +854,7 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
 
         @Override
         public String getAsString(FacesContext facesContext, UIComponent component, Object object) {
-//             System.out.println("ItemControllerConverter.getAsString()");
+//             //System.out.println("ItemControllerConverter.getAsString()");
             if (object == null) {
                 return null;
             }

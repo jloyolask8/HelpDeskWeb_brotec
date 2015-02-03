@@ -149,7 +149,7 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
     }
 
     private Vista createVistaPorAlerta(TipoAlerta alerta) {
-//        //System.out.println("filtraPorAlerta");
+//        ////System.out.println("filtraPorAlerta");
         Vista vista1 = new Vista(Caso.class);
         vista1.setIdUsuarioCreadaPor(((UserSessionBean) JsfUtil.getManagedBean("UserSessionBean")).getCurrent());
         vista1.setNombre("Casos con Alerta " + alerta.getNombre());
@@ -186,25 +186,25 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
 
     public void addChannel(String user, String channel) {
         getChannels().put(user, channel);
-        System.out.println("addChannel(). channels:" + getChannels());
+        //System.out.println("addChannel(). channels:" + getChannels());
     }
 
     public boolean containsChannel(String user) {
-        System.out.println("containsChannel(" + user + ")");
+        //System.out.println("containsChannel(" + user + ")");
         return getChannels().containsKey(user);
     }
 
     public void removeChannel(String user) {
-        System.out.println("removeChannel " + user);
+        //System.out.println("removeChannel " + user);
         if (getChannels().containsKey(user)) {
             getChannels().remove(user);
 //            RequestContext.getCurrentInstance().update("accionesaccordion1:usersLoggedIn");
-            System.out.println(user + " removed OK from applicationBean");
+            //System.out.println(user + " removed OK from applicationBean");
         }
     }
 
     public String getChannel(String user) {
-        System.out.println("getChannel(" + user + ")");
+        //System.out.println("getChannel(" + user + ")");
         return getChannels().get(user);
     }
 
@@ -295,17 +295,17 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
     public List<TipoCaso> getTipoCasoAvailableList() {
         final List<TipoCaso> tipos = (List<TipoCaso>) getJpaController().findAll(TipoCaso.class);
         tipos.remove(EnumTipoCaso.INTERNO.getTipoCaso());
-//        System.out.println("*** getTipoCasoAvailableList()");
+//        //System.out.println("*** getTipoCasoAvailableList()");
         return tipos;
     }
 
     public List<Area> getAreasAvailableList() {
-//        System.out.println("*** getAreasAvailableList()");
+//        //System.out.println("*** getAreasAvailableList()");
         return (List<Area>) getJpaController().findAll(Area.class);
     }
     
      public List<Grupo> getGruposAvailableList() {
-//        System.out.println("*** getAreasAvailableList()");
+//        //System.out.println("*** getAreasAvailableList()");
         return (List<Grupo>) getJpaController().findAll(Grupo.class);
     }
 

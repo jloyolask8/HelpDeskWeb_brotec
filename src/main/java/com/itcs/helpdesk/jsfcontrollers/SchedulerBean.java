@@ -84,10 +84,10 @@ public class SchedulerBean extends AbstractManagedBean<Object> implements Serial
     }
 
     public void agendarAlertasForAllCasos() {
-        System.out.println("agendarAlertasForAllCasos");
+        //System.out.println("agendarAlertasForAllCasos");
 
         List<Caso> casos_pendiente = getJpaController().getCasoFindByEstadoAndAlerta(EnumEstadoCaso.ABIERTO.getEstado(), EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta());
-//            System.out.println("encontrados "+casos.size()+" casos "+EnumTipoAlerta.TIPO_ALERTA_PENDIENTE+" que se debe agendar cambio de alerta");
+//            //System.out.println("encontrados "+casos.size()+" casos "+EnumTipoAlerta.TIPO_ALERTA_PENDIENTE+" que se debe agendar cambio de alerta");
 
         for (Caso caso : casos_pendiente) {
             if (caso.getNextResponseDue() != null) {
@@ -110,7 +110,7 @@ public class SchedulerBean extends AbstractManagedBean<Object> implements Serial
 
         List<Caso> casos_por_vencer = getJpaController().getCasoFindByEstadoAndAlerta(EnumEstadoCaso.ABIERTO.getEstado(),
                 EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta());
-//            System.out.println("encontrados "+casos.size()+" casos "+EnumTipoAlerta.TIPO_ALERTA_POR_VENCER+" que se debe agendar cambio de alerta");
+//            //System.out.println("encontrados "+casos.size()+" casos "+EnumTipoAlerta.TIPO_ALERTA_POR_VENCER+" que se debe agendar cambio de alerta");
         for (Caso caso : casos_por_vencer) {
             try {
                 HelpDeskScheluder.scheduleAlertaVencido(caso.getIdCaso(), caso.getNextResponseDue());
@@ -216,7 +216,7 @@ public class SchedulerBean extends AbstractManagedBean<Object> implements Serial
     //Nada que ver con el codigo
     public void verificaDatosBase() {
         JPAServiceFacade controller = getJpaController();
-        System.out.println("verificaDatosBase()...");
+        //System.out.println("verificaDatosBase()...");
 //        try {
 //            Thread.sleep(5000);
 //        } catch (InterruptedException ex) {

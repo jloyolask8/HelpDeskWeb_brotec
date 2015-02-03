@@ -256,7 +256,7 @@ public class AttachmentController extends AbstractManagedBean<Attachment> implem
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
-//            System.out.println("AttachmentControllerConverter getAsObject " + value);
+//            //System.out.println("AttachmentControllerConverter getAsObject " + value);
             if (value == null || value.length() == 0) {
                 return null;
             }
@@ -279,7 +279,7 @@ public class AttachmentController extends AbstractManagedBean<Attachment> implem
 
         @Override
         public String getAsString(FacesContext facesContext, UIComponent component, Object object) {
-//             System.out.println("AttachmentControllerConverter getAsString " + object);
+//             //System.out.println("AttachmentControllerConverter getAsString " + object);
             if (object == null) {
                 return null;
             }

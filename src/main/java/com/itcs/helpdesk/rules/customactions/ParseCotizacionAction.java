@@ -66,7 +66,7 @@ public abstract class ParseCotizacionAction extends Action {
             DatosCaso datos = collectData(caso.getDescripcion());
 
             if (ApplicationConfig.isAppDebugEnabled()) {
-                System.out.println("debug datos collected:" + datos);
+                //System.out.println("debug datos collected:" + datos);
             }
 
             handleClientData(datos, caso);
@@ -319,17 +319,17 @@ public abstract class ParseCotizacionAction extends Action {
         
         List<ModeloProducto> modelos = (List<ModeloProducto>) getJpaController().findAllEntities(vista, new OrderBy("nombre"), null);
         
-//                System.out.println("modelos:" + modelos);
+//                //System.out.println("modelos:" + modelos);
         if (modelos != null) {
             for (ModeloProducto modelObject : modelos) {
                 final Producto idProducto = modelObject.getProducto();
                 if (idProducto != null) {
-//                            System.out.println("Posible Proyecto:" + idProducto.getNombre());
+//                            //System.out.println("Posible Proyecto:" + idProducto.getNombre());
                     
                     if ((datos.getProducto() != null && datos.getProducto().equalsIgnoreCase(idProducto.getIdProducto()))
                             || caso.getDescripcion().contains(idProducto.getNombre())) {
                         
-//                                System.out.println("Match!!! Proyecto:" + idProducto.getNombre());
+//                                //System.out.println("Match!!! Proyecto:" + idProducto.getNombre());
                         caso.setIdComponente(modelObject.getIdComponente());
                         caso.setIdModelo(modelObject);
                         caso.setIdProducto(idProducto);

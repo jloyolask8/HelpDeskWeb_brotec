@@ -104,7 +104,7 @@ public class ParseCotizacionEnlaceInmobiliarioAction extends ParseCotizacionActi
 //        try
 //        {
 //            DatosCaso datos = parser.collectData(textToTest);
-//            System.out.println("datos:"+datos);
+//            //System.out.println("datos:"+datos);
 //        }
 //        catch (ActionExecutionException ex)
 //        {

@@ -70,7 +70,7 @@ public class DateRangeList implements Iterable<Interval> {
 //                    monthEnd.set(Calendar.DAY_OF_MONTH, lastDayOfMonth);
                     final DateTime monthEnd = monthStart.dayOfMonth().setCopy(lastDayOfMonth);
 
-                    System.out.println("Start:" + monthStart + "\n lastDayOfMonth:" + lastDayOfMonth + "\n End: " + monthEnd);
+                    //System.out.println("Start:" + monthStart + "\n lastDayOfMonth:" + lastDayOfMonth + "\n End: " + monthEnd);
 
                     interval = new Interval(monthStart, monthEnd);
 
