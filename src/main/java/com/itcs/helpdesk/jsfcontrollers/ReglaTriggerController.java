@@ -125,7 +125,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
                 ActionInfo actionInfo = class1.getAnnotation(ActionInfo.class);
                 if (actionInfo != null) {
                     if (actionInfo.mustShow()) {
-                        System.out.println("class found: " + class1.getCanonicalName());
+                        //System.out.println("class found: " + class1.getCanonicalName());
                         lista.add(class1.getCanonicalName());
                         actionClassInfoMap.put(class1.getCanonicalName(), actionInfo);
                     }
@@ -212,7 +212,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 //    }
 
     public void valueChangeListener(ValueChangeEvent e) {
-        System.out.println(" valueChangeListener() event:" + e);
+        //System.out.println(" valueChangeListener() event:" + e);
         Map<String, String> reqParams = FacesContext.getCurrentInstance()
                 .getExternalContext().getRequestParameterMap();
         String idRegla = reqParams.get("idRegla");
@@ -272,12 +272,12 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         int n = createRandomInt();
         filtro.setIdCondicion(n);//Ugly patch to solve identifier unknown when new items are added to the datatable.
         filtro.setIdTrigger(current);
-        System.out.println(filtro);
+        //System.out.println(filtro);
         current.getCondicionList().add(filtro);
     }
 
     public void removeFiltroFromVista(Condicion filtro) {
-        System.out.println("filtro:" + filtro);
+        //System.out.println("filtro:" + filtro);
         if (current.getCondicionList() == null || current.getCondicionList().isEmpty()) {
             JsfUtil.addErrorMessage("No hay criterios en la regla!");
         }
@@ -295,7 +295,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
         }
         newAccion.setIdAccion(createRandomInt());
         newAccion.setIdTrigger(current);
-//        System.out.println(newAccion);
+//        //System.out.println(newAccion);
         current.getAccionList().add(newAccion);
     }
 
@@ -334,7 +334,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
     }
 
     public void setAccionParametroUsuario(Usuario usuario) {
-        System.out.println("setAccionParametroUsuario " + usuario);
+        //System.out.println("setAccionParametroUsuario " + usuario);
         this.usuarioTemp = usuario;
         accionTemp.setParametros(usuario.getIdUsuario());
 
@@ -431,7 +431,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
             accionTemp.setIdAccion(n);
             getAcciones().add(accionTemp);
         }
-        System.out.println("prepareCreateAccion..." + getAcciones());
+        //System.out.println("prepareCreateAccion..." + getAcciones());
         accionTemp = new Accion();
         resetTempVars();
         JsfUtil.addSuccessMessage("Acción agregada");
@@ -445,7 +445,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
             accionTemp.setIdAccion(n);
             getAcciones().add(accionTemp);
         }
-        System.out.println("prepareCreateAccion..." + getAcciones());
+        //System.out.println("prepareCreateAccion..." + getAcciones());
         accionTemp = new Accion();
         resetTempVars();
         JsfUtil.addSuccessMessage("Acción agregada...");
@@ -712,7 +712,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
     }
 
     public void resetTempVars() {
-        System.out.println("resetTempVars");
+        //System.out.println("resetTempVars");
         usuarioTemp = null;
         prioridadTemp = null;
         grupoTemp = null;

@@ -132,7 +132,7 @@ public class HelpDeskScheluder {
             final List<Usuario> usuarios, final Long idCaso,
             final String eventId, String eventReminderId, final Date whenToRun) throws SchedulerException {
 
-        System.out.println("scheduling ScheduleEventReminderJob");
+        //System.out.println("scheduling ScheduleEventReminderJob");
 
         String mailsTo = "";
         boolean first = true;
@@ -172,7 +172,7 @@ public class HelpDeskScheluder {
             try{
                 HelpDeskScheluder.unschedule(jobKey);
             }catch(SchedulerException ex){
-                System.out.println("ERROR CONTROLADO");
+                //System.out.println("ERROR CONTROLADO");
                 ex.printStackTrace();
             }
         }
@@ -255,7 +255,7 @@ public class HelpDeskScheluder {
     public static void scheduleNotifyAgentsCasoReceived(String tenant, final String idCanal, final String mensajeFinal,
             final String to, final String subject, final Long idCaso) throws SchedulerException {
 
-        System.out.println("scheduleNotifyAgentsCasoReceived()");
+        //System.out.println("scheduleNotifyAgentsCasoReceived()");
         final String valueOfIdCaso = String.valueOf(idCaso);
         final String jobId = TicketNotifyMailToGroup.formatJobId(tenant, idCanal, valueOfIdCaso, to);
         final JobKey jobKey = JobKey.jobKey(jobId, HelpDeskScheluder.GRUPO_CORREO);
@@ -300,7 +300,7 @@ public class HelpDeskScheluder {
     public static void scheduleSendMailNota(String tenant, final String idCanal, final String mensajeFinal,
             final String to, final String cc, final String bcc, final String subject, final Long idCaso, final Integer idNota, final String attachIds) throws SchedulerException {
 
-        System.out.println("scheduleSendMail()");
+        //System.out.println("scheduleSendMail()");
         final String valueOfIdCaso = String.valueOf(idCaso);
         final String valueOfIdNota = String.valueOf(idNota);
         final String jobId = CaseResponseByMailJob.formatJobId(tenant, idCanal, valueOfIdCaso, to);

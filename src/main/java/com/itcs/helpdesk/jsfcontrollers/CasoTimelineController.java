@@ -137,7 +137,7 @@ public class CasoTimelineController extends AbstractManagedBean<ScheduleEvent> i
             }
         };
 
-        System.out.println("new CasoTimelineController()");
+        //System.out.println("new CasoTimelineController()");
 
     }
     
@@ -212,7 +212,7 @@ public class CasoTimelineController extends AbstractManagedBean<ScheduleEvent> i
 
 //    public void addEvent() {
 //
-//        System.out.println("void addEvent called");
+//        //System.out.println("void addEvent called");
 //
 //        try {
 //            ScheduleEvent entityEvent = (ScheduleEvent) event.getData();
@@ -286,7 +286,7 @@ public class CasoTimelineController extends AbstractManagedBean<ScheduleEvent> i
 //    }
     public void onEventMove(ScheduleEntryMoveEvent event) {
 
-        System.out.println("onEventMove");
+        //System.out.println("onEventMove");
 
         ScheduleEvent entityEvent = (ScheduleEvent) event.getScheduleEvent().getData();
 
@@ -295,7 +295,7 @@ public class CasoTimelineController extends AbstractManagedBean<ScheduleEvent> i
 
     public void onEventResize(ScheduleEntryResizeEvent event) {
 
-        System.out.println("onEventResize");
+        //System.out.println("onEventResize");
         ScheduleEvent entityEvent = (ScheduleEvent) event.getScheduleEvent().getData();
         try {
             getJpaController().merge(entityEvent);
@@ -342,7 +342,7 @@ public class CasoTimelineController extends AbstractManagedBean<ScheduleEvent> i
      * @return the timeZone
      */
     public TimeZone getTimeZone() {
-        System.out.println("timeZone:" + timeZone.toString());
+        //System.out.println("timeZone:" + timeZone.toString());
         return timeZone;
     }
 

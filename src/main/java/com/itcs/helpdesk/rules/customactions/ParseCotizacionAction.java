@@ -66,7 +66,7 @@ public abstract class ParseCotizacionAction extends Action {
             DatosCaso datos = collectData(caso.getDescripcion());
 
             if (ApplicationConfig.isAppDebugEnabled()) {
-                System.out.println("debug datos collected:" + datos);
+                //System.out.println("debug datos collected:" + datos);
             }
 
             handleClientData(datos, caso);

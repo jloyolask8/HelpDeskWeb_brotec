@@ -25,12 +25,6 @@ public class SubComponenteController extends AbstractManagedBean<SubComponente> 
         super(SubComponente.class);
     }
     
-   
-    
-    public void selectEntityFromDialog(SubComponente subComponente) {
-        RequestContext.getCurrentInstance().closeDialog(subComponente);
-    }
-
     @Override
     protected String getListPage() {
         return "/script/subComponente/List";

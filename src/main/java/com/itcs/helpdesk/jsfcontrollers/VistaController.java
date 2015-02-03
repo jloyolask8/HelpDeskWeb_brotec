@@ -100,7 +100,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
     }
 
     public String prepareCreate(Vista newVista, String backOutcome) {
-        System.out.println("prepareCreate(" + newVista + ")");
+        //System.out.println("prepareCreate(" + newVista + ")");
         current = newVista;
         this.filterHelper2 = null;//recreate filter helper
         visibilityOption = determineVisibility(current);

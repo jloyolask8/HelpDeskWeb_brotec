@@ -95,7 +95,7 @@ public class LoginCustomerController extends AbstractManagedBean<Cliente> implem
     }
 
     public void checkAccessToCasosList(javax.faces.event.ComponentSystemEvent event) {
-        System.out.println("checkSession()...");
+        //System.out.println("checkSession()...");
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         checkEmbeddedParam(request);
 
@@ -106,7 +106,7 @@ public class LoginCustomerController extends AbstractManagedBean<Cliente> implem
     }
 
     public void checkAccessToTicket(javax.faces.event.ComponentSystemEvent event) {
-        System.out.println("checkCustomerSession()...");
+        //System.out.println("checkCustomerSession()...");
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         checkEmbeddedParam(request);
         String idCaso = request.getParameter("idCaso");
@@ -115,7 +115,7 @@ public class LoginCustomerController extends AbstractManagedBean<Cliente> implem
             Caso caso = getJpaController().findCasoByIdEmailCliente(emailCliente_, Long.valueOf(idCaso));
             if (caso != null) {
                 //Se encontro un caso      
-//                System.out.println("Se encontro caso:" + idCaso);
+//                //System.out.println("Se encontro caso:" + idCaso);
                 setNumCaso(Long.valueOf(idCaso));
                 setEmailCliente(emailCliente_);
                 customerCasoController.setSelected(caso);
@@ -134,7 +134,7 @@ public class LoginCustomerController extends AbstractManagedBean<Cliente> implem
     
 
     public void prepareCreateTicket(javax.faces.event.ComponentSystemEvent event) {
-        System.out.println("initializeData()...");
+        //System.out.println("initializeData()...");
         HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         checkProductoParam(req);
     }
@@ -142,7 +142,7 @@ public class LoginCustomerController extends AbstractManagedBean<Cliente> implem
     private void checkProductoParam(HttpServletRequest req) {
         String proy = req.getParameter("prod");
         if (proy != null && !proy.isEmpty()) {
-            System.out.println("prod=" + proy);
+            //System.out.println("prod=" + proy);
             try {
                 Producto producto = getJpaController().find(Producto.class, proy);
 //                setProyecto(producto);

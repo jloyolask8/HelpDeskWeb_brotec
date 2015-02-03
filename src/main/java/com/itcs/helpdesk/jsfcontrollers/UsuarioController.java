@@ -123,7 +123,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
     }
 
 //    public Usuario getSelected() {
-////        System.out.println("getSelected: " + current);
+////        //System.out.println("getSelected: " + current);
 //        if (current == null) {
 //            current = new Usuario();
 //            selectedItemIndex = -1;
@@ -131,14 +131,14 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
 //        return current;
 //    }
 // public void setSelected(Usuario selected) {
-//        System.out.println("setSelected(" + selected + ")");
+//        //System.out.println("setSelected(" + selected + ")");
 //        if (selected == null) {
 //            return;
 //        }
 //        this.current = selected;
 //    }
 //    public List<Caso> getCasoAbiertoList() {
-//        System.out.println("getCasoAbiertoList");
+//        //System.out.println("getCasoAbiertoList");
 //        Vista vista = new Vista(Caso.class);
 //        if (vista.getFiltrosVistaList() == null) {
 //            vista.setFiltrosVistaList(new ArrayList<FiltroVista>());
@@ -171,7 +171,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
     }
 
     public void setIdUsuarioDelete(String idUsuarioDelete) {
-        System.out.println("idUsuario: " + idUsuarioDelete);
+        //System.out.println("idUsuario: " + idUsuarioDelete);
         this.idUsuarioDelete = idUsuarioDelete;
         Usuario usuario = getJpaController().find(Usuario.class, idUsuarioDelete);
         setSelected(usuario);
@@ -208,10 +208,10 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
     public void validaRut() {
         if (!UtilesRut.validar(getSelected().getRut())) {
             JsfUtil.addErrorMessage("Rut invalido");
-//            System.out.println("Rut invalido");
+//            //System.out.println("Rut invalido");
         }
 //        else {
-//            System.out.println("Rut valido");
+//            //System.out.println("Rut valido");
 //        }
     }
 
@@ -251,7 +251,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
     }
 
     public void prepareViewUserInDialog(Usuario u) {
-//        System.out.println("prepareViewUserInDialog(" + u + ")");
+//        //System.out.println("prepareViewUserInDialog(" + u + ")");
         current = u;
         Map<String, Object> options = new HashMap<>();
         options.put("height", "600");
@@ -297,7 +297,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
 //    @Override
 //    public String prepareEdit(Usuario u) {
 //        current = u;
-//        System.out.println("prepareEdit " + current.getIdUsuario());
+//        //System.out.println("prepareEdit " + current.getIdUsuario());
 //        if (current == null) {
 //            JsfUtil.addSuccessMessage("Se requiere que seleccione una fila.");
 //            return null;
@@ -384,7 +384,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
     }
 
     public String destroy() {
-        System.out.println("destroy current:" + current);
+        //System.out.println("destroy current:" + current);
         if (current == null) {
             return "";
         }
@@ -549,8 +549,8 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
 //
 //                Date to = cal.getTime();
 //
-//                //System.out.println("from:" + from);
-//                //System.out.println("To:" + to);
+//                ////System.out.println("from:" + from);
+//                ////System.out.println("To:" + to);
 ////                long count = getJpaController().countByCreatedBetween(Caso.class, from, to, idArea, idGrupo, idUsuario);
 //                long count = getJpaController().countCasosByCreatedBetween(from, to, current);
 //
@@ -558,7 +558,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
 //                if (count >= getMaxValueForCasosClosedVsOpenModel()) {
 //                    setMaxValueForCasosClosedVsOpenModel(count);
 //                }
-//                //System.out.println("year:" + year + ", count:" + count);
+//                ////System.out.println("year:" + year + ", count:" + count);
 //
 //
 ////                long count2 = getJpaController().countByClosedBetween(Caso.class, from, to, idArea, idGrupo, idUsuario);
@@ -568,7 +568,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
 //                    setMaxValueForCasosClosedVsOpenModel(count2);
 //                }
 //                cerrados.set(String.valueOf(year), count2);
-//                //System.out.println("year:" + year + ", count:" + count2);
+//                ////System.out.println("year:" + year + ", count:" + count2);
 //
 //            }
 //
@@ -592,8 +592,8 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
 //
 //                Date to = cal.getTime();
 //
-//                //System.out.println("from:" + from);
-//                //System.out.println("To:" + to);
+//                ////System.out.println("from:" + from);
+//                ////System.out.println("To:" + to);
 //
 ////                long count = getJpaController().countByCreatedBetween(Caso.class, from, to, idArea, idGrupo, idUsuario);
 //                long count = getJpaController().countCasosByCreatedBetween(from, to, current);
@@ -602,7 +602,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
 //                    setMaxValueForCasosClosedVsOpenModel(count);
 //                }
 //                creados.set(GraphsManagedBean.traduceMonth(month), count);
-//                //System.out.println("month:" + month + ", count:" + count);
+//                ////System.out.println("month:" + month + ", count:" + count);
 //
 //
 //                long count2 = getJpaController().countCasosByClosedBetween(from, to, current);
@@ -611,7 +611,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
 //                    setMaxValueForCasosClosedVsOpenModel(count2);
 //                }
 //                cerrados.set(GraphsManagedBean.traduceMonth(month), count2);
-//                //System.out.println("month:" + month + ", count:" + count2);
+//                ////System.out.println("month:" + month + ", count:" + count2);
 //
 //            }
 //

@@ -78,7 +78,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
     }
 
     public List<EmailCliente> completeEmailCliente(String query) {
-        System.out.println(query);
+        //System.out.println(query);
         //List<EmailCliente> results = new ArrayList<EmailCliente>();
 //        List<EmailCliente> emailClientes = getJpaController().getEmailClienteFindByEmailLike(query, 10);
 //        System.out.println(emailClientes);
@@ -145,7 +145,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
 ////            emailCliente_wizard_existeEmail = false;
 //            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "No existe el email:" + query, "No existe el Cliente con email:" + query);
 //            FacesContext.getCurrentInstance().addMessage(null, message);
-//            System.out.println("No existe el Cliente con email" + query);
+//            //System.out.println("No existe el Cliente con email" + query);
 //        }
 
             if (InputValidationBean.isValidEmail(query) && !results.contains(query)) {
@@ -231,7 +231,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
 
     public void handleFileUploadClienteProd(FileUploadEvent event) {
 
-        System.out.println("bulkLoadedProductoContratadoTipoAsoc:" + bulkLoadedProductoContratadoTipoAsoc);
+        //System.out.println("bulkLoadedProductoContratadoTipoAsoc:" + bulkLoadedProductoContratadoTipoAsoc);
 
 //        String email_regexp = "[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?";
         if (event != null) {
@@ -338,7 +338,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
                 subComponent = getJpaController().find(SubComponente.class, subComponentId);
             } catch (Exception e) {
                 subComponent = null;
-                System.out.println("component not found!");
+                //System.out.println("component not found!");
             }
         }
 
@@ -351,13 +351,13 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
                 try {
                     ProductoContratado pc = getJpaController().find(ProductoContratado.class, productoContratadoPK);
 
-//                System.out.println(pc);
+//                //System.out.println(pc);
                     if (pc == null) {
                         //do not exist, save it.
 
                         if (!map.containsKey(productoContratadoPK.toString())) {
 
-//                        System.out.println("PUT");
+//                        //System.out.println("PUT");
                             pc = new ProductoContratado(productoContratadoPK);
                             pc.setCliente(c);
                             pc.setTipoAsociacion(bulkLoadedProductoContratadoTipoAsoc);
@@ -432,43 +432,43 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
                     try {
                         rut = sheet.getCell(CellReferenceHelper.getColumn(cellPositionRut), rowIndex).getContents();
                     } catch (Exception e) {
-                        System.out.println("Error: " + e.getMessage());
+                        //System.out.println("Error: " + e.getMessage());
                     }
                     try {
                         nombres = sheet.getCell(CellReferenceHelper.getColumn(cellPositionNombre), rowIndex).getContents();
                     } catch (Exception e) {
-                        System.out.println("Error: " + e.getMessage());
+                        //System.out.println("Error: " + e.getMessage());
                     }
                     try {
                         apellidos = sheet.getCell(CellReferenceHelper.getColumn(cellPositionApellidos), rowIndex).getContents();
                     } catch (Exception e) {
-                        System.out.println("Error: " + e.getMessage());
+                        //System.out.println("Error: " + e.getMessage());
                     }
                     try {
                         correo = sheet.getCell(CellReferenceHelper.getColumn(cellPositionCorreo), rowIndex).getContents();
                     } catch (Exception e) {
-                        System.out.println("Error: " + e.getMessage());
+                        //System.out.println("Error: " + e.getMessage());
                     }
                     try {
                         sexo = sheet.getCell(CellReferenceHelper.getColumn(cellPositionSexo), rowIndex).getContents();
                     } catch (Exception e) {
-                        System.out.println("Error: " + e.getMessage());
+                        //System.out.println("Error: " + e.getMessage());
                     }
                     try {
                         direccion1 = sheet.getCell(CellReferenceHelper.getColumn(cellPositionDireccion1), rowIndex).getContents();
                     } catch (Exception e) {
-                        System.out.println("Error: " + e.getMessage());
+                        //System.out.println("Error: " + e.getMessage());
                     }
 
                     try {
                         fono1 = sheet.getCell(CellReferenceHelper.getColumn(cellPositionFono1), rowIndex).getContents();
                     } catch (Exception e) {
-                        System.out.println("Error: " + e.getMessage());
+                        //System.out.println("Error: " + e.getMessage());
                     }
                     try {
                         fono2 = sheet.getCell(CellReferenceHelper.getColumn(cellPositionFono2), rowIndex).getContents();
                     } catch (Exception e) {
-                        System.out.println("Error: " + e.getMessage());
+                        //System.out.println("Error: " + e.getMessage());
                     }
 
                     String moreValidEmail = StringUtils.isEmpty(correo) ? "" : correo.toLowerCase().trim();
@@ -564,7 +564,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
     }
 
     public void onBlurRutInput() {
-//        System.out.println("formatea");
+//        //System.out.println("formatea");
         String rutFormateado = UtilesRut.formatear(getSelected().getCliente().getRut());
         getSelected().getCliente().setRut(rutFormateado);
 
@@ -583,7 +583,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
     }
 
     public String actualizarEmailSeleccionado() {
-        System.out.println("actualizarEmailSeleccionado pressed!!");
+        //System.out.println("actualizarEmailSeleccionado pressed!!");
         String email = getSelected().getEmailCliente();
         EmailCliente emailCliente = getJpaController().find(EmailCliente.class, email);
         if (emailCliente != null) {

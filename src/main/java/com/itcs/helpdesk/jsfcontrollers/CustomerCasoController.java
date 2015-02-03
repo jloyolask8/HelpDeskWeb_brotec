@@ -65,7 +65,7 @@ public class CustomerCasoController extends CasoController {
 //    }
 
     public void initializeEmbeddedForm(javax.faces.event.ComponentSystemEvent event) {
-        System.out.println("initializeEmbeddedForm()...");
+        //System.out.println("initializeEmbeddedForm()...");
         if (this.current == null) {
             prepareCreateCasoFromCustomer();
         }

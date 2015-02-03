@@ -96,6 +96,11 @@ public abstract class AbstractManagedBean<E> implements Serializable {
 
     protected String backOutcome;
 
+    
+    public void selectEntityFromDialog(E o) {
+        RequestContext.getCurrentInstance().closeDialog(o);
+    }
+    
     public String goBack() {
         if (this.backOutcome == null) {
             recreateModel();
@@ -126,7 +131,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
      * @return
      */
     public List<E> complete(String query) {
-        System.out.println("complete...");
+        //System.out.println("complete...");
         List<E> results = (List<E>)getJpaController().findEntitiesByQuery(entityClass, false, 10, query);
         if (results == null) {
             return Collections.EMPTY_LIST;
@@ -504,7 +509,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
                     fCopy.setValor2Label(f.getValor2Label());
                     fCopy.setIdVista(copy);
                     copy.getFiltrosVistaList().add(fCopy);
-                    //System.out.println("added filtro " + fCopy);
+                    ////System.out.println("added filtro " + fCopy);
                 }
             }
 
@@ -513,7 +518,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
             }
             setVista(copy);
 //        this.setVista(copy);
-//        //System.out.println("Vista copy set:" + copy);
+//        ////System.out.println("Vista copy set:" + copy);
             recreatePagination();
 //            recreateModel();
         } catch (Exception e) {
@@ -906,7 +911,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
             }
             Collections.sort(lista, comparadorVistas);
             this.allMyVistas = lista;
-//            System.out.println("allMyVistas:"+allMyVistas);
+//            //System.out.println("allMyVistas:"+allMyVistas);
         }
 
         return this.allMyVistas;

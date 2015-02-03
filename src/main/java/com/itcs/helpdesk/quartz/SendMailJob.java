@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
@@ -114,16 +115,11 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
                             nota.setVisible(Boolean.FALSE);//registro interno
                             nota.setTipoNota(EnumTipoNota.REG_ENVIO_CORREO.getTipoNota());
                             nota.setEnviadoPorQuartzJobId(formatJobId);
-//                            em.persist(nota);//not needed!
+                            
+                            em.persist(nota);
 
-                            List<Nota> notaList = caso.getNotaList();
-                            if (notaList == null) {
-                                caso.setNotaList(new LinkedList<Nota>());
-                            }
-
-                            caso.getNotaList().add(nota);
-
-                            List<AuditLog> changeLog = new ArrayList<>();
+                            CopyOnWriteArrayList<AuditLog> changeLog = new CopyOnWriteArrayList<>();
+                            changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "Se agrega comentario #"+nota.getIdNota(), ""));
                             changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "Se envía correo, subject:'" + subject + "' a: " + nota.getEnviadoA(), ""));
 
                             for (AuditLog auditLog : changeLog) {

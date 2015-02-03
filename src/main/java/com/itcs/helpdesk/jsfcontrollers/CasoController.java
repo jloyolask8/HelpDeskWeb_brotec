@@ -72,6 +72,7 @@ import com.lowagie.text.PageSize;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -318,9 +319,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     private List<Attachment> cloneAttachments(List<Attachment> attachments, Caso casoBase) {
-//        System.out.println("clone Attachments size list: " + attachments.size());
-//        System.out.println("Caso base attachment list size: " + casoBase.getAttachmentList().size());
-//        System.out.println("Caso base attachmentNotEmbedded list size: " + casoBase.getAttachmentsNotEmbedded().size());
+//        //System.out.println("clone Attachments size list: " + attachments.size());
+//        //System.out.println("Caso base attachment list size: " + casoBase.getAttachmentList().size());
+//        //System.out.println("Caso base attachmentNotEmbedded list size: " + casoBase.getAttachmentsNotEmbedded().size());
         List<Attachment> clonedElements = new ArrayList<>(attachments.size());
         for (Attachment attachment : attachments) {
             Archivo archivo = getJpaController().find(Archivo.class, attachment.getIdAttachment());
@@ -417,7 +418,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     ccEmail.add(u.getEmail());
                 }
             }
-        }else{
+        } else {
             this.setCc(false);
         }
 
@@ -473,22 +474,27 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public void onChangeActiveIndexCasoSections(TabChangeEvent event) {
         //THIS CUERO PIC PULGA ES A RAIZ DE UN BUG DE PRIMEFACES, ME ENVIA EL ACTIVE INDEX SIEMPRE EN CER0.
-        final String idtab = event.getTab().getId();
-        if (idtab.contains("tab-actividades")) {
-            setActiveIndexCasoSections(TAB_ACTIVIDADES_INDEX);//tab-actividades
-        } else if (idtab.contains("tabAgendarEvento")) {
-            setActiveIndexCasoSections(TAB_AGENDA_INDEX);//tabAgendarEvento
-        } else if (idtab.contains("tabArchivos")) {
-            setActiveIndexCasoSections(TAB_ADJUNTOS_INDEX);//tabArchivos
-        } else if (idtab.contains("tabCasosRelacionados")) {
-            setActiveIndexCasoSections(TAB_CASOSREL_INDEX);//tabCasosRelacionados
-        } else if (idtab.contains("tab-timeline")) {
-            setActiveIndexCasoSections(TAB_TIMELINE_INDEX);//tab-timeline
-        } else if (idtab.contains("tabEditarEvento")) {
-            setActiveIndexCasoSections(TAB_EVENTO_INDEX);//tabEditarEvento
-        } else {
-            setActiveIndexCasoSections(TAB_ACTIVIDADES_INDEX);//descripcion
+        try {
+            final String idtab = event.getTab().getId();
+            if (idtab.contains("tab-actividades")) {
+                setActiveIndexCasoSections(TAB_ACTIVIDADES_INDEX);//tab-actividades
+            } else if (idtab.contains("tabAgendarEvento")) {
+                setActiveIndexCasoSections(TAB_AGENDA_INDEX);//tabAgendarEvento
+            } else if (idtab.contains("tabArchivos")) {
+                setActiveIndexCasoSections(TAB_ADJUNTOS_INDEX);//tabArchivos
+            } else if (idtab.contains("tabCasosRelacionados")) {
+                setActiveIndexCasoSections(TAB_CASOSREL_INDEX);//tabCasosRelacionados
+            } else if (idtab.contains("tab-timeline")) {
+                setActiveIndexCasoSections(TAB_TIMELINE_INDEX);//tab-timeline
+            } else if (idtab.contains("tabEditarEvento")) {
+                setActiveIndexCasoSections(TAB_EVENTO_INDEX);//tabEditarEvento
+            } else {
+                setActiveIndexCasoSections(TAB_ACTIVIDADES_INDEX);//descripcion
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
     }
 
     public List<AuditLog> getAuditLogsCurrentCase() {
@@ -541,7 +547,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         newSubCaso.setIdCasoPadre(current);
         newSubCaso.setTipoCaso(EnumTipoCaso.REPARACION_ITEM.getTipoCaso());
         newSubCaso.setIdSubEstado(EnumSubEstadoCaso.REPARACION_ITEM_NUEVO.getSubEstado());
-//        System.out.println(newSubCaso);
+//        //System.out.println(newSubCaso);
         current.getCasosHijosList().add(newSubCaso);
     }
 
@@ -561,7 +567,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public void runActionOnSelectedCasos() {
 
-//        System.out.println("accionToRunSelected:" + accionToRunSelected);
+//        //System.out.println("accionToRunSelected:" + accionToRunSelected);
         Action a = applicationBean.getPredefinedActions().get(accionToRunSelected);
         a.setConfig(accionToRunParametros);
 
@@ -808,8 +814,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //        EmailCliente emailCliente = getJpaControllerThatListenRules().getEmailClienteFindByEmail(event.getObject().toString());
         EmailCliente emailCliente = getJpaControllerThatListenRules().find(EmailCliente.class, getEmailCliente_wizard(), true);
 
-//        //System.out.println("emailCliente_wizard:" + emailCliente_wizard);
-//        //System.out.println("event.getObject().toString():" + event.getObject().toString());
+//        ////System.out.println("emailCliente_wizard:" + emailCliente_wizard);
+//        ////System.out.println("event.getObject().toString():" + event.getObject().toString());
         if (emailCliente != null) {
 
             current.setEmailCliente(emailCliente);
@@ -859,7 +865,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public void formateaRutFiltro2() {
-        //System.out.println("formateaRutFiltro2()");
+        ////System.out.println("formateaRutFiltro2()");
         try {
 //            final String rutInput = getSelected().getEmailCliente().getCliente().getRut();
 
@@ -942,7 +948,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public void handleSubCompChange() {
-        System.out.println("handleSubCompChange...");
+        //System.out.println("handleSubCompChange...");
         getSelected().setIdSubComponente(getJpaController().find(SubComponente.class, getSelected().getIdSubComponente().getIdSubComponente(), true));
     }
 
@@ -1015,7 +1021,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         if (res != null) {
             ItemController itemController = ((ItemController) res);
             Item itemSelected = (Item) itemController.getItem().getData();
-//            //System.out.println("categoria " + catSelected + " seleccionada");
+//            ////System.out.println("categoria " + catSelected + " seleccionada");
 //            current.setIdItem(itemSelected);
             current.getCasosHijosList().get(current.getCasosHijosList().size() - 1).setIdItem(itemSelected);
         }
@@ -1028,7 +1034,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         if (res != null) {
             ItemController itemController = ((ItemController) res);
             Item itemSelected = (Item) itemController.getItem().getData();
-//            //System.out.println("categoria " + catSelected + " seleccionada");
+//            ////System.out.println("categoria " + catSelected + " seleccionada");
 //            current.setIdItem(itemSelected);
             current.setIdItem(itemSelected);
         }
@@ -1050,12 +1056,12 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public void setIdFileDelete(String idFileDelete) {
         this.idFileDelete = idFileDelete;
-        //System.out.println("idFileDelete:" + idFileDelete);
+        ////System.out.println("idFileDelete:" + idFileDelete);
     }
     /**
      * Id Caso relacionado
      */
-    private String idCaserel = "";
+    private Caso idCaserel;
 
     @PostConstruct
     public void init() {
@@ -1078,11 +1084,11 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         return "inbox";
     }
 
-    public String getIdCaserel() {
+    public Caso getIdCaserel() {
         return idCaserel;
     }
 
-    public void setIdCaserel(String idCaserel) {
+    public void setIdCaserel(Caso idCaserel) {
         this.idCaserel = idCaserel;
     }
 
@@ -1177,7 +1183,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public void formateaRut() {
-//        System.out.println("formateaRut");
+//        //System.out.println("formateaRut");
         if (getSelected().getIdCliente() == null) {
             return;
         }
@@ -1542,6 +1548,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             EmailCliente email = new EmailCliente();
             email.setCliente(new Cliente());
             current.setEmailCliente(email);
+            current.setIdCliente(email.getCliente());
             EstadoCaso ec = new EstadoCaso();
             ec.setIdEstado(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
 
@@ -1654,7 +1661,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      */
     public String createAndView() {
         try {
-            System.out.println("CURRENT TEST ATACHMENT BEFORE:" + this.current.getAttachmentList());
+            //System.out.println("CURRENT TEST ATACHMENT BEFORE:" + this.current.getAttachmentList());
             List<Attachment> attachmentList = current.getAttachmentList();
             current.setAttachmentList(null);
             persist(current);
@@ -1732,7 +1739,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             style.remove();
         }
         ret = doc.toString();
-        //System.out.println("html ret:\n"+ret);
+        ////System.out.println("html ret:\n"+ret);
         return ret;
     }
 
@@ -2083,7 +2090,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     private Vista createVistaMyReviewUpdate() {
-        //        //System.out.println("filtraRevisarActualizaciones");
+        //        ////System.out.println("filtraRevisarActualizaciones");
         Vista vista1 = new Vista(Caso.class);
         vista1.setIdUsuarioCreadaPor(userSessionBean.getCurrent());
         vista1.setNombre("Casos Actualizados por el cliente");
@@ -2125,7 +2132,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     private Vista createVistaMisCasosCerrados() {
-//        //System.out.println("filtraRevisarActualizaciones");
+//        ////System.out.println("filtraRevisarActualizaciones");
         Vista vista1 = new Vista(Caso.class);
         vista1.setIdUsuarioCreadaPor(userSessionBean.getCurrent());
         vista1.setNombre("Casos cerrados");
@@ -2156,7 +2163,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     private Vista createVistaOpenPrio() {
-//        //System.out.println("filtraPorAlerta");
+//        ////System.out.println("filtraPorAlerta");
         Vista vista1 = new Vista(Caso.class);
         vista1.setIdUsuarioCreadaPor(userSessionBean.getCurrent());
         vista1.setNombre("Mis Casos prioritarios");
@@ -2193,7 +2200,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     private Vista createVistaCurrentUserByAlert(TipoAlerta alerta, EstadoCaso estadoCaso) {
-//        //System.out.println("filtraPorAlerta");
+//        ////System.out.println("filtraPorAlerta");
         Vista vista1 = new Vista(Caso.class);
         vista1.setIdUsuarioCreadaPor(userSessionBean.getCurrent());
         vista1.setNombre("Casos con Alerta " + alerta.getNombre());
@@ -2228,7 +2235,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public void changeSearchBarVisibility() {
         setSearchBarVisible(!isSearchBarVisible());
-//        System.out.println("changeSearchBarVisibility: "+isSearchBarVisible());
+//        //System.out.println("changeSearchBarVisibility: "+isSearchBarVisible());
     }
 
 //    public void refreshNotas() {
@@ -2476,7 +2483,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
 //    public void prepareProgramarVisitaPreventiva(ActionEvent actionEvent) {
-////        //System.out.println("prepareCreateRespuesta");
+////        ////System.out.println("prepareCreateRespuesta");
 //        try {
 //
 //            if (!validarSiPuedeProgramarVP(current)) {
@@ -2674,76 +2681,119 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         try {
 
-            Caso casorel = getJpaControllerThatListenRules().find(Caso.class, new Long(idCaserel));
-            if (new Long(idCaserel).equals(current.getIdCaso())) {
-                throw new Exception();
-            }
-            if (casorel != null) {
-                current = getJpaControllerThatListenRules().find(Caso.class, current.getIdCaso());
-                casorel.getCasosRelacionadosList().add(current);
-                getJpaControllerThatListenRules().mergeCaso(casorel, getManagerCasos().verificaCambios(casorel));
-                current.getCasosRelacionadosList().add(casorel);
-                getJpaControllerThatListenRules().mergeCaso(current, getManagerCasos().verificaCambios(current));
+//            Caso casorel = getJpaController().find(Caso.class, new Long(idCaserel));
+            if (idCaserel != null) {
 
-                idCaserel = "";
-                current = getJpaControllerThatListenRules().find(Caso.class, current.getIdCaso());
-                JsfUtil.addSuccessMessage(resourceBundle.getString("casorel.ok"));
-                //ManagerCasos.createLogReg(current, "Casos Relacionados", idCaserel, "");
+                if (idCaserel.getIdCaso().equals(current.getIdCaso())) {
+                    addErrorMessage("No se puede relacionar un caso consigo mismo.");
+                    return null;
+                } else {
+                    current = getJpaController().find(Caso.class, current.getIdCaso());
+//                casorel.getCasosRelacionadosList().add(current);
+//                getJpaController().mergeCaso(casorel, getManagerCasos().verificaCambios(casorel));
+                    if (current.getCasosRelacionadosList() == null) {
+                        current.setCasosRelacionadosList(new CopyOnWriteArrayList<Caso>());
+                    }
+                    current.getCasosRelacionadosList().add(idCaserel);
+                    getJpaController().mergeCaso(current, getManagerCasos().verificaCambios(current));
+
+                    idCaserel = null;
+//                current = getJpaController().find(Caso.class, current.getIdCaso());
+                    JsfUtil.addSuccessMessage(resourceBundle.getString("casorel.ok"));
+                    executeInClient("PF('casosRela').hide()");
+
+                    //ManagerCasos.createLogReg(current, "Casos Relacionados", idCaserel, "");
+                }
+
             } else {
-                idCaserel = "";
+                idCaserel = null;
                 JsfUtil.addErrorMessage(resourceBundle.getString("casorel.notfound"));
             }
         } catch (Exception e) {
-            idCaserel = "";
-            current = getJpaControllerThatListenRules().find(Caso.class, current.getIdCaso());
+            idCaserel = null;
+            current = getJpaController().find(Caso.class, current.getIdCaso());
             JsfUtil.addErrorMessage(resourceBundle.getString("casorel.nook"));
         }
-        current = getJpaControllerThatListenRules().find(Caso.class, current.getIdCaso());
+//        current = getJpaController().find(Caso.class, current.getIdCaso());
         return "/script/caso/Edit";
     }
 
-    public String eliminarRelacionado() {
-
+    public void onCasoChosenForEliminarRelacionado(SelectEvent event) {
+        idCaserel = (Caso) event.getObject();
+        addInfoMessage("Caso Selected Id:" + idCaserel.getIdCaso());
         try {
 
-            Caso casorel = getJpaController().find(Caso.class, new Long(idCaserel));
-            if (casorel == null) {
+            if (idCaserel == null) {
                 JsfUtil.addErrorMessage(resourceBundle.getString("DeletecasoRel.notfound"));
-                return null;
+                return;
             }
 
-            if (!casorel.getCasosRelacionadosList().contains(current)) {
+            if (!current.getCasosRelacionadosList().contains(idCaserel)) {
                 JsfUtil.addErrorMessage(resourceBundle.getString("DeletecasoRel.notfound"));
-                return null;
+                return;
             }
 
-            if (new Long(idCaserel).equals(current.getIdCaso())) {
-                throw new Exception();
-            }
-//            if (casorel != null) {
-            current = getJpaController().find(Caso.class, current.getIdCaso());
-            casorel.getCasosRelacionadosList().remove(current);
-            getJpaController().mergeCaso(casorel, getManagerCasos().verificaCambios(casorel));
-            current.getCasosRelacionadosList().remove(casorel);
+            current.getCasosRelacionadosList().remove(idCaserel);
             getJpaController().mergeCaso(current, getManagerCasos().verificaCambios(current));
 
-            idCaserel = "";
-            current = getJpaController().find(Caso.class, current.getIdCaso());
+            idCaserel = null;
+//            current = getJpaController().find(Caso.class, current.getIdCaso());
             JsfUtil.addSuccessMessage(resourceBundle.getString("DeletecasoRel.ok"));
-            //ManagerCasos.createLogReg(current, "Casos Relacionados", idCaserel, "");
-//            } else {
-//                idCaserel = "";
-//                JsfUtil.addErrorMessage(resourceBundle.getString("DeletecasoRel.notfound"));
-//            }
+
         } catch (Exception e) {
-            idCaserel = "";
-            current = getJpaController().find(Caso.class, current.getIdCaso());
+            idCaserel = null;
             JsfUtil.addErrorMessage(resourceBundle.getString("DeletecasoRel.nook"));
         }
-        current = getJpaController().find(Caso.class, current.getIdCaso());
-        return "/script/caso/Edit";
+
     }
 
+    public void chooseCasoFromDialog() {
+        RequestContext.getCurrentInstance().openDialog("selectOneCasoDialog");
+    }
+
+//    public String eliminarRelacionado() {
+//
+//        try {
+//
+////            Caso casorel = getJpaController().find(Caso.class, new Long(idCaserel));
+//            if (idCaserel == null) {
+//                JsfUtil.addErrorMessage(resourceBundle.getString("DeletecasoRel.notfound"));
+//                return null;
+//            }
+//
+//            if (!idCaserel.getCasosRelacionadosList().contains(current)) {
+//                JsfUtil.addErrorMessage(resourceBundle.getString("DeletecasoRel.notfound"));
+//                return null;
+//            }
+//
+//            if (idCaserel.getIdCaso().equals(current.getIdCaso())) {
+//                addErrorMessage("Error!");
+//            }
+////            if (casorel != null) {
+////            current = getJpaController().find(Caso.class, current.getIdCaso());
+////            idCaserel.getCasosRelacionadosList().remove(current);
+////            getJpaController().mergeCaso(idCaserel, getManagerCasos().verificaCambios(idCaserel));
+//
+//            current.getCasosRelacionadosList().remove(idCaserel);
+//            getJpaController().mergeCaso(current, getManagerCasos().verificaCambios(current));
+//
+//            idCaserel = null;
+////            current = getJpaController().find(Caso.class, current.getIdCaso());
+//            JsfUtil.addSuccessMessage(resourceBundle.getString("DeletecasoRel.ok"));
+//            executeInClient("PF('DeleteCasosRela').hide()");
+//            //ManagerCasos.createLogReg(current, "Casos Relacionados", idCaserel, "");
+////            } else {
+////                idCaserel = null;
+////                JsfUtil.addErrorMessage(resourceBundle.getString("DeletecasoRel.notfound"));
+////            }
+//        } catch (Exception e) {
+//            idCaserel = null;
+//            current = getJpaController().find(Caso.class, current.getIdCaso());
+//            JsfUtil.addErrorMessage(resourceBundle.getString("DeletecasoRel.nook"));
+//        }
+////        current = getJpaController().find(Caso.class, current.getIdCaso());
+//        return "/script/caso/Edit";
+//    }
     public void asignarCaso() {
 
         List<AuditLog> changeLog = new ArrayList<>();
@@ -2847,7 +2897,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 }
             }
         } catch (Exception e) {
-//            //System.out.println("tomar caso, exception: " + e.getClass().getName());
+//            ////System.out.println("tomar caso, exception: " + e.getClass().getName());
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
             JsfUtil.addErrorMessage(e, resourceBundle.getString("tomarcasoNOOK"));
         }
@@ -3250,7 +3300,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
             StringBuilder sbuilder = new StringBuilder();
             String destinatario;
-            if (!otroEmail.isEmpty()) {
+            if (otroEmail != null && !otroEmail.isEmpty()) {
                 for (String string : otroEmail) {
                     if (sbuilder.length() > 0) {
                         sbuilder.append(',');
@@ -3322,9 +3372,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //        
 //    }
     public String upload() {
-//        //System.out.println("upload()");
+//        ////System.out.println("upload()");
         if (uploadFile != null) {
-//            //System.out.println("Succesful " + uploadFile.getFileName() + " is uploaded.");
+//            ////System.out.println("Succesful " + uploadFile.getFileName() + " is uploaded.");
             FacesMessage msg = new FacesMessage("Succesful", uploadFile.getFileName() + " is uploaded.");
             FacesContext.getCurrentInstance().addMessage(null, msg);
         }
@@ -3589,9 +3639,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     }
 
 //                for (int i = 0; i <= 15; i++) {
-//                    System.out.print(sheet.getCell(i, row).getContents()+";");                    
+//                    //System.out.print(sheet.getCell(i, row).getContents()+";");                    
 //                }
-//                //System.out.println("");
+//                ////System.out.println("");
                     row++;
                 }
             }
@@ -3599,7 +3649,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             workbook.write();
             workbook.close();
             InputStream decodedInput = new ByteArrayInputStream(((ByteArrayOutputStream) output).toByteArray());
-            ////System.out.println("Ejemplo finalizado.");
+            //////System.out.println("Ejemplo finalizado.");
             return new DefaultStreamedContent(
                     decodedInput, "application/vnd.ms-excel", "casos.xls");
         } catch (Exception ex) {
@@ -3623,7 +3673,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             byte[] bytearray = new byte[(int) size];
             is.read(bytearray);
 
-            //System.out.println("CURRENT:"+this.current);
+            ////System.out.println("CURRENT:"+this.current);
             if (this.current != null) {
                 getManagerCasos().crearAdjunto(bytearray, null, this.current, nombre, event.getFile().getContentType(), event.getFile().getSize());
                 JsfUtil.addSuccessMessage("Archivo " + nombre + " subido con exito");
@@ -3661,7 +3711,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
             if (current.getAttachmentList() == null) {
                 current.setAttachmentList(new ArrayList<Attachment>());
-                //System.out.println("CURRENT:"+this.current);
+                ////System.out.println("CURRENT:"+this.current);
             }
 
             Attachment attach = new Attachment(n);
@@ -3673,7 +3723,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             attach.setMimeType(event.getFile().getContentType());
             attach.setArchivo(archivo);
             current.getAttachmentList().add(attach);
-            //System.out.println("CURRENT:"+this.current);
+            ////System.out.println("CURRENT:"+this.current);
 
             //getJpaControllerThatListenRules().persistAttachment(attach);//later
             //archivo.setIdAttachment(attach.getIdAttachment());run later in create
@@ -3964,7 +4014,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     private boolean compararStrings(String header, String value) {
         boolean resp = header.equals(value);
-        ////System.out.println("comparando "+header+" vs "+value+" resp="+resp);
+        //////System.out.println("comparando "+header+" vs "+value+" resp="+resp);
         return resp;
     }
 
@@ -4483,9 +4533,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      * @param habilitarMerge the habilitarMerge to set
      */
     public void setMergeHabilitado(boolean habilitarMerge) {
-//        System.out.println("habilitarMerge: " + habilitarMerge);
+//        //System.out.println("habilitarMerge: " + habilitarMerge);
         this.mergeHabilitado = habilitarMerge;
-//        System.out.println("seted habilitarMerge: " + this.mergeHabilitado);
+//        //System.out.println("seted habilitarMerge: " + this.mergeHabilitado);
     }
     
      public String getCanalStyleClass(Canal canal) {

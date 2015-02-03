@@ -89,7 +89,7 @@ public class ScheduleEventReminderJob extends AbstractGoDeskJob implements Job {
 
                     if (event != null && eventReminder != null) {
                         //database represents the real data, we only send reminders in case the event or reminders have not been deleted
-                        System.out.println("eventReminder: " + eventReminder);
+                        //System.out.println("eventReminder: " + eventReminder);
                         if (eventReminder.getReminderType().equalsIgnoreCase("EMAIL")) {
 
                             //SEND THE NOTIFICATION (NO-REPLY) EMAIL!
@@ -206,7 +206,7 @@ public class ScheduleEventReminderJob extends AbstractGoDeskJob implements Job {
                             eventReminder.setNotifiedOk(Boolean.TRUE);
                             em.merge(eventReminder);
 
-                            System.out.println("ScheduleEventReminderJob DONE!");
+                            //System.out.println("ScheduleEventReminderJob DONE!");
 
                         } else if (eventReminder.getReminderType().equalsIgnoreCase("POPUP")) {
                             //not supported type YET

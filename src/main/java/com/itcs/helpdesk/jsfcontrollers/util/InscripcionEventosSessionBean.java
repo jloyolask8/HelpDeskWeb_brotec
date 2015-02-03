@@ -56,7 +56,7 @@ public class InscripcionEventosSessionBean extends AbstractManagedBean<Caso> imp
     }
 
     public void initializeData(javax.faces.event.ComponentSystemEvent event) {
-        System.out.println("initializeData()...");
+        //System.out.println("initializeData()...");
         HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String idCaso = req.getParameter("id");
         if (!StringUtils.isEmpty(idCaso)) {
@@ -194,7 +194,7 @@ public class InscripcionEventosSessionBean extends AbstractManagedBean<Caso> imp
             Cliente clienteEntity = getJpaController().findClienteByRut(datos.getRut());
             if (clienteEntity == null) {
                 //this dude is not a client!
-                addWarnMessage("Lo sentimos este evento es sólo para clientes, Ud. no está registrado como cliente de la Inmobiliaria. Si ésta información es incorrecta favor notifíquenos enviando un mail a sac@brotec-icafal.cl.");
+                addWarnMessage("Lo sentimos este evento es sólo para clientes, Ud. no está registrado como cliente en nuestras bbdd. Si ésta información es incorrecta favor notifíquenos a travéz de nuestro formulario de contacto.");
             } else {
 
                 //check si tiene producto contratado?

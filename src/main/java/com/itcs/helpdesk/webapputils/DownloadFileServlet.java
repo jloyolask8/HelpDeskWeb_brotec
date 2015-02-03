@@ -51,8 +51,8 @@ public class DownloadFileServlet extends AbstractServlet {
             }
             Archivo existente = getJpaController(schema).find(Archivo.class, Long.parseLong(fileId));
             if (existente != null) {
-                System.out.println("existe archivo con id " + fileId);
-                System.out.println(existente.getContentType());
+                //System.out.println("existe archivo con id " + fileId);
+                //System.out.println(existente.getContentType());
                 ServletOutputStream sot = response.getOutputStream();
                 response.setContentType(existente.getContentType());                
                 BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(existente.getArchivo()));
@@ -65,7 +65,7 @@ public class DownloadFileServlet extends AbstractServlet {
                 sot.close();
                 bis.close();
             }else{
-                System.out.println("NO existe archivo con id " + fileId);
+                //System.out.println("NO existe archivo con id " + fileId);
             }
 
         } catch (Exception e) {

@@ -121,7 +121,7 @@ public class ClientAgentDetectorFilter implements Filter {
             FilterChain chain)
             throws IOException, ServletException {
         
-         System.out.println("\n****** ClientAgentDetectorFilter.doFilter ****** \n");
+         //System.out.println("\n****** ClientAgentDetectorFilter.doFilter ****** \n");
         
             HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
