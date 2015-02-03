@@ -147,7 +147,7 @@ public class ReportChartController extends AbstractManagedBean<ReportChart> impl
         for (int c = 0; c < model.getColumnCount(); c++) {
             for (int i = 0; i < model.getColumn(c).getWidgetCount(); i++) {
                 try {
-                    System.out.println(model.getColumn(c).getWidget(i) + " column:" + c + ", index:" + i);
+                    //System.out.println(model.getColumn(c).getWidget(i) + " column:" + c + ", index:" + i);
                     String id = model.getColumn(c).getWidget(i).replace("id_", "");
                     Long idChart = Long.parseLong(id);
 

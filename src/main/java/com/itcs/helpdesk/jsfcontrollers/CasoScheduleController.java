@@ -192,11 +192,11 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
                         getVista().getFiltrosVistaList().add(f5);
                     }
 
-//                    System.out.println("VISTA=" + getVista());
+//                    //System.out.println("VISTA=" + getVista());
 
                     final List<com.itcs.helpdesk.persistence.entities.ScheduleEvent> findEntities
                             = (List<com.itcs.helpdesk.persistence.entities.ScheduleEvent>) getJpaController().findAllEntities(getVista(), new OrderBy("startDate", OrderBy.OrderType.DESC), null);
-//                    System.out.println("events:" + findEntities);
+//                    //System.out.println("events:" + findEntities);
                     for (com.itcs.helpdesk.persistence.entities.ScheduleEvent scheduleEvent : findEntities) {
                         final DefaultScheduleEvent defaultScheduleEvent = new DefaultScheduleEvent(scheduleEvent.getTitle(), scheduleEvent.getStartDate(), scheduleEvent.getEndDate());
                         defaultScheduleEvent.setAllDay(scheduleEvent.getAllDay());
@@ -211,7 +211,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
             }
         };
 
-//        System.out.println("new CasoScheduleController()");
+//        //System.out.println("new CasoScheduleController()");
 
     }
 
@@ -274,7 +274,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     public void quickSaveEvent() {
 
-//        System.out.println("void quickSaveEvent called");
+//        //System.out.println("void quickSaveEvent called");
 
         try {
             com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) event.getData();
@@ -312,7 +312,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     public void saveEvent() {
 
-//        System.out.println("void saveEvent called");
+//        //System.out.println("void saveEvent called");
 
         try {
             com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) event.getData();
@@ -352,7 +352,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     public void onTabClose(TabCloseEvent closeEvent) {
         //update=":inputPanel"
-//        System.out.println("TabCloseEvent:" + closeEvent.getTab());
+//        //System.out.println("TabCloseEvent:" + closeEvent.getTab());
 //        FacesMessage msg = new FacesMessage("Tab Closed", "Closed tab: " + closeEvent.getTab().getTitle());
 //        FacesContext.getCurrentInstance().addMessage(null, msg);
         this.event = null;
@@ -368,7 +368,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     public void addEvent() {
 
-        System.out.println("void addEvent called");
+        //System.out.println("void addEvent called");
 
         try {
             com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) event.getData();
@@ -500,7 +500,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
     }
 
     public void removeScheduleEventReminder(ScheduleEventReminder r) {
-        System.out.println("removeScheduleEventReminder...");
+        //System.out.println("removeScheduleEventReminder...");
         if (this.event != null) {
             com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) this.event.getData();
 
@@ -551,7 +551,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     public void onEventMove(ScheduleEntryMoveEvent entryMoveEvent) {
 
-        System.out.println("onEventMove");
+        //System.out.println("onEventMove");
 
         com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) entryMoveEvent.getScheduleEvent().getData();
 
@@ -583,7 +583,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     public void onEventResize(ScheduleEntryResizeEvent event) {
 
-        System.out.println("onEventResize");
+        //System.out.println("onEventResize");
         com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) event.getScheduleEvent().getData();
         try {
 
@@ -638,10 +638,10 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
     }
 
     public List<Usuario> autoCompleteUsuario(String query) {
-        System.out.println(query);
+        //System.out.println(query);
         //List<EmailCliente> results = new ArrayList<EmailCliente>();
         List<Usuario> list = getJpaController().findUsuariosEntitiesLike(query, false, 10, 0);
-//        System.out.println(emailClientes);
+//        //System.out.println(emailClientes);
         if (list != null && !list.isEmpty()) {
             return list;
         } else {
@@ -649,17 +649,17 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "No existe ningun usuario con ese email o nombre...", "No existe ningun usuario con ese email o nombre...");
             FacesContext.getCurrentInstance().addMessage(null, message);
             list = new ArrayList<>();
-            System.out.println("No existe el Cliente con email" + query);
+            //System.out.println("No existe el Cliente con email" + query);
             return list;
         }
 
     }
 
     public List<Cliente> autoCompleteCliente(String query) {
-        System.out.println(query);
+        //System.out.println(query);
         //List<EmailCliente> results = new ArrayList<EmailCliente>();
         List<Cliente> list = getJpaController().findClientesEntitiesLike(query, false, 10, 0);
-//        System.out.println(emailClientes);
+//        //System.out.println(emailClientes);
         if (list != null && !list.isEmpty()) {
             return list;
         } else {
@@ -667,7 +667,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "No existe ningun cliente con ese nombre...", "No existe ningun cliente con ese nombre...");
             FacesContext.getCurrentInstance().addMessage(null, message);
             list = new ArrayList<>();
-            System.out.println("No existe el Cliente " + query);
+            //System.out.println("No existe el Cliente " + query);
             return list;
         }
 
@@ -726,7 +726,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     public void usuarioInvitedItemSelectEvent(SelectEvent selectEvent) {
         Object item = selectEvent.getObject();
-        System.out.println("item:" + item);
+        //System.out.println("item:" + item);
 
         try {
             com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) this.event.getData();
@@ -749,10 +749,10 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
     }
 
     public List<Resource> autoCompleteResource(String query) {
-        System.out.println(query);
+        //System.out.println(query);
         //List<EmailCliente> results = new ArrayList<EmailCliente>();
         List<Resource> list = getJpaController().findResourcesEntitiesLike(query, false, 10, 0);
-//        System.out.println(emailClientes);
+//        //System.out.println(emailClientes);
         if (list != null && !list.isEmpty()) {
             return list;
         } else {
@@ -760,7 +760,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "No existe ningun Resource...", "No existe ningun Resource...");
             FacesContext.getCurrentInstance().addMessage(null, message);
             list = new ArrayList<>();
-            System.out.println("No existe el Resource: " + query);
+            //System.out.println("No existe el Resource: " + query);
             return list;
         }
 
@@ -768,7 +768,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     public void resourceInvitedItemSelectEvent(SelectEvent selectEvent) {
         Object item = selectEvent.getObject();
-        System.out.println("item:" + item);
+        //System.out.println("item:" + item);
 
         try {
 

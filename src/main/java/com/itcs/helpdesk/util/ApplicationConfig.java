@@ -541,7 +541,7 @@ public class ApplicationConfig {
 //        try {
 //            value = Boolean.valueOf(getProperty(EnumSettingsBase.SEND_GROUP_NOTIFICATION_ON_NEW_CASE.getAppSetting().getSettingKey(), "false"));
 //            if (isAppDebugEnabled()) {
-//                System.out.println("SEND_GROUP_NOTIFICATION_ON_NEW_CASE:" + value);
+//                //System.out.println("SEND_GROUP_NOTIFICATION_ON_NEW_CASE:" + value);
 //            }
 //        } catch (Exception e) {
 //            e.printStackTrace();

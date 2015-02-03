@@ -99,7 +99,7 @@ public class ParseCotizacionVendedorWebAction extends ParseCotizacionAction {
             } else {
                 Log.createLogger(this.getClass().getName()).logWarning("Telefono no encontrado!");
             }
-//                System.out.println("fonoCotizanteInput:" + fonoCotizanteInput);
+//                //System.out.println("fonoCotizanteInput:" + fonoCotizanteInput);
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "error tratar de extraer Telefono", e);
         }

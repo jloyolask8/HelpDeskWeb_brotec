@@ -207,7 +207,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
 //        variables = 1; //One Dimention By Default
         pieModel = null;
         categoryModel = null;
-        System.out.println("resetOptions()");
+        //System.out.println("resetOptions()");
 //        campoCompCasoEjeXSeriesEntity = new FiltroVista();
 //        campoCompCasoEjeYItemsEntity = new FiltroVista();
     }
@@ -818,7 +818,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
             em.close();
         }
 
-        System.out.println("oneDimData:" + oneDimData);
+        //System.out.println("oneDimData:" + oneDimData);
     }
 
     /**
@@ -931,12 +931,12 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         int seriesIndex = 0;
 
         final DateTime input = new DateTime();
-        System.out.println(input);
+        //System.out.println(input);
         final DateTime startOfLastWeek
                 = new DateTime(input.withDayOfWeek(DateTimeConstants.MONDAY).withTimeAtStartOfDay());
-        System.out.println(startOfLastWeek);
+        //System.out.println(startOfLastWeek);
         final DateTime endOfLastWeek = startOfLastWeek.plusDays(6).withTime(23, 59, 59, 0);
-        System.out.println(startOfLastWeek + "---" + endOfLastWeek);
+        //System.out.println(startOfLastWeek + "---" + endOfLastWeek);
 
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", LOCALE_ES_CL);
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM", LOCALE_ES_CL);
@@ -1391,7 +1391,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         this.setShowFilter(false);
         variables = 1;
         oneDimData = new HashMap<>();
-        System.out.println("preparePieModelEstadoCasos()");
+        //System.out.println("preparePieModelEstadoCasos()");
         categoryModel = null;
         pieModel = new PieChartModel();
         setTipoGraficoSelected("pieChart");
@@ -1444,7 +1444,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
 
         setChartModelTitle("Estado de Casos");
 
-        System.out.println("oneDimData:" + oneDimData);
+        //System.out.println("oneDimData:" + oneDimData);
 
         return "reports";
 
@@ -1632,7 +1632,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
             filtroFecha2.setIdVista(view);
             view.getFiltrosVistaList().add(filtroFecha2);
 //==================
-//            System.out.println(view);
+//            //System.out.println(view);
 
             view.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
 

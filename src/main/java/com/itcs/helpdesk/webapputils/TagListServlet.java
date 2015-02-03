@@ -54,7 +54,7 @@ public class TagListServlet extends HttpServlet {
             } else {
                 out.println(getTagJSonList());
             }
-            System.out.println("getTagJSonList(" + q + ")");
+            //System.out.println("getTagJSonList(" + q + ")");
 
         } finally {
             out.close();

@@ -104,7 +104,7 @@ public class HelpDeskScheluder {
     private static String scheduleSendMail(final Long idCaso, final String idCanal, final String mensajeFinal,
             final String to, final String subject, final Date whenToRun) throws SchedulerException {
 
-//      System.out.println("scheduling SendMail job");
+//      //System.out.println("scheduling SendMail job");
         final String jobId = SendMailJob.formatJobId(idCanal, subject, idCaso.toString(), to);
         final JobKey jobKey = JobKey.jobKey(jobId, HelpDeskScheluder.GRUPO_CORREO);
         if (getInstance().checkExists(jobKey)) {
@@ -131,7 +131,7 @@ public class HelpDeskScheluder {
     public static String scheduleEventReminderJob(
             final List<Usuario> usuarios, final Long idCaso, final String eventId, String eventReminderId, final Date whenToRun) throws SchedulerException {
 
-        System.out.println("scheduling ScheduleEventReminderJob");
+        //System.out.println("scheduling ScheduleEventReminderJob");
 
         String mailsTo = "";
         boolean first = true;
@@ -170,7 +170,7 @@ public class HelpDeskScheluder {
             try{
                 HelpDeskScheluder.unschedule(jobKey);
             }catch(SchedulerException ex){
-                System.out.println("ERROR CONTROLADO");
+                //System.out.println("ERROR CONTROLADO");
                 ex.printStackTrace();
             }
         }
@@ -238,7 +238,7 @@ public class HelpDeskScheluder {
     }
 
     public static void unscheduleAlertasDelCaso(final Long idCaso) throws SchedulerException {
-        System.out.println("unscheduleAlertasDelCaso()");
+        //System.out.println("unscheduleAlertasDelCaso()");
         final String jobIdPorVencer = TicketAlertStateChangeJob.formatJobId(idCaso, EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta().getIdalerta());
         final String jobIdVencido = TicketAlertStateChangeJob.formatJobId(idCaso, EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta().getIdalerta());
 
@@ -249,7 +249,7 @@ public class HelpDeskScheluder {
     public static void scheduleNotifyAgentsCasoReceived(final String idCanal, final String mensajeFinal,
             final String to, final String subject, final Long idCaso) throws SchedulerException {
 
-        System.out.println("scheduleNotifyAgentsCasoReceived()");
+        //System.out.println("scheduleNotifyAgentsCasoReceived()");
         final String valueOfIdCaso = String.valueOf(idCaso);
         final String jobId = TicketNotifyMailToGroup.formatJobId(idCanal, valueOfIdCaso, to);
         final JobKey jobKey = JobKey.jobKey(jobId, HelpDeskScheluder.GRUPO_CORREO);
@@ -292,7 +292,7 @@ public class HelpDeskScheluder {
     public static void scheduleSendMailNota(final String idCanal, final String mensajeFinal,
             final String to, final String cc, final String bcc, final String subject, final Long idCaso, final Integer idNota, final String attachIds) throws SchedulerException {
 
-        System.out.println("scheduleSendMail()");
+        //System.out.println("scheduleSendMail()");
         final String valueOfIdCaso = String.valueOf(idCaso);
         final String valueOfIdNota = String.valueOf(idNota);
         final String jobId = CaseResponseByMailJob.formatJobId(idCanal, valueOfIdCaso, to);

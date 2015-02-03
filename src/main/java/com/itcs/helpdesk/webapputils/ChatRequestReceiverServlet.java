@@ -79,7 +79,7 @@ public class ChatRequestReceiverServlet extends HttpServlet {
                 xml.append(buffer, 0, len);
             }
 
-            //    System.out.println("\n\n\n\n\n\n\n\nXML:" + xml.toString());
+            //    //System.out.println("\n\n\n\n\n\n\n\nXML:" + xml.toString());
             XStream xstream = new XStream();
             xstream.ignoreUnknownElements();
             xstream.alias("case", Case.class);
@@ -90,7 +90,7 @@ public class ChatRequestReceiverServlet extends HttpServlet {
             xstream.omitField(Case.class, "plugins");
             Case caso_xml = (Case) xstream.fromXML(xml.toString());
 
-            //System.out.println("\n\n\nCaso:" + caso);
+            ////System.out.println("\n\n\nCaso:" + caso);
             DatosCaso datos = new DatosCaso();
             datos.setEmail(caso_xml.getRequested_by());
 
@@ -106,7 +106,7 @@ public class ChatRequestReceiverServlet extends HttpServlet {
                         datos.setTelefono(variable.getValue());
                     } else {
                         // datos.setDescripcion(datos.getDescripcion() + "\n" + variable.getName() + "=" + variable.getValue());
-                        System.out.println("Variable Value not handled!!! " + variable.getName() + "=" + variable.getValue());
+                        //System.out.println("Variable Value not handled!!! " + variable.getName() + "=" + variable.getValue());
                     }
                 }
             } else if (caso_xml.getSource_id().equals("2")) {
@@ -123,7 +123,7 @@ public class ChatRequestReceiverServlet extends HttpServlet {
                         }
                     } else {
                         // datos.setDescripcion(datos.getDescripcion() + "\n" + variable.getName() + "=" + variable.getValue());
-                        System.out.println("Variable Value not handled!!! " + variable.getName() + "=" + variable.getValue());
+                        //System.out.println("Variable Value not handled!!! " + variable.getName() + "=" + variable.getValue());
                     }
                 }
 
@@ -165,7 +165,7 @@ public class ChatRequestReceiverServlet extends HttpServlet {
                     } else if (variable.getName().equalsIgnoreCase("descripcion")) {
                         datos.setDescripcion(variable.getValue());
                     } else {
-                        System.out.println("Variable Value not handled!!! " + variable.getName() + "=" + variable.getValue());
+                        //System.out.println("Variable Value not handled!!! " + variable.getName() + "=" + variable.getValue());
 //                      datos.setDescripcion(datos.getDescripcion() + "\n" + variable.getName() + "=" + variable.getValue());
                     }
                 }
@@ -277,7 +277,7 @@ public class ChatRequestReceiverServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        System.out.println("Processing GET!!!");
+        //System.out.println("Processing GET!!!");
         processRequest(request, response);
     }
 

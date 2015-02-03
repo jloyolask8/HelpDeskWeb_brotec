@@ -113,10 +113,10 @@ public abstract class JPAFilterHelper implements Serializable {
     }
 
 //    public SelectItem[] autoCompleteFindPosibleOptionsFor(String query) {
-//        System.out.println(query);
+//        //System.out.println(query);
 //        //List<EmailCliente> results = new ArrayList<EmailCliente>();
 //        List<EmailCliente> emailClientes = getJpaController().getEmailClienteFindByEmailLike(query, 10);
-////        System.out.println(emailClientes);
+////        //System.out.println(emailClientes);
 //        if (emailClientes != null && !emailClientes.isEmpty()) {
 //            return emailClientes;
 //        } else {
@@ -125,7 +125,7 @@ public abstract class JPAFilterHelper implements Serializable {
 //            FacesContext.getCurrentInstance().addMessage(null, message);
 //            emailClientes = new ArrayList<>();
 //            emailClientes.add(new EmailCliente(query));
-//            System.out.println("No existe el Cliente con email" + query);
+//            //System.out.println("No existe el Cliente con email" + query);
 //            return emailClientes;
 //        }
 //
@@ -287,7 +287,7 @@ public abstract class JPAFilterHelper implements Serializable {
      * @return
      */
     public List<TipoComparacion> findTipoComparacionesAvailable(String idCampo, boolean changeOps) {
-//        System.out.println("findTipoComparacionesAvailable(idCampo=" + idCampo + ")");
+//        //System.out.println("findTipoComparacionesAvailable(idCampo=" + idCampo + ")");
         try {
             final ComparableField comparableField = getComparableField(idCampo);
             if (comparableField != null) {

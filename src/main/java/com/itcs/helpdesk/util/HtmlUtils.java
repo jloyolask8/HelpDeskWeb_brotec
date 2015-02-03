@@ -492,9 +492,9 @@ public class HtmlUtils {
 "        </tr>\n" +
 "    </tbody></table>";
 
-        System.out.println("texto extraido:\n" + stripInvalidMarkup(textoTest));
-//        System.out.println("Examples of HTMLSanitiser.encodeInvalidMarkup:");
-//        System.out.println("----------------------------------------------\n");
+        //System.out.println("texto extraido:\n" + stripInvalidMarkup(textoTest));
+//        //System.out.println("Examples of HTMLSanitiser.encodeInvalidMarkup:");
+//        //System.out.println("----------------------------------------------\n");
 //
 //        displayEncodeInvalidMarkup("ab & c", "encode text");
 //        displayEncodeInvalidMarkup("abc <u>def</u> geh", "<U> element not allowed");
@@ -504,8 +504,8 @@ public class HtmlUtils {
 //        displayEncodeInvalidMarkup("<p id=abc class='xyz'>abc</p>", "tidy up attributes to make them XHTML compliant");
 //        displayEncodeInvalidMarkup("List:<ul><li>A</li><li>B<li>C</ul>", "inserts optional end tags");
 //
-//        System.out.println("Examples of HTMLSanitiser.stripInvalidMarkup:");
-//        System.out.println("---------------------------------------------\n");
+//        //System.out.println("Examples of HTMLSanitiser.stripInvalidMarkup:");
+//        //System.out.println("---------------------------------------------\n");
 //
 //        displayStripInvalidMarkup("ab & c", "encode text");
 //        displayStripInvalidMarkup("abc <u>def</u> geh", "<U> element not allowed");
@@ -517,8 +517,8 @@ public class HtmlUtils {
 //        displayStripInvalidMarkup("List:<li>A</li><li>B<li>C", "missing required <UL> or <OL> element");
 //        displayStripInvalidMarkup("List:<ul><li>A</li><b><li>B</b><li>C</ul>", "<LI> is invalid as it is not directly under <UL> or <OL>");
 //
-//        System.out.println("Examples of HTMLSanitiser.stripInvalidMarkup with formatWhiteSpace=true:");
-//        System.out.println("------------------------------------------------------------------------\n");
+//        //System.out.println("Examples of HTMLSanitiser.stripInvalidMarkup with formatWhiteSpace=true:");
+//        //System.out.println("------------------------------------------------------------------------\n");
 //
 //        displayStripInvalidMarkup("abc\ndef", true, "convert LF to <BR>");
 //        displayStripInvalidMarkup("    abc", true, "ensure consecutive spaces are rendered");
@@ -538,7 +538,7 @@ public class HtmlUtils {
     }
 
     private static void display(String input, String explanation, String output) {
-        System.out.println(explanation + ":\ninput : " + input + "\noutput: " + output + "\n");
+        //System.out.println(explanation + ":\ninput : " + input + "\noutput: " + output + "\n");
     }
 
     public static String extractPlainText(String html)

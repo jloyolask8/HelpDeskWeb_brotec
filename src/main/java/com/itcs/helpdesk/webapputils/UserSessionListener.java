@@ -26,23 +26,23 @@ public class UserSessionListener implements HttpSessionListener {
     @Override
     public void sessionCreated(HttpSessionEvent arg0) {
         totalActiveSessions++;
-//        System.out.println("sessionCreated - add one session into counter");
+//        //System.out.println("sessionCreated - add one session into counter");
     }
 
     @Override
     public void sessionDestroyed(HttpSessionEvent arg0) {
         totalActiveSessions--;
-//        System.out.println("sessionDestroyed - from:" + arg0.getSource());
+//        //System.out.println("sessionDestroyed - from:" + arg0.getSource());
        
         ApplicationBean applicationBean = (ApplicationBean) arg0.getSession().getServletContext().getAttribute("applicationBean");
         try {
             final String sessionId = arg0.getSession().getId();
-//            System.out.println("sessionId:"+sessionId);
+//            //System.out.println("sessionId:"+sessionId);
             String idUsuario = applicationBean.getSessionIdMappings().get(sessionId);
             applicationBean.removeChannel(idUsuario);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("sessionDestroyed - deduct one session from counter");
+        //System.out.println("sessionDestroyed - deduct one session from counter");
     }
 }

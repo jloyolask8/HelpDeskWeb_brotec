@@ -31,7 +31,7 @@ public class InputValidationBean {
 
     public void validarRut(FacesContext context, UIComponent component,
             Object value) throws ValidatorException {
-        System.out.println("validarRut()");
+        //System.out.println("validarRut()");
 //        boolean validFormat = false;
         boolean validValue = false;
         String strValue = (String) value;
@@ -106,7 +106,7 @@ public class InputValidationBean {
 
     public void validarEmail(FacesContext context, UIComponent component,
             Object value) throws ValidatorException {
-        System.out.println("validarEmail()");
+        //System.out.println("validarEmail()");
         String strValue = (String) value;
         //Set the email pattern string
         Pattern p = Pattern.compile("[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?");

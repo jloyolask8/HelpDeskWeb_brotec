@@ -38,7 +38,7 @@ public class LoginFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
-//      System.out.println("\n****** LoginFilter.doFilter ****** \n");
+//      //System.out.println("\n****** LoginFilter.doFilter ****** \n");
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
         HttpSession session = req.getSession();
@@ -46,36 +46,36 @@ public class LoginFilter implements Filter {
 //         String requestedPage = req.getRequestURI();//Bug in login filter in GF
         UserSessionBean userSessionBean = (UserSessionBean) session.getAttribute("UserSessionBean");
 
-//        System.out.println("LoginFilter.doFilter:" + requestedPage);
+//        //System.out.println("LoginFilter.doFilter:" + requestedPage);
 //        for (Enumeration e = req.getHeaderNames(); e.hasMoreElements();) {
 //            String headerName = (String) e.nextElement();
-//            System.out.println("Name = " + headerName + " = " + req.getHeader(headerName));
+//            //System.out.println("Name = " + headerName + " = " + req.getHeader(headerName));
 //        }
         try {
             if (requestedPage.endsWith(".xhtml")) {
                 if (requestedPage.endsWith("login.xhtml") || requestedPage.endsWith("forgot.xhtml")) {
                     if (userSessionBean != null) {
                         if (userSessionBean.isValidatedSession()) {
-                            System.out.println("LoginFilter.sendRedirect:/script/index.xhtml");
+                            //System.out.println("LoginFilter.sendRedirect:/script/index.xhtml");
                             res.sendRedirect(req.getContextPath() + req.getServletPath() + "/script/index.xhtml");
                             return;
                         }
                     }
                 } else {
                     if (userSessionBean == null) {
-                        System.out.println("userSessionBean == null LoginFilter.sendRedirect:/script/login.xhtml");
+                        //System.out.println("userSessionBean == null LoginFilter.sendRedirect:/script/login.xhtml");
                         if (isAjax(req)) {
                             res.getWriter().print(xmlPartialRedirectToPage(req, "/script/login.xhtml"));
                             res.flushBuffer();
                         } else {
-                            System.out.println("redirecting... LoginFilter.sendRedirect:/script/login.xhtml");
+                            //System.out.println("redirecting... LoginFilter.sendRedirect:/script/login.xhtml");
                             res.sendRedirect(req.getContextPath() + req.getServletPath() + "/script/login.xhtml");
                         }
 
                         return;
                     } else {
                         if (!userSessionBean.isValidatedSession()) {
-                            System.out.println("userSessionBean is not ValidatedSession LoginFilter.sendRedirect:" + "/script/login.xhtml");
+                            //System.out.println("userSessionBean is not ValidatedSession LoginFilter.sendRedirect:" + "/script/login.xhtml");
                             if (isAjax(req)) {
                                 res.getWriter().print(xmlPartialRedirectToPage(req, "/script/login.xhtml"));
                                 res.flushBuffer();
@@ -104,7 +104,7 @@ public class LoginFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        System.out.println("LoginFilter.init");
+        //System.out.println("LoginFilter.init");
         this.filterConfig = filterConfig;
 //        if (filterConfig != null) {
 //

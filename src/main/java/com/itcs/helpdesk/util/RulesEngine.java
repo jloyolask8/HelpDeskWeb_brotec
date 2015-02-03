@@ -245,7 +245,7 @@ public class RulesEngine implements CasoChangeListener {
         final Object value = expresion.getValue();
 
 //        if (ApplicationConfig.isAppDebugEnabled()) {
-//            System.out.println("caso." + methodName + " = " + value);
+//            //System.out.println("caso." + methodName + " = " + value);
 //        }
         if (fieldType.equals(EnumFieldType.TEXT.getFieldType()) || fieldType.equals(EnumFieldType.TEXTAREA.getFieldType())) {
             //El valor es de tipo String, usarlo tal como esta
@@ -267,7 +267,7 @@ public class RulesEngine implements CasoChangeListener {
                     //Match the given string with the pattern
                     Matcher m = p.matcher((String) value);
                     if (ApplicationConfig.isAppDebugEnabled()) {
-                        System.out.println("patternToSearch:" + patternToSearch);
+                        //System.out.println("patternToSearch:" + patternToSearch);
                     }
                     return m.find();
 //                    return ((String) expresion.getValue()).toLowerCase().contains(valorAttributo.toLowerCase());//removes case sensitive issue

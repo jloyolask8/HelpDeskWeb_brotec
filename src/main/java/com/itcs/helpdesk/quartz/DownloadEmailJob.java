@@ -100,7 +100,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
 //        EntityManager em = createEntityManager(schema);
         EntityManagerFactory emf = createEntityManagerFactory();
         UserTransaction utx = UserTransactionHelper.lookupUserTransaction();
-//        System.out.println(UserTransactionHelper.getUserTxLocation() + ":" + utx);//DEBUG
+//        //System.out.println(UserTransactionHelper.getUserTxLocation() + ":" + utx);//DEBUG
 
         JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf);
         RulesEngine rulesEngine = new RulesEngine(emf, jpaController);
@@ -157,7 +157,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                                 try {
                                     if (emailMessage.getIdMessage() > highestUID) {
                                         highestUID = emailMessage.getIdMessage();
-//                                        System.out.println("highestUID: " + highestUID);
+//                                        //System.out.println("highestUID: " + highestUID);
                                     }
                                     //if isn't a blacklisted address
                                     if ((jpaController.find(BlackListEmail.class, emailMessage.getFromEmail()) == null)
@@ -177,13 +177,13 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                                             if (subject.toUpperCase().startsWith("RE:")
                                                     || subject.toUpperCase().startsWith("FWD:")) {
 
-                                                System.out.println("Subject:" + subject);
+                                                //System.out.println("Subject:" + subject);
                                                 //Si el subject dice que es una respuesta o un Fwd?
                                                 String tema = subject.replaceAll("([\\[\\(] *)?(Re|Fwd?) *([-:;)\\]][ :;\\])-]*|$)|\\]+ *$", "");
                                                 String emailFrom = emailMessage.getFromEmail();
 
-                                                System.out.println("new Subject:" + tema);
-                                                System.out.println("emailFrom:" + emailFrom);
+                                                //System.out.println("new Subject:" + tema);
+                                                //System.out.println("emailFrom:" + emailFrom);
 
                                                 final Caso casoByClient = jpaController.findCasoBySubjectAndEmailInClient(tema, emailFrom);
                                                 if (casoByClient != null) {
@@ -228,7 +228,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                         } finally {
                             try {
                                 if (highestUID > 0) {
-                                    System.out.println("saving highestUID: " + highestUID);
+                                    //System.out.println("saving highestUID: " + highestUID);
                                     canal.getCanalSettingList().remove(new CanalSetting(canal.getIdCanal(), EnumEmailSettingKeys.HIGHEST_UID.getKey()));
                                     canal.getCanalSettingList().add(new CanalSetting(canal, EnumEmailSettingKeys.HIGHEST_UID.getKey(), String.valueOf(highestUID), ""));
                                     jpaController.merge(canal);
