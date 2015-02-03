@@ -110,7 +110,7 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
                             nota.setFechaEnvio(Calendar.getInstance().getTime());
                             nota.setFechaModificacion(Calendar.getInstance().getTime());
                             nota.setIdCaso(caso);
-                            nota.setTexto(HtmlUtils.removeScriptsAndStyles(email_text));
+                            nota.setTexto(HtmlUtils.stripInvalidMarkup(email_text));
                             nota.setVisible(Boolean.FALSE);//registro interno
                             nota.setTipoNota(EnumTipoNota.REG_ENVIO_CORREO.getTipoNota());
                             nota.setEnviadoPorQuartzJobId(formatJobId);

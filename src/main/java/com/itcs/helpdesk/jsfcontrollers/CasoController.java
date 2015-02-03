@@ -22,10 +22,11 @@ import com.itcs.helpdesk.persistence.entities.Item;
 import com.itcs.helpdesk.persistence.entities.ModeloProducto;
 import com.itcs.helpdesk.persistence.entities.TipoAccion;
 import com.itcs.helpdesk.persistence.entities.Nota;
-import com.itcs.helpdesk.persistence.entities.Prioridad;
+import com.itcs.helpdesk.persistence.entities.ProductoContratado;
 import com.itcs.helpdesk.persistence.entities.Recinto;
 import com.itcs.helpdesk.persistence.entities.ReglaTrigger;
 import com.itcs.helpdesk.persistence.entities.ScheduleEvent;
+import com.itcs.helpdesk.persistence.entities.SubComponente;
 import com.itcs.helpdesk.persistence.entities.SubEstadoCaso;
 import com.itcs.helpdesk.persistence.entities.TipoAlerta;
 import com.itcs.helpdesk.persistence.entities.TipoNota;
@@ -177,6 +178,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //    private Integer progresoEnvioRespuesta;
     private ReglaTrigger reglaTriggerSelected;
     protected String emailCliente_wizard;
+    private SubComponente subComponente_wizard;
+    private Cliente cliente_wizard;
     protected String rutCliente_wizard;
     protected boolean emailCliente_wizard_existeEmail = false;
     protected boolean emailCliente_wizard_existeCliente = false;
@@ -388,7 +391,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         return "inbox";
     }
 
-    public void enableReplyMode() {
+    public void enableReplyMode(boolean all) {
 
         if (validateEdit()) {
             return;
@@ -396,8 +399,28 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         this.setReplyMode(true);
         this.setReplyByEmail(true);
+        this.ccEmail = new ArrayList<>();
 
-        //borrador
+        if (all) {
+
+            if (current.getEmailClienteCCList() != null && !current.getEmailClienteCCList().isEmpty()) {
+                this.setCc(true);
+                for (EmailCliente e : current.getEmailClienteCCList()) {
+                    ccEmail.add(e.getEmailCliente());
+                }
+            }
+
+            if (current.getUsuarioCCList() != null && !current.getUsuarioCCList().isEmpty()) {
+                this.setCc(true);
+                for (Usuario u : current.getUsuarioCCList()) {
+                    ccEmail.add(u.getEmail());
+                }
+            }
+        }else{
+            this.setCc(false);
+        }
+
+        //set borrador
         this.textoNota = current.getRespuesta();
 
         agregarHistoria();
@@ -755,6 +778,30 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         current.setIdModelo(modeloProducto);
     }
 
+    public void handleSubComponentSelect(SelectEvent event) {
+        SubComponente s = (SubComponente) getJpaController().find(SubComponente.class, getSubComponente_wizard().getIdSubComponente(), true);
+        if (s.getProductoContratadoList() != null && !s.getProductoContratadoList().isEmpty()) {
+            final ProductoContratado pc1 = s.getProductoContratadoList().get(0);
+
+            if (pc1.getCliente() != null) {
+                rutCliente_wizard = pc1.getCliente().getRut();
+                setEmailCliente_wizard_existeCliente(true);
+                current.setIdCliente(pc1.getCliente());
+                current.setIdProducto(pc1.getProducto());
+                current.setIdComponente(pc1.getComponente());
+                current.setIdSubComponente(pc1.getSubComponente());
+            } else {
+                addWarnMessage("ERRORCODE 2");
+            }
+
+        } else {
+
+            setEmailCliente_wizard_existeCliente(false);
+            addWarnMessage("El " + applicationBean.getProductSubComponentDescription() + " seleccionado no esta asociado a ningún cliente.");
+        }
+
+    }
+
     public void handleEmailSelect(SelectEvent event) {
 
 //        EmailCliente emailCliente = getJpaControllerThatListenRules().getEmailClienteFindByEmail(event.getObject().toString());
@@ -866,6 +913,36 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
         }
+    }
+
+    public void handleNewTicketClientSelectionChange() {
+        final Cliente c = getCliente_wizard();
+        if (c != null) {
+            setEmailCliente_wizard_existeCliente(true);
+            rutCliente_wizard = c.getRut();
+            current.setIdCliente(c);
+            if (c.getEmailClienteList() != null && !c.getEmailClienteList().isEmpty()) {
+                EmailCliente emailCliente = c.getEmailClienteList().get(0);
+                current.setEmailCliente(emailCliente);
+                emailCliente_wizard = emailCliente.getEmailCliente();
+                setEmailCliente_wizard_existeEmail(true);
+            } else {
+                emailCliente_wizard = null;
+                setEmailCliente_wizard_existeEmail(false);
+            }
+        } else {
+            current.setIdCliente(null);
+            current.setEmailCliente(null);
+            rutCliente_wizard = null;
+            emailCliente_wizard = null;
+            setEmailCliente_wizard_existeCliente(false);
+            setEmailCliente_wizard_existeEmail(false);
+        }
+    }
+
+    public void handleSubCompChange() {
+        System.out.println("handleSubCompChange...");
+        getSelected().setIdSubComponente(getJpaController().find(SubComponente.class, getSelected().getIdSubComponente().getIdSubComponente(), true));
     }
 
     protected void persist(Caso newCaso) throws PreexistingEntityException, RollbackFailureException, Exception {
@@ -1042,6 +1119,18 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     sbuilder.append(format.format(nota.getFechaCreacion()));
                 }
                 return sbuilder.toString();
+            } else if (EnumTipoNota.COMENTARIO_AGENTE.getTipoNota().equals(nota.getTipoNota())) {
+                StringBuilder sbuilder = new StringBuilder(nota.getTipoNota().getNombre());
+                sbuilder.append(" - creada por ");
+                sbuilder.append(nota.getCreadaPor().getIdUsuario());
+                if (nota.getEnviado() != null && nota.getEnviado()) {
+                    sbuilder.append(" - enviada el ");
+                    sbuilder.append(format.format(nota.getFechaEnvio()));
+                } else {
+                    sbuilder.append(" - creada el ");
+                    sbuilder.append(format.format(nota.getFechaCreacion()));
+                }
+                return sbuilder.toString();
             }
 
             String text = nota.getTipoNota().getNombre();
@@ -1148,10 +1237,10 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public void changeCCO(boolean cc) {
         if (cc) {
             setCc(!isCc());
-            ccEmail = null;
+//            ccEmail = null;
         } else {
             setCco(!isCco());
-            ccoEmail = null;
+//            ccoEmail = null;
         }
     }
 
@@ -1770,14 +1859,16 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      * @return
      * @throws Exception
      */
-    public String prepareEditPreviusItem() throws Exception {
-
-        if (selectedItemIndex > pagination.getPageFirstItem()) {
-            prepareEditIndex(--selectedItemIndex);
-        } else {
-            prepareEditIndex(pagination.getPageFirstItem());
+    public String prepareEditPreviusItem() {
+        try {
+            if (selectedItemIndex > pagination.getPageFirstItem()) {
+                prepareEditIndex(--selectedItemIndex);
+            } else {
+                prepareEditIndex(pagination.getPageFirstItem());
+            }
+        } catch (Exception e) {
+            addErrorMessage("No existe el elemento.");
         }
-
         return null;
     }
 
@@ -1787,15 +1878,20 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      * @return
      * @throws Exception
      */
-    public String prepareEditNextItem() throws Exception {
+    public String prepareEditNextItem() {
 
-        if (selectedItemIndex < pagination.getPageLastItem()) {
-            prepareEditIndex(++selectedItemIndex);
-        } else {
-            prepareEditIndex(pagination.getPageFirstItem());
+        try {
+            if (selectedItemIndex < pagination.getPageLastItem()) {
+                prepareEditIndex(++selectedItemIndex);
+            } else {
+                prepareEditIndex(pagination.getPageFirstItem());
+            }
+
+        } catch (Exception e) {
+            addErrorMessage("No existe el elemento.");
         }
-
         return null;
+
     }
 
     public String prepareEdit() throws Exception {
@@ -2779,7 +2875,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             nota.setIdNota(null);
             nota.setIdCaso(caso);
             nota.setFechaCreacion(Calendar.getInstance().getTime());
-            nota.setTexto(HtmlUtils.removeScriptsAndStyles(texto));
+            nota.setTexto(HtmlUtils.stripInvalidMarkup(texto));
 //            nota.setIdCanal(EnumCanal.SISTEMA.getCanal());
             nota.setVisible(publica);
 
@@ -2831,7 +2927,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             nota.setIdNota(null);
             nota.setIdCaso(caso);
             nota.setFechaCreacion(Calendar.getInstance().getTime());
-            nota.setTexto(HtmlUtils.removeScriptsAndStyles(texto));
+            nota.setTexto(HtmlUtils.stripInvalidMarkup(texto));
 //            nota.setIdCanal(EnumCanal.SISTEMA.getCanal());
             nota.setVisible(publica);
 //            nota.setAttachmentList(attachmentList);
@@ -3101,7 +3197,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         try {
             canal = MailNotifier.chooseDefaultCanalToSendMail(current);
         } catch (NoOutChannelException no) {
-            addErrorMessage("No se puede enviar la respuesta.", "Favor asignar un " + ApplicationConfig.getProductDescription() + "o Área al caso para poder determinar el canal de salida para enviar el correo.");
+            addErrorMessage("No se puede enviar la respuesta dado que el sistema no sabe por que canal responder este caso. Favor asignar un " + ApplicationConfig.getProductDescription() + " o Área al caso para poder determinar el canal de salida para enviar el correo.");
             return false;
         }
         try {
@@ -3245,14 +3341,14 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
 
         sbuilder.append(creaMensajeOriginal(current));
-        if (sbuilder.length() > MEGABYTE) {
-            String onlyText = HtmlUtils.extractText(sbuilder.toString());
-            if (onlyText.length() > MEGABYTE) {
-                return onlyText.substring(0, MEGABYTE);
-            } else {
-                return onlyText;
-            }
-        }
+//        if (sbuilder.length() > MEGABYTE) {
+//            String onlyText = HtmlUtils.extractText(sbuilder.toString());
+//            if (onlyText.length() > MEGABYTE) {
+//                return onlyText.substring(0, MEGABYTE);
+//            } else {
+//                return onlyText;
+//            }
+//        }
         return sbuilder.toString();
     }
 
@@ -4409,6 +4505,34 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
 
         return "fa-exclamation";
+    }
+
+    /**
+     * @return the subComponente_wizard
+     */
+    public SubComponente getSubComponente_wizard() {
+        return subComponente_wizard;
+    }
+
+    /**
+     * @param subComponente_wizard the subComponente_wizard to set
+     */
+    public void setSubComponente_wizard(SubComponente subComponente_wizard) {
+        this.subComponente_wizard = subComponente_wizard;
+    }
+
+    /**
+     * @return the cliente_wizard
+     */
+    public Cliente getCliente_wizard() {
+        return cliente_wizard;
+    }
+
+    /**
+     * @param cliente_wizard the cliente_wizard to set
+     */
+    public void setCliente_wizard(Cliente cliente_wizard) {
+        this.cliente_wizard = cliente_wizard;
     }
 
     @FacesConverter(forClass = Caso.class)

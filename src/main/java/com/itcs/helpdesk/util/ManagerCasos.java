@@ -1,6 +1,7 @@
 package com.itcs.helpdesk.util;
 
 import com.itcs.commons.email.EmailMessage;
+import com.itcs.commons.email.EnumEmailSettingKeys;
 import com.itcs.helpdesk.jsfcontrollers.CasoController;
 import com.itcs.helpdesk.jsfcontrollers.InputValidationBean;
 import com.itcs.helpdesk.jsfcontrollers.UsuarioController;
@@ -300,19 +301,20 @@ public class ManagerCasos implements Serializable {
 
     public Caso crearCaso(DatosCaso datos, Canal canal, Date fechaCreacion) throws Exception {
         Caso createdCaso = null;
-        try {
-            //TODO remove this!!!
-            createdCaso = getJpaController().getCasoFindByEmailCreationTimeAndType(datos.getEmail().trim(), fechaCreacion, EnumTipoCaso.PREVENTA.getTipoCaso());
-        } catch (Exception ex) {
-            //Do nothing if NoResultException (normal behaviour)
-            if (!(ex instanceof NoResultException)) {
-                Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "Error al buscar caso el Producto", ex);
-            }
-        }
-        if (createdCaso != null) {
-            Log.createLogger(this.getClass().getName()).logInfo("Se ha encontrado un caso " + createdCaso.getIdCaso() + " del mismo cliente generado a la misma hora");
-            return createdCaso;
-        }
+        //when this shit could happen?, shitty code.
+//        try {
+//            //TODO remove this!!!
+//            createdCaso = getJpaController().getCasoFindByEmailCreationTimeAndType(datos.getEmail().trim(), fechaCreacion, EnumTipoCaso.PREVENTA.getTipoCaso());
+//        } catch (Exception ex) {
+//            //Do nothing if NoResultException (normal behaviour)
+//            if (!(ex instanceof NoResultException)) {
+//                Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "Error al buscar caso el Producto", ex);
+//            }
+//        }
+//        if (createdCaso != null) {
+//            Log.createLogger(this.getClass().getName()).logInfo("Se ha encontrado un caso " + createdCaso.getIdCaso() + " del mismo cliente generado a la misma hora");
+//            return createdCaso;
+//        }
         if (complyWithMinimalDataRequirements(datos)) {
             Caso caso = new Caso();
 
@@ -498,14 +500,14 @@ public class ManagerCasos implements Serializable {
         return emailClientee;
     }
 
-    public boolean crearCasoDesdeEmail(Canal canal, EmailMessage item) {
+    public boolean crearCasoDesdeEmail(Canal canal, EmailMessage emailMessage) {
         boolean retorno = false;
         try {
             DatosCaso datos = new DatosCaso();
-            datos.setEmail(item.getFromEmail().toLowerCase().trim());
-            if (item.getFromName() != null) {
+            datos.setEmail(emailMessage.getFromEmail().toLowerCase().trim());
+            if (emailMessage.getFromName() != null) {
 
-                String from = MimeUtility.decodeText(item.getFromName().replace("\"", ""));
+                String from = MimeUtility.decodeText(emailMessage.getFromName().replace("\"", ""));
                 String[] nombres = from.split(" ");
                 if (nombres.length > 0) {
                     datos.setNombre(nombres[0]);
@@ -517,12 +519,15 @@ public class ManagerCasos implements Serializable {
                 }
             }
             datos.setTipoCaso(EnumTipoCaso.CONTACTO.getTipoCaso().getIdTipoCaso());
-            datos.setAsunto(item.getSubject());
-            datos.setDescripcion(item.getText());
+            datos.setAsunto(emailMessage.getSubject());
+            datos.setDescripcion(emailMessage.getText());
 //          datos.setIdArea(canal.getIdArea());//This is not important anymore
-            Caso caso = crearCaso(datos, canal);
+            Caso caso = crearCaso(datos, canal,
+                    (emailMessage.getReceivedDate() != null) ? emailMessage.getReceivedDate() : new Date());
             retorno = true;
-            handleEmailAttachments(item, caso);
+
+            handleCCEmail(emailMessage, caso, canal);
+            handleEmailAttachments(emailMessage, caso);
 
         } catch (Exception ex) {
             Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "crearCasoDesdeEmail fail", ex);
@@ -676,7 +681,7 @@ public class ManagerCasos implements Serializable {
                     ManagerCasos.calcularSLA(casoHijo);//    casoHijo.setNextResponseDue(caso.getNextResponseDue());    
                     casoHijo.setEmailCliente(emailCliente);
                     casoHijo.setIdCliente(emailCliente.getCliente());
-                    if(casoHijo.getIdCliente() == null){
+                    if (casoHijo.getIdCliente() == null) {
                         casoHijo.setIdCliente(caso.getIdCliente());
                         casoHijo.setEmailCliente(caso.getEmailCliente());
                     }
@@ -684,9 +689,8 @@ public class ManagerCasos implements Serializable {
                     //TODO brotec-specific
                     System.out.println("persisting recinto " + casoHijo.getIdRecinto());
                     String idRecinto = casoHijo.getIdRecinto();
-                    if(casoHijo.getIdRecinto().contains("[") && casoHijo.getIdRecinto().contains("]"))
-                    {
-                         idRecinto = casoHijo.getIdRecinto().split("\\[")[1].split("\\]")[0];
+                    if (casoHijo.getIdRecinto().contains("[") && casoHijo.getIdRecinto().contains("]")) {
+                        idRecinto = casoHijo.getIdRecinto().split("\\[")[1].split("\\]")[0];
                     }
                     if (null == getJpaController().find(Recinto.class, idRecinto)) {
                         Recinto r = new Recinto();
@@ -806,7 +810,7 @@ public class ManagerCasos implements Serializable {
         return nota;
     }
 
-    public boolean crearNotaDesdeEmail(Caso caso, Canal canal, EmailMessage item) throws Exception {
+    public boolean crearNotaDesdeEmail(Caso caso, Canal canal, EmailMessage emailMessage) throws Exception {
         boolean retorno = false;
         StringBuilder listIdAtt = new StringBuilder();
 
@@ -818,7 +822,7 @@ public class ManagerCasos implements Serializable {
         if (caso != null) {
             //FIRST QUESTION IS WHO IS THE SENDER?
             //OPTIONS ARE: AGENT OR CLIENT. AND OWNER OR NOT OWNER.
-            final String emailSender = item.getFromEmail().toLowerCase().trim();
+            final String from = emailMessage.getFromEmail().toLowerCase().trim();
             String senderName = null;
 
             Nota nota = new Nota();
@@ -826,9 +830,9 @@ public class ManagerCasos implements Serializable {
             nota.setVisible(true);//nota publica
             nota.setIdCaso(caso);
 
-            //we need to check if the sender is an agent or a client
+            //we need to check if the email is an agent or a client
             //doing a quick check on the caso.owner may improve response time
-            if (caso.getOwner() != null && caso.getOwner().getEmail() != null && caso.getOwner().getEmail().equalsIgnoreCase(emailSender)) {
+            if (caso.getOwner() != null && caso.getOwner().getEmail() != null && caso.getOwner().getEmail().equalsIgnoreCase(from)) {
                 //bingo its the owner
                 isAgent = true;
                 isOwner = true;
@@ -837,53 +841,103 @@ public class ManagerCasos implements Serializable {
                 nota.setTipoNota(EnumTipoNota.RESPUESTA_A_CLIENTE.getTipoNota());
                 nota.setEnviado(false);
                 senderName = caso.getOwner().getIdUsuario();
-            } else if (caso.getEmailCliente() != null && caso.getEmailCliente().getEmailCliente().equalsIgnoreCase(emailSender)) {
+                nota.setVisible(false);
+                
+            } else if (caso.getEmailCliente() != null && caso.getEmailCliente().getEmailCliente().equalsIgnoreCase(from)) {
                 //its a client
                 isAgent = false;
                 isClient = true;
                 isOwner = true;
                 caso.setRevisarActualizacion(true);
                 nota.setTipoNota(EnumTipoNota.RESPUESTA_DE_CLIENTE.getTipoNota());
-                nota.setEnviadoPor(emailSender);
+                nota.setEnviadoPor(from);
 
                 senderName = (caso.getEmailCliente().getCliente() != null
-                        && !StringUtils.isEmpty(caso.getEmailCliente().getCliente().getCapitalName())) ? caso.getEmailCliente().getCliente().getCapitalName() : emailSender;
+                        && !StringUtils.isEmpty(caso.getEmailCliente().getCliente().getCapitalName())) ? caso.getEmailCliente().getCliente().getCapitalName() : from;
             } else {
                 isOwner = false;
                 //is not the owner agent and is not the owner client
-                final List<Usuario> usuarioFindByEmail = getJpaController().getUsuarioFindByEmail(emailSender);
-                if (usuarioFindByEmail != null) {
+                //maybe another person
+                final List<Usuario> usuarioFindByEmail = getJpaController().getUsuarioFindByEmail(from);
+                if (usuarioFindByEmail != null && !usuarioFindByEmail.isEmpty()) {
                     //sender is a user, but not the owner
                     isClient = false;
                     isAgent = true;
-                    senderName = usuarioFindByEmail.get(0).getCapitalName();
+                    final Usuario user = usuarioFindByEmail.get(0);
+                    senderName = user.getCapitalName();
+                    nota.setTipoNota(EnumTipoNota.COMENTARIO_AGENTE.getTipoNota());
+                    nota.setCreadaPor(user);
+                    nota.setEnviado(true);
+                    nota.setEnviadoPor(StringUtils.isEmpty(senderName) ? from : senderName);
+                    nota.setVisible(false);
+
                 } else {
                     //last try is to check if this guy is another client
-                    final EmailCliente emailCliente = getJpaController().find(EmailCliente.class, emailSender);
+                    final EmailCliente emailCliente = getJpaController().find(EmailCliente.class, from);
                     if (emailCliente != null) {
                         //sender is a client, but not the owner
                         isClient = true;
                         isAgent = false;
                         senderName = emailCliente.getCliente().getCapitalName();
+                        nota.setTipoNota(EnumTipoNota.RESPUESTA_DE_CLIENTE.getTipoNota());
+                        nota.setEnviadoPor(senderName);
+                        nota.setEnviado(true);
+                    } else {
+                        try {
+                            //email del cliente que responde no esta registrado
+                            //1. lo creamos
+                            DatosCaso datos = new DatosCaso();
+                            datos.setEmail(emailMessage.getFromEmail().toLowerCase().trim());
+                            if (emailMessage.getFromName() != null) {
+
+                                String fromName = MimeUtility.decodeText(emailMessage.getFromName().replace("\"", ""));
+                                String[] nombres = fromName.split(" ");
+                                if (nombres.length > 0) {
+                                    datos.setNombre(nombres[0]);
+                                }
+                                if (nombres.length > 2) {
+                                    datos.setApellidos(nombres[1] + " " + nombres[2]);
+                                } else if (nombres.length > 1) {
+                                    datos.setApellidos(nombres[1]);
+                                }
+                            }
+
+                            final EmailCliente newEmailCliente = createOrUpdateEmailCliente(datos);
+                            //2. 
+                            isAgent = false;
+                            isClient = true;
+                            isOwner = false;
+                            senderName = newEmailCliente.getCliente().getCapitalName();
+                            caso.setRevisarActualizacion(true);
+                            nota.setTipoNota(EnumTipoNota.RESPUESTA_DE_CLIENTE.getTipoNota());
+                            nota.setEnviadoPor(from);
+                        } catch (Exception e) {
+                            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "error tratando de persistir email del cliente que responde, no esta registrado", e);
+                        }
                     }
                 }
             }
 
-            String textoBody = item.getText();
+            String textoBody = emailMessage.getText();
 //          textoBody = parseHtmlToText(textoBody);
             if (textoBody != null) {
                 nota.setTextoOriginal(textoBody);
-                final String removeScriptsAndStyles = HtmlUtils.removeScriptsAndStyles(textoBody);
-                nota.setTexto(HtmlUtils.stripInvalidMarkup(removeScriptsAndStyles));
+                final String removeScriptsAndStyles = HtmlUtils.stripInvalidMarkup(textoBody);
+                nota.setTexto(removeScriptsAndStyles);
             }
-            nota.setFechaCreacion(Calendar.getInstance().getTime());
-            if (item.getSubject().startsWith("Undeliverable:")) {
+
+            nota.setFechaEnvio((emailMessage.getReceivedDate() != null)
+                    ? emailMessage.getReceivedDate()
+                    : Calendar.getInstance().getTime());
+
+            nota.setFechaCreacion(new Date());
+            if (emailMessage.getSubject().startsWith("Undeliverable:")) {
                 nota.setTipoNota(EnumTipoNota.RESPUESTA_SERVIDOR.getTipoNota());
                 nota.setTexto("El servidor de correos comuníca que su respuesta "
                         + "anterior no pudo ser entregada al destinatario");
             } else {
 
-                for (EmailAttachment attachment : item.getAttachments()) {
+                for (EmailAttachment attachment : emailMessage.getAttachments()) {
 
                     Attachment attachmentEntity = attemptSaveAttachment(attachment, caso);
                     if (attachmentEntity != null) {
@@ -905,7 +959,7 @@ public class ManagerCasos implements Serializable {
 
             List<AuditLog> changeLog = new ArrayList<>();
             if (isClient) {
-                if(caso.isClosed()){
+                if (caso.isClosed()) {
                     caso.setIdEstado(EnumEstadoCaso.ABIERTO.getEstado());
                 }
                 changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "cliente " + senderName + " respondió el caso vía email, nota#Id:" + nota.getIdNota(), ""));
@@ -1202,6 +1256,75 @@ public class ManagerCasos implements Serializable {
             caso.setDescripcion(textoNota.toString());
             caso.setDescripcionTxt(HtmlUtils.stripInvalidMarkup(textoNota.toString()));
             mergeCaso(caso, createLogReg(caso, "Adjunto", "se agregan adjuntos al caso", ""));
+        }
+    }
+
+    private void handleCCEmail(EmailMessage item, Caso caso, Canal canal) throws Exception {
+        try {
+            for (String to : item.getToList()) {
+                if (!canal.getSetting(EnumEmailSettingKeys.INBOUND_USER.getKey()).equalsIgnoreCase(to)) {
+                    EmailCliente emclient = getJpaController().find(EmailCliente.class, to);
+                    if (emclient == null) {
+                        //client dont exist, before persist it, check if it is an agent
+                        final List<Usuario> findUsuarioByEmail = getJpaController().findUsuarioByEmail(to);
+                        if (findUsuarioByEmail == null || findUsuarioByEmail.isEmpty()) {
+                            //no existe un usuario con este email. por ende asumiremos que el mono es un cliente
+                            DatosCaso datos = new DatosCaso();
+                            datos.setNombre(to);
+                            datos.setEmail(to);
+                            emclient = createOrUpdateEmailCliente(datos);
+                        } else {
+                            //si es un agente entonces agregarlo a la lista cc de agentes =)
+                            if (caso.getUsuarioCCList() == null) {
+                                caso.setUsuarioCCList(new LinkedList<Usuario>());
+                            }
+                            caso.getUsuarioCCList().addAll(findUsuarioByEmail);
+                        }
+                    }
+
+                    if (emclient != null) {
+                        if (caso.getEmailClienteCCList() == null) {
+                            caso.setEmailClienteCCList(new LinkedList<EmailCliente>());
+                        }
+
+                        caso.getEmailClienteCCList().add(emclient);
+                    }
+                }
+            }
+            for (String cc : item.getCcList()) {
+                if (!canal.getSetting(EnumEmailSettingKeys.INBOUND_USER.getKey()).equalsIgnoreCase(cc)) {
+                    EmailCliente emclient = getJpaController().find(EmailCliente.class, cc);
+                    if (emclient == null) {
+                        //client dont exist, before persist it, check if it is an agent
+                        final List<Usuario> findUsuarioByEmail = getJpaController().findUsuarioByEmail(cc);
+                        if (findUsuarioByEmail == null || findUsuarioByEmail.isEmpty()) {
+                            //no existe un usuario con este email. por ende asumiremos que el mono es un cliente
+                            DatosCaso datos = new DatosCaso();
+                            datos.setNombre(cc);
+                            datos.setEmail(cc);
+                            emclient = createOrUpdateEmailCliente(datos);
+                        } else {
+                            //si es un agente entonces agregarlo a la lista cc de agentes =)
+                            if (caso.getUsuarioCCList() == null) {
+                                caso.setUsuarioCCList(new LinkedList<Usuario>());
+                            }
+                            caso.getUsuarioCCList().addAll(findUsuarioByEmail);
+                        }
+                    }
+
+                    if (emclient != null) {
+                        if (caso.getEmailClienteCCList() == null) {
+                            caso.setEmailClienteCCList(new LinkedList<EmailCliente>());
+                        }
+
+                        caso.getEmailClienteCCList().add(emclient);
+                    }
+                }
+            }
+
+            mergeCaso(caso, createLogReg(caso, "CC", "se procesa recipientes del mail entrante del caso: to=" + item.getToList() + " cc=" + item.getCcList(), ""));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

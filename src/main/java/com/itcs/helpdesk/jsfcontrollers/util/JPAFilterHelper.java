@@ -334,6 +334,7 @@ public abstract class JPAFilterHelper implements Serializable {
                 lista.add(EnumTipoComparacion.GT.getTipoComparacion());
                 lista.add(EnumTipoComparacion.LE.getTipoComparacion());
                 lista.add(EnumTipoComparacion.LT.getTipoComparacion());
+//                lista.add(EnumTipoComparacion.SC.getTipoComparacion());
 
             } else if (fieldType.equals(EnumFieldType.CALENDAR.getFieldType())) {
                 //El valor es de tipo Fecha, usar el String parseado a una fecha

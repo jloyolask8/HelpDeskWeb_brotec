@@ -3,7 +3,6 @@ package com.itcs.helpdesk.jsfcontrollers;
 import com.itcs.commons.email.EmailAutoconfigClient;
 import com.itcs.commons.email.EnumEmailSettingKeys;
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Canal;
 import com.itcs.helpdesk.persistence.entities.CanalSetting;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoCanal;
@@ -59,6 +58,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
     private String tmpEmailInfo;
     private String tmpFreq;
     private String tmpEmailConnectionTimeout = ApplicationConfig.DEFAULT_CONN_TIMEOUT;
+    private String tmpEmailUnreadEmailDownloadLimit = ApplicationConfig.DEFAULT_UNREAD_DOWNLOAD_LIMIT;
     private boolean tmpEmailDebugEnabled;
     private boolean tmpEmailDownloadAttachments = true;
     private boolean tmpEmailFinalizeReady;
@@ -135,6 +135,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         settings.put(EnumEmailSettingKeys.SMTP_PASS.getKey(), tmpEmailContrasena);
 
         settings.put(EnumEmailSettingKeys.SMTP_CONNECTIONTIMEOUT.getKey(), tmpEmailConnectionTimeout);
+        settings.put(EnumEmailSettingKeys.UNREAD_DOWNLOAD_LIMIT.getKey(), tmpEmailUnreadEmailDownloadLimit);
         return settings;
     }
 
@@ -241,6 +242,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         tmpEmailFinalizeReady = false;
         tmpEmailFirstStepReady = false;
         tmpEmailDownloadAttachments = true;
+        tmpEmailUnreadEmailDownloadLimit = ApplicationConfig.DEFAULT_UNREAD_DOWNLOAD_LIMIT;
         prepareCreate();
     }
 
@@ -294,6 +296,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         tmpEmailDebugEnabled = (current.getSetting(EnumEmailSettingKeys.MAIL_DEBUG.getKey()) == null) ? false : current.getSetting(EnumEmailSettingKeys.MAIL_DEBUG.getKey()).equals("true");
         tmpEmailDownloadAttachments = (current.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()) == null) ? false : current.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()).equals("true");
         tmpEmailConnectionTimeout = current.getSetting(EnumEmailSettingKeys.SMTP_CONNECTIONTIMEOUT.getKey());
+        tmpEmailUnreadEmailDownloadLimit = current.getSetting(EnumEmailSettingKeys.UNREAD_DOWNLOAD_LIMIT.getKey());
         tmpEmailInfo = null;
         tmpEmailFinalizeReady = false;
         tmpEmailFirstStepReady = true;
@@ -742,6 +745,20 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
      */
     public void setTmpEmailConnectionTimeout(String tmpEmailConnectionTimeout) {
         this.tmpEmailConnectionTimeout = tmpEmailConnectionTimeout;
+    }
+
+    /**
+     * @return the tmpEmailUnreadEmailDownloadLimit
+     */
+    public String getTmpEmailUnreadEmailDownloadLimit() {
+        return tmpEmailUnreadEmailDownloadLimit;
+    }
+
+    /**
+     * @param tmpEmailUnreadEmailDownloadLimit the tmpEmailUnreadEmailDownloadLimit to set
+     */
+    public void setTmpEmailUnreadEmailDownloadLimit(String tmpEmailUnreadEmailDownloadLimit) {
+        this.tmpEmailUnreadEmailDownloadLimit = tmpEmailUnreadEmailDownloadLimit;
     }
 
     @FacesConverter(forClass = Canal.class)

@@ -1,8 +1,10 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
+import com.itcs.helpdesk.persistence.entities.EmailCliente;
 import com.itcs.helpdesk.persistence.entities.SubComponente;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.faces.bean.ManagedBean;
@@ -22,6 +24,8 @@ public class SubComponenteController extends AbstractManagedBean<SubComponente> 
     public SubComponenteController() {
         super(SubComponente.class);
     }
+    
+   
     
     public void selectEntityFromDialog(SubComponente subComponente) {
         RequestContext.getCurrentInstance().closeDialog(subComponente);

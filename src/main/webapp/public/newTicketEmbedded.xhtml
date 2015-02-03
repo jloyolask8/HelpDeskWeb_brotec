@@ -1,0 +1,290 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions">
+    <h:head>
+        <title>#{applicationBean.helpdeskTitle} - Nueva Solicitud</title>
+
+        <link rel="dns-prefetch" href="//netdna.bootstrapcdn.com" />            
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"/>
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css"/>
+
+        <style type="text/css">
+
+            .ui-widget {
+                font-size: 11px !important;
+            }
+        </style>
+    </h:head>
+    <h:body>
+
+        <f:event type="preRenderView" listener="#{casoCustomerController.initializeEmbeddedForm}" />
+
+        <p:dialog id="messagesDialogId" visible="#{not empty facesContext.messageList}" 
+                  header="Mensajes" modal="true" closeOnEscape="true"
+                  widgetVar="messagesDialog"  appendTo="@(body)">
+            <h:form id="messagesForm">
+                <h:panelGrid style="padding-left: 10px;">
+                    <h:messages />
+                </h:panelGrid>
+                <div align="right">
+                    <p:commandButton immediate="true" 
+                                     onclick="PF('messagesDialog').hide();" update=":mainForm :form_:horario"
+                                     type="button" value="OK"/>
+                </div>  
+
+            </h:form>
+        </p:dialog>    
+
+        <div class="container">
+
+
+
+            <h:form id="form">
+
+                <p:messages globalOnly="true" rendered="#{casoCustomerController.stepNewCasoIndex eq 5}"/>
+
+                <h:panelGroup rendered="#{casoCustomerController.stepNewCasoIndex lt 5}">
+                    <h2>Solicitud de Servicio </h2>
+
+                    <ol class="breadcrumb">
+                        <h:panelGroup rendered="#{casoCustomerController.stepNewCasoIndex ge 1}">
+                            <li class="#{casoCustomerController.stepNewCasoIndex eq 1 ? 'active':''}">
+                                <h:commandLink action="#{casoCustomerController.setStepNewCasoIndex(1)}" 
+                                               rendered="#{casoCustomerController.stepNewCasoIndex gt 1}" immediate="true">
+                                    Email
+                                </h:commandLink>
+                                <h:outputText value="Email" rendered="#{casoCustomerController.stepNewCasoIndex le 1}"/>
+                            </li>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{casoCustomerController.stepNewCasoIndex ge 2}">
+                            <li class="#{casoCustomerController.stepNewCasoIndex eq 2 ? 'active':''}">
+                                <h:commandLink action="#{casoCustomerController.setStepNewCasoIndex(2)}" 
+                                               rendered="#{casoCustomerController.stepNewCasoIndex gt 2}"  immediate="true">
+                                    Datos Solicitante
+                                </h:commandLink>
+                                <h:outputText value="Datos Solicitante" rendered="#{casoCustomerController.stepNewCasoIndex le 2}"/>
+                            </li>
+
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{casoCustomerController.stepNewCasoIndex ge 3}">
+                            <li class="#{casoCustomerController.stepNewCasoIndex eq 3 ? 'active':''}">
+                                <h:commandLink action="#{casoCustomerController.setStepNewCasoIndex(3)}" immediate="true"
+                                               rendered="#{casoCustomerController.stepNewCasoIndex gt 3}">
+                                    Producto
+                                </h:commandLink>
+                                <h:outputText value="Producto" rendered="#{casoCustomerController.stepNewCasoIndex le 3}"/>
+                            </li>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{casoCustomerController.stepNewCasoIndex ge 4}">
+                            <li class="#{casoCustomerController.stepNewCasoIndex eq 4 ? 'active':''}">
+                                <h:commandLink action="#{casoCustomerController.setStepNewCasoIndex(4)}" immediate="true"
+                                               rendered="#{casoCustomerController.stepNewCasoIndex gt 4}">
+                                    Descripción
+                                </h:commandLink>
+                                <h:outputText value="Descripción" rendered="#{casoCustomerController.stepNewCasoIndex le 4}"/>
+                            </li>
+                        </h:panelGroup>
+                    </ol>
+                </h:panelGroup>
+
+
+
+
+                <p:focus context="form" />  
+
+                <h:panelGroup layout="block" styleClass="form-group" rendered="#{casoCustomerController.stepNewCasoIndex eq 1}">
+                    <label for="emailCliente">Su Email:</label>
+                    <h:inputText id="emailCliente" value="#{casoCustomerController.emailCliente_wizard}" 
+                                 validator="#{inputValidationBean.validarEmail}"
+                                 styleClass="form-control"
+                                 required="true" requiredMessage="Un Email Válido de cliente es requerido para identificar al cliente del caso.">                                        
+                        <pe:keyFilter mask="email"/>
+                    </h:inputText>
+
+                    <p:watermark value="Su Email" for="emailCliente"/>
+                    <span class="help-block"><h:message for="emailCliente" errorClass="text-danger" /></span>
+                </h:panelGroup>
+                <h:panelGroup layout="block" styleClass="form-group" rendered="#{casoCustomerController.stepNewCasoIndex eq 2}">
+                    <label for="nombres">Nombre:</label>
+                    <h:inputText id="nombres" value="#{casoCustomerController.selected.emailCliente.cliente.nombres}" styleClass="form-control"
+                                 title="#{bundle.CreateClienteTitle_nombres}" required="true" requiredMessage="El Nombre es un dato requerido." />
+
+                    <p:watermark value="Nombres" for="nombres"/>
+                    <span class="help-block"><h:message for="nombres" errorClass="text-danger" /></span>
+                </h:panelGroup>
+                <h:panelGroup layout="block" styleClass="form-group" rendered="#{casoCustomerController.stepNewCasoIndex eq 2}">
+                    <label for="apellidos">Apellido:</label>
+                    <h:inputText id="apellidos" value="#{casoCustomerController.selected.emailCliente.cliente.apellidos}" styleClass="form-control"
+                                 title="#{bundle.CreateClienteTitle_apellidos}" 
+                                 required="true" requiredMessage="Los Apellidos son un dato requerido."/>
+                    <p:watermark value="Apellido(s)" for="apellidos"/>
+                    <span class="help-block"><h:message for="apellidos" errorClass="text-danger" /></span>
+                </h:panelGroup>
+                <h:panelGroup layout="block" styleClass="form-group" rendered="#{casoCustomerController.stepNewCasoIndex eq 2}">
+                    <label for="fono1">Teléfono de contacto:</label>
+                    <h:inputText id="fono1" value="#{casoCustomerController.selected.emailCliente.cliente.fono1}" 
+                                 required="true" requiredMessage="Favor ingrese un Teléfono de contacto."
+                                 title="#{bundle.CreateClienteTitle_fono1}" styleClass="form-control">
+                        <pe:keyFilter regEx="/[\d\.\+\-\(\)]/"/>
+                    </h:inputText>
+                    <p:watermark value="Teléfono de contacto" for="fono1"/>
+                    <span class="help-block"><h:message for="fono1" errorClass="text-danger" /></span>
+                </h:panelGroup>
+
+                
+
+                <h:panelGroup layout="block" styleClass="form-group" rendered="#{casoCustomerController.stepNewCasoIndex eq 3}">
+                    <label for="idProducto">#{applicationBean.productDescription}:</label>
+
+                    <h:selectOneMenu id="idProducto" value="#{casoCustomerController.selected.idProducto}" styleClass="form-control">
+                        <f:selectItems value="#{productoController.itemsAvailableSelectOne}"/>
+                        <p:ajax event="change" update="idComponente"  listener="#{casoCustomerController.handleProductChange}" />
+                    </h:selectOneMenu>
+                    <span class="help-block">Seleccione #{applicationBean.productDescription} relacionado a su solicitud. Útil para derivar su solicitud al área indicada. <h:message for="idProducto" errorClass="text-danger" /></span>
+
+
+                </h:panelGroup>
+                <h:panelGroup layout="block" styleClass="form-group" rendered="#{casoCustomerController.stepNewCasoIndex eq 3}">
+                    <label for="idComponente">#{applicationBean.productComponentDescription}:</label>
+                    <h:selectOneMenu id="idComponente" value="#{casoCustomerController.selected.idComponente}" 
+                                     required="#{not empty casoCustomerController.selected.idProducto.componenteList}" requiredMessage="favor seleccione #{applicationBean.productComponentDescription}." 
+                                     styleClass="form-control"
+                                     disabled="#{casoCustomerController.selected.idProducto eq null}">
+                        <f:selectItem itemLabel="---" itemValue=""/>
+                        <f:selectItems value="#{casoCustomerController.selected.idProducto.componenteList}" 
+                                       var="comp" itemLabel="#{comp.nombre}" itemValue="#{comp}"/>
+                        <p:ajax event="change" update="idSubComponente"  listener="#{casoCustomerController.handleProductChange}" />
+                    </h:selectOneMenu>
+                    <span class="help-block"><h:message for="idComponente" errorClass="text-danger" /></span>
+
+                </h:panelGroup>
+                <h:panelGroup layout="block" styleClass="form-group" rendered="#{casoCustomerController.stepNewCasoIndex eq 3}">
+                    <label for="idSubComponente">#{applicationBean.productSubComponentDescription}:</label>
+                    <h:selectOneMenu id="idSubComponente" value="#{casoCustomerController.selected.idSubComponente}"  styleClass="form-control"
+                                     disabled="#{casoCustomerController.selected.idComponente eq null}">
+                        <f:selectItem itemLabel="---" itemValue=""/>
+                        <f:selectItems value="#{casoCustomerController.selected.idComponente.subComponenteList}" var="subc" itemLabel="#{subc.nombre}" itemValue="#{subc}"/>
+                    </h:selectOneMenu>
+                    <span class="help-block"><h:message for="idSubComponente" errorClass="text-danger" /></span>
+                </h:panelGroup>
+                
+                <h:panelGroup layout="block" styleClass="form-group" rendered="#{casoCustomerController.stepNewCasoIndex eq 4}">
+                    <label for="idArea">Area/Departamento:</label>
+                    <h:selectOneMenu id="idArea"  value="#{casoCustomerController.selected.idArea}" 
+                                     styleClass="form-control"
+                                     required="true" requiredMessage="Seleccione el Area en la cual crear el caso.">
+                        <f:selectItems value="#{areaController.itemsAvailableSelectMany}" />
+                    </h:selectOneMenu>
+
+                    <span class="help-block"><h:message for="idArea" errorClass="text-danger" /></span>
+
+                </h:panelGroup>
+                
+                <h:panelGroup layout="block" styleClass="form-group" rendered="#{casoCustomerController.stepNewCasoIndex eq 4}">
+                    <label for="idTipoCaso">Tipo de solicitud</label>
+                    <h:selectOneMenu id="idTipoCaso" styleClass="form-control"
+                                     required="true" requiredMessage="El tipo de caso es requerido."
+                                     converter="TipoCasoControllerConverter"
+                                     value="#{casoCustomerController.selected.tipoCaso}" >                                  
+                        <f:selectItems value="#{applicationBean.tipoCasoAvailableList}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
+
+                    </h:selectOneMenu>
+
+                    <span class="help-block"><h:message for="idTipoCaso" errorClass="text-danger" /></span>
+
+                </h:panelGroup>
+                <h:panelGroup layout="block" styleClass="form-group" rendered="#{casoCustomerController.stepNewCasoIndex eq 4}">
+                    <label for="idPrioridad">Urgencia de su solicitud</label>
+
+                    <h:selectOneMenu id="idPrioridad" styleClass="form-control" value="#{casoCustomerController.selected.idPrioridad}" 
+                                     required="true" requiredMessage="La Prioridad del caso es un dato requerido.">
+                        <f:selectItems value="#{applicationBean.prioridadItemsAvailableList}" 
+                                       var="prioridadItem" itemLabel="#{prioridadItem.nombre}" 
+                                       itemValue="#{prioridadItem}" itemDescription="#{prioridadItem.descripcion}"/>
+                    </h:selectOneMenu>
+
+                    <span class="help-block"><h:message for="idPrioridad" errorClass="text-danger" /></span>
+                </h:panelGroup>
+
+                <h:panelGroup layout="block" styleClass="form-group" rendered="#{casoCustomerController.stepNewCasoIndex eq 4}">
+                    <p:inputText id="tema" value="#{casoCustomerController.selected.tema}" styleClass="form-control"
+                                 title="#{bundle.CreateCasoTitle_tema}" required="true" requiredMessage="#{bundle.CreateCasoRequiredMessage_tema}"/>
+                    <span class="help-block"><h:message for="tema" errorClass="text-danger" /></span>
+                    <p:watermark value="Asunto" for="tema"/>
+                </h:panelGroup>
+
+
+
+                <h:panelGroup layout="block" styleClass="form-group" rendered="#{casoCustomerController.stepNewCasoIndex eq 4}">
+                    <p:inputTextarea value="#{casoCustomerController.selected.descripcion}"
+                                     required="true" requiredMessage="Ingrese una Descripción de su solicitud"
+                                     styleClass="form-control" id="descripcion"/>
+                    <p:watermark value="Descripción de su solicitud..." for="descripcion"/>
+
+                    <span class="help-block"><h:message for="descripcion" errorClass="text-danger" /></span>
+                </h:panelGroup>
+                <h:panelGroup layout="block" styleClass="form-group" rendered="#{casoCustomerController.stepNewCasoIndex eq 4}">
+
+                    <p:panel id="atachments" visible="#{casoCustomerController.showAttachmentsFlag}" style="border: none;">
+                        <p:fileUpload id="fileupload" rendered="#{casoCustomerController.showAttachmentsFlag}"
+                                      fileUploadListener="#{casoCustomerController.uploadToSaveLater}"
+                                      label="Para adjuntar Archivos simplemente arrastrarlos aquí"
+                                      uploadLabel="Subir"
+                                      cancelLabel="Cancelar subir archivo"
+                                      invalidFileMessage="Archivo Invalido." 
+                                      mode="advanced"
+                                      dragDropSupport="true"
+                                      auto="true"
+                                      update=" listaadjuntos fileupload"
+                                      multiple="true"  />
+
+                        <h:panelGroup id="listaadjuntos" layout="block" rendered="#{not empty casoCustomerController.selected.attachmentList}">
+
+                            <p:dataTable var="fileitem" value="#{casoCustomerController.selected.attachmentList}" 
+                                         emptyMessage="No hay archivos adjuntos.">
+
+                                <p:column headerText="Nombre Archivo">
+                                    <h:outputText value="${casoCustomerController.nombreArchivoParaDesplegar(fileitem.nombreArchivo)}" title="#{fileitem.nombreArchivo}"/> 
+                                </p:column>
+
+                                <p:column headerText="">
+                                    <p:commandButton icon="ui-icon-close" update=":form:listaadjuntos">
+                                        <p:collector unique="true" removeFrom="#{casoCustomerController.selected.attachmentList}"  value="#{fileitem}"/>
+                                    </p:commandButton>
+                                </p:column>
+                            </p:dataTable> 
+                        </h:panelGroup>
+
+                    </p:panel>
+
+                    <p:commandLink id="attlink" immediate="true" style="float: right;"
+                                   value="#{casoCustomerController.showAttachmentsFlag ? 'No Adjuntar archivos':'Adjuntar archivos'}" 
+                                   actionListener="#{casoCustomerController.toggleShowAttachments}"
+                                   update="@this atachments">
+                    </p:commandLink>
+
+                </h:panelGroup>
+
+
+
+                <p:commandButton actionListener="#{casoCustomerController.createCasoCustomerStep()}" 
+                                 update=":form"
+                                 rendered="#{casoCustomerController.stepNewCasoIndex le 4}"
+                                 value="#{casoCustomerController.stepNewCasoIndex eq 4 ? 'Finalizar':'Siguiente'}"
+                                 styleClass="btn btn-default" />
+
+
+
+            </h:form>
+        </div>
+
+
+    </h:body>
+</html>
+

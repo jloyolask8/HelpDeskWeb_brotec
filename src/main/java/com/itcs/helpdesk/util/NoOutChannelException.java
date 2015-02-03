@@ -17,7 +17,7 @@ public class NoOutChannelException extends Exception {
 
     @Override
     public String getMessage() {
-        return "No se puede determinar el canal de salida del caso.";
+        return "No se puede determinar el canal de salida (email) del caso.";
     }
     
 }
