@@ -20,7 +20,8 @@
                         <p:outputLabel value="Cliente:" for="clienteNotNull" style="font-weight:bold"/>
                     </p:column>
                     <p:column>
-                        <p:commandLink id="clienteNotNull" value="#{casoController.selected.clientName}" style="color: #4183C4 !important;" immediate="true"
+                        <p:commandLink id="clienteNotNull" value="#{casoController.selected.clientName}" 
+                                       style="color: #4183C4 !important;" immediate="true"
                                        update=":formDatosCliente" onclick="PF('dialogClient').show()" />
                     </p:column>
                 </p:row>

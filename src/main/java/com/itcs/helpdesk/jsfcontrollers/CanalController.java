@@ -3,6 +3,7 @@ package com.itcs.helpdesk.jsfcontrollers;
 import com.itcs.commons.email.EmailAutoconfigClient;
 import com.itcs.commons.email.EnumEmailSettingKeys;
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Canal;
 import com.itcs.helpdesk.persistence.entities.CanalSetting;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoCanal;

@@ -61,10 +61,11 @@ public class ChatRequestReceiverServlet extends AbstractServlet
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         
+        final StringBuilder xml = new StringBuilder();
         String schema = request.getParameter(AbstractJPAController.TENANT_PROP_NAME);
         try
         {
-            final StringBuilder xml = new StringBuilder();
+            
             final Reader reader = request.getReader();
 
             char[] buffer = new char[2048];

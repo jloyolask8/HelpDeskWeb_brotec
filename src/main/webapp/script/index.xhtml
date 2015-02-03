@@ -403,7 +403,7 @@
                                         </pe:switch>
                                     </p:column>
 
-                                    <p:column headerText="SLA">
+                                    <p:column sortBy="#{item.nextResponseDue}" headerText="SLA">
 
                                         <pe:switch id="switchTicketAlertState" value="#{item.isOpen().toString()}">  
                                             <pe:case value="true">  
@@ -479,9 +479,6 @@
 
                                     </ui:repeat>
                                 </h:panelGroup>
-
-
-
 
                             </h:form>
 

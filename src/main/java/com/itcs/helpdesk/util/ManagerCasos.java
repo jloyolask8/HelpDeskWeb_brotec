@@ -993,7 +993,7 @@ public class ManagerCasos implements Serializable {
                         String subject = formatIdCaso(caso.getIdCaso()) + " " + ClippingsPlaceHolders.buildFinalText("${TipoCaso} ${Asunto}", caso);
 
                         HelpDeskScheluder.scheduleSendMailNota(getJpaController().getSchema(), canal.getIdCanal(),
-                                item.getText(), emailCliente, subject, caso.getIdCaso(), nota.getIdNota(), listIdAtt.toString());
+                                emailMessage.getText(), emailCliente, subject, caso.getIdCaso(), nota.getIdNota(), listIdAtt.toString());
                     }
                 }
 

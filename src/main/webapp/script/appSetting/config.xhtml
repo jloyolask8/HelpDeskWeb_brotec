@@ -81,7 +81,7 @@
             <p:panel>
                 <p:outputLabel value="URL Para crear casos en su pagina web:" style="font-weight: bold;"/>
                 <h:outputText id="clipboard_text" 
-                              value="http://#{facesContext.externalContext.requestServerName}:#{facesContext.externalContext.requestServerPort}#{facesContext.externalContext.requestContextPath}/faces/public/newTicketEmbedded.xhtml"/>
+                              value="http://#{facesContext.externalContext.requestServerName}:#{facesContext.externalContext.requestServerPort}#{facesContext.externalContext.requestContextPath}/faces/public/newTicketEmbedded.xhtml?tenant=#{UserSessionBean.tenantId}"/>
           
               
                 

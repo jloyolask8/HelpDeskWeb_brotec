@@ -22,6 +22,7 @@ import com.itcs.helpdesk.persistence.entities.Item;
 import com.itcs.helpdesk.persistence.entities.ModeloProducto;
 import com.itcs.helpdesk.persistence.entities.TipoAccion;
 import com.itcs.helpdesk.persistence.entities.Nota;
+import com.itcs.helpdesk.persistence.entities.Prioridad;
 import com.itcs.helpdesk.persistence.entities.ProductoContratado;
 import com.itcs.helpdesk.persistence.entities.Recinto;
 import com.itcs.helpdesk.persistence.entities.ReglaTrigger;
@@ -3261,7 +3262,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 destinatario = current.getEmailCliente().getEmailCliente();
             }
             String ccEmails = null;
-            if (isCc() && !ccEmail.isEmpty()) {
+            if (isCc() && ccEmail != null && !ccEmail.isEmpty()) {
                 sbuilder = new StringBuilder();
                 for (String string : ccEmail) {
                     if (sbuilder.length() > 0) {
@@ -3272,7 +3273,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 ccEmails = sbuilder.toString();
             }
             String ccoEmails = null;
-            if (isCco() && !ccoEmail.isEmpty()) {
+            if (isCco() && ccoEmail != null && !ccoEmail.isEmpty()) {
                 sbuilder = new StringBuilder();
                 for (String string : ccoEmail) {
                     if (sbuilder.length() > 0) {

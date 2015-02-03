@@ -2,128 +2,63 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.itcs.helpdesk.jsfcontrollers;
+package com.itcs.helpdesk.jsfcontrollers.request;
 
-import com.itcs.helpdesk.persistence.entities.Caso;
+import com.itcs.helpdesk.jsfcontrollers.*;
 import com.itcs.helpdesk.persistence.entities.Cliente;
 import com.itcs.helpdesk.persistence.entities.EmailCliente;
-import com.itcs.helpdesk.persistence.entities.Nota;
 import com.itcs.helpdesk.persistence.entities.ProductoContratado;
 import com.itcs.helpdesk.persistence.entityenums.EnumCanal;
-import com.itcs.helpdesk.persistence.entityenums.EnumTipoNota;
-import com.itcs.helpdesk.persistence.jpa.exceptions.NonexistentEntityException;
 import com.itcs.helpdesk.persistence.jpa.exceptions.RollbackFailureException;
+import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.ManagerCasos;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 
 /**
  *
  * @author jonathan
  */
-@ManagedBean(name = "casoCustomerController")
+@ManagedBean(name = "embeddedFromNewTicketController")
 @SessionScoped
-public class CustomerCasoController extends CasoController {
+public class EmbeddedFromNewTicketController extends CustomerCasoController {
 
     //customer
     private int stepNewCasoIndex;
     private boolean embeddedFlag = false;
-     private boolean showAttachmentsFlag = false;
+    private boolean showAttachmentsFlag = false;
 
-    @Override
-    protected String getListPage() {
-        return "/customer/casos";
-    }
+    private String tenantId;
 
-    @Override
-    protected String getEditPage() {
-        return "/customer/ticket";
-    }
-
-    @Override
-    protected String getViewPage() {
-        return getEditPage();
-    }
-    
-    public void toggleShowAttachments(){
+    public void toggleShowAttachments() {
         showAttachmentsFlag = !showAttachmentsFlag;
     }
 
+    @Override
     public void initializeEmbeddedForm(javax.faces.event.ComponentSystemEvent event) {
         System.out.println("initializeEmbeddedForm()...");
         if (this.current == null) {
             prepareCreateCasoFromCustomer();
+            setStepNewCasoIndex(1);//2,3 o 4.
         }
         embeddedFlag = true;
+
+        HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        checkTenantParam(req);
     }
 
-    public String customerCreateNota() {
-
-        if (StringUtils.isEmpty(textoNota)) {
-            addErrorMessage("Su comentario no tiene texto, verifíque e intente nuevamente");
-            return null;
+    private void checkTenantParam(HttpServletRequest req) {
+        String tenant = req.getParameter("tenant");
+        if (tenant != null && !tenant.isEmpty()) {
+            System.out.println("tenant=" + tenant);
+            this.tenantId = tenant;
         }
-
-        try {
-            Nota nota = buildNewNota(current, textoNotaVisibilidadPublica, textoNota,
-                    EnumTipoNota.NOTA.getTipoNota(), true);
-            addNotaToCaso(current, nota);
-
-            getJpaController().mergeCaso(current, ManagerCasos.createLogReg(current, "Cliente agrega comentarios", "Cliente agrega comentarios tipo " + nota.getTipoNota().getNombre(), ""));
-
-        } catch (NonexistentEntityException ex) {
-            Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (RollbackFailureException ex) {
-            Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (Exception ex) {
-            Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            resetNotaForm();
-        }
-
-        return getEditPage();
-    }
-
-    public String prepareCreateCasoFromCustomer() {
-        try {
-            current = new Caso();
-
-            if (userSessionBean.isValidatedCustomerSession()) {
-                emailCliente_wizard = userSessionBean.getEmailCliente().getEmailCliente();
-                current.setEmailCliente(userSessionBean.getEmailCliente());
-                emailCliente_wizard_existeEmail = true;
-                if (userSessionBean.getEmailCliente().getCliente() != null) {
-                    emailCliente_wizard_existeCliente = true;
-                    if (StringUtils.isEmpty(userSessionBean.getEmailCliente().getCliente().getRut())) {
-                        rutCliente_wizard = null;
-                    } else {
-                        rutCliente_wizard = userSessionBean.getEmailCliente().getCliente().getRut();
-                    }
-                } else {
-                    emailCliente_wizard_existeCliente = false;
-                }
-            } else {
-                EmailCliente email = new EmailCliente();
-                email.setCliente(new Cliente());
-                current.setEmailCliente(email);
-                emailCliente_wizard_existeEmail = false;
-                emailCliente_wizard = null;
-            }
-
-            emailCliente_wizard_updateCliente = false;
-            selectedItemIndex = -1;
-            setStepNewCasoIndex(1);//2,3 o 4.
-
-        } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).logInfo("Error al preparar la creacion de un caso");
-            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
-        }
-        return "/customer/newSR";
     }
 
     public String createCasoCustomerStep() {
@@ -131,7 +66,7 @@ public class CustomerCasoController extends CasoController {
         switch (getStepNewCasoIndex()) {
             case 1:
 
-                EmailCliente email = getJpaController().find(EmailCliente.class, emailCliente_wizard);
+                EmailCliente email = getJpaControllerLocal().find(EmailCliente.class, emailCliente_wizard);
                 if (email != null) {
                     if (email.getCliente() == null) {
                         email.setCliente(new Cliente());
@@ -180,6 +115,23 @@ public class CustomerCasoController extends CasoController {
 
     }
 
+    protected ManagerCasos getManagerCasosLocal() {
+        if (!StringUtils.isEmpty(this.getTenantId())) {
+            ManagerCasos managerCasos = new ManagerCasos();
+            managerCasos.setJpaController(getJpaControllerLocal());
+            return managerCasos;
+        }
+        throw new IllegalAccessError("Error al acceder al ManagerCasos");
+    }
+
+    public JPAServiceFacade getJpaControllerLocal() {
+        if (!StringUtils.isEmpty(this.getTenantId())) {
+            JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf, this.getTenantId());
+            return jpaController;
+        }
+        throw new IllegalAccessError("Error al acceder al jpa");
+    }
+
     public String createAndCustomerView() {
         try {
 
@@ -187,11 +139,11 @@ public class CustomerCasoController extends CasoController {
 
             if (embeddedFlag) {
                 current.setIdCanal(EnumCanal.GODESK_CUSTOMER_PORTAL_EMBEDDED_FORM.getCanal());
-                getManagerCasos().persistCaso(current, ManagerCasos.createLogReg(current, "Crear", "se crea caso desde fomulario embebido en sitio web.", ""));
+                getManagerCasosLocal().persistCaso(current, ManagerCasos.createLogReg(current, "Crear", "se crea caso desde fomulario embebido en sitio web.", ""));
 
             } else {
                 current.setIdCanal(EnumCanal.GODESK_CUSTOMER_PORTAL.getCanal());
-                getManagerCasos().persistCaso(current, ManagerCasos.createLogReg(current, "Crear", "se crea caso desde portal del consumidor godesk web.", ""));
+                getManagerCasosLocal().persistCaso(current, ManagerCasos.createLogReg(current, "Crear", "se crea caso desde portal del consumidor godesk web.", ""));
                 openCase(current);
                 //Auto-Login customer
                 userSessionBean.setEmailCliente(current.getEmailCliente());
@@ -203,10 +155,10 @@ public class CustomerCasoController extends CasoController {
             addInfoMessage("Su solicitud ha sido ingresada exitósamente. Un ejecutivo se contactará con usted. Número de caso:[#" + current.getIdCaso() + "]");
 
         } catch (RollbackFailureException ex) {
-            addErrorMessage(resourceBundle.getString("PersistenceErrorOccured"), ex.getMessage());
-            Log.createLogger(CustomerCasoController.class.getName()).log(Level.SEVERE, "persist " + current, ex);
+            addErrorMessage("Error de base de datos", ex.getMessage());
+            Log.createLogger(EmbeddedFromNewTicketController.class.getName()).log(Level.SEVERE, "persist " + current, ex);
         } catch (Exception ex) {
-            Log.createLogger(CustomerCasoController.class.getName()).log(Level.SEVERE, "persist " + current, ex);
+            Log.createLogger(EmbeddedFromNewTicketController.class.getName()).log(Level.SEVERE, "persist " + current, ex);
 
         }
         return null;
@@ -238,5 +190,19 @@ public class CustomerCasoController extends CasoController {
      */
     public void setShowAttachmentsFlag(boolean showAttachmentsFlag) {
         this.showAttachmentsFlag = showAttachmentsFlag;
+    }
+
+    /**
+     * @return the tenantId
+     */
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    /**
+     * @param tenantId the tenantId to set
+     */
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
     }
 }

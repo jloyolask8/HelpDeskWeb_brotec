@@ -6,7 +6,7 @@
     xmlns:pe="http://primefaces.org/ui/extensions"
     xmlns:ui="http://java.sun.com/jsf/facelets">
 
-    <h:form id="formCreateNota" rendered="#{casoController.selected.open}">
+    <h:form id="message-details-reply" rendered="#{casoController.selected.open}">
         <br/>
 
         <h:panelGroup rendered="#{not casoController.replyMode}">
@@ -15,12 +15,12 @@
                 <p style="color: #999;">
                     Haz click para  
                     <strong><p:commandLink actionListener="#{casoController.enableCommentMode()}" value=" Agregar un Comentario"  styleClass="fa fa-comments"
-                                             update="formCreateNota"/></strong>
+                                             update="message-details-reply"/></strong>
                     ,
                     <strong><p:commandLink actionListener="#{casoController.enableReplyMode(false)}" value=" Responder" styleClass="fa fa-envelope"
-                                           update="formCreateNota"/></strong>
+                                           update="message-details-reply"/></strong>
                     o <strong><p:commandLink actionListener="#{casoController.enableReplyMode(true)}" value=" Responder a Todos" styleClass="fa fa-envelope"
-                                           update="formCreateNota"/></strong>
+                                           update="message-details-reply"/></strong>
                 </p>
             </p:panel>
 
@@ -55,8 +55,8 @@
                                     <p:column>
                                         <p:menuButton value="para:" id="menucc" style="background: transparent;">
 
-                                            <p:menuitem id="menuitemcc" update=":inputPanel:formCreateNota:menucc :inputPanel:formCreateNota:panelNotaTop" value="CC" actionListener="#{casoController.changeCCO(true)}" process="@this,otroEmail,otroEmailcc,otroEmailcco" icon="#{casoController.cc ? 'fa fa-check-square-o':'fa fa-square-o'}"/>
-                                            <p:menuitem id="menuitemcco" update=":inputPanel:formCreateNota:menucc :inputPanel:formCreateNota:panelNotaTop" value="CCO" actionListener="#{casoController.changeCCO(false)}" process="@this,otroEmail,otroEmailcc,otroEmailcco" icon="#{casoController.cco ? 'fa fa-check-square-o':'fa fa-square-o'}"/>
+                                            <p:menuitem id="menuitemcc" update=":message-details-reply:menucc :message-details-reply:panelNotaTop" value="CC" actionListener="#{casoController.changeCCO(true)}" process="@this,otroEmail,otroEmailcc,otroEmailcco" icon="#{casoController.cc ? 'fa fa-check-square-o':'fa fa-square-o'}"/>
+                                            <p:menuitem id="menuitemcco" update=":message-details-reply:menucc :message-details-reply:panelNotaTop" value="CCO" actionListener="#{casoController.changeCCO(false)}" process="@this,otroEmail,otroEmailcc,otroEmailcco" icon="#{casoController.cco ? 'fa fa-check-square-o':'fa fa-square-o'}"/>
 
                                         </p:menuButton>
                                     </p:column>
@@ -135,7 +135,7 @@
                             <h:panelGrid columns="2">
                                 <p:selectBooleanCheckbox id="adjuntarArchivosARespuesta" value="#{casoController.adjuntarArchivosARespuesta}" 
                                                          disabled="#{casoController.cantidadAttachment() le 0}">
-                                    <p:ajax update=":inputPanel:formCreateNota:parchivos" process="@this"/>  
+                                    <p:ajax update=":message-details-reply:parchivos" process="@this"/>  
                                 </p:selectBooleanCheckbox>
                                 <p:outputLabel for="adjuntarArchivosARespuesta" value="#{bundle.adjuntarArchivosARespuesta}" style="font-weight:bold"/>
                             </h:panelGrid>
@@ -190,7 +190,7 @@
 
                             <p:column >
                                 <p:commandButton action="#{casoController.disableReplyMode()}"  value="Cancelar"
-                                                 immediate="true" update=":inputPanel:formCreateNota"/>
+                                                 immediate="true" update=":message-details-reply"/>
                             </p:column>
 
                             <p:column colspan="2">
@@ -199,17 +199,17 @@
                                 <h:panelGroup style="float: right">
                                     <p:splitButton id="sendCommentButton" value="Enviar" actionListener="#{casoController.responder()}" 
                                                    ajax="false"
-                                                   update=":mainform:messages :formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso "
+                                                   update=":mainform:messages :formint1 :formact :message-details-reply :botoneraCaso "
                                                    icon="fa fa-envelope"
                                                    rendered="#{casoController.replyByEmail}">
 
                                         <p:menuitem value="Descartar borrador" actionListener="#{casoController.descartarBorrador()}"
-                                                    update=":mainform:messages :inputPanel:formCreateNota"
+                                                    update=":mainform:messages :message-details-reply"
                                                     icon="fa fa-trash-o"
                                                     rendered="#{not empty casoController.selected.respuesta}"/>
 
                                         <p:menuitem value="Guardar borrador" actionListener="#{casoController.guardarBorrador()}"
-                                                    update=":mainform:messages :inputPanel:formCreateNota"
+                                                    update=":mainform:messages :message-details-reply"
                                                     icon="fa fa-save"/>
 
 
@@ -218,21 +218,21 @@
 
                                 <h:panelGroup style="float: right">
                                     <p:splitButton id="saveCommentButton" value="Guardar" actionListener="#{casoController.crearNota(false)}"
-                                                   update=":mainform:messages :formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso :formTopMenu " 
+                                                   update=":mainform:messages :formint1 :formact :message-details-reply :botoneraCaso :main-navbar-form " 
                                                    icon="fa fa-save" rendered="#{not casoController.replyByEmail}">  
                                         <p:menuitem value="Guardar y notificar al cliente" actionListener="#{casoController.crearNota(true)}" 
-                                                    update=":mainform:messages :formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso :formTopMenu "  
+                                                    update=":mainform:messages :formint1 :formact :message-details-reply :botoneraCaso :main-navbar-form "  
                                                     icon="fa fa-save" />  
 
                                         <p:separator />  
 
                                         <p:menuitem value="Descartar borrador" actionListener="#{casoController.descartarBorrador()}"
-                                                    update=":mainform:messages :inputPanel:formCreateNota"
+                                                    update=":mainform:messages :message-details-reply"
                                                     icon="fa fa-trash-o"
                                                     rendered="#{not empty casoController.selected.respuesta}"/>
 
                                         <p:menuitem value="Guardar borrador" actionListener="#{casoController.guardarBorrador()}"
-                                                    update=":mainform:messages :inputPanel:formCreateNota"
+                                                    update=":mainform:messages :message-details-reply"
                                                     icon="fa fa-save"
                                                     rendered="#{empty casoController.selected.respuesta}"/>
 

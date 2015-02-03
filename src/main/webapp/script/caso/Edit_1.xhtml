@@ -192,7 +192,8 @@
             </h:form>
 
 
-            <p:tabView id="inputPanel" dynamic="false" scrollable="true" cache="true" style="width: 99% !important; " activeIndex="#{casoController.activeIndexCasoSections}">
+            <p:tabView id="inputPanel" dynamic="false" scrollable="true" cache="true" style="width: 99% !important; " 
+                       activeIndex="#{casoController.activeIndexCasoSections}">
                 <p:ajax event="tabChange" listener="#{casoController.onChangeActiveIndexCasoSections}" oncomplete="resizeScrollPanel();"/>
                 <p:ajax event="tabClose" listener="#{casoScheduleController.onTabClose}" />
 
