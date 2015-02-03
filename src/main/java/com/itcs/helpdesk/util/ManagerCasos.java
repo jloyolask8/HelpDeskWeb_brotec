@@ -923,8 +923,8 @@ public class ManagerCasos implements Serializable {
 //          textoBody = parseHtmlToText(textoBody);
             if (textoBody != null) {
                 nota.setTextoOriginal(textoBody);
-                final String removeScriptsAndStyles = HtmlUtils.removeScriptsAndStyles(textoBody);
-                nota.setTexto(HtmlUtils.stripInvalidMarkup(removeScriptsAndStyles));
+                final String removeScriptsAndStyles = HtmlUtils.stripInvalidMarkup(textoBody);
+                nota.setTexto(removeScriptsAndStyles);
             }
 
             nota.setFechaEnvio((emailMessage.getReceivedDate() != null)
