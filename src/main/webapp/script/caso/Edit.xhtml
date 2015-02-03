@@ -164,10 +164,9 @@
                                     ajax="false" value="Crear Caso Colaborativo" action="#{casoController.crearCasoColab(casoController.selected)}"/>
 
                         <p:menuitem rendered="#{casoController.verificarRelacionarCaso()}" icon="fa fa-chain"
-                                    ajax="true" value="Relacionar Otro Caso" onclick="PF('casosRela').show();"/>
-                        
-                        <p:menuitem rendered="#{casoController.verificarRelacionarCaso()}" icon="fa fa-trash-o"
-                                    ajax="true" value="Eliminar Relaci&oacute;n Caso" onclick="PF('DeleteCasosRela').show();"/>
+                                    ajax="true" value="Relacionar a Otro Caso" onclick="PF('casosRela').show();"/>
+
+
 
                         <p:menuitem rendered="#{casoController.verificarEliminarCaso()}" icon="fa fa-trash-o"
                                     ajax="true" value="Eliminar" onclick="PF('destroyCase').show();"/>
@@ -318,6 +317,13 @@
                     <p:scrollPanel id="scrollpaneCasosRel" mode="native" style="border: 0; height: 500px;">
 
                         <div align="right">
+
+                            <p:commandButton rendered="#{casoController.verificarRelacionarCaso() and not casoController.mergeHabilitado}" icon="fa fa-trash-o" 
+                                             actionListener="#{casoController.chooseCasoFromDialog()}"
+                                             ajax="true" value="Eliminar Relaci&oacute;n Caso" >
+                                <p:ajax event="dialogReturn" listener="#{casoController.onCasoChosenForEliminarRelacionado}"  update=":inputPanel:tabCasosRelacionados"/>
+                            </p:commandButton>
+                            &nbsp;
                             <p:commandButton actionListener="#{casoController.enableMerge()}" rendered="#{not casoController.mergeHabilitado}"
                                              value="Habilitar combinar con caso actual"
                                              icon="mergeIcon"
@@ -333,13 +339,13 @@
                                              update=":botoneraCaso scrollpaneCasosRel"/>
                         </div>
                         <br/>
-                        
+
                         <go:casoList id="casosMerge" rendered="#{casoController.mergeHabilitado}"
                                      selectionMultiple="true"
                                      casosList="#{casoController.mergeCandidatesList}"
                                      header="Candidatos para combinar (#{casoController.mergeCandidatesList.size()}) con caso N°#{casoController.selected.idCaso}"/>
 
-                       
+
                         <go:casoList id="casosRel" rendered="#{not casoController.mergeHabilitado}"
                                      casosList="#{casoController.selected.casosRelacionadosList}"
                                      header="Casos relacionados (#{casoController.selected.casosRelacionadosList.size()})"/>
@@ -954,28 +960,41 @@
             <p:dialog header="Agregar Caso Relacionado" widgetVar="casosRela" modal="true" dynamic="true" closeOnEscape="true" closable="false">
                 <h:form>
                     <h:panelGrid columns="2">
-                        <h:outputLabel value="Id Caso relacionado:" for="idcasorel" style="font-weight: bold"/>
-                        <h:inputText value="${casoController.idCaserel}" id="idcasorel"/>
+                        <h:outputLabel value="Caso a relacionar:" for="idcasorel" style="font-weight: bold"/>
+
+                        <p:autoComplete id="idcasorel" value="#{casoController.idCaserel}" 
+                                        completeMethod="#{casoController.complete}"
+                                        var="item" itemLabel="#{item.tema}" itemValue="#{item}" forceSelection="true">
+
+
+                            <p:column>
+                                <h:outputText value="#{item.clientName}" />
+                            </p:column>
+
+                            <p:column>
+                                <h:panelGroup layout="block">
+                                    <h:outputText styleClass="ticket-status" style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};" value="#{item.idSubEstado.nombre}"/>
+                                    <p:outputLabel id="temalink" value="#{item.tipoCaso.nombre} \##{item.idCaso} #{item.tema} (#{item.notaList.size()})">
+                                    </p:outputLabel>
+                                    <h:panelGroup rendered="#{item.hasScheduledEvents}">
+                                        <i class="fa fa-calendar"></i>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{item.hasAttachments}">
+                                        <i class="fa fa-paperclip"></i>    
+                                    </h:panelGroup>
+                                </h:panelGroup>
+                            </p:column>
+                        </p:autoComplete>
+
                         <p:button value="Cancelar" onclick="PF('casosRela').hide()"   />
-                        <p:commandButton value="Aceptar" ajax="true" update=":mainform:messages idcasorel"
+                        <p:commandButton value="Aceptar" ajax="true" update=":mainform:messages :inputPanel:tabCasosRelacionados"
                                          actionListener="#{casoController.agregarRelacionado}"   />
 
                     </h:panelGrid>
                 </h:form>
             </p:dialog>
-            
-            <p:dialog header="Eliminar Caso Relacionado" widgetVar="DeleteCasosRela" modal="true" dynamic="true" closeOnEscape="true" closable="false">
-                <h:form>
-                    <h:panelGrid columns="2">
-                        <h:outputLabel value="Id Caso relacionado:" for="idcasorel" style="font-weight: bold"/>
-                        <h:inputText value="${casoController.idCaserel}" id="idcasorel"/>
-                        <p:button value="Cancelar" onclick="PF('DeleteCasosRela').hide()"   />
-                        <p:commandButton value="Eliminar" ajax="true" update=":mainform:messages idcasorel"
-                                         actionListener="#{casoController.eliminarRelacionado()}"   />
 
-                    </h:panelGrid>
-                </h:form>
-            </p:dialog>
+
 
             <p:dialog id="idDialogArbolItem" header="Seleccione Item" widgetVar="idDialogArbolItem" dynamic="true" rendered="#{casoController.casoTipoReparacion}"
                       modal="true" height="550" closeOnEscape="true" closable="false">

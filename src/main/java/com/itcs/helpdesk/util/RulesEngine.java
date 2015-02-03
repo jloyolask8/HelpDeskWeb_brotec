@@ -148,12 +148,15 @@ public class RulesEngine implements CasoChangeListener {
             }
         } while (lista.size() > listaSup.size());
 
-        try {
-            AuditLog auditLog = ManagerCasos.createLogComment(caso, "Reglas aplicadas en la modificación del caso: " + rulesThatApply.toString());
-            getJpaController().persistAuditLog(auditLog);
-        } catch (Exception ex) {
-            Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "RulesEngine.casoChanged", ex);
+        if (!rulesThatApply.isEmpty()) {
+            try {
+                AuditLog auditLog = ManagerCasos.createLogComment(caso, "Reglas aplicadas en la modificación del caso: " + rulesThatApply.toString());
+                getJpaController().persistAuditLog(auditLog);
+            } catch (Exception ex) {
+                Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "RulesEngine.casoChanged", ex);
+            }
         }
+
     }
 
     private boolean evalConditions(ReglaTrigger reglaTrigger, Caso caso) {

@@ -221,7 +221,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                             }
 
                             if (ApplicationConfig.isAppDebugEnabled()) {
-                                Log.createLogger(this.getClass().getName()).logDebug("Revisión de correo " + canal + "exitosa: " + messages.size() + " mensajes leídos. Intancia: brotec-icafal");
+                                Log.createLogger(this.getClass().getName()).logDebug("Revisión de correo " + canal + "exitosa: " + messages.size() + " mensajes leídos.");
                             }
                         } catch (Exception ex) {
                             ex.printStackTrace();
