@@ -149,7 +149,7 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
 
                             final List<com.itcs.helpdesk.persistence.entities.ScheduleEvent> findEntities
                                     = (List<com.itcs.helpdesk.persistence.entities.ScheduleEvent>) getJpaController().findAllEntities(getVista(), new OrderBy("startDate", OrderBy.OrderType.DESC), null);
-//                    System.out.println("events:" + findEntities);
+//                    //System.out.println("events:" + findEntities);
                             for (com.itcs.helpdesk.persistence.entities.ScheduleEvent scheduleEvent : findEntities) {
                                 final DefaultScheduleEvent defaultScheduleEvent
                                         = new DefaultScheduleEvent(scheduleEvent.getTitle(),
@@ -186,7 +186,7 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
 //                        f5.setIdVista(getFilterHelper().getVista());
 //                        getFilterHelper().getVista().getFiltrosVistaList().add(f5);
 //                    }
-//                    System.out.println("VISTA=" + getFilterHelper().getVista());
+//                    //System.out.println("VISTA=" + getFilterHelper().getVista());
                 } catch (Exception ex) {
                     Logger.getLogger(GlobalScheduleController.class.getName()).log(Level.SEVERE, "loadEvents", ex);
                 }
@@ -194,7 +194,7 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
             }
         };
 
-        System.out.println("new CasoScheduleController()");
+        //System.out.println("new CasoScheduleController()");
 
     }
 
@@ -222,7 +222,7 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
 
     public void addEvent() {
 
-        System.out.println("void addEvent called");
+        //System.out.println("void addEvent called");
 
         try {
             com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) event.getData();
@@ -356,7 +356,7 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
     }
 
     public void removeScheduleEventReminder(ScheduleEventReminder r) {
-        System.out.println("removeScheduleEventReminder...");
+        //System.out.println("removeScheduleEventReminder...");
         if (this.event != null) {
             com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) event.getData();
 
@@ -407,7 +407,7 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
 
     public void onEventMove(ScheduleEntryMoveEvent event) {
 
-        System.out.println("onEventMove");
+        //System.out.println("onEventMove");
 
         com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) event.getScheduleEvent().getData();
 
@@ -435,7 +435,7 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
 
     public void onEventResize(ScheduleEntryResizeEvent event) {
 
-        System.out.println("onEventResize");
+        //System.out.println("onEventResize");
         com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) event.getScheduleEvent().getData();
         try {
 
@@ -490,10 +490,10 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
     }
 
     public List<Usuario> autoCompleteUsuario(String query) {
-        System.out.println(query);
+        //System.out.println(query);
         //List<EmailCliente> results = new ArrayList<EmailCliente>();
         List<Usuario> list = getJpaController().findUsuariosEntitiesLike(query, false, 10, 0);
-//        System.out.println(emailClientes);
+//        //System.out.println(emailClientes);
         if (list != null && !list.isEmpty()) {
             return list;
         } else {
@@ -501,7 +501,7 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "No existe ningun usuario con ese email o nombre...", "No existe ningun usuario con ese email o nombre...");
             FacesContext.getCurrentInstance().addMessage(null, message);
             list = new ArrayList<Usuario>();
-            System.out.println("No existe el Cliente con email" + query);
+            //System.out.println("No existe el Cliente con email" + query);
             return list;
         }
 
@@ -546,7 +546,7 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
 
     public void usuarioInvitedItemSelectEvent(SelectEvent event) {
         Object item = event.getObject();
-        System.out.println("item:" + item);
+        //System.out.println("item:" + item);
 
         try {
 
@@ -566,10 +566,10 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
     }
 
     public List<Resource> autoCompleteResource(String query) {
-        System.out.println(query);
+        //System.out.println(query);
         //List<EmailCliente> results = new ArrayList<EmailCliente>();
         List<Resource> list = getJpaController().findResourcesEntitiesLike(query, false, 10, 0);
-//        System.out.println(emailClientes);
+//        //System.out.println(emailClientes);
         if (list != null && !list.isEmpty()) {
             return list;
         } else {
@@ -577,7 +577,7 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "No existe ningun Resource...", "No existe ningun Resource...");
             FacesContext.getCurrentInstance().addMessage(null, message);
             list = new ArrayList<Resource>();
-            System.out.println("No existe el Resource: " + query);
+            //System.out.println("No existe el Resource: " + query);
             return list;
         }
 
@@ -585,7 +585,7 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
 
     public void resourceInvitedItemSelectEvent(SelectEvent event) {
         Object item = event.getObject();
-        System.out.println("item:" + item);
+        //System.out.println("item:" + item);
 
         try {
 

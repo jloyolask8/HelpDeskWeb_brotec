@@ -56,7 +56,7 @@ public class InscripcionEventosSessionBean extends AbstractManagedBean<Caso> imp
     }
 
     public void initializeData(javax.faces.event.ComponentSystemEvent event) {
-        System.out.println("initializeData()...");
+        //System.out.println("initializeData()...");
         HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String idCaso = req.getParameter("id");
         if (!StringUtils.isEmpty(idCaso)) {

@@ -124,8 +124,8 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
 //                    return null;
                 } else if (usuario.getPass() != null) {
                     String passMD5 = UtilSecurity.getMD5(password);
-//                    System.out.println("pass: "+password+" en MD5:"+passMD5);
-//                    System.out.println("usuario pass: "+usuario.getPass());
+//                    //System.out.println("pass: "+password+" en MD5:"+passMD5);
+//                    //System.out.println("usuario pass: "+usuario.getPass());
                     if (usuario.getPass().equals(passMD5)) {//compare encrypted pass
 
                         HttpServletRequest request = (HttpServletRequest) JsfUtil.getRequest();
@@ -145,7 +145,7 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
                         getUserSessionBean().setChannel(channel);
                         getApplicationBean().addChannel(usuario.getIdUsuario(), channel);
                         final String sessionId = JsfUtil.getRequest().getSession().getId();
-                        System.out.println("sessionId:" + sessionId);
+                        //System.out.println("sessionId:" + sessionId);
                         getApplicationBean().getSessionIdMappings().put(sessionId, usuario.getIdUsuario());
                         RequestContext requestContext = RequestContext.getCurrentInstance();
                         requestContext.execute("PF('socketMessages').connect('/" + usuario.getIdUsuario() + "')");

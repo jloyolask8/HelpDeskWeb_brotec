@@ -201,9 +201,9 @@ public class CustomFieldController extends AbstractManagedBean<CustomField> impl
 //    }
     public List<CasoCustomField> getCurrentCasoCustomFieldList(Caso caso) {
 
-//        System.out.println("getCurrentCasoCustomFieldList...");
-//        System.out.println("getTipoCaso:" + current.getTipoCaso());
-//        System.out.println("CustomFieldList:" + current.getTipoCaso().getCustomFieldList());
+//        //System.out.println("getCurrentCasoCustomFieldList...");
+//        //System.out.println("getTipoCaso:" + current.getTipoCaso());
+//        //System.out.println("CustomFieldList:" + current.getTipoCaso().getCustomFieldList());
         if (caso == null) {
             return null;
         }
@@ -242,7 +242,7 @@ public class CustomFieldController extends AbstractManagedBean<CustomField> impl
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, "error at getItemsSubEstadoCasoAvailableSelectOneCasoAbierto", ex);
         }
 
-//        System.out.println("return:" + caso.getCasoCustomFieldList());
+//        //System.out.println("return:" + caso.getCasoCustomFieldList());
         return caso.getCasoCustomFieldList();
     }
 

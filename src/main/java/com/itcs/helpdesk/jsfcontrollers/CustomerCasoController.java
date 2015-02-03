@@ -55,7 +55,7 @@ public class CustomerCasoController extends CasoController {
     }
 
     public void initializeEmbeddedForm(javax.faces.event.ComponentSystemEvent event) {
-        System.out.println("initializeEmbeddedForm()...");
+        //System.out.println("initializeEmbeddedForm()...");
         if (this.current == null) {
             prepareCreateCasoFromCustomer();
         }
@@ -200,7 +200,7 @@ public class CustomerCasoController extends CasoController {
             }
 
             setStepNewCasoIndex(getStepNewCasoIndex() + 1);
-            addInfoMessage("Su solicitud ha sido ingresada exitósamente. [#ref" + current.getIdCaso() + "]");
+            addInfoMessage("Su solicitud ha sido ingresada exitósamente. Un ejecutivo se contactará con usted. Número de caso:[#" + current.getIdCaso() + "]");
 
         } catch (RollbackFailureException ex) {
             addErrorMessage(resourceBundle.getString("PersistenceErrorOccured"), ex.getMessage());

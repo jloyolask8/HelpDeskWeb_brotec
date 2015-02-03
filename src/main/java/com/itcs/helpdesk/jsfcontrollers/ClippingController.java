@@ -244,9 +244,9 @@ public class ClippingController extends AbstractManagedBean<Clipping> implements
             }
             ClippingController controller = (ClippingController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "clippingController");
-            System.out.println("converting clipping id " + getKey(value).toString());
+            //System.out.println("converting clipping id " + getKey(value).toString());
             final Clipping clip = controller.getJpaController().getClippingJpaController().findClipping(getKey(value));
-            System.out.println("Found " + clip);
+            //System.out.println("Found " + clip);
             return clip;
         }
 

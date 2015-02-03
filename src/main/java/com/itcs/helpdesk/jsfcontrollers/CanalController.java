@@ -142,26 +142,26 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
     public void detectAutoConfig() {
         tmpEmailInfo = "intentando autodetectar configuración";
         RequestContext.getCurrentInstance().update("formAddEditEmail");
-        System.out.println(tmpEmailInfo);
+        //System.out.println(tmpEmailInfo);
         if (EmailAutoconfigClient.isValidEmail(tmpEmailCorreoElectronico)) {
             tmpEmailInfo = "buscando una configuración conocida";
             RequestContext.getCurrentInstance().update("formAddEditEmail");
-            System.out.println(tmpEmailInfo);
+            //System.out.println(tmpEmailInfo);
             if (EmailAutoconfigClient.existsAutoconfigSettings(tmpEmailCorreoElectronico)) {
                 tmpEmailInfo = "se ha encontrado una configuración conocida";
                 RequestContext.getCurrentInstance().update("formAddEditEmail");
-                System.out.println(tmpEmailInfo);
+                //System.out.println(tmpEmailInfo);
                 Map<String, String> settings;
                 if (EmailAutoconfigClient.isImapAvailable(tmpEmailCorreoElectronico)) {
                     settings = EmailAutoconfigClient.getIncommingServerSettings(tmpEmailCorreoElectronico, "imap");
-                    System.out.println("settings: " + settings);
+                    //System.out.println("settings: " + settings);
                     tmpEmailIncommingType = "IMAP";
                     tmpEmailIncommingHost = settings.get(EnumEmailSettingKeys.INBOUND_SERVER.getKey());
                     tmpEmailIncommingPort = settings.get(EnumEmailSettingKeys.INBOUND_PORT.getKey());
                     tmpEmailIncommingSsl = settings.get(EnumEmailSettingKeys.INBOUND_SSL_ENABLED.getKey()).equals("true") ? "SSL/TLS" : "NINGUNO";
                 } else if (EmailAutoconfigClient.isPop3Available(tmpEmailCorreoElectronico)) {
                     settings = EmailAutoconfigClient.getIncommingServerSettings(tmpEmailCorreoElectronico, "pop3");
-                    System.out.println("settings: " + settings);
+                    //System.out.println("settings: " + settings);
                     tmpEmailIncommingType = "POP3";
                     tmpEmailIncommingHost = settings.get(EnumEmailSettingKeys.INBOUND_SERVER.getKey());
                     tmpEmailIncommingPort = settings.get(EnumEmailSettingKeys.INBOUND_PORT.getKey());
@@ -191,7 +191,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         } else {
             tmpEmailInfo = "Correo no es válido";
             RequestContext.getCurrentInstance().update("formAddEditEmail");
-            System.out.println(tmpEmailCorreoElectronico + " mail not valid!!");
+            //System.out.println(tmpEmailCorreoElectronico + " mail not valid!!");
             return;
         }
         tmpEmailFirstStepReady = true;
@@ -242,6 +242,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         tmpEmailFinalizeReady = false;
         tmpEmailFirstStepReady = false;
         tmpEmailDownloadAttachments = true;
+        tmpEmailUnreadEmailDownloadLimit = ApplicationConfig.DEFAULT_UNREAD_DOWNLOAD_LIMIT;
         prepareCreate();
     }
 
@@ -377,7 +378,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
 
     public void update(Canal canal) {
         try {
-            System.out.println(canal + " canal estado:" + canal.getEnabled());
+            //System.out.println(canal + " canal estado:" + canal.getEnabled());
             getJpaController().mergeCanal(canal);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("CanalUpdated"));
         } catch (Exception e) {
@@ -502,7 +503,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
      * @param tmpEmailCorreoElectronico the tmpEmailCorreoElectronico to set
      */
     public void setTmpEmailCorreoElectronico(String tmpEmailCorreoElectronico) {
-        System.out.println("setTmpEmailCorreoElectronico:" + tmpEmailCorreoElectronico);
+        //System.out.println("setTmpEmailCorreoElectronico:" + tmpEmailCorreoElectronico);
         this.tmpEmailCorreoElectronico = tmpEmailCorreoElectronico;
     }
 
@@ -517,7 +518,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
      * @param tmpEmailContrasena the tmpEmailContrasena to set
      */
     public void setTmpEmailContrasena(String tmpEmailContrasena) {
-        System.out.println("setTmpEmailContrasena:" + tmpEmailContrasena);
+        //System.out.println("setTmpEmailContrasena:" + tmpEmailContrasena);
         this.tmpEmailContrasena = tmpEmailContrasena;
     }
 

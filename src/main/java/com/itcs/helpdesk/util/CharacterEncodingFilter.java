@@ -16,7 +16,7 @@ public class CharacterEncodingFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
-//        System.out.println("\n****** CharacterEncodingFilter.doFilter ****** \n");
+//        //System.out.println("\n****** CharacterEncodingFilter.doFilter ****** \n");
         req.setCharacterEncoding("UTF-8");
         resp.setCharacterEncoding("UTF-8");
         chain.doFilter(req, resp);
