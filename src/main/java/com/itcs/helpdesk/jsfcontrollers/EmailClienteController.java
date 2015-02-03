@@ -4,7 +4,9 @@ import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Cliente;
+import com.itcs.helpdesk.persistence.entities.Componente;
 import com.itcs.helpdesk.persistence.entities.EmailCliente;
+import com.itcs.helpdesk.persistence.entities.Producto;
 import com.itcs.helpdesk.persistence.entities.ProductoContratado;
 import com.itcs.helpdesk.persistence.entities.ProductoContratadoPK;
 import com.itcs.helpdesk.persistence.entities.SubComponente;
@@ -29,6 +31,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
+import javax.persistence.NoResultException;
 import jxl.CellReferenceHelper;
 import jxl.Sheet;
 import jxl.Workbook;
@@ -55,6 +58,12 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
     private String cellPositionDireccion1 = "";
     private String cellPositionFono1 = "";
     private String cellPositionFono2 = "";
+    private String cellPositionProduct = "";
+    private String cellPositionComponent = "";
+    private String cellPositionSubComponentName = "";
+    private String cellPositionSubComponentDesc = "";
+    private String initialRow = "1";
+
     private List<ProductoContratado> bulkLoadedProductoContratado;
     private String bulkLoadedProductoContratadoTipoAsoc;
     private List<Cliente> bulkLoadedClients;
@@ -265,7 +274,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
         if (c != null) {
             if (subComponent != null) {
                 ProductoContratadoPK productoContratadoPK = new ProductoContratadoPK(c.getIdCliente(),
-                        subComponent.getIdComponente().getIdProducto().getIdProducto(), 
+                        subComponent.getIdComponente().getIdProducto().getIdProducto(),
                         subComponent.getIdComponente().getIdComponente(), subComponent.getIdSubComponente());
 
                 try {
@@ -483,6 +492,211 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
 
     }
 
+    public void handleFileUploadCargaClienteFull(FileUploadEvent event) {
+
+        String email_regexp = "[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?";
+        Pattern p = Pattern.compile(email_regexp);
+
+//        fileClients = event.getFile();
+        if (fileClients != null) {
+
+            WorkbookSettings ws = new WorkbookSettings();
+            ws.setEncoding("Cp1252");
+
+            Workbook w;
+            try {
+                w = Workbook.getWorkbook(fileClients.getInputstream(), ws);
+                // Get the first sheet
+                Sheet sheet = w.getSheet(0);
+                // Loop over first 10 column and lines
+
+                String rut, nombres, apellidos, correo, sexo, direccion1, fono1,
+                        fono2, nombreProducto, idComponente, subComponentId,
+                        subComponentName, subComponentDesc;
+                int initialRowIndex = Integer.parseInt(initialRow);
+                for (int rowIndex = initialRowIndex; rowIndex < sheet.getRows(); rowIndex++) {
+
+                    //Lectura desde la planilla
+                    rut = readExcelCell(sheet, cellPositionRut, rowIndex);
+                    nombres = readExcelCell(sheet, cellPositionNombre, rowIndex);
+                    apellidos = readExcelCell(sheet, cellPositionApellidos, rowIndex);
+                    correo = readExcelCell(sheet, cellPositionCorreo, rowIndex);
+                    sexo = readExcelCell(sheet, cellPositionSexo, rowIndex);
+                    direccion1 = readExcelCell(sheet, cellPositionDireccion1, rowIndex);
+                    fono1 = readExcelCell(sheet, cellPositionFono1, rowIndex);
+                    fono2 = readExcelCell(sheet, cellPositionFono2, rowIndex);
+                    nombreProducto = readExcelCell(sheet, cellPositionProduct, rowIndex);
+                    idComponente = readExcelCell(sheet, cellPositionComponent, rowIndex);
+                    subComponentId = readExcelCell(sheet, cellPositionSubComponentId, rowIndex);
+                    subComponentName = readExcelCell(sheet, cellPositionSubComponentName, rowIndex);
+                    subComponentDesc = readExcelCell(sheet, cellPositionSubComponentDesc, rowIndex);
+
+                    //Pajas molidas
+                    String moreValidEmail = StringUtils.isEmpty(correo) ? "" : correo.toLowerCase().trim();
+                    String formattedRut = StringUtils.isEmpty(rut) ? "" : UtilesRut.formatear(rut);
+                    EmailCliente ec = null;
+                    if (!moreValidEmail.isEmpty()) {
+                        ec = new EmailCliente(moreValidEmail);
+                        if (!p.matcher(moreValidEmail).matches()) {
+                            ec = null;
+                        }
+                    }
+
+                    if (nombres.trim().isEmpty()) {
+                        continue;
+                    }
+
+                    Cliente cliente = null;
+                    if (UtilesRut.validar(rut)) {
+                        cliente = createClient(formattedRut, ec, apellidos, direccion1, nombres, sexo, fono1, fono2);
+                    } else {
+                        cliente = createClient(rut, ec, apellidos, direccion1, nombres, sexo, fono1, fono2);
+                    }
+
+                    if (ec != null) {
+                        if (getJpaController().getEmailClienteFindByEmail(ec.getEmailCliente()) == null) {
+                            getJpaController().persistCliente(cliente);
+                        }else{
+                            ec = getJpaController().getEmailClienteFindByEmail(ec.getEmailCliente());
+                            cliente = ec.getCliente();
+                        }
+                    }else{
+                        getJpaController().persistCliente(cliente);
+                    }
+
+                    //Se guarda el producto
+                    Producto producto = createProducto(nombreProducto);
+                    getJpaController().getProductoJpaController().createOrMerge(producto);
+
+                    //Si no existe el componente se agrega
+                    Componente componente = createComponente(producto, idComponente);
+                    if (getJpaController().getComponenteFindByIdComponente(idComponente) == null) {
+                        getJpaController().getComponenteJpaController().create(componente);
+                    }
+
+                    SubComponente subComponente = createSubcomponente(subComponentId, subComponentName, subComponentDesc, componente);
+
+                    if (getJpaController().getSubComponenteFindByIdSubComponente(subComponentId) == null) {
+                        getJpaController().getSubComponenteJpaController().create(subComponente);
+                    }
+
+                    ProductoContratadoPK productoContratadoPK = new ProductoContratadoPK(cliente.getIdCliente(),
+                            subComponente.getIdComponente().getIdProducto().getIdProducto(),
+                            subComponente.getIdComponente().getIdComponente(), subComponente.getIdSubComponente());
+
+                    ProductoContratado productoContratado = getJpaController().find(ProductoContratado.class, productoContratadoPK);
+                    if (productoContratado == null) {
+                        productoContratado = new ProductoContratado(productoContratadoPK);
+                        productoContratado.setCliente(cliente);
+                        productoContratado.setTipoAsociacion("Propietario");
+                        getJpaController().persist(productoContratado);
+                    }
+
+                }
+                addInfoMessage("Archivo " + fileClients.getFileName() + "cargado exitósamente");
+            } catch (Exception e) {
+                addErrorMessage(e.getMessage());
+                Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "handleFileUploadClienteProd", e);
+            }
+        } else {
+            FacesMessage msg = new FacesMessage("Error al subir el archivo, intente nuevamente");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        }
+
+    }
+
+    private SubComponente createSubcomponente(String subComponentId, String subComponentName, String subComponentDesc, Componente componente) {
+        SubComponente subComponente = new SubComponente(subComponentId);
+        subComponente.setNombre(subComponentName);
+        subComponente.setDescripcion(subComponentDesc);
+        subComponente.setIdComponente(componente);
+        return subComponente;
+    }
+
+    private Producto createProducto(String nombreProducto) throws Exception {
+
+        if ((StringUtils.isEmpty(nombreProducto))) {
+            return null;
+        }
+        Producto producto;
+        try {
+            producto = getJpaController().getProductoFindByNombre(nombreProducto);
+            if (producto != null) {
+                return producto;
+            } else {
+                producto = new Producto(nombreProducto);
+                producto.setNombre(nombreProducto);
+            }
+        } catch (NoResultException nr) {
+            producto = new Producto(nombreProducto);
+            producto.setNombre(nombreProducto);
+        }
+        return producto;
+    }
+
+    private Componente createComponente(Producto producto, String idComponente) {
+        if (StringUtils.isEmpty(idComponente)) {
+            return null;
+        }
+        Componente componente = new Componente(idComponente);
+        componente.setIdProducto(producto);
+        componente.setNombre(idComponente);
+        return componente;
+    }
+
+    private String readExcelCell(Sheet sheet, String column, int rowIndex) {
+        String value = "";
+        try {
+            value = sheet.getCell(CellReferenceHelper.getColumn(column), rowIndex).getContents();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        return value;
+    }
+
+    private Cliente createClient(String rut, EmailCliente ec, String apellidos, String direccion1, String nombres, String sexo, String fono1, String fono2) {
+        Cliente cl = new Cliente();
+        if (ec == null) {
+            cl.setApellidos(apellidos);
+            cl.setFono1(fono1);
+            cl.setFono2(fono2);
+            cl.setDirParticular(direccion1);
+            cl.setNombres(nombres);
+            cl.setRut(rut);
+            if (sexo != null && (sexo.equalsIgnoreCase("Hombre") || sexo.equalsIgnoreCase("Mujer"))) {
+                cl.setSexo(sexo);
+            } else if (sexo != null && (sexo.equalsIgnoreCase("M") || sexo.equalsIgnoreCase("F"))) {
+                cl.setSexo(sexo.equalsIgnoreCase("M") ? "Hombre" : "Mujer");
+            } else if (sexo != null && (sexo.equalsIgnoreCase("MASCULINO") || sexo.equalsIgnoreCase("FEMENINO"))) {
+                cl.setSexo(sexo.equalsIgnoreCase("MASCULINO") ? "Hombre" : "Mujer");
+            } else {
+                cl.setSexo("Desconocido");
+            }
+            return cl;
+        } else {
+            cl.setApellidos(apellidos);
+            cl.setFono1(fono1);
+            cl.setFono2(fono2);
+            cl.setDirParticular(direccion1);
+            cl.setNombres(nombres);
+            cl.setRut(rut);
+            if (sexo != null && (sexo.equalsIgnoreCase("Hombre") || sexo.equalsIgnoreCase("Mujer"))) {
+                cl.setSexo(sexo);
+            } else if (sexo != null && (sexo.equalsIgnoreCase("M") || sexo.equalsIgnoreCase("F"))) {
+                cl.setSexo(sexo.equalsIgnoreCase("M") ? "Hombre" : "Mujer");
+            } else if (sexo != null && (sexo.equalsIgnoreCase("MASCULINO") || sexo.equalsIgnoreCase("FEMENINO"))) {
+                cl.setSexo(sexo.equalsIgnoreCase("MASCULINO") ? "Hombre" : "Mujer");
+            } else {
+                cl.setSexo("Desconocido");
+            }
+            ec.setCliente(cl);
+            List<EmailCliente> emails = new ArrayList<>();
+            emails.add(ec);
+            cl.setEmailClienteList(emails);
+            return cl;
+        }
+    }
+
     public void onBlurRutInput() {
 //        System.out.println("formatea");
         String rutFormateado = UtilesRut.formatear(getSelected().getCliente().getRut());
@@ -606,7 +820,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
         current = new EmailCliente();
         current.setCliente(new Cliente());
         setCanCreate(false);
-        selectedItemIndex = -1;
+        setSelectedItemIndex(-1);
         return "/script/emailCliente/Create";
     }
 
@@ -721,7 +935,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
         performDestroy();
         recreateModel();
         updateCurrentItem();
-        if (selectedItemIndex >= 0) {
+        if (getSelectedItemIndex() >= 0) {
             return "/script/emailCliente/View";
         } else {
             // all items were removed - go back to list
@@ -741,16 +955,16 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
 
     private void updateCurrentItem() {
         int count = getJpaController().count(EmailCliente.class).intValue();
-        if (selectedItemIndex >= count) {
+        if (getSelectedItemIndex() >= count) {
             // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
+            setSelectedItemIndex(count - 1);
             // go to previous page if last page disappeared:
             if (pagination.getPageFirstItem() >= count) {
                 pagination.previousPage();
             }
         }
-        if (selectedItemIndex >= 0) {
-            current = (EmailCliente) getJpaController().queryByRange(EmailCliente.class, 1, selectedItemIndex).get(0);
+        if (getSelectedItemIndex() >= 0) {
+            current = (EmailCliente) getJpaController().queryByRange(EmailCliente.class, 1, getSelectedItemIndex()).get(0);
         }
     }
 
@@ -1057,6 +1271,92 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
      */
     public void setCellPositionFono2(String cellPositionFono2) {
         this.cellPositionFono2 = cellPositionFono2;
+    }
+
+    /**
+     * @return the selectedItemIndex
+     */
+    public int getSelectedItemIndex() {
+        return selectedItemIndex;
+    }
+
+    /**
+     * @param selectedItemIndex the selectedItemIndex to set
+     */
+    public void setSelectedItemIndex(int selectedItemIndex) {
+        this.selectedItemIndex = selectedItemIndex;
+    }
+
+    /**
+     * @return the cellPositionProduct
+     */
+    public String getCellPositionProduct() {
+        return cellPositionProduct;
+    }
+
+    /**
+     * @param cellPositionProduct the cellPositionProduct to set
+     */
+    public void setCellPositionProduct(String cellPositionProduct) {
+        this.cellPositionProduct = cellPositionProduct;
+    }
+
+    /**
+     * @return the cellPositionComponent
+     */
+    public String getCellPositionComponent() {
+        return cellPositionComponent;
+    }
+
+    /**
+     * @param cellPositionComponent the cellPositionComponent to set
+     */
+    public void setCellPositionComponent(String cellPositionComponent) {
+        this.cellPositionComponent = cellPositionComponent;
+    }
+
+    /**
+     * @return the cellPositionSubComponentName
+     */
+    public String getCellPositionSubComponentName() {
+        return cellPositionSubComponentName;
+    }
+
+    /**
+     * @param cellPositionSubComponentName the cellPositionSubComponentName to
+     * set
+     */
+    public void setCellPositionSubComponentName(String cellPositionSubComponentName) {
+        this.cellPositionSubComponentName = cellPositionSubComponentName;
+    }
+
+    /**
+     * @return the cellPositionSubComponentDesc
+     */
+    public String getCellPositionSubComponentDesc() {
+        return cellPositionSubComponentDesc;
+    }
+
+    /**
+     * @param cellPositionSubComponentDesc the cellPositionSubComponentDesc to
+     * set
+     */
+    public void setCellPositionSubComponentDesc(String cellPositionSubComponentDesc) {
+        this.cellPositionSubComponentDesc = cellPositionSubComponentDesc;
+    }
+
+    /**
+     * @return the initialRow
+     */
+    public String getInitialRow() {
+        return initialRow;
+    }
+
+    /**
+     * @param initialRow the initialRow to set
+     */
+    public void setInitialRow(String initialRow) {
+        this.initialRow = initialRow;
     }
 
     @FacesConverter(forClass = EmailCliente.class)
