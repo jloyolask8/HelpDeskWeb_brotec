@@ -152,7 +152,7 @@ public class RulesEngine implements CasoChangeListener {
         if (!rulesThatApply.isEmpty()) {
             try {
                 AuditLog auditLog = ManagerCasos.createLogComment(caso, "Reglas aplicadas en la modificación del caso: " + rulesThatApply.toString());
-                getJpaController().persistAuditLog(auditLog);
+                getJpaController().persist(auditLog);
             } catch (Exception ex) {
                 Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "RulesEngine.casoChanged", ex);
             }
