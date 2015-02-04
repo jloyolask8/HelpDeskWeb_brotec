@@ -132,6 +132,7 @@ public class CustomerCasoController extends CasoController {
                 EmailCliente email = new EmailCliente();
                 email.setCliente(new Cliente());
                 current.setEmailCliente(email);
+                current.setIdCliente(email.getCliente());
                 emailCliente_wizard_existeEmail = false;
                 emailCliente_wizard = null;
             }

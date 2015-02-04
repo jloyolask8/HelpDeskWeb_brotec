@@ -80,7 +80,7 @@
 
                                     <div class="col-sm-10">
                                         <h:inputText id="emailCliente" value="#{casoCustomerController.emailCliente_wizard}" validator="#{inputValidationBean.validarEmail}"
-                                                     styleClass="form-control"
+                                                     styleClass="form-control" maxlength="80"
                                                      required="true" requiredMessage="Un Email Válido de cliente es requerido para identificar al cliente del caso.">                                        
                                             <pe:keyFilter mask="email"/>
                                         </h:inputText>

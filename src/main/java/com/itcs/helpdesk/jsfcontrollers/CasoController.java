@@ -953,6 +953,10 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     protected void persist(Caso newCaso) throws PreexistingEntityException, RollbackFailureException, Exception {
+
+        List<Attachment> attachmentList = current.getAttachmentList();
+        current.setAttachmentList(null);
+
         if (newCaso.getFechaCreacion() == null) {
             newCaso.setFechaCreacion(new Date());
         }
@@ -986,6 +990,20 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             casoPadre.getCasosHijosList().add(newCaso);
             getManagerCasos().mergeCaso(casoPadre, ManagerCasos.createLogReg(casoPadre, "Nuevo subCaso", newCaso.getIdCaso().toString(), ""));
         }
+
+        if (attachmentList != null) {
+            for (Attachment attachment : attachmentList) {
+                getManagerCasos().crearAdjunto(
+                        attachment.getArchivo().getArchivo(), null,
+                        this.current, attachment.getNombreArchivo(),
+                        attachment.getMimeType(),
+                        attachment.getArchivo().getFileSize());
+                JsfUtil.addSuccessMessage("Archivo " + attachment.getNombreArchivo() + " subido con exito");
+            }
+
+            getJpaController().merge(this.current);
+        }
+
 //        getManagerCasos().agendarAlertas(newCaso);
         HelpDeskScheluder.scheduleAlertaPorVencer(getUserSessionBean().getTenantId(), newCaso.getIdCaso(), ManagerCasos.calculaCuandoPasaAPorVencer(newCaso));
         JsfUtil.addSuccessMessage("El Caso " + newCaso.getIdCaso() + " ha sido creado con éxito.");
@@ -1662,22 +1680,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public String createAndView() {
         try {
             //System.out.println("CURRENT TEST ATACHMENT BEFORE:" + this.current.getAttachmentList());
-            List<Attachment> attachmentList = current.getAttachmentList();
-            current.setAttachmentList(null);
             persist(current);
-            if (attachmentList != null) {
-                for (Attachment attachment : attachmentList) {
-                    getManagerCasos().crearAdjunto(
-                            attachment.getArchivo().getArchivo(), null,
-                            this.current, attachment.getNombreArchivo(),
-                            attachment.getMimeType(),
-                            attachment.getArchivo().getFileSize());
-                    JsfUtil.addSuccessMessage("Archivo " + attachment.getNombreArchivo() + " subido con exito");
-                }
-
-                getJpaController().merge(this.current);
-            }
-
             return "/script/caso/Edit";
         } catch (PreexistingEntityException e) {
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
