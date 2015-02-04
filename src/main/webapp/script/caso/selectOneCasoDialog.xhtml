@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Seleccione un caso</title>
+        <style type="text/css">
+             .ui-widget {
+                    font-size: 12px !important;
+                }
+        </style>
+    </h:head>
+
+    <h:body>
+        <h:form id="form">
+
+            <p:scrollPanel id="scroll" mode="native" style="height: 300px;border-color: window;border: 0;">
+                <h:panelGrid columns="4">
+                    <c:forEach items="#{casoController.selected.casosRelacionadosList}" var="item" >
+                         <h:outputText value=" #{item.clientName}"/>
+                         
+                            <h:outputText styleClass="ticket-status" 
+                                          style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};" value="#{item.idSubEstado.nombre}"
+                                          />
+                            <h:outputText value=" #{item.tipoCaso.nombre} N°#{item.idCaso} - #{item.tema}"/>
+
+                        <p:commandButton icon="ui-icon-search"
+                                         actionListener="#{casoController.selectEntityFromDialog(item)}" 
+                                         disabled="#{empty casoController.selected.casosRelacionadosList}"
+                                          />
+
+                    </c:forEach>
+                </h:panelGrid>
+            </p:scrollPanel>
+
+        </h:form>
+    </h:body>
+
+</html>

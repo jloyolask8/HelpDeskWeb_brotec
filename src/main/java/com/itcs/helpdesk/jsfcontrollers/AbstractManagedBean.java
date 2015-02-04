@@ -93,6 +93,11 @@ public abstract class AbstractManagedBean<E> implements Serializable {
 
     protected String backOutcome;
 
+    
+    public void selectEntityFromDialog(E o) {
+        RequestContext.getCurrentInstance().closeDialog(o);
+    }
+    
     public String goBack() {
         if (this.backOutcome == null) {
             recreateModel();

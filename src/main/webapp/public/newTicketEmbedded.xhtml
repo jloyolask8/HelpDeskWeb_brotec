@@ -101,6 +101,7 @@
                 <h:panelGroup layout="block" styleClass="form-group" rendered="#{casoCustomerController.stepNewCasoIndex eq 1}">
                     <label for="emailCliente">Su Email:</label>
                     <h:inputText id="emailCliente" value="#{casoCustomerController.emailCliente_wizard}" 
+                                 maxlength="80"
                                  validator="#{inputValidationBean.validarEmail}"
                                  styleClass="form-control"
                                  required="true" requiredMessage="Un Email Válido de cliente es requerido para identificar al cliente del caso.">                                        
@@ -241,12 +242,11 @@
                                       mode="advanced"
                                       dragDropSupport="true"
                                       auto="true"
-                                      update=" listaadjuntos fileupload"
+                                      update=" atachments fileupload"
                                       multiple="true"  />
 
-                        <h:panelGroup id="listaadjuntos" layout="block" rendered="#{not empty casoCustomerController.selected.attachmentList}">
-
                             <p:dataTable var="fileitem" value="#{casoCustomerController.selected.attachmentList}" 
+                                         rendered="#{not empty casoCustomerController.selected.attachmentList}"
                                          emptyMessage="No hay archivos adjuntos.">
 
                                 <p:column headerText="Nombre Archivo">
@@ -254,12 +254,11 @@
                                 </p:column>
 
                                 <p:column headerText="">
-                                    <p:commandButton icon="ui-icon-close" update=":form:listaadjuntos">
+                                    <p:commandButton icon="ui-icon-close" update=":form">
                                         <p:collector unique="true" removeFrom="#{casoCustomerController.selected.attachmentList}"  value="#{fileitem}"/>
                                     </p:commandButton>
                                 </p:column>
                             </p:dataTable> 
-                        </h:panelGroup>
 
                     </p:panel>
 
