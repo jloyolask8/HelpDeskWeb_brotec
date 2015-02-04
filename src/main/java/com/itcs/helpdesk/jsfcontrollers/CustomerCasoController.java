@@ -33,7 +33,7 @@ public class CustomerCasoController extends CasoController {
     //customer
     private int stepNewCasoIndex;
     private boolean embeddedFlag = false;
-     private boolean showAttachmentsFlag = false;
+    private boolean showAttachmentsFlag = false;
 
     @Override
     protected String getListPage() {
@@ -49,8 +49,8 @@ public class CustomerCasoController extends CasoController {
     protected String getViewPage() {
         return getEditPage();
     }
-    
-    public void toggleShowAttachments(){
+
+    public void toggleShowAttachments() {
         showAttachmentsFlag = !showAttachmentsFlag;
     }
 
@@ -111,6 +111,7 @@ public class CustomerCasoController extends CasoController {
                 EmailCliente email = new EmailCliente();
                 email.setCliente(new Cliente());
                 current.setEmailCliente(email);
+                current.setIdCliente(email.getCliente());
                 emailCliente_wizard_existeEmail = false;
                 emailCliente_wizard = null;
             }
@@ -187,11 +188,13 @@ public class CustomerCasoController extends CasoController {
 
             if (embeddedFlag) {
                 current.setIdCanal(EnumCanal.GODESK_CUSTOMER_PORTAL_EMBEDDED_FORM.getCanal());
-                getManagerCasos().persistCaso(current, ManagerCasos.createLogReg(current, "Crear", "se crea caso desde fomulario embebido en sitio web.", ""));
+                persist(current);
+//                getManagerCasos().persistCaso(current, ManagerCasos.createLogReg(current, "Crear", "se crea caso desde fomulario embebido en sitio web.", ""));
 
             } else {
                 current.setIdCanal(EnumCanal.GODESK_CUSTOMER_PORTAL.getCanal());
-                getManagerCasos().persistCaso(current, ManagerCasos.createLogReg(current, "Crear", "se crea caso desde portal del consumidor godesk web.", ""));
+                persist(current);
+//                getManagerCasos().persistCaso(current, ManagerCasos.createLogReg(current, "Crear", "se crea caso desde portal del consumidor godesk web.", ""));
                 openCase(current);
                 //Auto-Login customer
                 userSessionBean.setEmailCliente(current.getEmailCliente());
