@@ -119,7 +119,7 @@
                                     <h:panelGrid>
                                         <p:inputText id="rut" value="#{casoController.rutCliente_wizard}"  
                                                      title="#{bundle.CreateClienteTitle_rut}" validator="#{inputValidationBean.validarRut}"
-                                                     required="true" requiredMessage="El RUT es un dato requerido.">
+                                                     >
                                             <p:ajax event="blur" listener="#{casoController.formateaRutFiltro2}" partialSubmit="true" process="rut" update=":form:panelDatosCliente"/>
                                         </p:inputText>
                                         <p:outputLabel value="Con puntos y guión. Ejemplo: 15.040.452-5"/>
