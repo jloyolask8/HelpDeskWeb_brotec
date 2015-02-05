@@ -181,8 +181,10 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //    private Integer progresoEnvioRespuesta;
     private ReglaTrigger reglaTriggerSelected;
     protected String emailCliente_wizard;
+    private String tipoAsoc_wizard;
     private SubComponente subComponente_wizard;
     private Cliente cliente_wizard;
+    private ProductoContratado pcWizard;
     protected String rutCliente_wizard;
     protected boolean emailCliente_wizard_existeEmail = false;
     protected boolean emailCliente_wizard_existeCliente = false;
@@ -826,59 +828,73 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     }
 
+    public void handleEmailChange() {
+        handleEmailSelect(null);
+    }
+
     public void handleEmailSelect(SelectEvent event) {
 
-//        EmailCliente emailCliente = getJpaController().getEmailClienteFindByEmail(event.getObject().toString());
-        EmailCliente emailCliente = getJpaController().getEmailClienteFindByEmail(getEmailCliente_wizard());
+        if (!StringUtils.isEmpty(getEmailCliente_wizard())) {
+            //        EmailCliente emailCliente = getJpaController().getEmailClienteFindByEmail(event.getObject().toString());
+            EmailCliente emailCliente = getJpaController().getEmailClienteFindByEmail(getEmailCliente_wizard());
 
 //        ////System.out.println("emailCliente_wizard:" + emailCliente_wizard);
 //        ////System.out.println("event.getObject().toString():" + event.getObject().toString());
-        if (emailCliente != null) {
+            if (emailCliente != null) {
 
-            current.setEmailCliente(emailCliente);
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Email cliente registrado.", null);
-            FacesContext.getCurrentInstance().addMessage("form:emailCliente", message);
-            setEmailCliente_wizard_existeEmail(true);
-            if (emailCliente.getCliente() != null) {
-                getSelected().setIdCliente(emailCliente.getCliente());
-                rutCliente_wizard = emailCliente.getCliente().getRut();
-                setEmailCliente_wizard_existeCliente(true);
-            } else {
-                setEmailCliente_wizard_existeCliente(false);
-                Cliente cliente = new Cliente();
-                //cliente.setRut(rutCliente_wizard);
-                emailCliente.setCliente(cliente);
-            }
-        } else {
-
-            setEmailCliente_wizard_existeEmail(false);
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "Email " + emailCliente_wizard + " no registrado, favor ingresar los datos del cliente.", null);
-            FacesContext.getCurrentInstance().addMessage("form:emailCliente", message);
-
-            emailCliente = new EmailCliente(getEmailCliente_wizard());
-            if (rutCliente_wizard != null) {
-                //user already entered rut, so its posible there is a cliente selected.
-                //if i change the email, to an email that is not in database, it means i want to add a new email to an existent client.
-                Cliente existentClient = getJpaController().getClienteJpaController().findByRut(rutCliente_wizard);
-                if (existentClient == null) {
-                    //not exists
-                    Cliente cliente = new Cliente();
-                    cliente.setRut(rutCliente_wizard);
-                    emailCliente.setCliente(cliente);
-                    setEmailCliente_wizard_existeCliente(false);
-                } else {
-                    //yes, it exists...
-                    emailCliente.setCliente(existentClient);
+                current.setEmailCliente(emailCliente);
+                FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Email cliente registrado.", null);
+                FacesContext.getCurrentInstance().addMessage("form:emailCliente", message);
+                setEmailCliente_wizard_existeEmail(true);
+                if (emailCliente.getCliente() != null) {
+                    getSelected().setIdCliente(emailCliente.getCliente());
+                    rutCliente_wizard = emailCliente.getCliente().getRut();
                     setEmailCliente_wizard_existeCliente(true);
+                } else {
+                    setEmailCliente_wizard_existeCliente(false);
+                    Cliente cliente = new Cliente();
+                    //cliente.setRut(rutCliente_wizard);
+                    emailCliente.setCliente(cliente);
                 }
             } else {
-                setEmailCliente_wizard_existeCliente(false);
-                emailCliente.setCliente(new Cliente());
-            }
 
-            current.setEmailCliente(emailCliente);
+                setEmailCliente_wizard_existeEmail(false);
+                FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "Email " + emailCliente_wizard + " no registrado, favor ingresar los datos del cliente.", null);
+                FacesContext.getCurrentInstance().addMessage("form:emailCliente", message);
+
+                emailCliente = new EmailCliente(getEmailCliente_wizard());
+                if (rutCliente_wizard != null) {
+                    //user already entered rut, so its posible there is a cliente selected.
+                    //if i change the email, to an email that is not in database, it means i want to add a new email to an existent client.
+                    Cliente existentClient = getJpaController().getClienteJpaController().findByRut(rutCliente_wizard);
+                    if (existentClient == null) {
+                        //not exists
+                        Cliente cliente = new Cliente();
+                        cliente.setRut(rutCliente_wizard);
+                        emailCliente.setCliente(cliente);
+                        setEmailCliente_wizard_existeCliente(false);
+                    } else {
+                        //yes, it exists...
+                        emailCliente.setCliente(existentClient);
+                        setEmailCliente_wizard_existeCliente(true);
+                    }
+                } else {
+                    setEmailCliente_wizard_existeCliente(false);
+                    emailCliente.setCliente(new Cliente());
+                }
+
+                current.setEmailCliente(emailCliente);
+            }
+            // getSelected().setEmailCliente(emailCliente);
+        } else {
+            //selected null (other email blank!!)
+            current.setEmailCliente(null);
+//            current.setIdCliente(new Cliente());
+            setEmailCliente_wizard(null);
+            setEmailCliente_wizard_existeCliente(false);
+            setEmailCliente_wizard_existeEmail(false);
         }
-        // getSelected().setEmailCliente(emailCliente);
+
     }
 
     public void formateaRutFiltro2() {
@@ -940,13 +956,14 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public void handleNewTicketClientSelectionChange() {
-        final Cliente c = getCliente_wizard();
+        final ProductoContratado c = getPcWizard();
         if (c != null) {
+            this.setTipoAsoc_wizard(c.getTipoAsociacion());
             setEmailCliente_wizard_existeCliente(true);
-            rutCliente_wizard = c.getRut();
-            current.setIdCliente(c);
-            if (c.getEmailClienteList() != null && !c.getEmailClienteList().isEmpty()) {
-                EmailCliente emailCliente = c.getEmailClienteList().get(0);
+            rutCliente_wizard = c.getCliente().getRut();
+            current.setIdCliente(c.getCliente());
+            if (c.getCliente().getEmailClienteList() != null && !c.getCliente().getEmailClienteList().isEmpty()) {
+                EmailCliente emailCliente = c.getCliente().getEmailClienteList().get(0);
                 current.setEmailCliente(emailCliente);
                 emailCliente_wizard = emailCliente.getEmailCliente();
                 setEmailCliente_wizard_existeEmail(true);
@@ -955,7 +972,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 setEmailCliente_wizard_existeEmail(false);
             }
         } else {
-            current.setIdCliente(null);
+            current.setIdCliente(new Cliente());
             current.setEmailCliente(null);
             rutCliente_wizard = null;
             emailCliente_wizard = null;
@@ -966,7 +983,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     public void handleSubCompChange() {
         //System.out.println("handleSubCompChange...");
-        getSelected().setIdSubComponente(getJpaController().find(SubComponente.class, getSelected().getIdSubComponente().getIdSubComponente(), true));
+        if (getSelected().getIdSubComponente() != null) {
+            getSelected().setIdSubComponente(getJpaController().find(SubComponente.class, getSelected().getIdSubComponente().getIdSubComponente(), true));
+        }
     }
 
     protected void persist(Caso newCaso) throws PreexistingEntityException, RollbackFailureException, Exception {
@@ -992,8 +1011,10 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         newCaso.setEstadoAlerta(EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta());
 
         if (emailCliente_wizard_updateCliente && emailCliente_wizard_existeCliente) {
+            addProdContratadoToClient(newCaso.getEmailCliente().getCliente());
             getJpaController().merge(newCaso.getEmailCliente().getCliente());
         } else if (!emailCliente_wizard_existeCliente) {
+            addProdContratadoToClient(newCaso.getIdCliente());
             getJpaController().persist(newCaso.getIdCliente());
         }
 
@@ -1026,6 +1047,29 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         JsfUtil.addSuccessMessage("El Caso " + newCaso.getIdCaso() + " ha sido creado con éxito.");
 
+    }
+
+    private void addProdContratadoToClient(Cliente c) {
+        if (pcWizard == null && !StringUtils.isEmpty(tipoAsoc_wizard) && current.getIdSubComponente() != null) {
+            ProductoContratado pc = new ProductoContratado(c.getIdCliente(),
+                    current.getIdProducto().getIdProducto(), current.getIdComponente().getIdComponente(), current.getIdSubComponente().getIdSubComponente());
+            pc.setCliente(c);
+            pc.setComponente(current.getIdComponente());
+            pc.setProducto(current.getIdProducto());
+            pc.setSubComponente(current.getIdSubComponente());
+            pc.setTipoAsociacion(tipoAsoc_wizard);
+
+            if (c.getProductoContratadoList() == null) {
+                c.setProductoContratadoList(new ArrayList<ProductoContratado>());
+            }
+            c.getProductoContratadoList().add(pc);
+        } else {
+            if (pcWizard != null) {
+                if (c.getProductoContratadoList().contains(pcWizard)) {
+                    c.getProductoContratadoList().get(c.getProductoContratadoList().indexOf(pcWizard)).setTipoAsociacion(tipoAsoc_wizard);
+                }
+            }
+        }
     }
 
     public void verifyGoToCaso() {
@@ -1525,6 +1569,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             emailCliente_wizard_existeCliente = false;
             emailCliente_wizard_updateCliente = false;
             emailCliente_wizard = null;
+            tipoAsoc_wizard = null;
             rutCliente_wizard = null;
             selectedItemIndex = -1;
         } catch (Exception e) {
@@ -1562,6 +1607,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             emailCliente_wizard_existeCliente = false;
             emailCliente_wizard_updateCliente = false;
             emailCliente_wizard = null;
+            tipoAsoc_wizard = null;
             rutCliente_wizard = null;
             selectedItemIndex = -1;
         } catch (Exception e) {
@@ -1598,6 +1644,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             emailCliente_wizard_existeCliente = false;
             emailCliente_wizard_updateCliente = false;
             emailCliente_wizard = null;
+            tipoAsoc_wizard = null;
             rutCliente_wizard = null;
             selectedItemIndex = -1;
         } catch (Exception e) {
@@ -4582,6 +4629,34 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      */
     public void setCliente_wizard(Cliente cliente_wizard) {
         this.cliente_wizard = cliente_wizard;
+    }
+
+    /**
+     * @return the tipoAsoc_wizard
+     */
+    public String getTipoAsoc_wizard() {
+        return tipoAsoc_wizard;
+    }
+
+    /**
+     * @param tipoAsoc_wizard the tipoAsoc_wizard to set
+     */
+    public void setTipoAsoc_wizard(String tipoAsoc_wizard) {
+        this.tipoAsoc_wizard = tipoAsoc_wizard;
+    }
+
+    /**
+     * @return the pcWizard
+     */
+    public ProductoContratado getPcWizard() {
+        return pcWizard;
+    }
+
+    /**
+     * @param pcWizard the pcWizard to set
+     */
+    public void setPcWizard(ProductoContratado pcWizard) {
+        this.pcWizard = pcWizard;
     }
 
     @FacesConverter(forClass = Caso.class)

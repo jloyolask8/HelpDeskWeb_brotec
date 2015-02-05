@@ -80,27 +80,45 @@
                                 <h:outputLabel value="Seleccione un cliente:" for="cliente" style="font-weight: bold"
                                                rendered="#{not empty casoController.selected.idSubComponente}"/>
 
-                                <p:selectOneMenu id="cliente" value="#{casoController.cliente_wizard}" filter="true" filterMatchMode="contains"
+                                <p:selectOneMenu id="cliente" value="#{casoController.pcWizard}" filter="true" filterMatchMode="contains"
                                                  rendered="#{not empty casoController.selected.idSubComponente}" >
 
-                                    <f:selectItem itemLabel="Otro ..." itemValue=""/>
+                                    <f:selectItem itemLabel="Nuevo..." itemValue=""/>
 
                                     <f:selectItems value="#{casoController.selected.idSubComponente.productoContratadoList}" 
                                                    var="pc" itemLabel="#{pc.cliente.capitalName} (#{pc.tipoAsociacion ne null ? pc.tipoAsociacion:''})" 
-                                                   itemValue="#{pc.cliente}"/>
+                                                   itemValue="#{pc}"/>
 
                                     <p:ajax update=":form:panelDatosCliente"  listener="#{casoController.handleNewTicketClientSelectionChange}" />
                                 </p:selectOneMenu>
                                 <p:message for="cliente" rendered="#{not empty casoController.selected.idSubComponente}"/>
 
 
+                                <h:outputLabel value="Tipo de relacion:" for="tipoAsoc" style="font-weight: bold"
+                                               rendered="#{not empty casoController.selected.idSubComponente}"/>
+
+                                <h:panelGrid rendered="#{not empty casoController.selected.idSubComponente}">
+                                    <p:selectOneMenu id="tipoAsoc" value="#{casoController.tipoAsoc_wizard}" effect="fold" editable="true"
+                                                     disabled="#{casoController.pcWizard.tipoAsociacion ne null}"
+                                                     required="true" requiredMessage="Favor ingrese que relacion tiene el cliente con #{casoController.selected.idSubComponente.nombre}"
+                                                     >
+                                        <f:selectItem itemLabel="Seleccione relacion..." itemValue="" />
+                                        <f:selectItem itemLabel="Propietario" itemValue="Propietario" />
+                                        <f:selectItem itemLabel="Familiar" itemValue="Familiar" />
+                                    </p:selectOneMenu>
+                                    <p:outputLabel value="Tipo de relación entre #{casoController.pcWizard eq null?'el cliente':casoController.pcWizard.cliente}  y #{casoController.selected.idSubComponente.nombre}"/>
+                                </h:panelGrid>
+
+                                <p:message for="tipoAsoc" rendered="#{not empty casoController.selected.idSubComponente}"/>
+
 
                                 <p:outputLabel value="#{bundle.EditCasoLabel_emailCliente}" for="emailCliente" style="font-weight:bold"/>
 
-                                <p:selectOneMenu id="emailCliente_s" value="#{casoController.selected.emailCliente}"
+                                <p:selectOneMenu id="emailCliente_s" value="#{casoController.emailCliente_wizard}" var="opt"
                                                  rendered="#{casoController.selected.idCliente ne null and casoController.emailCliente_wizard_existeCliente}">
-                                    <f:selectItems value="#{casoController.selected.idCliente.emailClienteList}"/>
-                                    <p:ajax update=":form:panelDatosCliente" />
+                                  <f:selectItem itemLabel="Nuevo..." itemValue=""/>
+                                  <f:selectItems value="#{casoController.selected.idCliente.emailClienteList}" itemLabel="#{opt.emailCliente}" itemValue="#{opt.emailCliente}"/>
+                                    <p:ajax update=":form:panelDatosCliente"  listener="#{casoController.handleEmailChange}"/>
                                 </p:selectOneMenu>
 
                                 <p:autoComplete id="emailCliente" value="#{casoController.emailCliente_wizard}" 
@@ -169,7 +187,10 @@
 
                                 <p:selectBooleanCheckbox id="updateClient" style="float: right;"
                                                          value="#{casoController.emailCliente_wizard_updateCliente}" rendered="#{casoController.emailCliente_wizard_existeCliente}"/>
-                                <p:outputLabel value="Deseo Actualizar los datos del Cliente:" for="updateClient" style="font-weight:bold" rendered="#{casoController.emailCliente_wizard_existeCliente}"/>
+                                <p:outputLabel value="Deseo Actualizar los datos del Cliente" 
+                                               title="Seleccione esta opción si desea actualizar los datos ingresados en el cliente, incluida la relación con el producto seleccionado."
+                                               for="updateClient" style="font-weight:bold" 
+                                               rendered="#{casoController.emailCliente_wizard_existeCliente}"/>
                                 <p:message display="both" for="updateClient" rendered="#{casoController.emailCliente_wizard_existeCliente}"/>
 
 
