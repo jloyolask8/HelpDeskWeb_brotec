@@ -98,16 +98,16 @@
 
                                     <p:menuButton value="Agregar canal">
                                         <p:menuitem value="Correo electr&oacute;nico" icon="fa fa-envelope-o"
-                                                    action="#{canalController.prepareCreateEmail()}" oncomplete="addEditEmailDialogWidget.show();" 
+                                                    action="#{canalController.prepareCreateEmail()}" oncomplete="PF('addEditEmailDialogWidget').show();" 
                                                     update=":formAddEditEmail"/>
                                         <p:menuitem value="Chat" icon="fa fa-comment-o"
-                                                    action="#{canalController.prepareCreateChat()}" oncomplete="addEditDialog.show();" 
+                                                    action="#{canalController.prepareCreateChat()}" oncomplete="PF('addEditDialog').show();" 
                                                     update=":formAddEdit"/>
                                         <p:menuitem value="Manual" icon="fa fa-pencil-square-o"
-                                                    action="#{canalController.prepareCreateManual()}" oncomplete="addEditDialog.show();" 
+                                                    action="#{canalController.prepareCreateManual()}" oncomplete="PF('addEditDialog').show();" 
                                                     update=":formAddEdit"/>
                                         <p:menuitem value="Formulario" icon="fa fa-list-alt"
-                                                    action="#{canalController.prepareCreateFormulario()}" oncomplete="addEditDialog.show();" 
+                                                    action="#{canalController.prepareCreateFormulario()}" oncomplete="PF('addEditDialog').show();" 
                                                     update=":formAddEdit"/>
 
                                     </p:menuButton>
