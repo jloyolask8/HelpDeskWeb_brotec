@@ -1020,7 +1020,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
 
         if (!emailCliente_wizard_existeEmail && !StringUtils.isEmpty(emailCliente_wizard)) {
-            getJpaController().persistEmailCliente(newCaso.getEmailCliente());
+            getJpaController().persist(newCaso.getEmailCliente());
         }
 
         getManagerCasos().persistCaso(newCaso, ManagerCasos.createLogReg(newCaso, "Caso", "Se crea caso manual", ""));

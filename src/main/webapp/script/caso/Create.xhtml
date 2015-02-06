@@ -106,7 +106,7 @@
                                     <p:ajax update=":form:panelDatosCliente"  listener="#{casoController.handleEmailChange}"/>
                                 </p:selectOneMenu>
 
-                                <p:autoComplete id="emailCliente" value="#{casoController.emailCliente_wizard}" 
+                                <p:autoComplete id="emailCliente" value="#{casoController.emailCliente_wizard}" forceSelection="true"
                                                 rendered="#{not casoController.emailCliente_wizard_existeCliente}"
                                                 validator="#{inputValidationBean.validarEmail}"
                                                 completeMethod="#{emailClienteController.completeEmailClienteString}"  
