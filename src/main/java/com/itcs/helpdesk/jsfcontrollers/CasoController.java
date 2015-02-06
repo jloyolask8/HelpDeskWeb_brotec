@@ -1014,8 +1014,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             addProdContratadoToClient(newCaso.getEmailCliente().getCliente());
             getJpaController().merge(newCaso.getEmailCliente().getCliente());
         } else if (!emailCliente_wizard_existeCliente) {
-            addProdContratadoToClient(newCaso.getIdCliente());
             getJpaController().persist(newCaso.getIdCliente());
+            addProdContratadoToClient(newCaso.getIdCliente());
+            getJpaController().merge(newCaso.getIdCliente());
         }
 
         if (!emailCliente_wizard_existeEmail && !StringUtils.isEmpty(emailCliente_wizard)) {
