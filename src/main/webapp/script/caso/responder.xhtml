@@ -62,10 +62,13 @@
                                     </p:column>
                                 </p:column >
                                 <p:column colspan="10">
-                                    <p:autoComplete style="width: 100%;" id="otroEmail" multiple="true" value="#{casoController.otroEmail}" completeMethod="#{emailClienteController.completeEmailClienteString}"
-                                                    var="email"  itemValue="#{email}" itemLabel="#{email}"  forceSelection="false">
+                                    <p:autoComplete id="otroEmail" style="width: 100%;"  multiple="true" emptyMessage="No matches found"
+                                                    placeholder="Destination addresses" 
+                                                    value="#{casoController.otroEmail}" 
+                                                    required="true" requiredMessage="Favor agregar un destinatario para este mensaje."
+                                                    completeMethod="#{emailClienteController.completeEmailClienteString}"
+                                                    var="email"  itemValue="#{email}" itemLabel="#{email}"  forceSelection="true">
                                     </p:autoComplete>
-                                    <p:watermark for="otroEmail" value="email destino"/>
                                 </p:column>
                             </p:row>
                         </p:panelGrid>

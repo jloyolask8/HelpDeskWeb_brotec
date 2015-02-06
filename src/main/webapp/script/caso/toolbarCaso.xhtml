@@ -1,0 +1,684 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html [
+    <!ENTITY nbsp "&#160;"> 
+    ]>
+    <ui:composition 
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:pe="http://primefaces.org/ui/extensions"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:go="http://java.sun.com/jsf/composite/go">
+
+        <h:form id="formint1">
+
+            <p:panelGrid style="margin-bottom:10px;" styleClass="filtersGrid" id="panelGridDatos"  >
+
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="Cliente:" for="clienteNotNull" style="font-weight:bold"/>
+                    </p:column>
+                    <p:column>
+                        <p:commandLink id="clienteNotNull" value="#{casoController.selected.clientName}" 
+                                       style="color: #4183C4 !important;" immediate="true"
+                                       update=":formDatosCliente" onclick="PF('dialogClient').show()" />
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="Email cliente" for="emailClienteA" style="font-weight:bold"/>
+                    </p:column>
+                    <p:column>
+                        <p:selectOneMenu id="emailClienteA" style="width: 180px;" disabled="#{casoController.selected.closed}"
+                                         filter="true" filterMatchMode="contains"
+                                         value="#{casoController.selected.emailCliente}" >
+                            <f:selectItems value="#{casoController.selected.idCliente.emailClienteList}" var="email" 
+                                           itemLabel="#{email.emailCliente}" itemValue="#{email}" itemDescription="#{email.emailCliente}"/>
+                        </p:selectOneMenu>
+                    </p:column>
+                </p:row>
+
+                <p:row rendered="#{not empty casoController.selected.emailClienteCCList}">
+                    <p:column colspan="2">
+                        <div class="formSeparator">
+                            <h2>CC-Clientes</h2>
+                        </div>
+                    </p:column>
+                </p:row>
+
+                <p:row rendered="#{not empty casoController.selected.emailClienteCCList}">
+                    <p:column colspan="2">
+                        <ul style="padding-left: 0px;">
+                            <ui:repeat value="#{casoController.selected.emailClienteCCList}" var="emclientecc">
+                                <li data-token-value="#{emclientecc.emailCliente}" class="ui-autocomplete-token ui-state-active ui-corner-all">
+                                    <span class="ui-autocomplete-token-label" title="#{emclientecc.cliente.capitalName}">#{emclientecc.emailCliente}</span>
+                                </li>
+                            </ui:repeat>
+                        </ul>
+                    </p:column>
+                </p:row>
+                
+                <p:row rendered="#{not empty casoController.selected.usuarioCCList}">
+                    <p:column colspan="2">
+                        <div class="formSeparator">
+                            <h2>CC-Agentes</h2>
+                        </div>
+                    </p:column>
+                </p:row>
+
+                <p:row rendered="#{not empty casoController.selected.usuarioCCList}">
+                    <p:column colspan="2">
+                        <ul style="padding-left: 0px;">
+                            <ui:repeat value="#{casoController.selected.usuarioCCList}" var="agentcc">
+                                <li data-token-value="#{agentcc.idUsuario}" class="ui-autocomplete-token ui-state-active ui-corner-all">
+                                    <span class="ui-autocomplete-token-label" title="#{agentcc.email}">#{agentcc.idUsuario}</span>
+                                </li>
+                            </ui:repeat>
+                        </ul>
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column colspan="2">
+                        <div class="formSeparator">
+                            <h2>Creado/Modificado/SLA</h2>
+                        </div>
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="C/M/SLA" for="fechaCreacion" style="font-weight:bold"/>
+                    </p:column>
+                    <p:column>
+
+                        <h:panelGrid columns="6">
+
+                            <h:outputText id="fechaCreacion" value="#{casoController.formatShortDate(casoController.selected.fechaCreacion)} "/>
+                            <h:outputText value="/"/>
+                            <h:outputText id="fechaModif" value="#{casoController.formatShortDate(casoController.selected.fechaModif)}"/>
+                            <h:outputText value="/"/>
+                            <pe:switch id="switchTicketAlertState" value="#{casoController.selected.isOpen().toString()}">  
+                                <pe:case value="true">  
+                                    <pe:switch id="switchTicketAlertStateOpen" value="#{casoController.selected.estadoAlerta}">  
+                                        <pe:case value="#{EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta()}">  
+                                            <div class="fa-hover" style="color: #5cb85c;"><i class="fa fa-clock-o"></i> &nbsp;
+                                                <h:outputText id="nextResponseDue" 
+                                                              value="#{casoController.formatShortDate(casoController.selected.nextResponseDue)}"/>
+                                                <p:tooltip for="nextResponseDue" value="Acuerdo de respuesta #{casoController.prettyDate(casoController.selected.nextResponseDue)} - #{casoController.formatDate(casoController.selected.nextResponseDue)}"/>
+                                            </div>
+                                        </pe:case>
+                                        <pe:case value="#{EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta()}">  
+                                            <div class="fa-hover" style="color: #f0ad4e;"><i class="fa fa-warning"></i> &nbsp;
+                                                <h:outputText id="nextResponseDue" 
+                                                              value="#{casoController.formatShortDate(casoController.selected.nextResponseDue)}"/>
+                                                <p:tooltip for="nextResponseDue" value="Vence #{casoController.prettyDate(casoController.selected.nextResponseDue)} - #{casoController.formatDate(casoController.selected.nextResponseDue)}"/>
+                                            </div>
+                                        </pe:case>
+                                        <pe:case value="#{EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta()}">  
+                                            <div class="fa-hover" style="color: #c9302c;"><i class="fa fa-exclamation"></i> &nbsp;
+                                                <h:outputText id="nextResponseDue" 
+                                                              value="#{casoController.formatShortDate(casoController.selected.nextResponseDue)}"/>
+                                                <p:tooltip for="nextResponseDue" value="Vencido #{casoController.prettyDate(casoController.selected.nextResponseDue)} - #{casoController.formatDate(casoController.selected.nextResponseDue)}"/>
+                                            </div>
+                                        </pe:case>  
+                                    </pe:switch>  
+                                </pe:case> 
+
+                                <pe:case value="false">  
+                                    <div class="fa-hover" style="color: #000;"><i class="fa fa-lock"></i> &nbsp;
+                                        <h:outputText id="cerrado" 
+                                                      value="#{casoController.formatShortDate(casoController.selected.fechaCierre)}"/>
+                                        <p:tooltip for="cerrado" value="Cerrado #{casoController.prettyDate(casoController.selected.fechaCierre)} - #{casoController.formatDate(casoController.selected.fechaCierre)}"/>
+                                    </div>
+                                </pe:case>  
+                            </pe:switch>  
+
+                        </h:panelGrid>
+
+
+                        <p:tooltip for="fechaModif" value="Ultima modificación #{casoController.prettyDate(casoController.selected.fechaModif)} - #{casoController.formatDate(casoController.selected.fechaModif)}"/>
+
+                        <p:tooltip for="fechaCreacion" value="Creado #{casoController.prettyDate(casoController.selected.fechaCreacion)} - #{casoController.formatDate(casoController.selected.fechaCreacion)}"/>
+
+
+                    </p:column>
+                </p:row>
+
+
+                <p:row>
+                    <p:column colspan="2">
+                        <div class="formSeparator">
+                            <h2>Datos del Caso</h2>
+                        </div>
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="Tipo de caso:" style="font-weight:bold"/>
+                    </p:column>
+
+                    <p:column>
+                        <p:inplace  editor="true" emptyLabel="sin tipo" saveLabel="Guardar" disabled="#{casoController.selected.closed}">
+                            <p:ajax event="save" update=":formint1 :formCerrarCaso" />
+                            <f:facet name="output">
+                                <h:outputText value="#{casoController.selected.tipoCaso ne null ? casoController.selected.tipoCaso:'sin tipo'}" />
+                                <i class="fa fa-search"></i>                                           
+                            </f:facet>
+                            <f:facet name="input">
+
+                                <p:selectOneMenu id="idTipoCaso" style="width: 220px;" disabled="#{casoController.selected.closed}" converter="TipoCasoControllerConverter"
+                                                 required="true" requiredMessage="El tipo de caso es requerido."
+                                                 filter="true" filterMatchMode="contains"
+                                                 value="#{casoController.selected.tipoCaso}" >
+                                    <f:selectItems value="#{applicationBean.tipoCasoAvailableList}" var="tipo" 
+                                                   itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
+                                </p:selectOneMenu>
+
+                            </f:facet>
+                        </p:inplace>
+                    </p:column>
+                </p:row>
+
+
+
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="#{bundle.EditCasoLabel_idPrioridad}" for="idPrioridad" style="font-weight:bold"/>
+                    </p:column>
+
+                    <p:column>
+
+                        <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar" disabled="#{casoController.selected.closed}">
+                            <p:ajax event="save" update=":formint1 :formCerrarCaso" />
+                            <f:facet name="output">
+                                <h:outputText value="#{casoController.selected.idPrioridad.nombre}"/>
+                                <i class="fa fa-search"></i>                                           
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:selectOneMenu disabled="#{casoController.selected.closed}" style="width: 220px;"
+                                                 required="true"
+                                                 id="idPrioridad" value="#{casoController.selected.idPrioridad}" >
+                                    <f:selectItems value="#{prioridadController.itemsAvailableSelectMany}"/>
+                                </p:selectOneMenu>
+                            </f:facet>
+                        </p:inplace>
+
+
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="#{bundle.EditCasoLabel_owner}" for="owner" style="font-weight:bold"/>
+                    </p:column>
+
+                    <p:column>
+                        <p:commandLink id="owner" action="#{usuarioController.prepareView(casoController.selected.owner, '/script/caso/Edit')}"  
+                                       value="#{casoController.selected.owner.capitalName}" 
+                                       immediate="true" ajax="false"
+                                       style="color: #4183C4 !important;"                                 
+                                       title="Ver Datos del Agente" />
+                    </p:column>
+                </p:row>
+
+
+
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="#{bundle.EditCasoLabel_idCanal}" for="idCanal" style="font-weight:bold"/>
+                    </p:column>
+                    <p:column>
+                        <h:outputText id="idCanal" value="#{casoController.selected.idCanal.nombre}" title="#{bundle.EditCasoTitle_idCanal}"/>
+                    </p:column>
+                </p:row>
+
+
+
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="Area:" style="font-weight:bold"/>
+                    </p:column>
+                    <p:column>
+                        <p:inplace  editor="true" emptyLabel="sin area" saveLabel="Guardar" disabled="#{casoController.selected.closed}">
+                            <p:ajax event="save" update=":formint1 :formCerrarCaso" />
+                            <p:ajax event="save" listener="#{casoController.handleProductChange()}" update="idGrupoCaso" />
+                            <f:facet name="output">
+                                <h:outputText value="#{casoController.selected.idArea}" />
+                                <i class="fa fa-search"></i>                                           
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:selectOneMenu disabled="#{casoController.selected.closed}" id="idAreaCaso" style="width: 220px;"
+                                                 filter="true" filterMatchMode="contains"
+                                                 value="#{casoController.selected.idArea}" >
+                                    <f:selectItem itemLabel="" itemValue=""/>
+                                    <f:selectItems value="#{applicationBean.areasAvailableList}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
+                                </p:selectOneMenu>
+                            </f:facet>
+                        </p:inplace>
+                    </p:column>
+
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="Grupo:" style="font-weight:bold"/>
+                    </p:column>
+                    <p:column>
+                        <p:inplace  editor="true" emptyLabel="sin grupo" saveLabel="Guardar" disabled="#{casoController.selected.closed}">
+                            <p:ajax event="save" update=":formint1 :formCerrarCaso" />
+                            <f:facet name="output">
+                                <h:outputText value="#{casoController.selected.idGrupo}" />
+                                <i class="fa fa-search"></i>                                           
+                            </f:facet>
+                            <f:facet name="input">
+
+                                <p:selectOneMenu id="idGrupoCaso" style="width: 220px;"
+                                                 filter="true" filterMatchMode="contains"
+                                                 value="#{casoController.selected.idGrupo}"
+                                                 disabled="#{casoController.selected.closed or empty casoController.selected.idArea}">
+                                    <f:selectItem itemLabel="" itemValue="" />
+                                    <f:selectItems value="#{casoController.selected.idArea.grupoList}" 
+                                                   var="grupo" itemLabel="#{grupo.nombre}" itemValue="#{grupo}" itemDescription="#{grupo.descripcion}"/>
+                                </p:selectOneMenu>
+                            </f:facet>
+                        </p:inplace>
+                    </p:column>
+
+                </p:row>
+
+                <p:row rendered="#{not empty casoController.selected.idCasoCombinado}">
+                    <p:column>
+                        <p:outputLabel value="#{bundle.EditCasoLabel_idCasoCombinado}"  style="font-weight:bold"/>
+                    </p:column>
+                    <p:column>
+                        <h:commandLink id="idCasoCombinado" action="#{casoController.filterByIdCaso(casoController.selected.idCasoCombinado.idCaso)}" value="${casoController.selected.idCasoCombinado.tipoCaso.nombre} N°${casoController.selected.idCasoCombinado.idCaso} - ${casoController.selected.idCasoCombinado.tema}"/>
+                    </p:column>
+                </p:row>
+
+                <p:row rendered="#{not empty casoController.selected.idCasoPadre}">
+                    <p:column>
+                        <p:outputLabel value="#{bundle.EditCasoLabel_idCasoPadre}"  style="font-weight:bold"/>
+                    </p:column>
+                    <p:column>
+                        <h:commandLink id="idCasoPadre" action="#{casoController.filterByIdCaso(casoController.selected.idCasoPadre.idCaso)}" value="${casoController.selected.idCasoPadre.tipoCaso.nombre} N°${casoController.selected.idCasoPadre.idCaso} - ${casoController.selected.idCasoPadre.tema}"/>
+                    </p:column>
+                </p:row>
+
+
+                <p:row>
+                    <p:column colspan="2">
+                        <div class="formSeparator">
+                            <h2>Datos del Producto</h2>
+                        </div>
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="#{applicationBean.productDescription}:" for="idProducto" style="font-weight:bold"/>
+                    </p:column>
+
+                    <p:column>
+
+                        <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar" disabled="#{casoController.selected.closed}">
+                            <p:ajax event="save" listener="#{casoController.handleProductChange}" update="idComponente modeloProductoId" />
+                            <f:facet name="output">
+                                <h:outputText value="#{casoController.selected.idProducto.nombre}"/>
+                                <i class="fa fa-search"></i>                                           
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:selectOneMenu disabled="#{casoController.selected.closed or casoController.casoTipoReparacion}" id="idProducto" filter="true" filterMatchMode="contains" style="width: 220px;"
+                                                 value="#{casoController.selected.idProducto}" >
+                                    <f:selectItems value="#{productoController.itemsAvailableSelectOne}"/>
+                                </p:selectOneMenu>
+                            </f:facet>
+                        </p:inplace>
+
+
+
+                    </p:column>
+                </p:row>
+
+
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="Modelo:" for="modeloProductoId" style="font-weight:bold"/>
+                    </p:column>
+
+                    <p:column>
+
+                        <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar" disabled="#{casoController.selected.closed}">
+                            <p:ajax event="save" update="idComponente" listener="#{casoController.onProductoModeloChosen()}" />
+                            <f:facet name="output">
+                                <h:outputText value="#{casoController.selected.idModelo.nombre}"/>
+                                <i class="fa fa-search"></i>                                           
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:selectOneMenu id="modeloProductoId" disabled="#{casoController.selected.closed or casoController.casoTipoReparacion}" filter="true" filterMatchMode="contains" style="width: 220px;"
+                                                 value="#{casoController.selected.idModelo}" >
+                                    <f:selectItem itemLabel="" itemValue=""/>
+                                    <f:selectItems value="#{casoController.selected.idProducto.modeloProductoList}" var="m" itemValue="#{m}" itemLabel="#{m.nombre}"/>
+                                </p:selectOneMenu>
+                            </f:facet>
+                        </p:inplace>
+
+                    </p:column>
+                </p:row>
+
+
+
+                <p:row rendered="#{not casoController.casoTipoPreventa}">
+                    <p:column>
+                        <h:outputLabel value="#{applicationBean.productComponentDescription}:" for="idComponente" style="font-weight: bold"/>
+                    </p:column>
+
+                    <p:column>
+
+                        <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar" disabled="#{casoController.selected.closed}">
+                            <p:ajax event="save" update="idSubComponente"  listener="#{casoController.handleProductChange}" />
+                            <f:facet name="output">
+                                <h:outputText value="#{casoController.selected.idComponente.nombre}"/>
+                                <i class="fa fa-search"></i>                                           
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:selectOneMenu id="idComponente"  value="#{casoController.selected.idComponente}"  style="width: 220px;"
+                                                 filter="true" filterMatchMode="contains"
+                                                 disabled="#{casoController.selected.closed or casoController.selected.idProducto eq null or casoController.casoTipoReparacion}">
+                                    <f:selectItem itemLabel="" itemValue=""/>
+                                    <f:selectItems value="#{casoController.selected.idProducto.componenteList}" var="comp" itemLabel="#{comp.nombre}" itemValue="#{comp}"/>
+                                </p:selectOneMenu>
+                            </f:facet>
+                        </p:inplace>
+
+
+                    </p:column>
+                </p:row>
+
+                <p:row rendered="#{not casoController.casoTipoPreventa}">
+                    <p:column>
+                        <h:outputLabel value="#{applicationBean.productSubComponentDescription}:" for="idSubComponente" style="font-weight: bold"/>
+                    </p:column>
+
+                    <p:column style="padding-left: 0px !important;">
+
+
+                        <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar" 
+                                    disabled="#{casoController.selected.closed}">
+                            <f:facet name="output">
+
+                                <h:panelGrid style="width: 220px;">
+                                    <p:row>
+                                        <p:column >
+                                            <h:outputText value="#{casoController.selected.idSubComponente.nombre}"/>
+                                            <i class="fa fa-search" title="cambiar de #{applicationBean.productSubComponentDescription}"></i>    
+                                        </p:column>
+                                        <p:column>
+                                            &nbsp;
+                                            <p:commandButton action="#{productoController.prepareViewSubComponente(casoController.selected.idSubComponente, '/script/caso/Edit')}" 
+                                                             ajax="false" value="Editar"
+                                                             icon="fa fa-external-link"
+                                                             rendered="#{casoController.selected.open and casoController.selected.idSubComponente ne null}"
+                                                             title="Modificar datos de #{casoController.selected.idSubComponente.nombre}"/>
+                                        </p:column>
+                                    </p:row>
+                                </h:panelGrid>
+
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:selectOneMenu id="idSubComponente" value="#{casoController.selected.idSubComponente}"  style="width: 150px;"
+                                                 filter="true" filterMatchMode="contains"
+                                                 disabled="#{casoController.selected.closed or casoController.selected.idComponente eq null or casoController.casoTipoReparacion}">
+                                    <f:selectItem itemLabel="" itemValue=""/>
+                                    <f:selectItems value="#{casoController.selected.idComponente.subComponenteList}" var="subc" itemLabel="#{subc.nombre}" itemValue="#{subc}"/>
+                                </p:selectOneMenu>
+                            </f:facet>
+                        </p:inplace>
+
+                    </p:column>
+                </p:row>
+
+
+                <p:row rendered="#{not empty casoController.selected.idCliente.productoContratadoList}">
+                    <p:column colspan="2">
+                        <div class="formSeparator">
+                            <h2>#{applicationBean.productDescription} del cliente</h2>
+                        </div>
+                    </p:column>
+                </p:row>
+
+                <p:row rendered="#{not empty casoController.selected.idCliente.productoContratadoList}">
+                    <p:column colspan="2">
+
+                        <p:dataTable 
+                            value="#{casoController.selected.idCliente.productoContratadoList}" var="prod_cont" emptyMessage="El Cliente no tiene #{applicationBean.productDescription} asociado.">
+
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{applicationBean.productComponentDescription}"/>
+                                </f:facet>
+                                <h:outputText value="#{prod_cont.producto.nombre}" title="#{prod_cont.componente.nombre}/#{prod_cont.subComponente.nombre} #{prod_cont.tipoAsociacion}"/>
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{applicationBean.productSubComponentDescription}"/>
+                                </f:facet>
+                                <h:outputText value="#{prod_cont.subComponente.nombre}" title="#{prod_cont.tipoAsociacion}"/>
+                            </p:column>
+
+                        </p:dataTable>
+
+                    </p:column>
+                </p:row>
+
+
+                <p:row>
+                    <p:column colspan="2">
+                        <div class="formSeparator">
+                            <h2>Etiquetas</h2>
+                        </div>
+                    </p:column>
+                </p:row>
+
+
+                <p:row>
+
+                    <p:column colspan="2">
+
+                        <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar">
+                            <f:facet name="output">
+                                <ul style="padding-left: 0px;">
+                                    <ui:repeat value="#{casoController.selected.etiquetaStringList}" var="idTag">
+                                        <li data-token-value="#{idTag}" class="ui-autocomplete-token ui-state-active ui-corner-all">
+                                            <p:commandLink actionListener="#{casoController.onTagIdSelectCaso(idTag)}">
+                                                <span class="ui-autocomplete-token-label">#{idTag}</span>
+                                            </p:commandLink>
+                                        </li>
+                                    </ui:repeat>
+                                </ul>
+
+                                <i class="fa fa-edit" title="Editar etiquetas"></i> 
+
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:autoComplete id="tags" disabled="#{casoController.selected.closed}" 
+                                                value="#{casoController.selected.etiquetaStringList}" forceSelection="true" 
+                                                completeMethod="#{applicationBean.findEtiquetasByPattern}" multiple="true">
+                                    <p:ajax  event="itemSelect"  listener="#{casoController.tagItemSelectEvent}"  update=":mainform:messages"  />
+                                    <p:ajax  event="itemUnselect"  listener="#{casoController.tagItemUnselectEvent}"  update=":mainform:messages"  />
+                                </p:autoComplete>
+                                <p:watermark for="tags" value="Etiquetas"/>
+                            </f:facet>
+                        </p:inplace>
+                    </p:column>
+                </p:row>
+
+
+
+
+                <p:row>
+                    <p:column colspan="2">
+                        <div class="formSeparator">
+                            <h2>Campos adicionales</h2>
+                        </div>
+                    </p:column>
+                </p:row>
+
+                <p:row rendered="#{(casoController.selected.tipoCaso eq EnumTipoCaso.REPARACION_ITEM.getTipoCaso()) 
+                                   or (casoController.selected.tipoCaso eq EnumTipoCaso.PREVENTIVO.getTipoCaso())}">
+                    <p:column>
+                        <p:outputLabel value="Responsable" for="idResponsable" style="font-weight:bold"/>
+                    </p:column>
+
+                    <p:column>
+
+                        <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar">
+                            <f:facet name="output">
+                                <h:outputText value="#{casoController.selected.idResponsable.nombreResponsable}"/>
+                                <i class="fa fa-search"></i>                                           
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:selectOneMenu disabled="#{casoController.selected.closed}" style="width: 220px;"
+                                                 id="idResponsable" value="#{casoController.selected.idResponsable}" >
+                                    <f:selectItems value="#{responsableController.itemsAvailableSelectOne}"/>
+                                </p:selectOneMenu>
+                            </f:facet>
+                        </p:inplace>
+
+
+                    </p:column>
+                </p:row>
+
+                <p:row rendered="#{(casoController.selected.tipoCaso eq EnumTipoCaso.REPARACION_ITEM.getTipoCaso()) 
+                                   or (casoController.selected.tipoCaso eq EnumTipoCaso.PREVENTIVO.getTipoCaso())}">
+                    <p:column>
+                        <h:outputLabel value="Servicio Técnico:" for="idTechnicalService" style="font-weight:bold;"/>
+                    </p:column>
+                    <p:column>
+                        <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar">
+                            <f:facet name="output">
+                                <h:outputText value="#{casoController.selected.servicioTecnico eq true ? 'Si':'No'}"/>
+                                <i class="fa fa-edit"></i>                                           
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:selectBooleanCheckbox id="idTechnicalService" disabled="#{casoController.selected.closed}" 
+                                                         value="#{casoController.selected.servicioTecnico}" />
+                            </f:facet>
+                        </p:inplace>
+                    </p:column>
+                </p:row>
+
+                <p:row rendered="#{casoController.casoTipoPreventa}">
+                    <p:column>
+                        <h:outputLabel value="Crédito Preaprobado:" for="credito" style="font-weight: bold"/>
+                    </p:column>
+                    <p:column>
+                        <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar">
+                            <f:facet name="output">
+                                <h:outputText value="#{casoController.selected.creditoPreAprobado eq true ? 'Si':'No'}"/>
+                                <i class="fa fa-search"></i>                                           
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:selectBooleanCheckbox id="credito" value="#{casoController.selected.creditoPreAprobado}"  disabled="#{casoController.selected.closed}"/> 
+                            </f:facet>
+                        </p:inplace>
+                    </p:column>
+                </p:row>
+
+                <p:row rendered="#{casoController.casoTipoPreventa}">
+                    <p:column>
+                        <h:outputLabel value="Fecha est. Compra:" for="fechaCompra" style="font-weight: bold"/>
+                    </p:column>
+
+                    <p:column>
+
+                        <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar">
+                            <f:facet name="output">
+                                <h:outputText value="#{casoController.prettyDate(casoController.selected.fechaEstimadaCompra)}"/>
+                                <i class="fa fa-edit"></i>                                           
+                            </f:facet>
+                            <f:facet name="input">
+
+                                <p:calendar locale="es" navigator="true" id="fechaCompra" showButtonPanel="true" 
+                                            mindate="#{applicationBean.now}" style="width: 220px;"
+                                            disabled="#{casoController.selected.closed}"
+                                            value="#{casoController.selected.fechaEstimadaCompra}"  
+                                            title="Fecha estimada de compra" pattern="dd/MM/yyyy" label="Fecha est. Compra:"/>
+
+                            </f:facet>
+                        </p:inplace>
+
+
+                    </p:column>
+                </p:row>
+
+                <p:row rendered="#{casoController.casoTipoReparacion}">
+                    <p:column>
+                        <h:outputLabel value="Recinto:" for="Recinto" style="font-weight: bold"/>
+                    </p:column>
+
+                    <p:column>
+
+                        <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar">
+                            <f:facet name="output">
+                                <h:outputText value="#{casoController.selected.idRecinto}"/>
+                                <i class="fa fa-search"></i>                                           
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:selectOneMenu id="Recinto" value="#{casoController.selected.idRecinto}"  style="width: 220px;" editable="true"
+                                                 filter="true" filterMatchMode="contains">
+                                    <f:selectItems value="#{recintoController.itemsAvailableSelectMany}" var="r" itemLabel="#{r.idRecinto}" itemValue="#{r.idRecinto}"/>
+                                </p:selectOneMenu> 
+                            </f:facet>
+                        </p:inplace>
+
+
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column colspan="2">
+                        <ui:repeat id="tableCustomFields" var="customField" value="#{customFieldController.getCurrentCasoCustomFieldList(casoController.selected)}">
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="#{customField.customField.label}:" for="customFieldI"  style="font-weight: bold"/>
+
+                                <go:customField id="customFieldI0" rendered="#{customField.customField.required eq true and empty customField.valor}"
+                                                casoCustomFieldValue="#{customField}" 
+                                                casoOpen="#{casoController.selected.isOpen()}"/>
+
+                                <p:inplace  editor="true" rendered="#{customField.customField.required eq false or not empty customField.valor}"
+                                            emptyLabel="vacío" saveLabel="Guardar">
+                                    <f:facet name="output">
+                                        <h:outputText value="#{customField.valor}"/>
+                                        <i class="fa fa-search"></i>                                           
+                                    </f:facet>
+                                    <f:facet name="input">
+                                        <go:customField id="customFieldI" casoCustomFieldValue="#{customField}" casoOpen="#{casoController.selected.isOpen()}"/>
+                                    </f:facet>
+                                </p:inplace>
+
+                            </h:panelGrid>
+                            <br/>
+                        </ui:repeat>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column colspan="2">
+
+                        <p:commandButton disabled="#{casoController.selected.closed or not (casoController.verificarGrabarCaso())}" style="float: right"   
+                                         value="Guardar" icon="fa fa-save" actionListener="#{casoController.update}" ajax="true" 
+                                         update=":formint1 :inputPanel:formact :inputPanel:formCreateNota :botoneraCaso"/>
+
+                    </p:column>
+                </p:row>
+
+            </p:panelGrid>
+
+
+
+        </h:form>
+
+    </ui:composition>
