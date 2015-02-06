@@ -107,77 +107,7 @@
                 <div class="row">
                     <div class="col-md-4 col-sm-5 col-lg-3 col-sm-push-7 col-md-push-8 col-lg-push-9 sidebar"><!-- menu-right -->
 
-                        <h:form id="info-panel">
-                            <div class="panel panel-primary panel-dark widget-profile">
-                                <div class="panel-heading">
-                                    <div class="widget-profile-bg-icon"><i class="fa fa-flask"></i></div>
-                                    <img src="#{facesContext.externalContext.requestContextPath}/resources/images/pixel-admin/avatar.png" class="widget-profile-avatar"/>
-                                    <div class="widget-profile-header">
-                                        <span>
-                                            <h:outputText id="clienteNotNull" 
-                                                          value="#{casoController.selected.emailCliente.cliente ne null ? casoController.selected.emailCliente.cliente.capitalName:''}" /></span><br/>
-
-                                        <p:commandLink value="#{casoController.selected.emailCliente.emailCliente}" 
-                                                       title="#{casoController.selected.emailCliente.emailCliente}"                                                          
-                                                       action="#{clienteController.prepareView(casoController.selected.idCliente, '/script/caso/Edit')}" 
-                                                       ajax="false" 
-                                                       immediate="true"/>
-
-                                    </div>
-                                </div> <!-- / .panel-heading -->
-                                <div class="list-group">
-
-                                    <a href="#" class="list-group-item"><i class="fa fa-clock-o list-group-icon"></i>Creado vía <i title="Caso creado a travéz del canal: #{casoController.selected.idCanal.nombre}" 
-                                                                                                                                   class="casoController.selected.idCanal.idTipoCanal.iconStyleClass"></i>
-                                        <span class="badge badge-danger"><h:outputText id="fechaCreacion" value="#{casoController.prettyDate(casoController.selected.fechaCreacion)}" title="#{casoController.formatDate(casoController.selected.fechaCreacion)}"/></span></a>
-                                    <a href="#" class="list-group-item"><i class="fa fa-clock-o list-group-icon"></i>Modificado:<span class="badge badge-danger"><h:outputText id="fechaModificacion" value="#{casoController.prettyDate(casoController.selected.fechaModif)}" title="#{casoController.formatDate(casoController.selected.fechaModif)}"/></span></a>
-                                    <a href="#" class="list-group-item"><i class="fa fa-bell-o list-group-icon"></i>Commentarios del Agente<span class="badge badge-primary">#{casoController.cantidadDeNotas}</span></a>
-                                    <a href="#" class="list-group-item"><i class="fa fa-bell-o list-group-icon"></i>Respuestas del Agente<span class="badge badge-primary">#{casoController.cantidadDeRespuestasACliente}</span></a>
-                                    <a href="#" class="list-group-item"><i class="fa fa-bell-o list-group-icon"></i>Commentarios del Cliente<span class="badge badge-warning">#{casoController.cantidadDeRespuestasDelCliente}</span></a>
-
-                                    <ul class="breadcrumb" style="display: block;">
-                                        <li>Asignado a <h:outputText value="#{casoController.selected.idArea.nombre}"/></li>					
-                                        <li class="active">
-                                            <p:commandLink id="owner" actionListener="#{usuarioController.prepareViewUserInDialog(casoController.selected.owner)}"  
-                                                           value="#{casoController.selected.owner.capitalName}" 
-                                                           immediate="true"
-                                                           style="color: #4183C4 !important;"
-                                                           disabled="#{casoController.selected.closed or not usuarioController.puedeEditar(casoController.selected.owner)}" 
-                                                           title="Ver Datos del Agente" />
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </h:form>
-
-
-                        <div class="panel widget-notifications">
-                            <div class="panel-heading">
-                                <span class="panel-title"><i class="panel-title-icon fa fa-fire"></i>Log de Eventos</span>
-                            </div> <!-- / .panel-heading -->
-                            <div class="panel-body padding-sm">
-                                <div class="notifications-list">
-
-                                    <ui:repeat value="#{casoController.auditLogsCurrentCase}" var="audit" >
-                                        <div class="notification">
-                                            <div class="notification-title text-info"><h:outputText value="#{audit.idUser} "/></div>
-                                            <div class="notification-description">
-
-                                                #{(not empty audit.campo and not empty audit.oldValue) ? audit.campo.concat(' cambió de ').concat(audit.oldValue).concat(' a '):''}
-                                                #{audit.newValue}
-
-                                            </div>
-                                            <div class="notification-ago"><h:outputText title="#{casoController.formatDate(audit.fecha)}" value="#{casoController.prettyDate(audit.fecha)}"/></div>
-                                            <div class="notification-icon fa fa-hdd-o bg-info"></div>
-                                        </div> <!-- / .notification -->
-                                    </ui:repeat>
-
-
-
-                                </div>
-
-                            </div> <!-- / .panel-body -->
-                        </div> <!-- / .panel -->
+                        <ui:include src="info-panel.xhtml"/>
 
                         <div class="panel-group" id="accordion-example">
                             <div class="panel">
@@ -479,12 +409,27 @@
 
                             </div> <!-- / .panel -->
 
-
-
-
-
                         </div>
 
+                        <div class="panel widget-notifications">
+                            <div class="panel-heading">
+                                <span class="panel-title"><i class="panel-title-icon fa fa-fire"></i>Log de Eventos</span>
+                            </div> <!-- / .panel-heading -->
+                            <div class="panel-body padding-sm">
+                                <div class="notifications-list">
+                                    <ui:repeat value="#{casoController.auditLogsCurrentCase}" var="audit" >
+                                        <div class="notification">
+                                            <div class="notification-title text-info"><h:outputText value="#{audit.idUser} "/></div>
+                                            <div class="notification-description">
+                                                #{(not empty audit.campo and not empty audit.oldValue) ? audit.campo.concat(' cambió de ').concat(audit.oldValue).concat(' a '):''}
+                                                #{audit.newValue}
+                                            </div>
+                                            <div class="notification-ago"><h:outputText title="#{casoController.formatDate(audit.fecha)}" value="#{casoController.prettyDate(audit.fecha)}"/></div>
+                                        </div> <!-- / .notification -->
+                                    </ui:repeat>
+                                </div>
+                            </div> <!-- / .panel-body -->
+                        </div> <!-- / .panel -->
 
                         <div class="panel no-border panel-dark">
                             <div class="panel-body text-center">
@@ -517,150 +462,11 @@
 
                     <div class="col-sm-7 col-md-8 col-lg-9 col-sm-pull-5 col-md-pull-4 col-lg-pull-3 main">
 
-
-
-                        <h:form id="botoneraCaso">
-
-
-                            <div class="panel-heading-controls">
-
-
-
-                                <div class="btn-group btn-group-xs">
-                                    <h:commandLink title="Volver" action="inbox" styleClass="btn btn-xs btn-success btn-outline">
-                                        <i class="fa fa-chevron-left"></i>
-                                    </h:commandLink>
-
-                                    <h:commandLink title="#{bundle.EditCasoLabel_idCasoPadre}: #{casoController.selected.idCasoPadre.tipoCaso.nombre} N°#{casoController.selected.idCasoPadre.idCaso} - #{casoController.selected.idCasoPadre.tema}" 
-                                                   rendered="#{casoController.selected.idCasoPadre ne null}" 
-                                                   action="#{casoController.filterByIdCaso(casoController.selected.idCasoPadre.idCaso)}" styleClass="btn btn-xs btn-success btn-outline">
-                                        <i class="fa fa-level-up"></i>
-                                    </h:commandLink>
-
-                                    <h:commandLink title="Actualizar" 
-                                                   actionListener="#{casoController.refreshCurrentCaso()}" styleClass="btn btn-xs btn-success btn-outline">
-                                        <i class="fa fa-refresh"></i>
-                                    </h:commandLink>
-                                </div>
-
-                                <div class="btn-group btn-group-xs">
-                                    <p:commandLink rendered="#{casoController.verificarTomarCaso()}"
-                                                   styleClass="btn btn-xs btn-success btn-outline" type="button"
-                                                   ajax="true" title="Asignármelo" onclick="tomarCaso.show()" >
-                                        <i class="fa fa-inbox"></i>         
-                                    </p:commandLink>
-
-                                    <p:commandLink rendered="#{casoController.verificarReabrirCaso()}"
-                                                   styleClass="btn btn-xs btn-success btn-outline" 
-                                                   ajax="true" title="Reabrir Caso" onclick="openCase.show();" >
-                                        <i class="fa fa-folder-open-o"></i>         
-                                    </p:commandLink>
-                                </div>
-
-                                <div class="btn-group btn-group-xs">
-
-                                    <p:commandLink id="TagAsBtn" title="Etiquetas" 
-                                                   styleClass="btn btn-xs btn-success btn-outline" onclick="TagPanel.loadContents()">
-                                        <i class="fa fa-tags"></i>
-                                    </p:commandLink>
-
-                                    <p:overlayPanel id="TagPanel" widgetVar="TagPanel" for="TagAsBtn" hideEffect="fade" dynamic="true">                                     
-
-                                        <p:autoComplete id="tags" 
-                                                        value="#{casoController.selected.etiquetaStringList}" forceSelection="true" 
-                                                        completeMethod="#{applicationBean.findEtiquetasByPattern}" multiple="true">
-                                            <p:ajax  event="itemSelect"  listener="#{casoController.tagItemSelectEvent}"  update=":botoneraCaso:etiquetasGroup"  />
-                                            <p:ajax  event="itemUnselect"  listener="#{casoController.tagItemUnselectEvent}"  update=":botoneraCaso:etiquetasGroup"  />
-                                        </p:autoComplete>
-                                        <p:watermark for="tags" value="Etiquetas"/>
-
-                                    </p:overlayPanel>  
-
-                                    <p:commandLink id="TasksBtn" title="Tareas" styleClass="btn btn-xs btn-success btn-outline" onclick="TareasDialog.show()">
-                                        <i class="fa fa-tasks"></i>
-                                    </p:commandLink>
-
-
-
-                                </div>
-
-                                <div class="btn-group btn-group-xs">
-                                    <button type="button" class="btn btn-xs btn-success btn-outline dropdown-toggle" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<i class="fa fa-caret-down"></i></button>
-
-                                    <ul class="dropdown-menu">
-                                        <li>
-                                            <p:commandLink ajax="false" 
-                                                           title="Copiar Caso" action="#{casoController.prepareCopy()}">
-                                                <i class="fa fa-copy"></i> Copiar        
-                                            </p:commandLink>
-                                        </li>
-                                        <li>
-                                            <p:commandLink ajax="false" 
-                                                           title="Copiar y Asignármelo" action="#{casoController.prepareCopyAndAssignMe()}">
-                                                <i class="fa fa-copy"></i> Copiar y Asignármelo        
-                                            </p:commandLink>
-                                        </li>
-                                        <li>
-                                            <p:commandLink rendered="#{casoController.verificarTransferirCaso()}"
-                                                           ajax="true" title="Transferir" onclick="transferir.show();">
-                                                <i class="fa fa-users"></i> Transferir        
-                                            </p:commandLink>
-                                        </li>
-                                        <li>
-                                            <p:commandLink rendered="#{casoController.verificarCrearColaborativo()}"
-                                                           ajax="false" title="Crear Caso Colaborativo" 
-                                                           action="#{casoController.crearCasoColab(casoController.selected)}">
-                                                <i class="fa fa-ambulance"></i> Crear Caso Colaborativo        
-                                            </p:commandLink>
-                                        </li>
-                                        <li>
-                                            <p:commandLink rendered="#{casoController.verificarAsignarCaso()}"
-                                                           ajax="true" title="Asignar" onclick="transferir.show();">
-                                                <i class="fa fa-users"></i> Asignar        
-                                            </p:commandLink>
-                                        </li>
-                                        <li>
-                                            <p:commandLink rendered="#{casoController.verificarRelacionarCaso()}"
-                                                           ajax="true" title="Relacionar Caso" onclick="casosRela.show();">
-                                                <i class="fa fa-random"></i> Relacionar a otro Caso        
-                                            </p:commandLink>
-                                        </li>
-
-                                        <li>
-                                            <p:commandLink rendered="#{casoController.verificarCerrarCaso()}"
-                                                           ajax="true" title="Cerrar Caso" onclick="closeCase.show();">
-                                                <i class="fa fa-stop"></i> Cerrar Caso      
-                                            </p:commandLink>
-                                        </li>
-
-                                        <li class="divider"></li>
-                                        <li>
-                                            <p:commandLink rendered="#{casoController.verificarEliminarCaso()}"
-                                                           ajax="true" title="Eliminar Caso" onclick="destroyCase.show();">
-                                                <i class="fa fa-trash-o"></i> Eliminar Caso
-                                            </p:commandLink>
-                                        </li>
-
-
-                                    </ul>
-                                </div>
-                            </div> <!-- / .panel-heading-controls -->
-
-                        </h:form>
+                        <ui:include src="toolbarCaso.xhtml" />
 
                         <ui:include src="responder.xhtml" />
 
                         <ui:include src="actividadesListForm.xhtml" />
-
-                        <div class="panel no-border panel-dark">
-
-
-                        </div>
-
-
-
-
-
 
                     </div>
                 </div>

@@ -12,14 +12,9 @@
 
         <h:form id="formact">
 
-
-
             <c:forEach items="#{casoController.selected.notaList}" var="item" varStatus="loop">
 
-
-
-
-                <div id="panelNota#{loop.index}" class="#{casoController.notaEditable(item) ? 'panel panel-warning panel-body-colorful':'panel panel-dark colourable'}">
+                <div id="panelNota#{loop.index}" class="#{casoController.notaEditable(item) ? 'panel panel-dark colourable':'panel panel-dark colourable'}">
 
                     <h:panelGroup rendered="#{casoController.notaEditable(item)}">
                         <div class="panel-heading">
@@ -32,11 +27,11 @@
 
 
                     <div class="panel-body #{casoController.getNotaStyle(item.tipoNota)}">
-                         <div class="expandable">
-                                        <h:outputText value="#{casoController.extractNotaNewPart(item)}" escape="false"/>
-                                    </div>
-                                    
-                       
+                        <div class="expandable">
+                            <h:outputText value="#{casoController.extractNotaNewPart(item)}" escape="false"/>
+                        </div>
+
+
                         <br/>
                         <h:panelGroup rendered="#{not empty item.attachmentList}">
 
@@ -110,14 +105,14 @@
 
                     <p:inplace editor="true" disabled="#{casoController.selected.closed}">
                         <f:facet name="output">
-                            
-                             <div class="expandable">
-                                        <h:outputText 
-                                            value="#{casoController.selected.descripcionTxt}" 
-                                            escape="false"/>
-                                    </div>
-                                    
-                            
+
+                            <div class="expandable">
+                                <h:outputText 
+                                    value="#{casoController.selected.descripcionTxt}" 
+                                    escape="false"/>
+                            </div>
+
+
                         </f:facet>
                         <f:facet name="input">
                             <pe:ckEditor id="ticketDesc" value="#{casoController.selected.descripcionTxt}" 
