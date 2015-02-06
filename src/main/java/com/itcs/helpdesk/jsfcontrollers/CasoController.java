@@ -819,7 +819,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         if (!StringUtils.isEmpty(getEmailCliente_wizard())) {
             //        EmailCliente emailCliente = getJpaController().getEmailClienteFindByEmail(event.getObject().toString());
-            EmailCliente emailCliente = getJpaController().getEmailClienteFindByEmail(getEmailCliente_wizard());
+            EmailCliente emailCliente = getJpaController().find(EmailCliente.class, getEmailCliente_wizard());
 
 //        ////System.out.println("emailCliente_wizard:" + emailCliente_wizard);
 //        ////System.out.println("event.getObject().toString():" + event.getObject().toString());
@@ -849,7 +849,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 if (rutCliente_wizard != null) {
                     //user already entered rut, so its posible there is a cliente selected.
                     //if i change the email, to an email that is not in database, it means i want to add a new email to an existent client.
-                    Cliente existentClient = getJpaController().getClienteJpaController().findByRut(rutCliente_wizard);
+                    Cliente existentClient = getJpaController().findClienteByRut(rutCliente_wizard);
                     if (existentClient == null) {
                         //not exists
                         Cliente cliente = new Cliente();
@@ -995,10 +995,10 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         if (emailCliente_wizard_updateCliente && emailCliente_wizard_existeCliente) {
             addProdContratadoToClient(newCaso.getEmailCliente().getCliente());
-            getJpaController().merge(newCaso.getEmailCliente().getCliente());
+            getJpaControllerThatListenRules().merge(newCaso.getEmailCliente().getCliente());
         } else if (!emailCliente_wizard_existeCliente) {
             addProdContratadoToClient(newCaso.getIdCliente());
-            getJpaController().persist(newCaso.getIdCliente());
+            getJpaControllerThatListenRules().persist(newCaso.getIdCliente());
         }
 
         if (!emailCliente_wizard_existeEmail && !StringUtils.isEmpty(emailCliente_wizard)) {
