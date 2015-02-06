@@ -2919,7 +2919,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             recreateModel();
 
             RequestContext context = RequestContext.getCurrentInstance();
-            context.execute("transferir.hide()");
+            context.execute("PF('transferir').hide()");
 
 //            current = getJpaController().getCasoFindByIdCaso(current.getIdCaso());
         } catch (Exception e) {
