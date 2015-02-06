@@ -1565,13 +1565,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             current.setIdEstado(ec);
             //current.setTema("Postventa para " + current.getIdCliente().getCapitalName());
 
-            emailCliente_wizard_existeEmail = false;
-            emailCliente_wizard_existeCliente = false;
-            emailCliente_wizard_updateCliente = false;
-            emailCliente_wizard = null;
-            tipoAsoc_wizard = null;
-            rutCliente_wizard = null;
-            selectedItemIndex = -1;
+            resetWizardNewCaso();
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).logInfo("Error al preparar la creación del caso de postventa");
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
@@ -1603,13 +1597,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //            current.setIdSubEstado(sec);
             current.setIdEstado(ec);
 
-            emailCliente_wizard_existeEmail = false;
-            emailCliente_wizard_existeCliente = false;
-            emailCliente_wizard_updateCliente = false;
-            emailCliente_wizard = null;
-            tipoAsoc_wizard = null;
-            rutCliente_wizard = null;
-            selectedItemIndex = -1;
+            resetWizardNewCaso();
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).logInfo("Error al preparar la creación de un caso de entrega");
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
@@ -1640,18 +1628,26 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //            current.setIdSubEstado(sec);
             current.setIdEstado(ec);
 
-            emailCliente_wizard_existeEmail = false;
-            emailCliente_wizard_existeCliente = false;
-            emailCliente_wizard_updateCliente = false;
-            emailCliente_wizard = null;
-            tipoAsoc_wizard = null;
-            rutCliente_wizard = null;
-            selectedItemIndex = -1;
+            resetWizardNewCaso();
+            
+            
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).logInfo("Error al preparar la creacion de un caso");
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
         }
         return "/script/caso/Create";
+    }
+
+    private void resetWizardNewCaso() {
+        emailCliente_wizard_existeEmail = false;
+        emailCliente_wizard_existeCliente = false;
+        emailCliente_wizard_updateCliente = false;
+        emailCliente_wizard = null;
+        tipoAsoc_wizard = null;
+        rutCliente_wizard = null;
+        selectedItemIndex = -1;
+        pcWizard = null;
+        tipoAsoc_wizard = null;
     }
 
     public String prepareCopy() {
