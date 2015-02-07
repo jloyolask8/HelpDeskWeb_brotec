@@ -92,34 +92,27 @@
 
                 <a href="#" class="list-group-item"><i class="fa fa-bell-o list-group-icon"></i>Commentarios del Cliente<span class="badge badge-warning">#{casoController.cantidadDeRespuestasDelCliente}</span></a>
 
-                 <a href="#" class="list-group-item"><i class="fa fa-building-o list-group-icon"></i>Área
+                <a href="#" class="list-group-item"><i class="fa fa-building-o list-group-icon" title="Area"></i>
                     <h:outputText value="#{casoController.selected.idArea.nombre}"/>
                  </a>
                 
+                <a href="#" class="list-group-item"><i class="fa fa-building-o list-group-icon" title="Canal"></i>
+                      <h:outputText id="idCanal" value="#{casoController.selected.idCanal.nombre}" title="#{casoController.selected.idCanal}"/>
+                </a>
                
-                     <h:commandLink actionListener="#{usuarioController.prepareViewUserInDialog(casoController.selected.owner)}" 
+
+                <p:commandLink actionListener="#{usuarioController.prepareViewUserInDialog(casoController.selected.owner)}" 
                                     styleClass="list-group-item"
-                                     
                                        immediate="true"
                                        style="color: #4183C4 !important;"
                                        disabled="#{casoController.selected.closed or not usuarioController.puedeEditar(casoController.selected.owner)}" 
-                                       title="Ver Datos del Agente" >
-                          <i class="fa fa-user list-group-icon"></i>Agente: #{casoController.selected.owner.capitalName}
-                     </h:commandLink>
+                               title="Agente asignado al caso" >
+                    <i class="fa fa-user list-group-icon"></i>#{casoController.selected.owner.capitalName}
+                </p:commandLink>
                 
 
                  
-                <ul class="breadcrumb" style="display: block;">
-                    <li>Asignado a <h:outputText value="#{casoController.selected.idArea.nombre}"/></li>					
-                    <li class="active">
-                        <p:commandLink id="owner" actionListener="#{usuarioController.prepareViewUserInDialog(casoController.selected.owner)}"  
-                                       value="#{casoController.selected.owner.capitalName}" 
-                                       immediate="true"
-                                       style="color: #4183C4 !important;"
-                                       disabled="#{casoController.selected.closed or not usuarioController.puedeEditar(casoController.selected.owner)}" 
-                                       title="Ver Datos del Agente" />
-                    </li>
-                </ul>
+
             </div>
         </div>
     </h:form>

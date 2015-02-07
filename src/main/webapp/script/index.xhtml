@@ -80,16 +80,12 @@
                     <div class="panel search-panel">
 
                         <!-- Search form -->
-                        <h:form id="formfilter" styleClass="search-form bg-primary">
+                        <h:form id="formfilter" styleClass="search-form">
 
                             <div class="input-group input-group-lg">
 
-
-
                                 <h:inputText id="query" styleClass="form-control no-border" style="#{casoController.filterViewToggle ? 'border-bottom-left-radius: 0px;':''}" value="#{casoController.query}"  />
                                 <p:watermark for="query" value="#{empty casoController.vista ? 'Search':'Search in '.concat(casoController.vista.nombre)}"/>
-
-
 
                                 <span class="input-group-btn">
 
@@ -99,7 +95,6 @@
                                                      actionListener="#{casoController.filter()}">
 
                                     </p:commandButton>
-
 
                                 </span>
 
@@ -143,13 +138,7 @@
 
                             <h:form id="form0">
                                 <p:poll id="polling" widgetVar="poll" interval="150" listener="#{casoController.refresh}" update=":form0" />
-                                <h:panelGroup rendered="#{casoController.items.rowCount le 0}">
-                                    <div class="alert alert-page alert-warning">
-                                        <button type="button" class="close" data-dismiss="alert">×</button>
-                                        Your search did not match any cases.
-                                    </div>
-                                    <br/>
-                                </h:panelGroup>
+                               
 
                                 <div class="row">
                                     <div class="btn-toolbar wide-btns pull-left" role="toolbar">
@@ -300,6 +289,14 @@
                                 </div>
 
                                 <hr/>
+                                
+                                 <h:panelGroup rendered="#{casoController.items.rowCount le 0}">
+                                    <div class="alert alert-page alert-warning">
+                                        <button type="button" class="close" data-dismiss="alert">ok</button>
+                                        Your search did not match any cases.
+                                    </div>
+                                    <br/>
+                                </h:panelGroup>
 
                                 <p:dataTable id="ID_TABLA" value="#{casoController.items}" var="item"
                                              rendered="#{not casoController.mobileClient and casoController.items.rowCount gt 0}"  

@@ -42,6 +42,14 @@
                         border: 1px solid #ff0000;
                         background: #cd0a0a url("") 50% 50% repeat-x;                        
                     }
+
+                    .ui-autocomplete {
+                        position: absolute;
+                        cursor: default;
+                        border: none;
+                        padding: 0 0;
+                        border-radius: 1px;
+                    }
                 </style>
                 <script type="text/javascript">
                     PrimeFaces.locales['es'] = {
@@ -80,7 +88,7 @@
                 <ui:insert name="scripts"></ui:insert>
             </h:head>
 
-            <h:body id="mainbody" styleClass="theme-default main-navbar-fixed main-menu-animated">           
+            <h:body id="mainbody" styleClass="theme-adminflare main-navbar-fixed main-menu-animated mmc main-menu-fixed">           
 
                 <pe:ajaxErrorHandler /> 
 
@@ -659,10 +667,25 @@
                     });
 
 
-                    init.push(function () {
-                        $('body').addClass('mmc');
-                        $('body').addClass('main-menu-fixed');
+                    $(".select2Input").select2({
+                        dropdownAutoWidth: true,
+                        allowClear: true
+                    });
 
+                    $(".select2Multiple").select2({
+                        dropdownAutoWidth: true,
+                        allowClear: true
+                    });
+
+                    $('.datepicker').datetimepicker({
+                        language: 'es',
+                        format: 'dd/mm/yyyy hh:ii',
+                        viewformat: 'dd/mm/yyyy hh:ii',
+                        todayBtn: true,
+                        autoclose: true,
+                        todayHighlight: true,
+                        weekStart: 1,
+                        forceParse: true
                     });
 
                     window.PixelAdmin.start(init);
