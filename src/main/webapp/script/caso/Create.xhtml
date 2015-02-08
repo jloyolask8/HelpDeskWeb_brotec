@@ -75,12 +75,13 @@
                         <p:panel id="panelDatosCliente">
                             <p:messages globalOnly="true" showDetail="true" autoUpdate="true" closable="true" />
 
-                            <h:panelGrid id="datosCliente" columns="3" cellpadding="5">
+                            <h:panelGrid id="datosCliente" columns="3" cellpadding="5" rendered="#{casoController.selected.idCliente ne null}">
 
-                                <h:outputLabel value="Seleccione un cliente:" for="cliente" style="font-weight: bold"/>
+                                <h:outputLabel value="Seleccione un cliente:" for="cliente" style="font-weight: bold"
+                                               rendered="#{not empty casoController.selected.idSubComponente}"/>
 
                                 <p:selectOneMenu id="cliente" value="#{casoController.cliente_wizard}" filter="true" filterMatchMode="contains"
-                                                 disabled="#{empty casoController.selected.idSubComponente}" >
+                                                 rendered="#{not empty casoController.selected.idSubComponente}" >
 
                                     <f:selectItem itemLabel="Otro ..." itemValue=""/>
 
@@ -90,7 +91,7 @@
 
                                     <p:ajax update=":form:panelDatosCliente"  listener="#{casoController.handleNewTicketClientSelectionChange}" />
                                 </p:selectOneMenu>
-                                <p:message for="cliente"/>
+                                <p:message for="cliente" rendered="#{not empty casoController.selected.idSubComponente}"/>
 
 
 
@@ -119,7 +120,7 @@
                                 <h:panelGrid>
                                     <p:inputText id="rut" value="#{casoController.rutCliente_wizard}"  
                                                  title="#{bundle.CreateClienteTitle_rut}" validator="#{inputValidationBean.validarRut}"
-                                                 required="true" requiredMessage="El RUT es un dato requerido.">
+                                                 >
                                         <p:ajax event="blur" listener="#{casoController.formateaRutFiltro2}" partialSubmit="true" process="rut" update=":form:panelDatosCliente"/>
                                     </p:inputText>
                                     <p:outputLabel value="Con puntos y guión. Ejemplo: 15.040.452-5"/>
@@ -178,7 +179,7 @@
                         </p:panel>
                     </p:tab>
 
-                    <p:tab id="casos" title="Casos del Cliente">
+                    <p:tab id="casos" title="Casos del Cliente" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarCualquierCaso()}">
                         <go:casoListNoForm casosList="#{casoController.selected.idCliente.casoList}" 
                                            header="Historial de casos del Cliente #{casoController.selected.clientName} (#{casoController.selected.idCliente.casoList.size()})"/>
 

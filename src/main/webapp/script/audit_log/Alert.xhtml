@@ -11,41 +11,43 @@
             <p:outputLabel value="Alertas"/>
         </ui:define>
         <ui:define name="west">
-          
+            <p:accordionPanel multiple="true" cache="true" id="accionesaccordion1">
+                <p:tab title="Alertas" id="accionestab1">
                     <h:outputLabel escape="false" value="#{bundle.ayudaAlertas}"/>
-              
+                </p:tab>
+            </p:accordionPanel>  
         </ui:define>
         <ui:define name="body">
 
             <h:form>
                 <p:panel header="Filtro Alertas">
-                <h:panelGrid columns="6">
-                    <h:outputLabel value="Fecha Inicio" for="fecha" />
-                    <p:calendar locale="es" navigator="true" pattern="dd/MM/yyyy" id="fecha" value="#{auditLogController.alerta.fechaInicio}" title="Fecha Inicio"/>
+                    <h:panelGrid columns="6">
+                        <h:outputLabel value="Fecha Inicio" for="fecha" />
+                        <p:calendar locale="es" navigator="true" pattern="dd/MM/yyyy" id="fecha" value="#{auditLogController.alerta.fechaInicio}" title="Fecha Inicio"/>
 
-                    <h:outputLabel value="Fecha Fin" for="fecha1" />
-                    <p:calendar locale="es" navigator="true" pattern="dd/MM/yyyy" id="fecha1" value="#{auditLogController.alerta.fechaFin}" title="Fecha Fin" />
-                    
-                    <h:outputLabel value="Realizado por" for="idUser" />
-                    <p:selectOneMenu id="idUser" value="#{auditLogController.alerta.idUser}">
-                        <f:selectItems value="#{usuarioController.itemsAvailableSelectOne}"/>
-                    </p:selectOneMenu>
-                    
-                    <h:outputLabel rendered="#{filtroAcceso.verificarAccesoAFuncionFiltroOwner()}" value="Propietario" for="idOwner" />
-                    <p:selectOneMenu rendered="#{filtroAcceso.verificarAccesoAFuncionFiltroOwner()}" id="idOwner" value="#{auditLogController.alerta.idOwner}">
-                        <f:selectItems value="#{usuarioController.itemsAvailableSelectOneNoPropietario}"/>
-                    </p:selectOneMenu>
-                    
-                    <h:outputLabel value="#{bundle.EditAuditLogLabel_idCaso}" for="idCaso" />
-                    <p:inputText id="idCaso" value="#{auditLogController.alerta.idLogStr}" validator="#{inputValidationBean.validateNumber}"/>
-                        
-                </h:panelGrid>
+                        <h:outputLabel value="Fecha Fin" for="fecha1" />
+                        <p:calendar locale="es" navigator="true" pattern="dd/MM/yyyy" id="fecha1" value="#{auditLogController.alerta.fechaFin}" title="Fecha Fin" />
+
+                        <h:outputLabel value="Realizado por" for="idUser" />
+                        <p:selectOneMenu id="idUser" value="#{auditLogController.alerta.idUser}">
+                            <f:selectItems value="#{usuarioController.itemsAvailableSelectOne}"/>
+                        </p:selectOneMenu>
+
+                        <h:outputLabel rendered="#{filtroAcceso.verificarAccesoAFuncionFiltroOwner()}" value="Propietario" for="idOwner" />
+                        <p:selectOneMenu rendered="#{filtroAcceso.verificarAccesoAFuncionFiltroOwner()}" id="idOwner" value="#{auditLogController.alerta.idOwner}">
+                            <f:selectItems value="#{usuarioController.itemsAvailableSelectOneNoPropietario}"/>
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="#{bundle.EditAuditLogLabel_idCaso}" for="idCaso" />
+                        <p:inputText id="idCaso" value="#{auditLogController.alerta.idLogStr}" validator="#{inputValidationBean.validateNumber}"/>
+
+                    </h:panelGrid>
 
                     <f:facet name="footer">
                         <p:commandButton ajax="false" action="#{auditLogController.filterAlertList}" value="Filtrar"/>
                     </f:facet>
 
-            </p:panel>
+                </p:panel>
             </h:form>
             <h:form>
 
@@ -53,11 +55,11 @@
                 <h:panelGroup rendered="#{auditLogController.items.rowCount > 0}">
 
                     <p:dataTable widgetVar="AuditLogTable" var="item" value="#{auditLogController.items}"
-                                     emptyMessage="#{bundle.ListAuditLogEmpty}">
+                                 emptyMessage="#{bundle.ListAuditLogEmpty}">
 
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListAuditLogTitle} (#{auditLogController.pagination.pageFirstItem + 1} - #{auditLogController.pagination.pageLastItem + 1} de #{auditLogController.pagination.itemsCount})"/>
-                            </f:facet>
+                        <f:facet name="header">
+                            <h:outputText value="#{bundle.ListAuditLogTitle} (#{auditLogController.pagination.pageFirstItem + 1} - #{auditLogController.pagination.pageLastItem + 1} de #{auditLogController.pagination.itemsCount})"/>
+                        </f:facet>
 
                         <p:column >
                             <f:facet name="header">
@@ -68,27 +70,27 @@
                             <h:graphicImage value="/images/software-update-urgent-2.png" title="Caso vencido (mas del 100% del tiempo asignado)" rendered="#{item.newValue eq 'Caso Vencido'}"/>
                         </p:column>
                         <p:column  headerText="#{bundle.ListAuditLogTitle_idCaso}">
-           
-                        <h:outputText value="#{item.idCaso}"/>
-                    </p:column>
-                     <p:column  headerText="Propietario">
-           
-                        <h:outputText value="#{item.owner}"/>
-                    </p:column>
-                    <p:column  headerText="Estado alerta">
-           
-                        <h:outputText value="#{item.newValue}"/>
-                    </p:column>
-                    <p:column  headerText="#{bundle.ListAuditLogTitle_fecha}">
-           
-                        <h:outputText value="#{item.fecha}">
-                            <f:convertDateTime pattern="#{bundle.dateFormat}" />
-                        </h:outputText>
-                    </p:column>
-                    <p:column  headerText="Realizado por">
-           
-                        <h:outputText value="#{item.idUser}"/>
-                    </p:column>
+
+                            <h:outputText value="#{item.idCaso}"/>
+                        </p:column>
+                        <p:column  headerText="Propietario">
+
+                            <h:outputText value="#{item.owner}"/>
+                        </p:column>
+                        <p:column  headerText="Estado alerta">
+
+                            <h:outputText value="#{item.newValue}"/>
+                        </p:column>
+                        <p:column  headerText="#{bundle.ListAuditLogTitle_fecha}">
+
+                            <h:outputText value="#{item.fecha}">
+                                <f:convertDateTime pattern="#{bundle.dateFormat}" />
+                            </h:outputText>
+                        </p:column>
+                        <p:column  headerText="Realizado por">
+
+                            <h:outputText value="#{item.idUser}"/>
+                        </p:column>
 
 
                         <f:facet name="footer">
