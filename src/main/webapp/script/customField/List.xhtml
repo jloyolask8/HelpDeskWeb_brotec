@@ -85,7 +85,7 @@
                             <p:column headerText="Acción">
                                 <p:commandButton id="viewBtn" action="#{customFieldController.setSelected(item)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" title="#{bundle.View}" icon="ui-icon ui-icon-document" update=":CustomFieldViewForm" oncomplete="PF('CustomFieldViewDialog').show()"/>
                                 <p:commandButton id="editBtn" action="#{customFieldController.setSelected(item)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" title="#{bundle.Edit}" icon="ui-icon ui-icon-pencil" update=":CustomFieldEditForm" oncomplete="PF('CustomFieldEditDialog').show()"/>
-                                <p:commandButton id="showDialogButton" title="#{bundle.Delete}" update=":deleteForm" action="#{customFieldController.setSelected(item)}" oncomplete="confirmation.show()" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" icon="ui-icon ui-icon-trash"/>
+                                <p:commandButton id="showDialogButton" title="#{bundle.Delete}" update=":deleteForm" action="#{customFieldController.setSelected(item)}" oncomplete="PF('confirmation').show()" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" icon="ui-icon ui-icon-trash"/>
                             </p:column>
 
                             <f:facet name="footer">
