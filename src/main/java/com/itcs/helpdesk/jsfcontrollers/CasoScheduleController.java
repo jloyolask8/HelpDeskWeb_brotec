@@ -4,7 +4,6 @@
  */
 package com.itcs.helpdesk.jsfcontrollers;
 
-import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Cliente;
 import com.itcs.helpdesk.persistence.entities.FiltroVista;
@@ -54,8 +53,8 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     @ManagedProperty(value = "#{casoController}")
     private CasoController casoController;
-    @ManagedProperty(value = "#{UserSessionBean}")
-    private UserSessionBean userSessionBean;
+//    @ManagedProperty(value = "#{UserSessionBean}")
+//    private UserSessionBean userSessionBean;
     private ScheduleModel lazyScheduleEventsModel;
     private DefaultScheduleEvent event = null;
 
@@ -542,14 +541,14 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     public void onDateSelect(SelectEvent selectEvent) {
         List<Usuario> fUsuario = new LinkedList<>();
-        fUsuario.add(userSessionBean.getCurrent());
-        if (!userSessionBean.getCurrent().equals(casoController.getSelected().getOwner())) {
+        fUsuario.add(getUserSessionBean().getCurrent());
+        if (!getUserSessionBean().getCurrent().equals(casoController.getSelected().getOwner())) {
             fUsuario.add(casoController.getSelected().getOwner());
         }
         com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = new com.itcs.helpdesk.persistence.entities.ScheduleEvent();
         entityEvent.addNewScheduleEventReminder();
         entityEvent.setIdCaso(casoController.getSelected());
-        entityEvent.setIdUsuario(userSessionBean.getCurrent());
+        entityEvent.setIdUsuario(getUserSessionBean().getCurrent());
 
         entityEvent.setUsuariosInvitedList(fUsuario);
         this.event = new DefaultScheduleEvent("", (Date) selectEvent.getObject(), (Date) selectEvent.getObject());
@@ -637,12 +636,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
         this.casoController = casoController;
     }
 
-    /**
-     * @param userSessionBean the userSessionBean to set
-     */
-    public void setUserSessionBean(UserSessionBean userSessionBean) {
-        this.userSessionBean = userSessionBean;
-    }
+   
 
     public List<Usuario> autoCompleteUsuario(String query) {
         //System.out.println(query);

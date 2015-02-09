@@ -93,7 +93,7 @@
 
     <dependencies>
         
-           <dependency>
+        <dependency>
             <groupId>MFontAwesome</groupId>
             <artifactId>mfontawesome</artifactId>
             <version>1</version>
@@ -117,6 +117,18 @@
             <artifactId>joda-time</artifactId>
             <version>2.3</version>
         </dependency>
+        
+        <!-- for JSF 2.x -->
+        <!--dependency>
+            <groupId>org.ocpsoft.rewrite</groupId>
+            <artifactId>rewrite-servlet</artifactId>
+            <version>2.0.12.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ocpsoft.rewrite</groupId>
+            <artifactId>rewrite-config-prettyfaces</artifactId>
+            <version>2.0.12.Final</version>
+        </dependency-->
         
         <dependency>
             <groupId>org.ocpsoft.prettytime</groupId>

@@ -32,7 +32,6 @@
                 <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/widgets.min.css" rel="stylesheet" type="text/css"/>
                 <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/pages.min.css" rel="stylesheet" type="text/css"/>
                 <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/themes.min.css" rel="stylesheet" type="text/css"/>
-                <link href="#{facesContext.externalContext.requestContextPath}/resources/css/custom.css" rel="stylesheet" type="text/css"/>
                 <link href="#{facesContext.externalContext.requestContextPath}/resources/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css"/>
 
                 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet"/>
@@ -43,6 +42,10 @@
                         background: #cd0a0a url("") 50% 50% repeat-x;                        
                     }
 
+                    .ui-autocomplete-multiple-container {
+                        width: auto !important;
+                    }
+
                     .ui-autocomplete {
                         position: absolute;
                         cursor: default;
@@ -50,6 +53,8 @@
                         padding: 0 0;
                         border-radius: 1px;
                     }
+
+
                 </style>
                 <script type="text/javascript">
                     PrimeFaces.locales['es'] = {
@@ -84,6 +89,7 @@
 
                 <h:outputScript name="jsf.js" library="javax.faces"/>
 
+
                 <ui:insert name="head"></ui:insert>
                 <ui:insert name="scripts"></ui:insert>
             </h:head>
@@ -92,11 +98,7 @@
 
                 <pe:ajaxErrorHandler /> 
 
-                <p:ajaxStatus style="display:block;">
-                    <f:facet name="default">
-                        <h:outputText value="Por favor espere..." style="font-weight: bold;"/>
-                    </f:facet>               
-                </p:ajaxStatus>
+               
 
                 <p:idleMonitor timeout="1200000">
                     <p:ajax event="idle" listener="#{applicationBean.onIdle}" async="true" 
@@ -131,11 +133,7 @@
                                         <p:graphicImage library="images" name="LogoGODesk.png" title="GoDesk"/>
                                     </a>
 
-                                    <p:ajaxStatus>
-                                        <f:facet name="start">
-                                            <a href="#"><span class="label label-success">Loading...</span></a>
-                                        </f:facet>
-                                    </p:ajaxStatus>
+
 
                                     <!-- Main navbar toggle -->
                                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-navbar-collapse">
@@ -618,12 +616,32 @@
                                         Content
                         -->
                         <!-- Content here -->
-                        <ui:insert name="west"/>               
+                        <ui:insert name="west"/>  
+
+
+
+                        <p:ajaxStatus>
+                            <f:facet name="start">
+                                <div class="pull-right"  style="z-index: 1011; margin-left: auto;
+                                     margin-right: auto;
+                                     width: 200px;
+                                     position: absolute;" >
+                                    <a href="#"><span class="label label-warning">Loading...</span></a>
+                                </div>
+                            </f:facet>
+                        </p:ajaxStatus>
+
+
 
                         <ui:insert name="body"/>  
 
 
+
+
                     </div> <!-- / #content-wrapper -->
+
+
+
                     <div id="main-menu-bg"></div>
                 </div> <!-- / #main-wrapper -->
 
@@ -734,6 +752,12 @@
 
 
                 <ui:insert name="dialogs"/>
+                
+                 <p:ajaxStatus style="display:block;">
+                    <f:facet name="default">
+                        <h:outputText value="Por favor espere..." style="font-weight: bold;"/>
+                    </f:facet>               
+                </p:ajaxStatus>
 
 
             </h:body>

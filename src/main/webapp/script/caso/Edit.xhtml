@@ -17,461 +17,437 @@
         <ui:define name="head">
 
             <style type="text/css">
-                .page-header .pull-right {
-                    padding-top: 5px;
-                }
-                .page-header .pull-right > * {
-                    display: inline-block;
-                    vertical-align:middle;
-                }
 
-                .ui-autocomplete-multiple-container {
-                    width: auto !important;
-                }
-                .form-group {
-                    margin-bottom: 5px;
-                }
             </style>
 
         </ui:define>
 
-
-
-
         <ui:define name="body">
 
-            <div class="container-fluid">
-                <h:form>
-                    <div class="page-header">
-                        <div class="row">
-                            <div class="col-sm-10 col-xs-10">
+            <h:form>
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-sm-10 col-xs-10">
 
 
-                                <h:commandLink id="prio" disabled="#{casoController.selected.closed}" styleClass="m-details-star">
-                                    <p:graphicImage library="images" name="#{casoController.selected.esPrioritario ? 'star-enabled.png':'star-disabled.png'}" title="Importante!"/>
-                                    <p:ajax id="aj2" listener="#{casoController.changePriority(casoController.selected, casoController.selected.esPrioritario)}" update="prio"/>
-                                </h:commandLink>
+                            <h:commandLink id="prio" disabled="#{casoController.selected.closed}" styleClass="valign-middle m-details-star">
+                                <p:graphicImage library="images" name="#{casoController.selected.esPrioritario ? 'star-enabled.png':'star-disabled.png'}" title="Importante!"/>
+                                <p:ajax id="aj2" listener="#{casoController.changePriority(casoController.selected, casoController.selected.esPrioritario)}" update="prio"/>
+                            </h:commandLink>
 
-                                <!--estado ABIERTO - CERRADO -->
-                                <h:outputText value="#{casoController.selected.idEstado.nombre}" title="#{casoController.selected.estadoAlerta.nombre}" 
-                                              rendered="#{casoController.selected.isOpen()}" styleClass="label label-#{casoController.selected.estadoAlerta.styleClass}">
-                                </h:outputText>                       
-                                <h:outputText value="#{casoController.selected.idEstado.nombre}" title="Caso cerrado" 
-                                              rendered="#{not casoController.selected.isOpen()}" styleClass="label label-default">
-                                </h:outputText>   
-                                <!--fin estado ABIERTO - CERRADO -->
-                                <h1>
-                                    <span class="text-light-gray">
-                                        <h:outputText value="#{casoController.selected.tipoCaso ne null ? casoController.selected.tipoCaso.nombre:'Caso' } \##{casoController.selected.idCaso}:"/>
-                                    </span>
-                                    <h:outputText styleClass="text-semibold" 
-                                                  value="#{casoController.selected.tema}"/>
-                                </h1>
-                                <!-- TAGS-->
-                                <h:panelGroup id="etiquetasGroup">
-                                    <ui:repeat value="#{casoController.selected.etiquetaStringList}" var="et">
-                                        <h:outputText styleClass="label label-info label-tag" value="#{et}"/>
-                                    </ui:repeat>
-                                </h:panelGroup>
-                                <!-- fin TAGS-->
-                            </div>
-                            <div class="col-sm-2 col-xs-2">
-                                <div class="pages pull-right">
-                                    <ul class="pager pager-xs pull-right" style="margin: 0px !important;">
-                                        <li>
-                                            <h:commandLink action="#{casoController.prepareEditPreviusItem()}" style="font-weight: bold"
-                                                           title="Ir al caso anterior"
-                                                           disabled="#{casoController.selectedItemIndex eq casoController.pagination.pageFirstItem}"
-                                                           rendered="#{casoController.pagination.itemsCount > 0}">
-                                                <i class="fa fa-long-arrow-left"></i>         
-                                            </h:commandLink>
+                            <!--estado ABIERTO - CERRADO -->
+                            <h:outputText value="#{casoController.selected.idEstado.nombre}" title="#{casoController.selected.estadoAlerta.nombre}" 
+                                          rendered="#{casoController.selected.isOpen()}" styleClass="valign-middle label label-#{casoController.selected.estadoAlerta.styleClass}">
+                            </h:outputText>                       
+                            <h:outputText value="#{casoController.selected.idEstado.nombre}" title="Caso cerrado" 
+                                          rendered="#{not casoController.selected.isOpen()}" styleClass="valign-middle label label-default">
+                            </h:outputText>   
+                            <!--fin estado ABIERTO - CERRADO -->
+                            <h1 class="valign-middle">
+                                <h:outputText value="#{casoController.selected.tipoCaso ne null ? casoController.selected.tipoCaso.nombre:'Caso' } \##{casoController.selected.idCaso}: "/>
+                                <h:outputText styleClass="text-semibold" 
+                                              value="#{casoController.selected.tema}"/>
+                            </h1>
 
-                                        </li>
-                                        <li>
-                                            <h:commandLink action="#{casoController.prepareEditNextItem()}" style="font-weight: bold"
-                                                           title="Ir al caso siguiente"
-                                                           disabled="#{casoController.selectedItemIndex eq casoController.pagination.pageLastItem}"
-                                                           rendered="#{casoController.pagination.itemsCount > 0}">
-                                                <i class="fa fa-long-arrow-right"></i>       
-                                            </h:commandLink>
-                                        </li>
-                                    </ul>
-                                </div>
+                            <!-- fin TAGS-->
+                        </div>
+                        <div class="col-sm-2 col-xs-2">
+                            <div class="pages pull-right">
+                                <ul class="pager pager-xs pull-right" style="margin: 0px !important;">
+                                    <li>
+                                        <h:commandLink action="#{casoController.prepareEditPreviusItem()}" style="font-weight: bold"
+                                                       title="Ir al caso anterior"
+                                                       disabled="#{casoController.selectedItemIndex eq casoController.pagination.pageFirstItem}"
+                                                       rendered="#{casoController.pagination.itemsCount > 0}">
+                                            <i class="fa fa-long-arrow-left"></i>         
+                                        </h:commandLink>
+
+                                    </li>
+                                    <li>
+                                        <h:commandLink action="#{casoController.prepareEditNextItem()}" style="font-weight: bold"
+                                                       title="Ir al caso siguiente"
+                                                       disabled="#{casoController.selectedItemIndex eq casoController.pagination.pageLastItem}"
+                                                       rendered="#{casoController.pagination.itemsCount > 0}">
+                                            <i class="fa fa-long-arrow-right"></i>       
+                                        </h:commandLink>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
-                    </div> <!-- / .page-header -->
-                </h:form>
+                    </div>
+                </div> <!-- / .page-header -->
+            </h:form>
 
 
 
-                <div class="row">
-                    <div class="col-md-4 col-sm-5 col-lg-3 col-sm-push-7 col-md-push-8 col-lg-push-9 sidebar"><!-- menu-right -->
+            <div class="row">
 
-                        <ui:include src="info-panel.xhtml"/>
+                <div class="col-md-4 col-sm-5 col-lg-3 col-sm-push-7 col-md-push-8 col-lg-push-9 sidebar"><!-- menu-right -->
 
-                        <div class="panel-group" id="accordion-example">
-                            <div class="panel">
-                                <div class="panel-heading">
-                                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-example" href="#collapseOne">
-                                        Propiedades del caso
-                                    </a>
-                                </div> <!-- / .panel-heading -->
-                                <div id="collapseOne" class="panel-collapse in"> 
+                    <ui:include src="info-panel.xhtml"/>
 
-                                    <h:form id="formint1" styleClass="panel">
+                    <div class="panel-group" id="accordion-example">
+                        <div class="panel">
+                            <div class="panel-heading">
+                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-example" href="#collapseOne">
+                                    Propiedades del caso
+                                </a>
+                            </div> <!-- / .panel-heading -->
+                            <div id="collapseOne" class="panel-collapse in"> 
 
-                                        <div class="panel-body" style="padding: 10px !important;">
-                                            <div class="row">
-                                                <div class="col-sm-6">
-                                                    <div class="form-group no-margin-hr" >
-                                                        <h:outputLabel styleClass="control-label text-sm text-slim"
-                                                                       value="Tipo:" for="idTipoCaso"/>
-                                                        <h:selectOneMenu id="idTipoCaso"  styleClass="form-control input-sm" disabled="#{casoController.selected.closed}" 
-                                                                         required="true" requiredMessage="El tipo de caso es requerido."
-                                                                         converter="TipoCasoControllerConverter"
-                                                                         value="#{casoController.selected.tipoCaso}" >
-                                                            <f:selectItems value="#{applicationBean.tipoCasoAvailableList}" var="tipo" 
-                                                                           itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
-                                                            <p:ajax update=":formint1"/>
+                                <h:form id="formint1" styleClass="panel">
 
-                                                        </h:selectOneMenu>
-                                                    </div>
-                                                </div><!-- col-sm-6 -->
-                                                <div class="col-sm-6">
-                                                    <div class="form-group no-margin-hr">
-                                                        <h:outputLabel styleClass="control-label text-sm text-slim"
-                                                                       value="#{bundle.EditCasoLabel_idSubEstado}" for="idSubEstado"/>
-                                                        <h:selectOneMenu id="idSubEstado" styleClass="form-control input-sm"   rendered="#{!casoController.selected.closed}"
-                                                                         required="true" requiredMessage="El subestado es requerido"
-                                                                         value="#{casoController.selected.idSubEstado}" >
+                                    <div class="panel-body" style="padding: 10px !important;">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group no-margin-hr" >
+                                                    <h:outputLabel styleClass="control-label text-sm text-slim"
+                                                                   value="Tipo:" for="idTipoCaso"/>
+                                                    <h:selectOneMenu id="idTipoCaso"  styleClass="form-control input-sm" disabled="#{casoController.selected.closed}" 
+                                                                     required="true" requiredMessage="El tipo de caso es requerido."
+                                                                     converter="TipoCasoControllerConverter"
+                                                                     value="#{casoController.selected.tipoCaso}" >
+                                                        <f:selectItems value="#{applicationBean.tipoCasoAvailableList}" var="tipo" 
+                                                                       itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
+                                                        <p:ajax update=":formint1"/>
 
-                                                            <f:selectItems value="#{casoController.itemsSubEstadoCasoAvailableSelectOneCasoAbierto}" var="subEstad" itemDescription="#{subEstad.description}"/>
-                                                        </h:selectOneMenu>
-                                                        <h:outputText styleClass="label" 
-                                                                      style="background: \##{casoController.selected.idSubEstado.backgroundColor}; color: \##{casoController.selected.idSubEstado.fontColor};" value="#{casoController.selected.idSubEstado.nombre}"
-                                                                      rendered="#{casoController.selected.closed}"/>
-                                                    </div>
-                                                </div><!-- col-sm-6 -->
-                                            </div><!-- row -->
-
-                                            <div class="row">
-                                                <div class="col-sm-6">
-                                                    <div class="form-group no-margin-hr">
-                                                        <h:outputLabel styleClass="control-label text-sm text-slim"
-                                                                       value="#{bundle.EditCasoLabel_idPrioridad}" for="idPrioridad" />
-                                                        <h:selectOneMenu styleClass="form-control input-sm" disabled="#{casoController.selected.closed}"
-                                                                         required="true"
-                                                                         id="idPrioridad" value="#{casoController.selected.idPrioridad}" >
-                                                            <f:selectItems value="#{prioridadController.itemsAvailableSelectMany}"/>
-                                                        </h:selectOneMenu>
-                                                    </div>
-                                                </div><!-- col-sm-6 -->
-                                                <div class="col-sm-6">
-                                                    <div class="form-group no-margin-hr">
-                                                        <h:outputLabel 
-                                                            styleClass="control-label text-sm text-slim"
-                                                            value="#{bundle.EditCasoLabel_nextResponseDue}" for="nextResponseDue" />
-                                                        <h:inputText id="nextResponseDue" styleClass="form-control form_datetime input-sm" disabled="#{casoController.selected.closed}" 
-                                                                     title="#{bundle.EditCasoTitle_nextResponseDue}" value="#{casoController.selected.nextResponseDue}" 
-                                                                     required="true" requiredMessage="Favor ingrese un valor para el sla.">
-                                                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
-                                                        </h:inputText>
-
-                                                        <script type="text/javascript">
-                                                            $('.form_datetime').datetimepicker({
-                                                                language: 'es',
-                                                                format: 'dd/mm/yyyy hh:ii',
-                                                                viewformat: 'dd/mm/yyyy hh:ii',
-                                                                todayBtn: true,
-                                                                autoclose: true,
-                                                                todayHighlight: true,
-                                                                weekStart: 1,
-                                                                forceParse: true
-                                                            });
-                                                        </script>
-                                                    </div>
-                                                </div><!-- col-sm-6 -->
-                                            </div><!-- row -->
-
-                                            <div class="row">
-                                                <div class="col-sm-6">
-                                                    <div class="form-group no-margin-hr">
-                                                        <h:outputLabel styleClass="control-label text-sm text-slim"
-                                                                       value="#{applicationBean.productDescription}:" for="idProducto" />
-                                                        <h:selectOneMenu styleClass="form-control input-sm" disabled="#{casoController.selected.closed}" id="idProducto" 
-                                                                         value="#{casoController.selected.idProducto}" >
-                                                            <f:selectItems value="#{productoController.itemsAvailableSelectOne}"/>
-                                                            <p:ajax update="idComponente modeloProductoId"  listener="#{casoController.handleProductChange}" />
-                                                        </h:selectOneMenu>
-                                                    </div>
-                                                </div><!-- col-sm-6 -->
-                                                <div class="col-sm-6">
-                                                    <div class="form-group no-margin-hr">
-                                                        <h:outputLabel styleClass="control-label text-sm text-slim"
-                                                                       value="Modelo:" for="modeloProductoId" />
-                                                        <h:selectOneMenu styleClass="form-control input-sm" id="modeloProductoId" disabled="#{casoController.selected.closed}"
-                                                                         value="#{casoController.selected.idModelo}" >
-                                                            <f:selectItem itemLabel="" itemValue=""/>
-                                                            <f:selectItems value="#{casoController.selected.idProducto.modeloProductoList}" var="m" itemValue="#{m}" itemLabel="#{m.nombre}"/>
-                                                            <p:ajax update="idComponente"  listener="#{casoController.onProductoModeloChosen()}" />
-                                                        </h:selectOneMenu>
-                                                    </div>
-                                                </div><!-- col-sm-6 -->
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-sm-6">
-                                                    <div class="form-group no-margin-hr">
-                                                        <h:outputLabel styleClass="control-label text-sm text-slim"
-                                                                       value="#{applicationBean.productComponentDescription}:" 
-                                                                       for="idComponente" />
-                                                        <h:selectOneMenu styleClass="form-control input-sm" id="idComponente"  value="#{casoController.selected.idComponente}"
-                                                                         disabled="#{casoController.selected.closed or casoController.selected.idProducto eq null}">
-                                                            <f:selectItem itemLabel="" itemValue=""/>
-                                                            <f:selectItems value="#{casoController.selected.idProducto.componenteList}" var="comp" itemLabel="#{comp.nombre}" itemValue="#{comp}"/>
-                                                            <p:ajax update="idSubComponente"  listener="#{casoController.handleProductChange}" />  
-                                                        </h:selectOneMenu>
-                                                    </div>
-                                                </div><!-- col-sm-6 -->
-                                                <div class="col-sm-6">
-                                                    <div class="form-group no-margin-hr">
-                                                        <h:outputLabel styleClass="control-label text-sm text-slim"
-                                                                       value="#{applicationBean.productSubComponentDescription}:" for="idSubComponente" />
-                                                        <h:selectOneMenu styleClass="form-control input-sm" id="idSubComponente" value="#{casoController.selected.idSubComponente}"  
-                                                                         disabled="#{casoController.selected.closed or casoController.selected.idComponente eq null}">
-                                                            <f:selectItem itemLabel="" itemValue=""/>
-                                                            <f:selectItems value="#{casoController.selected.idComponente.subComponenteList}" var="subc" itemLabel="#{subc.nombre}" itemValue="#{subc}"/>
-                                                        </h:selectOneMenu>
-                                                    </div>
-                                                </div><!-- col-sm-6 -->
-                                            </div>
-                                            <ui:repeat id="tableCustomFields" var="customField" value="#{customFieldController.getCurrentCasoCustomFieldList(casoController.selected)}">
-
-                                                <div class="row form-group">
-                                                    <label class="col-sm-12 control-label text-sm text-slim">
-                                                        <h:outputLabel value="#{customField.customField.label}:" for="customFieldI"/>
-                                                    </label>
-                                                    <div class="col-sm-12">
-                                                        <go:customField id="customFieldI" casoCustomFieldValue="#{customField}" casoOpen="#{casoController.selected.isOpen()}"/>
-                                                    </div>
+                                                    </h:selectOneMenu>
                                                 </div>
-                                            </ui:repeat>
+                                            </div><!-- col-sm-6 -->
+                                            <div class="col-sm-6">
+                                                <div class="form-group no-margin-hr">
+                                                    <h:outputLabel styleClass="control-label text-sm text-slim"
+                                                                   value="#{bundle.EditCasoLabel_idSubEstado}" for="idSubEstado"/>
+                                                    <h:selectOneMenu id="idSubEstado" styleClass="form-control input-sm"   rendered="#{!casoController.selected.closed}"
+                                                                     required="true" requiredMessage="El subestado es requerido"
+                                                                     value="#{casoController.selected.idSubEstado}" >
 
+                                                        <f:selectItems value="#{casoController.itemsSubEstadoCasoAvailableSelectOneCasoAbierto}" var="subEstad" itemDescription="#{subEstad.description}"/>
+                                                    </h:selectOneMenu>
+                                                    <h:outputText styleClass="label" 
+                                                                  style="background: \##{casoController.selected.idSubEstado.backgroundColor}; color: \##{casoController.selected.idSubEstado.fontColor};" value="#{casoController.selected.idSubEstado.nombre}"
+                                                                  rendered="#{casoController.selected.closed}"/>
+                                                </div>
+                                            </div><!-- col-sm-6 -->
+                                        </div><!-- row -->
+
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group no-margin-hr">
+                                                    <h:outputLabel styleClass="control-label text-sm text-slim"
+                                                                   value="#{bundle.EditCasoLabel_idPrioridad}" for="idPrioridad" />
+                                                    <h:selectOneMenu styleClass="form-control input-sm" disabled="#{casoController.selected.closed}"
+                                                                     required="true"
+                                                                     id="idPrioridad" value="#{casoController.selected.idPrioridad}" >
+                                                        <f:selectItems value="#{prioridadController.itemsAvailableSelectMany}"/>
+                                                    </h:selectOneMenu>
+                                                </div>
+                                            </div><!-- col-sm-6 -->
+                                            <div class="col-sm-6">
+                                                <div class="form-group no-margin-hr">
+                                                    <h:outputLabel 
+                                                        styleClass="control-label text-sm text-slim"
+                                                        value="#{bundle.EditCasoLabel_nextResponseDue}" for="nextResponseDue" />
+                                                    <h:inputText id="nextResponseDue" styleClass="form-control form_datetime input-sm" disabled="#{casoController.selected.closed}" 
+                                                                 title="#{bundle.EditCasoTitle_nextResponseDue}" value="#{casoController.selected.nextResponseDue}" 
+                                                                 required="true" requiredMessage="Favor ingrese un valor para el sla.">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                                                    </h:inputText>
+
+                                                    <script type="text/javascript">
+                                                        $('.form_datetime').datetimepicker({
+                                                            language: 'es',
+                                                            format: 'dd/mm/yyyy hh:ii',
+                                                            viewformat: 'dd/mm/yyyy hh:ii',
+                                                            todayBtn: true,
+                                                            autoclose: true,
+                                                            todayHighlight: true,
+                                                            weekStart: 1,
+                                                            forceParse: true
+                                                        });
+                                                    </script>
+                                                </div>
+                                            </div><!-- col-sm-6 -->
+                                        </div><!-- row -->
+
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group no-margin-hr">
+                                                    <h:outputLabel styleClass="control-label text-sm text-slim"
+                                                                   value="#{applicationBean.productDescription}:" for="idProducto" />
+                                                    <h:selectOneMenu styleClass="form-control input-sm" disabled="#{casoController.selected.closed}" id="idProducto" 
+                                                                     value="#{casoController.selected.idProducto}" >
+                                                        <f:selectItems value="#{productoController.itemsAvailableSelectOne}"/>
+                                                        <p:ajax update="idComponente modeloProductoId"  listener="#{casoController.handleProductChange}" />
+                                                    </h:selectOneMenu>
+                                                </div>
+                                            </div><!-- col-sm-6 -->
+                                            <div class="col-sm-6">
+                                                <div class="form-group no-margin-hr">
+                                                    <h:outputLabel styleClass="control-label text-sm text-slim"
+                                                                   value="Modelo:" for="modeloProductoId" />
+                                                    <h:selectOneMenu styleClass="form-control input-sm" id="modeloProductoId" disabled="#{casoController.selected.closed}"
+                                                                     value="#{casoController.selected.idModelo}" >
+                                                        <f:selectItem itemLabel="" itemValue=""/>
+                                                        <f:selectItems value="#{casoController.selected.idProducto.modeloProductoList}" var="m" itemValue="#{m}" itemLabel="#{m.nombre}"/>
+                                                        <p:ajax update="idComponente"  listener="#{casoController.onProductoModeloChosen()}" />
+                                                    </h:selectOneMenu>
+                                                </div>
+                                            </div><!-- col-sm-6 -->
                                         </div>
-                                        <div class="panel-footer text-right">
-                                            <p:commandLink disabled="#{casoController.selected.closed or not (casoController.verificarGrabarCaso())}" 
-                                                           styleClass="btn btn-primary"
-                                                           ajax="false" update=":formint1" action="#{casoController.update}" >Guardar</p:commandLink>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group no-margin-hr">
+                                                    <h:outputLabel styleClass="control-label text-sm text-slim"
+                                                                   value="#{applicationBean.productComponentDescription}:" 
+                                                                   for="idComponente" />
+                                                    <h:selectOneMenu styleClass="form-control input-sm" id="idComponente"  value="#{casoController.selected.idComponente}"
+                                                                     disabled="#{casoController.selected.closed or casoController.selected.idProducto eq null}">
+                                                        <f:selectItem itemLabel="" itemValue=""/>
+                                                        <f:selectItems value="#{casoController.selected.idProducto.componenteList}" var="comp" itemLabel="#{comp.nombre}" itemValue="#{comp}"/>
+                                                        <p:ajax update="idSubComponente"  listener="#{casoController.handleProductChange}" />  
+                                                    </h:selectOneMenu>
+                                                </div>
+                                            </div><!-- col-sm-6 -->
+                                            <div class="col-sm-6">
+                                                <div class="form-group no-margin-hr">
+                                                    <h:outputLabel styleClass="control-label text-sm text-slim"
+                                                                   value="#{applicationBean.productSubComponentDescription}:" for="idSubComponente" />
+                                                    <h:selectOneMenu styleClass="form-control input-sm" id="idSubComponente" value="#{casoController.selected.idSubComponente}"  
+                                                                     disabled="#{casoController.selected.closed or casoController.selected.idComponente eq null}">
+                                                        <f:selectItem itemLabel="" itemValue=""/>
+                                                        <f:selectItems value="#{casoController.selected.idComponente.subComponenteList}" var="subc" itemLabel="#{subc.nombre}" itemValue="#{subc}"/>
+                                                    </h:selectOneMenu>
+                                                </div>
+                                            </div><!-- col-sm-6 -->
                                         </div>
+                                        <ui:repeat id="tableCustomFields" var="customField" value="#{customFieldController.getCurrentCasoCustomFieldList(casoController.selected)}">
+
+                                            <div class="row form-group">
+                                                <label class="col-sm-12 control-label text-sm text-slim">
+                                                    <h:outputLabel value="#{customField.customField.label}:" for="customFieldI"/>
+                                                </label>
+                                                <div class="col-sm-12">
+                                                    <go:customField id="customFieldI" casoCustomFieldValue="#{customField}" casoOpen="#{casoController.selected.isOpen()}"/>
+                                                </div>
+                                            </div>
+                                        </ui:repeat>
+
+                                    </div>
+                                    <div class="panel-footer text-right">
+                                        <p:commandLink disabled="#{casoController.selected.closed or not (casoController.verificarGrabarCaso())}" 
+                                                       styleClass="btn btn-primary"
+                                                       ajax="false" update=":formint1" action="#{casoController.update}" >Guardar</p:commandLink>
+                                    </div>
+                                </h:form>
+
+
+
+
+
+                            </div> <!-- / .collapse -->
+                        </div> <!-- / .panel -->
+
+
+
+                        <div class="panel">
+                            <div class="panel-heading">
+                                <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-example" href="#casosHijosList">
+                                    Sub casos (#{casoController.selected.casosHijosList.size()})
+                                </a>
+                            </div> <!-- / .panel-heading -->
+                            <div id="casosHijosList" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    <h:form id="formSubCasos" rendered="#{casoController.selected.casosHijosList.size() gt 0}">
+                                        <h:panelGrid columns="1">
+                                            <c:forEach items="#{casoController.selected.casosHijosList}" var="itemS" >
+                                                <h:commandLink action="#{casoController.filterByIdCaso(itemS.idCaso)}">                                                        
+                                                    <h:outputText styleClass="label" 
+                                                                  style="background: \##{itemS.idSubEstado.backgroundColor}; color: \##{itemS.idSubEstado.fontColor};" value="#{itemS.idSubEstado.nombre}"/>
+                                                    <h:outputText value=" #{itemS.tipoCaso.nombre} N°#{itemS.idCaso} - #{itemS.tema}"/>
+                                                </h:commandLink>
+                                                <p:separator/>
+                                            </c:forEach>
+                                        </h:panelGrid>
                                     </h:form>
+                                    <h:outputText value="No hay sub casos" rendered="#{casoController.selected.casosHijosList.size() le 0}"/>
+                                </div> <!-- / .panel-body -->
+                            </div> <!-- / .collapse -->
+                        </div> <!-- / .panel -->
+
+                        <div class="panel">
+                            <div class="panel-heading">
+                                <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-example" href="#casosRelacionadosList">
+                                    Casos relacionados (#{casoController.selected.casosRelacionadosList.size()})
+                                </a>
+                            </div> <!-- / .panel-heading -->
+                            <div id="casosRelacionadosList" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    <h:form id="formCasosRel" rendered="#{casoController.selected.casosRelacionadosList.size() gt 0}">
+                                        <h:panelGrid columns="1">
+                                            <c:forEach items="#{casoController.selected.casosRelacionadosList}" var="item" >
+                                                <h:commandLink action="#{casoController.filterByIdCaso(item.idCaso)}">                                                        
+                                                    <h:outputText styleClass="label" 
+                                                                  style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};" value="#{item.idSubEstado.nombre}"/>
+                                                    <h:outputText value=" #{item.tipoCaso.nombre} N°#{item.idCaso} - #{item.tema}"/>
+                                                </h:commandLink>
+                                                <p:separator/>
+                                            </c:forEach>
+                                        </h:panelGrid>
+                                    </h:form>
+                                    <h:outputText value="No hay casos relacionados" rendered="#{casoController.selected.casosRelacionadosList.size() le 0}"/>
 
 
+                                </div> <!-- / .panel-body -->
+                            </div> <!-- / .collapse -->
+                        </div> <!-- / .panel -->
 
 
+                        <div class="panel">
 
-                                </div> <!-- / .collapse -->
-                            </div> <!-- / .panel -->
-
-
-
-                            <div class="panel">
-                                <div class="panel-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-example" href="#casosHijosList">
-                                        Sub casos (#{casoController.selected.casosHijosList.size()})
+                            <div class="panel-heading">
+                                <h:panelGroup id="tab-adjuntos-panel">
+                                    <a id="title-tab-adjuntos" class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-example" href="#tab-adjuntos">
+                                        Archivos adjuntos (#{casoController.selected.cantidadAttachment})
                                     </a>
-                                </div> <!-- / .panel-heading -->
-                                <div id="casosHijosList" class="panel-collapse collapse">
-                                    <div class="panel-body">
-                                        <h:form id="formSubCasos" rendered="#{casoController.selected.casosHijosList.size() gt 0}">
-                                            <h:panelGrid columns="1">
-                                                <c:forEach items="#{casoController.selected.casosHijosList}" var="itemS" >
-                                                    <h:commandLink action="#{casoController.filterByIdCaso(itemS.idCaso)}">                                                        
-                                                        <h:outputText styleClass="label" 
-                                                                      style="background: \##{itemS.idSubEstado.backgroundColor}; color: \##{itemS.idSubEstado.fontColor};" value="#{itemS.idSubEstado.nombre}"/>
-                                                        <h:outputText value=" #{itemS.tipoCaso.nombre} N°#{itemS.idCaso} - #{itemS.tema}"/>
-                                                    </h:commandLink>
-                                                    <p:separator/>
-                                                </c:forEach>
-                                            </h:panelGrid>
-                                        </h:form>
-                                        <h:outputText value="No hay sub casos" rendered="#{casoController.selected.casosHijosList.size() le 0}"/>
-                                    </div> <!-- / .panel-body -->
-                                </div> <!-- / .collapse -->
-                            </div> <!-- / .panel -->
-
-                            <div class="panel">
-                                <div class="panel-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-example" href="#casosRelacionadosList">
-                                        Casos relacionados (#{casoController.selected.casosRelacionadosList.size()})
-                                    </a>
-                                </div> <!-- / .panel-heading -->
-                                <div id="casosRelacionadosList" class="panel-collapse collapse">
-                                    <div class="panel-body">
-                                        <h:form id="formCasosRel" rendered="#{casoController.selected.casosRelacionadosList.size() gt 0}">
-                                            <h:panelGrid columns="1">
-                                                <c:forEach items="#{casoController.selected.casosRelacionadosList}" var="item" >
-                                                    <h:commandLink action="#{casoController.filterByIdCaso(item.idCaso)}">                                                        
-                                                        <h:outputText styleClass="label" 
-                                                                      style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};" value="#{item.idSubEstado.nombre}"/>
-                                                        <h:outputText value=" #{item.tipoCaso.nombre} N°#{item.idCaso} - #{item.tema}"/>
-                                                    </h:commandLink>
-                                                    <p:separator/>
-                                                </c:forEach>
-                                            </h:panelGrid>
-                                        </h:form>
-                                        <h:outputText value="No hay casos relacionados" rendered="#{casoController.selected.casosRelacionadosList.size() le 0}"/>
+                                </h:panelGroup>
 
 
-                                    </div> <!-- / .panel-body -->
-                                </div> <!-- / .collapse -->
-                            </div> <!-- / .panel -->
+                            </div> <!-- / .panel-heading -->
+                            <div id="tab-adjuntos" class="panel-collapse collapse">
 
 
-                            <div class="panel">
+                                <h:form id="formlistaadjuntos">
+                                    <h:panelGroup id="listaadjuntos" layout="block" rendered="#{not empty casoController.selected.attachmentList}">
 
-                                <div class="panel-heading">
-                                    <h:panelGroup id="tab-adjuntos-panel">
-                                        <a id="title-tab-adjuntos" class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-example" href="#tab-adjuntos">
-                                            Archivos adjuntos (#{casoController.selected.cantidadAttachment})
-                                        </a>
+
+                                        <ul class="list-group no-margin">
+
+                                            <ui:repeat var="fileitem" value="#{casoController.selected.attachmentList}" >
+                                                <h:panelGroup rendered="#{fileitem.contentId eq null}">
+                                                    <li class="list-group-item no-border-hr padding-xs-hr">
+                                                        <h:outputText value="#{casoController.nombreArchivoParaDesplegar(fileitem.nombreArchivo)}" 
+                                                                      styleClass="text-semibold"
+                                                                      title="#{fileitem.nombreArchivo} (#{fileitem.fileSizeHuman})"/>     
+                                                        <div class="">
+                                                            &nbsp;&nbsp;
+                                                            <p:commandLink ajax="false" title="Bajar #{fileitem.nombreArchivo} (#{fileitem.fileSizeHuman})">
+                                                                Bajar
+                                                                <p:fileDownload contentDisposition="attachment" value="#{casoController.bajarArchivo(fileitem.idAttachment)}" />
+                                                            </p:commandLink>&nbsp;&nbsp;
+                                                            <p:commandLink value="Eliminar" title="Eliminar #{fileitem.nombreArchivo} (#{fileitem.fileSizeHuman})" 
+                                                                           onclick="borrarAttachment.show();"
+                                                                           disabled="#{not casoController.verificarGrabarCaso()}">
+                                                                <f:setPropertyActionListener target="#{casoController.idFileDelete}" value="#{fileitem.idAttachment}"/>
+                                                            </p:commandLink>
+
+                                                            <p:lightBox iframe="true" rendered="#{fileitem.imageOrPDF}"> 
+                                                                <h:outputLink  value="#{facesContext.externalContext.requestContextPath}/DownloadFileServlet?tenant=#{UserSessionBean.tenantId}&amp;id=#{fileitem.idAttachment}" 
+                                                                               title="Preview">  
+                                                                    <h:outputText value="Ver" title="Previsualizar"/>
+                                                                </h:outputLink>
+                                                            </p:lightBox>
+                                                        </div>
+
+
+                                                    </li>
+                                                </h:panelGroup>
+
+                                            </ui:repeat>
+                                        </ul>
+
+
                                     </h:panelGroup>
 
 
-                                </div> <!-- / .panel-heading -->
-                                <div id="tab-adjuntos" class="panel-collapse collapse">
+                                    <p:fileUpload id="fileupload"
+                                                  sizeLimit="5242880"
+                                                  invalidSizeMessage="El archivo excede el tamaño maximo: 5MB."
+                                                  fileUploadListener="#{casoController.subir}"
+                                                  disabled="#{not casoController.verificarGrabarCaso()}"
+                                                  label="Adjuntar (seleccionar o arrastrar aquí) ..."
+                                                  uploadLabel="Subir"
+                                                  cancelLabel="Cancelar Subida"
+                                                  invalidFileMessage="Archivo Invalido." 
+                                                  mode="advanced"
+                                                  dragDropSupport="true"
+                                                  auto="true"
+                                                  update=":mainform:messages :formlistaadjuntos :tab-adjuntos-panel :message-details-reply:parchivos"
+                                                  multiple="true"  
+                                                  rendered="#{casoController.selected.open}"/>
 
 
-                                    <h:form id="formlistaadjuntos">
-                                        <h:panelGroup id="listaadjuntos" layout="block" rendered="#{not empty casoController.selected.attachmentList}">
+                                    <p:tooltip for=":formlistaadjuntos:fileupload" value="Sugerencia: Arrastre y suelte los archivos en esta área del caso para adjuntarlos."/>
 
 
-                                            <ul class="list-group no-margin">
+                                </h:form>
 
-                                                <ui:repeat var="fileitem" value="#{casoController.selected.attachmentList}" >
-                                                    <h:panelGroup rendered="#{fileitem.contentId eq null}">
-                                                        <li class="list-group-item no-border-hr padding-xs-hr">
-                                                            <h:outputText value="#{casoController.nombreArchivoParaDesplegar(fileitem.nombreArchivo)}" 
-                                                                          styleClass="text-semibold"
-                                                                          title="#{fileitem.nombreArchivo} (#{fileitem.fileSizeHuman})"/>     
-                                                            <div class="">
-                                                                &nbsp;&nbsp;
-                                                                <p:commandLink ajax="false" title="Bajar #{fileitem.nombreArchivo} (#{fileitem.fileSizeHuman})">
-                                                                    Bajar
-                                                                    <p:fileDownload contentDisposition="attachment" value="#{casoController.bajarArchivo(fileitem.idAttachment)}" />
-                                                                </p:commandLink>&nbsp;&nbsp;
-                                                                <p:commandLink value="Eliminar" title="Eliminar #{fileitem.nombreArchivo} (#{fileitem.fileSizeHuman})" 
-                                                                               onclick="borrarAttachment.show();"
-                                                                               disabled="#{not casoController.verificarGrabarCaso()}">
-                                                                    <f:setPropertyActionListener target="#{casoController.idFileDelete}" value="#{fileitem.idAttachment}"/>
-                                                                </p:commandLink>
+                            </div> <!-- / .collapse -->
 
-                                                                <p:lightBox iframe="true" rendered="#{fileitem.imageOrPDF}"> 
-                                                                    <h:outputLink  value="#{facesContext.externalContext.requestContextPath}/DownloadFileServlet?tenant=#{UserSessionBean.tenantId}&amp;id=#{fileitem.idAttachment}" 
-                                                                                   title="Preview">  
-                                                                        <h:outputText value="Ver" title="Previsualizar"/>
-                                                                    </h:outputLink>
-                                                                </p:lightBox>
-                                                            </div>
-
-
-                                                        </li>
-                                                    </h:panelGroup>
-
-                                                </ui:repeat>
-                                            </ul>
-
-
-                                        </h:panelGroup>
-
-
-                                        <p:fileUpload id="fileupload"
-                                                      sizeLimit="5242880"
-                                                      invalidSizeMessage="El archivo excede el tamaño maximo: 5MB."
-                                                      fileUploadListener="#{casoController.subir}"
-                                                      disabled="#{not casoController.verificarGrabarCaso()}"
-                                                      label="Adjuntar (seleccionar o arrastrar aquí) ..."
-                                                      uploadLabel="Subir"
-                                                      cancelLabel="Cancelar Subida"
-                                                      invalidFileMessage="Archivo Invalido." 
-                                                      mode="advanced"
-                                                      dragDropSupport="true"
-                                                      auto="true"
-                                                      update=":mainform:messages :formlistaadjuntos :tab-adjuntos-panel :message-details-reply:parchivos"
-                                                      multiple="true"  
-                                                      rendered="#{casoController.selected.open}"/>
-
-
-                                        <p:tooltip for=":formlistaadjuntos:fileupload" value="Sugerencia: Arrastre y suelte los archivos en esta área del caso para adjuntarlos."/>
-
-
-                                    </h:form>
-
-                                </div> <!-- / .collapse -->
-
-                            </div> <!-- / .panel -->
-
-                        </div>
-
-                        <div class="panel widget-notifications">
-                            <div class="panel-heading">
-                                <span class="panel-title"><i class="panel-title-icon fa fa-fire"></i>Log de Eventos</span>
-                            </div> <!-- / .panel-heading -->
-                            <div class="panel-body padding-sm">
-                                <div class="notifications-list">
-                                    <ui:repeat value="#{casoController.auditLogsCurrentCase}" var="audit" >
-                                        <div class="notification">
-                                            <div class="notification-title text-info"><h:outputText value="#{audit.idUser} "/></div>
-                                            <div class="notification-description">
-                                                #{(not empty audit.campo and not empty audit.oldValue) ? audit.campo.concat(' cambió de ').concat(audit.oldValue).concat(' a '):''}
-                                                #{audit.newValue}
-                                            </div>
-                                            <div class="notification-ago"><h:outputText title="#{casoController.formatDate(audit.fecha)}" value="#{casoController.prettyDate(audit.fecha)}"/></div>
-                                        </div> <!-- / .notification -->
-                                    </ui:repeat>
-                                </div>
-                            </div> <!-- / .panel-body -->
                         </div> <!-- / .panel -->
 
-                        <div class="panel no-border panel-dark">
-                            <div class="panel-body text-center">
-                                <h:form id="formAgendarEvento">
-                                    <p:schedule id="myschedule" value="#{casoScheduleController.lazyScheduleEventsModel}" 
-                                                firstHour="8" widgetVar="myschedule" >
-                                        <p:ajax event="dateSelect" listener="#{casoScheduleController.onDateSelect}" 
-                                                update=":createEventForm:eventDetails" oncomplete="PF('createEventDialog').show()" />  
-                                        <p:ajax event="eventSelect" listener="#{casoScheduleController.onEventSelect}" 
-                                                update=":createEventForm:eventDetails" oncomplete="PF('createEventDialog').show()" />  
-
-                                        <p:ajax event="eventMove" listener="#{casoScheduleController.onEventMove}" update=":mainform:messages" />  
-                                        <p:ajax event="eventResize" listener="#{casoScheduleController.onEventResize}" update=":mainform:messages" /> 
-                                    </p:schedule>
-                                </h:form>
-                            </div>
-                        </div>
-
-                        <div class="panel no-border panel-dark">
-                            <div class="panel-body text-center">
-                                <p class="text-lg text-slim">
-                                    Can't find the answer?
-                                </p>
-                                <div style="margin-top: 20px;">
-                                    <a href="#" class="btn btn-lg btn-primary btn-flat" data-toggle="modal" data-target="#modal-faq">Contact Us</a>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
-                    <div class="col-sm-7 col-md-8 col-lg-9 col-sm-pull-5 col-md-pull-4 col-lg-pull-3 main">
+                    <div class="panel widget-notifications">
+                        <div class="panel-heading">
+                            <span class="panel-title"><i class="panel-title-icon fa fa-fire"></i>Log de Eventos</span>
+                        </div> <!-- / .panel-heading -->
+                        <div class="panel-body padding-sm">
+                            <div class="notifications-list">
+                                <ui:repeat value="#{casoController.auditLogsCurrentCase}" var="audit" >
+                                    <div class="notification">
+                                        <div class="notification-title text-info"><h:outputText value="#{audit.idUser} "/></div>
+                                        <div class="notification-description">
+                                            #{(not empty audit.campo and not empty audit.oldValue) ? audit.campo.concat(' cambió de ').concat(audit.oldValue).concat(' a '):''}
+                                            #{audit.newValue}
+                                        </div>
+                                        <div class="notification-ago"><h:outputText title="#{casoController.formatDate(audit.fecha)}" value="#{casoController.prettyDate(audit.fecha)}"/></div>
+                                    </div> <!-- / .notification -->
+                                </ui:repeat>
+                            </div>
+                        </div> <!-- / .panel-body -->
+                    </div> <!-- / .panel log de eventos -->
 
-                        <ui:include src="toolbarCaso.xhtml" />
+                    <div class="panel no-border panel-dark">
+                        <div class="panel-body text-center">
+                            <h:form id="formAgendarEvento">
+                                <p:schedule id="myschedule" value="#{casoScheduleController.lazyScheduleEventsModel}" 
+                                            firstHour="8" widgetVar="myschedule" >
+                                    <p:ajax event="dateSelect" listener="#{casoScheduleController.onDateSelect}" 
+                                            update=":createEventForm:eventDetails" oncomplete="PF('createEventDialog').show()" />  
+                                    <p:ajax event="eventSelect" listener="#{casoScheduleController.onEventSelect}" 
+                                            update=":createEventForm:eventDetails" oncomplete="PF('createEventDialog').show()" />  
 
-                        <ui:include src="responder.xhtml" />
+                                    <p:ajax event="eventMove" listener="#{casoScheduleController.onEventMove}" update=":mainform:messages" />  
+                                    <p:ajax event="eventResize" listener="#{casoScheduleController.onEventResize}" update=":mainform:messages" /> 
+                                </p:schedule>
+                            </h:form>
+                        </div>
+                    </div> <!-- / .panel Agenda -->
 
-                        <ui:include src="actividadesListForm.xhtml" />
-
+                    <div class="panel no-border panel-dark">
+                        <div class="panel-body text-center">
+                            <p class="text-lg text-slim">
+                                Can't find the answer?
+                            </p>
+                            <div style="margin-top: 20px;">
+                                <a href="#" class="btn btn-lg btn-primary btn-flat" data-toggle="modal" data-target="#modal-faq">Contact Us</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
+                <div class="col-sm-7 col-md-8 col-lg-9 col-sm-pull-5 col-md-pull-4 col-lg-pull-3 main">
+
+                    <ui:include src="toolbarCaso.xhtml" />
+
+                    <ui:include src="responder.xhtml" />
+
+                    <ui:include src="actividadesListForm.xhtml" />
+
+                </div>
             </div>
+
 
             <script type="text/javascript">
                 init.push(function () {

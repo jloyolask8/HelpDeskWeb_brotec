@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -15,7 +16,7 @@ import org.primefaces.model.SelectableDataModel;
 
 //TODO move all notas logic from casoController to this class!!
 @ManagedBean(name = "notaController")
-@SessionScoped
+@ViewScoped
 public class NotaController extends AbstractManagedBean<Nota> implements Serializable {
 
     public NotaController() {

@@ -43,6 +43,16 @@
             </h:head>
 
             <h:body id="mainbody" styleClass="theme-default page-signin-alt">   
+                
+                <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" />
+
+                <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+                    <div class="text-center">
+                        <p:outputLabel value="Accediendo a su cuenta..."/>
+                        <br/>
+                        <p:graphicImage library="images" name="ajaxloadingbar.gif" />
+                    </div>
+                </p:dialog>
 
 
                 <div class="signin-header">

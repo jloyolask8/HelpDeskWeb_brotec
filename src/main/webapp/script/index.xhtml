@@ -9,6 +9,9 @@
       xmlns:pe="http://primefaces.org/ui/extensions"
       xmlns:go="http://java.sun.com/jsf/composite/go">
 
+    <pe:importEnum type="com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta" var="EnumTipoAlerta" allSuffix="ALL_ENUM_VALUES" />
+    <pe:importEnum type="com.itcs.helpdesk.persistence.entityenums.EnumPrioridad" var="EnumPrioridad" allSuffix="ALL_ENUM_VALUES" />
+
     <ui:composition template="/script/template_inbox_bootstrap.xhtml">
         <ui:define name="title">
             <h:outputText value="#{applicationBean.helpdeskTitle} #{bundle.Inbox}"></h:outputText>
@@ -29,20 +32,7 @@
             </script>
         </ui:define>
 
-
-
         <ui:define name="body" id="body">
-
-            <pe:importEnum type="com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta" var="EnumTipoAlerta" allSuffix="ALL_ENUM_VALUES" />
-            <pe:importEnum type="com.itcs.helpdesk.persistence.entityenums.EnumPrioridad" var="EnumPrioridad" allSuffix="ALL_ENUM_VALUES" />
-
-
-
-            <script>
-                init.push(function () {
-                    $('body').addClass('page-search');
-                });
-            </script>
 
             <div class="page-header">
                 <h1><i class="fa fa-inbox page-header-icon"></i>&nbsp;&nbsp;Listado de Casos</h1>
@@ -138,7 +128,7 @@
 
                             <h:form id="form0">
                                 <p:poll id="polling" widgetVar="poll" interval="150" listener="#{casoController.refresh}" update=":form0" />
-                               
+
 
                                 <div class="row">
                                     <div class="btn-toolbar wide-btns pull-left" role="toolbar">
@@ -289,8 +279,8 @@
                                 </div>
 
                                 <hr/>
-                                
-                                 <h:panelGroup rendered="#{casoController.items.rowCount le 0}">
+
+                                <h:panelGroup rendered="#{casoController.items.rowCount le 0}">
                                     <div class="alert alert-page alert-warning">
                                         <button type="button" class="close" data-dismiss="alert">ok</button>
                                         Your search did not match any cases.
@@ -485,23 +475,23 @@
                 </div>
                 <div class="col-md-3">
                     <h:panelGroup layout="block" styleClass="panel" rendered="#{not empty tagCloudBean.items and (not casoController.mobileClient)}">
-                            <div class="panel-heading">
-                                <span class="panel-title"><i class="panel-title-icon fa fa-tags"></i>Mis Tags</span>
-                            </div>
+                        <div class="panel-heading">
+                            <span class="panel-title"><i class="panel-title-icon fa fa-tags"></i>Mis Tags</span>
+                        </div>
 
-                            <div class="panel-body">
+                        <div class="panel-body">
 
-                                <ui:repeat value="#{tagCloudBean.etiquetasByUsuario}" var="etiquetaUser">
-                                    <p:commandLink actionListener="#{tagCloudBean.onEtiquetaSelected(etiquetaUser.tagId)}"
-                                                   oncomplete="$('.nav-pills, .nav-tabs').tabdrop();"
-                                                   styleClass="label label-tag label-info" value="#{etiquetaUser}"
-                                                   update=":tabs :mainform:messages :form0 :formfilter:panelFilter0:panelFilter">
+                            <ui:repeat value="#{tagCloudBean.etiquetasByUsuario}" var="etiquetaUser">
+                                <p:commandLink actionListener="#{tagCloudBean.onEtiquetaSelected(etiquetaUser.tagId)}"
+                                               oncomplete="$('.nav-pills, .nav-tabs').tabdrop();"
+                                               styleClass="label label-tag label-info" value="#{etiquetaUser}"
+                                               update=":tabs :mainform:messages :form0 :formfilter:panelFilter0:panelFilter">
 
-                                    </p:commandLink>&nbsp;
-                                </ui:repeat>
+                                </p:commandLink>&nbsp;
+                            </ui:repeat>
 
 
-                            </div>
+                        </div>
                     </h:panelGroup>
 
 
@@ -610,7 +600,7 @@
             <p:dialog modal="true" widgetVar="excelStatusDialog" header="Generando Documento Excel con los casos..." 
                       draggable="false" closable="false" resizable="false">  
                 <p:graphicImage value="/images/excel64.png"/> &nbsp;
-               <p:graphicImage library="images" name="ajax-loader_red.gif" />
+                <p:graphicImage library="images" name="ajax-loader_red.gif" />
             </p:dialog> 
 
 

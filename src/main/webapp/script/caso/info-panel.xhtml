@@ -93,25 +93,34 @@
                 <a href="#" class="list-group-item"><i class="fa fa-bell-o list-group-icon"></i>Commentarios del Cliente<span class="badge badge-warning">#{casoController.cantidadDeRespuestasDelCliente}</span></a>
 
                 <a href="#" class="list-group-item"><i class="fa fa-building-o list-group-icon" title="Area"></i>
-                    <h:outputText value="#{casoController.selected.idArea.nombre}"/>
-                 </a>
-                
-                <a href="#" class="list-group-item"><i class="fa fa-building-o list-group-icon" title="Canal"></i>
-                      <h:outputText id="idCanal" value="#{casoController.selected.idCanal.nombre}" title="#{casoController.selected.idCanal}"/>
+                    <h:outputText value="#{casoController.selected.idArea.nombre ne null ? casoController.selected.idArea.nombre:'sin area'}"/>
                 </a>
-               
+
+                <a href="#" class="list-group-item"><i class="fa fa-building-o list-group-icon" title="Canal"></i>
+                    <h:outputText id="idCanal" value="#{casoController.selected.idCanal.nombre}" title="#{casoController.selected.idCanal}"/>
+                </a>
+
 
                 <p:commandLink actionListener="#{usuarioController.prepareViewUserInDialog(casoController.selected.owner)}" 
-                                    styleClass="list-group-item"
-                                       immediate="true"
-                                       style="color: #4183C4 !important;"
-                                       disabled="#{casoController.selected.closed or not usuarioController.puedeEditar(casoController.selected.owner)}" 
+                               styleClass="list-group-item"
+                               immediate="true"
+                               style="color: #4183C4 !important;"
+                               disabled="#{casoController.selected.closed or not usuarioController.puedeEditar(casoController.selected.owner)}" 
                                title="Agente asignado al caso" >
                     <i class="fa fa-user list-group-icon"></i>#{casoController.selected.owner.capitalName}
                 </p:commandLink>
-                
 
-                 
+                <a href="#" class="list-group-item">
+                    <i class="fa fa-tags list-group-icon"></i>Tags
+                    
+                   <!-- TAGS-->
+                                <h:panelGroup id="etiquetasGroup">
+                                    <ui:repeat value="#{casoController.selected.etiquetaStringList}" var="et">
+                                        <h:outputText styleClass="label label-info label-tag" value="#{et}"/>
+                                    </ui:repeat>
+                                </h:panelGroup>
+                </a>
+
 
             </div>
         </div>
