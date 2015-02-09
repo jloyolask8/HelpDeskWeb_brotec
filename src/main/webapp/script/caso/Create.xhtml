@@ -26,6 +26,7 @@
             </p:accordionPanel>
         </ui:define>
         <ui:define name="body">
+            <pe:importEnum type="com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso" var="EnumTipoCaso" allSuffix="ALL_ENUM_VALUES" />
 
             <h:form id="form">
 
@@ -94,15 +95,15 @@
                                 <p:message for="cliente" rendered="#{not empty casoController.selected.idSubComponente}"/>
 
 
-                               
+
 
 
                                 <p:outputLabel value="#{bundle.EditCasoLabel_emailCliente}" for="emailCliente" style="font-weight:bold"/>
 
                                 <p:selectOneMenu id="emailCliente_s" value="#{casoController.emailCliente_wizard}" var="opt"
                                                  rendered="#{casoController.selected.idCliente ne null and casoController.emailCliente_wizard_existeCliente}">
-                                  <f:selectItem itemLabel="Nuevo..." itemValue=""/>
-                                  <f:selectItems value="#{casoController.selected.idCliente.emailClienteList}" itemLabel="#{opt.emailCliente}" itemValue="#{opt.emailCliente}"/>
+                                    <f:selectItem itemLabel="Nuevo..." itemValue=""/>
+                                    <f:selectItems value="#{casoController.selected.idCliente.emailClienteList}" itemLabel="#{opt.emailCliente}" itemValue="#{opt.emailCliente}"/>
                                     <p:ajax update=":form:panelDatosCliente"  listener="#{casoController.handleEmailChange}"/>
                                 </p:selectOneMenu>
 
@@ -119,8 +120,8 @@
                                 <p:message for="emailCliente_s" rendered="#{casoController.selected.idCliente ne null and casoController.emailCliente_wizard_existeCliente}"/>
                                 <p:message for="emailCliente" rendered="#{not casoController.emailCliente_wizard_existeCliente}"/>
 
-                                
-                                 <h:outputLabel value="Tipo de relacion:" for="tipoAsoc" style="font-weight: bold"
+
+                                <h:outputLabel value="Tipo de relacion:" for="tipoAsoc" style="font-weight: bold"
                                                rendered="#{not empty casoController.selected.idSubComponente}"/>
 
                                 <h:panelGrid rendered="#{not empty casoController.selected.idSubComponente}">
@@ -135,7 +136,7 @@
                                 </h:panelGrid>
 
                                 <p:message for="tipoAsoc" rendered="#{not empty casoController.selected.idSubComponente}"/>
-                                
+
                                 <p:outputLabel value="#{bundle.CreateClienteLabel_rut}" for="rut" style="font-weight:bold"/>
                                 <h:panelGrid>
                                     <p:inputText id="rut" value="#{casoController.rutCliente_wizard}"  
@@ -229,7 +230,7 @@
                                                  filter="true" filterMatchMode="contains"
                                                  value="#{casoController.selected.tipoCaso}" >                                  
                                     <f:selectItems value="#{applicationBean.tipoCasoAvailableList}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
-                                    <p:ajax update="idSubEstado idPrioridad"/>
+                                    <p:ajax update="@parent idSubEstado idPrioridad"/>
                                 </p:selectOneMenu>
 
                                 <p:outputLabel value="#{bundle.EditCasoLabel_idSubEstado}" for="idSubEstado" style="font-weight:bold"/>
@@ -274,6 +275,50 @@
                                              toolbar="#{applicationBean.ckEditorToolbar}"
                                              customConfig="#{request.contextPath}/resources/js/ckeditor.js"
                                              id="descripcion" width="600px" height="210"/>
+
+
+                                <p:outputLabel value="Sub Casos" 
+                                               rendered="#{(casoController.selected.tipoCaso eq EnumTipoCaso.ENTREGA.getTipoCaso()) or (casoController.selected.tipoCaso eq EnumTipoCaso.POSTVENTA.getTipoCaso())}"
+                                               for="filtrosVista" style="font-weight:bold"/>
+
+                                <p:dataTable id="filtrosVista" value="#{casoController.selected.casosHijosList}" var="subcaso" 
+                                             rendered="#{(casoController.selected.tipoCaso eq EnumTipoCaso.ENTREGA.getTipoCaso()) or (casoController.selected.tipoCaso eq EnumTipoCaso.POSTVENTA.getTipoCaso())}">                     
+
+                                    <f:facet name="header">
+                                        <h:outputText value="Sub Casos"/>
+                                    </f:facet>
+
+                                    <p:column headerText="Recinto" width="15%">
+
+                                        <p:selectOneMenu id="Recinto" value="#{subcaso.idRecinto}"   style="width: 100%;" editable="true" 
+                                                         filter="true" filterMatchMode="contains">
+                                            <f:selectItems value="#{recintoController.itemsAvailableSelectMany}" var="r" itemLabel="#{r.idRecinto}" itemValue="#{r.idRecinto}"/>
+                                        </p:selectOneMenu>
+
+
+                                    </p:column>
+
+                                    <p:column headerText="Item" width="15%">
+                                        <p:commandButton immediate="true" style="width: 100%;"
+                                                         value="#{(subcaso.idItem eq null) ? 'Elegir item':subcaso.idItem}" 
+                                                         update=":formArbol:arbol :form:filtrosVista" oncomplete="#{p:widgetVar('idDialogArbol')}.show()"/>
+                                    </p:column>
+
+                                    <p:column headerText="Descripción" width="40%">
+                                        <p:inputText id="idDescripcionSubCaso" style="width: 100%;" value="#{subcaso.descripcion}"
+                                                     required="true" requiredMessage="Se requiere que ingrese una breve descripción para este sub-caso."/>
+                                    </p:column>
+
+                                    <p:column width="4%">
+                                        <f:facet name="header">
+
+                                            <p:commandButton icon="ui-icon-plus" actionListener="#{casoController.addNewSubCasoToPreentrega}" immediate="true"
+                                                             update=":form:filtrosVista" iconPos="notext" />
+                                        </f:facet>
+                                        <p:commandButton icon="ui-icon-close" actionListener="#{casoController.removeSubCasoFromCurrentCaso(subcaso)}" ajax="true" immediate="true"
+                                                         update=":form" iconPos="notext" />
+                                    </p:column>
+                                </p:dataTable>
 
                                 <p:outputLabel value="Archivos Adjuntos:" for="fileupload" style="font-weight:bold"/>
                                 <h:panelGrid width="600" style="padding: 0px !important; margin: 0px;">
@@ -345,6 +390,26 @@
             </p:dialog>
 
 
+            <p:dialog id="idDialogArbol" header="Seleccione Item" widgetVar="selCat" modal="true" appendTo="@(body)" height="550">
+                <h:form id="formArbol">
+                    <p:inputText id="searchItems" value="#{itemController.textoFiltro}"
+                                 title="#{bundle.EditCasoTitle_idCaso}" style="width: 250px !important;">
+                        <p:ajax event="keyup" update="arbol" listener="#{itemController.filtrarItems()}"/>
+                    </p:inputText>
+                    <p:watermark value="Filtro" for="searchItems"/>
+                    <div align="left">
+                        <p:tree id="arbol" value="#{itemController.tree}" var="node" dynamic="true" cache="false"
+                                selectionMode="single" selection="#{itemController.item}"
+                                style="border-color: window;">
+                            <p:ajax event="select" listener="#{casoController.onNodeItemSelect}" update=":form:filtrosVista" oncomplete="PF('selCat').hide()"/>
+                            <p:treeNode expandedIcon="myfoldericon16"
+                                        collapsedIcon="myfoldericon16">
+                                <h:outputText value="#{node.nombre}" />
+                            </p:treeNode>
+                        </p:tree>
+                    </div>
+                </h:form>
+            </p:dialog>
 
         </ui:define>
     </ui:composition>

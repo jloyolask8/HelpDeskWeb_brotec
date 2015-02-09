@@ -29,6 +29,7 @@ import com.itcs.helpdesk.persistence.entities.ScheduleEvent;
 import com.itcs.helpdesk.persistence.entities.SubComponente;
 import com.itcs.helpdesk.persistence.entities.SubEstadoCaso;
 import com.itcs.helpdesk.persistence.entities.TipoAlerta;
+import com.itcs.helpdesk.persistence.entities.TipoCaso;
 import com.itcs.helpdesk.persistence.entities.TipoNota;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entities.Vista;
@@ -1501,7 +1502,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             current.setRevisarActualizacion(false);
             current.setIdCasoPadre(casoTmp);
             Usuario usr = casoTmp.getOwner();
-            EmailCliente cliente = getJpaController().getEmailClienteFindByEmail(usr.getEmail());
+            EmailCliente cliente = getJpaController().find(EmailCliente.class, usr.getEmail());
             current.setIdCliente(casoTmp.getIdCliente());
             rutCliente_wizard = casoTmp.getIdCliente().getRut();
             emailCliente_wizard_existeCliente = true;
@@ -1543,79 +1544,30 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     public String prepareCreateCasoReparacion() {
-        try {
-            current = new Caso();
-            current.setRevisarActualizacion(true);
-            current.setIdPrioridad(null);
-            current.setFechaCreacion(Calendar.getInstance().getTime());
-            current.setFechaModif(current.getFechaCreacion());
-            current.setOwner(userSessionBean.getCurrent());
-            current.setTipoCaso(EnumTipoCaso.POSTVENTA.getTipoCaso());
-            current.setIdSubEstado(EnumSubEstadoCaso.POSTVENTA_NUEVO.getSubEstado());
-            current.setIdCanal(EnumCanal.MANUAL.getCanal());
-            current.setIdCliente(new Cliente());
-            EmailCliente email = new EmailCliente();
-            email.setCliente(current.getIdCliente());
-            current.setEmailCliente(email);
-            EstadoCaso ec = new EstadoCaso();
-            ec.setIdEstado(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
-
-//            SubEstadoCaso sec = new SubEstadoCaso();
-//            sec.setIdSubEstado(EnumSubEstadoCaso.NUEVO.getSubEstado().getIdSubEstado());
-//            current.setIdSubEstado(sec);
-            current.setIdEstado(ec);
-            //current.setTema("Postventa para " + current.getIdCliente().getCapitalName());
-
-            resetWizardNewCaso();
-        } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).logInfo("Error al preparar la creación del caso de postventa");
-            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
-        }
-        return "/script/caso/Create_preentrega";
+        prepareNewCasoCreation(EnumTipoCaso.POSTVENTA.getTipoCaso(), EnumSubEstadoCaso.POSTVENTA_NUEVO.getSubEstado());
+        return "/script/caso/Create";
     }
 
     public String prepareCreateCasoPreentrega() {
-        try {
-            current = new Caso();
-            current.setRevisarActualizacion(true);
-            current.setIdPrioridad(null);
-            current.setFechaCreacion(Calendar.getInstance().getTime());
-            current.setFechaModif(current.getFechaCreacion());
-            current.setOwner(userSessionBean.getCurrent());
-            current.setTema("Caso de pre-entrega");
-            current.setTipoCaso(EnumTipoCaso.ENTREGA.getTipoCaso());
-            current.setIdSubEstado(EnumSubEstadoCaso.ENTREGA_NUEVO.getSubEstado());
-            current.setIdCanal(EnumCanal.MANUAL.getCanal());
-            current.setIdCliente(new Cliente());
-            EmailCliente email = new EmailCliente();
-            email.setCliente(current.getIdCliente());
-            current.setEmailCliente(email);
-            EstadoCaso ec = new EstadoCaso();
-            ec.setIdEstado(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
-
-//            SubEstadoCaso sec = new SubEstadoCaso();
-//            sec.setIdSubEstado(EnumSubEstadoCaso.NUEVO.getSubEstado().getIdSubEstado());
-//            current.setIdSubEstado(sec);
-            current.setIdEstado(ec);
-
-            resetWizardNewCaso();
-        } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).logInfo("Error al preparar la creación de un caso de entrega");
-            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
-        }
-        return "/script/caso/Create_preentrega";
+        prepareNewCasoCreation(EnumTipoCaso.ENTREGA.getTipoCaso(), EnumSubEstadoCaso.ENTREGA_NUEVO.getSubEstado());
+        return "/script/caso/Create";
     }
 
     public String prepareCreate() {
+        prepareNewCasoCreation(EnumTipoCaso.CONTACTO.getTipoCaso(), EnumSubEstadoCaso.CONTACTO_NUEVO.getSubEstado());
+        return "/script/caso/Create";
+    }
+
+    private void prepareNewCasoCreation(TipoCaso tipo, SubEstadoCaso subEstado) {
         try {
             current = new Caso();
+            current.setTipoCaso(tipo);
+            current.setIdSubEstado(subEstado);
             current.setRevisarActualizacion(true);
-            current.setIdPrioridad(null);
+            current.setIdPrioridad(EnumPrioridad.MEDIA.getPrioridad());
             current.setFechaCreacion(Calendar.getInstance().getTime());
             current.setFechaModif(current.getFechaCreacion());
             current.setOwner(userSessionBean.getCurrent());
-            current.setTipoCaso(EnumTipoCaso.CONTACTO.getTipoCaso());
-            current.setIdSubEstado(EnumSubEstadoCaso.CONTACTO_NUEVO.getSubEstado());
             current.setIdCanal(EnumCanal.MANUAL.getCanal());
             EmailCliente email = new EmailCliente();
             email.setCliente(new Cliente());
@@ -1623,20 +1575,13 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             current.setIdCliente(email.getCliente());
             EstadoCaso ec = new EstadoCaso();
             ec.setIdEstado(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
-
-//            SubEstadoCaso sec = new SubEstadoCaso();
-//            sec.setIdSubEstado(EnumSubEstadoCaso.NUEVO.getSubEstado().getIdSubEstado());
-//            current.setIdSubEstado(sec);
             current.setIdEstado(ec);
-
             resetWizardNewCaso();
-            
-            
+
         } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).logInfo("Error al preparar la creacion de un caso");
+            Log.createLogger(this.getClass().getName()).logInfo("Error al preparar la creacion del caso");
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
         }
-        return "/script/caso/Create";
     }
 
     private void resetWizardNewCaso() {
