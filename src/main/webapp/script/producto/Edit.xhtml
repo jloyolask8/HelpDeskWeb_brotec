@@ -53,7 +53,7 @@
                                     </p:commandButton>
 
                                     <p:commandButton icon="ui-icon-close" update=":formBorrarLogo :uploadLogoProyectoForm"
-                                                     onclick="borrarLogo.show();">
+                                                     onclick="PF('borrarLogo').show();">
                                         <f:setPropertyActionListener target="#{productoController.idFileDelete}" 
                                                                      value="#{productoController.selected.idLogo}"/>
                                     </p:commandButton>

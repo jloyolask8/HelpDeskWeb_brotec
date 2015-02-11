@@ -242,6 +242,11 @@
                                     <p:menuitem value="Grupos de Agentes" action="#{grupoController.prepareList}" ajax="false" icon="fa fa-users">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
+                                    
+                                    <p:menuitem value="Recursos de la empresa" action="#{resourceController.prepareList}" ajax="false" icon="fa fa-barcode">
+                                        <p:resetInput target="@form" />
+                                    </p:menuitem>
+                                    
                                     <p:separator/>
                                     <p:menuitem value="Tipos de Casos" action="#{tipoCasoController.prepareList}" ajax="false" icon="fa fa-exclamation">
                                         <p:resetInput target="@form" />
