@@ -4,256 +4,244 @@
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:p="http://primefaces.org/ui"
     xmlns:pe="http://primefaces.org/ui/extensions"
-    xmlns:ui="http://java.sun.com/jsf/facelets">
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:go="http://java.sun.com/jsf/composite/go">
 
     <h:form id="message-details-reply" rendered="#{casoController.selected.open}">
-        <br/>
 
-        <h:panelGroup rendered="#{not casoController.replyMode}">
+        <p:panel styleClass="panel" rendered="#{not casoController.replyMode}">
+            <p style="color: #999;">
+                Haz click para  
+                <strong><p:commandLink actionListener="#{casoController.enableCommentMode()}" value=" Agregar un Comentario"  styleClass="fa fa-comment"
+                                       update="message-details-reply"/></strong>
+                ,
+                <strong><p:commandLink actionListener="#{casoController.enableReplyMode(false)}" value=" Responder" styleClass="fa fa-reply"
+                                       update="message-details-reply"/></strong>
+                o <strong><p:commandLink actionListener="#{casoController.enableReplyMode(true)}" value=" Responder a Todos" styleClass="fa fa-reply-all"
+                                         update="message-details-reply"/></strong>
+            </p>
+        </p:panel>
 
-            <p:panel style="height: 40px;">
-                <p style="color: #999;">
-                    Haz click para  
-                    <strong><p:commandLink actionListener="#{casoController.enableCommentMode()}" value=" Agregar un Comentario"  styleClass="fa fa-comments"
-                                             update="message-details-reply"/></strong>
-                    ,
-                    <strong><p:commandLink actionListener="#{casoController.enableReplyMode(false)}" value=" Responder" styleClass="fa fa-envelope"
-                                           update="message-details-reply"/></strong>
-                    o <strong><p:commandLink actionListener="#{casoController.enableReplyMode(true)}" value=" Responder a Todos" styleClass="fa fa-envelope"
-                                           update="message-details-reply"/></strong>
-                </p>
-            </p:panel>
+
+        <h:panelGroup layout="block" id="message-details-reply"  styleClass="panel form-horizontal"
+                      rendered="#{(casoController.replyMode) and ((casoController.verificarCrearActividad()))}"> 
+
+            <div class="panel-heading">
+                <span class="panel-title">
+                    <i class="panel-title-icon fa #{casoController.replyByEmail ? 'fa-reply':'fa-comment'}"></i>#{casoController.replyByEmail ? 'Responder':'Agregar comentario'}</span>
+                <div class="panel-heading-controls">
+
+                        <div class="btn-group">
+                            <h:selectOneMenu id="clipping" value="#{casoController.selectedClipping}" styleClass="form-control input-sm select2Input">
+                                <f:selectItem itemValue="" itemLabel="#{bundle.textoPredefinido}" />
+                                <f:selectItems value="#{clippingController.itemsAvailableSelectMany}"/>
+                                <p:ajax update="textonota" process="@this" listener="#{casoController.handleClippingSelectChangeEvent}" />
+                            </h:selectOneMenu>
+                        </div>
+                        <h:panelGroup layout="block"  class="btn-group btn-group-xs pull-right" rendered="#{not casoController.replyByEmail}">
+                            <h:selectBooleanCheckbox 
+                                id="textoNotaVisibilidadPublica" value="#{casoController.textoNotaVisibilidadPublica}" 
+                                styleClass="switcher form-control input-sm"/>
+                            <script type="text/javascript">
+                                $('.switcher').switcher({
+                                    theme: 'square',
+                                    on_state_content: ' Público ',
+                                    off_state_content: ' Privado '
+                                });
+                            </script>
+                        </h:panelGroup>
+                </div>
+            </div>
+
+
+            <div class="panel-body">
+
+                <h:panelGroup layout="block" id="paneldest"  rendered="#{casoController.replyByEmail}"
+                              styleClass="row form-group">
+                    <label class="col-sm-2 control-label" for="otroEmail"><p:outputLabel value="Para" for="otroEmail"/></label>
+                    <div class="col-sm-9">
+                        <p:autoComplete id="otroEmail" style="width: 100%;"  multiple="true" emptyMessage="No matches found"
+                                        placeholder="Email addresses" 
+                                        value="#{casoController.otroEmail}" 
+                                        required="true" requiredMessage="Favor agregar un destinatario para este mensaje."
+                                        completeMethod="#{emailClienteController.completeEmailClienteString}"
+                                        var="email"  itemValue="#{email}" itemLabel="#{email}"  forceSelection="true"/>
+                    </div>
+
+                    <div class="col-sm-1 pull-right">
+                        <div class="form-group">
+                            <div class="btn-group">
+                                <p:commandLink id="cclink" immediate="true" rendered="#{casoController.replyByEmail}"
+                                               value="cc" process="@this,otroEmail,otroEmailcc,otroEmailcco"
+                                               actionListener="#{casoController.changeCCO(true)}"
+                                               update="@this :message-details-reply">
+                                </p:commandLink>
+                            </div>
+                            <div class="btn-group">
+                                <p:commandLink id="ccolink" immediate="true" rendered="#{casoController.replyByEmail}"
+                                               value="cco" process="@this,otroEmail,otroEmailcc,otroEmailcco"
+                                               actionListener="#{casoController.changeCCO(false)}"
+                                               update="@this :message-details-reply">
+                                </p:commandLink>
+                            </div>
+
+                        </div>
+                    </div><!-- col-sm-6 -->
+                </h:panelGroup>
+                <h:panelGroup layout="block" id="panelcc" rendered="#{casoController.replyByEmail and casoController.cc}" 
+                              styleClass="row form-group">
+                    <label class="col-sm-2 control-label" for="otroEmailcc"><p:outputLabel value="CC" for="otroEmailcc"/></label>
+                    <div class="col-sm-10">
+                        <p:autoComplete style="width: 100%;" id="otroEmailcc" 
+                                        placeholder="Email addresses"
+                                        multiple="true" value="#{casoController.ccEmail}" completeMethod="#{emailClienteController.completeEmailClienteString}"
+                                        var="email"  itemValue="#{email}" itemLabel="#{email}"  forceSelection="false">
+                        </p:autoComplete>
+                    </div>
+                </h:panelGroup>
+                <h:panelGroup layout="block" id="panelcco" rendered="#{casoController.replyByEmail and casoController.cco}" 
+                              styleClass="row form-group">
+                    <label class="col-sm-2 control-label" for="otroEmailcco"><p:outputLabel value="CCO" for="otroEmailcco"/></label>
+                    <div class="col-sm-10">
+                        <p:autoComplete style="width: 100%;" id="otroEmailcco" 
+                                        placeholder="Email addresses"
+                                        multiple="true" value="#{casoController.ccoEmail}" completeMethod="#{emailClienteController.completeEmailClienteString}"
+                                        var="email"  itemValue="#{email}" itemLabel="#{email}"  forceSelection="false">
+                        </p:autoComplete>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup layout="block" styleClass="row form-group no-padding">
+                  
+                    <go:textAreaEditor id="textonota" fieldValue="#{casoController.textoNota}"
+                                       mobile="#{casoController.mobileClient}" watermark="Comments"
+                                               required="true" requiredMessage="Ingrese sus comentarios"/>
+                </h:panelGroup>
+
+                <h:panelGroup layout="block" styleClass="row">
+
+                    <div class="col-sm-5">
+                        <div class="form-group no-margin-hr">
+                            <h:outputLabel styleClass="control-label"
+                                           value="#{bundle.EditCasoLabel_idSubEstado}" for="idSubEstado"/>
+                            <h:selectOneMenu id="idSubEstado" styleClass="form-control"  rendered="#{!casoController.selected.closed}"
+                                             required="true" requiredMessage="El subestado es requerido"
+                                             value="#{casoController.selected.idSubEstado}" >
+
+                                <f:selectItems value="#{casoController.itemsSubEstadoCasoAvailableSelectOneCasoAbierto}" var="subEstad" itemDescription="#{subEstad.description}"/>
+                            </h:selectOneMenu>
+                            <h:outputText styleClass="label" 
+                                          style="background: \##{casoController.selected.idSubEstado.backgroundColor}; color: \##{casoController.selected.idSubEstado.fontColor};" value="#{casoController.selected.idSubEstado.nombre}"
+                                          rendered="#{casoController.selected.closed}"/>
+                        </div>
+                    </div><!-- col-sm-6 -->
+
+                    <div class="col-sm-5">
+                        <div class="form-group no-margin-hr">
+                            <h:outputLabel 
+                                styleClass="control-label"
+                                value="#{bundle.EditCasoLabel_nextResponseDue}" for="nextResponseDue" />
+                            <h:inputText id="nextResponseDue" styleClass="form-control datepicker" disabled="#{casoController.selected.closed}" 
+                                         title="#{bundle.EditCasoTitle_nextResponseDue}" value="#{casoController.selected.nextResponseDue}" 
+                                         required="true" requiredMessage="Favor ingrese un valor para el sla.">
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                            </h:inputText>
+
+
+                        </div>
+                    </div><!-- col-sm-6 -->
+
+                    <div class="col-sm-2">
+                        <div class="form-group">
+
+                            <p:commandLink id="attlink" immediate="true" rendered="#{casoController.replyByEmail}"
+                                           value="Adjuntos" 
+                                           actionListener="#{casoController.setAdjuntarArchivosARespuesta(not casoController.adjuntarArchivosARespuesta)}"
+                                           update="@this :message-details-reply:parchivos">
+                            </p:commandLink>
+
+                        </div>
+                    </div><!-- col-sm-6 -->
+                </h:panelGroup>
+
+                <h:panelGroup layout="block" styleClass="row list-group">
+                    <p:panel id="parchivos" visible="#{casoController.replyByEmail and casoController.adjuntarArchivosARespuesta}">
+                        <h:panelGrid columns="2" >
+                            <p:outputLabel for="listaadjuntosrespuesta" value="Seleccione adjuntos" style="font-weight:bold"/>
+
+                            <p:selectManyCheckbox id="listaadjuntosrespuesta" value="#{casoController.selectedAttachmensForMail}" layout="grid" columns="2"
+                                                  converter="attachmentConverter">
+                                <f:selectItems value="#{casoController.selected.attachmentsNotEmbedded}" 
+                                               var="item" itemLabel="${item.nombreArchivo}" itemValue="${item}" />
+                            </p:selectManyCheckbox>
+                        </h:panelGrid>
+                    </p:panel>
+                </h:panelGroup>
+
+            </div>  
+
+            <div class="panel-footer">
+
+                <div class="btn-group">
+                    <p:commandLink action="#{casoController.disableReplyMode()}" styleClass="btn btn-default"
+                                   immediate="true" update=":message-details-reply">
+                        <i class="fa fa-chevron-left"></i> Cancelar
+                    </p:commandLink>
+                </div>
+                <div class="pull-right" role="toolbar">
+                    <div class="btn-group">
+                        <p:commandLink actionListener="#{casoController.crearNota(false)}" 
+                                       styleClass="btn btn-primary"
+                                       rendered="#{not casoController.replyByEmail}"
+                                       update=":mainform:messages :formint1 :info-panel :formact :message-details-reply">
+                            <i class="fa fa-comment"></i> Guardar comentario
+                        </p:commandLink>
+                    </div>
+
+                    <div class="btn-group">
+                        <p:commandLink actionListener="#{casoController.crearNota(true)}" 
+                                       styleClass="btn btn-primary" rendered="#{not casoController.replyByEmail}"
+                                       update=":mainform:messages :formint1 :info-panel :formact :message-details-reply">
+                            <i class="fa fa-comment"></i> Guardar comentario y notificar al cliente  <i class="fa fa-envelope-o"></i>
+                        </p:commandLink>
+                    </div>
+
+                    <div class="btn-group">
+                        <p:commandLink actionListener="#{casoController.responder()}" 
+                                       styleClass="btn btn-primary" rendered="#{casoController.replyByEmail}"
+                                       update=":mainform:messages :formint1 :info-panel :formact :message-details-reply">
+                            <i class="fa fa-envelope"></i> Enviar
+                        </p:commandLink>
+                    </div>
+
+                    <div class="btn-group">
+                        <div class="btn-group dropup pull-right">
+
+                            <button type="button" class="btn btn-primary  dropdown-toggle" data-toggle="dropdown"><i class="fa fa-caret-up"></i></button>
+                            <ul class="dropdown-menu">
+
+                                <li>  
+                                    <p:commandLink actionListener="#{casoController.descartarBorrador()}"
+                                                   update=":mainform:messages"
+                                                   rendered="#{casoController.selected.respuesta ne null}">
+                                        <i class=""></i> Descartar borrador
+                                    </p:commandLink>
+                                </li>
+                                <li> 
+                                    <p:commandLink actionListener="#{casoController.guardarBorrador()}"
+                                                   update=":mainform:messages">
+                                        <i class=""></i> Guardar borrador
+                                    </p:commandLink>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
 
         </h:panelGroup>
 
-        <p:panel id="message-details-reply" style="border: 0px; padding: 0px;"
-                 rendered="#{(casoController.replyMode) and ((casoController.verificarCrearActividad()))}">  
-
-            <h:panelGrid width="100%">
-
-                <p:panel id="panelNotaTop" style="border: 0px; padding: 0px;">
-
-                    <p:selectOneMenu id="clipping" value="#{casoController.selectedClipping}" filter="true" filterMatchMode="contains">
-                        <f:selectItem itemValue="" itemLabel="#{bundle.textoPredefinido}" />
-                        <f:selectItems value="#{clippingController.itemsAvailableSelectMany}"/>
-                        <p:ajax update="textonota" process="@this" listener="#{casoController.handleClippingSelectChangeEvent}" />
-                    </p:selectOneMenu>
-
-                    <p:selectBooleanButton id="textoNotaVisibilidadPublica" 
-                                           rendered="#{not casoController.replyByEmail}"
-                                           onLabel="Público" offLabel="Privado" 
-                                           onIcon="ui-icon-check" offIcon="ui-icon-close"
-                                           value="#{casoController.textoNotaVisibilidadPublica}" 
-                                           style="float: right"/>
-
-
-                    <p:panel id="paneldest" style="border: 0px; padding: 0px;" rendered="#{casoController.replyByEmail}">
-                        <p:panelGrid styleClass="filtersGridParaOtroEmail" id="panelParaOtroEmail" style="width: 100%; border: 2px;" >
-                            <p:row>
-
-                                <p:column colspan="1">
-                                    <p:column>
-                                        <p:menuButton value="para:" id="menucc" style="background: transparent;">
-
-                                            <p:menuitem id="menuitemcc" update=":message-details-reply:menucc :message-details-reply:panelNotaTop" value="CC" actionListener="#{casoController.changeCCO(true)}" process="@this,otroEmail,otroEmailcc,otroEmailcco" icon="#{casoController.cc ? 'fa fa-check-square-o':'fa fa-square-o'}"/>
-                                            <p:menuitem id="menuitemcco" update=":message-details-reply:menucc :message-details-reply:panelNotaTop" value="CCO" actionListener="#{casoController.changeCCO(false)}" process="@this,otroEmail,otroEmailcc,otroEmailcco" icon="#{casoController.cco ? 'fa fa-check-square-o':'fa fa-square-o'}"/>
-
-                                        </p:menuButton>
-                                    </p:column>
-                                </p:column >
-                                <p:column colspan="10">
-                                    <p:autoComplete id="otroEmail" style="width: 100%;"  multiple="true" emptyMessage="No matches found"
-                                                    placeholder="Destination addresses" 
-                                                    value="#{casoController.otroEmail}" 
-                                                    required="true" requiredMessage="Favor agregar un destinatario para este mensaje."
-                                                    completeMethod="#{emailClienteController.completeEmailClienteString}"
-                                                    var="email"  itemValue="#{email}" itemLabel="#{email}"  forceSelection="true">
-                                    </p:autoComplete>
-                                </p:column>
-                            </p:row>
-                        </p:panelGrid>
-                    </p:panel>
-                    <p:panel id="panelcc" rendered="#{casoController.replyByEmail and casoController.cc}" style="border: 0px; padding: 0px;">
-                        <p:panelGrid styleClass="filtersGridParaOtroEmail" style="width: 100%; " >
-                            <p:row>
-
-                                <p:column colspan="1">
-                                    <p:outputLabel value="cc:" for="otroEmailcc"/>
-                                </p:column >
-                                <p:column colspan="10">
-                                    <p:autoComplete style="width: 100%;" id="otroEmailcc" multiple="true" value="#{casoController.ccEmail}" completeMethod="#{emailClienteController.completeEmailClienteString}"
-                                                    var="email"  itemValue="#{email}" itemLabel="#{email}"  forceSelection="false">
-                                    </p:autoComplete>
-                                    <p:watermark for="otroEmail" value="email destino"/>
-                                </p:column>
-                            </p:row>
-                        </p:panelGrid>
-                    </p:panel>
-                    <p:panel id="panelcco" rendered="#{casoController.replyByEmail and casoController.cco}" style="border: 0px; padding: 0px;">
-                        <p:panelGrid styleClass="filtersGridParaOtroEmail" style="width: 100%; " >
-                            <p:row>
-                                <p:column colspan="1">
-                                    <p:outputLabel value="cco:" for="otroEmailcco"/>
-                                </p:column >
-                                <p:column colspan="10">
-                                    <p:autoComplete style="width: 100%;" id="otroEmailcco" multiple="true" value="#{casoController.ccoEmail}" completeMethod="#{emailClienteController.completeEmailClienteString}"
-                                                    var="email"  itemValue="#{email}" itemLabel="#{email}"  forceSelection="false">
-                                    </p:autoComplete>
-                                    <p:watermark for="otroEmail" value="email destino"/>
-                                </p:column>
-                            </p:row>
-                        </p:panelGrid>
-                    </p:panel>
-
-
-                </p:panel>
-
-
-
-                <pe:ckEditor id="textonota" value="#{casoController.textoNota}" language="es"
-                             toolbar="#{applicationBean.ckEditorToolbar}"
-                             customConfig="#{request.contextPath}/resources/js/ckeditor.js"
-                             width="100%" />
-
-                <p:message for="textonota"/>
-
-                <p:panel id="parchivos" visible="#{casoController.replyByEmail and casoController.adjuntarArchivosARespuesta}">
-                    <h:panelGrid columns="2" >
-                        <p:outputLabel for="listaadjuntosrespuesta" value="Seleccione adjuntos" style="font-weight:bold"/>
-
-                        <p:selectManyCheckbox id="listaadjuntosrespuesta" value="#{casoController.selectedAttachmensForMail}" layout="grid" columns="2"
-                                              converter="attachmentConverter">
-                            <f:selectItems value="#{casoController.selected.attachmentsNotEmbedded}" 
-                                           var="item" itemLabel="${item.nombreArchivo}" itemValue="${item}" />
-                        </p:selectManyCheckbox>
-                    </h:panelGrid>
-                </p:panel>
-
-                <p:panelGrid styleClass="filtersGrid" style="width: 100%">
-
-
-                    <p:row>
-
-                        <p:column rendered="#{casoController.replyByEmail}">
-                            <h:panelGrid columns="2">
-                                <p:selectBooleanCheckbox id="adjuntarArchivosARespuesta" value="#{casoController.adjuntarArchivosARespuesta}" 
-                                                         disabled="#{casoController.cantidadAttachment() le 0}">
-                                    <p:ajax update=":message-details-reply:parchivos" process="@this"/>  
-                                </p:selectBooleanCheckbox>
-                                <p:outputLabel for="adjuntarArchivosARespuesta" value="#{bundle.adjuntarArchivosARespuesta}" style="font-weight:bold"/>
-                            </h:panelGrid>
-                        </p:column>
-
-                        <p:column>
-                            <h:panelGrid columns="2">  
-                                <p:outputLabel for="nextResponseDue1" value="#{bundle.cambiarSLA}" style="font-weight:bold"/>
-                                <p:calendar locale="es" navigator="true" id="nextResponseDue1" showButtonPanel="true" size="14"
-                                            mindate="#{applicationBean.now}" 
-                                            value="#{casoController.selected.nextResponseDue}" 
-                                            required="true" requiredMessage="Favor ingrese un valor para el sla."
-                                            title="Next Follow Up Due" pattern="dd/MM/yyyy HH:mm" label="SLA:"/>
-
-                            </h:panelGrid>
-                        </p:column>
-                        <p:column >
-                            <h:panelGrid columns="2">  
-                                <p:outputLabel value="#{bundle.cambiarSubEstado}:" for="idSubEstadox" style="font-weight:bold"/>
-                                <p:selectOneMenu rendered="#{not casoController.selected.closed}" id="idSubEstadox" value="#{casoController.selected.idSubEstado}" >
-                                    <f:selectItems value="#{casoController.itemsSubEstadoCasoAvailableSelectOneCasoAbierto}"/>
-                                </p:selectOneMenu>
-
-                                <p:selectOneMenu rendered="#{casoController.selected.closed}" id="idSubEstado2" value="#{casoController.selected.idSubEstado}" >
-                                    <f:selectItems value="#{casoController.itemsSubEstadoCasoAvailableSelectOneCasoCerrado}"/>
-                                </p:selectOneMenu>
-                            </h:panelGrid>
-                        </p:column>
-                    </p:row>
-
-
-
-
-                </p:panelGrid>
-
-
-
-                <h:panelGrid columns="4">
-                    <p:message for="nextResponseDue1"/>
-                    <p:message for="idSubEstadox"/>
-
-                </h:panelGrid>
-
-
-
-            </h:panelGrid>  
-
-            <f:facet name="footer">
-                <div align="right" style="width: 100%;">
-                    <p:panelGrid styleClass="filtersGrid" >
-                        <p:row>
-
-                            <p:column >
-                                <p:commandButton action="#{casoController.disableReplyMode()}"  value="Cancelar"
-                                                 immediate="true" update=":message-details-reply"/>
-                            </p:column>
-
-                            <p:column colspan="2">
-
-
-                                <h:panelGroup style="float: right">
-                                    <p:splitButton id="sendCommentButton" value="Enviar" actionListener="#{casoController.responder()}" 
-                                                   ajax="false"
-                                                   update=":mainform:messages :formint1 :formact :message-details-reply :botoneraCaso "
-                                                   icon="fa fa-envelope"
-                                                   rendered="#{casoController.replyByEmail}">
-
-                                        <p:menuitem value="Descartar borrador" actionListener="#{casoController.descartarBorrador()}"
-                                                    update=":mainform:messages :message-details-reply"
-                                                    icon="fa fa-trash-o"
-                                                    rendered="#{not empty casoController.selected.respuesta}"/>
-
-                                        <p:menuitem value="Guardar borrador" actionListener="#{casoController.guardarBorrador()}"
-                                                    update=":mainform:messages :message-details-reply"
-                                                    icon="fa fa-save"/>
-
-
-                                    </p:splitButton> 
-                                </h:panelGroup>
-
-                                <h:panelGroup style="float: right">
-                                    <p:splitButton id="saveCommentButton" value="Guardar" actionListener="#{casoController.crearNota(false)}"
-                                                   update=":mainform:messages :formint1 :formact :message-details-reply :botoneraCaso :main-navbar-form " 
-                                                   icon="fa fa-save" rendered="#{not casoController.replyByEmail}">  
-                                        <p:menuitem value="Guardar y notificar al cliente" actionListener="#{casoController.crearNota(true)}" 
-                                                    update=":mainform:messages :formint1 :formact :message-details-reply :botoneraCaso :main-navbar-form "  
-                                                    icon="fa fa-save" />  
-
-                                        <p:separator />  
-
-                                        <p:menuitem value="Descartar borrador" actionListener="#{casoController.descartarBorrador()}"
-                                                    update=":mainform:messages :message-details-reply"
-                                                    icon="fa fa-trash-o"
-                                                    rendered="#{not empty casoController.selected.respuesta}"/>
-
-                                        <p:menuitem value="Guardar borrador" actionListener="#{casoController.guardarBorrador()}"
-                                                    update=":mainform:messages :message-details-reply"
-                                                    icon="fa fa-save"
-                                                    rendered="#{empty casoController.selected.respuesta}"/>
-
-
-                                    </p:splitButton> 
-                                </h:panelGroup>
-
-
-
-                            </p:column>
-                        </p:row>
-                    </p:panelGrid>
-                </div>
-            </f:facet>
-
-        </p:panel>
-
-        <br/>
     </h:form>
 
 </ui:composition>

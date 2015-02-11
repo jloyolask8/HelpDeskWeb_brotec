@@ -7,7 +7,7 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:pe="http://primefaces.org/ui/extensions">
 
-    <ui:composition template="/script/template_inbox.xhtml">
+    <ui:composition template="/script/template_inbox_bootstrap.xhtml">
         <ui:define name="title">
             <p:outputLabel value="#{bundle.myAccountTitle}"/>
         </ui:define>
@@ -119,33 +119,82 @@
 <br/>
                     <p:fieldset legend="Preferencias"> 
 
-                        <h:panelGrid columns="3" cellpadding="6">
-                            <h:outputLabel value="Tema de colores:" for="statefulSwitcher"/> 
-                            <p:themeSwitcher value="#{UserSessionBean.current.theme}" style="width:200px" effect="fade" id="statefulSwitcher" 
-                                             required="true" requiredMessage="Debe seleccionar un Tema" var="t">
-                                <f:selectItem itemLabel="Seleccione un Tema" itemValue="" />
-                                <f:selectItems value="#{UserSessionBean.advancedThemes}" var="theme" itemLabel="#{theme.name}" itemValue="#{theme}"/>
-                                <p:column>  
-                                    <p:graphicImage value="/images/themes/#{t.image}"/>  
-                                </p:column>  
+                       <div class="panel panel-transparent form-horizontal">
+                                <div class="panel-body">
 
-                                <p:column>  
-                                    #{t.name}  
-                                </p:column> 
-                                <p:ajax listener="#{UserSessionBean.saveTheme}" />
-                            </p:themeSwitcher>
-                            <p:message for="statefulSwitcher" />
+                                    <h6 class="text-light-gray text-semibold text-xs" style="margin:20px 0 10px 0;">Look &amp; Feel</h6>
 
-                            <h:outputLabel for="textofirma" value="Firma" />  
+                                    <div class="row form-group">
+                                        
+                                          <label class="col-sm-2 control-label">
+                                            <h:outputLabel value="Menu principal:" for="mainMenuRight"/> 
+                                        </label>
 
-                            <pe:ckEditor value="#{UserSessionBean.current.firma}" language="es"
-                                         toolbar="#{applicationBean.ckEditorToolbar}"
-                                         customConfig="#{request.contextPath}/resources/js/ckeditor.js"
-                                         id="textofirma" width="100%" />
+                                        <div class="col-sm-5">
+                                            <h:selectBooleanCheckbox id="mainMenuRight"
+                                                                     value="#{UserSessionBean.current.mainMenuChangePos}" >
+                                            </h:selectBooleanCheckbox>
+                                            <label class="control-label">
+                                                <p:outputLabel for="mainMenuRight" value="Mostrar en la derecha de mi pantalla"/>
+                                            </label>
+                                        </div>
+                                    </div>
 
-                            <p:message for="textofirma"/>
+                                    <div class="row form-group">
+                                        <label class="col-sm-2 control-label">
+                                            <h:outputLabel value="Template:" for="template"/> 
+                                        </label>
 
-                        </h:panelGrid>
+                                        <div class="col-sm-5">
+                                            <h:selectOneMenu id="template" styleClass="form-control input-sm"                                                  
+                                                             required="true" requiredMessage="requerido."
+                                                             value="#{UserSessionBean.current.templateTheme}" >
+                                                <f:selectItem itemLabel="adminflare" itemValue="theme-adminflare"/>
+                                                <f:selectItem itemLabel="asphalt" itemValue="theme-asphalt"/>
+                                                <f:selectItem itemLabel="clean" itemValue="theme-clean"/>
+                                                <f:selectItem itemLabel="default" itemValue="theme-default"/>
+                                                <f:selectItem itemLabel="dust" itemValue="theme-dust"/>
+                                                <f:selectItem itemLabel="fresh" itemValue="theme-fresh"/>
+                                                <f:selectItem itemLabel="frost" itemValue="theme-frost"/>
+                                                <f:selectItem itemLabel="purple-hills" itemValue="theme-purple-hills"/>
+                                                <f:selectItem itemLabel="silver" itemValue="theme-silver"/>
+                                                <f:selectItem itemLabel="white" itemValue="theme-white"/>
+                                            </h:selectOneMenu>
+
+
+                                            <p:message for="template" />
+
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-group">
+
+                                        <label class="col-sm-2 control-label">
+                                            <h:outputLabel value="Tema de colores:" for="statefulSwitcher"/> 
+                                        </label>
+
+                                        <div class="col-sm-5">
+                                            <p:themeSwitcher value="#{UserSessionBean.current.theme}" effect="fade" id="statefulSwitcher" 
+                                                             required="true" requiredMessage="Debe seleccionar un Tema" var="t">
+                                                <f:selectItem itemLabel="Seleccione un Tema" itemValue="" />
+                                                <f:selectItems value="#{UserSessionBean.advancedThemes}" 
+                                                               var="theme" itemLabel="#{theme.name}" itemValue="#{theme}"/>
+                                                <p:column>  
+                                                    <p:graphicImage value="/images/themes/#{t.image}"/>  
+                                                </p:column>  
+
+                                                <p:column>  
+                                                    #{t.name}  
+                                                </p:column> 
+                                                <p:ajax listener="#{UserSessionBean.saveTheme}" />
+                                            </p:themeSwitcher>
+                                            <p:message for="statefulSwitcher" />
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
 
 
 

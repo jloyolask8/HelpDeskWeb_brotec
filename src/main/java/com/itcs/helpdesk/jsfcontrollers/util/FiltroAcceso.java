@@ -58,10 +58,7 @@ public class FiltroAcceso implements Serializable {
 
     public boolean esUsuarioSistema() {
         Usuario user = userSessionBean.getCurrent();
-        if (user != null && user.equals(EnumUsuariosBase.SISTEMA.getUsuario())) {
-            return true;
-        }
-        return false;
+        return user != null && user.equals(EnumUsuariosBase.SISTEMA.getUsuario());
     }
 
     public boolean verificarAccesoAFuncionAgregarCaso() {

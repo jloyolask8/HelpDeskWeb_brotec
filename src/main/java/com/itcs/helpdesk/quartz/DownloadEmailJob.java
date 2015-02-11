@@ -128,9 +128,9 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                     String emailReceiver = getValueOfCanalSetting(jpaController, canal, EnumEmailSettingKeys.INBOUND_USER);
                     EmailClient mailClient;
                     try {
-                        mailClient = MailClientFactory.getInstance(tenant, canal.getIdCanal());
-                    } catch (MailClientFactory.MailNotConfiguredException ex) {
-                        mailClient = MailClientFactory.createInstance(tenant, canal);
+                        mailClient = MailClientFactory.getInstance(tenant, canal);
+                    } catch (Exception ex) {
+                        throw new MailClientFactory.MailNotConfiguredException("No se puede enviar correos, favor comunicarse con el administrador para que configure la cuenta de correo asociada al canal "+canal);
                     }
 
                     if (mailClient != null) {

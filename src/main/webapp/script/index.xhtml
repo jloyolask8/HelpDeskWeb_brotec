@@ -34,7 +34,7 @@
 
         <ui:define name="body" id="body">
 
-            <div class="page-header">
+            <div class="page-header hidden-xs">
                 <h1><i class="fa fa-inbox page-header-icon"></i>&nbsp;&nbsp;Listado de Casos</h1>
             </div> <!-- / .page-header -->
 
@@ -88,7 +88,7 @@
 
                                 </span>
 
-                                <span class="input-group-btn">
+                                <span class="input-group-btn hidden-xs">
 
                                     <p:commandButton id="filterPanelToggle"  styleClass="btn no-border"
                                                      style="background: white;#{casoController.filterViewToggle ? 'border-bottom-right-radius: 0px;':''}" 
@@ -107,7 +107,7 @@
 
                             </div> <!-- / .input-group -->
 
-                            <go:filterView id="panelFilter0" titleIconClass="fa fa-inbox page-header-icon"
+                            <go:filterView id="panelFilter0" titleIconClass="fa fa-inbox page-header-icon hidden-xs"
                                            showSearchBar="false"
                                            controllerMBean="#{casoController}" 
                                            vista="#{casoController.vista}"
@@ -133,38 +133,14 @@
                                 <div class="row">
                                     <div class="btn-toolbar wide-btns pull-left" role="toolbar">
                                         <div class="btn-group">
-                                            <h:panelGroup rendered="#{casoController.items.rowCount gt 0}">
-                                                <div class="btn-group">
-                                                    <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
-                                                        <i class="fa fa-check-square-o"></i>&nbsp;<i class="fa fa-caret-down"></i>
-                                                    </button>
-                                                    <ul class="dropdown-menu" role="menu">
-                                                        <li>
-                                                            <p:commandLink  actionListener="#{casoController.checkAllItems()}" 
-                                                                            update=":form0">
-                                                                <i class="fa fa-check-square-o"></i>&nbsp;Seleccionar todo
-                                                            </p:commandLink>
-                                                        </li>
-
-                                                        <li>
-                                                            <p:commandLink actionListener="#{casoController.unCheckAllItems()}" update=":form0">
-                                                                <i class="fa fa-square-o"></i>&nbsp;Deseleccionar todo
-                                                            </p:commandLink>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </h:panelGroup>
-
                                             <p:commandLink  id="updateList" title="Actualizar" styleClass="btn" 
                                                             disabled="#{not empty casoController.selectedItems}" 
                                                             actionListener="#{casoController.refresh()}" update=":form0">
                                                 <i class="fa fa-refresh"></i>
                                             </p:commandLink>
-
-
                                         </div>
 
-                                        <div class="btn-group">
+                                        <div class="btn-group hidden-xs">
                                             <p:commandLink id="spamBtn"   styleClass="btn" title="Spam!"
                                                            oncomplete="blackListSelected.show();" update=":formBlackList"
                                                            rendered="#{not empty casoController.selectedItems}">
@@ -177,25 +153,13 @@
                                             </p:commandLink>
                                         </div>
 
-                                        <div class="btn-group">
-                                            <p:commandLink styleClass="btn" title="Descargar casos en planilla excel"
-                                                           ajax="false" onclick="PrimeFaces.monitorDownload(start, stop)"
-                                                           rendered="#{casoController.items.rowCount > 0}" immediate="true">
-                                                <i class="fa fa-download"></i>
-
-                                                <p:fileDownload value="#{casoController.exportAllItems()}" />
-
-                                            </p:commandLink>
-                                        </div>
-
-
-                                        <div class="btn-group">
+                                        <div class="btn-group hidden-xs">
 
                                             <p:commandLink styleClass="btn" title="Aplicar regla"
                                                            update=":applyRuleForm"
                                                            rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
                                                            onclick="PF('applyRuleDialog').show()">
-                                                <i class="fa fa-tasks"></i>
+                                                <i class="fa fa-cogs"></i>
                                             </p:commandLink>
 
 
@@ -239,16 +203,43 @@
 
                                         </div>
 
+                                        <div class="btn-group hidden-xs">
+                                            <p:commandLink styleClass="btn" title="Descargar casos en planilla excel"
+                                                           ajax="false" onclick="PrimeFaces.monitorDownload(start, stop)"
+                                                           rendered="#{casoController.items.rowCount > 0}" immediate="true">
+                                                <i class="fa fa-download"></i>
+
+                                                <p:fileDownload value="#{casoController.exportAllItems()}" />
+
+                                            </p:commandLink>
+                                        </div>
+                                        
                                     </div>
 
-                                    <div class="btn-toolbar pull-right" role="toolbar">
-                                        <div id="nav_buttons" class="btn-group">
+                                    <div class="btn-toolbar pull-right valign-middle" role="toolbar">
+                                        
+                                        <div class="btn-group valign-middle">
+                                            <h:outputText value="#{casoController.pagination.pageFirstItem + 1}-#{casoController.pagination.pageLastItem + 1} de #{casoController.pagination.itemsCount}" 
+                                                          rendered="#{casoController.pagination.itemsCount gt 0}" style="color: #000;"/>
+                                        </div>
+                                        
+                                         <div class="btn-group valign-middle">
+                                            <h:selectOneMenu id="cant" styleClass="form-control input-sm"  
+                                                         value="#{casoController.paginationPageSize}"
+                                                         rendered="#{casoController.pagination.itemsCount > 0}">
+                                            <p:ajax event="change" listener="#{casoController.resetPageSize()}"
+                                                    update=":form0"/>
+                                            <f:selectItems value="#{casoController.pagination.pageSizesAvailable}"/>
+                                        </h:selectOneMenu>
+                                        </div>
+                                        
+                                        <div id="nav_buttons" class="btn-group valign-middle">
                                             <p:commandLink action="#{casoController.previous}" styleClass="btn" 
                                                            update=":form0" disabled="#{not casoController.pagination.hasPreviousPage}" 
                                                            rendered="#{casoController.pagination.itemsCount > 0}">
                                                 <i class="fa fa-chevron-left"></i>
                                             </p:commandLink>
-
+                                            <h:outputText value=" "/>
                                             <p:commandLink action="#{casoController.next}" styleClass="btn" 
                                                            update=":form0" 
                                                            disabled="#{not casoController.pagination.hasNextPage}" 
@@ -259,23 +250,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="pages pull-right">
-                                        <h:selectOneMenu id="cant" styleClass="form-control input-sm"  
-                                                         value="#{casoController.paginationPageSize}"
-                                                         rendered="#{casoController.pagination.itemsCount > 0}">
-                                            <p:ajax event="change" listener="#{casoController.resetPageSize()}"
-                                                    update=":form0"/>
-                                            <f:selectItems value="#{casoController.pagination.pageSizesAvailable}"/>
-                                        </h:selectOneMenu>
-                                    </div>
-
-                                    <div class="pages pull-right">
-                                        <span class="padding-sm valign-middle">
-                                            <h:outputText value="#{casoController.pagination.pageFirstItem + 1}-#{casoController.pagination.pageLastItem + 1} de #{casoController.pagination.itemsCount}" 
-                                                          rendered="#{casoController.pagination.itemsCount gt 0}" style="color: #000;"/>
-                                        </span>
-
-                                    </div>
+                                  
                                 </div>
 
                                 <hr/>
@@ -426,10 +401,12 @@
                                     </p:column>
 
                                 </p:dataTable>
+                                
+                               
 
                                 <h:panelGroup id="ID_TABLA_X" 
                                               rendered="#{casoController.mobileClient and casoController.items.rowCount gt 0}"
-                                              styleClass="table table-hover">
+                                              styleClass="list-group">
 
                                     <ui:repeat value="#{casoController.items}" var="item">
 
@@ -474,7 +451,8 @@
 
                 </div>
                 <div class="col-md-3">
-                    <h:panelGroup layout="block" styleClass="panel" rendered="#{not empty tagCloudBean.items and (not casoController.mobileClient)}">
+                    <h:panelGroup layout="block" styleClass="panel hidden-xs" 
+                                  rendered="#{(not empty tagCloudBean.etiquetasByUsuario) and (not casoController.mobileClient)}">
                         <div class="panel-heading">
                             <span class="panel-title"><i class="panel-title-icon fa fa-tags"></i>Mis Tags</span>
                         </div>
@@ -569,11 +547,20 @@
 
             </p:dialog>
 
-            <h:form id="applyRuleForm">
-                <p:dialog id="applyRuleDialog" header="Ejecutar Regla de Negocio en casos seleccionados" modal="true"
-                          widgetVar="applyRuleDialog" dynamic="true" closeOnEscape="true">
+         
 
-                    <p:selectOneMenu disabled="#{casoController.pagination.itemsCount le 0}" label="Seleccione la regla"
+
+
+
+
+            <p:dialog id="applyRuleDialog" header="Ejecutar Regla de Negocio en casos seleccionados" modal="true" appendTo="@(body)" dynamic="true"
+                      widgetVar="applyRuleDialog"  closeOnEscape="true">
+
+                <h:form id="applyRuleForm">
+                    <h:outputLabel value="Esta regla se ejecutará solo en #{casoController.selectedItems.size()} casos seleccionados." rendered="#{not empty casoController.selectedItems}"/>
+                    <h:outputLabel value="Esta regla se ejecutará en todos los casos de la vista (#{casoController.pagination.itemsCount} casos)." rendered="#{empty casoController.selectedItems and casoController.pagination.itemsCount gt 0}"/>
+                    <br/>
+                    <p:selectOneMenu label="Seleccione la regla"
                                      id="applyRuleSelectRule" 
                                      required="true" requiredMessage="Seleccione una regla, esto es requerido."
                                      filter="true" filterMatchMode="contains" converter="ReglaTriggerControllerConverter"
@@ -583,47 +570,53 @@
 
                     </p:selectOneMenu>
 
-                    <f:facet name="footer">
-                        <p:commandButton actionListener="#{casoController.applyReglaToSelectedCasos}" update=":mainform:messages"
-                                         value="Ejecutar"/>
-                    </f:facet>
+                    <p:separator/>
 
+                    <p:commandButton actionListener="#{casoController.applyReglaToSelectedCasos}" update=":mainform:messages :form0"
+                                     value="Ejecutar"/>
+                </h:form>
 
-                </p:dialog>
-            </h:form>
-
-
+            </p:dialog>
 
 
 
 
-            <p:dialog modal="true" widgetVar="excelStatusDialog" header="Generando Documento Excel con los casos..." 
-                      draggable="false" closable="false" resizable="false">  
-                <p:graphicImage value="/images/excel64.png"/> &nbsp;
-                <p:graphicImage library="images" name="ajax-loader_red.gif" />
+            <p:dialog  widgetVar="excelStatusDialog" header="Generando Documento Excel con los casos..." draggable="false" closable="false" resizable="false"
+                       dynamic="true" modal="true" appendTo="@(body)">  
+                <p:graphicImage value="/images/excel64.png"/>
+                <p:graphicImage library="images" name="ajaxloadingbar.gif" />
             </p:dialog> 
 
 
 
 
-
-
-            <p:dialog modal="true" widgetVar="deleteSelectedCasos" header="Confirmar" resizable="false" closeOnEscape="true" appendTo="@(body)">  
+            <p:dialog  widgetVar="deleteSelectedCasos" header="Eliminar" resizable="false" closeOnEscape="true" modal="true" appendTo="@(body)" dynamic="true">  
                 <h:form id="formdeleteSelectedCasos">
-                    <h:outputFormat value="#{bundle.confirmDeleteCasos}">
+                    <h:outputFormat value="#{bundle.confirmDeleteCasos}" style="font-weight: bold;">
                         <f:param value="#{casoController.selectedItemsCount}" />
                     </h:outputFormat>
 
-                    <br/>
+                        <p:scrollPanel id="scrollpaneActividades" mode="native" style="height: 300px;border-color: window;border: 0;">
+                        <h:panelGrid columns="1">
+                            <c:forEach items="#{casoController.selectedItems}" var="item" >
+                                <h:commandLink action="#{casoController.filterByIdCaso(item.idCaso)}" >
+                                    <h:outputText styleClass="ticket-status" 
+                                                  style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};" value="#{item.idSubEstado.nombre}"
+                                                  />
+                                    <h:outputText value=" #{item.tipoCaso.nombre} N°#{item.idCaso} - #{item.tema}"/>
+                                </h:commandLink>
+                            </c:forEach>
+                        </h:panelGrid>
+                    </p:scrollPanel>
 
-                    <p:dataList value="#{casoController.selectedItems}" var="casoSelected">
-                        #{casoSelected.idCaso} #{casoSelected.tema} 
-                    </p:dataList>
+                    <p:separator/>
+                    <p:commandButton value="#{bundle.decline}" onclick="PF('deleteSelectedCasos').hide()" type="button" /> 
 
-                    <p:commandButton value="#{bundle.yesDelete}" action="#{casoController.destroySelected()}"
-                                     disabled="#{empty casoController.selectedItems}" ajax="false"
-                                     update=":form0" oncomplete="PF('deleteSelectedCasos').hide()"/>
-                    <p:commandButton value="#{bundle.decline}" onclick="deleteSelectedCasos.hide()" type="button" /> 
+                    <p:commandButton value="#{bundle.yesDelete}" styleClass="btn btn-danger" style="float: right"
+                                     actionListener="#{casoController.destroySelected()}" 
+                                     disabled="#{empty casoController.selectedItems}"
+                                     update=":form0" />
+
                 </h:form>
 
 
@@ -631,7 +624,7 @@
 
 
 
-            <p:dialog modal="true" widgetVar="blackListSelected" header="Confirmar" resizable="false" closeOnEscape="true" appendTo="@(body)">  
+            <p:dialog  widgetVar="blackListSelected" header="Confirmar" resizable="false" closeOnEscape="true" modal="true" appendTo="@(body)" dynamic="true">  
                 <h:form id="formBlackList">
                     <p:outputLabel value="Está seguro de marcar las siguientes direcciones de correo como spam y agregar a la lista negra ?"/>
 
@@ -650,13 +643,11 @@
                                      actionListener="#{casoController.saveBlackList}"
                                      update=":mainform:messages :form0" oncomplete="PF('blackListSelected').hide()"/> 
 
-                    <p:commandButton value="#{bundle.decline}" onclick="blackListSelected.hide()" type="button" /> 
+                    <p:commandButton value="#{bundle.decline}" onclick="PF('blackListSelected').hide()" type="button" /> 
                 </h:form>
 
 
-            </p:dialog> 
-
-
+            </p:dialog>
 
         </ui:define>
 

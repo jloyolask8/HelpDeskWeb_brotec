@@ -23,7 +23,7 @@
                     </span>
                     <br/>
 
-                    <h:selectOneMenu id="emailClienteA" style="width: 180px;" disabled="#{casoController.selected.closed}"
+                    <h:selectOneMenu id="emailClienteA" style="color: #fff;" disabled="#{casoController.selected.closed}"
                                      styleClass="form-control btn btn-outline dropdown-toggle btn-xs"
                                      value="#{casoController.selected.emailCliente}" >
                         <f:selectItems value="#{casoController.selected.idCliente.emailClienteList}" var="email" 
@@ -37,6 +37,13 @@
             <div class="list-group">
 
                 <a href="#" class="list-group-item">
+                    <i class="fa fa-ticket list-group-icon"></i>Status<span class="badge" style="background: \##{casoController.selected.idSubEstado.backgroundColor}; color: \##{casoController.selected.idSubEstado.fontColor};">
+                        <h:outputText id="idSubEstado" 
+                                      value="#{casoController.selected.idSubEstado.nombre}"/>    
+                    </span>
+                </a>
+
+                <a href="#" class="list-group-item">
                     <i class="fa fa-clock-o list-group-icon"></i>Creado<span class="badge badge-info">
                         <h:outputText  value="#{casoController.formatShortDate(casoController.selected.fechaCreacion)}" 
                                        title="Creado #{casoController.prettyDate(casoController.selected.fechaCreacion)} - #{casoController.formatDate(casoController.selected.fechaCreacion)}"/></span>
@@ -48,55 +55,52 @@
                                        title="Ultima modificación #{casoController.prettyDate(casoController.selected.fechaModif)} - #{casoController.formatDate(casoController.selected.fechaModif)}"/></span>
                 </a>
 
+                <a href="#" class="list-group-item">
+                    <pe:switch id="switchTicketAlertState" value="#{casoController.selected.isOpen().toString()}">  
+                        <pe:case value="true">  
+                            <pe:switch id="switchTicketAlertStateOpen" value="#{casoController.selected.estadoAlerta}">  
+                                <pe:case value="#{EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta()}"> 
 
-                <pe:switch id="switchTicketAlertState" value="#{casoController.selected.isOpen().toString()}">  
-                    <pe:case value="true">  
-                        <pe:switch id="switchTicketAlertStateOpen" value="#{casoController.selected.estadoAlerta}">  
-                            <pe:case value="#{EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta()}"> 
-                                <a href="#" class="list-group-item">
                                     <i class="fa fa-clock-o list-group-icon"></i>SLA
-                                    <span class="badge badge-success">
+                                    <span class="badge badge-success pull-right">
                                         <h:outputText  value="#{casoController.formatShortDate(casoController.selected.nextResponseDue)}" 
                                                        title="Acuerdo de respuesta #{casoController.prettyDate(casoController.selected.nextResponseDue)} - #{casoController.formatDate(casoController.selected.nextResponseDue)}"/>
-                                    </span> </a>
-                            </pe:case>
-                            <pe:case value="#{EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta()}"> 
-                                <a href="#" class="list-group-item">
+                                    </span> 
+                                </pe:case>
+                                <pe:case value="#{EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta()}"> 
+
                                     <i class="fa fa-clock-o list-group-icon"></i>SLA
-                                    <span class="badge badge-warning">
+                                    <span class="badge badge-warning pull-right">
                                         <h:outputText  value="#{casoController.formatShortDate(casoController.selected.nextResponseDue)}" 
                                                        title="Vence #{casoController.prettyDate(casoController.selected.nextResponseDue)} - #{casoController.formatDate(casoController.selected.nextResponseDue)}"/>
-                                    </span> </a>
-                            </pe:case>
-                            <pe:case value="#{EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta()}">  
-                                <a href="#" class="list-group-item">
+                                    </span> 
+                                </pe:case>
+                                <pe:case value="#{EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta()}">  
+
                                     <i class="fa fa-clock-o list-group-icon"></i>SLA
-                                    <span class="badge badge-danger">
+                                    <span class="badge badge-danger pull-right">
                                         <h:outputText  value="#{casoController.formatShortDate(casoController.selected.nextResponseDue)}" 
                                                        title="Vencido #{casoController.prettyDate(casoController.selected.nextResponseDue)} - #{casoController.formatDate(casoController.selected.nextResponseDue)}"/>
-                                    </span> </a>
-                            </pe:case>  
-                        </pe:switch>  
-                    </pe:case> 
+                                    </span> 
+                                </pe:case>  
+                            </pe:switch>  
+                        </pe:case> 
 
-                    <pe:case value="false">  
-                        <a href="#" class="list-group-item">
+                        <pe:case value="false">  
+
                             <i class="fa fa-clock-o list-group-icon"></i>Cerrado
-                            <span class="badge badge-default">
+                            <span class="badge badge-default pull-right">
                                 <h:outputText  value="#{casoController.formatShortDate(casoController.selected.fechaCierre)}"
                                                title="Cerrado #{casoController.prettyDate(casoController.selected.fechaCierre)} - #{casoController.formatDate(casoController.selected.fechaCierre)}"/>
-                            </span> </a>
-                    </pe:case>  
-                </pe:switch>  
+                            </span> 
+                        </pe:case>  
+                    </pe:switch>
+                </a>
 
 
                 <a href="#" class="list-group-item"><i class="fa fa-bell-o list-group-icon"></i>Commentarios del Cliente<span class="badge badge-warning">#{casoController.cantidadDeRespuestasDelCliente}</span></a>
 
-                <a href="#" class="list-group-item"><i class="fa fa-building-o list-group-icon" title="Area"></i>
-                    <h:outputText value="#{casoController.selected.idArea.nombre ne null ? casoController.selected.idArea.nombre:'sin area'}"/>
-                </a>
-
-                <a href="#" class="list-group-item"><i class="fa fa-building-o list-group-icon" title="Canal"></i>
+                <a href="#" class="list-group-item"><i class="fa fa-exchange list-group-icon" title="Canal"></i>
                     <h:outputText id="idCanal" value="#{casoController.selected.idCanal.nombre}" title="#{casoController.selected.idCanal}"/>
                 </a>
 
@@ -110,16 +114,18 @@
                     <i class="fa fa-user list-group-icon"></i>#{casoController.selected.owner.capitalName}
                 </p:commandLink>
 
-                <a href="#" class="list-group-item">
-                    <i class="fa fa-tags list-group-icon"></i>Tags
-                    
-                   <!-- TAGS-->
-                                <h:panelGroup id="etiquetasGroup">
-                                    <ui:repeat value="#{casoController.selected.etiquetaStringList}" var="et">
-                                        <h:outputText styleClass="label label-info label-tag" value="#{et}"/>
-                                    </ui:repeat>
-                                </h:panelGroup>
-                </a>
+                <h:panelGroup rendered="#{not empty casoController.selected.etiquetaStringList}">
+                    <a href="#" class="list-group-item">
+                        <i class="fa fa-tags list-group-icon"></i>
+                        <!-- TAGS-->
+                        <h:panelGroup id="etiquetasGroup">
+                            <ui:repeat value="#{casoController.selected.etiquetaStringList}" var="et">
+                                <h:outputText styleClass="label label-info label-tag" value="#{et}"/>
+                            </ui:repeat>
+                        </h:panelGroup>
+                    </a>
+                </h:panelGroup>
+
 
 
             </div>

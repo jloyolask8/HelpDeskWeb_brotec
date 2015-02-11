@@ -8,22 +8,17 @@
         xmlns:h="http://java.sun.com/jsf/html"
         xmlns:p="http://primefaces.org/ui"
         xmlns:pe="http://primefaces.org/ui/extensions"
-        xmlns:ui="http://java.sun.com/jsf/facelets">
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:go="http://java.sun.com/jsf/composite/go">
 
+        <pe:importEnum type="com.itcs.helpdesk.persistence.entityenums.EnumTipoNota" var="EnumTipoNota" allSuffix="ALL_ENUM_VALUES" />
+        
         <h:form id="formact">
 
             <c:forEach items="#{casoController.selected.notaList}" var="item" varStatus="loop">
 
                 <div id="panelNota#{loop.index}" class="#{casoController.notaEditable(item) ? 'panel panel-dark colourable':'panel panel-dark colourable'}">
 
-                    <h:panelGroup rendered="#{casoController.notaEditable(item)}">
-                        <div class="panel-heading">
-                            <span class="panel-title">#{casoController.creaTituloDeNota(item)}</span>
-                            <div class="panel-heading-controls">
-                                <div class="panel-heading-icon"><i class="fa fa-comment"></i></div>
-                            </div>
-                        </div>
-                    </h:panelGroup>
 
 
                     <div class="panel-body #{casoController.getNotaStyle(item.tipoNota)}">
@@ -68,20 +63,28 @@
                                   rendered="#{casoController.justCreadedNotaId eq item.idNota}"/> 
                     </div>
                     <div class="panel-footer">
+                        <h:panelGroup rendered="#{EnumTipoNota.REG_ENVIO_CORREO.getTipoNota() eq item.tipoNota}">
+                                <i class="fa fa-envelope text-light-gray"></i>
+                        </h:panelGroup>
+                        
+                        <h:panelGroup rendered="#{EnumTipoNota.REG_ENVIO_CORREO.getTipoNota() ne item.tipoNota}">
+                                <i class="fa fa-comment text-light-gray"></i>
+                        </h:panelGroup>
+
                         <span class="text-light-gray">#{casoController.creaTituloDeNota(item)}</span>
 
                         <div class="pull-right">
                             <p:commandLink actionListener="#{casoController.prepareEditNota(item)}"
                                            update=":formEditNota"
-                                           onsuccess="PF('Nota').show();" rendered="#{casoController.notaEditable(item)}" value="Editar"
+                                           onsuccess="PF('Nota').show();" rendered="#{casoController.notaEditable(item)}" 
                                            >
-                                <span class="btn-label icon fa fa-external-link"></span>Editar
+                                <span class="btn-label icon fa fa-edit" title="Editar"></span>
                             </p:commandLink>
                             &nbsp;
                             <p:commandLink actionListener="#{casoController.prepareViewHtml(item.texto)}"
                                            rendered="#{not casoController.mobileClient}"
                                            >
-                                <span class="btn-label icon fa fa-external-link"></span>Ver mensaje original
+                                <span class="btn-label icon fa fa-external-link" title="Abrir mensaje original"></span>
                             </p:commandLink>
                         </div>
 
@@ -98,10 +101,7 @@
                     </div>
                 </div>
                 <div class="panel-body">
-                    <div align="left" style="font-size: x-small;">
-                        <i>Oprima sobre la descripción si desea editar. La descripción del caso se muestra en texto plano por seguridad, para ver el original haz click en 
-                            ver mensaje HTML</i>
-                    </div>
+
 
                     <p:inplace editor="true" disabled="#{casoController.selected.closed}">
                         <f:facet name="output">
@@ -115,19 +115,23 @@
 
                         </f:facet>
                         <f:facet name="input">
-                            <pe:ckEditor id="ticketDesc" value="#{casoController.selected.descripcionTxt}" 
-                                         language="es"
-                                         toolbar="#{applicationBean.ckEditorToolbar}"
-                                         customConfig="#{request.contextPath}/resources/js/ckeditor.js"
-                                         required="true"  width="100%" /> 
-                            <p:watermark for="ticketDesc" value="Descripción del caso"/>
+
+                            <go:textAreaEditor fieldValue="#{casoController.selected.descripcionTxt}"
+                                               mobile="#{casoController.mobileClient}"  watermark="Descripción del caso"
+                                               required="true" requiredMessage="Ingrese Descripción del caso"/>
                         </f:facet>
                     </p:inplace>
 
                 </div>
                 <div class="panel-footer">
-                    <p:commandLink actionListener="#{casoController.prepareViewHtml(casoController.selected.descripcion)}" 
-                                   >
+
+                    <div align="left" style="font-size: x-small;">
+                        <p class="text-light-gray">Oprima sobre la descripción si desea editar. 
+                            La descripción del caso se muestra en texto plano por seguridad, para ver el original haz click en 
+                            ver mensaje HTML</p>
+                    </div>
+
+                    <p:commandLink actionListener="#{casoController.prepareViewHtml(casoController.selected.descripcion)}">
                         <span class="btn-label icon fa fa-external-link"></span>Ver mensaje original
                     </p:commandLink>
                 </div>
@@ -135,62 +139,7 @@
 
 
 
-            <p:accordionPanel multiple="true" id="listanotas" >
 
-                <p:tab id="tabDesc" title="casosHijosList" >  
-
-                    <p:panel id="panelDesc" style="border-color: window;">
-
-                        <pe:importEnum type="com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso" var="EnumTipoCaso" allSuffix="ALL_ENUM_VALUES" />
-
-                        <c:forEach items="#{casoController.selected.casosHijosList}" var="item" >
-                            <p:panelGrid style="margin-bottom:10px; width: 100%">
-                                <p:row rendered="#{item.tipoCaso eq EnumTipoCaso.REPARACION_ITEM.getTipoCaso()}">
-                                    <p:column>
-                                        <p:commandLink action="#{casoController.prepareEditCaso(item.idCaso.toString())}" 
-                                                       ajax="false" style="color: #000" immediate="true">
-                                            <b>ID Caso: </b> #{item.idCaso}
-                                        </p:commandLink>
-                                    </p:column>
-
-                                </p:row>
-                                <p:row rendered="#{item.tipoCaso eq EnumTipoCaso.REPARACION_ITEM.getTipoCaso()}">
-                                    <p:column>
-                                        <p:outputLabel value="&lt;b&gt;Recinto: &lt;/b&gt;#{item.idRecinto}" escape="false"/>
-                                    </p:column>
-                                </p:row>
-                                <p:row rendered="#{item.tipoCaso eq EnumTipoCaso.REPARACION_ITEM.getTipoCaso()}">
-                                    <p:column colspan="2">
-                                        <p:outputLabel value="&lt;b&gt;Item: &lt;/b&gt;#{item.idItem}" escape="false"/>                                                          
-                                    </p:column>
-                                </p:row>
-                                <p:row rendered="#{item.tipoCaso eq EnumTipoCaso.REPARACION_ITEM.getTipoCaso()}">
-                                    <p:column colspan="2">
-                                        <p:outputLabel value="&lt;b&gt;Descripción: &lt;/b&gt;#{item.descripcion}" escape="false"/>                               
-                                    </p:column>
-                                </p:row>
-                            </p:panelGrid>
-                        </c:forEach>
-                        <p:panelGrid style="margin-bottom:10px;" styleClass="filtersGrid" id="panelGridDatos" >
-                            <p:row rendered="#{casoController.casoTipoReparacion}">
-                                <p:column>
-                                    <h:outputLabel value="Item:" for="item" style="font-weight: bold"/>
-                                </p:column>
-                            </p:row>
-                            <p:row rendered="#{casoController.casoTipoReparacion}">
-                                <p:column>
-                                    <p:commandButton id="item" immediate="true" style="width: 100%;"
-                                                     value="#{(casoController.selected.idItem eq null) ? 'Elegir item':casoController.selected.idItem}" 
-                                                     update=":formArbolItem:arbol" oncomplete="PF('idDialogArbolItem').show()"/>                                  
-                                </p:column>
-                            </p:row>
-                        </p:panelGrid>
-
-
-                    </p:panel>  
-
-                </p:tab> 
-            </p:accordionPanel>
 
         </h:form>
 

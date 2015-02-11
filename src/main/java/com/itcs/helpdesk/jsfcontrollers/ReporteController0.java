@@ -273,7 +273,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         twoDimData = new HashMap<>();
         variables = 2;
 
-        EntityManager em = emf.createEntityManager();
+        EntityManager em = getJpaController().getEntityManager();
         ComparableField comparableFieldY = getFilterHelper().getComparableFieldsMap().get(campoCompCasoEjeYItemsEntity.getIdCampo());
         ComparableField comparableFieldX = getFilterHelper().getComparableFieldsMap().get(campoCompCasoEjeXSeriesEntity.getIdCampo());
         setYaxisLabel("N° de Casos Por " + comparableFieldY.getLabel());
@@ -567,7 +567,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
     public void createOneDimentionModel() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NotSupportedException, Exception {
         oneDimData = new HashMap<>();
         variables = 1;
-        EntityManager em = emf.createEntityManager();
+        EntityManager em = getJpaController().getEntityManager();
         ComparableField comparableFieldX = getFilterHelper().getComparableFieldsMap().get(campoCompCasoEjeXSeriesEntity.getIdCampo());
         try {
 
@@ -1889,6 +1889,26 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         return vista1;
     }
 
+    
+     public SelectItem[] getTiposDeGrafico() {
+
+        SelectItem[] types = null;
+
+        if (this.getVariables() == 1) {
+            types = new SelectItem[3];
+            types[0] = new SelectItem("pieChart", "Torta");
+            types[1] = new SelectItem("barChart", "Barras");
+            types[2] = new SelectItem("lineChart", "Lineas");
+        } else if (this.getVariables() == 2) {
+            types = new SelectItem[2];
+            types[0] = new SelectItem("barChart", "Barras");
+            types[1] = new SelectItem("lineChart", "Lineas");
+        }
+
+        return types;
+
+    }
+     
     @Override
     public PaginationHelper getPagination() {
         throw new UnsupportedOperationException("Not supported yet.");

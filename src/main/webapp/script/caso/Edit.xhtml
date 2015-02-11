@@ -117,24 +117,6 @@
                                             <div class="col-sm-6">
                                                 <div class="form-group no-margin-hr">
                                                     <h:outputLabel styleClass="control-label text-sm text-slim"
-                                                                   value="#{bundle.EditCasoLabel_idSubEstado}" for="idSubEstado"/>
-                                                    <h:selectOneMenu id="idSubEstado" styleClass="form-control input-sm"   rendered="#{!casoController.selected.closed}"
-                                                                     required="true" requiredMessage="El subestado es requerido"
-                                                                     value="#{casoController.selected.idSubEstado}" >
-
-                                                        <f:selectItems value="#{casoController.itemsSubEstadoCasoAvailableSelectOneCasoAbierto}" var="subEstad" itemDescription="#{subEstad.description}"/>
-                                                    </h:selectOneMenu>
-                                                    <h:outputText styleClass="label" 
-                                                                  style="background: \##{casoController.selected.idSubEstado.backgroundColor}; color: \##{casoController.selected.idSubEstado.fontColor};" value="#{casoController.selected.idSubEstado.nombre}"
-                                                                  rendered="#{casoController.selected.closed}"/>
-                                                </div>
-                                            </div><!-- col-sm-6 -->
-                                        </div><!-- row -->
-
-                                        <div class="row">
-                                            <div class="col-sm-6">
-                                                <div class="form-group no-margin-hr">
-                                                    <h:outputLabel styleClass="control-label text-sm text-slim"
                                                                    value="#{bundle.EditCasoLabel_idPrioridad}" for="idPrioridad" />
                                                     <h:selectOneMenu styleClass="form-control input-sm" disabled="#{casoController.selected.closed}"
                                                                      required="true"
@@ -143,32 +125,37 @@
                                                     </h:selectOneMenu>
                                                 </div>
                                             </div><!-- col-sm-6 -->
-                                            <div class="col-sm-6">
-                                                <div class="form-group no-margin-hr">
-                                                    <h:outputLabel 
-                                                        styleClass="control-label text-sm text-slim"
-                                                        value="#{bundle.EditCasoLabel_nextResponseDue}" for="nextResponseDue" />
-                                                    <h:inputText id="nextResponseDue" styleClass="form-control form_datetime input-sm" disabled="#{casoController.selected.closed}" 
-                                                                 title="#{bundle.EditCasoTitle_nextResponseDue}" value="#{casoController.selected.nextResponseDue}" 
-                                                                 required="true" requiredMessage="Favor ingrese un valor para el sla.">
-                                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
-                                                    </h:inputText>
 
-                                                    <script type="text/javascript">
-                                                        $('.form_datetime').datetimepicker({
-                                                            language: 'es',
-                                                            format: 'dd/mm/yyyy hh:ii',
-                                                            viewformat: 'dd/mm/yyyy hh:ii',
-                                                            todayBtn: true,
-                                                            autoclose: true,
-                                                            todayHighlight: true,
-                                                            weekStart: 1,
-                                                            forceParse: true
-                                                        });
-                                                    </script>
+                                        </div><!-- row -->
+
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group no-margin-hr" >
+                                                    <h:outputLabel styleClass="control-label text-sm text-slim"
+                                                                   value="Area" for="idAreaCaso"/>
+                                                    <h:selectOneMenu id="idAreaCaso" disabled="#{casoController.selected.closed}" styleClass="form-control input-sm" 
+                                                                     value="#{casoController.selected.idArea}" >
+                                                        <f:selectItem itemLabel="" itemValue=""/>
+                                                        <f:selectItems value="#{applicationBean.areasAvailableList}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
+                                                    </h:selectOneMenu>
                                                 </div>
                                             </div><!-- col-sm-6 -->
+                                            <div class="col-sm-6">
+                                                <div class="form-group no-margin-hr">
+                                                    <h:outputLabel styleClass="control-label text-sm text-slim"
+                                                                   value="Grupo" for="idGrupoCaso" />
+                                                    <h:selectOneMenu id="idGrupoCaso" styleClass="form-control input-sm"
+                                                                     value="#{casoController.selected.idGrupo}"
+                                                                     disabled="#{casoController.selected.closed or empty casoController.selected.idArea}">
+                                                        <f:selectItem itemLabel="" itemValue="" />
+                                                        <f:selectItems value="#{casoController.selected.idArea.grupoList}" 
+                                                                       var="grupo" itemLabel="#{grupo.nombre}" itemValue="#{grupo}" itemDescription="#{grupo.descripcion}"/>
+                                                    </h:selectOneMenu>
+                                                </div>
+                                            </div><!-- col-sm-6 -->
+
                                         </div><!-- row -->
+
 
                                         <div class="row">
                                             <div class="col-sm-6">
@@ -326,25 +313,31 @@
                                             <ui:repeat var="fileitem" value="#{casoController.selected.attachmentList}" >
                                                 <h:panelGroup rendered="#{fileitem.contentId eq null}">
                                                     <li class="list-group-item no-border-hr padding-xs-hr">
-                                                        <h:outputText value="#{casoController.nombreArchivoParaDesplegar(fileitem.nombreArchivo)}" 
-                                                                      styleClass="text-semibold"
-                                                                      title="#{fileitem.nombreArchivo} (#{fileitem.fileSizeHuman})"/>     
-                                                        <div class="">
-                                                            &nbsp;&nbsp;
-                                                            <p:commandLink ajax="false" title="Bajar #{fileitem.nombreArchivo} (#{fileitem.fileSizeHuman})">
-                                                                Bajar
+                                                        <div class="row padding-xs-hr">
+                                                            <p:graphicImage name="file_extension_#{fileitem.fileExtension}.png" library="file_extension_icons" />
+
+                                                            <h:outputText value=" #{casoController.nombreArchivoParaDesplegar(fileitem.nombreArchivo)}" 
+                                                                          styleClass="text-semibold"
+                                                                          title="#{fileitem.nombreArchivo} (#{fileitem.fileSizeHuman})"/> 
+
+                                                            <h:outputText value="#{fileitem.fileSizeHuman}  " style="color: #7A7A7A" styleClass="pull-right"/>
+                                                        </div>
+                                                        <div class="row">
+                                                            <p:commandLink styleClass="col-xs-1" ajax="false">
+                                                                <i class="fa fa-download list-group-icon" title="Download"></i>
                                                                 <p:fileDownload contentDisposition="attachment" value="#{casoController.bajarArchivo(fileitem.idAttachment)}" />
-                                                            </p:commandLink>&nbsp;&nbsp;
-                                                            <p:commandLink value="Eliminar" title="Eliminar #{fileitem.nombreArchivo} (#{fileitem.fileSizeHuman})" 
-                                                                           onclick="borrarAttachment.show();"
+                                                            </p:commandLink>
+                                                            <p:commandLink styleClass="col-xs-1"  
+                                                                           onclick="PF('borrarAttachment').show();"
                                                                            disabled="#{not casoController.verificarGrabarCaso()}">
+                                                                <i class="fa fa-times list-group-icon" title="Delete"></i>
                                                                 <f:setPropertyActionListener target="#{casoController.idFileDelete}" value="#{fileitem.idAttachment}"/>
                                                             </p:commandLink>
 
-                                                            <p:lightBox iframe="true" rendered="#{fileitem.imageOrPDF}"> 
-                                                                <h:outputLink  value="#{facesContext.externalContext.requestContextPath}/DownloadFileServlet?tenant=#{UserSessionBean.tenantId}&amp;id=#{fileitem.idAttachment}" 
-                                                                               title="Preview">  
-                                                                    <h:outputText value="Ver" title="Previsualizar"/>
+                                                            <p:lightBox  iframe="true" rendered="#{fileitem.imageOrPDF}"> 
+                                                                <h:outputLink styleClass="col-xs-1" value="#{facesContext.externalContext.requestContextPath}/DownloadFileServlet?tenant=#{UserSessionBean.tenantId}&amp;id=#{fileitem.idAttachment}" 
+                                                                              title="Preview">  
+                                                                    <i class="fa fa-external-link-square list-group-icon"></i>
                                                                 </h:outputLink>
                                                             </p:lightBox>
                                                         </div>
@@ -388,6 +381,25 @@
 
                     </div>
 
+                    <div class="panel no-border panel-dark">
+                        <div class="panel-body text-center">
+                            <h:form id="formAgendarEvento">
+                                <p:schedule id="myschedule" value="#{casoScheduleController.lazyScheduleEventsModel}" 
+                                            showHeader="#{not casoController.mobileClient}"
+
+                                            firstHour="8" widgetVar="myschedule" >
+                                    <p:ajax event="dateSelect" listener="#{casoScheduleController.onDateSelect}" 
+                                            update=":createEventForm:eventDetails" oncomplete="PF('createEventDialog').show()" />  
+                                    <p:ajax event="eventSelect" listener="#{casoScheduleController.onEventSelect}" 
+                                            update=":createEventForm:eventDetails" oncomplete="PF('createEventDialog').show()" />  
+
+                                    <p:ajax event="eventMove" listener="#{casoScheduleController.onEventMove}" update=":mainform:messages" />  
+                                    <p:ajax event="eventResize" listener="#{casoScheduleController.onEventResize}" update=":mainform:messages" /> 
+                                </p:schedule>
+                            </h:form>
+                        </div>
+                    </div> <!-- / .panel Agenda -->
+
                     <div class="panel widget-notifications">
                         <div class="panel-heading">
                             <span class="panel-title"><i class="panel-title-icon fa fa-fire"></i>Log de Eventos</span>
@@ -408,22 +420,7 @@
                         </div> <!-- / .panel-body -->
                     </div> <!-- / .panel log de eventos -->
 
-                    <div class="panel no-border panel-dark">
-                        <div class="panel-body text-center">
-                            <h:form id="formAgendarEvento">
-                                <p:schedule id="myschedule" value="#{casoScheduleController.lazyScheduleEventsModel}" 
-                                            firstHour="8" widgetVar="myschedule" >
-                                    <p:ajax event="dateSelect" listener="#{casoScheduleController.onDateSelect}" 
-                                            update=":createEventForm:eventDetails" oncomplete="PF('createEventDialog').show()" />  
-                                    <p:ajax event="eventSelect" listener="#{casoScheduleController.onEventSelect}" 
-                                            update=":createEventForm:eventDetails" oncomplete="PF('createEventDialog').show()" />  
 
-                                    <p:ajax event="eventMove" listener="#{casoScheduleController.onEventMove}" update=":mainform:messages" />  
-                                    <p:ajax event="eventResize" listener="#{casoScheduleController.onEventResize}" update=":mainform:messages" /> 
-                                </p:schedule>
-                            </h:form>
-                        </div>
-                    </div> <!-- / .panel Agenda -->
 
                     <div class="panel no-border panel-dark">
                         <div class="panel-body text-center">
@@ -440,7 +437,7 @@
                 <div class="col-sm-7 col-md-8 col-lg-9 col-sm-pull-5 col-md-pull-4 col-lg-pull-3 main">
 
                     <ui:include src="toolbarCaso.xhtml" />
-
+                    <br/>
                     <ui:include src="responder.xhtml" />
 
                     <ui:include src="actividadesListForm.xhtml" />

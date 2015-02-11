@@ -90,8 +90,9 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
                         unschedule(formatJobId);
                         //crear una nota de envio de email en el caso!
                         EntityManagerFactory emf = createEntityManagerFactory();
-                        UserTransaction utx = UserTransactionHelper.lookupUserTransaction();
                         EntityManager em = null;
+                        UserTransaction utx = UserTransactionHelper.lookupUserTransaction();
+                        
 //                        JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf);
 
                         try {
