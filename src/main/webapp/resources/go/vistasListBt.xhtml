@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://java.sun.com/jsf/composite"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name="controllerMBean" required="true" /> 
+        <cc:attribute name="user" required="true" /> 
+        <cc:attribute name="update" default=":mainform:messages" />
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <!-- Tabs -->
+        <h:form id="vistasForm">
+            <div class="search-tabs">
+                <ul class="nav nav-tabs">
+                    <ui:repeat value="#{cc.attrs.controllerMBean.getAllAgentVistasItems()}" var="vista1" >
+                        <li class="#{cc.attrs.controllerMBean.vista eq vista1 ? 'active':''}">
+
+                            <p:commandLink id="vistalink1" ajax="true" oncomplete="$('.nav-pills, .nav-tabs').tabdrop();"
+                                           update="#{cc.attrs.update}" 
+                                           actionListener="#{cc.attrs.controllerMBean.applyViewFilter(vista1)}" 
+                                           value="#{vista1.nombre}"  
+                                           rendered="#{cc.attrs.controllerMBean.vista ne vista1}"/>
+                            <p:tooltip for="vistalink1" value="#{vista1.descripcion}" rendered="#{not empty vista1.descripcion}" />  
+
+                            <h:panelGroup rendered="#{cc.attrs.controllerMBean.vista eq vista1}">
+                                <a href="#" data-toggle="tab">#{vista1.nombre} <span class="label label-info">#{cc.attrs.controllerMBean.countItemsVista(vista1)}</span></a>
+                            </h:panelGroup>
+
+                        </li>
+                    </ui:repeat>
+                </ul> <!-- / .nav -->
+            </div>
+        </h:form>
+        <!-- / Tabs -->
+
+    </cc:implementation>
+</html>

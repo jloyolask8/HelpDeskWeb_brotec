@@ -1351,6 +1351,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             casosPendientes = getJpaControllerThatListenRules().countEntities(vistaCasosPendientes, userSessionBean.getCurrent(), null);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
+            casosPendientes = 0L;
         }
 
         try {
@@ -1358,6 +1359,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             casosPorVencer = getJpaControllerThatListenRules().countEntities(vistaCasosPorVencer, userSessionBean.getCurrent(), null);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
+            casosPorVencer = 0L;
         }
 
         try {
@@ -1365,6 +1367,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             casosVencidos = getJpaControllerThatListenRules().countEntities(vistaCasosVencidos, userSessionBean.getCurrent(), null);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
+            casosVencidos = 0L;
         }
 
         try {
@@ -1372,6 +1375,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             casosCerrados = getJpaControllerThatListenRules().countEntities(vistaCasosCerrados, userSessionBean.getCurrent(), null);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
+            casosCerrados = 0L;
         }
 
         try {
@@ -1379,6 +1383,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             casosRevisarActualizacion = getJpaControllerThatListenRules().countEntities(vistaMyReviewUpdate, userSessionBean.getCurrent(), null);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
+            casosRevisarActualizacion = 0L;
         }
 
         try {
@@ -1387,6 +1392,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
+            casosPrioritarios = 0L;
         }
 
 //                    casosPendientes = getJpaControllerThatListenRules().getCasoCount(userSessionBean.getCurrent(), EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta());
