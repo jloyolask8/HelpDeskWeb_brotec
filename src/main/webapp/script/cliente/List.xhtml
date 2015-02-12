@@ -15,106 +15,206 @@
         <ui:define name="menutitle">
             <p:outputLabel value="Vistas de Clientes"></p:outputLabel>
         </ui:define>
-        <ui:define name="west">
 
-            <go:vistasListBt id="vistasList" update=":vistasList:vistasForm :mainform:messages :formfilter:panelFilter0:panelFilter :form" 
-                           controllerMBean="#{clienteController}"
-                           user="#{UserSessionBean.current}"/>
 
-            <br/>
-
-            <p:outputLabel escape="false" value="#{bundle.ayudaClientes}"/>
-
-        </ui:define>
         <ui:define name="body">
-            
-            <div class="page-header hidden-xs">
-                <h1><i class="fa fa-inbox page-header-icon"></i>&nbsp;&nbsp;Listado de Clientes</h1>
-            </div> <!-- / .page-header -->
 
-            <h:form id="formfilter">
-                <go:filterView id="panelFilter0" titleIconClass="fa fa-users page-header-icon"
-                               controllerMBean="#{clienteController}" 
-                               vista="#{clienteController.vista}"
-                               filterHelper="#{clienteController.filterHelper}" 
-                               canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
-                               update=":mainform:messages :formfilter:panelFilter0:panelFilter :form"
-                               vistaControllerBackOutcome="/script/cliente/List"/>
+            <!-- page-header -->
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-sm-10 col-xs-10">
+                        <h1><i class="fa fa-users page-header-icon"></i>&nbsp;&nbsp; Lista de Clientes</h1>
+                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                            <i class="fa fa-info-circle"/>
+                        </p:commandLink> 
+                    </div>
+                    <div class="col-sm-2 col-xs-2">
+                        <h:form>
 
-            </h:form>
-
-            <h:form id="form">
-                
-                <go:paginatorBtnsBt controllerMBean="#{clienteController}" update=":form"/>
-                
-                <h:panelGroup>
-
-                    <p:toolbar >
-
-                        <p:toolbarGroup align="left">
-                            <p:commandButton ajax="false" action="#{clienteController.prepareCreateMasivo()}" value="Importación masiva de clientes" icon="fa fa-upload" />
-                            <p:commandButton ajax="false" action="cargarClienteProducto" value="Importar Relación Cliente/#{applicationBean.productSubComponentDescription}" icon="fa fa-upload" />
-                        </p:toolbarGroup>
-
-                    </p:toolbar>
+                            <div class="btn-group pull-right">
+                                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i></button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <h:commandLink action="#{clienteController.prepareCreate}" 
+                                                       value="Agregar Cliente"
+                                                       title="Agregar/Crear nuevo">
+                                        </h:commandLink>
+                                    </li>
+                                </ul>
+                            </div>
 
 
-                    <p:dataTable widgetVar="dataTable" var="item" value="#{clienteController.items}" selectionMode="single"
-                                 emptyMessage="#{bundle.emptyList}">
+                        </h:form>
+
+                    </div>
+                </div>
+            </div><!-- / .page-header --> 
+            <div class="row">
+                <go:vistasListBt id="vistasList" 
+                                 update=":vistasList:vistasForm :mainform:messages :form :form0" 
+                                 controllerMBean="#{clienteController}"
+                                 user="#{UserSessionBean.current}"/>
 
 
+                <div class="panel search-panel">
+                    <h:form id="form" styleClass="search-form">
+                        <go:filterView controllerMBean="#{clienteController}" vista="#{clienteController.vista}"
+                                       showSearchBar="true"
+                                       filterHelper="#{clienteController.filterHelper}" 
+                                       update=":mainform:messages :form0"
+                                       vistaControllerBackOutcome="/script/cliente/List"/>
 
-                        <p:column headerText="Nombre" sortBy="#{item.capitalFullName}">
-                            <h:outputText value="#{item.capitalFullName}"/>
-                        </p:column>
+                        <h:panelGroup layout="block" styleClass="row alert alert-page alert-warning" rendered="#{clienteController.items.rowCount le 0}">
+                            <button type="button" class="close" data-dismiss="alert">x</button>
+                            Su busqueda no coincide con ningun caso.
+                        </h:panelGroup>
+                    </h:form>
 
-                        <p:column headerText="Rut Cliente" sortBy="#{item.rut}">
-                            <h:outputText value="#{item.rut}"/>
-                        </p:column>
 
-                        <p:column headerText="Email">
-                            <ui:repeat value="#{item.emailClienteList}" var="r" >
-                                <p:outputLabel value="#{r.emailCliente} (#{r.casoList.size()} casos)"/>
-                            </ui:repeat>
-                        </p:column>
-
-                        <p:column headerText="Casos">
-                             <p:outputLabel value="#{item.casoList.size()} "/>
-                        </p:column>
-
-                        <p:column headerText="TPC" >
-                            <h:outputText value="#{not empty item.productoContratadoList ? 'Si':'No'}"/>
-                        </p:column>
-
-                        <p:column headerText="Acción">
-                            <p:commandButton id="viewBtn" ajax="false" action="#{clienteController.prepareView(item)}" title="Ver" icon="ui-icon ui-icon-document"/>
-                            <p:commandButton id="editBtn" ajax="false" action="#{clienteController.prepareEdit(item)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" title="Editar" icon="ui-icon ui-icon-pencil"/>
-                            <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" 
-                                             rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" 
-                                             actionListener="#{clienteController.prepareEditPK(item.idCliente)}" 
-                                             oncomplete="PF('confirmation').show()" 
-                                             disabled="#{not clienteController.puedeEliminar(item)}" icon="ui-icon ui-icon-trash"/>
-                        </p:column>
+                    <h:form id="form0">
 
 
 
-                    </p:dataTable>
+                        <h:panelGroup layout="block" styleClass="panel panel-transparent" rendered="#{clienteController.items.rowCount gt 0}">
+                            <div class="panel-heading">
+                                <span class="panel-title"> 
+                                    <go:paginatorCounts controllerMBean="#{clienteController}" 
+                                                        rendered="#{clienteController.pagination.itemsCount gt 0}"/>
+                                </span>
 
-                </h:panelGroup>
+                                <div class="panel-heading-controls">
+                                    <go:paginatorBtnsBt controllerMBean="#{clienteController}" update=":form"/>
+                                </div>
+                            </div>
+                            <div class="panel-body no-padding">
+                                <h:dataTable id="panelG1" value="#{clienteController.items}" 
+                                             styleClass="table table-hover"
+                                             var="item">
+
+                                    <h:column >
+                                        <f:facet name="header">
+                                            <h:outputText value="Nombre"/>
+                                        </f:facet>
+                                        <h:outputText value="#{item.capitalFullName}"/>
+                                    </h:column>
+
+                                    <h:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Rut"/>
+                                        </f:facet>
+                                        <h:outputText value="#{item.rut}"/>
+                                    </h:column>
+
+                                    <h:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Email"/>
+
+                                        </f:facet>
+                                        <ui:repeat value="#{item.emailClienteList}" var="r" >
+                                            <p:outputLabel value="#{r.emailCliente} (#{r.casoList.size()} casos)"/>
+                                        </ui:repeat>
+                                    </h:column>
+
+                                    <h:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Casos"/>
+                                        </f:facet>
+                                        <p:outputLabel value="#{item.casoList.size()} "/>
+                                    </h:column>
+
+                                    <h:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="TPC"/>
+                                        </f:facet>
+                                        <h:outputText value="#{not empty item.productoContratadoList ? 'Si':'No'}"/>
+                                    </h:column>
+
+                                    <h:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Accion"/>
+                                        </f:facet>
+
+
+                                        <div class="btn-toolbar">
+
+                                            <p:commandLink id="viewBtn" action="#{clienteController.prepareView(item)}" title="Ver" ajax="false"
+                                                           styleClass="btn btn-sm btn-outline btn-primary"
+                                                           >
+                                                <i class="fa fa-eye"/>
+                                            </p:commandLink>
+
+                                            <p:commandLink id="editBtn" action="#{clienteController.prepareEdit(item)}" title="Editar" ajax="false"
+                                                           styleClass="btn btn-sm btn-outline btn-primary"
+                                                           rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
+                                                <i class="fa fa-edit"/>
+                                            </p:commandLink>
+
+                                            <p:commandLink  id="showDialogButton" 
+                                                            actionListener="#{clienteController.prepareEditPK(item.idCliente)}"
+                                                            rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
+                                                            styleClass="btn btn-sm btn-outline btn-danger"
+                                                            title="Eliminar"
+                                                            oncomplete="PF('confirmation').show()"
+                                                            update=":confirmDialog"
+                                                            disabled="#{not clienteController.puedeEliminar(item)}">
+                                                <i class="fa fa-times"/>
+
+                                            </p:commandLink>
+                                        </div>
+
+                                    </h:column>
+
+
+
+
+                                </h:dataTable>
+                            </div>
+
+                            <div class="panel-footer">
+                                <div class="row text-center">
+                                    <go:paginatorCounts controllerMBean="#{clippingController}" 
+                                                        rendered="#{clippingController.pagination.itemsCount gt 0}"/>
+                                </div>
+                            </div>
+                        </h:panelGroup>
 
 
 
 
 
-                <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
-                          header="Iniciando proceso de eliminación" widgetVar="confirmation">
+                    </h:form> 
+                </div>
+            </div>
+        </ui:define>
 
-                    <h:outputText value="Está seguro de eliminar al cliente #{clienteController.selected.nombres} #{clienteController.selected.apellidos}?"/>
-                    <br/>
-                    <p:outputLabel value="Casos asociados al cliente:"/>
-                    <p:scrollPanel mode="native" style="height: 100px;border-color: window;border: 0;">
-                        <h:panelGrid columns="1">
-                            <c:forEach items="#{clienteController.selected.casoList}" var="item" >
+        <ui:define name="dialogs">
+
+
+
+            <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
+                      header="Iniciando proceso de eliminación" widgetVar="confirmation">
+
+                <h:outputText value="Está seguro de eliminar al cliente #{clienteController.selected.nombres} #{clienteController.selected.apellidos}?"/>
+                <br/>
+                <p:outputLabel value="Casos asociados al cliente:"/>
+                <p:scrollPanel mode="native" style="height: 100px;border-color: window;border: 0;">
+                    <h:panelGrid columns="1">
+                        <c:forEach items="#{clienteController.selected.casoList}" var="item" >
+                            <h:commandLink action="#{casoController.filterByIdCaso(item.idCaso)}" >
+                                <h:outputText styleClass="ticket-status" 
+                                              style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};" value="#{item.idSubEstado.nombre}"
+                                              />
+                                <h:outputText value=" #{item.tipoCaso.nombre} N°#{item.idCaso} - #{item.tema}"/>
+                            </h:commandLink>
+                        </c:forEach>
+                    </h:panelGrid>
+                </p:scrollPanel>
+
+                <p:outputLabel value="Casos asociados a cada email del cliente:"/>
+                <p:scrollPanel mode="native" style="height: 100px;border-color: window;border: 0;">
+                    <h:panelGrid columns="1">
+                        <c:forEach items="#{clienteController.selected.emailClienteList}" var="email" >
+                            <c:forEach items="#{email.casoList}" var="item" >
                                 <h:commandLink action="#{casoController.filterByIdCaso(item.idCaso)}" >
                                     <h:outputText styleClass="ticket-status" 
                                                   style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};" value="#{item.idSubEstado.nombre}"
@@ -122,34 +222,28 @@
                                     <h:outputText value=" #{item.tipoCaso.nombre} N°#{item.idCaso} - #{item.tema}"/>
                                 </h:commandLink>
                             </c:forEach>
-                        </h:panelGrid>
-                    </p:scrollPanel>
-
-                    <p:outputLabel value="Casos asociados a cada email del cliente:"/>
-                    <p:scrollPanel mode="native" style="height: 100px;border-color: window;border: 0;">
-                        <h:panelGrid columns="1">
-                            <c:forEach items="#{clienteController.selected.emailClienteList}" var="email" >
-                                <c:forEach items="#{email.casoList}" var="item" >
-                                    <h:commandLink action="#{casoController.filterByIdCaso(item.idCaso)}" >
-                                        <h:outputText styleClass="ticket-status" 
-                                                      style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};" value="#{item.idSubEstado.nombre}"
-                                                      />
-                                        <h:outputText value=" #{item.tipoCaso.nombre} N°#{item.idCaso} - #{item.tema}"/>
-                                    </h:commandLink>
-                                </c:forEach>
-                            </c:forEach>
-                        </h:panelGrid>
-                    </p:scrollPanel>
-
+                        </c:forEach>
+                    </h:panelGrid>
+                </p:scrollPanel>
+                <h:form id="formDelete">
                     <f:facet name="footer">
                         <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{clienteController.destroy()}" 
                                          ajax="false" />
                         <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
                     </f:facet>
+                </h:form>
+            </p:dialog>
 
-                </p:dialog>
+            <p:dialog id="helpDialog" showEffect="fade" hideEffect="clip" modal="true"
+                      header="Help" widgetVar="helpDialog">
+                <div class="row note note-info hidden-xs">
+                    <p><h:outputText  value="#{bundle.ayudaClientes}" escape="false"/></p>
+                </div>  
 
-            </h:form>
+                <h:button id="decline" value="Cerrar" onclick="PF('helpDialog').hide()"  /> 
+
+            </p:dialog>
+
         </ui:define>
     </ui:composition>
 
