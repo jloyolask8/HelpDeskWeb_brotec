@@ -77,20 +77,17 @@
                         </h:panelGroup>
 
                     </h:form>
-
-
-                </div>
-
-            </div>
-
-            <div class="row">
+                    
                 <h:form id="form0">
 
 
 
-                    <h:panelGroup layout="block" styleClass="panel" rendered="#{clippingController.items.rowCount gt 0}">
+                    <h:panelGroup layout="block" styleClass="panel panel-transparent" rendered="#{clippingController.items.rowCount gt 0}">
                         <div class="panel-heading">
-                            <span class="panel-title">Lista de Respuestas predefinidas</span>
+                            <span class="panel-title"> 
+                                <go:paginatorCounts controllerMBean="#{clippingController}" 
+                                                    rendered="#{clippingController.pagination.itemsCount gt 0}"/>
+                            </span>
 
                             <div class="panel-heading-controls">
                                 <go:paginatorBtnsBt controllerMBean="#{clippingController}" update=":form"/>
@@ -138,6 +135,7 @@
                                         <h:outputText value="Agente"/>
                                     </f:facet>
                                     <p:commandLink value="#{item.idUsuarioCreadaPor.capitalName}"
+                                                   styleClass="btn-link"
                                                    rendered="#{not empty item.idUsuarioCreadaPor}" 
                                                    action="#{usuarioController.prepareView(item.idUsuarioCreadaPor, '/script/clipping/List')}" ajax="false" immediate="true"/>
                                 </h:column>
@@ -147,15 +145,22 @@
                                         <h:outputText value="&nbsp;"/>
                                     </f:facet>
 
-                                    <p:commandButton id="editBtn" action="#{clippingController.prepareEdit()}" ajax="false"
-                                                     icon="ui-icon ui-icon-pencil" 
-                                                     rendered="#{item.idUsuarioCreadaPor eq UserSessionBean.current}"/>
+                                    <div class="btn-toolbar">
+                                        <p:commandLink id="editBtn" action="#{clippingController.prepareEdit()}" ajax="false"
+                                                       styleClass="btn btn-sm btn-outline btn-primary"
+                                                       rendered="#{item.idUsuarioCreadaPor eq UserSessionBean.current}">
+                                            <i class="fa fa-edit"/>
+                                        </p:commandLink>
 
-                                    <p:commandButton icon="ui-icon ui-icon-trash" actionListener="#{clippingController.destroy()}" 
-                                                     update=":form :mainform:messages">
-                                        <p:confirm header="Confirmación" message="Esta seguro de eliminar #{item.nombre} ??" 
-                                                   icon="ui-icon-alert"/>
-                                    </p:commandButton>
+                                        <p:commandLink  actionListener="#{clippingController.destroy()}" 
+                                                        styleClass="btn btn-sm btn-outline btn-danger"
+                                                        update=":form :mainform:messages">
+                                            <i class="fa fa-times"/>
+                                            <p:confirm header="Confirmación" message="Esta seguro de eliminar #{item.nombre} ??" 
+                                                       icon="ui-icon-alert"/>
+                                        </p:commandLink>
+                                    </div>
+
 
                                 </h:column>
 
@@ -166,8 +171,10 @@
                         </div>
 
                         <div class="panel-footer">
-                            <h:outputText value="#{clippingController.pagination.pageFirstItem + 1}-#{clippingController.pagination.pageLastItem + 1} de #{clippingController.pagination.itemsCount}" 
-                                          rendered="#{clippingController.pagination.itemsCount gt 0}" style="color: #000;"/>
+                            <div class="row text-center">
+                                <go:paginatorCounts controllerMBean="#{clippingController}" 
+                                                    rendered="#{clippingController.pagination.itemsCount gt 0}"/>
+                            </div>
                         </div>
                     </h:panelGroup>
 
@@ -176,7 +183,13 @@
 
 
                 </h:form>
+
+
+                </div>
+
             </div>
+
+            
 
 
 
