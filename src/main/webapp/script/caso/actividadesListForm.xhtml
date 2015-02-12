@@ -12,85 +12,103 @@
         xmlns:go="http://java.sun.com/jsf/composite/go">
 
         <pe:importEnum type="com.itcs.helpdesk.persistence.entityenums.EnumTipoNota" var="EnumTipoNota" allSuffix="ALL_ENUM_VALUES" />
-        
+
         <h:form id="formact">
 
-            <c:forEach items="#{casoController.selected.notaList}" var="item" varStatus="loop">
+            <h:panelGroup layout="block" styleClass="timeline" rendered="#{not empty casoController.selected.notaList}">
 
-                <div id="panelNota#{loop.index}" class="#{casoController.notaEditable(item) ? 'panel panel-dark colourable':'panel panel-dark colourable'}">
+                <c:forEach items="#{casoController.selected.notaList}" var="item" varStatus="loop">
 
 
-
-                    <div class="panel-body #{casoController.getNotaStyle(item.tipoNota)}">
-                        <div class="expandable">
-                            <h:outputText value="#{casoController.extractNotaNewPart(item)}" escape="false"/>
+                    <div class="tl-entry">
+                        <div class="tl-time">
+                            <h:outputText value="#{casoController.prettyDate(item.fechaCreacion)}"/>
                         </div>
+                        <div class="tl-icon bg-info"><i class="fa #{item.tipoNota.styleIcon ne null ? item.tipoNota.styleIcon:'fa-comment'}"></i></div>
+                        <div class="panel tl-body">
+                            <h4 class="text-default">
+                                <h:outputText value="\##{item.idNota} #{item.creadaPor ne null ? item.creadaPor.capitalName:(item.enviadoPor ne null ? item.enviadoPor:'unknown sender')}"/></h4>
+                            <div class="expandable">
+                                <h:outputText value="#{casoController.extractNotaNewPart(item)}" escape="false"/>
+                            </div>
+
+                            <h:panelGroup rendered="#{not empty item.attachmentList}">
+
+                                <hr/>
+                                <h6 class="text-light-gray text-semibold text-xs" style="margin:20px 0 10px 0;">ADJUNTOS</h6>
+
+                            </h:panelGroup>
+
+                            <c:forEach items="#{item.attachmentList}" var="nota_f_attachment" >
+                                <h:panelGrid columns="6">
+                                    <p:graphicImage name="file_extension_#{nota_f_attachment.fileExtension}.png" library="file_extension_icons" />
+
+                                    <p:commandLink ajax="false" value="#{nota_f_attachment.nombreArchivoOriginal}" 
+
+                                                   title="Descargar #{nota_f_attachment.nombreArchivo} (#{nota_f_attachment.mimeType})">
+                                        <p:fileDownload value="#{casoController.bajarArchivo(nota_f_attachment.idAttachment)}" />
+                                    </p:commandLink>
+
+                                    <h:outputText value="(#{nota_f_attachment.fileSizeHuman})" style="color: #7A7A7A"/>
 
 
-                        <br/>
-                        <h:panelGroup rendered="#{not empty item.attachmentList}">
+                                    <p:lightBox iframe="true" iframeTitle="#{nota_f_attachment.nombreArchivoOriginal}"
+                                                rendered="#{nota_f_attachment.isPdf() or nota_f_attachment.isImage()}"> 
+                                        <h:outputLink  value="#{facesContext.externalContext.requestContextPath}/DownloadFileServlet?id=#{nota_f_attachment.idAttachment}&amp;tenant=#{UserSessionBean.tenantId}" 
+                                                       styleClass="ui-icon ui-icon-search"
+                                                       title="Preview">  
+                                        </h:outputLink>
+                                    </p:lightBox>
 
-                            <hr class="panel-wide"/>
-                            <h6 class="text-light-gray text-semibold text-xs" style="margin:20px 0 10px 0;">ADJUNTOS</h6>
 
-                        </h:panelGroup>
+                                </h:panelGrid>
+                            </c:forEach>
 
-                        <c:forEach items="#{item.attachmentList}" var="nota_f_attachment" >
-                            <h:panelGrid columns="6">
-                                <p:graphicImage name="file_extension_#{nota_f_attachment.fileExtension}.png" library="file_extension_icons" />
+                            <hr/>
 
-                                <p:commandLink ajax="false" value="#{nota_f_attachment.nombreArchivoOriginal}" 
+                            <span class="text-light-gray">#{casoController.creaTituloDeNota(item)}</span>
 
-                                               title="Descargar #{nota_f_attachment.nombreArchivo} (#{nota_f_attachment.mimeType})">
-                                    <p:fileDownload value="#{casoController.bajarArchivo(nota_f_attachment.idAttachment)}" />
+                            <div class="pull-right">
+                                <p:commandLink actionListener="#{casoController.prepareEditNota(item)}"
+                                               update=":formEditNota"
+                                               onsuccess="PF('Nota').show();" rendered="#{casoController.notaEditable(item)}" 
+                                               styleClass="btn-link">
+                                    <span class="btn-label icon fa fa-edit" title="Editar"></span>
                                 </p:commandLink>
+                                &nbsp;
+                                <p:commandLink actionListener="#{casoController.prepareViewHtml(item.texto)}"
+                                               rendered="#{not casoController.mobileClient}"
+                                               styleClass="btn-link">
+                                    <span class="btn-label icon fa fa-external-link" title="Abrir mensaje original"></span>
+                                </p:commandLink>
+                            </div>
 
-                                <h:outputText value="(#{nota_f_attachment.fileSizeHuman})" style="color: #7A7A7A"/>
+                        </div> <!-- / .tl-body -->
+                    </div> <!-- / .tl-entry -->
 
 
-                                <p:lightBox iframe="true" iframeTitle="#{nota_f_attachment.nombreArchivoOriginal}"
-                                            rendered="#{nota_f_attachment.isPdf() or nota_f_attachment.isImage()}"> 
-                                    <h:outputLink  value="#{facesContext.externalContext.requestContextPath}/DownloadFileServlet?id=#{nota_f_attachment.idAttachment}&amp;tenant=#{UserSessionBean.tenantId}" 
-                                                   styleClass="ui-icon ui-icon-search"
-                                                   title="Preview">  
-                                    </h:outputLink>
-                                </p:lightBox>
+                </c:forEach>
+
+                <script type="text/javascript">
+
+                    $('div.expandable').expander({
+                        slicePoint: 50,
+                        widow: 2,
+                        expandEffect: 'fadeIn',
+                        expandSpeed: 250,
+                        collapseEffect: 'fadeOut',
+                        collapseSpeed: 200,
+                        // allow the user to re-collapse the expanded text.
+                        userCollapse: true,
+                        expandText: '[ + ]', // default is 'read more'
+                        userCollapseText: '[ - ]'  // default is 'read less'
+                    });
+
+                </script>
+
+            </h:panelGroup>
 
 
-                            </h:panelGrid>
-                        </c:forEach>
-                        <p:effect type="highlight" event="load" 
-                                  rendered="#{casoController.justCreadedNotaId eq item.idNota}"/> 
-                    </div>
-                    <div class="panel-footer">
-                        <h:panelGroup rendered="#{EnumTipoNota.REG_ENVIO_CORREO.getTipoNota() eq item.tipoNota}">
-                                <i class="fa fa-envelope text-light-gray"></i>
-                        </h:panelGroup>
-                        
-                        <h:panelGroup rendered="#{EnumTipoNota.REG_ENVIO_CORREO.getTipoNota() ne item.tipoNota}">
-                                <i class="fa fa-comment text-light-gray"></i>
-                        </h:panelGroup>
-
-                        <span class="text-light-gray">#{casoController.creaTituloDeNota(item)}</span>
-
-                        <div class="pull-right">
-                            <p:commandLink actionListener="#{casoController.prepareEditNota(item)}"
-                                           update=":formEditNota"
-                                           onsuccess="PF('Nota').show();" rendered="#{casoController.notaEditable(item)}" 
-                                           >
-                                <span class="btn-label icon fa fa-edit" title="Editar"></span>
-                            </p:commandLink>
-                            &nbsp;
-                            <p:commandLink actionListener="#{casoController.prepareViewHtml(item.texto)}"
-                                           rendered="#{not casoController.mobileClient}"
-                                           >
-                                <span class="btn-label icon fa fa-external-link" title="Abrir mensaje original"></span>
-                            </p:commandLink>
-                        </div>
-
-                    </div>
-                </div>
-            </c:forEach>
 
 
             <div class="panel panel-body-colorful">
@@ -131,8 +149,9 @@
                             ver mensaje HTML</p>
                     </div>
 
-                    <p:commandLink actionListener="#{casoController.prepareViewHtml(casoController.selected.descripcion)}">
-                        <span class="btn-label icon fa fa-external-link"></span>Ver mensaje original
+                    <p:commandLink actionListener="#{casoController.prepareViewHtml(casoController.selected.descripcion)}"
+                                   styleClass="btn-link">
+                        <span class="btn-label icon fa fa-external-link"></span>
                     </p:commandLink>
                 </div>
             </div>
