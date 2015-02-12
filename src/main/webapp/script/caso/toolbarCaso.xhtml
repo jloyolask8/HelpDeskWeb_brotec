@@ -7,14 +7,9 @@
     xmlns:ui="http://java.sun.com/jsf/facelets"
     xmlns:go="http://java.sun.com/jsf/composite/go">
 
-    <h:form id="botoneraCaso">
-
-        <div class="row">
-
-            <div class="btn-toolbar wide-btns pull-left" role="toolbar">
                 <div class="btn-group">
                     <h:commandLink title="Volver" action="inbox" styleClass="btn btn-default">
-                        <i class="fa fa-chevron-left"></i>
+                        <i class="fa fa-inbox"></i>
                     </h:commandLink>
 
                     <h:commandLink title="#{bundle.EditCasoLabel_idCasoPadre}: #{casoController.selected.idCasoPadre.tipoCaso.nombre} N°#{casoController.selected.idCasoPadre.idCaso} - #{casoController.selected.idCasoPadre.tema}" 
@@ -22,42 +17,13 @@
                                    action="#{casoController.filterByIdCaso(casoController.selected.idCasoPadre.idCaso)}" styleClass="btn btn-default">
                         <i class="fa fa-level-up"></i>
                     </h:commandLink>
-               
+
                     <h:commandLink title="Actualizar" 
                                    actionListener="#{casoController.refreshCurrentCaso()}" styleClass="btn btn-default">
                         <i class="fa fa-refresh"></i>
                     </h:commandLink>
 
                 </div>
-          
-
-                 <div class="btn-group">
-                    <p:commandLink rendered="#{casoController.verificarCrearActividad()}"
-                                   styleClass="btn btn-default" actionListener="#{casoController.enableCommentMode()}"
-                                   disabled="#{casoController.selected.closed}"
-                                   update=":message-details-reply"
-                                   ajax="true" title="Agregar un Comentario"  >
-                        <i class="fa fa-comment"></i>         
-                    </p:commandLink>
-             
-                    <p:commandLink rendered="#{casoController.verificarCrearActividad()}"
-                                   styleClass="btn btn-default" actionListener="#{casoController.enableReplyMode(false)}"
-                                   disabled="#{casoController.selected.closed}"
-                                   update=":message-details-reply"
-                                   ajax="true" title="Reply"  >
-                        <i class="fa fa-reply"></i>         
-                    </p:commandLink>
-              
-                    <p:commandLink rendered="#{casoController.verificarCrearActividad()}"
-                                   styleClass="btn btn-default" actionListener="#{casoController.enableReplyMode(true)}"
-                                   disabled="#{casoController.selected.closed}"
-                                   update=":message-details-reply"
-                                   ajax="true" title="Reply All"  >
-                        <i class="fa fa-reply-all"></i>         
-                    </p:commandLink>
-                </div>
-               
-
 
                 <div class="btn-group">
                     <p:commandLink rendered="#{casoController.verificarTomarCaso()}"
@@ -66,6 +32,7 @@
                         <i class="fa fa-inbox"></i>         
                     </p:commandLink>
                 </div>
+                
                 <div class="btn-group">
                     <p:commandLink rendered="#{casoController.verificarReabrirCaso()}"
                                    styleClass="btn btn-default" 
@@ -73,6 +40,7 @@
                         <i class="fa fa-folder-open-o"></i>         
                     </p:commandLink>
                 </div>
+                
                 <div class="btn-group">
                     <p:commandLink id="TagAsBtn" title="Etiquetas" 
                                    styleClass="btn btn-default" onclick="TagPanel.loadContents()">
@@ -84,8 +52,8 @@
                         <p:autoComplete id="tags" 
                                         value="#{casoController.selected.etiquetaStringList}" forceSelection="true" 
                                         completeMethod="#{applicationBean.findEtiquetasByPattern}" multiple="true">
-                            <p:ajax  event="itemSelect"  listener="#{casoController.tagItemSelectEvent}"  update=":botoneraCaso:etiquetasGroup"  />
-                            <p:ajax  event="itemUnselect"  listener="#{casoController.tagItemUnselectEvent}"  update=":botoneraCaso:etiquetasGroup"  />
+                            <p:ajax  event="itemSelect"  listener="#{casoController.tagItemSelectEvent}"  update=""  />
+                            <p:ajax  event="itemUnselect"  listener="#{casoController.tagItemUnselectEvent}"  update=""  />
                         </p:autoComplete>
                         <p:watermark for="tags" value="Etiquetas"/>
 
@@ -98,7 +66,23 @@
                 </div>
 
                 <div class="btn-group">
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="fa fa-cog"></span> <i class="fa fa-caret-down"></i></button>
+                    <h:commandLink action="#{casoController.prepareEditPreviusItem()}"
+                                   title="Ir al caso anterior" styleClass="btn btn-default"
+                                   disabled="#{casoController.selectedItemIndex eq casoController.pagination.pageFirstItem}"
+                                   rendered="#{casoController.pagination.itemsCount > 0}">
+                        <i class="fa fa-chevron-left"></i>         
+                    </h:commandLink>
+
+                    <h:commandLink action="#{casoController.prepareEditNextItem()}" 
+                                   title="Ir al caso siguiente" styleClass="btn btn-default"
+                                   disabled="#{casoController.selectedItemIndex eq casoController.pagination.pageLastItem}"
+                                   rendered="#{casoController.pagination.itemsCount > 0}">
+                        <i class="fa fa-chevron-right"></i>       
+                    </h:commandLink>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="fa fa-bars"></span> <i class="fa fa-caret-down"></i></button>
 
                     <ul class="dropdown-menu">
                         <li>
@@ -157,12 +141,5 @@
 
                     </ul>
                 </div>
-            </div>
-
-        </div>
-
-
-
-    </h:form>
 
 </ui:composition>

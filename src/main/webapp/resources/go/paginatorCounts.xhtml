@@ -12,6 +12,6 @@
     <!-- IMPLEMENTATION -->
     <cc:implementation>
         <h:outputText value="#{cc.attrs.controllerMBean.pagination.pageFirstItem + 1} - #{cc.attrs.controllerMBean.pagination.pageLastItem + 1} / #{cc.attrs.controllerMBean.pagination.itemsCount}" 
-                       />
+                      rendered="#{cc.attrs.controllerMBean.pagination.itemsCount gt 0}" />
     </cc:implementation>
 </html>

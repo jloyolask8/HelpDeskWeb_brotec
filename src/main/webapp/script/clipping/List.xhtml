@@ -9,14 +9,16 @@
 
     <ui:composition template="/script/template_inbox_bootstrap.xhtml">
         <ui:define name="title">
-            <p:outputLabel value="#{bundle.ListClippingTitle}"/>
+            <h:outputText value="#{bundle.ListClippingTitle}"/>
+        </ui:define>
+        
+        <ui:define name="help">
+            <h:outputText  value="#{bundle.clippingHelp}" escape="false"/>
         </ui:define>
 
-        <ui:define name="menutitle"><p:outputLabel value="#{bundle.clippingDesc}"/></ui:define>
-
+        <ui:define name="menutitle"><h:outputText value="#{bundle.clippingDesc}"/></ui:define>
 
         <ui:define name="body">
-
 
             <!-- page-header -->
             <div class="page-header">
@@ -85,8 +87,7 @@
                     <h:panelGroup layout="block" styleClass="panel panel-transparent" rendered="#{clippingController.items.rowCount gt 0}">
                         <div class="panel-heading">
                             <span class="panel-title"> 
-                                <go:paginatorCounts controllerMBean="#{clippingController}" 
-                                                    rendered="#{clippingController.pagination.itemsCount gt 0}"/>
+                                <go:paginatorCounts controllerMBean="#{clippingController}" />
                             </span>
 
                             <div class="panel-heading-controls">
@@ -94,6 +95,7 @@
                             </div>
                         </div>
                         <div class="panel-body no-padding">
+                            <div class="table-responsive">
                             <h:dataTable id="panelG1" value="#{clippingController.items}" 
                                          styleClass="table table-hover"
                                          var="item">
@@ -168,12 +170,12 @@
 
 
                             </h:dataTable>
-                        </div>
+                            </div>
+                            </div>
 
                         <div class="panel-footer">
                             <div class="row text-center">
-                                <go:paginatorCounts controllerMBean="#{clippingController}" 
-                                                    rendered="#{clippingController.pagination.itemsCount gt 0}"/>
+                                <go:paginatorCounts controllerMBean="#{clippingController}" />
                             </div>
                         </div>
                     </h:panelGroup>
@@ -205,15 +207,7 @@
             </p:confirmDialog>
 
 
-            <p:dialog id="helpDialog" showEffect="fade" hideEffect="clip" modal="true"
-                      header="Help" widgetVar="helpDialog">
-                <div class="row note note-info hidden-xs">
-                    <p><h:outputText  value="#{bundle.clippingHelp}" escape="false"/></p>
-                </div>  
-
-                <h:button id="decline" value="Cerrar" onclick="PF('helpDialog').hide()"  /> 
-
-            </p:dialog>
+          
 
 
             <p:dialog id="confirmDialog" showEffect="fade" hideEffect="clip" modal="true"

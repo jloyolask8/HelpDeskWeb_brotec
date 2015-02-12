@@ -147,7 +147,7 @@
                                         <ul class="nav navbar-nav pull-right right-navbar-nav">
 
                                             <!-- CASOS STARRED -->
-                                            <li class="nav-icon-btn nav-icon-btn-default">
+                                            <li class="nav-icon-btn nav-icon-btn-primary">
 
                                                 <p:commandLink id="casosPrioritarios" styleClass="notifications-link"
                                                                ajax="false" immediate="true"
@@ -584,11 +584,7 @@
 
                                 </ul> <!-- / .navigation -->
                                 <div class="menu-content">
-                                    <p:commandLink action="#{casoController.prepareCreate}" ajax="false"
-                                                   rendered="#{filtroAcceso.verificarAccesoAFuncionAgregarCaso()}"
-                                                   styleClass="btn btn-primary btn-labeled btn-block btn-outline" >
-                                        <i class="btn-label fa fa-plus"></i>Nuevo Caso
-                                    </p:commandLink>
+
                                 </div>
                             </div> <!-- / #main-menu-inner -->
                         </h:form>
@@ -708,6 +704,19 @@
 
 
 
+                <p:dialog id="helpDialog" showEffect="fade" hideEffect="clip" modal="true"
+                          header="Help" widgetVar="helpDialog">
+                    <div class="row note note-info">
+                        <p>
+                            <ui:insert name="help">
+                                <h:outputText value="Texto de ayuda..."/>
+                            </ui:insert>
+                        </p>
+                    </div>  
+
+                    <h:button id="decline" value="Cerrar" styleClass="btn" onclick="PF('helpDialog').hide()"  /> 
+
+                </p:dialog>
 
 
                 <p:dialog id="panelChangePassId" appendTo="@(body)" closeOnEscape="true" widgetVar="panelChangePass" header="Cambiar Contraseña" modal="true">

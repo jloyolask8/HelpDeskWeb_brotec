@@ -228,7 +228,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private boolean replyByEmail = true;
     protected boolean searchBarVisible = true;
     //respuesta
-    private boolean adjuntarArchivosARespuesta = false;
+//    private boolean adjuntarArchivosARespuesta = false;
     private boolean mergeHabilitado;
     private transient LinkedList<Caso> mergeCandidatesList;
     private transient Map<Integer, Boolean> showReducedContentMap;
@@ -3075,7 +3075,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         this.replyMode = false;
         this.replyByEmail = false;//default option
         this.selectedClipping = null;//reset clipping
-        this.adjuntarArchivosARespuesta = false;//reset attach files checkbox
+//        this.adjuntarArchivosARespuesta = false;//reset attach files checkbox
 
         if (tipoNotas != null && tipoNotas.isEmpty()) {
             tipoNotas.clear();
@@ -3321,10 +3321,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
             List<Attachment> attachmentList = null;
 
-            if (adjuntarArchivosARespuesta && selectedAttachmensForMail != null) {
-                attachmentList = selectedAttachmensForMail;
-            }
-
             //TODO: create an Object Builder factory
             Nota nota = createNota(getSelected(), true, textoNota.trim(),
                     EnumTipoNota.REG_ENVIO_CORREO.getTipoNota(), false, attachmentList);
@@ -3345,7 +3341,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
             StringBuilder listIdAtt = new StringBuilder();
 
-            if (adjuntarArchivosARespuesta && selectedAttachmensForMail != null) {
+            if (selectedAttachmensForMail != null) {
 
                 Iterator<Attachment> iteradorAttachments = selectedAttachmensForMail.iterator();
                 while (iteradorAttachments.hasNext()) {
@@ -4411,19 +4407,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         return selectedItemIndex;
     }
 
-    /**
-     * @return the adjuntarArchivosARespuesta
-     */
-    public boolean isAdjuntarArchivosARespuesta() {
-        return adjuntarArchivosARespuesta;
-    }
-
-    /**
-     * @param adjuntarArchivosARespuesta the adjuntarArchivosARespuesta to set
-     */
-    public void setAdjuntarArchivosARespuesta(boolean adjuntarArchivosARespuesta) {
-        this.adjuntarArchivosARespuesta = adjuntarArchivosARespuesta;
-    }
+ 
 
     /**
      * @return the activeIndexCasoSections
