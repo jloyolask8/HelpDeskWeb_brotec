@@ -8,933 +8,694 @@
       xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:pe="http://primefaces.org/ui/extensions"
       xmlns:go="http://java.sun.com/jsf/composite/go">
-    <ui:composition template="/script/template_inbox.xhtml">
-        <ui:define name="title">
-            <p:outputLabel value="#{casoController.selected.tipoCaso ne null ? casoController.selected.tipoCaso.nombre:'Caso' } N°#{casoController.selected.idCaso}"/>
-        </ui:define>
 
-        <ui:define name="menutitle">
-            <p:outputLabel value="Datos del Caso"/>
+    <ui:composition template="/script/template_inbox_bootstrap.xhtml">
+        <ui:define name="title">
+            <h:outputText value="Caso #{casoController.selected.idCaso}: #{casoController.selected.tema}"></h:outputText>
         </ui:define>
 
         <ui:define name="head">
+
             <style type="text/css">
-                .ui-autocomplete-multiple-container{
-                    width: 100% !important;
-                }
-                .ui-panelgrid-odd{
-                    //background: none repeat scroll 0 0 #F2F5F9;
-                }
-
-                .ui-panelgrid-even{
-                    //background: none repeat scroll 0 0 #F2F5F9;
-                }
-
-                .filtersGridParaOtroEmail td:nth-child(1) {
-                    width: 70px;
-                    padding-left: 0px;
-                }
-                .filtersGridParaOtroEmail td:nth-child(2) {
-                    padding-right: 0px;
-                    margin-right: 100px;
-
-                }
-
-                .ui-panel .ui-panel-content {
-                    //border: 0px;
-                    padding: 0px !important;
-                }
-
-                #menucc_button{
-                    background: transparent !important;
-                }
-
-                .ui-layout-pane-center{
-                    /*border: none !important;*/
-                    //padding-top: 0px !important;
-                    //padding-left: 1px !important;
-                    //margin-top: -5px !important;
-                }
 
             </style>
 
         </ui:define>
 
-
-        <ui:define name="west">
-
-            <ui:include src="propertiesCaso.xhtml"/>
-
-        </ui:define>
-
         <ui:define name="body">
-            <pe:importEnum type="com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta" var="EnumTipoAlerta" allSuffix="ALL_ENUM_VALUES" />
-            <pe:importEnum type="com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso" var="EnumTipoCaso" allSuffix="ALL_ENUM_VALUES" />
+
+            <h:form>
+                <div class="page-header">
+                    <div class="row">
+                        <div class="col-sm-10 col-xs-10">
 
 
+                            <h:commandLink id="prio" disabled="#{casoController.selected.closed}" styleClass="valign-middle m-details-star">
+                                <p:graphicImage library="images" name="#{casoController.selected.esPrioritario ? 'star-enabled.png':'star-disabled.png'}" title="Importante!"/>
+                                <p:ajax id="aj2" listener="#{casoController.changePriority(casoController.selected, casoController.selected.esPrioritario)}" update="prio"/>
+                            </h:commandLink>
 
+                            <!--estado ABIERTO - CERRADO -->
+                            <h:outputText value="#{casoController.selected.idEstado.nombre}" title="#{casoController.selected.estadoAlerta.nombre}" 
+                                          rendered="#{casoController.selected.isOpen()}" styleClass="valign-middle label label-#{casoController.selected.estadoAlerta.styleClass}">
+                            </h:outputText>                       
+                            <h:outputText value="#{casoController.selected.idEstado.nombre}" title="Caso cerrado" 
+                                          rendered="#{not casoController.selected.isOpen()}" styleClass="valign-middle label label-default">
+                            </h:outputText>   
+                            <!--fin estado ABIERTO - CERRADO -->
+                            <h1 class="valign-middle">
+                                <h:outputText value="#{casoController.selected.tipoCaso ne null ? casoController.selected.tipoCaso.nombre:'Caso' } \##{casoController.selected.idCaso}: "/>
+                                <h:outputText styleClass="text-semibold" 
+                                              value="#{casoController.selected.tema}"/>
+                            </h1>
 
-            <h:form id="botoneraCaso" style="margin-top: 5px;">
+                            <!-- fin TAGS-->
+                        </div>
+                        <div class="col-sm-2 col-xs-2">
+                            <div class="pages pull-right">
+                                <ul class="pager pager-xs pull-right" style="margin: 0px !important;">
+                                    <li>
+                                        <h:commandLink action="#{casoController.prepareEditPreviusItem()}" style="font-weight: bold"
+                                                       title="Ir al caso anterior"
+                                                       disabled="#{casoController.selectedItemIndex eq casoController.pagination.pageFirstItem}"
+                                                       rendered="#{casoController.pagination.itemsCount > 0}">
+                                            <i class="fa fa-long-arrow-left"></i>         
+                                        </h:commandLink>
 
-                <h:panelGroup id="tituloCaso">
-
-                    <p:panelGrid styleClass="filtersGrid" id="panelGridDatos">
-                        <p:row>
-
-                            <p:column>
-                                <h:commandLink id="prio" disabled="#{casoController.selected.closed}" >
-                                    <p:graphicImage library="images" name="#{casoController.selected.esPrioritario ? 'star-enabled.png':'star-disabled.png'}" title="Importante!"/>
-                                    <p:ajax id="aj2" listener="#{casoController.changePriority(casoController.selected, casoController.selected.esPrioritario)}" update="prio :formTopMenu"/>
-
-                                </h:commandLink>
-                            </p:column>
-
-                            <p:column>
-                                <p:inplace editor="true" disabled="#{casoController.selected.closed}">
-                                    <f:facet name="output">
-                                        <p:outputLabel style="font-size: 18px !important;"
-                                                       value="#{casoController.selected.tema}"/>
-                                    </f:facet>
-                                    <f:facet name="input">
-                                        <p:inputText id="ticketTema" value="#{casoController.selected.tema}"/> 
-                                        <p:watermark for="ticketTema" value="Asunto del caso"/>
-                                    </f:facet>
-                                </p:inplace>
-                            </p:column>
-
-
-
-                            <p:column>
-                                <h:outputText styleClass="ticket-status" value="#{casoController.selected.idEstado.nombre}"
-                                              style="#{casoController.selected.isOpen() eq true ? 'background: #4abf5a; color: #FFFFFF;':'background: #444444; color: #FFFFFF;'}"/>
-                            </p:column>
-                            <!-- Ticket Alert status -->
-                            <p:column>
-                                <h:outputText id="idSubEstado" styleClass="ticket-status" 
-                                              style="background: \##{casoController.selected.idSubEstado.backgroundColor}; color: \##{casoController.selected.idSubEstado.fontColor};" 
-                                              value="#{casoController.selected.idSubEstado.nombre}"/>
-                            </p:column>
-
-                            <p:column>
-                                <h:panelGroup rendered="#{casoController.selected.hasScheduledEvents}">
-                                    <i class="fa fa-calendar"></i>
-                                </h:panelGroup>
-                                <h:panelGroup rendered="#{casoController.selected.hasAttachments}">
-                                    <i class="fa fa-paperclip"></i>    
-                                </h:panelGroup>
-                            </p:column>
-                        </p:row>
-                    </p:panelGrid>
-                </h:panelGroup>
-
-                <h:panelGrid columns="14">     
-
-                    <p:commandButton ajax="false" title="#{casoController.selected.idCasoPadre ne null ? 'Subir al caso '.concat(casoController.selected.idCasoPadre):'Ir al listado de casos'}" icon="fa fa-chevron-left" action="#{casoController.goOneLevelUp()}" style="width: 50px;"/>
-
-                    <p:commandButton ajax="false" title="Actualizar" icon="fa fa-refresh" actionListener="#{casoController.refreshCurrentCaso()}" style="width: 50px;"/>
-
-                    <p:commandButton ajax="false" icon="fa fa-download" value="Acta Pre-entrega" 
-                                     rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.ENTREGA.getTipoCaso()}">
-                        <p:fileDownload value="#{casoController.generarActaPreEntrega()}" />
-                    </p:commandButton>
-
-                    <p:menuButton id="panelBotonesResp" value="Opciones">
-                        <p:menuitem  rendered="#{casoController.verificarTomarCaso()}" ajax="true" value="Asignármelo" onclick="PF('tomarCaso').show()" icon="fa fa-inbox" />
-                        <p:menuitem  rendered="#{casoController.verificarTransferirCaso()}" icon="fa fa-user"
-                                     ajax="true" value="Transferir" onclick="PF('transferir').show();" />
-                        <p:menuitem  rendered="#{casoController.verificarAsignarCaso()}" icon="fa fa-user"
-                                     ajax="true" value="Asignar" onclick="PF('transferir').show();" />
-                        <p:menuitem  rendered="#{casoController.verificarCerrarCaso()}" icon="fa fa-lock"
-                                     ajax="true" value="Cerrar el caso"  onclick="PF('closeCase').show();" />
-                        <p:menuitem  rendered="#{casoController.verificarReabrirCaso()}" ajax="true" value="Reabrir Caso"  icon="fa fa-unlock" 
-                                     onclick="PF('openCase').show();" />
-                        <p:separator/>
-                        <p:menuitem rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.PREVENTIVO.getTipoCaso()}"
-                                    value="Generar Documento Visita Preventiva" 
-                                    title="Generar Documento Visita Preventiva"                                                 
-                                    actionListener="#{casoController.generarPDFVisitaPreventivaPostventa()}"
-                                    icon="fa fa-file"  />
-                        <p:separator rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.PREVENTIVO.getTipoCaso()}"/>
-                        <p:menuitem ajax="false" value="Copiar" action="#{casoController.prepareCopy()}" icon="fa fa-copy"/>
-
-                        <p:menuitem ajax="false" value="Copiar y Asignármelo" action="#{casoController.prepareCopyAndAssignMe()}" icon="fa fa-clipboard"/>
-
-
-                        <p:menuitem rendered="#{casoController.verificarCrearColaborativo()}" icon="fa fa-code-fork"
-                                    ajax="false" value="Crear Caso Colaborativo" action="#{casoController.crearCasoColab(casoController.selected)}"/>
-
-                        <p:menuitem rendered="#{casoController.verificarRelacionarCaso()}" icon="fa fa-chain"
-                                    ajax="true" value="Relacionar Otro Caso" onclick="PF('casosRela').show();"/>
-                        
-                        <p:menuitem rendered="#{casoController.verificarRelacionarCaso()}" icon="fa fa-trash-o"
-                                    ajax="true" value="Eliminar Relaci&oacute;n Caso" onclick="PF('DeleteCasosRela').show();"/>
-
-                        <p:menuitem rendered="#{casoController.verificarEliminarCaso()}" icon="fa fa-trash-o"
-                                    ajax="true" value="Eliminar" onclick="PF('destroyCase').show();"/>
-                    </p:menuButton>
-
-
-                    <p:commandButton icon="ui-icon ui-icon-seek-prev" ajax="false"
-                                     action="#{casoController.prepareEditPreviusItem()}" 
-                                     title="Ir al caso anterior"
-                                     disabled="#{casoController.selectedItemIndex eq casoController.pagination.pageFirstItem}"
-                                     rendered="#{casoController.pagination.itemsCount > 0}"/>
-
-
-
-                    <p:commandButton icon="ui-icon ui-icon-seek-next" ajax="false"
-                                     action="#{casoController.prepareEditNextItem()}" 
-                                     title="Ir al caso siguiente"
-                                     disabled="#{casoController.selectedItemIndex eq casoController.pagination.pageLastItem}"
-                                     rendered="#{casoController.pagination.itemsCount > 0}"/>
-                </h:panelGrid>
-
+                                    </li>
+                                    <li>
+                                        <h:commandLink action="#{casoController.prepareEditNextItem()}" style="font-weight: bold"
+                                                       title="Ir al caso siguiente"
+                                                       disabled="#{casoController.selectedItemIndex eq casoController.pagination.pageLastItem}"
+                                                       rendered="#{casoController.pagination.itemsCount > 0}">
+                                            <i class="fa fa-long-arrow-right"></i>       
+                                        </h:commandLink>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- / .page-header -->
             </h:form>
 
 
-            <p:tabView id="inputPanel" dynamic="false" scrollable="true" cache="true" style="width: 99% !important; " activeIndex="#{casoController.activeIndexCasoSections}">
-                <p:ajax event="tabChange" listener="#{casoController.onChangeActiveIndexCasoSections}" oncomplete="resizeScrollPanel();"/>
-                <p:ajax event="tabClose" listener="#{casoScheduleController.onTabClose}" />
+
+            <div class="row">
+
+                <div class="col-md-4 col-sm-5 col-lg-3 col-sm-push-7 col-md-push-8 col-lg-push-9 sidebar"><!-- menu-right -->
+
+                    <ui:include src="info-panel.xhtml"/>
+
+                    <div class="panel-group" id="accordion-example">
+                        <div class="panel">
+                            <div class="panel-heading">
+                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-example" href="#collapseOne">
+                                    Propiedades del caso
+                                </a>
+                            </div> <!-- / .panel-heading -->
+                            <div id="collapseOne" class="panel-collapse in"> 
+
+                                <h:form id="formint1" styleClass="panel">
+
+                                    <div class="panel-body" style="padding: 10px !important;">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group no-margin-hr" >
+                                                    <h:outputLabel styleClass="control-label text-sm text-slim"
+                                                                   value="Tipo:" for="idTipoCaso"/>
+                                                    <h:selectOneMenu id="idTipoCaso"  styleClass="form-control input-sm" disabled="#{casoController.selected.closed}" 
+                                                                     required="true" requiredMessage="El tipo de caso es requerido."
+                                                                     converter="TipoCasoControllerConverter"
+                                                                     value="#{casoController.selected.tipoCaso}" >
+                                                        <f:selectItems value="#{applicationBean.tipoCasoAvailableList}" var="tipo" 
+                                                                       itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
+                                                        <p:ajax update=":formint1"/>
+
+                                                    </h:selectOneMenu>
+                                                </div>
+                                            </div><!-- col-sm-6 -->
+                                            <div class="col-sm-6">
+                                                <div class="form-group no-margin-hr">
+                                                    <h:outputLabel styleClass="control-label text-sm text-slim"
+                                                                   value="#{bundle.EditCasoLabel_idPrioridad}" for="idPrioridad" />
+                                                    <h:selectOneMenu styleClass="form-control input-sm" disabled="#{casoController.selected.closed}"
+                                                                     required="true"
+                                                                     id="idPrioridad" value="#{casoController.selected.idPrioridad}" >
+                                                        <f:selectItems value="#{prioridadController.itemsAvailableSelectMany}"/>
+                                                    </h:selectOneMenu>
+                                                </div>
+                                            </div><!-- col-sm-6 -->
+
+                                        </div><!-- row -->
+
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group no-margin-hr" >
+                                                    <h:outputLabel styleClass="control-label text-sm text-slim"
+                                                                   value="Area" for="idAreaCaso"/>
+                                                    <h:selectOneMenu id="idAreaCaso" disabled="#{casoController.selected.closed}" styleClass="form-control input-sm" 
+                                                                     value="#{casoController.selected.idArea}" >
+                                                        <f:selectItem itemLabel="" itemValue=""/>
+                                                        <f:selectItems value="#{applicationBean.areasAvailableList}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
+                                                    </h:selectOneMenu>
+                                                </div>
+                                            </div><!-- col-sm-6 -->
+                                            <div class="col-sm-6">
+                                                <div class="form-group no-margin-hr">
+                                                    <h:outputLabel styleClass="control-label text-sm text-slim"
+                                                                   value="Grupo" for="idGrupoCaso" />
+                                                    <h:selectOneMenu id="idGrupoCaso" styleClass="form-control input-sm"
+                                                                     value="#{casoController.selected.idGrupo}"
+                                                                     disabled="#{casoController.selected.closed or empty casoController.selected.idArea}">
+                                                        <f:selectItem itemLabel="" itemValue="" />
+                                                        <f:selectItems value="#{casoController.selected.idArea.grupoList}" 
+                                                                       var="grupo" itemLabel="#{grupo.nombre}" itemValue="#{grupo}" itemDescription="#{grupo.descripcion}"/>
+                                                    </h:selectOneMenu>
+                                                </div>
+                                            </div><!-- col-sm-6 -->
+
+                                        </div><!-- row -->
 
 
-                <p:tab id="tab-actividades" title="Actividades (#{casoController.selected.notaList.size()})">
-                    <p:scrollPanel id="scrollpaneActividades" mode="native" style="border: 0;">
-                        <ui:include src="responder.xhtml" />
-                        <br/>
-                        <ui:include src="actividadesListForm.xhtml" />
-                    </p:scrollPanel>
-                </p:tab>
-
-
-
-                <p:tab id="tabAgendarEvento" title="Agenda (#{casoController.selected.scheduleEventList.size()})">
-
-                    <p:scrollPanel id="scrollpaneAgenda" mode="native" style="border: 0; height: 500px;">
-
-                        <h:form id="formAgendarEvento">
-                            <h2>Calendario de Eventos</h2>
-
-                            <p:schedule id="myschedule" value="#{casoScheduleController.lazyScheduleEventsModel}" 
-                                        aspectRatio="4"
-                                        firstHour="8" widgetVar="myschedule" >
-                                <p:ajax event="dateSelect" listener="#{casoScheduleController.onDateSelect}"  
-                                        disabled="#{(not casoController.verificarCrearActividad()) and (not casoController.verificarResponderCaso())}"
-                                        update=":createEventForm:eventDetails" oncomplete="PF('createEventDialog').show();PF('viewEventDialog').hide()" />  
-
-                                <p:ajax event="eventSelect" listener="#{casoScheduleController.onEventSelect}" 
-                                        disabled="#{(not casoController.verificarCrearActividad()) and (not casoController.verificarResponderCaso())}"
-                                        update=":viewEventForm :viewEventForm:panelClientesInvitados:panelclientesinvitados" oncomplete="PF('viewEventDialog').show();PF('createEventDialog').hide();" />  
-
-                                <p:ajax event="eventMove" listener="#{casoScheduleController.onEventMove}" 
-                                        disabled="#{(not casoController.verificarCrearActividad()) and (not casoController.verificarResponderCaso())}"
-                                        update=":inputPanel:formTimelineAgenda :mainform:messages" />  
-                                <p:ajax event="eventResize" listener="#{casoScheduleController.onEventResize}" 
-                                        disabled="#{(not casoController.verificarCrearActividad()) and (not casoController.verificarResponderCaso())}"
-                                        update=":inputPanel:formTimelineAgenda :mainform:messages" /> 
-                            </p:schedule>
-                        </h:form>
-
-                        <p:separator/>
-
-                        <h:form id="formTimelineAgenda">
-
-                            <h2>Cronograma de Eventos</h2>
-
-                            <pe:timeline id="timelineEvents" value="#{casoTimelineController.modelScheduleEvents}" var="event"  
-                                         responsive="true"  timeZone="#{casoTimelineController.timeZone}" 
-                                         showNavigation="true" 
-                                         editable="false" eventStyle="dot"
-                                         showButtonNew="false" minHeight="200" widgetVar="timelineWdgt">  
-
-                                <h:panelGrid columns="1">  
-                                    <i class="fa fa-calendar"></i>
-                                    <h:outputText value="#{event.title}"/>  
-                                    <h:outputText value="Agendado por: #{event.idUsuario ne null ? event.idUsuario:''} (#{casoController.prettyDate(event.startDate)})"/>  
-
-                                </h:panelGrid> 
-
-
-                            </pe:timeline>  
-                        </h:form>
-                    </p:scrollPanel>
-                </p:tab>  
-
-                <p:tab id="tabArchivos" title="Adjuntos (#{casoController.cantidadAttachment()})">
-                    <h:form id="formlistaadjuntos">
-
-                        <h:panelGroup id="listaadjuntos" layout="block">
-
-                            <c:forEach items="#{casoController.selected.attachmentsNotEmbedded}" var="caso_attachment" >
-                                <h:panelGrid columns="6">
-                                    <p:graphicImage name="file_extension_#{caso_attachment.fileExtension}.png" library="file_extension_icons" />
-                                    <p:commandLink ajax="false" value="#{caso_attachment.nombreArchivo}" 
-                                                   title="Descargar #{caso_attachment.nombreArchivo} (#{caso_attachment.mimeType})">
-                                        <p:fileDownload value="#{casoController.bajarArchivo(caso_attachment.idAttachment)}" />
-                                    </p:commandLink>
-                                    <h:outputText value="#{caso_attachment.fileSizeHuman}" style="color: #7A7A7A"/>
-                                    <p:lightBox iframe="true" iframeTitle="#{caso_attachment.nombreArchivoOriginal}"
-                                                rendered="#{caso_attachment.isPdf() or caso_attachment.isImage()}"> 
-                                        <h:outputLink  value="#{facesContext.externalContext.requestContextPath}/DownloadFileServlet?id=#{caso_attachment.idAttachment}" 
-                                                       styleClass="ui-icon ui-icon-search"
-                                                       title="Preview">  
-                                        </h:outputLink>
-                                    </p:lightBox>
-                                    <p:commandLink  title="Eliminar #{caso_attachment.nombreArchivo} (#{caso_attachment.mimeType})"
-                                                    onclick="PF('borrarAttachment').show();"
-                                                    disabled="#{not casoController.verificarGrabarCaso()}">
-                                        <i class="fa fa-times"></i>
-                                        <f:setPropertyActionListener target="#{casoController.idFileDelete}" value="#{caso_attachment.idAttachment}"/>
-                                    </p:commandLink>
-                                </h:panelGrid>
-                            </c:forEach>
-
-                        </h:panelGroup>
-
-                        <br/>
-
-                        <p:fileUpload id="fileupload"
-                                      sizeLimit="5242880"
-                                      invalidSizeMessage="El archivo excede el tamaño maximo: 5MB."
-                                      fileUploadListener="#{casoController.subir}"
-                                      disabled="#{not casoController.verificarGrabarCaso()}"
-                                      label="Subir Documentos"
-                                      uploadLabel="Subir"
-                                      cancelLabel="Cancelar Subida"
-                                      invalidFileMessage="Archivo Invalido." 
-                                      mode="advanced"
-                                      dragDropSupport="true"
-                                      auto="true"
-                                      update=":mainform:messages listaadjuntos :inputPanel:formCreateNota:listaadjuntosrespuesta"
-                                      multiple="true"  
-                                      rendered="#{casoController.selected.open}"/>
-
-                        <p:tooltip for="fileupload" value="Sugerencia: Arrastre y suelte los archivos en esta área del caso para adjuntarlos."/>
-                    </h:form>
-
-
-                </p:tab>
-
-                <p:tab id="tabCasosRelacionados" title="Casos Relacionados (#{casoController.selected.casosRelacionadosList.size() + casoController.selected.casosHijosList.size()})" >
-                    <p:scrollPanel id="scrollpaneCasosRel" mode="native" style="border: 0; height: 500px;">
-
-                        <div align="right">
-                            <p:commandButton actionListener="#{casoController.enableMerge()}" rendered="#{not casoController.mergeHabilitado}"
-                                             value="Habilitar combinar con caso actual"
-                                             icon="mergeIcon"
-                                             update="scrollpaneCasosRel"/>
-                            <p:commandButton actionListener="#{casoController.enableMerge()}" rendered="#{casoController.mergeHabilitado}"
-                                             value="Cancelar"
-                                             icon="ui-icon-close"
-                                             update="scrollpaneCasosRel"/>
-                            &nbsp;
-                            <p:commandButton actionListener="#{casoController.mergeSelectedCasos()}" rendered="#{casoController.mergeHabilitado}"
-                                             value="Combinar"
-                                             icon="mergeIcon"
-                                             update=":botoneraCaso scrollpaneCasosRel"/>
-                        </div>
-                        <br/>
-                        
-                        <go:casoList id="casosMerge" rendered="#{casoController.mergeHabilitado}"
-                                     selectionMultiple="true"
-                                     casosList="#{casoController.mergeCandidatesList}"
-                                     header="Candidatos para combinar (#{casoController.mergeCandidatesList.size()}) con caso N°#{casoController.selected.idCaso}"/>
-
-                       
-                        <go:casoList id="casosRel" rendered="#{not casoController.mergeHabilitado}"
-                                     casosList="#{casoController.selected.casosRelacionadosList}"
-                                     header="Casos relacionados (#{casoController.selected.casosRelacionadosList.size()})"/>
-
-                        <go:casoList id="subCasos" rendered="#{not casoController.mergeHabilitado}"
-                                     casosList="#{casoController.selected.casosHijosList}"
-                                     header="Sub casos (#{casoController.selected.casosHijosList.size()})"/>
-
-                    </p:scrollPanel>
-                </p:tab>
-
-                <p:tab id="tab-timeline" title="Auditoría de eventos">
-
-                    <p:scrollPanel id="scrollpaneTimeline" mode="native" style="border: 0; height: 500px;">
-
-
-                        <div class="panel no-border panel-dark">
-                            <div class="timeline">
-                                <!-- Timeline header -->
-                                <ui:repeat value="#{casoController.auditLogsCurrentCase}" var="audit" >
-
-                                    <div class="tl-entry" >
-                                        <div class="tl-time">
-                                            <h:outputText value="#{casoController.prettyDate(audit.fecha)}"/>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group no-margin-hr">
+                                                    <h:outputLabel styleClass="control-label text-sm text-slim"
+                                                                   value="#{applicationBean.productDescription}:" for="idProducto" />
+                                                    <h:selectOneMenu styleClass="form-control input-sm" disabled="#{casoController.selected.closed}" id="idProducto" 
+                                                                     value="#{casoController.selected.idProducto}" >
+                                                        <f:selectItems value="#{productoController.itemsAvailableSelectOne}"/>
+                                                        <p:ajax update="idComponente modeloProductoId"  listener="#{casoController.handleProductChange}" />
+                                                    </h:selectOneMenu>
+                                                </div>
+                                            </div><!-- col-sm-6 -->
+                                            <div class="col-sm-6">
+                                                <div class="form-group no-margin-hr">
+                                                    <h:outputLabel styleClass="control-label text-sm text-slim"
+                                                                   value="Modelo:" for="modeloProductoId" />
+                                                    <h:selectOneMenu styleClass="form-control input-sm" id="modeloProductoId" disabled="#{casoController.selected.closed}"
+                                                                     value="#{casoController.selected.idModelo}" >
+                                                        <f:selectItem itemLabel="" itemValue=""/>
+                                                        <f:selectItems value="#{casoController.selected.idProducto.modeloProductoList}" var="m" itemValue="#{m}" itemLabel="#{m.nombre}"/>
+                                                        <p:ajax update="idComponente"  listener="#{casoController.onProductoModeloChosen()}" />
+                                                    </h:selectOneMenu>
+                                                </div>
+                                            </div><!-- col-sm-6 -->
                                         </div>
-                                        <div class="tl-icon bg-info"><i class="fa fa-thumb-tack"></i></div>
-                                        <div class="panel tl-body">
-                                            #{(not empty audit.campo and not empty audit.oldValue) ? audit.campo.concat(' cambió de ').concat(audit.oldValue).concat(' a '):''}
-                                            #{audit.newValue}
-
-                                            <i class="text-muted text-sm">                                              
-                                                <h:outputText value=" Realizado por: #{audit.idUser} "/>
-                                                <h:outputText value="#{audit.fecha}">
-                                                    <f:convertDateTime pattern="#{bundle.dateFormat2}" />
-                                                </h:outputText>  
-                                            </i>
-                                        </div> <!-- / .tl-body -->
-                                    </div> <!-- / .tl-entry -->
-
-                                    <p:separator/>
-
-                                </ui:repeat>
-                            </div> <!-- / .timeline -->
-                        </div>
-
-                    </p:scrollPanel>
-
-                </p:tab>
-
-                <p:tab id="tabEditarEvento" title="Detalles del Evento" closable="true" 
-                       rendered="#{casoScheduleController.event ne null}">
-
-                    <h:form id="editEventForm">
-                        <p:messages globalOnly="true"/>
-
-                        <h:panelGrid columns="2" styleClass="filtersGrid">
-
-                            <p:panelGrid id="eventDetails" 
-                                         style="margin-bottom:10px;" styleClass="filtersGrid" >
-
-                                <p:row>
-                                    <p:column>
-                                        <h:outputLabel value="Evento:" style="font-weight: bold;"/>  
-                                    </p:column>
-
-                                    <p:column>
-                                        <p:inputText id="title" value="#{casoScheduleController.event.title}" style="width: 100%;"
-                                                     required="true" requiredMessage="Favor ingrese un titulo para el evento."/> 
-                                        <p:watermark for="title" value="Titulo del evento"/>
-                                        <p:message for="title"/>
-                                    </p:column>
-                                </p:row>
-                                <p:row>
-
-                                    <p:column>
-                                        <h:outputLabel value="Descripción:" style="font-weight: bold;"/>  
-                                    </p:column>
-
-                                    <p:column>
-                                        <p:inplace editor="true">
-                                            <f:facet name="output">
-                                                <h:outputText value="#{not empty casoScheduleController.event.data.descripcion ? casoScheduleController.event.data.descripcion:'Haz click para añadir una descripción'}" />
-                                            </f:facet>
-                                            <f:facet name="input">
-                                                <p:inputTextarea id="desc" value="#{casoScheduleController.event.data.descripcion}" style="width: 100%;"/> 
-                                                <p:watermark for="desc" value="Descripción del evento"/>
-                                            </f:facet>
-                                        </p:inplace>
-
-                                        <p:message for="desc"/>
-                                    </p:column>
-                                </p:row>
-
-                                <p:row>
-
-                                    <p:column>
-                                        <h:outputLabel value="Fecha:" style="font-weight: bold;"/>  
-                                    </p:column>
-
-                                    <p:column>
-                                        <p:panelGrid columns="6">
-
-                                            <p:calendar id="from" value="#{casoScheduleController.event.startDate}" size="14"
-                                                        pattern="dd/MM/yyyy HH:mm"
-                                                        required="true" requiredMessage="Favor ingrese fecha y hora de comienzo.">  
-                                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />  
-                                                <p:ajax event="dateSelect" update="endDate" />
-                                            </p:calendar>  
-                                            <h:outputLabel for="endDate" value="Hasta:" style="font-weight: bold;"/>  
-                                            <p:calendar id="endDate" mindate="#{casoScheduleController.event.startDate}" value="#{casoScheduleController.event.endDate}" size="14"
-                                                        pattern="dd/MM/yyyy HH:mm"
-                                                        required="true" requiredMessage="Favor ingrese fecha y hora de término.">  
-                                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />  
-                                                <f:attribute name="startDate" value="#{casoScheduleController.event.startDate}" />
-                                                <f:validator validatorId="primeDateRangeValidator" />
-                                            </p:calendar>
-                                            <h:selectBooleanCheckbox id="allDay" value="#{casoScheduleController.event.allDay}"
-                                                                     label="Todo el dia"/>  
-                                            <h:outputLabel for="allDay" value="Todo el día" style="font-weight: bold;"/> 
-                                        </p:panelGrid>
-
-                                        <p:message for="from"/>
-                                        <p:message for="endDate"/>
-                                        <p:message for="allDay"/>
-
-
-                                    </p:column>
-
-
-                                </p:row>
-
-                                <p:row>
-                                    <p:column>
-                                        <h:outputLabel for="resources" value="Recursos:" style="font-weight: bold;"/>  
-                                    </p:column>
-
-                                    <p:column>
-
-                                        <p:panelGrid columns="2">
-                                            <p:autoComplete id="resources" value="#{casoScheduleController.selectedResourceToAddInvited}" 
-                                                            completeMethod="#{casoScheduleController.autoCompleteResource}"  
-                                                            var="rr"  itemValue="#{rr}" itemLabel="#{rr.nombre}">  
-
-                                                <p:ajax  event="itemSelect" process="@this" listener="#{casoScheduleController.resourceInvitedItemSelectEvent}" 
-                                                         update=":inputPanel:editEventForm:panelRecursos"  />
-
-                                                <f:facet name="itemtip">
-                                                    <h:panelGrid  columns="2" cellpadding="5">  
-                                                        <f:facet name="header">  
-                                                            <h:outputText value="#{rr.nombre}" />  
-                                                        </f:facet>  
-
-                                                        <h:outputText value="Nombre: " />  
-                                                        <h:outputText value="#{rr.nombre}" />  
-
-                                                        <h:outputText value="Tipo: " />  
-                                                        <h:outputText value="#{rr.tipo}" /> 
-
-
-                                                    </h:panelGrid>  
-                                                </f:facet>  
-
-                                            </p:autoComplete>   
-
-                                            <p:panel id="panelRecursos">
-
-                                                <h:outputText value="sin recursos" rendered="#{empty casoScheduleController.event.data.resourceList}"/>
-                                                <ui:repeat id="rList" value="#{casoScheduleController.event.data.resourceList}" var="rSelected">
-                                                    <h:panelGroup styleClass="ticket-status" style="background: #4abf5a; color: #FFFFFF;"
-                                                                  layout="block">
-                                                        <h:outputText   value="#{rSelected.nombre}"/>
-                                                        <p:commandLink value="x" update=":inputPanel:editEventForm:panelRecursos" 
-                                                                       process="@this"
-                                                                       style="border: none !important;"
-                                                                       styleClass="btn btn-xs btn-danger btn-outline">
-
-                                                            <p:collector unique="true" value="#{rSelected}" 
-                                                                         removeFrom="#{casoScheduleController.event.data.resourceList}"/>
-                                                        </p:commandLink>
-                                                    </h:panelGroup>&nbsp;
-
-                                                </ui:repeat>
-                                            </p:panel>
-                                        </p:panelGrid>
-                                        <p:watermark for="resources" value="Añadir recurso..."/>
-
-
-                                    </p:column>
-                                </p:row>
-                                <p:row>
-                                    <p:column>
-                                        <h:outputLabel for="recordatorios" value="Recordatorios:" style="font-weight: bold;"/>  
-                                    </p:column>
-
-                                    <p:column>
-                                        <p:panel id="reminders">
-
-                                            <ui:repeat id="recordatorios" value="#{casoScheduleController.event.data.scheduleEventReminderList}" var="reminder" >
-
-                                                <h:panelGrid columns="4" cellpadding="5" cellspacing="5">
-
-                                                    <h:selectOneMenu id="reminderType" 
-                                                                     value="#{reminder.reminderType}" 
-                                                                     required="true" requiredMessage="Se requiere ...">
-
-                                                        <f:selectItem itemLabel="Correo" itemValue="EMAIL"/>
-                                                        <f:selectItem itemLabel="Ventana emergente" itemValue="POPUP" itemDisabled="true"/>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group no-margin-hr">
+                                                    <h:outputLabel styleClass="control-label text-sm text-slim"
+                                                                   value="#{applicationBean.productComponentDescription}:" 
+                                                                   for="idComponente" />
+                                                    <h:selectOneMenu styleClass="form-control input-sm" id="idComponente"  value="#{casoController.selected.idComponente}"
+                                                                     disabled="#{casoController.selected.closed or casoController.selected.idProducto eq null}">
+                                                        <f:selectItem itemLabel="" itemValue=""/>
+                                                        <f:selectItems value="#{casoController.selected.idProducto.componenteList}" var="comp" itemLabel="#{comp.nombre}" itemValue="#{comp}"/>
+                                                        <p:ajax update="idSubComponente"  listener="#{casoController.handleProductChange}" />  
                                                     </h:selectOneMenu>
-
-                                                    <h:inputText id="quantityTime" value="#{reminder.quantityTime}" size="3" required="true" />
-
-                                                    <h:selectOneMenu id="unitOfTimeInMinutes" 
-                                                                     value="#{reminder.unitOfTimeInMinutes}" 
-                                                                     required="true" requiredMessage="Se requiere ...">
-                                                        <f:selectItem itemLabel="minutos" itemValue="1"/>
-                                                        <f:selectItem itemLabel="horas" itemValue="60"/>
-                                                        <f:selectItem itemLabel="días" itemValue="1440"/>
-                                                        <f:selectItem itemLabel="semanas" itemValue="10080"/>
+                                                </div>
+                                            </div><!-- col-sm-6 -->
+                                            <div class="col-sm-6">
+                                                <div class="form-group no-margin-hr">
+                                                    <h:outputLabel styleClass="control-label text-sm text-slim"
+                                                                   value="#{applicationBean.productSubComponentDescription}:" for="idSubComponente" />
+                                                    <h:selectOneMenu styleClass="form-control input-sm" id="idSubComponente" value="#{casoController.selected.idSubComponente}"  
+                                                                     disabled="#{casoController.selected.closed or casoController.selected.idComponente eq null}">
+                                                        <f:selectItem itemLabel="" itemValue=""/>
+                                                        <f:selectItems value="#{casoController.selected.idComponente.subComponenteList}" var="subc" itemLabel="#{subc.nombre}" itemValue="#{subc}"/>
                                                     </h:selectOneMenu>
+                                                </div>
+                                            </div><!-- col-sm-6 -->
+                                        </div>
+                                        <ui:repeat id="tableCustomFields" var="customField" value="#{customFieldController.getCurrentCasoCustomFieldList(casoController.selected)}">
 
-                                                    <p:commandLink value="eliminar" update=":inputPanel:editEventForm:eventDetails" immediate="true"
-                                                                   style="color: #006dcc"
-                                                                   actionListener="#{casoScheduleController.removeScheduleEventReminder(reminder)}" >
+                                            <div class="row form-group">
+                                                <label class="col-sm-12 control-label text-sm text-slim">
+                                                    <h:outputLabel value="#{customField.customField.label}:" for="customFieldI"/>
+                                                </label>
+                                                <div class="col-sm-12">
+                                                    <go:customField id="customFieldI" casoCustomFieldValue="#{customField}" casoOpen="#{casoController.selected.isOpen()}"/>
+                                                </div>
+                                            </div>
+                                        </ui:repeat>
 
-                                                    </p:commandLink>
+                                    </div>
+                                    <div class="panel-footer text-right">
+                                        <p:commandLink disabled="#{casoController.selected.closed or not (casoController.verificarGrabarCaso())}" 
+                                                       styleClass="btn btn-primary"
+                                                       ajax="false" update=":formint1" action="#{casoController.update}" >Guardar</p:commandLink>
+                                    </div>
+                                </h:form>
 
-                                                </h:panelGrid>
 
+
+
+
+                            </div> <!-- / .collapse -->
+                        </div> <!-- / .panel -->
+
+
+
+                        <div class="panel">
+                            <div class="panel-heading">
+                                <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-example" href="#casosHijosList">
+                                    Sub casos (#{casoController.selected.casosHijosList.size()})
+                                </a>
+                            </div> <!-- / .panel-heading -->
+                            <div id="casosHijosList" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    <h:form id="formSubCasos" rendered="#{casoController.selected.casosHijosList.size() gt 0}">
+                                        <h:panelGrid columns="1">
+                                            <c:forEach items="#{casoController.selected.casosHijosList}" var="itemS" >
+                                                <h:commandLink action="#{casoController.filterByIdCaso(itemS.idCaso)}">                                                        
+                                                    <h:outputText styleClass="label" 
+                                                                  style="background: \##{itemS.idSubEstado.backgroundColor}; color: \##{itemS.idSubEstado.fontColor};" value="#{itemS.idSubEstado.nombre}"/>
+                                                    <h:outputText value=" #{itemS.tipoCaso.nombre} N°#{itemS.idCaso} - #{itemS.tema}"/>
+                                                </h:commandLink>
+                                                <p:separator/>
+                                            </c:forEach>
+                                        </h:panelGrid>
+                                    </h:form>
+                                    <h:outputText value="No hay sub casos" rendered="#{casoController.selected.casosHijosList.size() le 0}"/>
+                                </div> <!-- / .panel-body -->
+                            </div> <!-- / .collapse -->
+                        </div> <!-- / .panel -->
+
+                        <div class="panel">
+                            <div class="panel-heading">
+                                <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-example" href="#casosRelacionadosList">
+                                    Casos relacionados (#{casoController.selected.casosRelacionadosList.size()})
+                                </a>
+                            </div> <!-- / .panel-heading -->
+                            <div id="casosRelacionadosList" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    <h:form id="formCasosRel" rendered="#{casoController.selected.casosRelacionadosList.size() gt 0}">
+                                        <h:panelGrid columns="1">
+                                            <c:forEach items="#{casoController.selected.casosRelacionadosList}" var="item" >
+                                                <h:commandLink action="#{casoController.filterByIdCaso(item.idCaso)}">                                                        
+                                                    <h:outputText styleClass="label" 
+                                                                  style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};" value="#{item.idSubEstado.nombre}"/>
+                                                    <h:outputText value=" #{item.tipoCaso.nombre} N°#{item.idCaso} - #{item.tema}"/>
+                                                </h:commandLink>
+                                                <p:separator/>
+                                            </c:forEach>
+                                        </h:panelGrid>
+                                    </h:form>
+                                    <h:outputText value="No hay casos relacionados" rendered="#{casoController.selected.casosRelacionadosList.size() le 0}"/>
+
+
+                                </div> <!-- / .panel-body -->
+                            </div> <!-- / .collapse -->
+                        </div> <!-- / .panel -->
+
+
+                        <div class="panel">
+
+                            <div class="panel-heading">
+                                <h:panelGroup id="tab-adjuntos-panel">
+                                    <a id="title-tab-adjuntos" class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion-example" href="#tab-adjuntos">
+                                        Archivos adjuntos (#{casoController.selected.cantidadAttachment})
+                                    </a>
+                                </h:panelGroup>
+
+
+                            </div> <!-- / .panel-heading -->
+                            <div id="tab-adjuntos" class="panel-collapse collapse">
+
+
+                                <h:form id="formlistaadjuntos">
+                                    <h:panelGroup id="listaadjuntos" layout="block" rendered="#{not empty casoController.selected.attachmentList}">
+
+
+                                        <ul class="list-group no-margin">
+
+                                            <ui:repeat var="fileitem" value="#{casoController.selected.attachmentList}" >
+                                                <h:panelGroup rendered="#{fileitem.contentId eq null}">
+                                                    <li class="list-group-item no-border-hr padding-xs-hr">
+                                                        <div class="row padding-xs-hr">
+                                                            <p:graphicImage name="file_extension_#{fileitem.fileExtension}.png" library="file_extension_icons" />
+
+                                                            <h:outputText value=" #{casoController.nombreArchivoParaDesplegar(fileitem.nombreArchivo)}" 
+                                                                          styleClass="text-semibold"
+                                                                          title="#{fileitem.nombreArchivo} (#{fileitem.fileSizeHuman})"/> 
+
+                                                            <h:outputText value="#{fileitem.fileSizeHuman}  " style="color: #7A7A7A" styleClass="pull-right"/>
+                                                        </div>
+                                                        <div class="row">
+                                                            <p:commandLink styleClass="col-xs-1" ajax="false">
+                                                                <i class="fa fa-download list-group-icon" title="Download"></i>
+                                                                <p:fileDownload contentDisposition="attachment" value="#{casoController.bajarArchivo(fileitem.idAttachment)}" />
+                                                            </p:commandLink>
+                                                            <p:commandLink styleClass="col-xs-1"  
+                                                                           onclick="PF('borrarAttachment').show();"
+                                                                           disabled="#{not casoController.verificarGrabarCaso()}">
+                                                                <i class="fa fa-times list-group-icon" title="Delete"></i>
+                                                                <f:setPropertyActionListener target="#{casoController.idFileDelete}" value="#{fileitem.idAttachment}"/>
+                                                            </p:commandLink>
+
+                                                            <p:lightBox  iframe="true" rendered="#{fileitem.imageOrPDF}"> 
+                                                                <h:outputLink styleClass="col-xs-1" value="#{facesContext.externalContext.requestContextPath}/DownloadFileServlet?tenant=#{UserSessionBean.tenantId}&amp;id=#{fileitem.idAttachment}" 
+                                                                              title="Preview">  
+                                                                    <i class="fa fa-external-link-square list-group-icon"></i>
+                                                                </h:outputLink>
+                                                            </p:lightBox>
+                                                        </div>
+
+
+                                                    </li>
+                                                </h:panelGroup>
 
                                             </ui:repeat>
-                                            <p:commandLink value="Agregar recordatorio" style="color: #006dcc"
-                                                           actionListener="#{casoScheduleController.addNewScheduleEventReminder()}" 
-                                                           immediate="true"
-                                                           update=":inputPanel:editEventForm:reminders"/>
-                                        </p:panel>
-
-                                    </p:column>
-                                </p:row>
+                                        </ul>
 
 
-                                <p:row>
-                                    <p:column>
-
-                                    </p:column>
-
-                                    <p:column>
-                                        <h:panelGrid columns="2">
-                                            <h:selectBooleanCheckbox id="publicEventCheckbox" value="#{casoScheduleController.event.data.publicEvent}">
-                                                <p:ajax update=":inputPanel:editEventForm:publicEvent" process="@this"/>  
-                                            </h:selectBooleanCheckbox>
-                                            <h:outputLabel for="publicEventCheckbox" value="Clientes pueden inscribirse al evento" 
-                                                           title="Clientes pueden inscribirse al evento"/>  
-                                        </h:panelGrid>
-
-                                        <p:message for="publicEventCheckbox"/>
-
-                                        <p:panel id="publicEvent" visible="#{casoScheduleController.event.data.publicEvent}">
-                                            <p:panelGrid rendered="#{casoScheduleController.event.data.publicEvent}">
-                                                <p:row>
-                                                    <p:column>
-                                                        <h:outputLabel value="Máx Inscritos" for="maxClientesInscritos" style="font-weight: bold;"/>
-                                                    </p:column>
-
-                                                    <p:column>
-                                                        <p:inputText id="maxClientesInscritos" 
-                                                                     value="#{casoScheduleController.event.data.maxClientesInscritos}" 
-                                                                     required="true" requiredMessage="Se requiere que ingrese el máximo de Clientes Inscritos.">
-                                                        </p:inputText>
-                                                        <br/>
-                                                        <h:outputFormat value="Podrán inscribirse sólo aquellos clientes que sean {0} de {1} de {2} {3} {4}">
-                                                            <f:param value="Propietarios" />
-                                                            <f:param value="#{casoController.selected.idSubComponente ne null ? casoController.selected.idSubComponente.nombre:'cualquier '.concat(applicationBean.productSubComponentDescription)}" />
-                                                            <f:param value="#{casoController.selected.idModelo ne null ? 'modelo '.concat(casoController.selected.idModelo.nombre):'cualquier modelo'}" />
-                                                            <f:param value="#{casoController.selected.idComponente ne null ? ''.concat(applicationBean.productComponentDescription).concat(': ').concat(casoController.selected.idComponente.nombre):'cualquier '.concat(applicationBean.productComponentDescription)}" />
-                                                            <f:param value="#{casoController.selected.idProducto ne null ? ''.concat(applicationBean.productDescription).concat(': ').concat(casoController.selected.idProducto.nombre):'cualquier '.concat(applicationBean.productDescription)}" />
-
-                                                        </h:outputFormat>
-                                                        <p:message for="maxClientesInscritos"/>
-                                                    </p:column>
-                                                </p:row>
-                                            </p:panelGrid>
-                                        </p:panel>
-                                    </p:column>
-                                </p:row>
+                                    </h:panelGroup>
 
 
-                                <p:row>
-                                    <p:column>
+                                    <p:fileUpload id="fileupload"
+                                                  sizeLimit="5242880"
+                                                  invalidSizeMessage="El archivo excede el tamaño maximo: 5MB."
+                                                  fileUploadListener="#{casoController.subir}"
+                                                  disabled="#{not casoController.verificarGrabarCaso()}"
+                                                  label="Adjuntar (seleccionar o arrastrar aquí) ..."
+                                                  uploadLabel="Subir"
+                                                  cancelLabel="Cancelar Subida"
+                                                  invalidFileMessage="Archivo Invalido." 
+                                                  mode="advanced"
+                                                  dragDropSupport="true"
+                                                  auto="true"
+                                                  update=":mainform:messages :formlistaadjuntos :tab-adjuntos-panel :message-details-reply:parchivos"
+                                                  multiple="true"  
+                                                  rendered="#{casoController.selected.open}"/>
 
-                                    </p:column>
 
-                                    <p:column>
-                                        <h:panelGrid columns="2">
-                                            <h:selectBooleanCheckbox id="accionAutomaticaBool" value="#{casoScheduleController.event.data.executeAction}">
-                                                <p:ajax update=":inputPanel:editEventForm:action" process="@this"/>  
-                                            </h:selectBooleanCheckbox>
-                                            <h:outputLabel for="accionAutomaticaBool" value="Programar una acción automática" 
-                                                           title="Programar una tarea o acción que se ejecutará automáticamente cuando se cumpla la fecha del evento..."/>  
-                                        </h:panelGrid>
+                                    <p:tooltip for=":formlistaadjuntos:fileupload" value="Sugerencia: Arrastre y suelte los archivos en esta área del caso para adjuntarlos."/>
 
-                                        <p:message for="accionAutomaticaBool"/>
 
-                                        <p:panel id="action" visible="#{casoScheduleController.event.data.executeAction}">
-                                            <p:panelGrid rendered="#{casoScheduleController.event.data.executeAction}">
-                                                <p:row>
-                                                    <p:column>
-                                                        <h:outputLabel id="labelTipoAccion" value="Acción:" for="idTipoAccion" style="font-weight: bold;"/>
-                                                    </p:column>
+                                </h:form>
 
-                                                    <p:column>
-                                                        <h:selectOneMenu id="idTipoAccion" styleClass="form-control"
-                                                                         value="#{casoScheduleController.event.data.idTipoAccion}" 
-                                                                         required="true" requiredMessage="Se requiere que seleccione el nombre de una clase que implemente la Accion."
-                                                                         >
-                                                            <p:ajax update=":inputPanel:editEventForm:action" />
-                                                            <f:selectItems value="#{nombreAccionController.itemsAvailableSelectOneImplementingActionClass}"/>
-                                                        </h:selectOneMenu>
-                                                        <p:message for="idTipoAccion"/>
-                                                    </p:column>
-                                                </p:row>
+                            </div> <!-- / .collapse -->
+
+                        </div> <!-- / .panel -->
+
+                    </div>
+
+                    <div class="panel no-border panel-dark">
+                        <div class="panel-body text-center">
+                            <h:form id="formAgendarEvento">
+                                <p:schedule id="myschedule" value="#{casoScheduleController.lazyScheduleEventsModel}" 
+                                            showHeader="#{not casoController.mobileClient}"
+
+                                            firstHour="8" widgetVar="myschedule" >
+                                    <p:ajax event="dateSelect" listener="#{casoScheduleController.onDateSelect}" 
+                                            update=":createEventForm:eventDetails" oncomplete="PF('createEventDialog').show()" />  
+                                    <p:ajax event="eventSelect" listener="#{casoScheduleController.onEventSelect}" 
+                                            update=":createEventForm:eventDetails" oncomplete="PF('createEventDialog').show()" />  
+
+                                    <p:ajax event="eventMove" listener="#{casoScheduleController.onEventMove}" update=":mainform:messages" />  
+                                    <p:ajax event="eventResize" listener="#{casoScheduleController.onEventResize}" update=":mainform:messages" /> 
+                                </p:schedule>
+                            </h:form>
+                        </div>
+                    </div> <!-- / .panel Agenda -->
+
+                    <div class="panel widget-notifications">
+                        <div class="panel-heading">
+                            <span class="panel-title"><i class="panel-title-icon fa fa-fire"></i>Log de Eventos</span>
+                        </div> <!-- / .panel-heading -->
+                        <div class="panel-body padding-sm">
+                            <div class="notifications-list">
+                                <ui:repeat value="#{casoController.auditLogsCurrentCase}" var="audit" >
+                                    <div class="notification">
+                                        <div class="notification-title text-info"><h:outputText value="#{audit.idUser} "/></div>
+                                        <div class="notification-description">
+                                            #{(not empty audit.campo and not empty audit.oldValue) ? audit.campo.concat(' cambió de ').concat(audit.oldValue).concat(' a '):''}
+                                            #{audit.newValue}
+                                        </div>
+                                        <div class="notification-ago"><h:outputText title="#{casoController.formatDate(audit.fecha)}" value="#{casoController.prettyDate(audit.fecha)}"/></div>
+                                    </div> <!-- / .notification -->
+                                </ui:repeat>
+                            </div>
+                        </div> <!-- / .panel-body -->
+                    </div> <!-- / .panel log de eventos -->
 
 
 
+                    <div class="panel no-border panel-dark">
+                        <div class="panel-body text-center">
+                            <p class="text-lg text-slim">
+                                Can't find the answer?
+                            </p>
+                            <div style="margin-top: 20px;">
+                                <a href="#" class="btn btn-lg btn-primary btn-flat" data-toggle="modal" data-target="#modal-faq">Contact Us</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                                                <p:row rendered="#{casoScheduleController.event.data.executeAction}">
-                                                    <p:column>
-                                                        <h:outputLabel id="labelidAccionCustom" value="Propiedades:" for="idAccionCustom" style="font-weight: bold;" />
-                                                    </p:column>
+                <div class="col-sm-7 col-md-8 col-lg-9 col-sm-pull-5 col-md-pull-4 col-lg-pull-3 main">
 
-                                                    <p:column>
-                                                        <p:inputTextarea id="idAccionCustom" value="#{casoScheduleController.event.data.parametrosAccion}"  style="width: 100%;"
-                                                                         title="#{bundle.CreateAccionLabel_parametros}"/>
-                                                        <p:message for="idAccionCustom"/>
-                                                    </p:column>
-                                                </p:row>
+                    <ui:include src="toolbarCaso.xhtml" />
+                    <br/>
+                    <ui:include src="responder.xhtml" />
 
-                                            </p:panelGrid>
-                                        </p:panel>
-                                    </p:column>
-                                </p:row>
+                    <ui:include src="actividadesListForm.xhtml" />
+
+                </div>
+            </div>
 
 
+            <script type="text/javascript">
+                init.push(function () {
+                    // Open nav on mobile
+                    $('.mail-nav .navigation li.active a').click(function () {
+                        $('.mail-nav .navigation').toggleClass('open');
+                        return false;
+                    });
 
-
-
-                            </p:panelGrid> 
-                            <h:panelGroup>
-
-                                <p:panelGrid>
-                                    <p:row>
-                                        <p:column>
-                                            <go:panelUsuariosInvitados id="panelUsuariosInvitados"/>
-                                        </p:column>
-                                    </p:row>
-
-                                </p:panelGrid>
-
-                                <p:panelGrid>
-
-                                    <p:row>
-                                        <p:column>
-                                            <go:panelClientesInvitados id="panelClientesInvitados2"/>
-                                        </p:column>
-                                    </p:row>
-
-                                </p:panelGrid>
-
-                            </h:panelGroup>  
+                    // Fix navigation if main menu is fixed
+                    if ($('body').hasClass('main-menu-fixed')) {
+                        $('.mail-nav').addClass('fixed');
+                    }
 
 
 
-                        </h:panelGrid>
-                        <p:separator/>
-
-                        <p:commandButton id="addButton" value="Guardar Evento" style="float: right;"
-                                         actionListener="#{casoScheduleController.saveEvent()}" 
-                                         update=":inputPanel"/>  
-                        <br/>
-                    </h:form>
-
-                </p:tab>
-
-            </p:tabView> 
-
-
-
-
+                })
+            </script>
 
         </ui:define>
-
 
         <ui:define name="dialogs">
 
 
-            <p:confirmDialog closeOnEscape="true" global="true" showEffect="fade" hideEffect="explode" >
-                <p:commandButton value="Si" type="button" styleClass="btn btn-danger ui-confirmdialog-yes" icon="ui-icon-check"/>
-                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/> 	
-            </p:confirmDialog>
+            <h:form id="tasksform">
+                <p:dialog header="Tareas" widgetVar="TareasDialog" modal="true" appendTo="@(body)">
 
-            <p:dialog header="Asignarme el Caso" widgetVar="tomarCaso" modal="true" dynamic="true" closeOnEscape="true" closable="false">
+                    <div class="col-md-12">
+                        <!-- Javascript -->
+                        <script>
+                            init.push(function () {
+                                $('.widget-tasks .panel-body').pixelTasks().sortable({
+                                    axis: "y",
+                                    handle: ".task-sort-icon",
+                                    stop: function (event, ui) {
+                                        // IE doesn't register the blur when sorting
+                                        // so trigger focusout handlers to remove .ui-state-focus
+                                        ui.item.children(".task-sort-icon").triggerHandler("focusout");
+                                    }
+                                });
+                                $('#clear-completed-tasks').click(function () {
+                                    $('.widget-tasks .panel-body').pixelTasks('clearCompletedTasks');
+                                });
+                            });
+                        </script>
+                        <!-- / Javascript -->
+
+                        <div class="panel widget-tasks panel-dark-gray">
+                            <div class="panel-heading">
+                                <span class="panel-title"><i class="panel-title-icon fa fa-tasks"></i>Recent tasks</span>
+                                <div class="panel-heading-controls">
+                                    <button class="btn btn-xs btn-primary btn-outline dark" id="clear-completed-tasks"><i class="fa fa-eraser text-success"></i> Clear completed tasks</button>
+                                </div>
+                            </div> <!-- / .panel-heading -->
+                            <!-- Without vertical padding -->
+                            <div class="panel-body no-padding-vr">
+
+                                <div class="task">
+                                    <span class="label label-warning pull-right">High</span>
+                                    <div class="fa fa-arrows-v task-sort-icon"></div>
+                                    <div class="action-checkbox">
+                                        <label class="px-single"><input type="checkbox" name="" value="" class="px"/><span class="lbl"></span></label>
+                                    </div>
+                                    <a href="#" class="task-title">A very important task<span>1 hour left</span></a>
+                                </div> <!-- / .task -->
+
+                                <div class="task completed">
+                                    <span class="label label-warning pull-right">High</span>
+                                    <div class="fa fa-arrows-v task-sort-icon"></div>
+                                    <div class="action-checkbox">
+                                        <label class="px-single"><input type="checkbox" name="" value="" class="px" checked="checked"/><span class="lbl"></span></label>
+                                    </div>
+                                    <a href="#" class="task-title">A very important task<span>58 minutes left</span></a>
+                                </div> <!-- / .task -->
+
+                                <div class="task completed">
+                                    <div class="fa fa-arrows-v task-sort-icon"></div>
+                                    <div class="action-checkbox">
+                                        <label class="px-single"><input type="checkbox" name="" value="" class="px" checked="checked"/><span class="lbl"></span></label>
+                                    </div>
+                                    <a href="#" class="task-title">A regular task</a>
+                                </div> <!-- / .task -->
+
+                                <div class="task">
+                                    <div class="fa fa-arrows-v task-sort-icon"></div>
+                                    <div class="action-checkbox">
+                                        <label class="px-single"><input type="checkbox" name="" value="" class="px"/><span class="lbl"></span></label>
+                                    </div>
+                                    <a href="#" class="task-title">A regular task</a>
+                                </div> <!-- / .task -->
+
+                                <div class="task">
+                                    <div class="fa fa-arrows-v task-sort-icon"></div>
+                                    <div class="action-checkbox">
+                                        <label class="px-single"><input type="checkbox" name="" value="" class="px"/><span class="lbl"></span></label>
+                                    </div>
+                                    <a href="#" class="task-title">A regular task</a>
+                                </div> <!-- / .task -->
+
+                                <div class="task">
+                                    <span class="label pull-right">Low</span>
+                                    <div class="fa fa-arrows-v task-sort-icon"></div>
+                                    <div class="action-checkbox">
+                                        <label class="px-single"><input type="checkbox" name="" value="" class="px"/><span class="lbl"></span></label>
+                                    </div>
+                                    <a href="#" class="task-title">An unimportant task</a>
+                                </div> <!-- / .task -->
+
+                                <div class="task">
+                                    <span class="label pull-right">Low</span>
+                                    <div class="fa fa-arrows-v task-sort-icon"></div>
+                                    <div class="action-checkbox">
+                                        <label class="px-single"><input type="checkbox" name="" value="" class="px"/><span class="lbl"></span></label>
+                                    </div>
+                                    <a href="#" class="task-title">An unimportant task</a>
+                                </div> <!-- / .task -->
+
+                                <div class="task">
+                                    <div class="fa fa-arrows-v task-sort-icon"></div>
+                                    <div class="action-checkbox">
+                                        <label class="px-single"><input type="checkbox" name="" value="" class="px"/><span class="lbl"></span></label>
+                                    </div>
+                                    <a href="#" class="task-title">A regular task</a>
+                                </div> <!-- / .task -->
+
+                                <div class="task">
+                                    <span class="label pull-right">Low</span>
+                                    <div class="fa fa-arrows-v task-sort-icon"></div>
+                                    <div class="action-checkbox">
+                                        <label class="px-single"><input type="checkbox" name="" value="" class="px"/><span class="lbl"></span></label>
+                                    </div>
+                                    <a href="#" class="task-title">An unimportant task</a>
+                                </div> <!-- / .task -->
+                            </div> <!-- / .panel-body -->
+                        </div> <!-- / .panel -->
+                    </div>
+                    <!-- /13. $RECENT_TASKS -->
+
+                </p:dialog>
+            </h:form>
+
+            <p:dialog header="Asignarme el Caso" widgetVar="tomarCaso" modal="true" appendTo="@(body)">
                 <h:form>
-                    <h:outputLabel value="¿Está seguro de auto-asignarse el Caso y todos sus Sub-Casos?" /><br></br>
+                    <h:outputLabel value="¿Está seguro de auto-asignarse el Caso y todos sus Sub-Casos?" /><br/>
                     <div style="text-align: right">
                         <p:commandButton value="Si"
                                          actionListener="#{casoController.tomarCaso}" ajax="false" />
-                        <p:commandButton value="No" onclick="PF('tomarCaso').hide()" type="button" />
+                        <p:commandButton value="No" onclick="tomarCaso.hide()" type="button" />
                     </div>
                 </h:form>
             </p:dialog>
 
-            <p:dialog header="Datos Cliente" widgetVar="dialogClient" modal="true" dynamic="true"  closeOnEscape="true" closable="false">
-                <h:form id="formDatosCliente">
-                    <p:messages globalOnly="true"/>
 
-                    <h:panelGrid id="datosDelCliente" columns="3">
-                        <p:outputLabel value="Email:" for="email" style="font-weight:bold"/>
-                        <h:outputText id="email" value="#{casoController.selected.emailCliente}"/>
-                        <p:message display="both" for="email"/>
-                        <p:outputLabel value="#{bundle.CreateClienteLabel_rut}" for="rut" style="font-weight:bold"/>                        
-                        <p:inputText id="rut" value="#{casoController.selected.idCliente.rut}" 
-                                     title="#{bundle.CreateClienteTitle_rut}" validator="#{inputValidationBean.validarRut}">
 
-                            <p:ajax event="blur" listener="#{casoController.formateaRut()}" update="rut,datosDelCliente"/>
-                        </p:inputText>
-
-                        <p:message display="both" for="rut"/>
-
-                        <p:outputLabel value="#{bundle.CreateClienteLabel_nombres}" for="nombres" style="font-weight:bold"/>
-
-                        <p:inputText  id="nombres" value="#{casoController.selected.idCliente.nombres}" label="nombres" required="true" requiredMessage="Los nombres son requeridos"/>
-
-                        <p:message display="both" for="nombres"/>
-
-                        <p:outputLabel value="#{bundle.CreateClienteLabel_apellidos}" for="apellidos" style="font-weight:bold"/>                      
-                        <p:inputText  id="apellidos" value="#{casoController.selected.idCliente.apellidos}" label="apellidos"/>                        
-                        <p:message display="both" for="apellidos"/>                   
-
-                        <p:outputLabel value="Teléfono:" for="fono1" style="font-weight:bold"/>                    
-
-                        <p:inputText  id="fono1" value="#{casoController.selected.idCliente.fono1}" label="fono1" validatorMessage="Fono no es valido">
-                            <pe:keyFilter regEx="/[\d\.\+\-\(\)]/"/>
-                        </p:inputText>
-
-                        <p:message display="both" for="fono1"/>
-
-                        <p:outputLabel value="Teléfono Adicional:" for="fono2" style="font-weight:bold"/>
-
-                        <p:inputText  id="fono2" value="#{casoController.selected.idCliente.fono2}" label="fono2" validatorMessage="Fono no es valido">
-                            <pe:keyFilter regEx="/[\d\.\+\-\(\)]/"/>
-                        </p:inputText>
-
-                        <p:message display="both" for="fono2"/>
-
-                        <p:outputLabel value="#{bundle.CreateClienteLabel_dirParticular}" for="dirParticular" style="font-weight:bold"/>
-
-                        <p:inputTextarea id="dirParticular" autoResize="true" value="#{casoController.selected.idCliente.dirParticular}" 
-                                         title="#{bundle.CreateClienteTitle_dirParticular}" cols="40" />
-
-                        <p:message display="both" for="dirParticular"/>
-
-                        <p:outputLabel value="#{bundle.CreateClienteLabel_dirComercial}" for="dirComercial" style="font-weight:bold"/>
-
-                        <p:inputTextarea id="dirComercial" autoResize="true" value="#{casoController.selected.idCliente.dirComercial}" 
-                                         title="#{bundle.CreateClienteTitle_dirComercial}" cols="40"/>
-
-                        <p:message display="both" for="dirComercial"/>
-
-                    </h:panelGrid>
-                    <p:separator/>
-                    <p:commandButton action="#{casoController.mergeCliente}" disabled="#{not (casoController.verificarGrabarCaso())}"
-                                     value="Guardar" ajax="true" update=":formDatosCliente" icon="ui-icon-disk"/>  
-                    <p:commandButton action="#{clienteController.prepareView(casoController.selected.idCliente, '/script/caso/Edit')}"
-                                     value="Ver detalle" immediate="true" ajax="false" icon="ui-icon-circle-zoomin"/> 
-                    <p:commandButton action="#{clienteController.prepareList}" value="Lista de clientes" immediate="true" ajax="false" icon="ui-icon-folder-open"/>          
-                    <p:commandButton value="Cerrar" immediate="true" onclick="PF('dialogClient').hide()" icon="ui-icon-close" type="button"/>
-                </h:form>
-            </p:dialog>
-
-            <p:dialog header="Confirmar Borrar Archivo" widgetVar="borrarAttachment" modal="true" dynamic="true" closeOnEscape="true" closable="false">
+            <p:dialog header="Confirmar Borrar Archivo" widgetVar="borrarAttachment" modal="true" appendTo="@(body)">
                 <h:form>
-                    <label id="textoEliminar" >¿Esta seguro de borrar el archivo?</label><br></br>
-                    <br></br>
+                    <label id="textoEliminar" >¿Esta seguro de borrar el archivo?</label><br/>
+                    <br/>
                     <div style="text-align: right">                       
-                        <p:commandButton value="Si" update=":mainform:messages :inputPanel:formlistaadjuntos:listaadjuntos :inputPanel:formCreateNota"
-                                         actionListener="#{casoController.deleteAttachment(actionEvent)}" onclick="PF('borrarAttachment').hide()"/>
+                        <p:commandButton value="Si" update=":mainform:messages :formlistaadjuntos :tab-adjuntos-panel :message-details-reply:parchivos"
+                                         actionListener="#{casoController.deleteAttachment(actionEvent)}" onclick="borrarAttachment.hide()"/>
 
-                        <p:commandButton value="No" onclick="PF('borrarAttachment').hide()" type="button" />
+                        <p:commandButton value="No" onclick="borrarAttachment.hide()" type="button" immediate="true"/>
                     </div>
                 </h:form>
             </p:dialog>
 
-
-
-            <p:dialog header="Editar Comentario" widgetVar="Nota" modal="true" dynamic="true" closeOnEscape="true" closable="false">
+            <p:dialog header="Editar Comentario" widgetVar="Nota" modal="true" appendTo="@(body)">
                 <h:form id="formEditNota">
                     <p:messages globalOnly="true"/>
 
 
-                    <h:panelGrid columns="3">                     
+                    <div class="btn-group btn-group-xs">
+                        <h:selectBooleanCheckbox 
+                            id="textoNotaVisibilidadPublica" value="#{casoController.selectedNota.visible}" 
+                            styleClass="switcher"/>
+                        <script type="text/javascript">
+                            $('.switcher').switcher({
+                                theme: 'square',
+                                on_state_content: 'Público',
+                                off_state_content: 'Privado'
+                            });
+                        </script>
+                    </div>
 
-                        <p:outputLabel for="textoNotaVisibilidadPublica" value="Público:" style="font-weight:bold"/>
-                        <p:selectBooleanCheckbox id="textoNotaVisibilidadPublica" value="#{casoController.selectedNota.visible}" />
-                        <p:message for="textoNotaVisibilidadPublica"/>
-
-                        <p:outputLabel for="nextResponseDue1" value="#{bundle.cambiarSLA}:" style="font-weight:bold"/>
-                        <p:calendar locale="es" navigator="true" id="nextResponseDue1" showButtonPanel="true" mindate="#{applicationBean.now}" 
-                                    value="#{casoController.selected.nextResponseDue}" 
-                                    title="Next Follow Up Due" pattern="dd/MM/yyyy HH:mm" label="SLA:"/>
-                        <p:message for="nextResponseDue1"/>
-
-                        <p:outputLabel value="#{bundle.cambiarSubEstado}:" for="idSubEstadox" style="font-weight:bold"/>
-                        <p:selectOneMenu rendered="#{!casoController.selected.closed}" id="idSubEstadox" value="#{casoController.selected.idSubEstado}" >
-                            <f:selectItems value="#{casoController.itemsSubEstadoCasoAvailableSelectOneCasoAbierto}"/>
-                        </p:selectOneMenu>
-
-                        <p:selectOneMenu rendered="#{casoController.selected.closed}" id="idSubEstado2" value="#{casoController.selected.idSubEstado}" >
-                            <f:selectItems value="#{casoController.itemsSubEstadoCasoAvailableSelectOneCasoCerrado}"/>
-                        </p:selectOneMenu>
-                        <p:message for="idSubEstadox"/>
-
-
-                    </h:panelGrid>
                     <pe:ckEditor value="#{casoController.selectedNota.texto}" required="true" language="es"
                                  toolbar="#{applicationBean.ckEditorToolbar}"
-                                 customConfig="#{request.contextPath}/resources/js/ckeditor.js"
-                                 id="textonota" width="560" height="210"/>
+                                 width="100%"
+                                 id="textonota" height="210"/>
 
-                    <p:commandButton value="Cancelar" ajax="true"  onclick="PF('Nota').hide()"  update=":formint1" />
-
-                    <p:commandButton value="Guardar" ajax="false" update=":formint1 :formCreateNota :inputPanel:formlistaadjuntos" actionListener="#{casoController.editNota(false)}"/>
-                    <p:commandButton value="Guardar y notificar al cliente" ajax="false" update=":formint1 :formCreateNota :inputPanel:formlistaadjuntos" actionListener="#{casoController.editNota(true)}"/>
-
+                    <p:commandButton value="Guardar" ajax="true" 
+                                     update=":formint1 :formlistaadjuntos :formact" action="#{casoController.editNota(false)}"/>
+                    <p:commandButton value="Guardar y notificar al cliente" ajax="true" 
+                                     update=":formint1 :formact :formlistaadjuntos" action="#{casoController.editNota(true)}"/>
+                    <p:commandButton value="Cerrar" type="button"  onclick="Nota.hide()" immediate="true" />
 
                 </h:form>
             </p:dialog>
 
-            <p:dialog header="Cerrar Caso" widgetVar="closeCase" modal="true" dynamic="true" closeOnEscape="true" closable="false">
+
+            <p:dialog header="Cerrar Caso" widgetVar="closeCase" modal="true" appendTo="@(body)" >
                 <h:form id="formCerrarCaso">
 
-                    <p:messages/>
-
                     <h:panelGrid columns="3">
 
-                        <p:outputLabel for="idSubEstado2"  value="Causa de cierre del caso:" style="font-weight: bold;"/>
-                        <p:selectOneMenu id="idSubEstado2" value="#{casoController.selected.idSubEstado}" >
-                            <f:selectItems value="#{casoController.itemsSubEstadoCasoAvailableSelectOneCasoCerrado}" 
-                                           var="subEstad" itemDescription="#{subEstad.description}"/>
-                        </p:selectOneMenu>
-                        <p:message for="idSubEstado2" />  
+                        <h:outputLabel value="Tipo:"  rendered="#{casoController.selected.tipoCaso eq null}"/>
+                        <h:selectOneMenu styleClass="form-control input-sm" id="idTipoCaso" rendered="#{casoController.selected.tipoCaso eq null}"
+                                         required="true" requiredMessage="El tipo de caso es requerido."
+                                         converter="TipoCasoControllerConverter"
+                                         value="#{casoController.selected.tipoCaso}" >                                  
+                            <f:selectItems value="#{applicationBean.tipoCasoAvailableList}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
+                            <p:ajax update="idSubEstado2"/>
+                        </h:selectOneMenu>
+                        <p:message for="idTipoCaso"/>
 
-                        <p:outputLabel for="nota"  value="Nota de cierre:" style="font-weight: bold;"/>
-                        <p:inputTextarea id="nota" value="#{casoController.textoNota}" />
-                        <p:message for="nota" />  
+                        <h:outputLabel for="idSubEstado2"  value="Seleccione causal de cierre del caso:" style="font-weight: bold;"/>
+                        <p:selectOneMenu id="idSubEstado2" value="#{casoController.selected.idSubEstado}" >
+                            <f:selectItems value="#{casoController.itemsSubEstadoCasoAvailableSelectOneCasoCerrado}" var="subEstad" itemDescription="#{subEstad.description}"/>
+                        </p:selectOneMenu>
+                        <p:message for="idSubEstado2" />                            
 
                     </h:panelGrid>
 
-                    <p:outputLabel value="Nota: se cerrarán también los sub-casos (casos hijos del caso actual), si existen."
-                                   rendered="#{casoController.selected.tipoCaso ne EnumTipoCaso.ENTREGA.getTipoCaso()}"/>
-                    <p:outputLabel value="Nota: Todos los subcasos deben estar previamente cerrados."
-                                   rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.ENTREGA.getTipoCaso()}"/>
+                    <h:outputLabel value="Nota: se cerrarán también los sub-casos (casos hijos del caso actual), si existen."/>
 
                     <h:panelGrid columns="3">
-
-                        <p:commandButton value="Cancelar" ajax="true"  onclick="PF('closeCase').hide()"   />
-
-                        <p:commandButton value="Aceptar" ajax="true" update="formCerrarCaso :mainform:messages"
-                                         actionListener="#{casoController.cerrarCaso}"  />
-
-                        <p:commandButton value="Cerrar el caso y programar visita preventiva" 
-                                         rendered="#{casoController.selected.tipoCaso eq EnumTipoCaso.ENTREGA.getTipoCaso()}"
-                                         ajax="true" update=":formCerrarCaso :mainform:messages"
-                                         actionListener="#{casoController.cerrarCasoYProgramarVP}"   />
+                        <p:commandButton value="Aceptar" ajax="false" update=":mainform:messages"
+                                         actionListener="#{casoController.cerrarCaso}"   />
+                        <p:commandButton value="Cancelar" ajax="true"  onclick="closeCase.hide()" immediate="true"  />
                     </h:panelGrid>
 
                 </h:form>
             </p:dialog>
 
-            <p:dialog header="Eliminar Caso" widgetVar="destroyCase" modal="true" dynamic="true" closeOnEscape="true" closable="false">
+
+            <p:dialog header="Eliminar Caso" widgetVar="destroyCase" modal="true" appendTo="@(body)" >
                 <h:form id="formEliminarCaso">
                     <h:outputLabel value="#{bundle.EliminarCaso}" />
                     <br/><br/>
-                    <p:commandButton value="Cancelar" ajax="true"  onclick="PF('destroyCase').hide()"   />
-
                     <p:commandButton rendered="#{casoController.verificarEliminarCaso()}"
                                      ajax="false" value="Eliminar Caso" action="#{casoController.destroy()}"/>
-
+                    <p:commandButton value="Cancelar" ajax="true"  onclick="destroyCase.hide()"   />
                 </h:form>
             </p:dialog>
 
-            <p:dialog header="ReAbrir Caso" widgetVar="openCase" modal="true" dynamic="true" closeOnEscape="true" closable="false">
+            <p:dialog header="ReAbrir Caso" widgetVar="openCase" modal="true" appendTo="@(body)">
                 <h:form>
                     <h:outputLabel value="#{bundle.ReabrirCaso}" />
 
                     <br>
-                        <p:outputLabel value="#{bundle.EditCasoLabel_idSubEstado}" for="idSubEstadoreopen" style="font-weight:bold"/>
+                        <h:outputLabel value="#{bundle.EditCasoLabel_idSubEstado}" for="idSubEstadoreopen" />
                         <p:selectOneMenu id="idSubEstadoreopen"  
                                          filter="true" filterMatchMode="contains"
                                          value="#{casoController.selected.idSubEstado}" >
@@ -943,58 +704,33 @@
                         </p:selectOneMenu>
                     </br>
 
-                    <p:commandButton value="Cancelar" ajax="true"  onclick="PF('openCase').hide()"   />
-
                     <p:commandButton value="Aceptar" ajax="false" update=":mainform:messages"
                                      actionListener="#{casoController.reabrirCaso}"   />
+                    <p:commandButton value="Cancelar" type="button"  onclick="openCase.hide()"  immediate="true" />
 
                 </h:form>
             </p:dialog>
 
-            <p:dialog header="Agregar Caso Relacionado" widgetVar="casosRela" modal="true" dynamic="true" closeOnEscape="true" closable="false">
+
+
+            <p:dialog header="Agregar Casos Relacionado" widgetVar="casosRela" modal="true" appendTo="@(body)" >
                 <h:form>
                     <h:panelGrid columns="2">
                         <h:outputLabel value="Id Caso relacionado:" for="idcasorel" style="font-weight: bold"/>
                         <h:inputText value="${casoController.idCaserel}" id="idcasorel"/>
-                        <p:button value="Cancelar" onclick="PF('casosRela').hide()"   />
-                        <p:commandButton value="Aceptar" ajax="true" update=":mainform:messages idcasorel"
+                        <p:commandButton value="Agregar" ajax="true" update=":mainform:messages idcasorel"
                                          actionListener="#{casoController.agregarRelacionado}"   />
 
-                    </h:panelGrid>
-                </h:form>
-            </p:dialog>
-            
-            <p:dialog header="Eliminar Caso Relacionado" widgetVar="DeleteCasosRela" modal="true" dynamic="true" closeOnEscape="true" closable="false">
-                <h:form>
-                    <h:panelGrid columns="2">
-                        <h:outputLabel value="Id Caso relacionado:" for="idcasorel" style="font-weight: bold"/>
-                        <h:inputText value="${casoController.idCaserel}" id="idcasorel"/>
-                        <p:button value="Cancelar" onclick="PF('DeleteCasosRela').hide()"   />
-                        <p:commandButton value="Eliminar" ajax="true" update=":mainform:messages idcasorel"
-                                         actionListener="#{casoController.eliminarRelacionado()}"   />
-
+                        <p:commandButton value="Cancelar" type="button"  onclick="casosRela.hide()"  immediate="true" />
                     </h:panelGrid>
                 </h:form>
             </p:dialog>
 
-            <p:dialog id="idDialogArbolItem" header="Seleccione Item" widgetVar="idDialogArbolItem" dynamic="true" rendered="#{casoController.casoTipoReparacion}"
-                      modal="true" height="550" closeOnEscape="true" closable="false">
-                <h:form id="formArbolItem">
-                    <div align="left">
-                        <p:tree id="arbol" value="#{itemController.tree}" var="node" dynamic="true" cache="false"
-                                selectionMode="single" selection="#{itemController.item}"
-                                style="border-color: window;">
-                            <p:ajax event="select" listener="#{casoController.onNodeItemSelectedInSelectedCaso}" 
-                                    update=":inputPanel:formact:listanotas:panelGridDatos" oncomplete="PF('idDialogArbolItem').hide()"/>
-                            <p:treeNode expandedIcon="myfoldericon16" collapsedIcon="myfoldericon16">
-                                <h:outputText value="#{node.nombre}" />
-                            </p:treeNode>
-                        </p:tree>
-                    </div>
-                </h:form>
-            </p:dialog>
 
-            <p:dialog header="Transferir Caso" widgetVar="transferir" modal="true" dynamic="true" closeOnEscape="true" closable="false">
+
+
+
+            <p:dialog header="Transferir Caso" widgetVar="transferir" modal="true" appendTo="@(body)" closeOnEscape="true">
                 <h:form id="transferForm">
 
                     <p:panel id="panel-transferir">
@@ -1075,16 +811,17 @@
                             </p:row>
                             <p:row>
                                 <p:column colspan="3">
-                                    <p:inputTextarea id="transferNote" value="#{casoController.textoNota}" style="width: 100%;" required="true" requiredMessage="El Motivo de la transferencia o asignación es requerido."/>                              
+                                    <p:inputTextarea id="transferNote" value="#{casoController.textoNota}" style="width: 100%;" required="true" requiredMessage="El Motivo de la transferencia o asignación es requerido."/> 
+                                    <p:watermark for="transferNote" value="Ingrese un motivo" />
                                 </p:column>
                             </p:row>
 
                         </p:panelGrid>
 
                         <f:facet name="footer">
-                            <p:commandButton value="Cancelar" onclick="PF('transferir').hide()" type="button" /> 
+                            <p:commandButton value="Transferir" update=":transferForm :formact :formint1" actionListener="#{casoController.asignarCaso}"  />
 
-                            <p:commandButton value="Transferir" update=":transferForm :inputPanel:formact :formint1" actionListener="#{casoController.asignarCaso}"  />
+                            <p:commandButton value="Cancelar" type="button"  onclick="transferir.hide()"  immediate="true" />
                         </f:facet>
                     </p:panel>
 
@@ -1094,294 +831,350 @@
             </p:dialog>
 
 
-            <p:dialog id="createEventDialog" widgetVar="createEventDialog" header="Crear Evento" dynamic="true"
-                      showEffect="fade" hideEffect="fade" closeOnEscape="true" closable="false">  
+            <p:dialog id="createEventDialog" widgetVar="createEventDialog" header="Evento" 
+                      showEffect="fade" hideEffect="fade" closeOnEscape="true" appendTo="@(body)">  
                 <h:form id="createEventForm">
 
-                    <p:panelGrid id="eventDetails" columns="1" 
-                                 style="margin-bottom:10px;" styleClass="filtersGrid" >
+                    <p:scrollPanel style="width:550px;height:400px">
+                        <p:panelGrid id="eventDetails" columns="1" 
+                                     style="margin-bottom:10px;" styleClass="filtersGrid" >
 
-                        <p:messages globalOnly="true"/>
+                            <p:messages globalOnly="true"/>
 
-                        <p:row>
-                            <p:column>
-                                <p:inputText id="title" value="#{casoScheduleController.event.title}" style="width: 100%;"
-                                             required="true" requiredMessage="Favor ingrese un titulo para el evento."/> 
-                                <p:watermark for="title" value="Titulo del evento"/>
-                                <p:message for="title"/>
-                            </p:column>
-                        </p:row>
-                        <p:row>
-                            <p:column>
-                                <p:inplace editor="true">
-                                    <f:facet name="output">
-                                        <h:outputText value="#{not empty casoScheduleController.event.data.descripcion ? casoScheduleController.event.data.descripcion:'Haz click para añadir una descripción'}" />
-                                    </f:facet>
-                                    <f:facet name="input">
-                                        <p:inputTextarea id="desc" value="#{casoScheduleController.event.data.descripcion}" style="width: 100%;"/> 
-                                        <p:watermark for="desc" value="Descripción del evento"/>
-                                    </f:facet>
-                                </p:inplace>
+                            <p:row>
+                                <p:column>
+                                    <h:outputLabel for="title" value="Titulo:" style="font-weight: bold;"/>  
+                                </p:column>
 
-                                <p:message for="desc"/>
-                            </p:column>
-                        </p:row>
-                        <p:separator/>
-                        <p:row>
+                                <p:column>
+                                    <h:inputText id="title" value="#{casoScheduleController.event.title}" styleClass="form-control"
+                                                 required="true" requiredMessage="Favor ingrese un titulo para el evento."/> 
+                                    <p:message for="title"/>
+                                </p:column>
+                            </p:row>
 
-                            <p:column>
-                                <h:outputLabel value="Fecha:" style="font-weight: bold;"/>  
-                            </p:column>
+                            <p:row>
 
-                            <p:column>
-                                <p:panelGrid columns="6">
-                                    <h:outputLabel for="from" value="Desde:" style="font-weight: bold;"/>  
-                                    <p:calendar id="from" value="#{casoScheduleController.event.startDate}" size="14"
-                                                pattern="dd/MM/yyyy HH:mm"
-                                                required="true" requiredMessage="Favor ingrese fecha y hora de comienzo.">  
-                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />  
-                                        <p:ajax event="dateSelect" update="endDate" />
-                                    </p:calendar>  
-                                    <h:outputLabel for="endDate" value="Hasta:" style="font-weight: bold;"/>  
-                                    <p:calendar id="endDate" mindate="#{casoScheduleController.event.startDate}" value="#{casoScheduleController.event.endDate}" size="14"
-                                                pattern="dd/MM/yyyy HH:mm"
-                                                required="true" requiredMessage="Favor ingrese fecha y hora de término.">  
-                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />  
-                                        <f:attribute name="startDate" value="#{casoScheduleController.event.startDate}" />
-                                        <f:validator validatorId="primeDateRangeValidator" />
-                                    </p:calendar>
-                                    <h:selectBooleanCheckbox id="allDay" value="#{casoScheduleController.event.allDay}"
-                                                             label="Todo el dia"/>  
-                                    <h:outputLabel for="allDay" value="Todo el día" style="font-weight: bold;"/> 
-                                </p:panelGrid>
+                                <p:column>
+                                    <h:outputLabel value="Fecha:" style="font-weight: bold;"/>  
+                                </p:column>
 
-                                <p:message for="from"/>
-                                <p:message for="endDate"/>
-                                <p:message for="allDay"/>
+                                <p:column>
+                                    <p:panelGrid columns="6">
+                                        <h:outputLabel for="from" value="Desde:" style="font-weight: bold;"/>  
+                                        <p:inputMask id="from" value="#{casoScheduleController.event.startDate}" size="14"
+                                                     styleClass="form_datetime form_datetime"
+                                                     mask="99/99/9999 99:99" required="true" requiredMessage="Favor ingrese fecha y hora de comienzo.">  
+                                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />  
+                                        </p:inputMask>  
+                                        <h:outputLabel for="to" value="Hasta:" style="font-weight: bold;"/>  
+                                        <p:inputMask id="to" value="#{casoScheduleController.event.endDate}" size="14"
+                                                     styleClass="form_datetime form_datetime"
+                                                     mask="99/99/9999 99:99" required="true" requiredMessage="Favor ingrese fecha y hora de término.">  
+                                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />  
+                                        </p:inputMask>
+                                        <h:selectBooleanCheckbox id="allDay" value="#{casoScheduleController.event.allDay}"
+                                                                 label="Todo el dia"/>  
+                                        <h:outputLabel for="allDay" value="Todo el día" style="font-weight: bold;"/> 
+                                    </p:panelGrid>
+
+                                    <p:message for="from"/>
+                                    <p:message for="to"/>
+                                    <p:message for="allDay"/>
 
 
-                            </p:column>
+                                </p:column>
 
 
-                        </p:row>
+                            </p:row>
 
-                        <p:separator/>
 
-                        <p:row>
-                            <p:column>
-                                <h:outputLabel value="Organizador:" style="font-weight: bold;"/>  
-                            </p:column>
+                            <p:row>
+                                <p:column>
+                                    <h:outputLabel for="invitados" value="Usuarios:" style="font-weight: bold;"/>
+                                </p:column>
 
-                            <p:column>
-                                <p:outputLabel value="#{casoScheduleController.event.data.idUsuario.capitalName}"/>
-                            </p:column>
-                        </p:row>
+                                <p:column>
 
-                    </p:panelGrid>  
+                                    <p:panelGrid columns="2">
+                                        <p:autoComplete id="invitados" value="#{casoScheduleController.selectedUserToAddInvited}" 
+                                                        completeMethod="#{casoScheduleController.autoCompleteUsuario}"  
+                                                        var="u"  itemValue="#{u}" itemLabel="#{u.capitalName}">  
+
+                                            <p:ajax  event="itemSelect"  process="@form"
+                                                     listener="#{casoScheduleController.usuarioInvitedItemSelectEvent}"  
+                                                     update=":createEventForm:eventDetails"  />
+
+                                            <f:facet name="itemtip">
+                                                <h:panelGrid  columns="2" cellpadding="5">  
+                                                    <f:facet name="header">  
+                                                        <h:outputText value="#{u.capitalName}" />  
+                                                    </f:facet>  
+
+                                                    <h:outputText value="Nombre: " />  
+                                                    <h:outputText value="#{u.capitalName}" />  
+
+                                                    <h:outputText value="Email: " />  
+                                                    <h:outputText value="#{u.email}" /> 
+
+
+                                                </h:panelGrid>  
+                                            </f:facet>  
+
+                                        </p:autoComplete> 
+
+                                        <p:panel>
+
+                                            <h:outputText value="favor agregar usuarios al evento" rendered="#{empty casoScheduleController.event.data.usuariosInvitedList}"/>
+
+                                            <ui:repeat id="invitadosList" value="#{casoScheduleController.event.data.usuariosInvitedList}" var="userSelected">
+                                                <h:panelGroup styleClass="label label-info">
+                                                    <h:outputText   value="#{userSelected.capitalName} (#{userSelected.idUsuario})"/>
+                                                    <p:commandLink update=":createEventForm:eventDetails" 
+                                                                   process="@form"
+                                                                   style="border: none !important;"
+                                                                   styleClass="btn btn-xs btn-danger btn-outline">
+                                                        <i class="fa fa-times"></i>
+                                                        <p:collector unique="true" value="#{userSelected}" 
+                                                                     removeFrom="#{casoScheduleController.event.data.usuariosInvitedList}"/>
+                                                    </p:commandLink>
+                                                </h:panelGroup>
+                                            </ui:repeat>
+
+                                        </p:panel>
+
+                                    </p:panelGrid>
+
+                                    <p:watermark for="invitados" value="Buscar usuario..."/>
+                                </p:column>
+                            </p:row>
+
+                            <p:row>
+                                <p:column>
+                                    <h:outputLabel for="resources" value="Recursos:" style="font-weight: bold;"/>  
+                                </p:column>
+
+                                <p:column>
+
+                                    <p:panelGrid columns="2">
+                                        <p:autoComplete id="resources" value="#{casoScheduleController.selectedResourceToAddInvited}" 
+                                                        completeMethod="#{casoScheduleController.autoCompleteResource}"  
+                                                        var="rr"  itemValue="#{rr}" itemLabel="#{rr.nombre}">  
+
+                                            <p:ajax  event="itemSelect" process="@form" listener="#{casoScheduleController.resourceInvitedItemSelectEvent}" 
+                                                     update=":createEventForm:eventDetails"  />
+
+                                            <f:facet name="itemtip">
+                                                <h:panelGrid  columns="2" cellpadding="5">  
+                                                    <f:facet name="header">  
+                                                        <h:outputText value="#{rr.nombre}" />  
+                                                    </f:facet>  
+
+                                                    <h:outputText value="Nombre: " />  
+                                                    <h:outputText value="#{rr.nombre}" />  
+
+                                                    <h:outputText value="Tipo: " />  
+                                                    <h:outputText value="#{rr.tipo}" /> 
+
+
+                                                </h:panelGrid>  
+                                            </f:facet>  
+
+                                        </p:autoComplete>   
+
+                                        <p:panel>
+
+                                            <h:outputText value="recursos" rendered="#{empty casoScheduleController.event.data.resourceList}"/>
+                                            <ui:repeat id="rList" value="#{casoScheduleController.event.data.resourceList}" var="rSelected">
+                                                <h:panelGroup styleClass="label label-info">
+                                                    <h:outputText   value="#{rSelected.nombre}"/>
+                                                    <p:commandLink update=":createEventForm:eventDetails" 
+                                                                   process="@form"
+                                                                   style="border: none !important;"
+                                                                   styleClass="btn btn-xs btn-danger btn-outline">
+                                                        <i class="fa fa-times"></i>
+                                                        <p:collector unique="true" value="#{rSelected}" 
+                                                                     removeFrom="#{casoScheduleController.event.data.resourceList}"/>
+                                                    </p:commandLink>
+                                                </h:panelGroup>&nbsp;
+
+                                            </ui:repeat>
+                                        </p:panel>
+                                    </p:panelGrid>
+                                    <p:watermark for="resources" value="Buscar recurso..."/>
+
+
+                                </p:column>
+                            </p:row>
+
+                            <p:row>
+                                <p:column>
+                                    <h:outputLabel for="recordatorios" value="Recordatorios:" style="font-weight: bold;"/>  
+                                </p:column>
+
+                                <p:column>
+                                    <p:panel>
+
+                                        <ui:repeat id="recordatorios" value="#{casoScheduleController.event.data.scheduleEventReminderList}" var="reminder" >
+
+                                            <h:panelGrid columns="4" cellpadding="5" cellspacing="5">
+                                                <h:selectOneMenu id="reminderType" 
+                                                                 value="#{reminder.reminderType}" 
+                                                                 required="true" requiredMessage="Se requiere ...">
+
+                                                    <f:selectItem itemLabel="Correo" itemValue="EMAIL"/>
+                                                    <f:selectItem itemLabel="Ventana emergente" itemValue="POPUP" itemDisabled="true"/>
+                                                </h:selectOneMenu>
+
+                                                <h:inputText id="quantityTime" value="#{reminder.quantityTime}" size="3" required="true" />
+
+                                                <h:selectOneMenu id="unitOfTimeInMinutes" 
+                                                                 value="#{reminder.unitOfTimeInMinutes}" 
+                                                                 required="true" requiredMessage="Se requiere ...">
+                                                    <f:selectItem itemLabel="minutos" itemValue="1"/>
+                                                    <f:selectItem itemLabel="horas" itemValue="60"/>
+                                                    <f:selectItem itemLabel="días" itemValue="1440"/>
+                                                    <f:selectItem itemLabel="semanas" itemValue="10080"/>
+                                                </h:selectOneMenu>
+
+                                                <p:commandLink update=":createEventForm:eventDetails" process="@this"
+                                                               styleClass="btn btn-xs btn-danger btn-outline"
+                                                               actionListener="#{casoScheduleController.removeScheduleEventReminder(reminder)}" >
+                                                    <i class="fa fa-times"></i>
+                                                </p:commandLink>
+
+                                            </h:panelGrid>
+
+
+                                        </ui:repeat>
+                                        <p:commandLink value="Agregar recordatorio" style="color: #006dcc"
+                                                       actionListener="#{casoScheduleController.addNewScheduleEventReminder()}" 
+                                                       update=":createEventForm:eventDetails"/>
+                                    </p:panel>
+
+                                </p:column>
+                            </p:row>
+
+
+
+
+
+
+                            <p:row>
+                                <p:column>
+
+                                </p:column>
+
+                                <p:column>
+                                    <h:panelGrid columns="2">
+                                        <h:selectBooleanCheckbox id="accionAutomaticaBool" value="#{casoScheduleController.event.data.executeAction}">
+                                            <p:ajax update=":createEventForm:eventDetails" process="@form"/>  
+                                        </h:selectBooleanCheckbox>
+                                        <h:outputLabel for="accionAutomaticaBool" value="Programar una acción automática" 
+                                                       title="Programar una tarea o acción que se ejecutará automáticamente cuando se cumpla la fecha del evento..."/>  
+                                    </h:panelGrid>
+
+                                    <p:message for="accionAutomaticaBool"/>
+                                </p:column>
+                            </p:row>
+
+
+
+
+
+                            <p:row rendered="#{casoScheduleController.event.data.executeAction}">
+                                <p:column>
+                                    <h:outputLabel id="labelTipoAccion" value="Acción:" for="idTipoAccion" style="font-weight: bold;" 
+                                                   />
+                                </p:column>
+
+                                <p:column>
+                                    <h:selectOneMenu id="idTipoAccion" styleClass="form-control"
+                                                     value="#{casoScheduleController.event.data.idTipoAccion}" 
+                                                     required="true" requiredMessage="Se requiere que seleccione el nombre de una clase que implemente la Accion."
+                                                     >
+                                        <p:ajax update=":createEventForm:eventDetails" />
+                                        <f:selectItems value="#{tipoAccionController.itemsAvailableSelectOneImplementingActionClass}"/>
+                                    </h:selectOneMenu>
+                                    <p:message for="idTipoAccion"/>
+                                </p:column>
+                            </p:row>
+
+
+
+
+                            <p:row rendered="#{casoScheduleController.event.data.executeAction}">
+                                <p:column>
+                                    <h:outputLabel id="labelidAccionCustom" value="Param:" for="idAccionCustom" style="font-weight: bold;" 
+                                                   />
+
+                                </p:column>
+
+                                <p:column>
+                                    <h:inputText id="idAccionCustom" value="#{casoScheduleController.event.data.parametrosAccion}"  styleClass="form-control"
+                                                 required="true" requiredMessage="Se requiere que ingrese parametros para la accion."
+                                                 title="#{bundle.CreateAccionLabel_parametros}"/>
+                                    <p:message for="idAccionCustom"/>
+                                </p:column>
+                            </p:row>
+
+
+
+
+                            <script type="text/javascript">
+                                $(".select2Multiple").select2({
+                                    dropdownAutoWidth: true,
+                                    allowClear: true
+                                });
+                                $('.form_datetime').datetimepicker({
+                                    language: 'es',
+                                    format: 'dd/mm/yyyy hh:ii',
+                                    viewformat: 'dd/mm/yyyy hh:ii',
+                                    todayBtn: true,
+                                    autoclose: true,
+                                    todayHighlight: true,
+                                    weekStart: 1,
+                                    forceParse: true
+                                });
+
+                                $('div.expandable').expander({
+                                    slicePoint: 50,
+                                    widow: 2,
+                                    expandEffect: 'fadeIn',
+                                    expandSpeed: 250,
+                                    collapseEffect: 'fadeOut',
+                                    collapseSpeed: 200,
+                                    // allow the user to re-collapse the expanded text.
+                                    userCollapse: true,
+                                    expandText: '[ + ]', // default is 'read more'
+                                    userCollapseText: '[ - ]'  // default is 'read less'
+                                });
+
+                            </script>
+
+                        </p:panelGrid>  
+                    </p:scrollPanel>
+
+
+
 
                     <p:separator/>
-                    <p:commandButton value="Cerrar" oncomplete="PF('createEventDialog').hide();" update=":createEventForm:eventDetails" process="@this">
-                        <p:resetInput target="@form" />
-                    </p:commandButton>
-                    &nbsp;
-                    <p:commandButton id="addButton" value="Crear Evento" 
+                    <p:commandButton type="reset" value="Reset" update=":createEventForm:eventDetails"/>  
+                    <p:commandButton id="addButton" value="Guardar" 
                                      actionListener="#{casoScheduleController.addEvent()}"
                                      update=":createEventForm:eventDetails" />  
-
-                    &nbsp;
-                    <p:commandLink id="editButton" value="Editar evento »" 
-                                   style="font-weight: bold;float: right;color: #15c;text-decoration: underline;cursor: pointer;white-space: nowrap;"
-                                   actionListener="#{casoScheduleController.goEditEvent()}" update=":createEventForm:eventDetails"/>
                 </h:form>
-            </p:dialog>
-
-            <p:dialog id="viewEventDialog" widgetVar="viewEventDialog" header="Evento" dynamic="true"
-                      showEffect="fade" hideEffect="fade" closeOnEscape="true" closable="true" modal="true">  
-                <h:form id="viewEventForm">
-
-                    <p:messages globalOnly="true"/>
+            </p:dialog> 
 
 
-                    <p:panelGrid columns="1" styleClass="filtersGrid">
-
-                        <p:row>
-                            <p:column colspan="2">
-                                <p:inplace editor="true">
-                                    <f:facet name="output">
-                                        <p:outputLabel value="#{casoScheduleController.event.title}" title="#{casoScheduleController.event.data.eventId}" style="font-weight: bold;"/>
-                                    </f:facet>
-                                    <f:facet name="input">
-                                        <p:inputText id="title" value="#{casoScheduleController.event.title}" style="width: 100%;"
-                                                     required="true" requiredMessage="Favor ingrese un titulo para el evento."/> 
-                                        <p:watermark for="title" value="Titulo del evento"/>
-                                    </f:facet>
-                                </p:inplace>
-
-                                <p:message for="title"/>
-                            </p:column>
-                        </p:row>
-
-                        <p:row>
-                            <p:column colspan="2">
-                                <p:panelGrid columns="6">
-
-                                    <p:inplace editor="true">
-                                        <f:facet name="output">
-                                            <h:outputText value="#{casoController.formatDateRange(casoScheduleController.event.startDate, casoScheduleController.event.endDate)}" />
-                                            <h:outputText value="#{casoScheduleController.event.allDay eq true ? ' Todo el dia':''}" />
-                                        </f:facet>
-                                        <f:facet name="input">
-                                            <p:calendar id="from" value="#{casoScheduleController.event.startDate}" size="14"
-                                                        pattern="dd/MM/yyyy HH:mm"
-                                                        required="true" requiredMessage="Favor ingrese fecha y hora de comienzo.">  
-                                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />  
-                                                <p:ajax event="dateSelect" update="endDate" />
-                                            </p:calendar>  
-                                            <h:outputLabel for="endDate" value="Hasta:" style="font-weight: bold;"/> 
-                                            <p:calendar id="endDate" mindate="#{casoScheduleController.event.startDate}" value="#{casoScheduleController.event.endDate}" size="14"
-                                                        pattern="dd/MM/yyyy HH:mm"
-                                                        required="true" requiredMessage="Favor ingrese fecha y hora de término.">  
-                                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />  
-                                                <f:attribute name="startDate" value="#{casoScheduleController.event.startDate}" />
-                                                <f:validator validatorId="primeDateRangeValidator" />
-                                            </p:calendar>
-
-                                            <h:selectBooleanCheckbox id="allDay" value="#{casoScheduleController.event.allDay}"
-                                                                     label="Todo el dia"/>  
-                                            <h:outputLabel for="allDay" value="Todo el día" style="font-weight: bold;"/> 
-                                        </f:facet>
-                                    </p:inplace>
-
-                                </p:panelGrid>
-
-                                <p:message for="from"/>
-                                <p:message for="endDate"/>
-                                <p:message for="allDay"/>
-
-                            </p:column>
 
 
-                        </p:row>
 
-                        <p:row>
-                            <p:column colspan="2">
-                                <p:inplace editor="true">
-                                    <f:facet name="output">
-                                        <h:outputText value="#{not empty casoScheduleController.event.data.descripcion ? casoScheduleController.event.data.descripcion:'Haz click para añadir una descripción'}" />
-                                    </f:facet>
-                                    <f:facet name="input">
-                                        <p:inputTextarea id="desc" value="#{casoScheduleController.event.data.descripcion}" style="width: 100%;"/> 
-                                        <p:watermark for="desc" value="Descripción del evento"/>
-                                    </f:facet>
-                                </p:inplace>
-
-                                <p:message for="desc"/>
-                            </p:column>
-                        </p:row>
-
-                        <p:row>
-                            <p:column>
-                                <h:outputLabel value="Organizador:" style="font-weight: bold;"/>  
-                            </p:column>
-
-                            <p:column>
-                                <p:outputLabel value="#{casoScheduleController.event.data.idUsuario.capitalName}"/>
-                            </p:column>
-                        </p:row>
-
-                        <p:row>
-                            <p:column>
-                                <p:panelGrid columns="2" styleClass="filtersGrid" >
-
-                                    <p:panelGrid columns="1" rendered="#{not empty casoScheduleController.event.data.usuariosInvitedList}"
-                                                 style="margin-bottom:10px;" styleClass="filtersGrid" >
-
-                                        <p:row>
-                                            <p:column>
-                                                <go:panelUsuariosInvitados id="panelUsuariosInvitados"/>
-                                            </p:column>
-                                        </p:row>
-                                    </p:panelGrid>
-
-                                    <p:panelGrid columns="1" rendered="#{not empty casoScheduleController.event.data.scheduleEventClientList}"
-                                                 style="margin-bottom:10px;" styleClass="filtersGrid" >
-                                        <p:row>
-                                            <p:column>
-                                                <go:panelClientesInvitados id="panelClientesInvitados"/>
-                                            </p:column>
-                                        </p:row>
-                                    </p:panelGrid>
-
-                                </p:panelGrid>
-                            </p:column>
-                        </p:row>
-
-
-                    </p:panelGrid>
-
-                    <p:separator/>
-
-                    <p:commandButton id="delButton" value="Eliminar evento" styleClass="btn btn-danger"
-                                     actionListener="#{casoScheduleController.deleteSelectedEvent()}">
-                        <p:confirm header="Confirmación" message="Esta seguro de eliminar el evento ?" icon="ui-icon-alert"/>
-                    </p:commandButton>
-
-                    &nbsp;
-                    <p:commandButton value="Cerrar" 
-                                     actionListener="#{casoScheduleController.closeViewEvent()}" update=":viewEventForm" process="@this">
-                        <p:resetInput target="@form" />
-                    </p:commandButton>
-
-
-                    &nbsp;
-
-                    <p:commandButton id="addButton" value="Guardar"
-                                     actionListener="#{casoScheduleController.quickSaveEvent()}"
-                                     update=":viewEventForm" />
-                    &nbsp;
-                    <p:commandLink id="editButton" value="Editar evento »" style="font-weight: bold;float: right;color: #15c;text-decoration: underline;cursor: pointer;white-space: nowrap;"
-                                   actionListener="#{casoScheduleController.goEditEvent()}" update=":inputPanel"/>
-                </h:form>
-            </p:dialog>
-            <script>
-                //<![CDATA[
-                $(document).ready(function () {
-                    resizeScrollPanel();
-                });
-
-                function resizeScrollPanel() {
-                    var layoutCenterPane = document.getElementsByClassName("ui-layout-content pe-layout-pane-content")[0];
-                    var botoneraPanel = document.getElementById("botoneraCaso");
-                    var inputPanel = document.getElementById("inputPanel");
-                    var inputPanelHeight = (layoutCenterPane.clientHeight - botoneraPanel.clientHeight - 25);
-                    inputPanel.style.height = (inputPanelHeight + "px");
-                    var tabsBar = inputPanel.getElementsByClassName("ui-tabs-navscroller")[0];
-                    var height = inputPanelHeight - (tabsBar.clientHeight + 30);
-                    resizeComponent("inputPanel:scrollpaneActividades", height);
-                    resizeComponent("inputPanel:scrollpaneAgenda", height);
-                    resizeComponent("inputPanel:scrollpaneCasosRel", height);
-                    resizeComponent("inputPanel:scrollpaneTimeline", height);
-                }
-
-                function resizeComponent(componentId, height) {
-                    try {
-                        var componentToResize = document.getElementById(componentId);
-                        if (componentToResize !== null)
-                        {
-                            componentToResize.style.height = (height + "px");
-                        }
-                    } catch (err) {
-                    }
-                }
-
-                var id;
-                $(window).resize(function () {
-                    id = setTimeout(resizeScrollPanel, 500);
-                });
-
-                //]]>
-            </script>
         </ui:define>
+
+
+
+
     </ui:composition>
 
 </html>

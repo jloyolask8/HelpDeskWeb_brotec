@@ -8,7 +8,7 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:go="http://java.sun.com/jsf/composite/go">
 
-    <ui:composition template="/script/template_inbox.xhtml">
+    <ui:composition template="/script/template_inbox_bootstrap.xhtml">
         <ui:define name="title">
             <p:outputLabel value="Clientes"></p:outputLabel>
         </ui:define>
@@ -17,7 +17,7 @@
         </ui:define>
         <ui:define name="west">
 
-            <go:vistasList id="vistasList" update=":vistasList:vistasForm :mainform:messages :formfilter:panelFilter0:panelFilter :form" 
+            <go:vistasListBt id="vistasList" update=":vistasList:vistasForm :mainform:messages :formfilter:panelFilter0:panelFilter :form" 
                            controllerMBean="#{clienteController}"
                            user="#{UserSessionBean.current}"/>
 
@@ -27,6 +27,10 @@
 
         </ui:define>
         <ui:define name="body">
+            
+            <div class="page-header hidden-xs">
+                <h1><i class="fa fa-inbox page-header-icon"></i>&nbsp;&nbsp;Listado de Clientes</h1>
+            </div> <!-- / .page-header -->
 
             <h:form id="formfilter">
                 <go:filterView id="panelFilter0" titleIconClass="fa fa-users page-header-icon"
@@ -40,6 +44,9 @@
             </h:form>
 
             <h:form id="form">
+                
+                <go:paginatorBtnsBt controllerMBean="#{clienteController}" update=":form"/>
+                
                 <h:panelGroup>
 
                     <p:toolbar >
@@ -48,15 +55,6 @@
                             <p:commandButton ajax="false" action="#{clienteController.prepareCreateMasivo()}" value="Importación masiva de clientes" icon="fa fa-upload" />
                             <p:commandButton ajax="false" action="cargarClienteProducto" value="Importar Relación Cliente/#{applicationBean.productSubComponentDescription}" icon="fa fa-upload" />
                         </p:toolbarGroup>
-
-                        <p:toolbarGroup align="right">
-
-                            <go:paginatorButtons controllerMBean="#{clienteController}" update=":form"/>
-                            <p:separator/>
-                            <p:commandButton ajax="false" action="#{clienteController.prepareCreate}" value="Crear cliente" icon="fa fa-plus-circle" />
-
-                        </p:toolbarGroup>  
-
 
                     </p:toolbar>
 

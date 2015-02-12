@@ -29,252 +29,301 @@
 
             <h:form id="form">
 
-           <p:wizard widgetVar="wiz" 
-                              flowListener="#{casoController.onFlowProcess}" nextLabel="Siguiente" backLabel="Anterior" showNavBar="true" showStepStatus="true">
+                <p:wizard widgetVar="wiz" 
+                          flowListener="#{casoController.onFlowProcess}" nextLabel="Siguiente" backLabel="Anterior" showNavBar="true" showStepStatus="true">
+
+                    <p:tab id="producto" title="Datos Producto">
+
+                        <p:panel id="productPanel">
+
+                            <p:messages/>
+
+                            <h:panelGrid columns="3">
+
+                                <p:outputLabel value="#{applicationBean.productDescription}" for="idProducto" style="font-weight:bold"/>
+                                <p:selectOneMenu id="idProducto" value="#{casoController.selected.idProducto}" filter="true" filterMatchMode="contains">
+                                    <f:selectItems value="#{productoController.itemsAvailableSelectOne}"/>
+                                    <p:ajax update="idComponente"  listener="#{casoController.handleProductChange}" />
+                                </p:selectOneMenu>
+                                <p:message for="idProducto"/>
+
+                                <h:outputLabel value="#{applicationBean.productComponentDescription}:" for="idComponente" style="font-weight: bold"/>
+                                <p:selectOneMenu id="idComponente" value="#{casoController.selected.idComponente}" filter="true" filterMatchMode="contains"
+                                                 disabled="#{casoController.selected.idProducto eq null}">
+                                    <f:selectItem itemLabel="---" itemValue=""/>
+                                    <f:selectItems value="#{casoController.selected.idProducto.componenteList}" var="comp" itemLabel="#{comp.nombre}" itemValue="#{comp}"/>
+                                    <p:ajax update="idSubComponente"  listener="#{casoController.handleProductChange}" />  
+                                </p:selectOneMenu>
+                                <p:message for="idComponente"/>
+
+                                <h:outputLabel value="#{applicationBean.productSubComponentDescription}:" for="idSubComponente" style="font-weight: bold"/>
+                                <p:selectOneMenu id="idSubComponente" value="#{casoController.selected.idSubComponente}" filter="true" filterMatchMode="contains"
+                                                 disabled="#{casoController.selected.idComponente eq null}">
+                                    <f:selectItem itemLabel="---" itemValue=""/>
+                                    <f:selectItems value="#{casoController.selected.idComponente.subComponenteList}" var="subc" itemLabel="#{subc.nombre}" itemValue="#{subc}"/>
+                                    <p:ajax update=":form:panelDatosCliente"  listener="#{casoController.handleSubCompChange}" />  
+                                </p:selectOneMenu>
+                                <p:message for="idSubComponente"/>
 
 
-                        <p:tab id="personal" title="Datos Cliente">
+                            </h:panelGrid>
+                        </p:panel>
+                    </p:tab>
 
-                            <p:panel id="panelDatosCliente">
-                                <p:messages globalOnly="true" showDetail="true" autoUpdate="true" closable="true" />
-                                    <h:panelGrid id="datosCliente" columns="3" cellpadding="5">
+                    <p:tab id="personal" title="Datos del Cliente">
 
-                                        <p:outputLabel value="#{bundle.EditCasoLabel_emailCliente}" for="emailCliente" style="font-weight:bold"/>
+                        <p:panel id="panelDatosCliente">
+                            <p:messages globalOnly="true" showDetail="true" autoUpdate="true" closable="true" />
 
-                                        <p:autoComplete id="emailCliente" value="#{casoController.emailCliente_wizard}" validator="#{inputValidationBean.validarEmail}"
-                                                        completeMethod="#{emailClienteController.completeEmailClienteString}"  
-                                                        var="email"  itemValue="#{email}" itemLabel="#{email}">  
-                                            <p:ajax event="itemSelect" listener="#{casoController.handleEmailSelect}" update=":form:panelDatosCliente" />  
-                                            <pe:keyFilter mask="email"/>
-                                        </p:autoComplete>
+                            <h:panelGrid id="datosCliente" columns="3" cellpadding="5" rendered="#{casoController.selected.idCliente ne null}">
 
+                                <h:outputLabel value="Seleccione un cliente:" for="cliente" style="font-weight: bold"
+                                               rendered="#{not empty casoController.selected.idSubComponente}"/>
 
-                                        <p:message for="emailCliente"/>
+                                <p:selectOneMenu id="cliente" value="#{casoController.pcWizard}" filter="true" filterMatchMode="contains"
+                                                 rendered="#{not empty casoController.selected.idSubComponente}" >
 
+                                    <f:selectItem itemLabel="Nuevo..." itemValue=""/>
 
-                                        <p:outputLabel value="#{bundle.CreateClienteLabel_rut}" for="rut" style="font-weight:bold"/>
-                                        <h:panelGrid>
-                                            <p:inputText id="rut" value="#{casoController.rutCliente_wizard}"  
-                                                         title="#{bundle.CreateClienteTitle_rut}" validator="#{inputValidationBean.validarRut}"
-                                                         required="true" requiredMessage="El RUT es un dato requerido.">
-                                                <p:ajax event="blur" listener="#{casoController.formateaRutFiltro2}" partialSubmit="true" process="rut" update=":form:panelDatosCliente"/>
-                                            </p:inputText>
-                                            <p:outputLabel value="Con puntos y guión. Ejemplo: 15.040.452-5"/>
-                                        </h:panelGrid>
+                                    <f:selectItems value="#{casoController.selected.idSubComponente.productoContratadoList}" 
+                                                   var="pc" itemLabel="#{pc.cliente.capitalName} (#{pc.tipoAsociacion ne null ? pc.tipoAsociacion:''})" 
+                                                   itemValue="#{pc}"/>
 
-                                        <p:message display="both" for="rut"/>
-
-                                        <p:outputLabel value="#{bundle.CreateClienteLabel_nombres}" for="nombres" style="font-weight:bold"/>
-                                        <p:inputText id="nombres" value="#{casoController.selected.idCliente.nombres}" 
-                                                     title="#{bundle.CreateClienteTitle_nombres}" required="true" requiredMessage="El Nombre es un dato requerido." size="40"/>
-                                        <p:message display="both" for="nombres"/>
-
-                                        <p:outputLabel value="#{bundle.CreateClienteLabel_apellidos}" for="apellidos" style="font-weight:bold"/>
-                                        <p:inputText id="apellidos" value="#{casoController.selected.idCliente.apellidos}" 
-                                                     title="#{bundle.CreateClienteTitle_apellidos}" size="40"/>
-                                        <p:message display="both" for="apellidos"/>
-
-                                        <p:outputLabel value="Sexo:" for="sexo" style="font-weight:bold"/>
-                                        <p:selectOneButton id="sexo" value="#{casoController.selected.idCliente.sexo}" >  
-                                            <f:selectItem itemLabel="Hombre" itemValue="Hombre" />  
-                                            <f:selectItem itemLabel="Mujer" itemValue="Mujer" />  
-                                        </p:selectOneButton> 
-                                        <p:message display="both" for="sexo"/>
-
-                                        <p:outputLabel value="#{bundle.CreateClienteLabel_fono1}" for="fono1" style="font-weight:bold"/>
-                                        <p:inputText id="fono1" value="#{casoController.selected.idCliente.fono1}" 
-                                                     title="#{bundle.CreateClienteTitle_fono1}" size="40">
-                                            <pe:keyFilter regEx="/[\d\.\+\-\(\)]/"/>
-                                        </p:inputText>
-                                        <p:message display="both" for="fono1"/>
-                                        <p:outputLabel value="#{bundle.CreateClienteLabel_fono2}" for="fono2" style="font-weight:bold"/>
-                                        <p:inputText id="fono2" value="#{casoController.selected.idCliente.fono2}" 
-                                                     title="#{bundle.CreateClienteTitle_fono2}" size="40">
-                                            <pe:keyFilter regEx="/[\d\.\+\-\(\)]/"/>
-                                        </p:inputText>
-                                        <p:message display="both" for="fono2"/>
-                                        <p:outputLabel value="#{bundle.CreateClienteLabel_dirParticular}" for="dirParticular" style="font-weight:bold"/>
-                                        <p:inputTextarea id="dirParticular" autoResize="true" value="#{casoController.selected.idCliente.dirParticular}" 
-                                                         title="#{bundle.CreateClienteTitle_dirParticular}" cols="40" />
-                                        <p:message display="both" for="dirParticular"/>
-                                        <p:outputLabel value="#{bundle.CreateClienteLabel_dirComercial}" for="dirComercial" style="font-weight:bold"/>
-                                        <p:inputTextarea id="dirComercial" autoResize="true" value="#{casoController.selected.idCliente.dirComercial}" 
-                                                         title="#{bundle.CreateClienteTitle_dirComercial}" cols="40"/>
-                                        <p:message display="both" for="dirComercial"/>
-
-                                        <p:selectBooleanCheckbox id="updateClient" style="float: right;"
-                                                                 value="#{casoController.emailCliente_wizard_updateCliente}" rendered="#{casoController.emailCliente_wizard_existeCliente}"/>
-                                        <p:outputLabel value="Deseo Actualizar los datos del Cliente:" for="updateClient" style="font-weight:bold" rendered="#{casoController.emailCliente_wizard_existeCliente}"/>
-                                        <p:message display="both" for="updateClient" rendered="#{casoController.emailCliente_wizard_existeCliente}"/>
+                                    <p:ajax update=":form:panelDatosCliente"  listener="#{casoController.handleNewTicketClientSelectionChange}" />
+                                </p:selectOneMenu>
+                                <p:message for="cliente" rendered="#{not empty casoController.selected.idSubComponente}"/>
 
 
+                                <h:outputLabel value="Tipo de relacion:" for="tipoAsoc" style="font-weight: bold"
+                                               rendered="#{not empty casoController.selected.idSubComponente}"/>
 
-                                    </h:panelGrid>
-
-
-
-                            </p:panel>
-                        </p:tab>
-                        
-                        <p:tab id="casos" title="Casos del Cliente">
-                            <go:casoListNoForm casosList="#{casoController.selected.idCliente.casoList}" 
-                                                     header="Historial de casos del Cliente #{casoController.selected.clientName} (#{casoController.selected.idCliente.casoList.size()})"/>
-
-                            
-                            <p:outputLabel value="El cliente no tiene casos previos asociados."
-                                           rendered="#{empty casoController.selected.idCliente.casoList}"/>
-                        </p:tab>
-                        <p:tab id="producto" title="Datos Producto">
-
-                            <p:panel id="productPanel">
-
-                                <p:messages/>
-
-                                <h:panelGrid columns="3">
-
-                                    <p:outputLabel value="#{applicationBean.productDescription}" for="idProducto" style="font-weight:bold"/>
-                                    <p:selectOneMenu id="idProducto" value="#{casoController.selected.idProducto}" filter="true" filterMatchMode="contains">
-                                        <f:selectItems value="#{productoController.itemsAvailableSelectOne}"/>
-                                        <p:ajax update="idComponente"  listener="#{casoController.handleProductChange}" />
+                                <h:panelGrid rendered="#{not empty casoController.selected.idSubComponente}">
+                                    <p:selectOneMenu id="tipoAsoc" value="#{casoController.tipoAsoc_wizard}" effect="fold" editable="true"
+                                                     disabled="#{casoController.pcWizard.tipoAsociacion ne null}"
+                                                     required="true" requiredMessage="Favor ingrese que relacion tiene el cliente con #{casoController.selected.idSubComponente.nombre}"
+                                                     >
+                                        <f:selectItem itemLabel="Seleccione relacion..." itemValue="" />
+                                        <f:selectItem itemLabel="Propietario" itemValue="Propietario" />
+                                        <f:selectItem itemLabel="Familiar" itemValue="Familiar" />
                                     </p:selectOneMenu>
-                                    <p:message for="idProducto"/>
-
-                                    <h:outputLabel value="#{applicationBean.productComponentDescription}:" for="idComponente" style="font-weight: bold"/>
-                                    <p:selectOneMenu id="idComponente" value="#{casoController.selected.idComponente}" filter="true" filterMatchMode="contains"
-                                                     disabled="#{casoController.selected.idProducto eq null}">
-                                        <f:selectItem itemLabel="---" itemValue=""/>
-                                        <f:selectItems value="#{casoController.selected.idProducto.componenteList}" var="comp" itemLabel="#{comp.nombre}" itemValue="#{comp}"/>
-                                        <p:ajax update="idSubComponente"  listener="#{casoController.handleProductChange}" />  
-                                    </p:selectOneMenu>
-                                    <p:message for="idComponente"/>
-
-                                    <h:outputLabel value="#{applicationBean.productSubComponentDescription}:" for="idSubComponente" style="font-weight: bold"/>
-                                    <p:selectOneMenu id="idSubComponente" value="#{casoController.selected.idSubComponente}" filter="true" filterMatchMode="contains"
-                                                     disabled="#{casoController.selected.idComponente eq null}">
-                                        <f:selectItem itemLabel="---" itemValue=""/>
-                                        <f:selectItems value="#{casoController.selected.idComponente.subComponenteList}" var="subc" itemLabel="#{subc.nombre}" itemValue="#{subc}"/>
-                                    </p:selectOneMenu>
-                                    <p:message for="idSubComponente"/>
-
-
-                                </h:panelGrid>
-                            </p:panel>
-                        </p:tab>
-                        <p:tab id="detallesCaso" title="Detalles caso">
-
-                            <p:panel >
-
-                                <p:messages/>
-
-                                <h:panelGrid columns="2" id="panelGridDatos">
-
-                                    <p:outputLabel value="#{bundle.CreateCasoLabel_tema}" for="tema" style="font-weight:bold"/>
-                                    <p:inputText id="tema" style="width: 590px;" value="#{casoController.selected.tema}" title="#{bundle.CreateCasoTitle_tema}" required="true" requiredMessage="#{bundle.CreateCasoRequiredMessage_tema}"/>
-
-
-                                    <p:outputLabel value="Tipo:" style="font-weight:bold"/>
-                                    <p:selectOneMenu id="idTipoCaso" style="width: 300px;" converter="TipoCasoControllerConverter"
-                                                     required="true" requiredMessage="El tipo de caso es requerido."
-                                                     filter="true" filterMatchMode="contains"
-                                                     value="#{casoController.selected.tipoCaso}" >                                  
-                                        <f:selectItems value="#{applicationBean.tipoCasoAvailableList}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
-                                        <p:ajax update="idSubEstado idPrioridad"/>
-                                    </p:selectOneMenu>
-
-                                    <p:outputLabel value="#{bundle.EditCasoLabel_idSubEstado}" for="idSubEstado" style="font-weight:bold"/>
-                                    <p:selectOneMenu id="idSubEstado"  style="width: 300px;"
-                                                     filter="true" filterMatchMode="contains"
-                                                     required="true" requiredMessage="El Sub Estado del caso es un dato requerido."
-                                                     value="#{casoController.selected.idSubEstado}" >
-                                        <f:selectItems value="#{casoController.itemsSubEstadoCasoAvailableSelectOneCasoAbierto}" var="subEstad" itemDescription="#{subEstad.description}"/>
-
-                                    </p:selectOneMenu>
-
-                                    <p:outputLabel value="#{bundle.CreateCasoLabel_idPrioridad}" for="idPrioridad" style="font-weight:bold"/>
-                                    <p:selectOneMenu id="idPrioridad" value="#{casoController.selected.idPrioridad}" style="width: 300px;"
-                                                     required="true" requiredMessage="La Prioridad del caso es un dato requerido.">
-                                        <f:selectItems value="#{prioridadController.itemsAvailableSelectMany}"/>
-                                    </p:selectOneMenu>
-
-                                    <p:outputLabel value="Área:" for="idArea" style="font-weight: bold;"/>
-                                    <p:selectOneMenu id="idArea"  value="#{casoController.selected.idArea}" style="width: 300px;"
-                                                     required="true" requiredMessage="Seleccione el Area en la cual crear el caso.">
-                                        <f:selectItems value="#{areaController.itemsAvailableSelectMany}" />
-                                    </p:selectOneMenu>
-
-                                    <p:outputLabel value="#{bundle.CreateCasoLabel_owner}" for="owner" style="font-weight:bold"/>
-                                    <p:selectOneMenu id="owner" value="#{casoController.selected.owner}" style="width: 300px;"
-                                                     filter="true" filterMatchMode="contains"
-                                                     disabled="#{(not filtroAcceso.verificarAccesoAFuncionEditarCualquierCaso()) and not casoController.selected.idCanal.idCanal eq 'INTERNO'}">
-                                        <f:selectItems value="#{usuarioController.itemsAvailableSelectOneNoSystem}"/>
-                                    </p:selectOneMenu>
-
-
-
-                                    <p:outputLabel value="Tags/Etiquetas:" for="tags" style="font-weight:bold"/>
-
-                                    <p:autoComplete id="tags"
-                                                    value="#{casoController.selected.etiquetaStringList}" forceSelection="true" 
-                                                    completeMethod="#{applicationBean.findEtiquetasByPattern}" multiple="true" styleClass="autocompleteTagsCreate"/> 
-
-                                    <p:outputLabel value="#{bundle.CreateCasoLabel_descripcion}" for="descripcion" style="font-weight:bold"/>
-
-                                    <pe:ckEditor value="#{casoController.selected.descripcion}"
-                                                 toolbar="#{applicationBean.ckEditorToolbar}"
-                                                 customConfig="#{request.contextPath}/resources/js/ckeditor.js"
-                                                 id="descripcion" width="600px" height="210"/>
-
-                                    <p:outputLabel value="Archivos Adjuntos:" for="fileupload" style="font-weight:bold"/>
-                                    <h:panelGrid width="600" style="padding: 0px !important; margin: 0px;">
-                                        <p:row>
-                                            <p:column style="padding: 0px !important; margin: 0px;">
-                                                <p:fileUpload id="fileupload"
-                                                              fileUploadListener="#{casoController.uploadToSaveLater}"
-                                                              label="Seleccionar Archivo"
-                                                              uploadLabel="Subir"
-                                                              cancelLabel="Cancelar Subida"
-                                                              invalidFileMessage="Archivo Invalido." 
-                                                              mode="advanced"
-                                                              dragDropSupport="true"
-                                                              auto="true"
-                                                              update=":mainform:messages listaadjuntos fileupload"
-                                                              multiple="true"  />
-                                            </p:column>
-                                        </p:row>
-
-                                        <h:panelGroup id="listaadjuntos" layout="block">
-                                            <ui:repeat value="#{casoController.selected.attachmentList}" var="fileitem" >
-
-                                                <h:panelGrid columns="3">
-                                                    <h:outputText value="${casoController.nombreArchivoParaDesplegar(fileitem.nombreArchivo)}" title="#{fileitem.nombreArchivo}"/>                                               
-
-                                                    <p:commandButton icon="ui-icon-close"
-                                                                     onclick="borrarAttachment.show();">
-                                                        <f:setPropertyActionListener target="#{casoController.idFileRemove}" value="#{fileitem.idAttachment}"/>
-                                                    </p:commandButton>
-
-                                                </h:panelGrid>
-
-                                            </ui:repeat>
-                                        </h:panelGroup>
-                                    </h:panelGrid>
-
-
+                                    <p:outputLabel value="Tipo de relación entre #{casoController.pcWizard eq null?'el cliente':casoController.pcWizard.cliente}  y #{casoController.selected.idSubComponente.nombre}"/>
                                 </h:panelGrid>
 
-                                <f:facet name="footer" >
-                                    <div class="ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all">
-                                        <div align="right" style="width: 100%;">
-                                            <p:commandButton action="#{casoController.createAndView()}" value="#{bundle.CreateCasoSaveLink}" ajax="false" style="width: 200px;"/>
-                                        </div>
+                                <p:message for="tipoAsoc" rendered="#{not empty casoController.selected.idSubComponente}"/>
+
+
+                                <p:outputLabel value="#{bundle.EditCasoLabel_emailCliente}" for="emailCliente" style="font-weight:bold"/>
+
+                                <p:selectOneMenu id="emailCliente_s" value="#{casoController.emailCliente_wizard}" var="opt"
+                                                 rendered="#{casoController.selected.idCliente ne null and casoController.emailCliente_wizard_existeCliente}">
+                                  <f:selectItem itemLabel="Nuevo..." itemValue=""/>
+                                  <f:selectItems value="#{casoController.selected.idCliente.emailClienteList}" itemLabel="#{opt.emailCliente}" itemValue="#{opt.emailCliente}"/>
+                                    <p:ajax update=":form:panelDatosCliente"  listener="#{casoController.handleEmailChange}"/>
+                                </p:selectOneMenu>
+
+                                <p:autoComplete id="emailCliente" value="#{casoController.emailCliente_wizard}" forceSelection="true"
+                                                rendered="#{not casoController.emailCliente_wizard_existeCliente}"
+                                                validator="#{inputValidationBean.validarEmail}"
+                                                completeMethod="#{emailClienteController.completeEmailClienteString}"  
+                                                var="email"  itemValue="#{email}" itemLabel="#{email}">  
+                                    <p:ajax event="itemSelect" listener="#{casoController.handleEmailSelect}" update=":form:panelDatosCliente" />  
+                                    <pe:keyFilter mask="email"/>
+                                </p:autoComplete>
+
+
+                                <p:message for="emailCliente_s" rendered="#{casoController.selected.idCliente ne null and casoController.emailCliente_wizard_existeCliente}"/>
+                                <p:message for="emailCliente" rendered="#{not casoController.emailCliente_wizard_existeCliente}"/>
+
+                                <p:outputLabel value="#{bundle.CreateClienteLabel_rut}" for="rut" style="font-weight:bold"/>
+                                <h:panelGrid>
+                                    <p:inputText id="rut" value="#{casoController.rutCliente_wizard}"  
+                                                 title="#{bundle.CreateClienteTitle_rut}" validator="#{inputValidationBean.validarRut}"
+                                                 >
+                                        <p:ajax event="blur" listener="#{casoController.formateaRutFiltro2}" partialSubmit="true" process="rut" update=":form:panelDatosCliente"/>
+                                    </p:inputText>
+                                    <p:outputLabel value="Con puntos y guión. Ejemplo: 15.040.452-5"/>
+                                </h:panelGrid>
+
+                                <p:message display="both" for="rut"/>
+
+
+                                <p:outputLabel value="#{bundle.CreateClienteLabel_nombres}" for="nombres" style="font-weight:bold"/>
+                                <p:inputText id="nombres" value="#{casoController.selected.idCliente.nombres}" 
+                                             title="#{bundle.CreateClienteTitle_nombres}" required="true" requiredMessage="El Nombre es un dato requerido." size="40"/>
+                                <p:message display="both" for="nombres"/>
+
+                                <p:outputLabel value="#{bundle.CreateClienteLabel_apellidos}" for="apellidos" style="font-weight:bold"/>
+                                <p:inputText id="apellidos" value="#{casoController.selected.idCliente.apellidos}" 
+                                             title="#{bundle.CreateClienteTitle_apellidos}" size="40"/>
+                                <p:message display="both" for="apellidos"/>
+
+                                <p:outputLabel value="Sexo:" for="sexo" style="font-weight:bold"/>
+                                <p:selectOneButton id="sexo" value="#{casoController.selected.idCliente.sexo}" >  
+                                    <f:selectItem itemLabel="Hombre" itemValue="Hombre" />  
+                                    <f:selectItem itemLabel="Mujer" itemValue="Mujer" />  
+                                </p:selectOneButton> 
+                                <p:message display="both" for="sexo"/>
+
+                                <p:outputLabel value="#{bundle.CreateClienteLabel_fono1}" for="fono1" style="font-weight:bold"/>
+                                <p:inputText id="fono1" value="#{casoController.selected.idCliente.fono1}" 
+                                             title="#{bundle.CreateClienteTitle_fono1}" size="40">
+                                    <pe:keyFilter regEx="/[\d\.\+\-\(\)]/"/>
+                                </p:inputText>
+                                <p:message display="both" for="fono1"/>
+                                <p:outputLabel value="#{bundle.CreateClienteLabel_fono2}" for="fono2" style="font-weight:bold"/>
+                                <p:inputText id="fono2" value="#{casoController.selected.idCliente.fono2}" 
+                                             title="#{bundle.CreateClienteTitle_fono2}" size="40">
+                                    <pe:keyFilter regEx="/[\d\.\+\-\(\)]/"/>
+                                </p:inputText>
+                                <p:message display="both" for="fono2"/>
+                                <p:outputLabel value="#{bundle.CreateClienteLabel_dirParticular}" for="dirParticular" style="font-weight:bold"/>
+                                <p:inputTextarea id="dirParticular" autoResize="true" value="#{casoController.selected.idCliente.dirParticular}" 
+                                                 title="#{bundle.CreateClienteTitle_dirParticular}" cols="40" />
+                                <p:message display="both" for="dirParticular"/>
+                                <p:outputLabel value="#{bundle.CreateClienteLabel_dirComercial}" for="dirComercial" style="font-weight:bold"/>
+                                <p:inputTextarea id="dirComercial" autoResize="true" value="#{casoController.selected.idCliente.dirComercial}" 
+                                                 title="#{bundle.CreateClienteTitle_dirComercial}" cols="40"/>
+                                <p:message display="both" for="dirComercial"/>
+
+                                <p:selectBooleanCheckbox id="updateClient" style="float: right;"
+                                                         value="#{casoController.emailCliente_wizard_updateCliente}" rendered="#{casoController.emailCliente_wizard_existeCliente}"/>
+                                <p:outputLabel value="Deseo Actualizar los datos del Cliente" 
+                                               title="Seleccione esta opción si desea actualizar los datos ingresados en el cliente, incluida la relación con el producto seleccionado."
+                                               for="updateClient" style="font-weight:bold" 
+                                               rendered="#{casoController.emailCliente_wizard_existeCliente}"/>
+                                <p:message display="both" for="updateClient" rendered="#{casoController.emailCliente_wizard_existeCliente}"/>
+
+
+
+                            </h:panelGrid>
+
+                        </p:panel>
+                    </p:tab>
+
+                    <p:tab id="casos" title="Casos del Cliente" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarCualquierCaso()}">
+                        <go:casoListNoForm casosList="#{casoController.selected.idCliente.casoList}" 
+                                           header="Historial de casos del Cliente #{casoController.selected.clientName} (#{casoController.selected.idCliente.casoList.size()})"/>
+
+
+                        <p:outputLabel value="El cliente no tiene casos previos asociados."
+                                       rendered="#{empty casoController.selected.idCliente.casoList}"/>
+                    </p:tab>
+
+                    <p:tab id="detallesCaso" title="Detalles caso">
+
+                        <p:panel >
+
+                            <p:messages globalOnly="true" showDetail="true" autoUpdate="true" closable="true" />
+
+                            <h:panelGrid columns="2" id="panelGridDatos">
+
+                                <p:outputLabel value="#{bundle.CreateCasoLabel_tema}" for="tema" style="font-weight:bold"/>
+                                <p:inputText id="tema" style="width: 590px;" value="#{casoController.selected.tema}" title="#{bundle.CreateCasoTitle_tema}" required="true" requiredMessage="#{bundle.CreateCasoRequiredMessage_tema}"/>
+
+
+                                <p:outputLabel value="Tipo:" style="font-weight:bold"/>
+                                <p:selectOneMenu id="idTipoCaso" style="width: 300px;" converter="TipoCasoControllerConverter"
+                                                 required="true" requiredMessage="El tipo de caso es requerido."
+                                                 filter="true" filterMatchMode="contains"
+                                                 value="#{casoController.selected.tipoCaso}" >                                  
+                                    <f:selectItems value="#{applicationBean.tipoCasoAvailableList}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
+                                    <p:ajax update="idSubEstado idPrioridad"/>
+                                </p:selectOneMenu>
+
+                                <p:outputLabel value="#{bundle.EditCasoLabel_idSubEstado}" for="idSubEstado" style="font-weight:bold"/>
+                                <p:selectOneMenu id="idSubEstado"  style="width: 300px;"
+                                                 filter="true" filterMatchMode="contains"
+                                                 required="true" requiredMessage="El Sub Estado del caso es un dato requerido."
+                                                 value="#{casoController.selected.idSubEstado}" >
+                                    <f:selectItems value="#{casoController.itemsSubEstadoCasoAvailableSelectOneCasoAbierto}" var="subEstad" itemDescription="#{subEstad.description}"/>
+
+                                </p:selectOneMenu>
+
+                                <p:outputLabel value="#{bundle.CreateCasoLabel_idPrioridad}" for="idPrioridad" style="font-weight:bold"/>
+                                <p:selectOneMenu id="idPrioridad" value="#{casoController.selected.idPrioridad}" style="width: 300px;"
+                                                 required="true" requiredMessage="La Prioridad del caso es un dato requerido.">
+                                    <f:selectItems value="#{prioridadController.itemsAvailableSelectMany}"/>
+                                </p:selectOneMenu>
+
+                                <p:outputLabel value="Área:" for="idArea" style="font-weight: bold;"/>
+                                <p:selectOneMenu id="idArea"  value="#{casoController.selected.idArea}" style="width: 300px;"
+                                                 required="true" requiredMessage="Seleccione el Area en la cual crear el caso.">
+                                    <f:selectItems value="#{areaController.itemsAvailableSelectMany}" />
+                                </p:selectOneMenu>
+
+                                <p:outputLabel value="#{bundle.CreateCasoLabel_owner}" for="owner" style="font-weight:bold"/>
+                                <p:selectOneMenu id="owner" value="#{casoController.selected.owner}" style="width: 300px;"
+                                                 filter="true" filterMatchMode="contains"
+                                                 disabled="#{(not filtroAcceso.verificarAccesoAFuncionEditarCualquierCaso()) and not casoController.selected.idCanal.idCanal eq 'INTERNO'}">
+                                    <f:selectItems value="#{usuarioController.itemsAvailableSelectOneNoSystem}"/>
+                                </p:selectOneMenu>
+
+
+
+                                <p:outputLabel value="Tags/Etiquetas:" for="tags" style="font-weight:bold"/>
+
+                                <p:autoComplete id="tags"
+                                                value="#{casoController.selected.etiquetaStringList}" forceSelection="true" 
+                                                completeMethod="#{applicationBean.findEtiquetasByPattern}" multiple="true" styleClass="autocompleteTagsCreate"/> 
+
+                                <p:outputLabel value="#{bundle.CreateCasoLabel_descripcion}" for="descripcion" style="font-weight:bold"/>
+
+                                <pe:ckEditor value="#{casoController.selected.descripcion}"
+                                             toolbar="#{applicationBean.ckEditorToolbar}"
+                                             customConfig="#{request.contextPath}/resources/js/ckeditor.js"
+                                             id="descripcion" width="600px" height="210"/>
+
+                                <p:outputLabel value="Archivos Adjuntos:" for="fileupload" style="font-weight:bold"/>
+                                <h:panelGrid width="600" style="padding: 0px !important; margin: 0px;">
+                                    <p:row>
+                                        <p:column style="padding: 0px !important; margin: 0px;">
+                                            <p:fileUpload id="fileupload"
+                                                          fileUploadListener="#{casoController.uploadToSaveLater}"
+                                                          label="Seleccionar Archivo"
+                                                          uploadLabel="Subir"
+                                                          cancelLabel="Cancelar Subida"
+                                                          invalidFileMessage="Archivo Invalido." 
+                                                          mode="advanced"
+                                                          dragDropSupport="true"
+                                                          auto="true"
+                                                          update=":mainform:messages listaadjuntos fileupload"
+                                                          multiple="true"  />
+                                        </p:column>
+                                    </p:row>
+
+                                    <h:panelGroup id="listaadjuntos" layout="block">
+                                        <ui:repeat value="#{casoController.selected.attachmentList}" var="fileitem" >
+
+                                            <h:panelGrid columns="3">
+                                                <h:outputText value="${casoController.nombreArchivoParaDesplegar(fileitem.nombreArchivo)}" title="#{fileitem.nombreArchivo}"/>                                               
+
+                                                <p:commandButton icon="ui-icon-close"
+                                                                 onclick="PF('borrarAttachment').show();">
+                                                    <f:setPropertyActionListener target="#{casoController.idFileRemove}" value="#{fileitem.idAttachment}"/>
+                                                </p:commandButton>
+
+                                            </h:panelGrid>
+
+                                        </ui:repeat>
+                                    </h:panelGroup>
+                                </h:panelGrid>
+
+
+                            </h:panelGrid>
+
+                            <f:facet name="footer" >
+                                <div class="ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all">
+                                    <div align="right" style="width: 100%;">
+                                        <p:commandButton action="#{casoController.createAndView()}" value="#{bundle.CreateCasoSaveLink}" ajax="false" style="width: 200px;"/>
                                     </div>
-                                </f:facet>
+                                </div>
+                            </f:facet>
 
-                            </p:panel>
-                        </p:tab>
-                    </p:wizard>
+                        </p:panel>
+                    </p:tab>
+                </p:wizard>
 
-             
+
             </h:form>
 
         </ui:define>

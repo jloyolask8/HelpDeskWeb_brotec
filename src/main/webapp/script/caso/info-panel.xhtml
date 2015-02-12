@@ -1,0 +1,135 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:pe="http://primefaces.org/ui/extensions"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:go="http://java.sun.com/jsf/composite/go">
+
+    <pe:importEnum type="com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta" var="EnumTipoAlerta" allSuffix="ALL_ENUM_VALUES" />
+
+    <h:form id="info-panel">
+        <div class="panel panel-primary panel-dark widget-profile">
+            <div class="panel-heading">
+                <div class="widget-profile-bg-icon"><i class="#{(casoController.selected.idCanal.idTipoCanal.idTipo eq 'EMAIL') ? 'fa fa-envelope-o fa-lg':((casoController.selected.idCanal.idTipoCanal.idTipo eq 'CHAT') ? 'fa fa-comments fa-lg':((casoController.selected.idCanal.idTipoCanal.idTipo eq 'MANUAL') ? 'fa fa-pencil-square-o fa-lg':((casoController.selected.idCanal.idTipoCanal.idTipo eq 'FORMULARIO') ? 'fa fa-list-alt fa-lg':'')))}"></i></div>
+                <img src="#{facesContext.externalContext.requestContextPath}/resources/images/pixel-admin/avatar.png" class="widget-profile-avatar"/>
+                <div class="widget-profile-header">
+                    <span>
+                        <h:commandLink value="#{casoController.selected.emailCliente.cliente ne null ? casoController.selected.emailCliente.cliente.capitalName:''}"
+                                       title="#{casoController.selected.emailCliente.emailCliente}"                                                          
+                                       action="#{clienteController.prepareView(casoController.selected.idCliente, '/script/caso/Edit')}" 
+                                       immediate="true"/>
+                    </span>
+                    <br/>
+
+                    <h:selectOneMenu id="emailClienteA" style="color: #fff;" disabled="#{casoController.selected.closed}"
+                                     styleClass="form-control btn btn-outline dropdown-toggle btn-xs"
+                                     value="#{casoController.selected.emailCliente}" >
+                        <f:selectItems value="#{casoController.selected.idCliente.emailClienteList}" var="email" 
+                                       itemLabel="#{email.emailCliente}" itemValue="#{email}" itemDescription="#{email.emailCliente}"/>
+                    </h:selectOneMenu>
+
+
+
+                </div>
+            </div> <!-- / .panel-heading -->
+            <div class="list-group">
+
+                <a href="#" class="list-group-item">
+                    <i class="fa fa-ticket list-group-icon"></i>Status<span class="badge" style="background: \##{casoController.selected.idSubEstado.backgroundColor}; color: \##{casoController.selected.idSubEstado.fontColor};">
+                        <h:outputText id="idSubEstado" 
+                                      value="#{casoController.selected.idSubEstado.nombre}"/>    
+                    </span>
+                </a>
+
+                <a href="#" class="list-group-item">
+                    <i class="fa fa-clock-o list-group-icon"></i>Creado<span class="badge badge-info">
+                        <h:outputText  value="#{casoController.formatShortDate(casoController.selected.fechaCreacion)}" 
+                                       title="Creado #{casoController.prettyDate(casoController.selected.fechaCreacion)} - #{casoController.formatDate(casoController.selected.fechaCreacion)}"/></span>
+                </a>
+
+                <a href="#" class="list-group-item">
+                    <i class="fa fa-clock-o list-group-icon"></i>Modificado<span class="badge badge-info">
+                        <h:outputText  value="#{casoController.formatShortDate(casoController.selected.fechaModif)}" 
+                                       title="Ultima modificación #{casoController.prettyDate(casoController.selected.fechaModif)} - #{casoController.formatDate(casoController.selected.fechaModif)}"/></span>
+                </a>
+
+                <a href="#" class="list-group-item">
+                    <pe:switch id="switchTicketAlertState" value="#{casoController.selected.isOpen().toString()}">  
+                        <pe:case value="true">  
+                            <pe:switch id="switchTicketAlertStateOpen" value="#{casoController.selected.estadoAlerta}">  
+                                <pe:case value="#{EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta()}"> 
+
+                                    <i class="fa fa-clock-o list-group-icon"></i>SLA
+                                    <span class="badge badge-success pull-right">
+                                        <h:outputText  value="#{casoController.formatShortDate(casoController.selected.nextResponseDue)}" 
+                                                       title="Acuerdo de respuesta #{casoController.prettyDate(casoController.selected.nextResponseDue)} - #{casoController.formatDate(casoController.selected.nextResponseDue)}"/>
+                                    </span> 
+                                </pe:case>
+                                <pe:case value="#{EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta()}"> 
+
+                                    <i class="fa fa-clock-o list-group-icon"></i>SLA
+                                    <span class="badge badge-warning pull-right">
+                                        <h:outputText  value="#{casoController.formatShortDate(casoController.selected.nextResponseDue)}" 
+                                                       title="Vence #{casoController.prettyDate(casoController.selected.nextResponseDue)} - #{casoController.formatDate(casoController.selected.nextResponseDue)}"/>
+                                    </span> 
+                                </pe:case>
+                                <pe:case value="#{EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta()}">  
+
+                                    <i class="fa fa-clock-o list-group-icon"></i>SLA
+                                    <span class="badge badge-danger pull-right">
+                                        <h:outputText  value="#{casoController.formatShortDate(casoController.selected.nextResponseDue)}" 
+                                                       title="Vencido #{casoController.prettyDate(casoController.selected.nextResponseDue)} - #{casoController.formatDate(casoController.selected.nextResponseDue)}"/>
+                                    </span> 
+                                </pe:case>  
+                            </pe:switch>  
+                        </pe:case> 
+
+                        <pe:case value="false">  
+
+                            <i class="fa fa-clock-o list-group-icon"></i>Cerrado
+                            <span class="badge badge-default pull-right">
+                                <h:outputText  value="#{casoController.formatShortDate(casoController.selected.fechaCierre)}"
+                                               title="Cerrado #{casoController.prettyDate(casoController.selected.fechaCierre)} - #{casoController.formatDate(casoController.selected.fechaCierre)}"/>
+                            </span> 
+                        </pe:case>  
+                    </pe:switch>
+                </a>
+
+
+                <a href="#" class="list-group-item"><i class="fa fa-bell-o list-group-icon"></i>Commentarios del Cliente<span class="badge badge-warning">#{casoController.cantidadDeRespuestasDelCliente}</span></a>
+
+                <a href="#" class="list-group-item"><i class="fa fa-exchange list-group-icon" title="Canal"></i>
+                    <h:outputText id="idCanal" value="#{casoController.selected.idCanal.nombre}" title="#{casoController.selected.idCanal}"/>
+                </a>
+
+
+                <p:commandLink actionListener="#{usuarioController.prepareViewUserInDialog(casoController.selected.owner)}" 
+                               styleClass="list-group-item"
+                               immediate="true"
+                               style="color: #4183C4 !important;"
+                               disabled="#{casoController.selected.closed or not usuarioController.puedeEditar(casoController.selected.owner)}" 
+                               title="Agente asignado al caso" >
+                    <i class="fa fa-user list-group-icon"></i>#{casoController.selected.owner.capitalName}
+                </p:commandLink>
+
+                <h:panelGroup rendered="#{not empty casoController.selected.etiquetaStringList}">
+                    <a href="#" class="list-group-item">
+                        <i class="fa fa-tags list-group-icon"></i>
+                        <!-- TAGS-->
+                        <h:panelGroup id="etiquetasGroup">
+                            <ui:repeat value="#{casoController.selected.etiquetaStringList}" var="et">
+                                <h:outputText styleClass="label label-info label-tag" value="#{et}"/>
+                            </ui:repeat>
+                        </h:panelGroup>
+                    </a>
+                </h:panelGroup>
+
+
+
+            </div>
+        </div>
+    </h:form>
+
+</ui:composition>

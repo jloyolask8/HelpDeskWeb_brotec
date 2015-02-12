@@ -43,14 +43,21 @@
             </h:head>
 
             <h:body id="mainbody" styleClass="theme-default page-signin-alt">   
+                
+                <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" />
+
+                <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+                    <div class="text-center">
+                        <p:outputLabel value="Accediendo a su cuenta..."/>
+                        <br/>
+                        <p:graphicImage library="images" name="ajaxloadingbar.gif" />
+                    </div>
+                </p:dialog>
 
 
                 <div class="signin-header">
-                    <a href="#" class="logo">
-                        <div class="demo-logo bg-primary">
+                    <a href="http://www.godesk.cl" class="logo">
                           <p:graphicImage library="images" name="LogoGODesk.png" title="GoDesk"/>
-                        </div>&nbsp;
-                        <strong>Go</strong>Desk
                     </a> <!-- / .logo -->
                     <a href="signup.xhtml" class="btn btn-primary">Registrarse</a>
                 </div> <!-- / .header -->

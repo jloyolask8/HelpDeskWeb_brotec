@@ -207,7 +207,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
 //        variables = 1; //One Dimention By Default
         pieModel = null;
         categoryModel = null;
-        System.out.println("resetOptions()");
+        //System.out.println("resetOptions()");
 //        campoCompCasoEjeXSeriesEntity = new FiltroVista();
 //        campoCompCasoEjeYItemsEntity = new FiltroVista();
     }
@@ -273,7 +273,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         twoDimData = new HashMap<>();
         variables = 2;
 
-        EntityManager em = emf.createEntityManager();
+        EntityManager em = getJpaController().getEntityManager();
         ComparableField comparableFieldY = getFilterHelper().getComparableFieldsMap().get(campoCompCasoEjeYItemsEntity.getIdCampo());
         ComparableField comparableFieldX = getFilterHelper().getComparableFieldsMap().get(campoCompCasoEjeXSeriesEntity.getIdCampo());
         setYaxisLabel("N° de Casos Por " + comparableFieldY.getLabel());
@@ -567,7 +567,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
     public void createOneDimentionModel() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NotSupportedException, Exception {
         oneDimData = new HashMap<>();
         variables = 1;
-        EntityManager em = emf.createEntityManager();
+        EntityManager em = getJpaController().getEntityManager();
         ComparableField comparableFieldX = getFilterHelper().getComparableFieldsMap().get(campoCompCasoEjeXSeriesEntity.getIdCampo());
         try {
 
@@ -818,7 +818,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
             em.close();
         }
 
-        System.out.println("oneDimData:" + oneDimData);
+        //System.out.println("oneDimData:" + oneDimData);
     }
 
     /**
@@ -931,12 +931,12 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         int seriesIndex = 0;
 
         final DateTime input = new DateTime();
-        System.out.println(input);
+        //System.out.println(input);
         final DateTime startOfLastWeek
                 = new DateTime(input.withDayOfWeek(DateTimeConstants.MONDAY).withTimeAtStartOfDay());
-        System.out.println(startOfLastWeek);
+        //System.out.println(startOfLastWeek);
         final DateTime endOfLastWeek = startOfLastWeek.plusDays(6).withTime(23, 59, 59, 0);
-        System.out.println(startOfLastWeek + "---" + endOfLastWeek);
+        //System.out.println(startOfLastWeek + "---" + endOfLastWeek);
 
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", LOCALE_ES_CL);
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM", LOCALE_ES_CL);
@@ -1391,7 +1391,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         this.setShowFilter(false);
         variables = 1;
         oneDimData = new HashMap<>();
-        System.out.println("preparePieModelEstadoCasos()");
+        //System.out.println("preparePieModelEstadoCasos()");
         categoryModel = null;
         pieModel = new PieChartModel();
         setTipoGraficoSelected("pieChart");
@@ -1444,7 +1444,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
 
         setChartModelTitle("Estado de Casos");
 
-        System.out.println("oneDimData:" + oneDimData);
+        //System.out.println("oneDimData:" + oneDimData);
 
         return "reports";
 
@@ -1632,7 +1632,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
             filtroFecha2.setIdVista(view);
             view.getFiltrosVistaList().add(filtroFecha2);
 //==================
-//            System.out.println(view);
+//            //System.out.println(view);
 
             view.getFiltrosVistaList().addAll(getVista().getFiltrosVistaList());
 
@@ -1889,6 +1889,26 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         return vista1;
     }
 
+    
+     public SelectItem[] getTiposDeGrafico() {
+
+        SelectItem[] types = null;
+
+        if (this.getVariables() == 1) {
+            types = new SelectItem[3];
+            types[0] = new SelectItem("pieChart", "Torta");
+            types[1] = new SelectItem("barChart", "Barras");
+            types[2] = new SelectItem("lineChart", "Lineas");
+        } else if (this.getVariables() == 2) {
+            types = new SelectItem[2];
+            types[0] = new SelectItem("barChart", "Barras");
+            types[1] = new SelectItem("lineChart", "Lineas");
+        }
+
+        return types;
+
+    }
+     
     @Override
     public PaginationHelper getPagination() {
         throw new UnsupportedOperationException("Not supported yet.");

@@ -41,8 +41,21 @@
                 <ui:insert name="scripts"></ui:insert>
             </h:head>
 
-            <h:body id="mainbody" styleClass="theme-default page-signup">   
+            <h:body id="mainbody" styleClass="theme-default page-signup">  
+                
+                 <script>
+                    var init = [];
+                </script>
 
+                <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" />
+
+                <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+                    <div class="text-center">
+                        <p:outputLabel value="Estamos creando su cuenta, favor espere unos segundos..."/>
+                        <br/>
+                        <p:graphicImage library="images" name="ajaxloadingbar.gif" />
+                    </div>
+                </p:dialog>
 
                 <!-- Page background -->
                 <div id="page-signup-bg">
@@ -133,7 +146,7 @@
                                              value="#{signUpController.registrationVO.companyName}">
 
                                     <f:validateLength minimum="3" />
-                                    
+
 
                                 </h:inputText>
                                 <p:watermark for="companyName" value="Empresa u organización"/>
@@ -144,13 +157,16 @@
 
                             <div class="form-group" style="margin-top: 20px;margin-bottom: 20px;">
                                 <label class="checkbox-inline">
-                                    <h:selectBooleanCheckbox id="confirm_id" styleClass="px" value="#{signUpController.agreedToTermsConditions}"/>
+                                    <h:selectBooleanCheckbox id="confirm_id" styleClass="px" 
+                                                             value="#{signUpController.agreedToTermsConditions}"/>
                                     <span class="lbl">I agree with the <a href="#" target="_blank">Terms and Conditions</a></span>
                                 </label>
                             </div>
 
                             <div class="form-actions">
-                                <h:commandButton type="submit" action="#{signUpController.signup()}" styleClass="signup-btn bg-primary"
+                                <p:commandButton id="submit" action="#{signUpController.signup()}" 
+                                                 styleClass="signup-btn bg-primary" update=":signup-form_id"
+                                                 onclick="jQuery(this).addClass('ui-state-disabled')"
                                                  value="COMENZAR" />
 
                             </div>
@@ -182,9 +198,9 @@
                 <!-- Get jQuery from Google CDN -->
                 <!--[if !IE]> -->
                 <script type="text/javascript">
-                    //<![CDATA[
-                    window.jQuery || document.write('<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js">' + "<" + "/script>");
-                    //]]>
+                                                     //<![CDATA[
+                                                     window.jQuery || document.write('<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js">' + "<" + "/script>");
+                                                     //]]>
                 </script>
 
                 <!-- <![endif]-->

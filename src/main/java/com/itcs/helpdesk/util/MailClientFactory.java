@@ -24,6 +24,7 @@ public class MailClientFactory {
      * This method creates an instance of EmailClient based on the configuration
      * passed.
      *
+     * @param tenant
      * @param canal canal de tipo email
      * @return
      * @throws FileNotFoundException
@@ -48,10 +49,29 @@ public class MailClientFactory {
         clients.put(canal.getIdCanal(), instance);
         return instance;
     }
+    
+     /**
+     * @param tenant
+     * @param canal
+     * @return the instance
+     * @throws java.io.IOException
+     */
+    public static EmailClient getInstance(String tenant, Canal canal) throws IOException {
+        if(clients != null && !clients.isEmpty() && clients.containsKey(canal.getIdCanal())){
+            return clients.get(canal.getIdCanal());
+        }else{
+            EmailClient instance = createInstance(tenant, canal);
+            return instance;
+//            throw new MailNotConfiguredException("No se puede enviar correos, favor comunicarse con el administrador para que configure la cuenta de correo asociada al canal "+canal);
+        }
+        
+    }
 
     /**
+     * @param tenant
      * @param idCanal
      * @return the instance
+     * @throws com.itcs.helpdesk.util.MailClientFactory.MailNotConfiguredException
      */
     public static EmailClient getInstance(String tenant, String idCanal) throws MailNotConfiguredException{
         if(clients != null && !clients.isEmpty() && clients.containsKey(idCanal)){

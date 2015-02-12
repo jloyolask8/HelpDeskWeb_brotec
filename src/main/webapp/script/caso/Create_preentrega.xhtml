@@ -5,7 +5,8 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:pe="http://primefaces.org/ui/extensions">
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:go="http://java.sun.com/jsf/composite/go">
 
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
@@ -28,27 +29,92 @@
 
             <h:form id="form">
 
-                <p:panel header="#{bundle.CreateCasoTitle}">
-
                     <p:wizard widgetVar="wiz" 
                               flowListener="#{casoController.onFlowProcess}" nextLabel="Siguiente" backLabel="Anterior" showNavBar="true" showStepStatus="true">
 
+                    <p:tab id="producto" title="Datos Producto">
 
-                        <p:tab id="personal" title="Datos Cliente">
+                        <p:panel id="productPanel">
+
+                            <p:messages/>
+
+                            <h:panelGrid columns="3">
+
+                                <p:outputLabel value="#{applicationBean.productDescription}" for="idProducto" style="font-weight:bold"/>
+                                <p:selectOneMenu id="idProducto" value="#{casoController.selected.idProducto}" filter="true" filterMatchMode="contains">
+                                    <f:selectItems value="#{productoController.itemsAvailableSelectOne}"/>
+                                    <p:ajax update="idComponente"  listener="#{casoController.handleProductChange}" />
+                                </p:selectOneMenu>
+                                <p:message for="idProducto"/>
+
+                                <h:outputLabel value="#{applicationBean.productComponentDescription}:" for="idComponente" style="font-weight: bold"/>
+                                <p:selectOneMenu id="idComponente" value="#{casoController.selected.idComponente}" filter="true" filterMatchMode="contains"
+                                                 disabled="#{casoController.selected.idProducto eq null}">
+                                    <f:selectItem itemLabel="---" itemValue=""/>
+                                    <f:selectItems value="#{casoController.selected.idProducto.componenteList}" var="comp" itemLabel="#{comp.nombre}" itemValue="#{comp}"/>
+                                    <p:ajax update="idSubComponente"  listener="#{casoController.handleProductChange}" />  
+                                </p:selectOneMenu>
+                                <p:message for="idComponente"/>
+
+                                <h:outputLabel value="#{applicationBean.productSubComponentDescription}:" for="idSubComponente" style="font-weight: bold"/>
+                                <p:selectOneMenu id="idSubComponente" value="#{casoController.selected.idSubComponente}" filter="true" filterMatchMode="contains"
+                                                 disabled="#{casoController.selected.idComponente eq null}">
+                                    <f:selectItem itemLabel="---" itemValue=""/>
+                                    <f:selectItems value="#{casoController.selected.idComponente.subComponenteList}" var="subc" itemLabel="#{subc.nombre}" itemValue="#{subc}"/>
+                                    <p:ajax update=":form:panelDatosCliente"  listener="#{casoController.handleSubCompChange}" />  
+                                </p:selectOneMenu>
+                                <p:message for="idSubComponente"/>
+
+
+                            </h:panelGrid>
+                        </p:panel>
+                    </p:tab>
+
+                    <p:tab id="personal" title="Datos del Cliente">
 
                             <p:panel id="panelDatosCliente">
-                                <p:messages id="messages" globalOnly="true" showDetail="true" autoUpdate="true" closable="true" />
+                            <p:messages globalOnly="true" showDetail="true" autoUpdate="true" closable="true" />
+
                                 <h:panelGrid id="datosCliente" columns="3" cellpadding="5">
+
+                                <h:outputLabel value="Seleccione un cliente:" for="cliente" style="font-weight: bold"/>
+
+                                <p:selectOneMenu id="cliente" value="#{casoController.cliente_wizard}" filter="true" filterMatchMode="contains"
+                                                 disabled="#{empty casoController.selected.idSubComponente}" >
+
+                                    <f:selectItem itemLabel="Otro ..." itemValue=""/>
+
+                                    <f:selectItems value="#{casoController.selected.idSubComponente.productoContratadoList}" 
+                                                   var="pc" itemLabel="#{pc.cliente.capitalName} (#{pc.tipoAsociacion ne null ? pc.tipoAsociacion:''})" 
+                                                   itemValue="#{pc.cliente}"/>
+
+                                    <p:ajax update=":form:panelDatosCliente"  listener="#{casoController.handleNewTicketClientSelectionChange}" />
+                                </p:selectOneMenu>
+                                <p:message for="cliente"/>
+
+
 
                                     <p:outputLabel value="#{bundle.EditCasoLabel_emailCliente}" for="emailCliente" style="font-weight:bold"/>
 
-                                    <p:autoComplete id="emailCliente" value="#{casoController.emailCliente_wizard}" validator="#{inputValidationBean.validarEmail}"
+                                <p:selectOneMenu id="emailCliente_s" value="#{casoController.selected.emailCliente}"
+                                                 rendered="#{casoController.selected.idCliente ne null and casoController.emailCliente_wizard_existeCliente}">
+                                    <f:selectItems value="#{casoController.selected.idCliente.emailClienteList}"/>
+                                    <p:ajax update=":form:panelDatosCliente" />
+                                </p:selectOneMenu>
+
+                                <p:autoComplete id="emailCliente" value="#{casoController.emailCliente_wizard}" 
+                                                rendered="#{not casoController.emailCliente_wizard_existeCliente}"
+                                                validator="#{inputValidationBean.validarEmail}"
                                                     completeMethod="#{emailClienteController.completeEmailClienteString}"  
                                                     var="email"  itemValue="#{email}" itemLabel="#{email}">  
                                         <p:ajax event="itemSelect" listener="#{casoController.handleEmailSelect}" update=":form:panelDatosCliente" />  
                                         <pe:keyFilter mask="email"/>
                                     </p:autoComplete>
-                                    <p:message for="emailCliente"/>
+
+
+                                <p:message for="emailCliente_s" rendered="#{casoController.selected.idCliente ne null and casoController.emailCliente_wizard_existeCliente}"/>
+                                <p:message for="emailCliente" rendered="#{not casoController.emailCliente_wizard_existeCliente}"/>
+
                                     <p:outputLabel value="#{bundle.CreateClienteLabel_rut}" for="rut" style="font-weight:bold"/>
                                     <h:panelGrid>
                                         <p:inputText id="rut" value="#{casoController.rutCliente_wizard}"  
@@ -61,6 +127,7 @@
 
                                     <p:message display="both" for="rut"/>
 
+
                                     <p:outputLabel value="#{bundle.CreateClienteLabel_nombres}" for="nombres" style="font-weight:bold"/>
                                     <p:inputText id="nombres" value="#{casoController.selected.idCliente.nombres}" 
                                                  title="#{bundle.CreateClienteTitle_nombres}" required="true" requiredMessage="El Nombre es un dato requerido." size="40"/>
@@ -68,7 +135,7 @@
 
                                     <p:outputLabel value="#{bundle.CreateClienteLabel_apellidos}" for="apellidos" style="font-weight:bold"/>
                                     <p:inputText id="apellidos" value="#{casoController.selected.idCliente.apellidos}" 
-                                                 title="#{bundle.CreateClienteTitle_apellidos}" required="true" requiredMessage="Los Apellidos son un dato requerido." size="40"/>
+                                             title="#{bundle.CreateClienteTitle_apellidos}" size="40"/>
                                     <p:message display="both" for="apellidos"/>
 
                                     <p:outputLabel value="Sexo:" for="sexo" style="font-weight:bold"/>
@@ -108,50 +175,23 @@
 
                                 </h:panelGrid>
 
-
                             </p:panel>
                         </p:tab>
-                        <p:tab id="producto" title="Datos Producto">
 
-                            <p:panel id="productPanel">
-
-                                <p:messages/>
-
-                                <h:panelGrid columns="3">
-
-                                    <p:outputLabel value="#{applicationBean.productDescription}" for="idProducto" style="font-weight:bold"/>
-                                    <p:selectOneMenu id="idProducto" value="#{casoController.selected.idProducto}">
-                                        <f:selectItems value="#{productoController.itemsAvailableSelectOne}"/>
-                                        <p:ajax update="idComponente"  listener="#{casoController.handleProductChange}" />
-                                    </p:selectOneMenu>
-                                    <p:message for="idProducto"/>
-
-                                    <h:outputLabel value="#{applicationBean.productComponentDescription}:" for="idComponente" style="font-weight: bold"/>
-                                    <p:selectOneMenu id="idComponente" value="#{casoController.selected.idComponente}" required="true" requiredMessage="Requerido."
-                                                     disabled="#{casoController.selected.idProducto eq null}">
-                                        <f:selectItem itemLabel="---" itemValue=""/>
-                                        <f:selectItems value="#{casoController.selected.idProducto.componenteList}" var="comp" itemLabel="#{comp.nombre}" itemValue="#{comp}"/>
-                                        <p:ajax update="idSubComponente"  listener="#{casoController.handleProductChange}" />  
-                                    </p:selectOneMenu>
-                                    <p:message for="idComponente"/>
-
-                                    <h:outputLabel value="#{applicationBean.productSubComponentDescription}:" for="idSubComponente" style="font-weight: bold"/>
-                                    <p:selectOneMenu id="idSubComponente" value="#{casoController.selected.idSubComponente}" 
-                                                     disabled="#{casoController.selected.idComponente eq null}">
-                                        <f:selectItem itemLabel="---" itemValue=""/>
-                                        <f:selectItems value="#{casoController.selected.idComponente.subComponenteList}" var="subc" itemLabel="#{subc.nombre}" itemValue="#{subc}"/>
-                                    </p:selectOneMenu>
-                                    <p:message for="idSubComponente"/>
+                    <p:tab id="casos" title="Casos del Cliente">
+                        <go:casoListNoForm casosList="#{casoController.selected.idCliente.casoList}" 
+                                           header="Historial de casos del Cliente #{casoController.selected.clientName} (#{casoController.selected.idCliente.casoList.size()})"/>
 
 
-                                </h:panelGrid>
-                            </p:panel>
-                        </p:tab>
+                        <p:outputLabel value="El cliente no tiene casos previos asociados."
+                                       rendered="#{empty casoController.selected.idCliente.casoList}"/>
+                    </p:tab>
+
                         <p:tab id="detallesCaso" title="Detalles caso">
 
                             <p:panel >
 
-                                <p:messages/>
+                            <p:messages globalOnly="true" showDetail="true" autoUpdate="true" closable="true" />
 
                                 <h:panelGrid columns="2" id="panelGridDatos">
 
@@ -159,6 +199,23 @@
                                     <p:inputText id="tema" style="width: 590px;" value="#{casoController.selected.tema}" title="#{bundle.CreateCasoTitle_tema}" required="true" requiredMessage="#{bundle.CreateCasoRequiredMessage_tema}"/>
 
 
+                                <p:outputLabel value="Tipo:" style="font-weight:bold"/>
+                                <p:selectOneMenu id="idTipoCaso" style="width: 300px;" converter="TipoCasoControllerConverter"
+                                                 required="true" requiredMessage="El tipo de caso es requerido."
+                                                 filter="true" filterMatchMode="contains"
+                                                 value="#{casoController.selected.tipoCaso}" >                                  
+                                    <f:selectItems value="#{applicationBean.tipoCasoAvailableList}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
+                                    <p:ajax update="idSubEstado idPrioridad"/>
+                                </p:selectOneMenu>
+
+                                <p:outputLabel value="#{bundle.EditCasoLabel_idSubEstado}" for="idSubEstado" style="font-weight:bold"/>
+                                <p:selectOneMenu id="idSubEstado"  style="width: 300px;"
+                                                 filter="true" filterMatchMode="contains"
+                                                 required="true" requiredMessage="El Sub Estado del caso es un dato requerido."
+                                                 value="#{casoController.selected.idSubEstado}" >
+                                    <f:selectItems value="#{casoController.itemsSubEstadoCasoAvailableSelectOneCasoAbierto}" var="subEstad" itemDescription="#{subEstad.description}"/>
+
+                                </p:selectOneMenu>
 
                                     <p:outputLabel value="#{bundle.CreateCasoLabel_idPrioridad}" for="idPrioridad" style="font-weight:bold"/>
                                     <p:selectOneMenu id="idPrioridad" value="#{casoController.selected.idPrioridad}" style="width: 300px;"
@@ -228,7 +285,7 @@
                                             <f:facet name="header">
 
                                                 <p:commandButton icon="ui-icon-plus" actionListener="#{casoController.addNewSubCasoToPreentrega}" immediate="true"
-                                                                 update=":form:messages :form:filtrosVista" iconPos="notext" />
+                                                                 update=":form:filtrosVista" iconPos="notext" />
                                             </f:facet>
                                             <p:commandButton icon="ui-icon-close" actionListener="#{casoController.removeSubCasoFromCurrentCaso(subcaso)}" ajax="true" immediate="true"
                                                              update=":form" iconPos="notext" />
@@ -260,7 +317,7 @@
                                                     <h:outputText value="${casoController.nombreArchivoParaDesplegar(fileitem.nombreArchivo)}" title="#{fileitem.nombreArchivo}"/>                                               
 
                                                     <p:commandButton icon="ui-icon-close"
-                                                                     onclick="borrarAttachment.show();">
+                                                                     onclick="PF('borrarAttachment').show();">
                                                         <f:setPropertyActionListener target="#{casoController.idFileRemove}" value="#{fileitem.idAttachment}"/>
                                                     </p:commandButton>
 
@@ -285,7 +342,7 @@
                         </p:tab>
                     </p:wizard>
 
-                </p:panel>
+
             </h:form>
 
         </ui:define>

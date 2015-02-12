@@ -10,6 +10,7 @@ import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.FiltroVista;
+import com.itcs.helpdesk.persistence.entities.SubComponente;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
@@ -95,6 +96,11 @@ public abstract class AbstractManagedBean<E> implements Serializable {
 
     protected String backOutcome;
 
+    
+    public void selectEntityFromDialog(E o) {
+        RequestContext.getCurrentInstance().closeDialog(o);
+    }
+    
     public String goBack() {
         if (this.backOutcome == null) {
             recreateModel();
@@ -116,6 +122,21 @@ public abstract class AbstractManagedBean<E> implements Serializable {
         this.entityClass = entityClass;
 //        this.schemaName = getUserSessionBean().getCurrent().getTenantId();
         Logger.getLogger(this.getClass().getName()).log(Level.INFO, "{0} for {1} created", new Object[]{this.getClass().getSimpleName(), entityClass.getSimpleName()});
+    }
+
+    /**
+     * Queries for an autocomplete List
+     *
+     * @param query
+     * @return
+     */
+    public List<E> complete(String query) {
+        //System.out.println("complete...");
+        List<E> results = (List<E>)getJpaController().findEntitiesByQuery(entityClass, false, 10, query);
+        if (results == null) {
+            return Collections.EMPTY_LIST;
+        }
+        return results;
     }
 
     public void showMessageInDialog(FacesMessage.Severity severity, String msg, String detail) {
@@ -488,7 +509,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
                     fCopy.setValor2Label(f.getValor2Label());
                     fCopy.setIdVista(copy);
                     copy.getFiltrosVistaList().add(fCopy);
-                    //System.out.println("added filtro " + fCopy);
+                    ////System.out.println("added filtro " + fCopy);
                 }
             }
 
@@ -497,7 +518,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
             }
             setVista(copy);
 //        this.setVista(copy);
-//        //System.out.println("Vista copy set:" + copy);
+//        ////System.out.println("Vista copy set:" + copy);
             recreatePagination();
 //            recreateModel();
         } catch (Exception e) {
@@ -890,7 +911,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
             }
             Collections.sort(lista, comparadorVistas);
             this.allMyVistas = lista;
-//            System.out.println("allMyVistas:"+allMyVistas);
+//            //System.out.println("allMyVistas:"+allMyVistas);
         }
 
         return this.allMyVistas;

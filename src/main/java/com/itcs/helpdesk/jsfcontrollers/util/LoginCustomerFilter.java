@@ -48,9 +48,9 @@ public class LoginCustomerFilter implements Filter {
 
         UserSessionBean userSessionBean = (UserSessionBean) session.getAttribute("UserSessionBean");
 
-        System.out.println("userSessionBean:" + userSessionBean);
+        //System.out.println("userSessionBean:" + userSessionBean);
 
-        System.out.println("Filtering Request:" + req.getRequestURL().toString());
+        //System.out.println("Filtering Request:" + req.getRequestURL().toString());
 
 //        String tenantId = null;
 //        if (userSessionBean != null && userSessionBean.getTenantId() != null) {
@@ -58,7 +58,7 @@ public class LoginCustomerFilter implements Filter {
 //        } else {
 //            tenantId = getHostSubDomain(req.getRequestURL().toString());
 //        }
-//        System.out.println("tenantId:" + tenantId);
+//        //System.out.println("tenantId:" + tenantId);
         try {
 
             if (requestedPage.endsWith(".xhtml")) {
@@ -106,9 +106,9 @@ public class LoginCustomerFilter implements Filter {
 //
 //        UserSessionBean userSessionBean = (UserSessionBean) session.getAttribute("UserSessionBean");
 //
-//        System.out.println("userSessionBean:" + userSessionBean);
+//        //System.out.println("userSessionBean:" + userSessionBean);
 //
-//        System.out.println("Filtering Request:" + requestedPage);
+//        //System.out.println("Filtering Request:" + requestedPage);
 //
 //       try {
 //            if (requestedPage.endsWith(".xhtml")) {

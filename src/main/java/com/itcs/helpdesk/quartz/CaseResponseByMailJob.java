@@ -57,7 +57,7 @@ public class CaseResponseByMailJob extends AbstractGoDeskJob implements Job {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
 
-        System.out.println("CaseResponseByMailJob.execute ");
+        //System.out.println("CaseResponseByMailJob.execute ");
 
         JobDataMap map = context.getMergedJobDataMap();//.getJobDetail().getJobDataMap();
         if (map != null) {

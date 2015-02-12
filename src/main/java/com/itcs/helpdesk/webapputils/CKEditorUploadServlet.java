@@ -53,6 +53,7 @@ public class CKEditorUploadServlet extends AbstractServlet {
     @Override
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+        String schema = request.getParameter(AbstractJPAController.TENANT_PROP_NAME);
         ArchivoNa uploadedFile = new ArchivoNa();
         PrintWriter out = response.getWriter();
 
@@ -62,7 +63,7 @@ public class CKEditorUploadServlet extends AbstractServlet {
 //        FileItemFactory factory = new DiskFileItemFactory();
 //        ServletFileUpload upload = new ServletFileUpload();
         try {
-            String schema = request.getParameter(AbstractJPAController.TENANT_PROP_NAME);
+            
 
             if (!StringUtils.isEmpty(schema)) {
                 if (ServletFileUpload.isMultipartContent(request)) {
@@ -115,7 +116,7 @@ public class CKEditorUploadServlet extends AbstractServlet {
                 + ":"
                 + request.getServerPort()
                 + request.getContextPath()
-                + "/ckeditor/getimage?imageId=" + uploadedFile.getId();
+                + "/ckeditor/getimage?imageId=" + uploadedFile.getId()+"&"+AbstractJPAController.TENANT_PROP_NAME+"="+schema;
 //        String pathToFile = request.getContextPath() + "/ckeditor/getimage?imageId=" + uploadedFile.getId();
 //        String callbackStr = "<script type=\"text/javascript\"><![CDATA[window.parent.CKEDITOR.tools.callFunction('"
 //                + callback + "','" + pathToFile + "','" + errorMessage + "')"+"]]></script>";

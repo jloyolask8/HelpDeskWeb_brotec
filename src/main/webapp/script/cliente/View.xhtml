@@ -4,13 +4,11 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:pe="http://primefaces.org/ui/extensions"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:go="http://java.sun.com/jsf/composite/go">
+      xmlns:f="http://java.sun.com/jsf/core">
 
-    <ui:composition template="/script/template_inbox.xhtml">
+    <ui:composition template="/script/template_inbox_bootstrap.xhtml">
         <ui:define name="title">
-            <p:outputLabel value="#{bundle.ViewEmailClienteTitle}"/>
+            <h:outputText value="#{bundle.ViewEmailClienteTitle}"></h:outputText>
         </ui:define>
 
         <ui:define name="west">
@@ -19,143 +17,333 @@
 
         <ui:define name="body">
 
-            <pe:importEnum type="com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta" var="EnumTipoAlerta" allSuffix="ALL_ENUM_VALUES" />
+            <script>
+                var init = [];
+                init.push(function() {
+                    $('body').addClass('mmc');
+                    $('body').addClass('page-profile');
+                });
+            </script>
 
             <h:form id="form">
-                <p:messages globalOnly="true"/>
-
-                <p:tabView id="tabs" activeIndex="#{areaController.editActiveIndex}" dynamic="true">
-                    <p:tab id="tab1" title="Datos del Cliente" >
-
-                        <h:panelGrid columns="2" cellspacing="6">
-
-                            <h:outputLabel value="#{bundle.CreateEmailClienteLabel_idCliente}" for="idCliente" style="font-weight:bold"/>
-                            <h:outputText id="idCliente" value="#{clienteController.selected.idCliente}" title="#{bundle.CreateEmailClienteTitle_idCliente}" />  
-
-                            <h:outputLabel value="Email:" for="emailCliente" style="font-weight:bold"/>
-
-                            <h:panelGrid>
-                                <ui:repeat  id="emailCliente" value="#{clienteController.selected.emailClienteList}"  var="email">  
-                                    <h:outputText value="#{email.emailCliente}"/>
-                                    <br/>                                
-                                </ui:repeat>  
-
-                            </h:panelGrid>
-
-                            <h:outputLabel value="#{bundle.CreateClienteLabel_rut}" for="rut" style="font-weight:bold"/>
-                            <h:outputText id="rut" value="#{clienteController.selected.rut}" title="#{bundle.CreateClienteTitle_rut}"/>                    
-
-                            <h:outputLabel value="#{bundle.CreateClienteLabel_nombres}" for="nombres" style="font-weight:bold"/>
-                            <h:outputText id="nombres" value="#{clienteController.selected.nombres}" title="#{bundle.CreateClienteTitle_nombres}" />
-
-                            <h:outputLabel value="#{bundle.CreateClienteLabel_apellidos}" for="apellidos" style="font-weight:bold"/>
-                            <h:outputText id="apellidos" value="#{clienteController.selected.apellidos}" title="#{bundle.CreateClienteTitle_apellidos}" />
-
-                            <p:outputLabel value="Sexo:" for="sexo" style="font-weight:bold"/>
-                            <h:outputText id="sexo" value="#{clienteController.selected.sexo}" />
-
-
-                            <h:outputLabel value="#{bundle.CreateClienteLabel_fono1}" for="fono1" style="font-weight:bold"/>
-                            <h:outputText id="fono1" value="#{clienteController.selected.fono1}" title="#{bundle.CreateClienteTitle_fono1}" />
-
-                            <h:outputLabel value="#{bundle.CreateClienteLabel_fono2}" for="fono2" style="font-weight:bold"/>
-                            <h:outputText id="fono2" value="#{clienteController.selected.fono2}" title="#{bundle.CreateClienteTitle_fono2}" />
-
-                            <h:outputLabel value="#{bundle.CreateClienteLabel_dirParticular}" for="dirParticular" style="font-weight:bold"/>
-                            <h:outputText id="dirParticular" value="#{clienteController.selected.dirParticular}" title="#{bundle.CreateClienteTitle_dirParticular}" />
-
-                            <h:outputLabel value="#{bundle.CreateClienteLabel_dirComercial}" for="dirComercial" style="font-weight:bold"/>
-                            <h:outputText id="dirComercial" value="#{clienteController.selected.dirComercial}" title="#{bundle.CreateClienteTitle_dirComercial}" />
-                        </h:panelGrid>
-
-                        <br/>
-                        <h:outputText value="Nota: Un Cliente puede tener mas de una direccion de correo asociada." style="color: #999"/>
-
-                    </p:tab>
-
-                    <p:tab id="tab2" title="#{applicationBean.productSubComponentDescription}(s) Asociado(s)" >
-                        <h:panelGrid> 
-                            <p:dataTable id="dataList" rendered="#{clienteController.selected ne null and clienteController.selected ne null}" 
-                                         value="#{clienteController.selected.productoContratadoList}" var="prod_cont" emptyMessage="El Cliente no tiene #{applicationBean.productDescription} asociado.">
-
-                                <p:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="#{applicationBean.productDescription}"/>
-                                    </f:facet>
-                                    <h:outputText id="prod" value="#{prod_cont.producto.nombre}"/>
-                                    <p:tooltip for="prod" value="#{prod_cont.observaciones}"/>
-                                </p:column>
-
-                                <p:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="#{applicationBean.productComponentDescription}"/>
-                                    </f:facet>
-                                    <h:outputText value="#{prod_cont.componente.nombre}"/>
-                                </p:column>
-
-                                <p:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="#{applicationBean.productSubComponentDescription}"/>
-                                    </f:facet>
-                                    <h:outputText value="#{prod_cont.subComponente.nombre}"/>
-                                </p:column>
-
-                                <p:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="Relación"/>
-                                    </f:facet>
-                                    <h:outputText value="#{prod_cont.tipoAsociacion}"/>
-                                </p:column>
-
-
-                            </p:dataTable>
-
-                        </h:panelGrid>
-
-                    </p:tab>
-
-                    <p:tab id="tab3" title="Histórico de Casos" >
-
-                        <go:casoListNoForm casosList="#{clienteController.selected.casoList}" header="Histórico de Casos asociados al cliente (#{clienteController.selected.casoList.size()})"/>
-
-                        <ui:repeat value="#{clienteController.selected.emailClienteList}" var="r" >
-                            <br/>
-                            <go:casoListNoForm casosList="#{r.casoList}" header="Histórico de Casos asociados al email #{r.emailCliente} (#{r.casoList.size()})"/>
-                        </ui:repeat>
-
-                    </p:tab>
-
-                </p:tabView>
+                <div class="profile-full-name">
+                    <span class="text-semibold">Perfil del Cliente </span>#{clienteController.selected.capitalName}
+                </div>
+                <div class="profile-row">
+                    <div class="left-col">
+                        <div class="profile-block">
+                            <div class="panel profile-photo">
+                                <img src="#{facesContext.externalContext.requestContextPath}/resources/images/pixel-admin/avatar.png" class="avatar"/>
+                            </div><br/>
+                            <p:commandLink action="#{clienteController.prepareEdit(clienteController.selected)}" 
+                                           ajax="false"
+                                           styleClass="btn btn-primary btn-labeled" 
+                                           rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
+                                <i class="btn-label fa fa-pencil-square-o"></i>#{bundle.edit}
+                            </p:commandLink>
+                            &nbsp;
+                            <a href="#" class="btn"><i class="fa fa-comment"></i></a>
+                        </div>
 
 
 
+                        <div class="panel panel-transparent">
+                            <div class="panel-heading">
+                                <span class="panel-title">Estadísticas</span>
+                            </div>
+                            <div class="list-group">
+                                <a href="#" class="list-group-item"><strong>2</strong> Productos </a>
+                                <a href="#" class="list-group-item"><strong>579</strong> Cotizaciones</a>
+                                <a href="#" class="list-group-item"><strong>100</strong> Contactos  </a>
+                            </div>
+                        </div>
 
-                <br/>
+                        <div class="panel panel-transparent">
+                            <div class="panel-heading">
+                                <span class="panel-title">Social</span>
+                            </div>
+                            <div class="list-group">
+                                <a href="#" class="list-group-item"><i class="profile-list-icon fa fa-twitter" style="color: #4ab6d5"></i> xxx</a>
+                                <a href="#" class="list-group-item"><i class="profile-list-icon fa fa-facebook-square" style="color: #1a7ab9"></i> xxx</a>
+                                <a href="#" class="list-group-item"><i class="profile-list-icon fa fa-skype" style="color: #4ab6d5"></i> xxx</a>
+                                <a href="#" class="list-group-item"><i class="profile-list-icon fa fa-linkedin" style="color: #1a7ab9"></i> xxx</a>
+
+                            </div>
+                        </div>
+
+                        <div class="panel panel-transparent profile-skills">
+                            <div class="panel-heading">
+                                <span class="panel-title">Etiquetas</span>
+                            </div>
+                            <div class="panel-body">
+                                <span class="label label-primary">UI/UX</span>
+                                <span class="label label-primary">Web design</span>
+
+                            </div>
+                        </div>
 
 
 
-                <p:toolbar>  
-                    <p:toolbarGroup align="left">   
-                        <p:commandButton action="#{clienteController.goBack}" value="#{bundle.goBack}" icon="fa fa-chevron-left" ajax="false" immediate="true"/>
-                        <p:separator/>
-                        <p:commandButton action="#{clienteController.prepareEdit(clienteController.selected)}" ajax="false"
-                                         value="#{bundle.edit}" icon="ui-icon ui-icon-pencil" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/> 
-                        <p:separator/>
-                        <p:commandButton id="showDialogButton" value="#{bundle.destroy}" onclick="PF('confirmation').show()" 
-                                         rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" 
-                                         icon="ui-icon ui-icon-trash" disabled="#{not clienteController.puedeEliminar(clienteController.selected)}"/> 
-                    </p:toolbarGroup>
+                    </div>
+                    <div class="right-col">
+
+                        <hr class="profile-content-hr no-grid-gutter-h"/>
+
+                        <div class="profile-content">
+
+                            <ul id="profile-tabs" class="nav nav-tabs">
+                                <li class="active">
+                                    <a href="#profile-tabs-datos" data-toggle="tab">Datos Personales</a>
+                                </li>
+                                <li>
+                                    <a href="#profile-tabs-productos" data-toggle="tab">#{applicationBean.productDescription}</a>
+                                </li>
+                                <li>
+                                    <a href="#profile-tabs-tickets" data-toggle="tab">Historial de Casos</a>
+                                </li>
+                                <li>
+                                    <a href="#profile-tabs-comments" data-toggle="tab">Comentarios</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content tab-content-bordered panel-padding">
+                                <div class="tab-pane panel no-padding no-border fade in active" id="profile-tabs-datos">
+                                    <div class="row">
+
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">Email</label>
+                                                <div class="col-sm-10">
+                                                    <p class="form-control-static">
+                                                        <h:panelGrid>
+                                                            <ui:repeat  id="emailCliente" value="#{clienteController.selected.emailClienteList}"  var="item">  
+                                                                <h:outputText value="#{item.emailCliente}"/>
+                                                                <br/>                                
+                                                            </ui:repeat>  
+
+                                                        </h:panelGrid>
+                                                    </p>
+                                                </div>
+                                            </div> <!-- / .form-group -->
+
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">#{bundle.CreateClienteLabel_rut}</label>
+                                                <div class="col-sm-10">
+                                                    <p class="form-control-static"> 
+                                                        <h:outputText id="rut" value="#{clienteController.selected.rut}" 
+                                                                      title="#{bundle.CreateClienteTitle_rut}"/></p>
+                                                </div>
+                                            </div> <!-- / .form-group -->
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">#{bundle.CreateClienteLabel_nombres}</label>
+                                                <div class="col-sm-10">
+                                                    <p class="form-control-static">#{clienteController.selected.nombres}</p>
+                                                </div>
+                                            </div> <!-- / .form-group -->
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">#{bundle.CreateClienteLabel_apellidos}</label>
+                                                <div class="col-sm-10">
+                                                    <p class="form-control-static">#{clienteController.selected.apellidos}</p>
+                                                </div>
+                                            </div> <!-- / .form-group -->
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">Sexo:</label>
+                                                <div class="col-sm-10">
+                                                    <p class="form-control-static">#{clienteController.selected.sexo}</p>
+                                                </div>
+                                            </div> <!-- / .form-group -->
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">#{bundle.CreateClienteLabel_fono1}</label>
+                                                <div class="col-sm-10">
+                                                    <p class="form-control-static">#{clienteController.selected.fono1}</p>
+                                                </div>
+                                            </div> <!-- / .form-group -->
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">#{bundle.CreateClienteLabel_fono2}</label>
+                                                <div class="col-sm-10">
+                                                    <p class="form-control-static">#{clienteController.selected.fono2}</p>
+                                                </div>
+                                            </div> <!-- / .form-group -->
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">#{bundle.CreateClienteLabel_dirParticular}</label>
+                                                <div class="col-sm-10">
+                                                    <p class="form-control-static">#{clienteController.selected.dirParticular}</p>
+                                                </div>
+                                            </div> <!-- / .form-group -->
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">#{bundle.CreateClienteLabel_dirComercial}</label>
+                                                <div class="col-sm-10">
+                                                    <p class="form-control-static">#{clienteController.selected.dirComercial}</p>
+                                                </div>
+                                            </div> <!-- / .form-group -->
+
+                                            <h:outputText value="Nota: Un Cliente puede tener mas de una direccion de correo asociada." style="color: #999"/>
+
+                                        </div>
+                                    </div>
+                                </div>
+                           
+                            <div class="tab-pane fade" id="profile-tabs-productos">
+                                <h:panelGrid> 
+
+                                    <p:dataTable id="dataList" rendered="#{clienteController.selected ne null and clienteController.selected ne null}" 
+                                                 value="#{clienteController.selected.productoContratadoList}" var="item" emptyMessage="El Cliente no tiene #{applicationBean.productDescription} asociado.">
+
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{applicationBean.productDescription}"/>
+                                            </f:facet>
+                                            <h:outputText id="prod" value="#{item.producto.nombre}"/>
+                                            <p:tooltip for="prod" value="#{item.observaciones}"/>
+                                        </p:column>
+
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{applicationBean.productComponentDescription}"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.componente.nombre}"/>
+                                        </p:column>
+
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{applicationBean.productSubComponentDescription}"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.subComponente.nombre}"/>
+                                        </p:column>
+
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{bundle.ListProductoContratadoTitle_vendedor}"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.vendedor}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{bundle.ListProductoContratadoTitle_fechaCompra}"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.fechaCompra}">
+                                                <f:convertDateTime pattern="#{bundle.dateFormat2}" />
+                                            </h:outputText>
+                                        </p:column>
+
+
+                                    </p:dataTable>
+
+                                </h:panelGrid>
+                            </div>
+
+                            <div class="tab-pane fade" id="profile-tabs-tickets">
+                                <h:panelGroup id="panelG1">
+                                    <p:dataTable id="ID_TABLA" value="#{clienteController.selected.casoList}" var="item"
+                                                 selection="#{casoController.selected}" selectionMode="single"
+                                                 emptyMessage="#{bundle.ListCasoEmpty}" 
+                                                 rowKey="#{item.idCaso}" 
+                                                 rowStyleClass="#{item.revisarActualizacion eq true ? 'updated':''}"
+                                                 sortBy="#{item.fechaCreacion}"
+                                                 sortOrder="descending"
+                                                 draggableColumns="true">
+                                        <f:facet name="header">
+                                            <h:outputText value="Casos creados por el Cliente (#{clienteController.selected.casoList.size()} casos)"></h:outputText>
+                                        </f:facet>
+
+                                        <p:column headerText="ID" sortBy="#{item.idCaso}">
+                                            <p:commandLink id="editBtn" ajax="false" action="#{casoController.prepareEdit(item)}" value="#{item.idCaso}"  title="Abrir caso"/>
+                                        </p:column>
+
+                                        <p:column headerText="A" exportable="false">
+                                            <h:graphicImage value="/images/user-available.png" title="Caso pendiente (entre 0 y 50% del tiempo asignado)" rendered="#{item.estadoAlerta.idalerta eq 1 and item.idEstado.idEstado eq 'abierto'}"/>
+                                            <h:graphicImage value="/images/dialog-warning-3.png" title="Caso por vencer (mas del 50% del tiempo asignado)" rendered="#{item.estadoAlerta.idalerta eq 2 and item.idEstado.idEstado eq 'abierto'}"/>
+                                            <h:graphicImage value="/images/software-update-urgent-2.png" title="Caso vencido (mas del 100% del tiempo asignado)" rendered="#{item.estadoAlerta.idalerta eq 3 and item.idEstado.idEstado eq 'abierto'}"/>
+                                            <h:graphicImage value="/images/locked.png" title="Caso cerrado" rendered="#{item.idEstado.idEstado eq 'cerrado'}"/>
+                                        </p:column>
+
+                                        <p:column headerText="P" exportable="false">
+                                            <h:outputText value="" rendered="#{item.esPrioritario eq false}"/>
+                                            <h:graphicImage value="/images/bookmarks.png" rendered="#{item.esPrioritario eq true}"/>
+                                        </p:column>
+
+
+
+                                        <p:column sortBy="#{item.fechaCreacion}" headerText="Fecha creación">
+                                            <h:outputText value="#{item.fechaCreacion}">
+                                                <f:convertDateTime pattern="#{bundle.dateFormat2}" />
+                                            </h:outputText>
+                                        </p:column>
+
+                                        <p:column sortBy="#{item.nextResponseDue}" headerText="SLA">
+                                            <h:outputText value="#{item.nextResponseDue}">
+                                                <f:convertDateTime pattern="#{bundle.dateFormat2}" />
+                                            </h:outputText>
+                                        </p:column>
+
+                                        <p:column headerText="Tema" sortBy="#{item.tema}">
+                                            <p:commandLink action="#{casoController.prepareEdit(item)}" ajax="false" value="#{item.tema}" />
+                                        </p:column>                                                                         
+
+                                        <p:column headerText="#{bundle.ListCasoTitle_owner}" sortBy="#{item.owner.capitalName}">
+                                            <p:commandLink rendered="#{not (item.owner eq null)}" action="#{usuarioController.prepareView(item.owner)}" ajax="false" value="#{item.owner.capitalName}" />
+
+                                        </p:column>
+
+                                        <p:column headerText="Estado" sortBy="#{item.idSubEstado.nombre}">
+                                            <h:outputText value="#{item.idSubEstado.nombre}"/>
+                                        </p:column>
+
+                                    </p:dataTable>
+                                </h:panelGroup>
+                            </div>
+
+                            <div class="tab-pane fade" id="profile-tabs-comments">
+
+                            </div>
+                                 </div>
+                        </div>
 
 
 
 
-                </p:toolbar>
+
+                        <p:toolbar>  
+                                    <p:toolbarGroup align="left">   
+                                       
+                                        <p:commandButton action="#{clienteController.prepareList}" 
+                                                         value="#{bundle.showAll}" icon="ui-icon-folder-open" ajax="false"/>
+
+                                        <p:separator/>
+                                        <p:commandButton id="showDialogButton" value="#{bundle.destroy}" onclick="confirmation.show()" 
+                                                         rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" 
+                                                         icon="ui-icon ui-icon-trash" 
+                                                         disabled="#{not clienteController.puedeEliminar(clienteController.selected)}"/> 
+                                    </p:toolbarGroup>  
+                                </p:toolbar>
 
 
+                    </div>
+                </div>
+            </h:form>
+
+            <ui:define name="startscript">
+                <script type="text/javascript">
+                    init.push(function() {
+                        $('#profile-tabs').tabdrop();
+
+                        $("#leave-comment-form").expandingInput({
+                            target: 'textarea',
+                            hidden_content: '> div',
+                            placeholder: 'Write message',
+                            onAfterExpand: function() {
+                                $('#leave-comment-form textarea').attr('rows', '3').autosize();
+                            }
+                        });
+                    })
+                    window.PixelAdmin.start(init);
+                </script>
+            </ui:define>
+
+        </ui:define>
 
 
-
-
+        <ui:define name="dialogs">
+            <h:form>
                 <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
                           header="Iniciando proceso de eliminación" widgetVar="confirmation">
 
@@ -163,17 +351,13 @@
 
                     <f:facet name="footer">
                         <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{clienteController.destroySelected}" 
-                                         update=":form" oncomplete="PF('confirmation').hide()"/>
-                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
+                                         update=":form" oncomplete="confirmation.hide()"/>
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
                     </f:facet>
 
                 </p:dialog>
-
-
-
-
-
             </h:form>
+
         </ui:define>
     </ui:composition>
 

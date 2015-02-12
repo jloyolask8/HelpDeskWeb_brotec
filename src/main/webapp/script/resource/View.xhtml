@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ViewResourceTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{bundle.ViewResourceLabel_idResource}"/>
+                    <h:outputText value="#{resourceController.selected.idResource}" title="#{bundle.ViewResourceTitle_idResource}"/>
+                    <h:outputText value="#{bundle.ViewResourceLabel_nombre}"/>
+                    <h:outputText value="#{resourceController.selected.nombre}" title="#{bundle.ViewResourceTitle_nombre}"/>
+                    <h:outputText value="#{bundle.ViewResourceLabel_descripcion}"/>
+                    <h:outputText value="#{resourceController.selected.descripcion}" title="#{bundle.ViewResourceTitle_descripcion}"/>
+                    <h:outputText value="#{bundle.ViewResourceLabel_tipo}"/>
+                    <h:outputText value="#{resourceController.selected.tipo}" title="#{bundle.ViewResourceTitle_tipo}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{resourceController.destroyAndView}" value="#{bundle.ViewResourceDestroyLink}"/>
+                <br />
+                <br />
+                <h:link outcome="Edit" value="#{bundle.ViewResourceEditLink}"/>
+                <br />
+                <h:commandLink action="#{resourceController.prepareCreate}" value="#{bundle.ViewResourceCreateLink}" />
+                <br />
+                <h:commandLink action="#{resourceController.prepareList}" value="#{bundle.ViewResourceShowAllLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.ViewResourceIndexLink}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

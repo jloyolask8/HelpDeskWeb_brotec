@@ -145,7 +145,7 @@
                             </p:commandButton>
 
                             <p:commandButton icon="ui-icon-close" update=":formborrarArchivoActaEntrega :uploadFormidArchivoActaEntrega"
-                                             onclick="borrarArchivoActaEntrega.show();">
+                                             onclick="PF('borrarArchivoActaEntrega').show();">
                                 <f:setPropertyActionListener target="#{productoController.idFileDelete}" 
                                                              value="#{productoController.currentSubComponente.idArchivoActaEntrega}"/>
                             </p:commandButton>
@@ -163,7 +163,7 @@
                             </p:commandButton>
 
                             <p:commandButton icon="ui-icon-close" update=":formborrarArchivoActaPreEntrega :uploadFormidArchivoActaPreEntrega"
-                                             onclick="borrarArchivoActaPreEntrega.show();">
+                                             onclick="PF('borrarArchivoActaPreEntrega').show();">
                                 <f:setPropertyActionListener target="#{productoController.idFileDelete}" 
                                                              value="#{productoController.currentSubComponente.idArchivoActaPreEntrega}"/>
                             </p:commandButton>
@@ -182,7 +182,7 @@
                             </p:commandButton>
 
                             <p:commandButton icon="ui-icon-close" update=":formborrarArchivoCartaEntrega :uploadFormidArchivoCartaEntrega"
-                                             onclick="borrarArchivoCartaEntrega.show();">
+                                             onclick="PF('borrarArchivoCartaEntrega').show();">
                                 <f:setPropertyActionListener target="#{productoController.idFileDelete}" 
                                                              value="#{productoController.currentSubComponente.idArchivoCartaEntrega}"/>
                             </p:commandButton>

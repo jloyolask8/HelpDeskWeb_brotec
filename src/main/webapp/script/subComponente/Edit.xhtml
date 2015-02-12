@@ -55,7 +55,7 @@
                             </p:commandButton>
 
                             <p:commandButton icon="ui-icon-close" update=":formborrarArchivoActaEntrega :uploadFormidArchivoActaEntrega"
-                                             onclick="borrarArchivoActaEntrega.show();">
+                                             onclick="PF('borrarArchivoActaEntrega').show();">
                                 <f:setPropertyActionListener target="#{productoController.idFileDelete}" 
                                                              value="#{subComponenteController.selected.idArchivoActaEntrega}"/>
                             </p:commandButton>
@@ -73,7 +73,7 @@
                             </p:commandButton>
 
                             <p:commandButton icon="ui-icon-close" update=":formborrarArchivoActaPreEntrega :uploadFormidArchivoActaPreEntrega"
-                                             onclick="borrarArchivoActaPreEntrega.show();">
+                                             onclick="PF('borrarArchivoActaPreEntrega').show();">
                                 <f:setPropertyActionListener target="#{productoController.idFileDelete}" 
                                                              value="#{subComponenteController.selected.idArchivoActaPreEntrega}"/>
                             </p:commandButton>
@@ -92,7 +92,7 @@
                             </p:commandButton>
 
                             <p:commandButton icon="ui-icon-close" update=":formborrarArchivoCartaEntrega :uploadFormidArchivoCartaEntrega"
-                                             onclick="borrarArchivoCartaEntrega.show();">
+                                             onclick="PF('borrarArchivoCartaEntrega').show();">
                                 <f:setPropertyActionListener target="#{productoController.idFileDelete}" 
                                                              value="#{subComponenteController.selected.idArchivoCartaEntrega}"/>
                             </p:commandButton>

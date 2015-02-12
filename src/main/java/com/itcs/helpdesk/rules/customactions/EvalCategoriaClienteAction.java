@@ -108,7 +108,7 @@ public class EvalCategoriaClienteAction extends Action {
                     current.setEtiquetaList(etiquetaList);
                     getJpaController().mergeCasoWithoutNotify(current, createLogReg(current, "Etiquetas", "Se agrega Etiqueta: " + selected.toString(), ""));
                 } catch (Exception ex) {
-                    System.out.println("No se pudo Agregar la etiqueta" + selected);
+                    //System.out.println("No se pudo Agregar la etiqueta" + selected);
                     Log.createLogger(EvalCategoriaClienteAction.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }

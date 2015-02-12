@@ -149,12 +149,15 @@ public class RulesEngine implements CasoChangeListener {
             }
         } while (lista.size() > listaSup.size());
 
-        try {
-            AuditLog auditLog = ManagerCasos.createLogComment(caso, "Reglas aplicadas en la modificación del caso: " + rulesThatApply.toString());
-            getJpaController().persist(auditLog);
-        } catch (Exception ex) {
-            Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "RulesEngine.casoChanged", ex);
+        if (!rulesThatApply.isEmpty()) {
+            try {
+                AuditLog auditLog = ManagerCasos.createLogComment(caso, "Reglas aplicadas en la modificación del caso: " + rulesThatApply.toString());
+                getJpaController().persist(auditLog);
+            } catch (Exception ex) {
+                Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "RulesEngine.casoChanged", ex);
+            }
         }
+
     }
 
     private boolean evalConditions(ReglaTrigger reglaTrigger, Caso caso) {
@@ -246,7 +249,7 @@ public class RulesEngine implements CasoChangeListener {
         final Object value = expresion.getValue();
 
 //        if (ApplicationConfig.isAppDebugEnabled()) {
-//            System.out.println("caso." + methodName + " = " + value);
+//            //System.out.println("caso." + methodName + " = " + value);
 //        }
         if (fieldType.equals(EnumFieldType.TEXT.getFieldType()) || fieldType.equals(EnumFieldType.TEXTAREA.getFieldType())) {
             //El valor es de tipo String, usarlo tal como esta
@@ -268,7 +271,7 @@ public class RulesEngine implements CasoChangeListener {
                     //Match the given string with the pattern
                     Matcher m = p.matcher((String) value);
                     if (ApplicationConfig.isAppDebugEnabled()) {
-                        System.out.println("patternToSearch:" + patternToSearch);
+                        //System.out.println("patternToSearch:" + patternToSearch);
                     }
                     return m.find();
 //                    return ((String) expresion.getValue()).toLowerCase().contains(valorAttributo.toLowerCase());//removes case sensitive issue
@@ -552,8 +555,13 @@ public class RulesEngine implements CasoChangeListener {
                     if (value != null) {
                         return (Long) value <= valorAtt;
                     }
+
+//                } else if (operador.equals(EnumTipoComparacion.SC.getTipoComparacion())) {
+//                    if (value != null) {
+//                        return (Long) value <= valorAtt;
+//                    }
                 } else {
-                    throw new IllegalStateException("Comparator " + operador.getIdComparador() + " is not supported!!");
+                    throw new IllegalStateException("Comparator " + operador.getIdComparador() + " is not supported here!!");
                 }
 
             } else {

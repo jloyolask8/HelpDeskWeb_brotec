@@ -80,7 +80,7 @@
 
                                     <div class="col-sm-10">
                                         <h:inputText id="emailCliente" value="#{casoCustomerController.emailCliente_wizard}" validator="#{inputValidationBean.validarEmail}"
-                                                     styleClass="form-control"
+                                                     styleClass="form-control" maxlength="80"
                                                      required="true" requiredMessage="Un Email Válido de cliente es requerido para identificar al cliente del caso.">                                        
                                             <pe:keyFilter mask="email"/>
                                         </h:inputText>
@@ -317,7 +317,9 @@
                 <div class="page-footer">
 
                     <div class="progress">
-                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="#{casoCustomerController.stepNewCasoIndex * 25}" aria-valuemin="0" aria-valuemax="100" style="width: #{casoCustomerController.stepNewCasoIndex * 25}\%">
+                        <div class="progress-bar progress-bar-success" role="progressbar" 
+                             aria-valuenow="#{casoCustomerController.stepNewCasoIndex * 25}" 
+                             aria-valuemin="0" aria-valuemax="100" style="width: #{casoCustomerController.stepNewCasoIndex * 25}\%">
                             <span>#{casoCustomerController.stepNewCasoIndex * 25}% de avance</span>
                         </div>
                     </div>

@@ -367,26 +367,32 @@ public class MailNotifier {
      */
     public static Canal chooseDefaultCanalToSendMail(Caso caso) throws NoOutChannelException {
 
-        if (caso.getIdCanal() != null && caso.getIdCanal().getIdTipoCanal() != null && caso.getIdCanal().getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal())) {
+        if (caso.getIdCanal() != null && caso.getIdCanal().getIdTipoCanal() != null 
+                && caso.getIdCanal().getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal())) {
             return caso.getIdCanal();
         } else {
 
             //choose canal, prioritize the area's default canal
-            Canal canal = (caso.getIdArea() != null && caso.getIdArea().getIdCanal() != null
-                    && caso.getIdArea().getIdCanal().getIdTipoCanal() != null && caso.getIdArea().getIdCanal().getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal()))
-                    ? caso.getIdArea().getIdCanal() : caso.getIdCanal();
+            Canal chosenEmailChannel = (caso.getIdArea() != null && caso.getIdArea().getIdCanal() != null
+                    && caso.getIdArea().getIdCanal().getIdTipoCanal() != null 
+                    && caso.getIdArea().getIdCanal().getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal()))
+                    ? caso.getIdArea().getIdCanal() : null;
 
-            if (canal == null) {//TODO do not use this since product may have a ventas email, and when a postventa user gets here there will be problems.
-                //choose the project's default canal
-                canal = (caso.getIdProducto() != null && caso.getIdProducto().getIdOutCanal() != null
-                        && caso.getIdProducto().getIdOutCanal().getIdTipoCanal() != null && caso.getIdProducto().getIdOutCanal().getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal()))
-                        ? caso.getIdProducto().getIdOutCanal() : null;
-            }
+//            if (chosenEmailChannel == null) {
+//            //We do not use this since product may have a ventas email, and when a postventa user gets here there will be problems.
+//                //choose the project's default canal
+//                chosenEmailChannel = (caso.getIdProducto() != null && caso.getIdProducto().getIdOutCanal() != null
+//                        && caso.getIdProducto().getIdOutCanal().getIdTipoCanal() != null 
+//                        && caso.getIdProducto().getIdOutCanal().getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal()))
+//                        ? caso.getIdProducto().getIdOutCanal() : null;
+//            }
 
-            if (canal != null && canal.getIdTipoCanal() != null && canal.getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal())
-                    && !StringUtils.isEmpty(canal.getIdCanal())) {
+            if (chosenEmailChannel != null 
+                    && chosenEmailChannel.getIdTipoCanal() != null 
+                    && chosenEmailChannel.getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal())
+                    && !StringUtils.isEmpty(chosenEmailChannel.getIdCanal())) {
 
-                return canal;
+                return chosenEmailChannel;
 
             } else {
                 throw new NoOutChannelException();

@@ -59,6 +59,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
     private String tmpEmailInfo;
     private String tmpFreq;
     private String tmpEmailConnectionTimeout = ApplicationConfig.DEFAULT_CONN_TIMEOUT;
+    private String tmpEmailUnreadEmailDownloadLimit = ApplicationConfig.DEFAULT_UNREAD_DOWNLOAD_LIMIT;
     private boolean tmpEmailDebugEnabled;
     private boolean tmpEmailDownloadAttachments = true;
     private boolean tmpEmailFinalizeReady;
@@ -135,32 +136,33 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         settings.put(EnumEmailSettingKeys.SMTP_PASS.getKey(), tmpEmailContrasena);
 
         settings.put(EnumEmailSettingKeys.SMTP_CONNECTIONTIMEOUT.getKey(), tmpEmailConnectionTimeout);
+        settings.put(EnumEmailSettingKeys.UNREAD_DOWNLOAD_LIMIT.getKey(), tmpEmailUnreadEmailDownloadLimit);
         return settings;
     }
 
     public void detectAutoConfig() {
         tmpEmailInfo = "intentando autodetectar configuración";
         RequestContext.getCurrentInstance().update("formAddEditEmail");
-        System.out.println(tmpEmailInfo);
+        //System.out.println(tmpEmailInfo);
         if (EmailAutoconfigClient.isValidEmail(tmpEmailCorreoElectronico)) {
             tmpEmailInfo = "buscando una configuración conocida";
             RequestContext.getCurrentInstance().update("formAddEditEmail");
-            System.out.println(tmpEmailInfo);
+            //System.out.println(tmpEmailInfo);
             if (EmailAutoconfigClient.existsAutoconfigSettings(tmpEmailCorreoElectronico)) {
                 tmpEmailInfo = "se ha encontrado una configuración conocida";
                 RequestContext.getCurrentInstance().update("formAddEditEmail");
-                System.out.println(tmpEmailInfo);
+                //System.out.println(tmpEmailInfo);
                 Map<String, String> settings;
                 if (EmailAutoconfigClient.isImapAvailable(tmpEmailCorreoElectronico)) {
                     settings = EmailAutoconfigClient.getIncommingServerSettings(tmpEmailCorreoElectronico, "imap");
-                    System.out.println("settings: " + settings);
+                    //System.out.println("settings: " + settings);
                     tmpEmailIncommingType = "IMAP";
                     tmpEmailIncommingHost = settings.get(EnumEmailSettingKeys.INBOUND_SERVER.getKey());
                     tmpEmailIncommingPort = settings.get(EnumEmailSettingKeys.INBOUND_PORT.getKey());
                     tmpEmailIncommingSsl = settings.get(EnumEmailSettingKeys.INBOUND_SSL_ENABLED.getKey()).equals("true") ? "SSL/TLS" : "NINGUNO";
                 } else if (EmailAutoconfigClient.isPop3Available(tmpEmailCorreoElectronico)) {
                     settings = EmailAutoconfigClient.getIncommingServerSettings(tmpEmailCorreoElectronico, "pop3");
-                    System.out.println("settings: " + settings);
+                    //System.out.println("settings: " + settings);
                     tmpEmailIncommingType = "POP3";
                     tmpEmailIncommingHost = settings.get(EnumEmailSettingKeys.INBOUND_SERVER.getKey());
                     tmpEmailIncommingPort = settings.get(EnumEmailSettingKeys.INBOUND_PORT.getKey());
@@ -190,7 +192,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         } else {
             tmpEmailInfo = "Correo no es válido";
             RequestContext.getCurrentInstance().update("formAddEditEmail");
-            System.out.println(tmpEmailCorreoElectronico + " mail not valid!!");
+            //System.out.println(tmpEmailCorreoElectronico + " mail not valid!!");
             return;
         }
         tmpEmailFirstStepReady = true;
@@ -241,6 +243,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         tmpEmailFinalizeReady = false;
         tmpEmailFirstStepReady = false;
         tmpEmailDownloadAttachments = true;
+        tmpEmailUnreadEmailDownloadLimit = ApplicationConfig.DEFAULT_UNREAD_DOWNLOAD_LIMIT;
         prepareCreate();
     }
 
@@ -294,6 +297,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         tmpEmailDebugEnabled = (current.getSetting(EnumEmailSettingKeys.MAIL_DEBUG.getKey()) == null) ? false : current.getSetting(EnumEmailSettingKeys.MAIL_DEBUG.getKey()).equals("true");
         tmpEmailDownloadAttachments = (current.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()) == null) ? false : current.getSetting(EnumEmailSettingKeys.DOWNLOAD_ATTACHMENTS.getKey()).equals("true");
         tmpEmailConnectionTimeout = current.getSetting(EnumEmailSettingKeys.SMTP_CONNECTIONTIMEOUT.getKey());
+        tmpEmailUnreadEmailDownloadLimit = current.getSetting(EnumEmailSettingKeys.UNREAD_DOWNLOAD_LIMIT.getKey());
         tmpEmailInfo = null;
         tmpEmailFinalizeReady = false;
         tmpEmailFirstStepReady = true;
@@ -501,7 +505,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
      * @param tmpEmailCorreoElectronico the tmpEmailCorreoElectronico to set
      */
     public void setTmpEmailCorreoElectronico(String tmpEmailCorreoElectronico) {
-        System.out.println("setTmpEmailCorreoElectronico:" + tmpEmailCorreoElectronico);
+        //System.out.println("setTmpEmailCorreoElectronico:" + tmpEmailCorreoElectronico);
         this.tmpEmailCorreoElectronico = tmpEmailCorreoElectronico;
     }
 
@@ -516,7 +520,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
      * @param tmpEmailContrasena the tmpEmailContrasena to set
      */
     public void setTmpEmailContrasena(String tmpEmailContrasena) {
-        System.out.println("setTmpEmailContrasena:" + tmpEmailContrasena);
+        //System.out.println("setTmpEmailContrasena:" + tmpEmailContrasena);
         this.tmpEmailContrasena = tmpEmailContrasena;
     }
 
@@ -742,6 +746,20 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
      */
     public void setTmpEmailConnectionTimeout(String tmpEmailConnectionTimeout) {
         this.tmpEmailConnectionTimeout = tmpEmailConnectionTimeout;
+    }
+
+    /**
+     * @return the tmpEmailUnreadEmailDownloadLimit
+     */
+    public String getTmpEmailUnreadEmailDownloadLimit() {
+        return tmpEmailUnreadEmailDownloadLimit;
+    }
+
+    /**
+     * @param tmpEmailUnreadEmailDownloadLimit the tmpEmailUnreadEmailDownloadLimit to set
+     */
+    public void setTmpEmailUnreadEmailDownloadLimit(String tmpEmailUnreadEmailDownloadLimit) {
+        this.tmpEmailUnreadEmailDownloadLimit = tmpEmailUnreadEmailDownloadLimit;
     }
 
     @FacesConverter(forClass = Canal.class)

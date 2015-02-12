@@ -20,7 +20,8 @@
                         <p:outputLabel value="Cliente:" for="clienteNotNull" style="font-weight:bold"/>
                     </p:column>
                     <p:column>
-                        <p:commandLink id="clienteNotNull" value="#{casoController.selected.clientName}" style="color: #4183C4 !important;" immediate="true"
+                        <p:commandLink id="clienteNotNull" value="#{casoController.selected.clientName}" 
+                                       style="color: #4183C4 !important;" immediate="true"
                                        update=":formDatosCliente" onclick="PF('dialogClient').show()" />
                     </p:column>
                 </p:row>
@@ -38,6 +39,45 @@
                     </p:column>
                 </p:row>
 
+                <p:row rendered="#{not empty casoController.selected.emailClienteCCList}">
+                    <p:column colspan="2">
+                        <div class="formSeparator">
+                            <h2>CC-Clientes</h2>
+                        </div>
+                    </p:column>
+                </p:row>
+
+                <p:row rendered="#{not empty casoController.selected.emailClienteCCList}">
+                    <p:column colspan="2">
+                        <ul style="padding-left: 0px;">
+                            <ui:repeat value="#{casoController.selected.emailClienteCCList}" var="emclientecc">
+                                <li data-token-value="#{emclientecc.emailCliente}" class="ui-autocomplete-token ui-state-active ui-corner-all">
+                                    <span class="ui-autocomplete-token-label" title="#{emclientecc.cliente.capitalName}">#{emclientecc.emailCliente}</span>
+                                </li>
+                            </ui:repeat>
+                        </ul>
+                    </p:column>
+                </p:row>
+                
+                <p:row rendered="#{not empty casoController.selected.usuarioCCList}">
+                    <p:column colspan="2">
+                        <div class="formSeparator">
+                            <h2>CC-Agentes</h2>
+                        </div>
+                    </p:column>
+                </p:row>
+
+                <p:row rendered="#{not empty casoController.selected.usuarioCCList}">
+                    <p:column colspan="2">
+                        <ul style="padding-left: 0px;">
+                            <ui:repeat value="#{casoController.selected.usuarioCCList}" var="agentcc">
+                                <li data-token-value="#{agentcc.idUsuario}" class="ui-autocomplete-token ui-state-active ui-corner-all">
+                                    <span class="ui-autocomplete-token-label" title="#{agentcc.email}">#{agentcc.idUsuario}</span>
+                                </li>
+                            </ui:repeat>
+                        </ul>
+                    </p:column>
+                </p:row>
 
                 <p:row>
                     <p:column colspan="2">
@@ -410,7 +450,7 @@
                 </p:row>
 
                 <p:row rendered="#{not empty casoController.selected.idCliente.productoContratadoList}">
-                    <p:column>
+                    <p:column colspan="2">
 
                         <p:dataTable 
                             value="#{casoController.selected.idCliente.productoContratadoList}" var="prod_cont" emptyMessage="El Cliente no tiene #{applicationBean.productDescription} asociado.">

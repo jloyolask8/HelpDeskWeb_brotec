@@ -54,7 +54,7 @@ public class SatisfactionController extends AbstractManagedBean<Caso> implements
     }
 
     public void checkAccessToEvaluateTicket() {
-        System.out.println("checkAccessToEvaluateTicket()...");
+        //System.out.println("checkAccessToEvaluateTicket()...");
 //        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 
         if (!StringUtils.isEmpty(idCaso) && !StringUtils.isEmpty(emailCliente) && !StringUtils.isEmpty(sat)) {
@@ -109,7 +109,7 @@ public class SatisfactionController extends AbstractManagedBean<Caso> implements
      * @param sat new value of sat
      */
     public void setSat(String sat) {
-        System.out.println("setSat..." + sat);
+        //System.out.println("setSat..." + sat);
         this.sat = sat;
     }
 

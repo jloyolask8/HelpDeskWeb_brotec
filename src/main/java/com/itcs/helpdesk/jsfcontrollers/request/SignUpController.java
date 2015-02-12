@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
+import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
@@ -27,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
  * @author jonathan
  */
 @ManagedBean
-@RequestScoped
+@ViewScoped
 public class SignUpController extends AbstractManagedBean<Usuario> implements Serializable {
 
     private RegistrationVO registrationVO = new RegistrationVO();
@@ -46,20 +47,32 @@ public class SignUpController extends AbstractManagedBean<Usuario> implements Se
      * @return
      */
     public String signup() {
+
+        if (!agreedToTermsConditions) {
+            addErrorMessage("Lo siento, Debe estar de acuerdo con los términos y condiciones antes de crear su cuenta.");
+            return null;
+        }
+        
+
         if (!StringUtils.isEmpty(registrationVO.getCompanyName())) {
             try {
-                 final String schemaName = registrationVO.getCompanyName().trim().toLowerCase().replace("\u0020", "_");
+                final String schemaName = registrationVO.getCompanyName().trim().toLowerCase().replace("\u0020", "_");
                 registrationVO.setCompanyName(schemaName);
                 //run this in public schema
                 final JPAServiceFacade jpaController1 = new JPAServiceFacade(utx, emf, AbstractJPAController.PUBLIC_SCHEMA_NAME);
                 jpaController1.createTheSchema(registrationVO);
-                
-                 //Insert the base data. run this in the schema just created
+
+                //Insert the base data. run this in the schema just created
                 TenantDataPopulator dataPopulator = new TenantDataPopulator(new JPAServiceFacade(utx, emf, schemaName));
                 dataPopulator.populateBaseData();
-                
-                 //Insert the Admin user
-                dataPopulator.insertAdminUser(registrationVO);
+
+                //Insert the Admin user
+                Usuario admin = dataPopulator.insertAdminUser(registrationVO);
+
+                getUserSessionBean().setCurrent(admin);
+                getUserSessionBean().setTenantId(admin.getTenantId());
+
+                return "/script/index.xhtml?faces-redirect=true";
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -74,8 +87,8 @@ public class SignUpController extends AbstractManagedBean<Usuario> implements Se
             Object value) throws ValidatorException {
         System.out.println("validateCompanyName()");
         String strValue = (String) value;
-        
-          //Set the schema pattern string
+
+        //Set the schema pattern string
         Pattern p = Pattern.compile("[a-z][a-z0-9._-]+$");
 
         //Match the given string with the pattern
@@ -91,7 +104,7 @@ public class SignUpController extends AbstractManagedBean<Usuario> implements Se
             message.setSeverity(FacesMessage.SEVERITY_ERROR);
             throw new ValidatorException(message);
         }
-        
+
         //Public schema
         final JPAServiceFacade jpaController1 = new JPAServiceFacade(utx, emf, AbstractJPAController.PUBLIC_SCHEMA_NAME);
         String result = jpaController1.findSchemaByName(strValue);

@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://java.sun.com/jsf/composite"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name="fieldValue" required="true" />
+        <cc:attribute name="disabled" default="false" />
+        <cc:attribute name="watermark" default="" required="true" />
+        <cc:attribute name="mobile" default="false" required="true" />
+        <cc:attribute name="required" default="false" />
+        <cc:attribute name="requiredMessage" default="Favor ingrese un valor" />
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <h:panelGroup>
+            <pe:ckEditor id="ckEditor" value="#{cc.attrs.fieldValue}" 
+                         language="es" rendered="#{not cc.attrs.mobile}"
+                         toolbar="#{applicationBean.ckEditorToolbar}"
+                         customConfig="#{request.contextPath}/resources/js/ckeditor.js"
+                         required="#{cc.attrs.required}"  width="100%" /> 
+            <p:watermark for="ckEditor" value="#{cc.attrs.watermark}" rendered="#{not cc.attrs.mobile}"/>
+
+            <h:inputTextarea id="inputTextarea" value="#{cc.attrs.fieldValue}" rendered="#{cc.attrs.mobile}"
+                             required="#{cc.attrs.required}" requiredMessage="#{cc.attrs.requiredMessage}"
+                             styleClass="form-control summernote" >
+
+            </h:inputTextarea>
+            <p:watermark for="inputTextarea" value="#{cc.attrs.watermark}" rendered="#{cc.attrs.mobile}"/>
+            <p:message for="inputTextarea" rendered="#{cc.attrs.mobile}"/>
+            <p:message for="ckEditor" rendered="#{not cc.attrs.mobile}"/>
+
+        </h:panelGroup>
+
+    </cc:implementation>
+</html>

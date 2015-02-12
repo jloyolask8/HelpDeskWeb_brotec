@@ -37,6 +37,7 @@ public class ApplicationConfig {
     }
     private static Log logger = Log.createLogger(ApplicationConfig.class.getName());
     public final static String DEFAULT_CONN_TIMEOUT = "60000";
+    public final static String DEFAULT_UNREAD_DOWNLOAD_LIMIT = "10";
     public final static String DEFAULT_IO_TIMEOUT = "600000";
     public static final String MAIL_DEBUG = "mail.debug";
     public static final String MAIL_SMTP_HOST = "mail.smtp.host";
@@ -540,7 +541,7 @@ public class ApplicationConfig {
 //        try {
 //            value = Boolean.valueOf(getProperty(EnumSettingsBase.SEND_GROUP_NOTIFICATION_ON_NEW_CASE.getAppSetting().getSettingKey(), "false"));
 //            if (isAppDebugEnabled()) {
-//                System.out.println("SEND_GROUP_NOTIFICATION_ON_NEW_CASE:" + value);
+//                //System.out.println("SEND_GROUP_NOTIFICATION_ON_NEW_CASE:" + value);
 //            }
 //        } catch (Exception e) {
 //            e.printStackTrace();

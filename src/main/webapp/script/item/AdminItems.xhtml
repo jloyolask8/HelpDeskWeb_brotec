@@ -28,7 +28,7 @@
                             <p:layoutUnit position="east" resizable="false" size="200" >
                                 <p:menu id="menucat" style="border:none !important; width: 185px;">
                                     <p:submenu label="Opciones">
-                                        <p:menuitem value="Nuevo Item desde archivo" onclick="crearItemsDialog.show();"
+                                        <p:menuitem value="Nuevo Item desde archivo" onclick="PF('crearItemsDialog').show();"
                                                     icon="ui-icon-plusthick" update=":crearItemForm"/>
                                         <p:menuitem value="Cortar" actionListener="#{itemController.cortarItem(actionEvent)}"
                                                     icon="ui-icon-scissors" disabled="#{not itemController.puedeCortar()}"
@@ -42,12 +42,12 @@
                                         <p:menuitem value="Bajar" actionListener="#{itemController.bajarItem(actionEvent)}"
                                                     icon="ui-icon-arrowthick-1-s" disabled="#{not itemController.puedeBajarItem()}"
                                                     update=":formadmincat:arbol :formadmincat:menucat"/>
-                                        <p:menuitem value="Nuevo Item" actionListener="#{itemController.prepareCreateAjax(actionEvent)}" onclick="crearDialog.show();"
+                                        <p:menuitem value="Nuevo Item" actionListener="#{itemController.prepareCreateAjax(actionEvent)}" onclick="PF('crearDialog').show();"
                                                     icon="ui-icon-plusthick" update=":crearItemForm"/>
-                                        <p:menuitem value="Borrar" onclick="borrarDialog.show();"
+                                        <p:menuitem value="Borrar" onclick="PF('borrarDialog').show();"
                                                     icon="ui-icon-minusthick" disabled="#{not itemController.puedeBorrarItem()}"/>
                                         <p:menuitem value="Renombrar" actionListener="#{itemController.prepareRenombrarAjax(actionEvent)}"
-                                                    oncomplete="renombrarDialog.show();" update=":formrename"
+                                                    oncomplete="PF('renombrarDialog').show();" update=":formrename"
                                                     icon="ui-icon-pencil" disabled="#{not itemController.puedeRenombrar()}"/>
                                     </p:submenu>
                                 </p:menu>
