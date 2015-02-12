@@ -92,11 +92,11 @@
 
             <h:body id="mainbody" styleClass="#{UserSessionBean.current.templateTheme ne null ? UserSessionBean.current.templateTheme:'theme-default'} main-navbar-fixed main-menu-animated mmc main-menu-fixed">           
 
+              
+
                 <f:event type="preRenderView" listener="#{casoController.initializeData}" />
 
                 <pe:ajaxErrorHandler /> 
-
-
 
                 <p:idleMonitor timeout="1200000">
                     <p:ajax event="idle" listener="#{applicationBean.onIdle}" async="true" 
@@ -339,7 +339,6 @@
                         <p:defaultCommand target="main-navbar-form:searchCaseBtn" />
                     </h:form>
 
-
                     <!-- 4. $MAIN_MENU =================================================================================
                     
                                     Main menu
@@ -510,7 +509,7 @@
 
                                     </h:panelGroup>
 
-                                     <li class="mm-dropdown">
+                                    <li class="mm-dropdown">
                                         <a href="#"><i class="menu-icon fa fa-user"></i>
                                             <span class="mm-text" title="TotalActiveSessions: #{applicationBean.totalActiveSession}">
                                                 Usuarios Conectados (#{applicationBean.usersLoggedIn.size()})
@@ -527,8 +526,8 @@
                                                     </p:commandLink>
 
                                                 </li>
-                                                
-                                                  
+
+
                                             </c:forEach>
                                         </ul>
                                     </li>
@@ -548,7 +547,7 @@
                                     </h:panelGroup>
 
 
-                                   
+
                                     <h:panelGroup rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
                                         <li class="mm-dropdown">
                                             <a href="#"><i class="menu-icon fa fa-wrench"></i><span class="mm-text">Ajustes Sistema</span></a>
@@ -740,11 +739,7 @@
 
                 <ui:insert name="dialogs"/>
 
-                <p:ajaxStatus style="display:block;">
-                    <f:facet name="default">
-                        <h:outputText value="Por favor espere..." style="font-weight: bold;"/>
-                    </f:facet>               
-                </p:ajaxStatus>
+              
 
 
             </h:body>

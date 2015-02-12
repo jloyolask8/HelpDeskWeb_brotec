@@ -51,43 +51,10 @@
                         <!-- Search form -->
                         <h:form id="formfilter" styleClass="search-form">
 
-                            <div class="input-group input-group-lg">
-
-                                <h:inputText id="query" styleClass="form-control no-border" style="#{casoController.filterViewToggle ? 'border-bottom-left-radius: 0px;':''}" value="#{casoController.query}"  />
-                                <p:watermark for="query" value="#{empty casoController.vista ? 'Search':'Search in '.concat(casoController.vista.nombre)}"/>
-
-                                <span class="input-group-btn">
-
-                                    <p:commandButton id="simpleSearchBtn" ajax="true" update=":form0"                                                      
-                                                     style="background: white;"
-                                                     styleClass="btn btn-outline no-border no-border-radius" value=""
-                                                     actionListener="#{casoController.filter()}">
-
-                                    </p:commandButton>
-
-                                </span>
-
-                                <span class="input-group-btn hidden-xs">
-
-                                    <p:commandButton id="filterPanelToggle"  styleClass="btn no-border"
-                                                     style="background: white;#{casoController.filterViewToggle ? 'border-bottom-right-radius: 0px;':''}" 
-
-                                                     ajax="true"  icon="#{casoController.filterViewToggle ? 'ui-icon-minus':'ui-icon-triangle-1-s'}" iconPos="notext"
-                                                     update=":formfilter :formfilter:panelFilter0:panelFilter"
-                                                     disabled="#{not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
-                                                     title="#{casoController.filterViewToggle ? 'Ocultar filtros':'Ver filtro avanzado'}"
-                                                     immediate="true">
-                                        <f:setPropertyActionListener target="#{casoController.filterViewToggle}" 
-                                                                     value="#{not casoController.filterViewToggle}"/>
-                                    </p:commandButton>
-
-                                </span>
-
-
-                            </div> <!-- / .input-group -->
+                            
 
                             <go:filterView id="panelFilter0" titleIconClass="fa fa-inbox page-header-icon hidden-xs"
-                                           showSearchBar="false"
+                                           showSearchBar="true"
                                            controllerMBean="#{casoController}" 
                                            vista="#{casoController.vista}"
                                            filterHelper="#{casoController.filterHelper}" 
@@ -197,36 +164,8 @@
 
                                     <div class="btn-toolbar pull-right valign-middle" role="toolbar">
                                         
-                                        <div class="btn-group valign-middle">
-                                            <h:outputText value="#{casoController.pagination.pageFirstItem + 1}-#{casoController.pagination.pageLastItem + 1} de #{casoController.pagination.itemsCount}" 
-                                                          rendered="#{casoController.pagination.itemsCount gt 0}" style="color: #000;"/>
-                                        </div>
-                                        
-                                         <div class="btn-group valign-middle">
-                                            <h:selectOneMenu id="cant" styleClass="form-control input-sm"  
-                                                         value="#{casoController.paginationPageSize}"
-                                                         rendered="#{casoController.pagination.itemsCount > 0}">
-                                            <p:ajax event="change" listener="#{casoController.resetPageSize()}"
-                                                    update=":form0"/>
-                                            <f:selectItems value="#{casoController.pagination.pageSizesAvailable}"/>
-                                        </h:selectOneMenu>
-                                        </div>
-                                        
-                                        <div id="nav_buttons" class="btn-group valign-middle">
-                                            <p:commandLink action="#{casoController.previous}" styleClass="btn" 
-                                                           update=":form0" disabled="#{not casoController.pagination.hasPreviousPage}" 
-                                                           rendered="#{casoController.pagination.itemsCount > 0}">
-                                                <i class="fa fa-chevron-left"></i>
-                                            </p:commandLink>
-                                            <h:outputText value=" "/>
-                                            <p:commandLink action="#{casoController.next}" styleClass="btn" 
-                                                           update=":form0" 
-                                                           disabled="#{not casoController.pagination.hasNextPage}" 
-                                                           rendered="#{casoController.pagination.itemsCount > 0}">
-                                                <i class="fa fa-chevron-right"></i>
-                                            </p:commandLink>
-
-                                        </div>
+                                       <go:paginatorBtnsBt controllerMBean="#{casoController}" update=":form0"/>
+                                       
                                     </div>
 
                                   

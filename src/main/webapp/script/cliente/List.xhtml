@@ -44,6 +44,9 @@
             </h:form>
 
             <h:form id="form">
+                
+                <go:paginatorBtnsBt controllerMBean="#{clienteController}" update=":form"/>
+                
                 <h:panelGroup>
 
                     <p:toolbar >
@@ -52,15 +55,6 @@
                             <p:commandButton ajax="false" action="#{clienteController.prepareCreateMasivo()}" value="Importación masiva de clientes" icon="fa fa-upload" />
                             <p:commandButton ajax="false" action="cargarClienteProducto" value="Importar Relación Cliente/#{applicationBean.productSubComponentDescription}" icon="fa fa-upload" />
                         </p:toolbarGroup>
-
-                        <p:toolbarGroup align="right">
-
-                            <go:paginatorButtons controllerMBean="#{clienteController}" update=":form"/>
-                            <p:separator/>
-                            <p:commandButton ajax="false" action="#{clienteController.prepareCreate}" value="Crear cliente" icon="fa fa-plus-circle" />
-
-                        </p:toolbarGroup>  
-
 
                     </p:toolbar>
 

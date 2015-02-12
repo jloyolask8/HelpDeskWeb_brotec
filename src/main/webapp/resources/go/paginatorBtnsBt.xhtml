@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://java.sun.com/jsf/composite"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name="controllerMBean" required="true" /> 
+        <cc:attribute name="update" default=":mainform:messages" />
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+            
+
+                <div class="btn-group">
+                    <h:selectOneMenu id="cant" styleClass="form-control input-sm"  
+                                     value="#{cc.attrs.controllerMBean.paginationPageSize}"
+                                     rendered="#{cc.attrs.controllerMBean.pagination.itemsCount > 0}">
+                        <p:ajax event="change" listener="#{cc.attrs.controllerMBean.resetPageSize()}"
+                                update="#{cc.attrs.update}"/>
+                        <f:selectItems value="#{cc.attrs.controllerMBean.pagination.pageSizesAvailable}"/>
+                    </h:selectOneMenu>
+                </div>
+
+                <div id="nav_buttons" class="btn-group">
+                    <p:commandLink action="#{cc.attrs.controllerMBean.previous}" styleClass="btn btn-primary btn-outline" 
+                                   update="#{cc.attrs.update}" disabled="#{not cc.attrs.controllerMBean.pagination.hasPreviousPage}" 
+                                   rendered="#{cc.attrs.controllerMBean.pagination.itemsCount > 0}">
+                        <i class="fa fa-chevron-left"></i>
+                    </p:commandLink>
+                    <h:outputText value=" "/>
+                    <p:commandLink action="#{cc.attrs.controllerMBean.next}" styleClass="btn btn-primary btn-outline" 
+                                   update="#{cc.attrs.update}" 
+                                   disabled="#{not cc.attrs.controllerMBean.pagination.hasNextPage}" 
+                                   rendered="#{cc.attrs.controllerMBean.pagination.itemsCount > 0}">
+                        <i class="fa fa-chevron-right"></i>
+                    </p:commandLink>
+
+                </div>
+    </cc:implementation>
+</html>

@@ -26,8 +26,11 @@
                             <p:commandLink id="vistalink1" ajax="true" oncomplete="$('.nav-pills, .nav-tabs').tabdrop();"
                                            update="#{cc.attrs.update}" 
                                            actionListener="#{cc.attrs.controllerMBean.applyViewFilter(vista1)}" 
-                                           value="#{vista1.nombre}"  
-                                           rendered="#{cc.attrs.controllerMBean.vista ne vista1}"/>
+
+                                           rendered="#{cc.attrs.controllerMBean.vista ne vista1}">
+
+                                #{vista1.nombre}<span class="label label-default">#{cc.attrs.controllerMBean.countItemsVista(vista1)}</span>
+                            </p:commandLink>
                             <p:tooltip for="vistalink1" value="#{vista1.descripcion}" rendered="#{not empty vista1.descripcion}" />  
 
                             <h:panelGroup rendered="#{cc.attrs.controllerMBean.vista eq vista1}">
@@ -36,8 +39,25 @@
 
                         </li>
                     </ui:repeat>
+
+                    <li>
+                        <h:commandLink action="#{vistaController.prepareList()}"
+                                       rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
+                                       title="Administrar Vistas" >
+                            <i class="fa fa-cog"/>
+                        </h:commandLink>
+                    </li>
+                    <li>
+                        <p:commandLink actionListener="#{cc.attrs.controllerMBean.resetVistas}"
+                                       update="#{cc.attrs.update}"
+                                       title="Refrescar Vistas">
+                            <i class="fa fa-refresh"/>
+                        </p:commandLink>
+                    </li>
                 </ul> <!-- / .nav -->
             </div>
+
+
         </h:form>
         <!-- / Tabs -->
 

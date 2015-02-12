@@ -27,32 +27,48 @@
 
         <composite:implementation>
 
+
+            <h:panelGroup layout="block" styleClass="input-group input-group-lg" rendered="#{cc.attrs.showSearchBar}">
+
+                <h:inputText id="query" styleClass="form-control no-border" 
+                             style="#{cc.attrs.controllerMBean.filterViewToggle ? 'border-bottom-left-radius: 0px;':''}" 
+                             value="#{cc.attrs.controllerMBean.query}"  />
+                <p:watermark for="query" value="#{empty cc.attrs.controllerMBean.vista ? 'Search':'Search in '.concat(cc.attrs.controllerMBean.vista.nombre)}"/>
+
+                <span class="input-group-btn">
+
+                    <p:commandButton id="simpleSearchBtn" ajax="true" update="@form panelFilter #{cc.attrs.update}"                                                      
+                                     style="background: white;width: 1px;" 
+                                     styleClass="btn btn-outline no-border no-border-radius" value=""
+                                     actionListener="#{cc.attrs.controllerMBean.filter()}">
+
+                    </p:commandButton>
+
+                </span>
+
+                <span class="input-group-btn hidden-xs">
+
+                    <p:commandButton id="filterPanelToggle"  styleClass="btn no-border"
+                                     style="background: white;#{cc.attrs.controllerMBean.filterViewToggle ? 'border-bottom-right-radius: 0px;':''}" 
+
+                                     ajax="true"  icon="#{cc.attrs.controllerMBean.filterViewToggle ? 'ui-icon-minus':'ui-icon-triangle-1-s'}" iconPos="notext"
+                                     update="@form panelFilter #{cc.attrs.update}"
+                                     disabled="#{not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
+                                     title="#{cc.attrs.controllerMBean.filterViewToggle ? 'Ocultar filtros':'Ver filtro avanzado'}"
+                                     immediate="true">
+                        <f:setPropertyActionListener target="#{cc.attrs.controllerMBean.filterViewToggle}" 
+                                                     value="#{not cc.attrs.controllerMBean.filterViewToggle}"/>
+                    </p:commandButton>
+
+                </span>
+
+
+            </h:panelGroup>
+
             <p:panel id="panelFilter"  styleClass="panelFilter no-border-radius"  
                      style="border: none !important;"  visible="#{cc.attrs.controllerMBean.filterViewToggle}">
 
-                <h:panelGrid columns="5" rendered="#{cc.attrs.showSearchBar}" style="padding: 0">
 
-                    <h:inputText id="query" styleClass="query" value="#{cc.attrs.controllerMBean.query}" size="64" />
-
-                    <p:commandButton id="simpleSearchBtn" ajax="true" update="#{cc.attrs.update}" icon="fa fa-search" 
-                                     title="" 
-                                     iconPos="notext"
-                                     actionListener="#{cc.attrs.controllerMBean.filter()}"/>
-
-                    <p:commandButton id="filterPanelToggle" 
-                                     ajax="true"
-                                     update="panelFilter"
-                                     disabled="#{not cc.attrs.canChangeFilters}"
-                                     title="#{cc.attrs.controllerMBean.filterViewToggle ? 'Ocultar filtros':'Ver filtro avanzado'}"
-                                     immediate="true" icon="#{cc.attrs.controllerMBean.filterViewToggle ? 'fa fa-caret-square-o-up ':'fa fa-caret-square-o-down '}">
-
-                        <f:setPropertyActionListener target="#{cc.attrs.controllerMBean.filterViewToggle}" 
-                                                     value="#{not cc.attrs.controllerMBean.filterViewToggle}"/>
-
-                    </p:commandButton>
-                    <p:watermark for="query" value="#{empty cc.attrs.vista ? 'Search':'Search in '.concat(cc.attrs.vista.nombre)}"/>
-                    <p:tooltip for="simpleSearchBtn" value="#{empty cc.attrs.vista ? 'Search all':'Search in '.concat(cc.attrs.vista.nombre)}"/>
-                </h:panelGrid>
 
                 <ui:repeat id="filtrosVista" 
                            value="#{cc.attrs.vista.filtrosVistaList}" var="filtro">  
@@ -134,8 +150,8 @@
                         weekStart: 1,
                         forceParse: true
                     });
-                    
-                     
+
+
 
                     $(function () {
                         jQuery(".typeahead").typeahead({
