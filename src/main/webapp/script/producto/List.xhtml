@@ -4,128 +4,226 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:go="http://java.sun.com/jsf/composite/go">
 
-    <ui:composition template="/script/template_inbox.xhtml">
+    <ui:composition template="/script/template_inbox_bootstrap.xhtml">
         <ui:define name="title">
             <p:outputLabel value="#{applicationBean.helpdeskTitle} - Listado de #{applicationBean.productDescription}(s)"/>
         </ui:define>
-        <ui:define name="west">
-            <p:panel>
-                    <h:outputLabel escape="false" value="#{bundle.ayudaProductos}"/>
-            </p:panel>
+        <ui:define name="menutitle">
+            <p:outputLabel value="Listado de #{applicationBean.productDescription}"></p:outputLabel>
         </ui:define>
+        <ui:define name="help">
+            <h:outputText  value="#{bundle.ayudaProductos}" escape="false"/>
+        </ui:define>
+
         <ui:define  name="body">
-            <h:form id="form">
 
-                <h:outputFormat value="Hay un total de {0} #{applicationBean.productSubComponentDescription}(s), en {1} #{applicationBean.productComponentDescription}(s) y {2} #{applicationBean.productDescription}(s).">
-                    <f:param value="#{productoController.totalSubComponentsItemsCount}" />
-                    <f:param value="#{productoController.totalComponentsItemsCount}" />
-                    <f:param value="#{productoController.totalItemsCount}" />
-                </h:outputFormat>
+            <!-- page-header -->
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-sm-10 col-xs-10">
+                        <h1><i class="fa fa-cubes page-header-icon"></i>&nbsp;&nbsp;<p:outputLabel value="Listado de #{applicationBean.productDescription}(s)"></p:outputLabel></h1>
+                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                            <i class="fa fa-info-circle"/>
+                        </p:commandLink> 
+                    </div>
+                    <div class="col-sm-2 col-xs-2">
+                        <h:form>
 
-
-                <h:panelGroup >
-
-                    <p:dataTable var="item" value="#{productoController.items}"
-                                 selectionMode="single"
-                                 emptyMessage="#{bundle.ListProductoContratadoEmpty}">
-
-                        <f:facet name="header">
-                            <h:outputText value="Listado de #{applicationBean.productDescription}(s)"></h:outputText>
-                        </f:facet>
-                        
-                        
-                        <p:column>
-                            <p:graphicImage value="#{productoController.findLogoStreamedContent(item.idLogo)}" cache="false" width="60"/>
-                        </p:column>
-                        <p:column headerText="#{bundle.ProductoTitle_nombre}" filterBy="nombre" filterMatchMode="contains">
-
-                           
-                             
-                            <h:outputText value="#{item.nombre}" title="#{item.idProducto}"/>
-                        </p:column>
-                     
-
-                        <p:column headerText="Total de Modelos">
-                            <h:outputText value="#{item.modeloProductoList ne null ? item.modeloProductoList.size():'0'}"/>
-                        </p:column>
-
-                        <p:column headerText="Total de #{applicationBean.productComponentDescription}(s)">
-                            <h:outputText value="#{item.componenteList ne null ? item.componenteList.size():'0'}"/>
-                        </p:column>
-
-                        <p:column headerText="Grupos Encargados">
-                            <h:outputText value="#{empty item.grupoList ? 'ninguno':item.grupoList }"/>
-                        </p:column>
-                        
-                          <p:column headerText="Canal por defecto">
-                            <h:outputText value="#{item.idOutCanal.nombre}"/>
-                        </p:column>
-
-                        <p:column headerText="Acción">
-                            <p:commandButton id="editBtn" ajax="false" action="#{productoController.prepareEdit(item)}" title="Editar #{applicationBean.productDescription}" icon="ui-icon ui-icon-pencil"/>
-                            <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" action="#{productoController.setSelected(item)}" oncomplete="PF('confirmation').show()" icon="ui-icon ui-icon-trash"/>
-                        </p:column>
-
-                        <f:facet name="footer">
-                            <p:toolbar style="border: none;">
-                               <p:toolbarGroup align="left">
-
-                                    <p:outputLabel value="Páginas de "/>
-                                    <p:selectOneMenu id="cant" value="#{productoController.paginationPageSize}" style="top: 7px">
-                                        <p:ajax event="change" listener="#{productoController.resetPageSize()}" update=":form"/>
-                                        <f:selectItems value="#{productoController.pagination.pageSizesAvailable}"/>
-                                    </p:selectOneMenu>
-
-                                    <p:separator/>
-
-                                    <p:commandButton ajax="false" action="#{productoController.first}" disabled="#{not productoController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{productoController.pagination.itemsCount > 0}"/>
-
-                                    <p:commandButton ajax="false" action="#{productoController.previous}" disabled="#{not productoController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{productoController.pagination.itemsCount > 0}"/>
-
-                                    <p:commandButton ajax="false" action="#{productoController.next}" disabled="#{not productoController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{productoController.pagination.itemsCount > 0}"/>
-
-                                    <p:commandButton ajax="false" action="#{productoController.last}" disabled="#{not productoController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{productoController.pagination.itemsCount > 0}"/>
-
-                                    <p:separator/>
-                                    <p:commandButton ajax="false" action="#{productoController.prepareCreate}" value="Crear #{applicationBean.productDescription}" icon="ui-icon ui-icon-plus" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
-                                    <p:separator/>
-                                    <p:commandButton ajax="false" action="#{productoController.prepareCreateMasivo()}" value="Carga masiva" icon="ui-icon ui-icon-arrowstop-1-n" style="float: right" />
+                            <div class="btn-group pull-right">
+                                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i></button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <h:commandLink action="#{productoController.prepareCreate}" 
+                                                       value="Agregar #{applicationBean.productDescription}"
+                                                       title="Agregar/Crear nuevo #{applicationBean.productDescription}">
+                                        </h:commandLink>
+                                    </li>
+                                    <li>
+                                        <h:commandLink action="#{productoController.prepareCreateMasivo()}" 
+                                                       value="Agregar Carga masiva clientes"
+                                                       title="Agregar/Carga masiva clientes">
+                                        </h:commandLink>
+                                    </li>
+                                </ul>
+                            </div>
 
 
-                               </p:toolbarGroup>
-                            </p:toolbar>
+                        </h:form>
 
-                        </f:facet>
+                    </div>
+                </div>
+            </div><!-- / .page-header --> 
+
+            <div class="row">
+                <go:vistasListBt id="vistasList" 
+                                 update=":vistasList:vistasForm :mainform:messages :form :form0" 
+                                 controllerMBean="#{productoController}"
+                                 user="#{UserSessionBean.current}"/>
+                <div class="panel search-panel">
+                    <h:form id="form" styleClass="search-form">
+                        <go:filterView controllerMBean="#{productoController}" vista="#{productoController.vista}"
+                                       showSearchBar="true"
+                                       filterHelper="#{productoController.filterHelper}" 
+                                       update=":mainform:messages :form0"
+                                       vistaControllerBackOutcome="/script/cliente/List"/>
+
+                        <h:panelGroup layout="block" styleClass="row alert alert-page alert-warning" rendered="#{productoController.items.rowCount le 0}">
+                            <button type="button" class="close" data-dismiss="alert">x</button>
+                            Su busqueda no coincide con ningun producto.
+                        </h:panelGroup>
+                    </h:form>
+
+                    <h:form id="form0">
+
+                        <h:outputFormat value="Hay un total de {0} #{applicationBean.productSubComponentDescription}(s), en {1} #{applicationBean.productComponentDescription}(s) y {2} #{applicationBean.productDescription}(s).">
+                            <f:param value="#{productoController.totalSubComponentsItemsCount}" />
+                            <f:param value="#{productoController.totalComponentsItemsCount}" />
+                            <f:param value="#{productoController.totalItemsCount}" />
+                        </h:outputFormat>
+
+
+                        <h:panelGroup layout="block" styleClass="panel panel-transparent" rendered="#{productoController.items.rowCount gt 0}">
+                            <div class="panel-heading">
+                                <span class="panel-title"> 
+                                    <go:paginatorCounts controllerMBean="#{productoController}"/>
+                                </span>
+
+                                <div class="panel-heading-controls">
+                                    <go:paginatorBtnsBt controllerMBean="#{productoController}" update=":form"/>
+                                </div>
+                            </div>
+
+                            <div class="panel-body no-padding">
+                                <div class="table-responsive">
+
+                                    <h:dataTable id="panelG1" value="#{productoController.items}" 
+                                                 styleClass="table table-hover"
+                                                 var="item">
+
+                                        <h:column >
+                                            <f:facet name="header">
+                                                <h:outputText value="Logo"/>
+                                            </f:facet>
+                                            <p:graphicImage value="#{productoController.findLogoStreamedContent(item.idLogo)}" cache="false" width="60"/>
+                                        </h:column>
+
+                                        <h:column >
+                                            <f:facet name="header">
+                                                <h:outputText value="#{bundle.ProductoTitle_nombre}"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.nombre}" title="#{item.idProducto}"/>
+                                        </h:column>
+
+                                        <h:column >
+                                            <f:facet name="header">
+                                                <h:outputText value="Total de Modelos"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.modeloProductoList ne null ? item.modeloProductoList.size():'0'}"/>
+                                        </h:column>
+
+                                        <h:column >
+                                            <f:facet name="header">
+                                                <h:outputText value="Total de #{applicationBean.productComponentDescription}(s)"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.componenteList ne null ? item.componenteList.size():'0'}"/>
+                                        </h:column>
+
+                                        <h:column >
+                                            <f:facet name="header">
+                                                <h:outputText value="Grupos Encargados"/>
+                                            </f:facet>
+                                            <h:outputText value="#{empty item.grupoList ? 'ninguno':item.grupoList }"/>
+                                        </h:column>
+                                        
+                                        <h:column >
+                                            <f:facet name="header">
+                                                <h:outputText value="Canal por defecto"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.idOutCanal.nombre}"/>
+                                        </h:column>
+                                        
+
+                                        
 
 
 
-                    </p:dataTable>
-                </h:panelGroup>
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Accion"/>
+                                            </f:facet>
+                                            <div class="btn-toolbar">
 
-                <br />
 
 
-                <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
-                          header="Iniciando proceso de eliminación" widgetVar="confirmation">
+                                                <p:commandLink id="editBtn" action="#{productoController.prepareEdit(item)}" title="Editar #{applicationBean.productDescription}" ajax="false"
+                                                               styleClass="btn btn-sm btn-outline btn-primary"
+                                                               rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
+                                                    <i class="fa fa-edit"/>
+                                                </p:commandLink>
 
-                    <h:outputText value="Está seguro de eliminar el producto #{productoController.selected.nombre}?"/>
+                                                <p:commandLink  id="showDialogButton" 
+                                                                actionListener="#{productoController.setSelected(item)}"
+                                                                rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
+                                                                styleClass="btn btn-sm btn-outline btn-danger"
+                                                                title="Eliminar"
+                                                                oncomplete="PF('confirmation').show()"
+                                                                update=":confirmDialog">
+                                                    <i class="fa fa-times"/>
 
-                    <f:facet name="footer">
-                        <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{productoController.destroy()}" 
-                                         ajax="false"/>
-                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
-                    </f:facet>
+                                                </p:commandLink>
+                                            </div>
+                                        </h:column>    
 
-                </p:dialog>
 
-            </h:form>
+
+
+
+
+
+                                    </h:dataTable>
+
+                                </div>
+
+                            </div>
+
+                            <div class="panel-footer">
+                                <div class="row text-center">
+                                    <go:paginatorCounts controllerMBean="#{productoController}"/>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+                    </h:form>
+                </div>
+            </div>
+            <br />
+        </ui:define>
+
+        <ui:define name="dialogs">
+            <p:confirmDialog closeOnEscape="true" global="true" showEffect="fade" hideEffect="explode" >
+                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/> 	
+            </p:confirmDialog>
+
+
+
+
+
+            <p:dialog id="confirmDialog" showEffect="fade" hideEffect="clip" modal="true"
+                      header="Iniciando proceso de eliminación" widgetVar="confirmation">
+                <h:form id="formDelete">
+                    <h:outputText value="Está seguro de eliminar al cliente #{productoController.selected.nombre}?"/>
+                    <p:commandButton id="confirm" value="Si, Eliminar" actionListener="#{productoController.destroy()}" action="/script/pagina"
+                                     update=":form0" oncomplete="PF('confirmation').hide()"/>
+                    <p:commandButton id="decline" value="No, Cancelar" onclick="PF('confirmation').hide()" type="button" /> 
+
+                </h:form>
+            </p:dialog>
+
+
         </ui:define>
     </ui:composition>
 
 </html>
-
-
-
-
