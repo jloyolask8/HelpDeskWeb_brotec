@@ -102,7 +102,7 @@ public class ComponenteController extends AbstractManagedBean<Componente> implem
             return;
         }
         try {
-            getJpaController().remove(Componente.class, item);
+            getJpaController().remove(Componente.class, item.getIdComponente());
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ComponenteDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -150,7 +150,7 @@ public class ComponenteController extends AbstractManagedBean<Componente> implem
 
     private void performDestroy() {
         try {
-            getJpaController().remove(Componente.class, current);
+            getJpaController().remove(Componente.class, current.getIdComponente());
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ComponenteDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));

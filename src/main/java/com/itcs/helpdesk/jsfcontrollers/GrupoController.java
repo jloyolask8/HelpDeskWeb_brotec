@@ -240,7 +240,7 @@ public class GrupoController extends AbstractManagedBean<Grupo> implements Seria
                 JsfUtil.addErrorMessage("No se puede eliminar, el grupo aun tiene usuarios asociados");
                 return false;
             }
-            getJpaController().remove(Grupo.class, current);
+            getJpaController().remove(Grupo.class, current.getIdGrupo());
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("GrupoDeleted"));
             return true;
         } catch (Exception e) {

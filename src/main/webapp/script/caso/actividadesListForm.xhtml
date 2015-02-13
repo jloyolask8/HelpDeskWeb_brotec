@@ -24,7 +24,7 @@
                         <div class="tl-time">
                             <h:outputText value="#{casoController.prettyDate(item.fechaCreacion)}"/>
                         </div>
-                        <div class="tl-icon bg-info"><i class="fa #{item.tipoNota.styleIcon ne null ? item.tipoNota.styleIcon:'fa-comment'}"></i></div>
+                        <div class="tl-icon #{item.visible ? 'bg-info':'bg-gray'}"><i class="fa #{item.tipoNota.styleIcon ne null ? item.tipoNota.styleIcon:'fa-comment'}"></i></div>
                         <div class="panel tl-body">
                             <h4 class="text-default">
                                 <h:outputText value="\##{item.idNota} #{item.creadaPor ne null ? item.creadaPor.capitalName:(item.enviadoPor ne null ? item.enviadoPor:'unknown sender')}"/></h4>
@@ -68,7 +68,15 @@
 
                             <span class="text-light-gray">#{casoController.creaTituloDeNota(item)}</span>
 
-                            <div class="pull-right">
+                            <p:outputPanel layout="block" styleClass="pull-right">
+
+                                <p:commandLink styleClass="btn-link" ajax="true"
+                                               actionListener="#{casoController.changeNotaVisibility(item, item.visible)}" 
+                                               update="@parent" >
+                                    <i class="#{item.visible ? 'fa fa-eye':'fa fa-eye-slash'}" 
+                                       title="#{item.visible ? 'Visible al público':'Privado'}"/>
+                                </p:commandLink>
+                                &nbsp;
                                 <p:commandLink actionListener="#{casoController.prepareEditNota(item)}"
                                                update=":formEditNota"
                                                onsuccess="PF('Nota').show();" rendered="#{casoController.notaEditable(item)}" 
@@ -81,7 +89,7 @@
                                                styleClass="btn-link">
                                     <span class="btn-label icon fa fa-external-link" title="Abrir mensaje original"></span>
                                 </p:commandLink>
-                            </div>
+                            </p:outputPanel>
 
                         </div> <!-- / .tl-body -->
                     </div> <!-- / .tl-entry -->

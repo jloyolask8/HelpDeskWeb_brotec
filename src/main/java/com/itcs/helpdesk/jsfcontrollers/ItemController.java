@@ -203,7 +203,7 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
 
     private void performDestroy() {
         try {
-            getJpaController().remove(Item.class, current);
+            getJpaController().remove(Item.class, current.getIdItem());
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ItemDeleted"));
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
@@ -465,7 +465,7 @@ public class ItemController extends AbstractManagedBean<Item> implements Seriali
             }
         }
         try {
-            getJpaController().remove(Item.class, item);
+            getJpaController().remove(Item.class, item.getIdItem());
         } catch (Exception ex) {
             Logger.getLogger(ItemController.class.getName()).log(Level.SEVERE, null, ex);
         }

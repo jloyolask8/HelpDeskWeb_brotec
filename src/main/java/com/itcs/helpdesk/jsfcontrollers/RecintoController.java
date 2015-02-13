@@ -162,7 +162,7 @@ public class RecintoController extends AbstractManagedBean<Recinto> implements S
 
     private void performDestroy() {
         try {
-            getJpaController().remove(Recinto.class, current);
+            getJpaController().remove(Recinto.class, current.getIdRecinto());
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("RecintoDeleted"));
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());

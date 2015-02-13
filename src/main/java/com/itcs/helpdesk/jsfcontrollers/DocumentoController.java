@@ -118,7 +118,7 @@ public class DocumentoController extends AbstractManagedBean<Documento> implemen
 
     private void performDestroy() {
         try {
-            getJpaController().remove(Documento.class, current);
+            getJpaController().remove(Documento.class, current.getIdDocumento());
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("DocumentoDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));

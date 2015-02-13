@@ -80,7 +80,7 @@ public class BlackListController extends AbstractManagedBean<BlackListEmail> imp
     public void destroy(BlackListEmail o) {
         if (o != null) {
             try {
-                getJpaController().remove(BlackListEmail.class, o);
+                getJpaController().remove(BlackListEmail.class, o.getEmailAddress());
                 JsfUtil.addSuccessMessage(getSelected().getClass().getSimpleName() + " eliminado exitosamente.");
             } catch (Exception e) {
                 Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
@@ -111,7 +111,7 @@ public class BlackListController extends AbstractManagedBean<BlackListEmail> imp
 //    }
     private void performDestroy() {
         try {
-            getJpaController().remove(BlackListEmail.class, current);
+            getJpaController().remove(BlackListEmail.class, current.getEmailAddress());
            JsfUtil.addSuccessMessage(getSelected().getClass().getSimpleName() + " eliminado exitosamente.");
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());

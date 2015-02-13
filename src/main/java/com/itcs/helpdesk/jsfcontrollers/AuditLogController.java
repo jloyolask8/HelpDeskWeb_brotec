@@ -1,18 +1,17 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.FiltroAcceso;
-import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
-import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.AuditLog;
-import com.itcs.helpdesk.persistence.entityenums.EnumFunciones;
-import com.itcs.helpdesk.persistence.utils.vo.AuditLogVO;
-import com.itcs.helpdesk.util.Log;
+import com.itcs.helpdesk.persistence.entities.FiltroVista;
+import com.itcs.helpdesk.persistence.entities.Vista;
+import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
+import com.itcs.helpdesk.persistence.utils.OrderBy;
 import java.io.Serializable;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.Collections;
 import java.util.List;
-import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
@@ -20,11 +19,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
-import javax.faces.model.SelectItem;
 import org.primefaces.model.SelectableDataModel;
-
 
 @ManagedBean(name = "auditLogController")
 @SessionScoped
@@ -34,29 +30,94 @@ public class AuditLogController extends AbstractManagedBean<AuditLog> implements
     private transient FiltroAcceso filtroAcceso;
 //    private AuditLog current;
 //    private AuditLog[] selectedItems;
-   
+
     private int selectedItemIndex;
-    private Date fechaInicio;
-    private Date fechaTermino;
+//    private Date fechaInicio;
+//    private Date fechaTermino;
 
     /*
      * Elementos para las Alertas
      */
-    private AuditLogVO alerta;
+//    private AuditLogVO alerta;
     //private List<AuditLog> alertas = null;
     boolean isAlerts = false;
 
     public AuditLogController() {
         super(AuditLog.class);
     }
+    
+    public void prepareFilterAlertas(){
+        
+        Vista vista1 = new Vista(AuditLog.class);
+        vista1.setNombre("Alertas");
 
-    public AuditLogVO getAlerta() {
-        return alerta;
+        FiltroVista f1 = new FiltroVista();
+        f1.setIdCampo("campo");
+        f1.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+        f1.setValor("EstadoAlerta");
+        f1.setIdVista(vista1);
+
+        vista1.getFiltrosVistaList().add(f1);
+        
+        setVista(vista1);
+        
+        recreateModel();
+        recreatePagination();
+    }
+    
+    public void resetVista(){
+        Vista vista1 = new Vista(AuditLog.class);
+        vista1.setNombre("Logs");
+        setVista(vista1);
+        recreateModel();
+        recreatePagination();
     }
 
-    public void setAlerta(AuditLogVO alerta) {
-        this.alerta = alerta;
+    public List<AuditLog> getActivityLogs(String idUsuario) {
+        if (idUsuario == null) {
+            return null;
+        }
+        Vista vista1 = new Vista(AuditLog.class);
+        vista1.setNombre("Activity Logs");
+
+        FiltroVista f1 = new FiltroVista();
+        f1.setIdCampo("owner");
+        f1.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+        f1.setValor(idUsuario);
+        f1.setIdVista(vista1);
+
+        vista1.getFiltrosVistaList().add(f1);
+        
+        FiltroVista f2 = new FiltroVista();
+        f2.setIdCampo("idUser");
+        f2.setIdComparador(EnumTipoComparacion.NE.getTipoComparacion());
+        f2.setValor(idUsuario);
+        f2.setIdVista(vista1);
+
+        vista1.getFiltrosVistaList().add(f2);
+
+        try {
+            return (List<AuditLog>) getJpaController()
+                    .findEntities(vista1, 14, 0, new OrderBy("fecha", OrderBy.OrderType.DESC), getUserSessionBean().getCurrent());
+
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, "ClassNotFoundException", ex);
+        }
+        return Collections.EMPTY_LIST;
     }
+
+    @Override
+    public OrderBy getDefaultOrderBy() {
+        return new OrderBy("fecha", OrderBy.OrderType.DESC);
+    }
+
+//    public AuditLogVO getAlerta() {
+//        return alerta;
+//    }
+//
+//    public void setAlerta(AuditLogVO alerta) {
+//        this.alerta = alerta;
+//    }
 
     /*
      * public DataModel getAlertas() { if(alertas == null){ if(alerta == null){
@@ -76,71 +137,66 @@ public class AuditLogController extends AbstractManagedBean<AuditLog> implements
 //        }
 //        return current;
 //    }
-
-    public Date getFechaInicio() {
-        return fechaInicio;
-    }
-
-    public void setFechaInicio(Date fechaInicio) {
-        this.fechaInicio = fechaInicio;
-    }
-
-    public Date getFechaTermino() {
-        return fechaTermino;
-    }
-
-    public void setFechaTermino(Date fechaTermino) {
-        this.fechaTermino = fechaTermino;
-    }
-
-    @Override
-    protected void beforePrepareList() {
-        alerta = new AuditLogVO();
-        isAlerts = false;
-    }
-    
-
-    @Override
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            if (alerta == null) {
-                alerta = new AuditLogVO();
-            }
-            if (!filtroAcceso.verificaAccesoAFuncion(EnumFunciones.FILTRO_OWNER)) {
-                alerta.setIdOwner(((UserSessionBean) JsfUtil.getManagedBean("UserSessionBean")).getCurrent());
-            }
-            pagination = new PaginationHelper(10) {
-                @Override
-                public int getItemsCount() {
-                    if (isAlerts) {
-                        int value = getJpaController().getAuditLogCount(alerta, false);
-                        return value;
-                    } else {
-                        int value = getJpaController().getAuditLogCount(alerta, true);
-                        return value;
-                    }
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    if (alerta == null) {
-                        alerta = new AuditLogVO();
-                    }
-                    if (!filtroAcceso.verificaAccesoAFuncion(EnumFunciones.FILTRO_OWNER)) {
-                        alerta.setIdOwner(((UserSessionBean) JsfUtil.getManagedBean("UserSessionBean")).getCurrent());
-                    }
-                    if (isAlerts) {
-                        return new ListDataModel(getJpaController().findAuditLogEntities(getPageSize(), getPageFirstItem(), alerta, false));
-                    } else {
-                        AuditLogDataModel list = new AuditLogDataModel(getJpaController().findAuditLogEntities(getPageSize(), getPageFirstItem(), alerta, true));
-                        return list;
-                    }
-                }
-            };
-        }
-        return pagination;
-    }
-
+//    public Date getFechaInicio() {
+//        return fechaInicio;
+//    }
+//
+//    public void setFechaInicio(Date fechaInicio) {
+//        this.fechaInicio = fechaInicio;
+//    }
+//
+//    public Date getFechaTermino() {
+//        return fechaTermino;
+//    }
+//
+//    public void setFechaTermino(Date fechaTermino) {
+//        this.fechaTermino = fechaTermino;
+//    }
+//    @Override
+//    protected void beforePrepareList() {
+//        alerta = new AuditLogVO();
+//        isAlerts = false;
+//    }
+//    @Override
+//    public PaginationHelper getPagination() {
+//        if (pagination == null) {
+//            if (alerta == null) {
+//                alerta = new AuditLogVO();
+//            }
+//            if (!filtroAcceso.verificaAccesoAFuncion(EnumFunciones.FILTRO_OWNER)) {
+//                alerta.setIdOwner(((UserSessionBean) JsfUtil.getManagedBean("UserSessionBean")).getCurrent());
+//            }
+//            pagination = new PaginationHelper(10) {
+//                @Override
+//                public int getItemsCount() {
+//                    if (isAlerts) {
+//                        int value = getJpaController().getAuditLogCount(alerta, false);
+//                        return value;
+//                    } else {
+//                        int value = getJpaController().getAuditLogCount(alerta, true);
+//                        return value;
+//                    }
+//                }
+//
+//                @Override
+//                public DataModel createPageDataModel() {
+//                    if (alerta == null) {
+//                        alerta = new AuditLogVO();
+//                    }
+//                    if (!filtroAcceso.verificaAccesoAFuncion(EnumFunciones.FILTRO_OWNER)) {
+//                        alerta.setIdOwner(((UserSessionBean) JsfUtil.getManagedBean("UserSessionBean")).getCurrent());
+//                    }
+//                    if (isAlerts) {
+//                        return new ListDataModel(getJpaController().findAuditLogEntities(getPageSize(), getPageFirstItem(), alerta, false));
+//                    } else {
+//                        AuditLogDataModel list = new AuditLogDataModel(getJpaController().findAuditLogEntities(getPageSize(), getPageFirstItem(), alerta, true));
+//                        return list;
+//                    }
+//                }
+//            };
+//        }
+//        return pagination;
+//    }
 //    public String prepareList() {
 //        pagination = null;
 //        alerta = new AuditLogVO();
@@ -148,13 +204,10 @@ public class AuditLogController extends AbstractManagedBean<AuditLog> implements
 //        isAlerts = false;
 //        return "/script/audit_log/List";
 //    }
-
     @Override
     protected String getListPage() {
-       return "/script/audit_log/List";
+        return "/script/audit_log/List";
     }
-    
-    
 
 //    public String prepareView() {
 //        if (getSelectedItems().length != 1) {
@@ -166,25 +219,6 @@ public class AuditLogController extends AbstractManagedBean<AuditLog> implements
 //        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
 //        return "/script/audit_log/View";
 //    }
-
-    public String prepareCreate() {
-        current = new AuditLog();
-        selectedItemIndex = -1;
-        return "/script/audit_log/Create";
-    }
-
-    public String create() {
-        try {
-            getJpaController().persist(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AuditLogCreated"));
-            return prepareCreate();
-        } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
-            return null;
-        }
-    }
-
 //    public String prepareEdit() {
 //        if (getSelectedItems().length != 1) {
 //            JsfUtil.addSuccessMessage("Se requiere que seleccione una fila para editar.");
@@ -195,164 +229,89 @@ public class AuditLogController extends AbstractManagedBean<AuditLog> implements
 //        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
 //        return "/script/audit_log/Edit";
 //    }
-
-    public String update() {
-        try {
-            getJpaController().merge(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AuditLogUpdated"));
-            return "/script/audit_log/View";
-        } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
-            return null;
-        }
-    }
-
-    public String destroy() {
-        if (current == null) {
-            return "";
-        }
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        performDestroy();
-        recreateModel();
-        return "/script/audit_log/List";
-    }
-
-//    public String destroySelected() {
-//
-//        if (getSelectedItems().length <= 0) {
-//            return "";
-//        } else {
-//            for (int i = 0; i < getSelectedItems().length; i++) {
-//                current = getSelectedItems()[i];
-//                performDestroy();
+//    public String filterLogList() {
+//        try {
+//            if (getAlerta().getIdLogStr().isEmpty()) {
+//                alerta.setIdCaso(null);
+//            } else {
+//                alerta.setIdCaso(Long.parseLong((String) getAlerta().getIdLogStr()));
 //            }
+//            recreateModel();
+//            pagination = null;
+//        } catch (Exception e) {
+//            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
+//            e.printStackTrace();
 //        }
-//        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-//        recreateModel();
+//
 //        return "/script/audit_log/List";
 //    }
-
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "/script/audit_log/View";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "/script/audit_log/List";
-        }
-    }
-
-    public String filterLogList() {
-        try {
-            if (getAlerta().getIdLogStr().isEmpty()) {
-                alerta.setIdCaso(null);
-            } else {
-                alerta.setIdCaso(Long.parseLong((String) getAlerta().getIdLogStr()));
-            }
-            recreateModel();
-            pagination = null;
-        } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
-            e.printStackTrace();
-        }
-
-        return "/script/audit_log/List";
-    }
-
-    public String filterAlertList() {
-        try {
-            if (getAlerta().getIdLogStr().isEmpty()) {
-                alerta.setIdCaso(null);
-            } else {
-                alerta.setIdCaso(Long.parseLong((String) getAlerta().getIdLogStr()));
-            }
-            pagination = null;
-            items = null;
-        } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
-            e.printStackTrace();
-        }
-
-        return "/script/audit_log/Alert";
-    }
-
-    public String alertList() {
-        try {
-            alerta = new AuditLogVO();
-            Calendar cal1 = Calendar.getInstance();
-            Calendar cal2 = Calendar.getInstance();
-            cal1.add(Calendar.MONTH, -1);
-            cal2.add(Calendar.DAY_OF_YEAR, 1);
-            alerta.setFechaInicio(cal1.getTime());
-            alerta.setFechaFin(cal2.getTime());
-            //alertas = null;
-            pagination = null;
-            items = null;
-            isAlerts = true;
-            //getJpaController().findAlertsEntities(null)
-        } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
-        }
-        return "/script/audit_log/Alert";
-    }
-
-    private void performDestroy() {
-        try {
-            getJpaController().remove(AuditLog.class, current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AuditLogDeleted"));
-        } catch (Exception e) {
-            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
-        }
-    }
-
-    private void updateCurrentItem() {
-
-        if (alerta == null) {
-            alerta = new AuditLogVO();
-        }
-        if (!filtroAcceso.verificaAccesoAFuncion(EnumFunciones.FILTRO_OWNER)) {
-            alerta.setIdUser(((UserSessionBean) JsfUtil.getManagedBean("UserSessionBean")).getCurrent());
-        }
-
-        int count;
-        if (isAlerts) {
-            count = getJpaController().getAuditLogCount(alerta, false);
-        } else {
-            count = getJpaController().getAuditLogCount(alerta, true);
-        }
-
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = getJpaController().findAuditLogEntities(1, selectedItemIndex, alerta, true).get(0);
-        }
-    }
-
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-//        Iterator iter = items.iterator();
-//        List<AuditLog> listOfAuditLog = new ArrayList<AuditLog>();
-//        while (iter.hasNext()) {
-//            listOfAuditLog.add((AuditLog) iter.next());
+//
+//    public String filterAlertList() {
+//        try {
+//            if (getAlerta().getIdLogStr().isEmpty()) {
+//                alerta.setIdCaso(null);
+//            } else {
+//                alerta.setIdCaso(Long.parseLong((String) getAlerta().getIdLogStr()));
+//            }
+//            pagination = null;
+//            items = null;
+//        } catch (Exception e) {
+//            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
+//            e.printStackTrace();
 //        }
 //
-//        return new AuditLogDataModel(listOfAuditLog);
-    }
-
+//        return "/script/audit_log/Alert";
+//    }
+//    public String alertList() {
+//        try {
+//            alerta = new AuditLogVO();
+//            Calendar cal1 = Calendar.getInstance();
+//            Calendar cal2 = Calendar.getInstance();
+//            cal1.add(Calendar.MONTH, -1);
+//            cal2.add(Calendar.DAY_OF_YEAR, 1);
+//            alerta.setFechaInicio(cal1.getTime());
+//            alerta.setFechaFin(cal2.getTime());
+//            //alertas = null;
+//            pagination = null;
+//            items = null;
+//            isAlerts = true;
+//            //getJpaController().findAlertsEntities(null)
+//        } catch (Exception e) {
+//            Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());
+//        }
+//        return "/script/audit_log/Alert";
+//    }
+//
+//   
+//
+//    private void updateCurrentItem() {
+//
+//        if (alerta == null) {
+//            alerta = new AuditLogVO();
+//        }
+//        if (!filtroAcceso.verificaAccesoAFuncion(EnumFunciones.FILTRO_OWNER)) {
+//            alerta.setIdUser(((UserSessionBean) JsfUtil.getManagedBean("UserSessionBean")).getCurrent());
+//        }
+//
+//        int count;
+//        if (isAlerts) {
+//            count = getJpaController().getAuditLogCount(alerta, false);
+//        } else {
+//            count = getJpaController().getAuditLogCount(alerta, true);
+//        }
+//
+//        if (selectedItemIndex >= count) {
+//            // selected index cannot be bigger than number of items:
+//            selectedItemIndex = count - 1;
+//            // go to previous page if last page disappeared:
+//            if (pagination.getPageFirstItem() >= count) {
+//                pagination.previousPage();
+//            }
+//        }
+//        if (selectedItemIndex >= 0) {
+//            current = getJpaController().findAuditLogEntities(1, selectedItemIndex, alerta, true).get(0);
+//        }
+//    }
 //    /**
 //     * @return the selectedItems
 //     */
@@ -366,7 +325,6 @@ public class AuditLogController extends AbstractManagedBean<AuditLog> implements
 //    public void setSelectedItems(AuditLog[] selectedItems) {
 //        this.selectedItems = selectedItems;
 //    }
-
 //    private void recreateModel() {
 //        //alertas = null;
 //        items = null;
@@ -395,31 +353,29 @@ public class AuditLogController extends AbstractManagedBean<AuditLog> implements
 //        recreateModel();
 //        return "";
 //    }
-
-    @Override
-    public SelectItem[] getItemsAvailableSelectMany() {
-        if (alerta == null) {
-            alerta = new AuditLogVO();
-        }
-        if (!filtroAcceso.verificaAccesoAFuncion(EnumFunciones.FILTRO_OWNER)) {
-            alerta.setIdUser(((UserSessionBean) JsfUtil.getManagedBean("UserSessionBean")).getCurrent());
-        }
-        return JsfUtil.getSelectItems(getJpaController().findAuditLogEntities(alerta), false);
-    }
-
-    @Override
-    public SelectItem[] getItemsAvailableSelectOne() {
-        if (alerta == null) {
-            alerta = new AuditLogVO();
-        }
-        if (!filtroAcceso.verificaAccesoAFuncion(EnumFunciones.FILTRO_OWNER)) {
-            alerta.setIdUser(((UserSessionBean) JsfUtil.getManagedBean("UserSessionBean")).getCurrent());
-        }
-        return JsfUtil.getSelectItems(getJpaController().findAuditLogEntities(alerta), true);
-
-
-    }
-
+//    @Override
+//    public SelectItem[] getItemsAvailableSelectMany() {
+//        if (alerta == null) {
+//            alerta = new AuditLogVO();
+//        }
+//        if (!filtroAcceso.verificaAccesoAFuncion(EnumFunciones.FILTRO_OWNER)) {
+//            alerta.setIdUser(((UserSessionBean) JsfUtil.getManagedBean("UserSessionBean")).getCurrent());
+//        }
+//        return JsfUtil.getSelectItems(getJpaController().findAuditLogEntities(alerta), false);
+//    }
+//
+//    @Override
+//    public SelectItem[] getItemsAvailableSelectOne() {
+//        if (alerta == null) {
+//            alerta = new AuditLogVO();
+//        }
+//        if (!filtroAcceso.verificaAccesoAFuncion(EnumFunciones.FILTRO_OWNER)) {
+//            alerta.setIdUser(((UserSessionBean) JsfUtil.getManagedBean("UserSessionBean")).getCurrent());
+//        }
+//        return JsfUtil.getSelectItems(getJpaController().findAuditLogEntities(alerta), true);
+//
+//
+//    }
     /**
      * @param filtroAcceso the filtroAcceso to set
      */
@@ -429,7 +385,7 @@ public class AuditLogController extends AbstractManagedBean<AuditLog> implements
 
     @Override
     public Class getDataModelImplementationClass() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return AuditLogDataModel.class;
     }
 
     @FacesConverter(forClass = AuditLog.class)
@@ -441,8 +397,8 @@ public class AuditLogController extends AbstractManagedBean<AuditLog> implements
                 return null;
             }
             UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
-                getValue(facesContext.getELContext(), null, "UserSessionBean");
-        return controller.getJpaController().find(AuditLog.class, Long.valueOf(value));
+                    getValue(facesContext.getELContext(), null, "UserSessionBean");
+            return controller.getJpaController().find(AuditLog.class, Long.valueOf(value));
         }
 
         String getStringKey(java.lang.Long value) {
@@ -465,8 +421,6 @@ public class AuditLogController extends AbstractManagedBean<AuditLog> implements
         }
     }
 }
-
-
 
 class AuditLogDataModel extends ListDataModel<AuditLog> implements SelectableDataModel<AuditLog> {
 

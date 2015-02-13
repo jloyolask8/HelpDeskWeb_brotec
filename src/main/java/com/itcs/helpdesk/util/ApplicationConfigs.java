@@ -7,6 +7,8 @@ package com.itcs.helpdesk.util;
 import com.itcs.commons.email.EnumEmailSettingKeys;
 import com.itcs.helpdesk.persistence.entities.Canal;
 import com.itcs.helpdesk.persistence.entityenums.EnumSettingsBase;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.mail.Email;
@@ -15,7 +17,37 @@ import org.apache.commons.mail.Email;
  *
  * @author jonathan
  */
-public class ApplicationConfig {
+public class ApplicationConfigs {
+
+    private final String schema;
+    private Properties configuration;
+    private static final Map<String, ApplicationConfigs> instances = new HashMap<>();
+
+    public ApplicationConfigs(String schema, Properties configuration) {
+        this.schema = schema;
+        this.configuration = configuration;
+    }
+
+    public static void loadTenantInstance(String schema, Properties configuration) {
+        if (!StringUtils.isEmpty(schema)) {
+//            if (!instances.containsKey(schema)) {
+            ApplicationConfigs instance = new ApplicationConfigs(schema, configuration);
+            instances.put(schema, instance);
+//            }
+        }
+    }
+
+    public static ApplicationConfigs getInstance(String schema) throws NoInstanceConfigurationException {
+        if (!StringUtils.isEmpty(schema)) {
+            if (instances.containsKey(schema)) {
+                return instances.get(schema);
+            }
+//            instance.setConfiguration(new Properties());
+//            instance.loadFromBundleConfiguration();//Here i can change to load properties from the Database.
+        }
+
+        throw new NoInstanceConfigurationException();
+    }
 
     public enum EnumMailServerType {
 
@@ -35,7 +67,7 @@ public class ApplicationConfig {
             return value;
         }
     }
-    private static Log logger = Log.createLogger(ApplicationConfig.class.getName());
+    private static Log logger = Log.createLogger(ApplicationConfigs.class.getName());
     public final static String DEFAULT_CONN_TIMEOUT = "60000";
     public final static String DEFAULT_UNREAD_DOWNLOAD_LIMIT = "10";
     public final static String DEFAULT_IO_TIMEOUT = "600000";
@@ -77,9 +109,8 @@ public class ApplicationConfig {
     public static final String MAIL_IMAPS_SOCKETIO_TIMEOUT = "mail.imaps.timeout";
     public static final String MAIL_IMAP_SOCKETIO_TIMEOUT = "mail.imap.timeout";
 
-    private Properties configuration;
-    private static ApplicationConfig instance = null;
-
+//    private Properties configuration;
+//    private static ApplicationConfigs instance = null;
     /**
      * Genera properties de un canal especifico
      *
@@ -308,33 +339,29 @@ public class ApplicationConfig {
             e.printStackTrace();
         }
 
-        if (ApplicationConfig.isAppDebugEnabled()) {
-            logger.logDebug("Called generateEmailPropertiesFromArea():" + props);
-        }
+        logger.logDebug("Called generateEmailPropertiesFromCanal():" + props);
         return props;
 
     }
 
-    public static ApplicationConfig getInstance() {
-        if (instance == null) {
-            instance = new ApplicationConfig();
-            instance.setConfiguration(new Properties());
-//            instance.loadFromBundleConfiguration();//Here i can change to load properties from the Database.
-        }
-
-        return instance;
-    }
-
-    public void loadConfiguration(Properties p) {
-//        configuration = new Properties();
-        configuration.putAll(p);
-//        configuration = new Properties();
-//        configuration.putAll(EntityClassReflector.getPropertiesFromEntity(appConfig));
-//        configuration.putAll(EntityClassReflector.getPropertiesFromEntity(emailConfig));
-//        getInstance().setConfiguration(configuration);
-        logger.logDebug(p);
-    }
-
+//    public static ApplicationConfigs getInstance() {
+//        if (instance == null) {
+//            instance = new ApplicationConfigs();
+//            instance.setConfiguration(new Properties());
+////            instance.loadFromBundleConfiguration();//Here i can change to load properties from the Database.
+//        }
+//
+//        return instance;
+//    }
+//    public void loadConfiguration(Properties p) {
+////        configuration = new Properties();
+//        configuration.putAll(p);
+////        configuration = new Properties();
+////        configuration.putAll(EntityClassReflector.getPropertiesFromEntity(appConfig));
+////        configuration.putAll(EntityClassReflector.getPropertiesFromEntity(emailConfig));
+////        getInstance().setConfiguration(configuration);
+//        logger.logDebug(p);
+//    }
 //    private void loadFromBundleConfiguration() {
 //        ResourceBundle configBundle = ResourceBundle.getBundle("/Config");
 //        configuration = new Properties();
@@ -345,7 +372,7 @@ public class ApplicationConfig {
 //        }
 //
 //    }
-    private static boolean getBooleanPropertyValue(String key) {
+    private boolean getBooleanPropertyValue(String key) {
         boolean value = false;
         try {
             value = Boolean.valueOf(getProperty(key, "false"));
@@ -355,62 +382,69 @@ public class ApplicationConfig {
         return value;
     }
 
-    private static String getProperty(String key) {
-        return ApplicationConfig.getInstance().getConfiguration().getProperty(key);
+//    private static String getProperty(String key) {
+//        return ApplicationConfigs.getInstance().getConfiguration().getProperty(key);
+//    }
+//
+//    private static String getProperty(String key, String defaultValue) {
+//        return ApplicationConfigs.getInstance().getConfiguration().getProperty(key, defaultValue);
+//    }
+    private String getProperty(String key) {
+        return getConfiguration().getProperty(key);
     }
 
-    private static String getProperty(String key, String defaultValue) {
-        return ApplicationConfig.getInstance().getConfiguration().getProperty(key, defaultValue);
+    private String getProperty(String key, String defaultValue) {
+        return getConfiguration().getProperty(key, defaultValue);
     }
 
-    public static String getSaludoClienteHombre() {
+    public String getSaludoClienteHombre() {
         return getProperty(EnumSettingsBase.SALUDO_CLIENTE_HOMBRE.getAppSetting().getSettingKey());
     }
 
-    public static String getSaludoClienteMujer() {
+    public String getSaludoClienteMujer() {
         return getProperty(EnumSettingsBase.SALUDO_CLIENTE_MUJER.getAppSetting().getSettingKey());
     }
 
-    public static String getSaludoClienteUnknown() {
+    public String getSaludoClienteUnknown() {
         return getProperty(EnumSettingsBase.SALUDO_CLIENTE_UNKNOWN.getAppSetting().getSettingKey());
     }
 
-    public static boolean isShowCompanyLogo() {
+    public boolean isShowCompanyLogo() {
         return getBooleanPropertyValue(EnumSettingsBase.SHOW_COMPANY_LOGO.getAppSetting().getSettingKey());
     }
 
-    public static boolean isAreaRequired() {
+    public boolean isAreaRequired() {
         return getBooleanPropertyValue(EnumSettingsBase.AREA_IS_REQUIRED.getAppSetting().getSettingKey());
     }
-    
-    public static boolean isCustomerSurveyEnabled() {
+
+    public boolean isCustomerSurveyEnabled() {
         return getBooleanPropertyValue(EnumSettingsBase.SURVEY_ENABLED.getAppSetting().getSettingKey());
     }
 
-    public static boolean isProductoRequired() {
+    public boolean isProductoRequired() {
         return getBooleanPropertyValue(EnumSettingsBase.PRODUCT_IS_REQUIRED.getAppSetting().getSettingKey());
     }
 
 //    public static String getAttachmentRuta() {
-//        return ApplicationConfig.getProperty(EnumSettingsBase.ATTACHMENT_RUTA.getAppSetting().getSettingKey());
+//        return ApplicationConfigs.getProperty(EnumSettingsBase.ATTACHMENT_RUTA.getAppSetting().getSettingKey());
 //    }
-    public static String getHelpdeskTitle() {
-        return ApplicationConfig.getProperty(EnumSettingsBase.HELPDESK_TITLE.getAppSetting().getSettingKey());
+    public String getHelpdeskTitle() {
+        return getProperty(EnumSettingsBase.HELPDESK_TITLE.getAppSetting().getSettingKey());
     }
 
-    public static String getCompanyLogo() {
-        return ApplicationConfig.getProperty(EnumSettingsBase.COMPANY_LOGO_ID_ATTACHMENT.getAppSetting().getSettingKey());
+    public String getCompanyLogo() {
+        return getProperty(EnumSettingsBase.COMPANY_LOGO_ID_ATTACHMENT.getAppSetting().getSettingKey());
     }
 
-    public static String getCompanyLoginBackground() {
-        return ApplicationConfig.getProperty(EnumSettingsBase.COMPANY_LOGIN_BACKGROUND_URL.getAppSetting().getSettingKey());
-    }
-    
-    public static String getCompanyContextURL() {
-        return ApplicationConfig.getProperty(EnumSettingsBase.COMPANY_HELPDESK_SITE_URL.getAppSetting().getSettingKey());
+    public String getCompanyLoginBackground() {
+        return getProperty(EnumSettingsBase.COMPANY_LOGIN_BACKGROUND_URL.getAppSetting().getSettingKey());
     }
 
-    public static int getCompanyLogoSize() {
+    public String getCompanyContextURL() {
+        return getProperty(EnumSettingsBase.COMPANY_HELPDESK_SITE_URL.getAppSetting().getSettingKey());
+    }
+
+    public int getCompanyLogoSize() {
         int value = 100;
         try {
             value = Integer.valueOf(getProperty(EnumSettingsBase.COMPANY_LOGO_SIZE.getAppSetting().getSettingKey(), "100"));
@@ -420,67 +454,67 @@ public class ApplicationConfig {
         return value;
     }
 
-    public static String getCompanyName() {
-        return ApplicationConfig.getProperty(EnumSettingsBase.COMPANY_NAME.getAppSetting().getSettingKey());
+    public String getCompanyName() {
+        return getProperty(EnumSettingsBase.COMPANY_NAME.getAppSetting().getSettingKey());
     }
 
-    public static String getNotificationTicketAlertChangeSubjectText() {
-        return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_TAC_SUBJECT_TEXT.getAppSetting().getSettingKey());
+    public String getNotificationTicketAlertChangeSubjectText() {
+        return getProperty(EnumSettingsBase.NOTIFICATION_TAC_SUBJECT_TEXT.getAppSetting().getSettingKey());
     }
 
-    public static String getNotificationTicketAlertChangeBodyText() {
-        return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_TAC_BODY_TEXT.getAppSetting().getSettingKey());
-    }
-    
-     public static String getNotificationTicketUpdatedSubjectText() {
-        return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_UPDATE_AGENT_SUBJECT_TEXT.getAppSetting().getSettingKey());
+    public String getNotificationTicketAlertChangeBodyText() {
+        return getProperty(EnumSettingsBase.NOTIFICATION_TAC_BODY_TEXT.getAppSetting().getSettingKey());
     }
 
-    public static String getNotificationTicketUpdatedBodyText() {
-        return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_UPDATE_AGENT_BODY_TEXT.getAppSetting().getSettingKey());
+    public String getNotificationTicketUpdatedSubjectText() {
+        return getProperty(EnumSettingsBase.NOTIFICATION_UPDATE_AGENT_SUBJECT_TEXT.getAppSetting().getSettingKey());
     }
 
-    public static String getNotificationSubjectText() {
-        return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_SUBJECT_TEXT.getAppSetting().getSettingKey());
+    public String getNotificationTicketUpdatedBodyText() {
+        return getProperty(EnumSettingsBase.NOTIFICATION_UPDATE_AGENT_BODY_TEXT.getAppSetting().getSettingKey());
     }
 
-    public static String getNotificationBodyText() {
-        return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_BODY_TEXT.getAppSetting().getSettingKey());
+    public String getNotificationSubjectText() {
+        return getProperty(EnumSettingsBase.NOTIFICATION_SUBJECT_TEXT.getAppSetting().getSettingKey());
     }
 
-    public static String getNotificationClientSubjectText() {
-        return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_UPDATE_CLIENT_SUBJECT_TEXT.getAppSetting().getSettingKey());
+    public String getNotificationBodyText() {
+        return getProperty(EnumSettingsBase.NOTIFICATION_BODY_TEXT.getAppSetting().getSettingKey());
     }
 
-    public static String getNotificationClientBodyText() {
-        return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_UPDATE_CLIENT_BODY_TEXT.getAppSetting().getSettingKey());
-    }
-    
-    public static String getCustomerSurveySubjectText() {
-        return ApplicationConfig.getProperty(EnumSettingsBase.CUSTOMER_SURVEY_SUBJECT_TEXT.getAppSetting().getSettingKey());
+    public String getNotificationClientSubjectText() {
+        return getProperty(EnumSettingsBase.NOTIFICATION_UPDATE_CLIENT_SUBJECT_TEXT.getAppSetting().getSettingKey());
     }
 
-    public static String getCustomerSurveyBodyText() {
-        return ApplicationConfig.getProperty(EnumSettingsBase.CUSTOMER_SURVEY_BODY_TEXT.getAppSetting().getSettingKey());
+    public String getNotificationClientBodyText() {
+        return getProperty(EnumSettingsBase.NOTIFICATION_UPDATE_CLIENT_BODY_TEXT.getAppSetting().getSettingKey());
     }
 
-    public static String getProductDescription() {
-        return ApplicationConfig.getProperty(EnumSettingsBase.PRODUCT_DESCRIPTION.getAppSetting().getSettingKey());
+    public String getCustomerSurveySubjectText() {
+        return getProperty(EnumSettingsBase.CUSTOMER_SURVEY_SUBJECT_TEXT.getAppSetting().getSettingKey());
     }
 
-    public static String getProductComponentDescription() {
-        return ApplicationConfig.getProperty(EnumSettingsBase.PRODUCT_COMP_DESCRIPTION.getAppSetting().getSettingKey());
+    public String getCustomerSurveyBodyText() {
+        return getProperty(EnumSettingsBase.CUSTOMER_SURVEY_BODY_TEXT.getAppSetting().getSettingKey());
     }
 
-    public static String getProductSubComponentDescription() {
-        return ApplicationConfig.getProperty(EnumSettingsBase.PRODUCT_SUBCOMP_DESCRIPTION.getAppSetting().getSettingKey());
-    }
-    
-    public static String getDiagnosticScripts() {
-        return ApplicationConfig.getProperty(EnumSettingsBase.DIAGNOSTIC_SCRIPT.getAppSetting().getSettingKey(), "");
+    public String getProductDescription() {
+        return getProperty(EnumSettingsBase.PRODUCT_DESCRIPTION.getAppSetting().getSettingKey());
     }
 
-    public static boolean isSendNotificationOnTransfer() {
+    public String getProductComponentDescription() {
+        return getProperty(EnumSettingsBase.PRODUCT_COMP_DESCRIPTION.getAppSetting().getSettingKey());
+    }
+
+    public String getProductSubComponentDescription() {
+        return getProperty(EnumSettingsBase.PRODUCT_SUBCOMP_DESCRIPTION.getAppSetting().getSettingKey());
+    }
+
+    public String getDiagnosticScripts() {
+        return getProperty(EnumSettingsBase.DIAGNOSTIC_SCRIPT.getAppSetting().getSettingKey(), "");
+    }
+
+    public boolean isSendNotificationOnTransfer() {
         boolean value = true;
         try {
             value = Boolean.valueOf(getProperty(EnumSettingsBase.SEND_NOTIFICATION_ON_TRANSFER.getAppSetting().getSettingKey(), "true"));
@@ -490,7 +524,7 @@ public class ApplicationConfig {
         return value;
     }
 
-    public static boolean isSendNotificationOnSubscribedToEvent() {
+    public boolean isSendNotificationOnSubscribedToEvent() {
         boolean value = true;
         try {
             value = Boolean.valueOf(getProperty(EnumSettingsBase.SEND_NOTIFICATION_TOCLIENT_ON_SUBSCRIBED_TO_EVENT.getAppSetting().getSettingKey(), "false"));
@@ -500,7 +534,7 @@ public class ApplicationConfig {
         return value;
     }
 
-    public static boolean isSendNotificationToClientOnNewTicket() {
+    public boolean isSendNotificationToClientOnNewTicket() {
         boolean value = true;
         try {
             value = Boolean.valueOf(getProperty(EnumSettingsBase.SEND_NOTIFICATION_TOCLIENT_ON_NEW_TICKET.getAppSetting().getSettingKey(), "false"));
@@ -509,8 +543,8 @@ public class ApplicationConfig {
         }
         return value;
     }
-    
-    public static boolean createSupervisorCases() {
+
+    public boolean createSupervisorCases() {
         boolean value = true;
         try {
             value = Boolean.valueOf(getProperty(EnumSettingsBase.CREATE_CASO_SUPERVISOR_ENABLED.getAppSetting().getSettingKey(), "false"));
@@ -520,23 +554,23 @@ public class ApplicationConfig {
         return value;
     }
 
-    public static String getNotificationClientSubjectNewTicketText() {
-        return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_NEW_TICKET_CLIENT_SUBJECT_TEXT.getAppSetting().getSettingKey());
+    public String getNotificationClientSubjectNewTicketText() {
+        return getProperty(EnumSettingsBase.NOTIFICATION_NEW_TICKET_CLIENT_SUBJECT_TEXT.getAppSetting().getSettingKey());
     }
 
-    public static String getNotificationClientBodyNewTicketText() {
-        return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_NEW_TICKET_CLIENT_BODY_TEXT.getAppSetting().getSettingKey());
+    public String getNotificationClientBodyNewTicketText() {
+        return getProperty(EnumSettingsBase.NOTIFICATION_NEW_TICKET_CLIENT_BODY_TEXT.getAppSetting().getSettingKey());
     }
 
-    public static String getNotificationClientSubjectSubscribedToEventText() {
-        return ApplicationConfig.getProperty(EnumSettingsBase.NOTIF_SUBSCRIBED_EVENT_CLIENT_SUBJECT.getAppSetting().getSettingKey());
+    public String getNotificationClientSubjectSubscribedToEventText() {
+        return getProperty(EnumSettingsBase.NOTIF_SUBSCRIBED_EVENT_CLIENT_SUBJECT.getAppSetting().getSettingKey());
     }
 
-    public static String getNotificationClientBodySubscribedToEventText() {
-        return ApplicationConfig.getProperty(EnumSettingsBase.NOTIFICATION_SUBSCRIBED_TO_EVENT_CLIENT_BODY_TEXT.getAppSetting().getSettingKey());
+    public String getNotificationClientBodySubscribedToEventText() {
+        return getProperty(EnumSettingsBase.NOTIFICATION_SUBSCRIBED_TO_EVENT_CLIENT_BODY_TEXT.getAppSetting().getSettingKey());
     }
 
-//      public static boolean isSendGroupNotifOnNewCaseEnabled() {
+//      public boolean isSendGroupNotifOnNewCaseEnabled() {
 //        boolean value = false;
 //        try {
 //            value = Boolean.valueOf(getProperty(EnumSettingsBase.SEND_GROUP_NOTIFICATION_ON_NEW_CASE.getAppSetting().getSettingKey(), "false"));
@@ -548,7 +582,7 @@ public class ApplicationConfig {
 //        }
 //        return value;
 //    }
-    public static boolean isAppDebugEnabled() {
+    public boolean isAppDebugEnabled() {
         boolean value = false;
         try {
             value = Boolean.valueOf(getProperty(EnumSettingsBase.DEBUG_ENABLED.getAppSetting().getSettingKey(), "false"));
@@ -558,49 +592,49 @@ public class ApplicationConfig {
         return value;
     }
 
-//    private static String getMailServerType() {
-//        return ApplicationConfig.getProperty(MAIL_SERVER_TYPE);
+//    private String getMailServerType() {
+//        return getProperty(MAIL_SERVER_TYPE);
 //    }
 //
-//    private static String getMailSessionJndiName() {
-//        return ApplicationConfig.getProperty(MAIL_SESSION_JNDINAME);
+//    private String getMailSessionJndiName() {
+//        return getProperty(MAIL_SESSION_JNDINAME);
 //    }
 //
-//    private static String getTextoRespuestaCaso() {
-//        return ApplicationConfig.getProperty(TEXTO_RESP_CASO);
+//    private String getTextoRespuestaCaso() {
+//        return getProperty(TEXTO_RESP_CASO);
 //    }
 //
-//    private static String getTextoRespuestaAutomatica() {
-//        return ApplicationConfig.getProperty(TEXTO_RESP_AUTOMATICA);
+//    private String getTextoRespuestaAutomatica() {
+//        return getProperty(TEXTO_RESP_AUTOMATICA);
 //    }
 //
-//    private static String getSubjectRespuestaAutomatica() {
-//        return ApplicationConfig.getProperty(SUBJECT_RESP_AUTOMATICA);
+//    private String getSubjectRespuestaAutomatica() {
+//        return getProperty(SUBJECT_RESP_AUTOMATICA);
 //    }
-//    private static boolean getEmailAcuseDeRecibo() {
+//    private boolean getEmailAcuseDeRecibo() {
 //        boolean value = false;
 //        try {
-//            value = Boolean.valueOf(ApplicationConfig.getProperty(ApplicationConfig.EMAIL_ACUSEDERECIBO, "false"));
+//            value = Boolean.valueOf(getProperty(EMAIL_ACUSEDERECIBO, "false"));
 //        } catch (Exception e) {
 //            logger.logSevere(e.getMessage());
 //        }
 //        return value;
 //    }
 //
-//    private static boolean isEmailEnabled() {
+//    private boolean isEmailEnabled() {
 //        boolean value = false;
 //        try {
-//            value = Boolean.valueOf(ApplicationConfig.getProperty(EMAIL_ENABLED, "false"));
+//            value = Boolean.valueOf(getProperty(EMAIL_ENABLED, "false"));
 //        } catch (Exception e) {
 //            logger.logSevere(e.getMessage());
 //        }
 //        return value;
 //    }
 //
-//    private static boolean isJndiEnabled() {
+//    private boolean isJndiEnabled() {
 //        boolean value = false;
 //        try {
-//            value = Boolean.valueOf(ApplicationConfig.getProperty(MAIL_USE_JNDI, "false"));
+//            value = Boolean.valueOf(getProperty(MAIL_USE_JNDI, "false"));
 //        } catch (Exception e) {
 //            logger.logSevere(e.getMessage());
 //        }
@@ -609,10 +643,10 @@ public class ApplicationConfig {
 //    /**
 //     * @return the EMAIL_FRECUENCIA
 //     */
-//    private static int getEmailFrecuencia() {
+//    private int getEmailFrecuencia() {
 //        int value = 10;
 //        try {
-//            value = Integer.valueOf(ApplicationConfig.getProperty(EMAIL_FRECUENCIA));
+//            value = Integer.valueOf(getProperty(EMAIL_FRECUENCIA));
 //        } catch (Exception e) {
 //            logger.logSevere(e.getMessage());
 //        }

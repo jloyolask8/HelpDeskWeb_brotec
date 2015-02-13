@@ -70,22 +70,26 @@ public class ClippingsPlaceHolders {
         return values;
     }
 
-    public static String buildFinalText(String templateString, Caso caso) {
+    public static String buildFinalText(String templateString, Caso caso, String schema) throws NoInstanceConfigurationException {
+        
+         final ApplicationConfigs configInstance = ApplicationConfigs.getInstance(schema);
+         
 //        //System.out.println("templateString:" + templateString);
         Map<String, String> valuesMap = new HashMap<>();
         for (Object key : placeHolders.keySet()) {
             valuesMap.put(placeHolders.getProperty((String) key), StringUtils.defaultString(String.valueOf(getValueObjectFor((String) key, caso))));
         }
+       
 
         try {
-            final String saludoH = ApplicationConfig.getSaludoClienteHombre();
-            final String saludoM = ApplicationConfig.getSaludoClienteMujer();
+            final String saludoH = configInstance.getSaludoClienteHombre();
+            final String saludoM = configInstance.getSaludoClienteMujer();
             valuesMap.put(SALUDO_CLIENTE, (caso.getEmailCliente().getCliente().getSexo().equalsIgnoreCase("Hombre") ? saludoH : saludoM));
         } catch (Exception e) {
-            valuesMap.put(SALUDO_CLIENTE, ApplicationConfig.getSaludoClienteUnknown());
+            valuesMap.put(SALUDO_CLIENTE, configInstance.getSaludoClienteUnknown());
         }
         
-        valuesMap.put(GODESK_CONTEXT_URL, ApplicationConfig.getCompanyContextURL());
+        valuesMap.put(GODESK_CONTEXT_URL, configInstance.getCompanyContextURL());
 
         StrSubstitutor sub = new StrSubstitutor(valuesMap);
         final String replace = sub.replace(templateString);

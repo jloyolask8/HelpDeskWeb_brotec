@@ -46,7 +46,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.faces.bean.ManagedProperty;
-import javax.persistence.EntityManagerFactory;
 import javax.resource.NotSupportedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -80,14 +79,22 @@ public class RulesEngine implements CasoChangeListener {
 
     @Override
     public void casoCreated(Caso caso) {
+        
+//        ApplicationConfigs configInstance = null;
+//        try {
+//            configInstance = ApplicationConfigs.getInstance(getJpaController().getSchema());
+//        } catch (NoInstanceConfigurationException ex) {
+//            Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+        
         List<ReglaTrigger> listaSup = getJpaController().getReglaTriggerFindByEvento("%CREATE%");
         List<ReglaTrigger> lista;
 
         List<String> rulesThatApply = new LinkedList<>();
 
-        if (ApplicationConfig.isAppDebugEnabled()) {
-            Log.createLogger(this.getClass().getName()).logInfo("executing casoCreated Reglas -> " + listaSup);
-        }
+//        if (configInstance != null && configInstance.isAppDebugEnabled()) {
+//            Log.createLogger(this.getClass().getName()).logInfo("executing casoCreated Reglas -> " + listaSup);
+//        }
         do {
             lista = new LinkedList<>(listaSup);
             for (ReglaTrigger reglaTrigger : lista) {
@@ -95,28 +102,29 @@ public class RulesEngine implements CasoChangeListener {
                     boolean aplica = evalConditions(reglaTrigger, caso);
                     if (aplica) {
                         rulesThatApply.add(reglaTrigger.getIdTrigger());
-                        if (ApplicationConfig.isAppDebugEnabled()) {
-                            Log.createLogger(this.getClass().getName()).logInfo("regla " + reglaTrigger.getIdTrigger() + " APLICA_AL_CASO " + caso.toString());
-                        }
+//                        if (configInstance != null && configInstance.isAppDebugEnabled()) {
+//                            Log.createLogger(this.getClass().getName()).logInfo("regla " + reglaTrigger.getIdTrigger() + " APLICA_AL_CASO " + caso.toString());
+//                        }
                         listaSup.remove(reglaTrigger);
                         for (Accion accion : reglaTrigger.getAccionList()) {
                             executeAction(accion, caso);
                         }
                     } else {
-                        if (ApplicationConfig.isAppDebugEnabled()) {
-                            Log.createLogger(this.getClass().getName()).logInfo("regla " + reglaTrigger.getIdTrigger() + " NO_APLICA_AL_CASO " + caso.toString());
-                        }
+//                        if (configInstance != null && configInstance.isAppDebugEnabled()) {
+//                            Log.createLogger(this.getClass().getName()).logInfo("regla " + reglaTrigger.getIdTrigger() + " NO_APLICA_AL_CASO " + caso.toString());
+//                        }
                     }
                 } else {
-                    if (ApplicationConfig.isAppDebugEnabled()) {
-                        Log.createLogger(this.getClass().getName()).logInfo("regla " + reglaTrigger.getIdTrigger() + " NO_ESTA_ACTIVA");
-                    }
+//                    if (configInstance != null && configInstance.isAppDebugEnabled()) {
+//                        Log.createLogger(this.getClass().getName()).logInfo("regla " + reglaTrigger.getIdTrigger() + " NO_ESTA_ACTIVA");
+//                    }
                 }
             }
         } while (lista.size() > listaSup.size());
 
         try {
-            AuditLog auditLog = ManagerCasos.createLogComment(caso, "Reglas aplicadas en la creación del caso: " + rulesThatApply.toString());
+            String message = rulesThatApply.isEmpty() ? "Ninguna regla aplica al caso.":"Reglas aplicadas en la creación del caso: " + rulesThatApply.toString();
+            AuditLog auditLog = ManagerCasos.createLogComment(caso, message);
             getJpaController().persist(auditLog);
         } catch (Exception ex) {
             Logger.getLogger(RulesEngine.class.getName()).log(Level.SEVERE, "RulesEngine.casoCreated", ex);
@@ -136,10 +144,6 @@ public class RulesEngine implements CasoChangeListener {
                     boolean aplica = evalConditions(reglaTrigger, caso, changeList);
                     if (aplica) {
                         rulesThatApply.add(reglaTrigger.getIdTrigger());
-                        if (ApplicationConfig.isAppDebugEnabled()) {
-                            Log.createLogger(this.getClass().getName()).logInfo("regla " + reglaTrigger.getIdTrigger() + " APLICA_AL_CASO " + caso.toString());
-                        }
-
                         listaSup.remove(reglaTrigger);
                         for (Accion accion : reglaTrigger.getAccionList()) {
                             executeAction(accion, caso);
@@ -165,9 +169,9 @@ public class RulesEngine implements CasoChangeListener {
     }
 
     private boolean evalConditions(ReglaTrigger reglaTrigger, Caso caso, List<AuditLog> changeList) {
-        if (ApplicationConfig.isAppDebugEnabled()) {
-            Log.createLogger(this.getClass().getName()).logInfo("Verificando regla -> " + reglaTrigger.getIdTrigger());
-        }
+//        if (ApplicationConfigs.getInstance(getJpaController().getSchema()).isAppDebugEnabled()) {
+//            Log.createLogger(this.getClass().getName()).logInfo("Verificando regla -> " + reglaTrigger.getIdTrigger());
+//        }
         boolean any = false;
         if (reglaTrigger.getAnyOrAll() != null) {
             any = reglaTrigger.getAnyOrAll().equals("ANY");
@@ -195,24 +199,20 @@ public class RulesEngine implements CasoChangeListener {
         return aplica;
     }
 
+    /**
+     * called from ouside to force the apply of a rule, no matter if the rule is not active.
+     * @param reglaTrigger
+     * @param selectedCasos 
+     */
     public void applyRuleOnThisCasos(ReglaTrigger reglaTrigger, List<Caso> selectedCasos) {
 
         for (Caso caso : selectedCasos) {
-//            if (reglaTrigger.getReglaActiva()) {
             boolean aplica = evalConditions(reglaTrigger, caso);
             if (aplica) {
-                if (ApplicationConfig.isAppDebugEnabled()) {
-                    Log.createLogger(this.getClass().getName()).logInfo("regla " + reglaTrigger.getIdTrigger() + " APLICA_AL_CASO " + caso.toString());
-                }
                 for (Accion accion : reglaTrigger.getAccionList()) {
                     executeAction(accion, caso);
                 }
-            } else {
-                if (ApplicationConfig.isAppDebugEnabled()) {
-                    Log.createLogger(this.getClass().getName()).logInfo("regla " + reglaTrigger.getIdTrigger() + " NO_APLICA_AL_CASO " + caso.toString());
-                }
-            }
-//            }
+            } 
         }
     }
 
@@ -248,7 +248,7 @@ public class RulesEngine implements CasoChangeListener {
         expresion.execute();
         final Object value = expresion.getValue();
 
-//        if (ApplicationConfig.isAppDebugEnabled()) {
+//        if (ApplicationConfigs.getInstance(getJpaController().getSchema()).isAppDebugEnabled()) {
 //            //System.out.println("caso." + methodName + " = " + value);
 //        }
         if (fieldType.equals(EnumFieldType.TEXT.getFieldType()) || fieldType.equals(EnumFieldType.TEXTAREA.getFieldType())) {
@@ -270,7 +270,7 @@ public class RulesEngine implements CasoChangeListener {
                     Pattern p = Pattern.compile(patternToSearch, Pattern.CASE_INSENSITIVE);
                     //Match the given string with the pattern
                     Matcher m = p.matcher((String) value);
-                    if (ApplicationConfig.isAppDebugEnabled()) {
+                    if (ApplicationConfigs.getInstance(getJpaController().getSchema()).isAppDebugEnabled()) {
                         //System.out.println("patternToSearch:" + patternToSearch);
                     }
                     return m.find();
@@ -650,7 +650,7 @@ public class RulesEngine implements CasoChangeListener {
 
                 getJpaController().mergeCasoWithoutNotify(caso, auditLogAssignUser);
 
-                if (ApplicationConfig.isSendNotificationOnTransfer()) {
+                if (ApplicationConfigs.getInstance(getJpaController().getSchema()).isSendNotificationOnTransfer()) {
                     try {
                         MailNotifier.notifyCasoAssigned(getJpaController().getSchema(), caso, null);
                     } catch (Exception ex) {

@@ -36,6 +36,13 @@
                 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet"/>
 
                 <style type="text/css">
+
+                    .ui-growl{
+                        z-index: 1011;
+                        top: 10%;
+                        left:40%;
+                    }
+
                     .ui-widget-content .ui-state-error {
                         border: 1px solid #ff0000;
                         background: #cd0a0a url("") 50% 50% repeat-x;                        
@@ -108,7 +115,7 @@
                 </script>
 
                 <h:form id="mainform">
-                    <p:growl id="messages" life="10000" autoUpdate="true"  globalOnly="true" widgetVar="messages"/>
+                    <p:growl id="messages" life="5000" autoUpdate="true"  globalOnly="true" widgetVar="messages"/>
                 </h:form>
 
                 <div id="main-wrapper">
@@ -536,7 +543,7 @@
 
                                         <li>
                                             <p:commandLink title="Settings" 
-                                                           action="#{areaController.prepareList()}" ajax="false">
+                                                           action="#{appSettingController.goToConfigPage}" ajax="false">
                                                 <i class="menu-icon fa fa-cogs"></i>
                                                 <span class="mm-text">Settings</span>
                                             </p:commandLink>

@@ -95,7 +95,7 @@ public class PrioridadController extends AbstractManagedBean<Prioridad> implemen
         if (getSelectedItems() != null) {
             for (Prioridad prioridad : getSelectedItems()) {
                 try {
-                    getJpaController().remove(Prioridad.class, prioridad);
+                    getJpaController().remove(Prioridad.class, prioridad.getIdPrioridad());
                 } catch (Exception ex) {
                     addErrorMessage("No se pudo eliminar la prioridad " + prioridad.getIdPrioridad() + ". Tiene casos asociados.");
                     Logger.getLogger(PrioridadController.class.getName()).log(Level.SEVERE, null, ex);
@@ -107,7 +107,7 @@ public class PrioridadController extends AbstractManagedBean<Prioridad> implemen
 
     private void performDestroy() {
         try {
-            getJpaController().remove(Prioridad.class, current);
+            getJpaController().remove(Prioridad.class, current.getIdPrioridad());
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("PrioridadDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));

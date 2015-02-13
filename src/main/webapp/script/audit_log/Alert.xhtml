@@ -12,41 +12,12 @@
         </ui:define>
         <ui:define name="west">
           
-                    <h:outputLabel escape="false" value="#{bundle.ayudaAlertas}"/>
+                    
               
         </ui:define>
         <ui:define name="body">
 
-            <h:form>
-                <p:panel header="Filtro Alertas">
-                <h:panelGrid columns="6">
-                    <h:outputLabel value="Fecha Inicio" for="fecha" />
-                    <p:calendar locale="es" navigator="true" pattern="dd/MM/yyyy" id="fecha" value="#{auditLogController.alerta.fechaInicio}" title="Fecha Inicio"/>
-
-                    <h:outputLabel value="Fecha Fin" for="fecha1" />
-                    <p:calendar locale="es" navigator="true" pattern="dd/MM/yyyy" id="fecha1" value="#{auditLogController.alerta.fechaFin}" title="Fecha Fin" />
-                    
-                    <h:outputLabel value="Realizado por" for="idUser" />
-                    <p:selectOneMenu id="idUser" value="#{auditLogController.alerta.idUser}">
-                        <f:selectItems value="#{usuarioController.itemsAvailableSelectOne}"/>
-                    </p:selectOneMenu>
-                    
-                    <h:outputLabel rendered="#{filtroAcceso.verificarAccesoAFuncionFiltroOwner()}" value="Propietario" for="idOwner" />
-                    <p:selectOneMenu rendered="#{filtroAcceso.verificarAccesoAFuncionFiltroOwner()}" id="idOwner" value="#{auditLogController.alerta.idOwner}">
-                        <f:selectItems value="#{usuarioController.itemsAvailableSelectOneNoPropietario}"/>
-                    </p:selectOneMenu>
-                    
-                    <h:outputLabel value="#{bundle.EditAuditLogLabel_idCaso}" for="idCaso" />
-                    <p:inputText id="idCaso" value="#{auditLogController.alerta.idLogStr}" validator="#{inputValidationBean.validateNumber}"/>
-                        
-                </h:panelGrid>
-
-                    <f:facet name="footer">
-                        <p:commandButton ajax="false" action="#{auditLogController.filterAlertList}" value="Filtrar"/>
-                    </f:facet>
-
-            </p:panel>
-            </h:form>
+            
             <h:form>
 
                 <h:outputText escape="false" value="#{bundle.ListAuditLogEmpty}" rendered="#{auditLogController.items.rowCount == 0}"/>

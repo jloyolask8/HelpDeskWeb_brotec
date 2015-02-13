@@ -15,10 +15,11 @@ import com.itcs.helpdesk.persistence.entities.CanalSettingPK;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
-import com.itcs.helpdesk.util.ApplicationConfig;
+import com.itcs.helpdesk.util.ApplicationConfigs;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.MailClientFactory;
 import com.itcs.helpdesk.util.ManagerCasos;
+import com.itcs.helpdesk.util.NoInstanceConfigurationException;
 import com.itcs.helpdesk.util.RulesEngine;
 import java.util.List;
 import java.util.logging.Level;
@@ -112,16 +113,16 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
             Canal canal = jpaController.find(Canal.class, idCanal);
 
             if (canal != null) {
-                String freqStr = canal.getSetting(EnumEmailSettingKeys.CHECK_FREQUENCY.getKey());
-                try {
-                    if (freqStr != null) {
-                        freq = Integer.parseInt(freqStr);
-                    }
-                } catch (NumberFormatException ex) {
-                    /*probably a weird value, silently ignore it*/
-                }
 
                 if (canal.getEnabled()) {
+                    String freqStr = canal.getSetting(EnumEmailSettingKeys.CHECK_FREQUENCY.getKey());
+                    try {
+                        if (freqStr != null) {
+                            freq = Integer.parseInt(freqStr);
+                        }
+                    } catch (NumberFormatException ex) {
+                        /*probably a weird value, silently ignore it*/
+                    }
 
                     String channelEmailAddress = getValueOfCanalSetting(jpaController, canal, EnumEmailSettingKeys.SMTP_USER);
 
@@ -130,7 +131,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                     try {
                         mailClient = MailClientFactory.getInstance(tenant, canal);
                     } catch (Exception ex) {
-                        throw new MailClientFactory.MailNotConfiguredException("No se puede enviar correos, favor comunicarse con el administrador para que configure la cuenta de correo asociada al canal "+canal);
+                        throw new MailClientFactory.MailNotConfiguredException("No se puede enviar correos, favor comunicarse con el administrador para que configure la cuenta de correo asociada al canal " + canal);
                     }
 
                     if (mailClient != null) {
@@ -141,15 +142,20 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                             mailClient.openFolder("inbox");
                             List<EmailMessage> messages;
                             if (canal.containsKey(EnumEmailSettingKeys.HIGHEST_UID.getKey())) {
-                                long nextUID = Long.parseLong(canal.getSetting(EnumEmailSettingKeys.HIGHEST_UID.getKey())) + 1;
-                                //Trae los mensajes de a 10
-                                messages = mailClient.getMessagesOnlyHeaders(nextUID, nextUID + N_EMAILS_FETCH);
+                                try {
+                                    long nextUID = Long.parseLong(canal.getSetting(EnumEmailSettingKeys.HIGHEST_UID.getKey())) + 1;
+                                    //Trae los mensajes de a 10
+                                    messages = mailClient.getMessagesOnlyHeaders(nextUID, nextUID + N_EMAILS_FETCH);
+                                } catch (NumberFormatException nfe) {
+                                    int limit = Integer.parseInt(ApplicationConfigs.DEFAULT_UNREAD_DOWNLOAD_LIMIT);
+                                    messages = mailClient.getUnreadMessagesOnlyHeaders(limit);
+                                }
                             } else {
                                 if (canal.containsKey(EnumEmailSettingKeys.UNREAD_DOWNLOAD_LIMIT.getKey())) {
                                     int limit = Integer.parseInt(canal.getSetting(EnumEmailSettingKeys.UNREAD_DOWNLOAD_LIMIT.getKey()));
                                     messages = mailClient.getUnreadMessagesOnlyHeaders(limit);
                                 } else {
-                                    int limit = Integer.parseInt(ApplicationConfig.DEFAULT_UNREAD_DOWNLOAD_LIMIT);
+                                    int limit = Integer.parseInt(ApplicationConfigs.DEFAULT_UNREAD_DOWNLOAD_LIMIT);
                                     messages = mailClient.getUnreadMessagesOnlyHeaders(limit);
                                 }
                             }
@@ -185,7 +191,6 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
 
                                                 //System.out.println("new Subject:" + tema);
                                                 //System.out.println("emailFrom:" + emailFrom);
-
                                                 final Caso casoByClient = jpaController.findCasoBySubjectAndEmailInClient(tema, emailFrom);
                                                 if (casoByClient != null) {
                                                     insertEmailIntoCaso(casoByClient, canal, emailMessage, mailClient, managerCasos);
@@ -209,7 +214,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
 
                                         }
                                     } else {
-                                        if (ApplicationConfig.isAppDebugEnabled()) {
+                                        if (ApplicationConfigs.getInstance(tenant).isAppDebugEnabled()) {
                                             Log.createLogger(this.getClass().getName()).logDebug("BLOCKED MESSAGE " + emailMessage.getIdMessage() + " FROM:" + emailMessage.getFromEmail());
                                         }
                                     }
@@ -221,7 +226,7 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                                 }
                             }
 
-                            if (ApplicationConfig.isAppDebugEnabled()) {
+                            if (ApplicationConfigs.getInstance(tenant).isAppDebugEnabled()) {
                                 Log.createLogger(this.getClass().getName()).logDebug("Revisión de correo " + canal + "exitosa: " + messages.size() + " mensajes leídos.");
                             }
                         } catch (Exception ex) {
@@ -256,7 +261,8 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
         return freq;
     }
 
-    private void downloadAsNewTicket(JPAServiceFacade jpaController, EmailMessage emailMessage, Canal canal, EmailClient mailClient, ManagerCasos managerCasos) throws MessagingException, EmailException {
+    private void downloadAsNewTicket(JPAServiceFacade jpaController, EmailMessage emailMessage, Canal canal,
+            EmailClient mailClient, ManagerCasos managerCasos) throws MessagingException, EmailException, NoInstanceConfigurationException {
         //assume its a new email
         boolean download;
         //block messages that do not ref# to a case comming from an FromEmail configured as a agent's email addresss.
@@ -267,18 +273,17 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
             download = false;
             //Esto debe hacerse configurable
 
-            if (ApplicationConfig.createSupervisorCases()) {
+            if (ApplicationConfigs.getInstance(jpaController.getSchema()).createSupervisorCases()) {
                 if ((user.getUsuarioList() != null) && (!user.getUsuarioList().isEmpty())) {
                     //this guy is a supervisor, he can create tickets
                     download = true;
-                } else {
-                    //ignore emails from users of the system !!
-                    //let them know that this is now allowed!!
-                    download = false;
-                    if (ApplicationConfig.isAppDebugEnabled()) {
-                        Log.createLogger(this.getClass().getName()).logDebug("IGNORING MESSAGE " + emailMessage.getIdMessage() + " from user  of the system :" + users);
+                } 
+            }
+            
+            if(!download){
+                if (ApplicationConfigs.getInstance(jpaController.getSchema()).isAppDebugEnabled()) {
+                        Log.createLogger(this.getClass().getName()).logDebug("IGNORING MESSAGE " + emailMessage.getIdMessage() + " because is coming from a user of the system :" + users);
                     }
-                }
             }
 
         } else {

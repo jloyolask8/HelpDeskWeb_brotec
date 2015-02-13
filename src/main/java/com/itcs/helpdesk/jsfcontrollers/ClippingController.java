@@ -181,7 +181,7 @@ public class ClippingController extends AbstractManagedBean<Clipping> implements
 
     private void performDestroy() {
         try {
-            getJpaController().remove(current);
+            getJpaController().remove(Clipping.class, current.getIdClipping());
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ClippingDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));

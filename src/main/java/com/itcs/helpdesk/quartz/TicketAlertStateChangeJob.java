@@ -88,6 +88,7 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
                                     String idUser = context.getScheduler().getSchedulerName();
                                     AuditLog audit = new AuditLog();
                                     audit.setIdUser(idUser);
+                                    audit.setCampo("EstadoAlerta");
                                     audit.setFecha(Calendar.getInstance().getTime());
                                     audit.setTabla(Caso.class.getSimpleName());
                                     audit.setNewValue("Estado de alerta del caso cambia a: " + caso.getEstadoAlerta().getNombre());

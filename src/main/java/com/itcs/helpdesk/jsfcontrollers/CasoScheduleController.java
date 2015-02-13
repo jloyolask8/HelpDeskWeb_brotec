@@ -254,7 +254,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
                 }
 
                 lazyScheduleEventsModel.deleteEvent(event);
-                getJpaController().remove(com.itcs.helpdesk.persistence.entities.ScheduleEvent.class, entityEvent);
+                getJpaController().remove(com.itcs.helpdesk.persistence.entities.ScheduleEvent.class, entityEvent.getEventId());
                 addInfoMessage("Evento eliminado exitósamente.");
                 executeInClient("PF('myschedule').update();PF('viewEventDialog').hide();");
             }

@@ -4,6 +4,7 @@
  */
 package com.itcs.helpdesk.jsfcontrollers;
 
+import com.itcs.helpdesk.jsfcontrollers.util.ApplicationBean;
 import com.itcs.helpdesk.jsfcontrollers.util.JPAFilterHelper;
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
@@ -15,9 +16,11 @@ import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.persistence.utils.OrderBy;
+import com.itcs.helpdesk.util.ApplicationConfigs;
 import com.itcs.helpdesk.util.DateUtils;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.ManagerCasos;
+import com.itcs.helpdesk.util.NoInstanceConfigurationException;
 import com.itcs.helpdesk.util.RulesEngine;
 import com.itcs.helpdesk.webapputils.UAgentInfo;
 import java.io.IOException;
@@ -96,11 +99,19 @@ public abstract class AbstractManagedBean<E> implements Serializable {
 
     protected String backOutcome;
 
-    
     public void selectEntityFromDialog(E o) {
         RequestContext.getCurrentInstance().closeDialog(o);
     }
-    
+
+    public ApplicationConfigs getApplicationConfigInstance() {
+        try {
+            return ApplicationConfigs.getInstance(getUserSessionBean().getTenantId());
+        } catch (NoInstanceConfigurationException ex) {
+            Logger.getLogger(ApplicationBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
     public String goBack() {
         if (this.backOutcome == null) {
             recreateModel();
@@ -132,7 +143,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
      */
     public List<E> complete(String query) {
         //System.out.println("complete...");
-        List<E> results = (List<E>)getJpaController().findEntitiesByQuery(entityClass, false, 10, query);
+        List<E> results = (List<E>) getJpaController().findEntitiesByQuery(entityClass, false, 10, query);
         if (results == null) {
             return Collections.EMPTY_LIST;
         }
@@ -338,7 +349,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
 //        return jpaController;
         if (!StringUtils.isEmpty(getUserSessionBean().getTenantId())) {
             JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf, getUserSessionBean().getTenantId());
-             RulesEngine rulesEngine = new RulesEngine(jpaController);
+            RulesEngine rulesEngine = new RulesEngine(jpaController);
             jpaController.setCasoChangeListener(rulesEngine);
             return jpaController;
         }
@@ -346,7 +357,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     }
 
     public JPAServiceFacade getJpaController() {
-        System.out.println("AbstractManagedBean.getJpaController() " + getUserSessionBean().getTenantId());
+//        System.out.println("AbstractManagedBean.getJpaController() " + getUserSessionBean().getTenantId());
 //        if (jpaController == null && !StringUtils.isEmpty(getUserSessionBean().getTenantId())) {
 //            jpaController = new JPAServiceFacade(utx, emf, getUserSessionBean().getTenantId());
 //        }
@@ -528,8 +539,8 @@ public abstract class AbstractManagedBean<E> implements Serializable {
         return prepareList();//"inbox";
 
     }
-    
-    public boolean isMobileClient(){
+
+    public boolean isMobileClient() {
         return isThisRequestCommingFromAMobileDevice(JsfUtil.getRequest());
     }
 

@@ -137,7 +137,7 @@ public class ModeloProductoController extends AbstractManagedBean<ModeloProducto
             Producto p = current.getProducto();
             p.getModeloProductoList().remove(current);
             // <p:collector value="#{modeloProductoController.selected}" removeFrom="#{productoController.selected.modeloProductoList}" unique="true"/>
-            getJpaController().remove(ModeloProducto.class, current);
+            getJpaController().remove(ModeloProducto.class, current.getModeloProductoPK());
             getJpaController().merge(p);
 
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ModeloProductoDeleted"));

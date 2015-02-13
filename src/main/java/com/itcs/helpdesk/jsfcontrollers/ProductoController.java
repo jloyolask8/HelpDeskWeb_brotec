@@ -9,8 +9,9 @@ import com.itcs.helpdesk.persistence.jpa.exceptions.RollbackFailureException;
 import java.io.Serializable;
 import java.util.List;
 import java.util.ResourceBundle;
-import com.itcs.helpdesk.util.ApplicationConfig;
+import com.itcs.helpdesk.util.ApplicationConfigs;
 import com.itcs.helpdesk.util.Log;
+import com.itcs.helpdesk.util.NoInstanceConfigurationException;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -145,7 +146,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
 
             Archivo archivo = getJpaController().find(Archivo.class, idFileDelete);
             if (archivo != null) {
-                getJpaController().remove(Archivo.class, archivo);
+                getJpaController().remove(Archivo.class, archivo.getIdAttachment());
                 getSelected().setIdLogo(null);
                 JsfUtil.addSuccessMessage("Archivo " + archivo.getFileName() + " borrado correctamente.");
                 executeInClient("PF('borrarLogo').hide()");
@@ -165,7 +166,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
         try {
 
             Archivo archivo = getJpaController().find(Archivo.class, idFileDelete);
-            getJpaController().remove(Archivo.class, archivo);
+            getJpaController().remove(Archivo.class, archivo.getIdAttachment());
             currentSubComponente.setIdArchivoActaEntrega(null);
 
             JsfUtil.addSuccessMessage("Archivo " + archivo.getFileName() + " borrado correctamente.");
@@ -182,7 +183,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
         try {
 
             Archivo archivo = getJpaController().find(Archivo.class, idFileDelete);
-            getJpaController().remove(Archivo.class, archivo);
+            getJpaController().remove(Archivo.class, archivo.getIdAttachment());
             currentSubComponente.setIdArchivoActaPreEntrega(null);
 
             JsfUtil.addSuccessMessage("Archivo " + archivo.getFileName() + " borrado correctamente.");
@@ -199,7 +200,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
         try {
 
             Archivo archivo = getJpaController().find(Archivo.class, idFileDelete);
-            getJpaController().remove(Archivo.class, archivo);
+            getJpaController().remove(Archivo.class, archivo.getIdAttachment());
             currentSubComponente.setIdArchivoCartaEntrega(null);
 
             JsfUtil.addSuccessMessage("Archivo " + archivo.getFileName() + " borrado correctamente.");
@@ -525,6 +526,21 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
 //        Map<String, SubComponente> bulkLoadedSubComponenteErrorMap = new HashMap<String, SubComponente>();
 
         //--------
+        
+        ApplicationConfigs configinstance;
+        String productDescription = "Producto";
+        String productComponentDescription = "Componente";
+         String productSubComponentDescription = "SubComponente";
+        try {
+            configinstance = ApplicationConfigs.getInstance(getUserSessionBean().getTenantId());
+            productDescription = configinstance.getProductDescription();
+            productComponentDescription = configinstance.getProductComponentDescription();
+            productSubComponentDescription = configinstance.getProductSubComponentDescription();
+            
+        } catch (NoInstanceConfigurationException ex) {
+            Logger.getLogger(ProductoController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         bulkLoadedProductosWithErrors = new ArrayList<>();
 
         int counterproducto = 0;
@@ -542,10 +558,12 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
                 e.printStackTrace();
             }
         }
+        
+        
 
-        JsfUtil.addSuccessMessage(counterproducto + " " + ApplicationConfig.getProductDescription() + "(s) fueron guardados de un total de " + bulkLoadedProductos.size());
+        JsfUtil.addSuccessMessage(counterproducto + " " + productDescription + "(s) fueron guardados de un total de " + bulkLoadedProductos.size());
         if (bulkLoadedProductosWithErrors.size() > 0) {
-            JsfUtil.addSuccessMessage(bulkLoadedProductosWithErrors.size() + " " + ApplicationConfig.getProductDescription() + "(s) tienen error" + bulkLoadedProductos.size());
+            JsfUtil.addSuccessMessage(bulkLoadedProductosWithErrors.size() + " " + productDescription + "(s) tienen error" + bulkLoadedProductos.size());
         }
 
 //        --------
@@ -570,8 +588,9 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
                 e.printStackTrace();
             }
         }
+        
 
-        JsfUtil.addSuccessMessage(counterComponente + " " + ApplicationConfig.getProductComponentDescription() + "(s) fueron guardados de un total de " + bulkLoadedComponentes.size());
+        JsfUtil.addSuccessMessage(counterComponente + " " + productComponentDescription + "(s) fueron guardados de un total de " + bulkLoadedComponentes.size());
 //        --------
         bulkLoadedSubComponenteWithErrors = new ArrayList<>();
 
@@ -599,8 +618,9 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
                 e.printStackTrace();
             }
         }
+        
 
-        JsfUtil.addSuccessMessage(counterSubComponente + " " + ApplicationConfig.getProductSubComponentDescription() + "(s) fueron guardados de un total de " + bulkLoadedSubComponentes.size());
+        JsfUtil.addSuccessMessage(counterSubComponente + " " + productSubComponentDescription + "(s) fueron guardados de un total de " + bulkLoadedSubComponentes.size());
 //        --------
         try {
             prepareList();
@@ -613,23 +633,6 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
 
     }
 
-//    @Override
-//    public PaginationHelper getPagination() {
-//        if (pagination == null) {
-//            pagination = new PaginationHelper(getPaginationPageSize()) {
-//                @Override
-//                public int getItemsCount() {
-//                    return getJpaController().count(Producto.class).intValue();
-//                }
-//
-//                @Override
-//                public DataModel createPageDataModel() {
-//                    return new ProductoDataModel(getJpaController().queryByRange(Producto.class, getPageSize(), getPageFirstItem()));
-//                }
-//            };
-//        }
-//        return pagination;
-//    }
     public int getTotalItemsCount() {
         return getJpaController().count(Producto.class).intValue();
     }
@@ -797,7 +800,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
 
     private void performDestroy() {
         try {
-            getJpaController().remove(Producto.class, current);
+            getJpaController().remove(Producto.class, current.getIdProducto());
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ProductoDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));

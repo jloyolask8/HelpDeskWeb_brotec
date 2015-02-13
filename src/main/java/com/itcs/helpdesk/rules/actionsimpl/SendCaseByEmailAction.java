@@ -12,6 +12,7 @@ import com.itcs.helpdesk.rules.ActionInfo;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.MailClientFactory;
 import com.itcs.helpdesk.util.MailNotifier;
+import com.itcs.helpdesk.util.NoInstanceConfigurationException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.mail.EmailException;
 
@@ -47,6 +48,8 @@ public class SendCaseByEmailAction extends Action {
                     throw new ActionExecutionException("Error al tratar de enviar caso por email a " + destinationEmails + " favor verifique la configuración de correo.", ex);
                 } catch (EmailException ex) {
                     throw new ActionExecutionException("Error al tratar de enviar caso por email a " + destinationEmails + " favor verifique los datos del caso.", ex);
+                } catch (NoInstanceConfigurationException ex) {
+                    throw new ActionExecutionException(ex.getMessage(), ex);
                 }
             }
         }

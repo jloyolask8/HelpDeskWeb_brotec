@@ -160,7 +160,7 @@ public class CustomFieldController extends AbstractManagedBean<CustomField> impl
     public void destroy() {
         try {
             if (!JsfUtil.isValidationFailed()) {
-                getJpaController().remove(CustomField.class, current);
+                getJpaController().remove(CustomField.class, current.getIdCustomField());
                 JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("CustomFieldDeleted"));
                 current = null; // Remove selection
                 items = null;    // Invalidate list of items to trigger re-query.

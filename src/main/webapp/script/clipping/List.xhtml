@@ -11,7 +11,7 @@
         <ui:define name="title">
             <h:outputText value="#{bundle.ListClippingTitle}"/>
         </ui:define>
-        
+
         <ui:define name="help">
             <h:outputText  value="#{bundle.clippingHelp}" escape="false"/>
         </ui:define>
@@ -79,119 +79,119 @@
                         </h:panelGroup>
 
                     </h:form>
-                    
-                <h:form id="form0">
+
+                    <h:form id="form0">
 
 
 
-                    <h:panelGroup layout="block" styleClass="panel panel-transparent" rendered="#{clippingController.items.rowCount gt 0}">
-                        <div class="panel-heading">
-                            <span class="panel-title"> 
-                                <go:paginatorCounts controllerMBean="#{clippingController}" />
-                            </span>
+                        <h:panelGroup layout="block" styleClass="panel panel-transparent" rendered="#{clippingController.items.rowCount gt 0}">
+                            <div class="panel-heading">
+                                <span class="panel-title"> 
+                                    <go:paginatorCounts controllerMBean="#{clippingController}" />
+                                </span>
 
-                            <div class="panel-heading-controls">
-                                <go:paginatorBtnsBt controllerMBean="#{clippingController}" update=":form"/>
+                                <div class="panel-heading-controls">
+                                    <go:paginatorBtnsBt controllerMBean="#{clippingController}" update=":form"/>
+                                </div>
                             </div>
-                        </div>
-                        <div class="panel-body no-padding">
-                            <div class="table-responsive">
-                            <h:dataTable id="panelG1" value="#{clippingController.items}" 
-                                         styleClass="table table-hover"
-                                         var="item">
+                            <div class="panel-body no-padding">
+                                <div class="table-responsive">
+                                    <h:dataTable id="panelG1" value="#{clippingController.items}" 
+                                                 styleClass="table table-hover  table-condensed"
+                                                 var="item">
 
-                                <h:column >
-                                    <f:facet name="header">
-                                        <h:outputText value="#{bundle.ListClippingTitle_nombre}"/>
-                                    </f:facet>
-                                    <h:outputText id="name" value="#{item.nombre}"/>
-                                    <p:overlayPanel id="overlayPanel" for="name" hideEffect="fade" dynamic="true">  
-                                        <h:outputText value="#{item.texto}" escape="false"/>
-                                    </p:overlayPanel>
+                                        <h:column >
+                                            <f:facet name="header">
+                                                <h:outputText value="#{bundle.ListClippingTitle_nombre}"/>
+                                            </f:facet>
+                                            <h:outputText id="name" value="#{item.nombre}"/>
+                                            <p:overlayPanel id="overlayPanel" for="name" hideEffect="fade" dynamic="true">  
+                                                <h:outputText value="#{item.texto}" escape="false"/>
+                                            </p:overlayPanel>
 
-                                </h:column>
+                                        </h:column>
 
-                                <h:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="#{bundle.ListClippingTitle_visibleToAll}"/>
-                                    </f:facet>
-                                    <h:outputText value="#{item.visibleToAll ? 'Si':'No'}"/>
-                                </h:column>
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{bundle.ListClippingTitle_visibleToAll}"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.visibleToAll ? 'Si':'No'}"/>
+                                        </h:column>
 
-                                <h:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="#{bundle.ListClippingTitle_idGrupo}"/>
-                                    </f:facet>
-                                    <h:outputText value="#{item.idGrupo.nombre}"/>
-                                </h:column>
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{bundle.ListClippingTitle_idGrupo}"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.idGrupo.nombre}"/>
+                                        </h:column>
 
-                                <h:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="#{bundle.ListClippingTitle_idArea}"/>
-                                    </f:facet>
-                                    <h:outputText value="#{item.idArea.nombre}"/>
-                                </h:column>
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{bundle.ListClippingTitle_idArea}"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.idArea.nombre}"/>
+                                        </h:column>
 
-                                <h:column >
-                                    <f:facet name="header">
-                                        <h:outputText value="Agente"/>
-                                    </f:facet>
-                                    <p:commandLink value="#{item.idUsuarioCreadaPor.capitalName}"
-                                                   styleClass="btn-link"
-                                                   rendered="#{not empty item.idUsuarioCreadaPor}" 
-                                                   action="#{usuarioController.prepareView(item.idUsuarioCreadaPor, '/script/clipping/List')}" ajax="false" immediate="true"/>
-                                </h:column>
+                                        <h:column >
+                                            <f:facet name="header">
+                                                <h:outputText value="Agente"/>
+                                            </f:facet>
+                                            <p:commandLink value="#{item.idUsuarioCreadaPor.capitalName}"
+                                                           styleClass="btn-link"
+                                                           rendered="#{not empty item.idUsuarioCreadaPor}" 
+                                                           action="#{usuarioController.prepareView(item.idUsuarioCreadaPor, '/script/clipping/List')}" ajax="false" immediate="true"/>
+                                        </h:column>
 
-                                <h:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="&nbsp;"/>
-                                    </f:facet>
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="&nbsp;"/>
+                                            </f:facet>
 
-                                    <div class="btn-toolbar">
-                                        <p:commandLink id="editBtn" action="#{clippingController.prepareEdit()}" ajax="false"
-                                                       styleClass="btn btn-sm btn-outline btn-primary"
-                                                       rendered="#{item.idUsuarioCreadaPor eq UserSessionBean.current}">
-                                            <i class="fa fa-edit"/>
-                                        </p:commandLink>
+                                            <div class="btn-toolbar">
+                                                <p:commandLink id="editBtn" action="#{clippingController.prepareEdit()}" ajax="false"
+                                                               styleClass="btn btn-sm btn-outline btn-primary"
+                                                               rendered="#{item.idUsuarioCreadaPor eq UserSessionBean.current}">
+                                                    <i class="fa fa-edit"/>
+                                                </p:commandLink>
 
-                                        <p:commandLink  actionListener="#{clippingController.destroy()}" 
-                                                        styleClass="btn btn-sm btn-outline btn-danger"
-                                                        update=":form :mainform:messages">
-                                            <i class="fa fa-times"/>
-                                            <p:confirm header="Confirmación" message="Esta seguro de eliminar #{item.nombre} ??" 
-                                                       icon="ui-icon-alert"/>
-                                        </p:commandLink>
-                                    </div>
+                                                <p:commandLink  actionListener="#{clippingController.destroy()}" 
+                                                                styleClass="btn btn-sm btn-outline btn-danger"
+                                                                update=":form :mainform:messages">
+                                                    <i class="fa fa-times"/>
+                                                    <p:confirm header="Confirmación" message="Esta seguro de eliminar #{item.nombre} ??" 
+                                                               icon="ui-icon-alert"/>
+                                                </p:commandLink>
+                                            </div>
 
 
-                                </h:column>
-
+                                        </h:column>
 
 
 
-                            </h:dataTable>
+
+                                    </h:dataTable>
+                                </div>
                             </div>
+
+                            <div class="panel-footer">
+                                <div class="row text-center">
+                                    <go:paginatorCounts controllerMBean="#{clippingController}" />
+                                </div>
                             </div>
-
-                        <div class="panel-footer">
-                            <div class="row text-center">
-                                <go:paginatorCounts controllerMBean="#{clippingController}" />
-                            </div>
-                        </div>
-                    </h:panelGroup>
+                        </h:panelGroup>
 
 
 
 
 
-                </h:form>
+                    </h:form>
 
 
                 </div>
 
             </div>
 
-            
+
 
 
 
@@ -207,7 +207,7 @@
             </p:confirmDialog>
 
 
-          
+
 
 
             <p:dialog id="confirmDialog" showEffect="fade" hideEffect="clip" modal="true"

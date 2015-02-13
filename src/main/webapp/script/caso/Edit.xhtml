@@ -29,31 +29,31 @@
                     <div class="row">
 
 
-                            <h:commandLink id="prio" disabled="#{casoController.selected.closed}" styleClass="valign-middle m-details-star">
-                                <p:graphicImage library="images" name="#{casoController.selected.esPrioritario ? 'star-enabled.png':'star-disabled.png'}" title="Importante!"/>
-                                <p:ajax id="aj2" listener="#{casoController.changePriority(casoController.selected, casoController.selected.esPrioritario)}" update="prio"/>
-                            </h:commandLink>
+                        <h:commandLink id="prio" disabled="#{casoController.selected.closed}" styleClass="valign-middle m-details-star">
+                            <p:graphicImage library="images" name="#{casoController.selected.esPrioritario ? 'star-enabled.png':'star-disabled.png'}" title="Importante!"/>
+                            <p:ajax id="aj2" listener="#{casoController.changePriority(casoController.selected, casoController.selected.esPrioritario)}" update="prio"/>
+                        </h:commandLink>
 
-                            <!--estado ABIERTO - CERRADO -->
-                            <h:outputText value="#{casoController.selected.idEstado.nombre}" title="#{casoController.selected.estadoAlerta.nombre}" 
-                                          rendered="#{casoController.selected.isOpen()}" styleClass="valign-middle label label-#{casoController.selected.estadoAlerta.styleClass}">
-                            </h:outputText>                       
-                            <h:outputText value="#{casoController.selected.idEstado.nombre}" title="Caso cerrado" 
-                                          rendered="#{not casoController.selected.isOpen()}" styleClass="valign-middle label label-default">
-                            </h:outputText>   
-                            <!--fin estado ABIERTO - CERRADO -->
-                            <h1 class="valign-middle">
-                                <h:outputText value="#{casoController.selected.tipoCaso ne null ? casoController.selected.tipoCaso.nombre:'Caso' } \##{casoController.selected.idCaso}: "/>
-                                <h:outputText styleClass="text-semibold" 
-                                              value="#{casoController.selected.tema}"/>
-                            </h1>
+                        <!--estado ABIERTO - CERRADO -->
+                        <h:outputText value="#{casoController.selected.idEstado.nombre}" title="#{casoController.selected.estadoAlerta.nombre}" 
+                                      rendered="#{casoController.selected.isOpen()}" styleClass="valign-middle label label-#{casoController.selected.estadoAlerta.styleClass}">
+                        </h:outputText>                       
+                        <h:outputText value="#{casoController.selected.idEstado.nombre}" title="Caso cerrado" 
+                                      rendered="#{not casoController.selected.isOpen()}" styleClass="valign-middle label label-default">
+                        </h:outputText>   
+                        <!--fin estado ABIERTO - CERRADO -->
+                        <h1 class="valign-middle">
+                            <h:outputText value="#{casoController.selected.tipoCaso ne null ? casoController.selected.tipoCaso.nombre:'Caso' } \##{casoController.selected.idCaso}: "/>
+                            <h:outputText styleClass="text-semibold" 
+                                          value="#{casoController.selected.tema}"/>
+                        </h1>
 
-                            <!-- fin TAGS-->
+                        <!-- fin TAGS-->
                         <div class="pull-right">
 
                             <ui:include src="toolbarCaso.xhtml" />
 
-                          
+
                         </div>
                     </div>
                 </div> <!-- / .page-header -->
@@ -63,10 +63,18 @@
 
             <div class="row">
 
-                <div class="col-md-4 col-sm-5 col-lg-3 col-sm-push-7 col-md-push-8 col-lg-push-9 sidebar"><!-- menu-right -->
+                <div class="col-sm-7 col-md-8 col-lg-9  main">
+
+                    <ui:include src="responder.xhtml" />
+                    <ui:include src="actividadesListForm.xhtml" />
+
+                </div>
+
+                <div class="col-md-4 col-sm-5 col-lg-3  sidebar"><!-- menu-right -->
 
                     <ui:include src="info-panel.xhtml"/>
 
+                    <!--Propiedades del caso-->
                     <div class="panel-group" id="accordion-example">
                         <div class="panel">
                             <div class="panel-heading">
@@ -205,7 +213,11 @@
                                     <div class="panel-footer text-right">
                                         <p:commandLink disabled="#{casoController.selected.closed or not (casoController.verificarGrabarCaso())}" 
                                                        styleClass="btn btn-primary"
-                                                       ajax="false" update=":formint1" action="#{casoController.update}" >Guardar</p:commandLink>
+                                                       onclick="jQuery(this).addClass('ui-state-disabled');
+                                                               jQuery(this).children().addClass('fa fa-refresh fa-spin')"
+                                                       ajax="true" update="@this @(.panel) @(.ui-panel) @(form)" action="#{casoController.update}" >
+                                            <i class=""></i> Guardar
+                                        </p:commandLink>
                                     </div>
                                 </h:form>
 
@@ -393,8 +405,10 @@
                                     <div class="notification">
                                         <div class="notification-title text-info"><h:outputText value="#{audit.idUser} "/></div>
                                         <div class="notification-description">
-                                            #{(not empty audit.campo and not empty audit.oldValue) ? audit.campo.concat(' cambió de ').concat(audit.oldValue).concat(' a '):''}
-                                            #{audit.newValue}
+                                            <h:outputText rendered="#{not empty audit.campo}"
+                                                          value="#{(not empty audit.campo and not empty audit.oldValue) ? audit.campo.concat(' cambió de ').concat(audit.oldValue).concat(' a ').concat(audit.newValue):audit.campo.concat(': ').concat(audit.newValue)}"/>
+
+                                            <h:outputText rendered="#{empty audit.campo}" value="#{audit.newValue}"/>
                                         </div>
                                         <div class="notification-ago"><h:outputText title="#{casoController.formatDate(audit.fecha)}" value="#{casoController.prettyDate(audit.fecha)}"/></div>
                                     </div> <!-- / .notification -->
@@ -404,7 +418,7 @@
                     </div> <!-- / .panel log de eventos -->
 
 
-
+                    <!--Necesitas ayuda?-->
                     <div class="panel no-border panel-dark">
                         <div class="panel-body text-center">
                             <p class="text-lg text-slim">
@@ -417,14 +431,7 @@
                     </div>
                 </div>
 
-                <div class="col-sm-7 col-md-8 col-lg-9 col-sm-pull-5 col-md-pull-4 col-lg-pull-3 main">
 
-
-                    <ui:include src="responder.xhtml" />
-
-                    <ui:include src="actividadesListForm.xhtml" />
-
-                </div>
             </div>
 
 
@@ -617,11 +624,17 @@
                                  width="100%"
                                  id="textonota" height="210"/>
 
-                    <p:commandButton value="Guardar" ajax="true" 
-                                     update=":formint1 :formlistaadjuntos :formact" action="#{casoController.editNota(false)}"/>
+                    <p:commandLink ajax="true" 
+                                     update=":formint1 :formlistaadjuntos :formact" action="#{casoController.editNota(false)}"
+                                     onclick="jQuery(this).addClass('ui-state-disabled');
+                                             jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                        <i class=""></i> Guardar
+                    </p:commandLink>
+
                     <p:commandButton value="Guardar y notificar al cliente" ajax="true" 
                                      update=":formint1 :formact :formlistaadjuntos" action="#{casoController.editNota(true)}"/>
-                    <p:commandButton value="Cerrar" type="button"  onclick="Nota.hide()" immediate="true" />
+
+                    <p:commandButton value="Cerrar" type="button"  onclick="PF('Nota').hide()" immediate="true" />
 
                 </h:form>
             </p:dialog>

@@ -21,7 +21,7 @@ import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.persistence.utils.OrderBy;
 import com.itcs.helpdesk.rules.Action;
 import com.itcs.helpdesk.rules.ActionExecutionException;
-import com.itcs.helpdesk.util.ApplicationConfig;
+import com.itcs.helpdesk.util.ApplicationConfigs;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.UtilesRut;
 import com.itcs.helpdesk.webservices.DatosCaso;
@@ -65,8 +65,8 @@ public abstract class ParseCotizacionAction extends Action {
 
             DatosCaso datos = collectData(caso.getDescripcion());
 
-            if (ApplicationConfig.isAppDebugEnabled()) {
-                //System.out.println("debug datos collected:" + datos);
+            if (ApplicationConfigs.getInstance(getJpaController().getSchema()).isAppDebugEnabled()) {
+                System.out.println("executing ParseCotizacionAction: " + datos);
             }
 
             handleClientData(datos, caso);

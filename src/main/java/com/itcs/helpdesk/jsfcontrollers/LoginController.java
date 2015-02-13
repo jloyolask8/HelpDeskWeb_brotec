@@ -53,7 +53,7 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
 
     public String changePass() {
         try {
-            final JPAServiceFacade jpaController1 = new JPAServiceFacade(utx, emf, tenantId);
+            final JPAServiceFacade jpaController1 = new JPAServiceFacade(utx, emf, getUserSessionBean().getTenantId());
             if (passwordCurrent != null) {
                 Usuario user = getUserSessionBean().getCurrent();
                 String passMD5 = UtilSecurity.getMD5(passwordCurrent);
@@ -78,7 +78,7 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
 
             }
         } catch (Exception ex) {
-            JsfUtil.addErrorMessage("Ocurrió un problema con el servicio, Favor intente más tarde.");
+            addErrorMessage("Ocurrió un problema con el servicio, Favor intente más tarde.");
             Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
@@ -221,7 +221,7 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
 
     public String logout_action() {
 
-        final JPAServiceFacade jpaController1 = new JPAServiceFacade(utx, emf, tenantId);
+        final JPAServiceFacade jpaController1 = new JPAServiceFacade(utx, emf, getUserSessionBean().getTenantId());
 
         try {
             getApplicationBean().removeChannel(getUserSessionBean().getCurrent().getIdUsuario());
