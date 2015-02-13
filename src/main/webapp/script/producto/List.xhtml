@@ -68,7 +68,7 @@
                                        showSearchBar="true"
                                        filterHelper="#{productoController.filterHelper}" 
                                        update=":mainform:messages :form0"
-                                       vistaControllerBackOutcome="/script/cliente/List"/>
+                                       vistaControllerBackOutcome="/script/producto/List"/>
 
                         <h:panelGroup layout="block" styleClass="row alert alert-page alert-warning" rendered="#{productoController.items.rowCount le 0}">
                             <button type="button" class="close" data-dismiss="alert">x</button>
@@ -152,7 +152,7 @@
 
                                         <h:column>
                                             <f:facet name="header">
-                                                <h:outputText value="Accion"/>
+                                                <h:outputText value="Acción"/>
                                             </f:facet>
                                             <div class="btn-toolbar">
 
@@ -214,7 +214,7 @@
             <p:dialog id="confirmDialog" showEffect="fade" hideEffect="clip" modal="true"
                       header="Iniciando proceso de eliminación" widgetVar="confirmation">
                 <h:form id="formDelete">
-                    <h:outputText value="Está seguro de eliminar al cliente #{productoController.selected.nombre}?"/>
+                    <h:outputText value="Está seguro de eliminar el producto #{productoController.selected.nombre}?"/>
                     <p:commandButton id="confirm" value="Si, Eliminar" actionListener="#{productoController.destroy()}" action="/script/pagina"
                                      update=":form0" oncomplete="PF('confirmation').hide()"/>
                     <p:commandButton id="decline" value="No, Cancelar" onclick="PF('confirmation').hide()" type="button" /> 

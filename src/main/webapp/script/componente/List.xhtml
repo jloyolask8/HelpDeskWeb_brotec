@@ -7,105 +7,175 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:go="http://java.sun.com/jsf/composite/go">
 
-    <ui:composition template="/script/template_inbox.xhtml">
+    <ui:composition template="/script/template_inbox_bootstrap.xhtml">
         <ui:define name="title">
-            <p:outputLabel value="#{applicationBean.productComponentDescription}"></p:outputLabel>
+            <p:outputLabel value="Lista de #{applicationBean.productComponentDescription}"></p:outputLabel>
         </ui:define>
         <ui:define name="menutitle">
-            <p:outputLabel value="Vistas de #{applicationBean.productComponentDescription}(s)"></p:outputLabel>
+            <p:outputLabel value="Listado de #{applicationBean.productComponentDescription}(s)"></p:outputLabel>
         </ui:define>
-        <ui:define name="west">
-
-            <go:vistasList id="vistasList" update=":vistasList:vistasForm :mainform:messages :formfilter:panelFilter0:panelFilter :form" 
-                           controllerMBean="#{componenteController}"
-                           user="#{UserSessionBean.current}"/>
-
-            <br/>
-
-            <p:outputLabel escape="false" value="help"/>
-
+        <ui:define name="help">
+            <h:outputText  value="#{bundle.ayudaProductos}" escape="false"/>
         </ui:define>
+
         <ui:define name="body">
 
-            <h:form id="formfilter">
-                <go:filterView id="panelFilter0" 
-                               controllerMBean="#{componenteController}" 
-                               vista="#{componenteController.vista}"
-                               filterHelper="#{componenteController.filterHelper}" 
-                               canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
-                               update=":mainform:messages :form"
-                               vistaControllerBackOutcome="/script/componente/List"/>
-
-            </h:form>
-
-            <h:form id="form">
-                <p:messages globalOnly="true"/>
-                <h:panelGroup>
-
-                    <p:toolbar >
-
-                        <p:toolbarGroup align="right">
-
-                            <go:paginatorButtons controllerMBean="#{componenteController}" update=":form"/>
-                            <p:separator/>
-                            <p:commandButton ajax="false" action="#{componenteController.prepareCreate}" value="Crear #{applicationBean.productComponentDescription}" icon="fa fa-plus-circle" />
-
-                        </p:toolbarGroup>  
 
 
-                    </p:toolbar>
+            <!-- page-header -->
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-sm-10 col-xs-10">
+                        <h1><i class="fa fa-cubes page-header-icon"></i>&nbsp;&nbsp;<p:outputLabel value="Listado de #{applicationBean.productComponentDescription}(s)"></p:outputLabel></h1>
+                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                            <i class="fa fa-info-circle"/>
+                        </p:commandLink> 
+                    </div>
+                    <div class="col-sm-2 col-xs-2">
+                        <h:form>
+
+                            <div class="btn-group pull-right">
+                                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i></button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <h:commandLink action="#{componenteController.prepareCreate}" 
+                                                       value="Agregar #{applicationBean.productComponentDescription}"
+                                                       title="Agregar/Crear nuevo #{applicationBean.productComponentDescription}">
+                                        </h:commandLink>
+                                    </li>
+
+                                </ul>
+                            </div>
 
 
-                    <p:dataTable widgetVar="dataTable" var="item" value="#{componenteController.items}" selectionMode="single"
-                                 emptyMessage="#{bundle.emptyList}">
+                        </h:form>
 
-                        <p:column headerText="Código" sortBy="#{item.idComponente}">
-                                <h:outputText value="#{item.idComponente}" />
-                            </p:column>
+                    </div>
+                </div>
+            </div><!-- / .page-header --> 
 
-                        <p:column headerText="Nombre" sortBy="#{item.nombre}">
-                                <h:outputText value="#{item.nombre}" />
-                            </p:column>
+            <div class="row">
+                <go:vistasListBt id="vistasList" 
+                                 update=":vistasList:vistasForm :mainform:messages :form :form0" 
+                                 controllerMBean="#{componenteController}"
+                                 user="#{UserSessionBean.current}"/>
+                <div class="panel search-panel">
+                    <h:form id="form" styleClass="search-form">
+                        <go:filterView controllerMBean="#{componenteController}" vista="#{componenteController.vista}"
+                                       showSearchBar="true"
+                                       filterHelper="#{componenteController.filterHelper}" 
+                                       canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
+                                       update=":mainform:messages :form0"
+                                       vistaControllerBackOutcome="/script/componente/List"/>
 
-                        <p:column headerText="#{applicationBean.productDescription}" sortBy="#{item.idProducto.nombre}">
-                                <h:outputText value="#{item.idProducto.nombre}" />
-                            </p:column>
+                        <h:panelGroup layout="block" styleClass="row alert alert-page alert-warning" rendered="#{componenteController.items.rowCount le 0}">
+                            <button type="button" class="close" data-dismiss="alert">x</button>
+                            Su busqueda no coincide con ningun componente.
+                        </h:panelGroup>
+                    </h:form>
+                    <h:form id="form0">
 
-                            <p:column headerText="Acción">
-                                <p:commandButton id="viewBtn" ajax="false" action="#{componenteController.prepareView(item)}" title="Ver" icon="ui-icon ui-icon-document"/>
-                                <p:commandButton id="editBtn" ajax="false" action="#{componenteController.prepareEdit(item)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" title="Editar" icon="ui-icon ui-icon-pencil"/>
-                                <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" action="#{componenteController.setSelected(item)}" oncomplete="PF('confirmation').show()" icon="ui-icon ui-icon-trash"/>
-                            </p:column>
+                        <h:panelGroup layout="block" styleClass="panel panel-transparent" rendered="#{componenteController.items.rowCount gt 0}">
+                            <div class="panel-heading">
+                                <span class="panel-title"> 
+                                    <go:paginatorCounts controllerMBean="#{componenteController}"/>
+                                </span>
 
-                       
+                                <div class="panel-heading-controls">
+                                    <go:paginatorBtnsBt controllerMBean="#{componenteController}" update=":form"/>
+                                </div>
+                            </div>
+
+                            <div class="panel-body no-padding">
+                                <div class="table-responsive">
+                                    <h:dataTable id="panelG1" value="#{componenteController.items}" 
+                                                 styleClass="table table-hover"
+                                                 var="item">
+
+                                        <h:column >
+                                            <f:facet name="header">
+                                                <h:outputText value="Código"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.idComponente}" />
+                                        </h:column>
+                                        <h:column >
+                                            <f:facet name="header">
+                                                <h:outputText value="Nombre"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.nombre}" />
+                                        </h:column>
+                                        <h:column >
+                                            <f:facet name="header">
+                                                <h:outputText value="#{applicationBean.productDescription}"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.idProducto.nombre}" />
+                                        </h:column>
+
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Acción"/>
+                                            </f:facet>
+                                            <div class="btn-toolbar">
+
+                                                <p:commandLink id="viewBtn" action="#{componenteController.prepareView(item)}" title="Ver" ajax="false"
+                                                               styleClass="btn btn-sm btn-outline btn-primary"
+                                                               >
+                                                    <i class="fa fa-eye"/>
+                                                </p:commandLink>
+
+                                                <p:commandLink id="editBtn" action="#{componenteController.prepareEdit(item)}" title="Editar" ajax="false" 
+                                                               styleClass="btn btn-sm btn-outline btn-primary"
+                                                               rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
+                                                    <i class="fa fa-edit"/>
+                                                </p:commandLink>
+
+                                                <p:commandLink  id="showDialogButton" 
+                                                                actionListener="#{componenteController.setSelected(item)}"
+                                                                rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
+                                                                styleClass="btn btn-sm btn-outline btn-danger"
+                                                                title="Eliminar"
+                                                                oncomplete="PF('confirmation').show()"
+                                                                update=":confirmDialog">
+                                                    <i class="fa fa-times"/>
+
+                                                </p:commandLink>
+                                            </div>
+                                        </h:column>  
 
 
+                                    </h:dataTable>
+                                </div>
+                            </div>
 
+                            <div class="panel-footer">
+                                <div class="row text-center">
+                                    <go:paginatorCounts controllerMBean="#{componenteController}"/>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+                    </h:form>
 
+                </div>
+            </div>
 
+        </ui:define>
+        <ui:define name="dialogs">
 
-                    </p:dataTable>
+            <p:confirmDialog closeOnEscape="true" global="true" showEffect="fade" hideEffect="explode" >
+                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/> 	
+            </p:confirmDialog>
 
-                </h:panelGroup>
+            <p:dialog id="confirmDialog" showEffect="fade" hideEffect="clip" modal="true"
+                      header="Iniciando proceso de eliminación" widgetVar="confirmation">
+                <h:form id="formDelete">
+                    <h:outputText value="Está seguro de eliminar el componente #{componenteController.selected.nombre} ??"/>
+                    <p:commandButton id="confirm" value="Si, Eliminar" actionListener="#{componenteController.destroy()}" action="/script/pagina"
+                                     update=":form0" oncomplete="PF('confirmation').hide()"/>
+                    <p:commandButton id="decline" value="No, Cancelar" onclick="PF('confirmation').hide()" type="button" /> 
 
-
-
-
-
-                <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
-                          header="Iniciando proceso de eliminación" widgetVar="confirmation">
-
-                    <h:outputText value="Está seguro de eliminar #{applicationBean.productSubComponentDescription} #{componenteController.selected.nombre} ?"/>
-
-                    <f:facet name="footer">
-                        <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{componenteController.destroy()}" 
-                                         ajax="false"/>
-                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
-                    </f:facet>
-
-                </p:dialog>
-
-            </h:form>
+                </h:form>
+            </p:dialog>
         </ui:define>
     </ui:composition>
 

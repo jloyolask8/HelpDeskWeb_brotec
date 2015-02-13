@@ -7,120 +7,207 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:go="http://java.sun.com/jsf/composite/go">
 
-    <ui:composition template="/script/template_inbox.xhtml">
+    <ui:composition template="/script/template_inbox_bootstrap.xhtml">
         <ui:define name="title">
-            <p:outputLabel value="#{applicationBean.productSubComponentDescription}"></p:outputLabel>
+            <h:outputLabel value="#{applicationBean.productSubComponentDescription}"></h:outputLabel>
         </ui:define>
         <ui:define name="menutitle">
-            <p:outputLabel value="Vistas de #{applicationBean.productSubComponentDescription}"></p:outputLabel>
+            <h:outputLabel value="Vistas de #{applicationBean.productSubComponentDescription}"></h:outputLabel>
         </ui:define>
-        <ui:define name="west">
-
-            <go:vistasList id="vistasList" update=":vistasList:vistasForm :mainform:messages :formfilter:panelFilter0:panelFilter :form" 
-                           controllerMBean="#{subComponenteController}"
-                           user="#{UserSessionBean.current}"/>
-
-            <br/>
-
-            <p:outputLabel escape="false" value="help"/>
-
+        <ui:define name="help">
+            <h:outputText  value="#{bundle.ayudaProductos}" escape="false"/>
         </ui:define>
+
         <ui:define name="body">
 
-            <h:form id="formfilter">
-                <go:filterView id="panelFilter0" 
-                               controllerMBean="#{subComponenteController}" 
-                                vista="#{subComponenteController.vista}"
-                               filterHelper="#{subComponenteController.filterHelper}" 
-                               canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
-                               update=":mainform:messages :form"
-                               vistaControllerBackOutcome="/script/subComponente/List"/>
+            <!-- page-header -->
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-sm-10 col-xs-10">
+                        <h1><i class="fa fa-cubes page-header-icon"></i>&nbsp;&nbsp;<p:outputLabel value="Listado de #{applicationBean.productSubComponentDescription}(s)"></p:outputLabel></h1>
+                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                            <i class="fa fa-info-circle"/>
+                        </p:commandLink> 
+                    </div>
+                    <div class="col-sm-2 col-xs-2">
+                        <h:form>
 
-            </h:form>
+                            <div class="btn-group pull-right">
+                                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i></button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <h:commandLink action="#{subComponenteController.prepareCreate}" 
+                                                       value="Agregar #{applicationBean.productSubComponentDescription}"
+                                                       title="Agregar/Crear nuevo #{applicationBean.productSubComponentDescription}">
+                                        </h:commandLink>
+                                    </li>
 
-            <h:form id="form">
-                <p:messages globalOnly="true"/>
-                <h:panelGroup>
-
-                    <p:toolbar >
-
-                        <p:toolbarGroup align="right">
-
-                            <go:paginatorButtons controllerMBean="#{subComponenteController}" update=":form"/>
-                            <p:separator/>
-                            <p:commandButton ajax="false" action="#{subComponenteController.prepareCreate}" value="Crear #{applicationBean.productSubComponentDescription}" icon="fa fa-plus-circle" />
-
-                        </p:toolbarGroup>  
-
-
-                    </p:toolbar>
+                                </ul>
+                            </div>
 
 
-                    <p:dataTable widgetVar="dataTable" var="item" value="#{subComponenteController.items}" selectionMode="single"
-                                 emptyMessage="#{bundle.emptyList}">
+                        </h:form>
+
+                    </div>
+                </div>
+            </div><!-- / .page-header --> 
+
+            <div class="row">
+                <go:vistasListBt id="vistasList" 
+                                 update=":vistasList:vistasForm :mainform:messages :form :form0" 
+                                 controllerMBean="#{subComponenteController}"
+                                 user="#{UserSessionBean.current}"/>
+                <div class="panel search-panel">
+
+                    <h:form id="form" styleClass="search-form">
+                        <go:filterView controllerMBean="#{subComponenteController}" vista="#{subComponenteController.vista}"
+                                       showSearchBar="true"
+                                       filterHelper="#{subComponenteController.filterHelper}" 
+                                       canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
+                                       update=":mainform:messages :form0"
+                                       vistaControllerBackOutcome="/script/subComponente/List"/>
+
+                        <h:panelGroup layout="block" styleClass="row alert alert-page alert-warning" rendered="#{subComponenteController.items.rowCount le 0}">
+                            <button type="button" class="close" data-dismiss="alert">x</button>
+                            Su busqueda no coincide con ningun Sub componente.
+                        </h:panelGroup>
+                    </h:form>
+
+                    <h:form id="form0">
+                        <p:messages globalOnly="true"/>
+                        <h:panelGroup layout="block" styleClass="panel panel-transparent" rendered="#{subComponenteController.items.rowCount gt 0}">
+                            <div class="panel-heading">
+                                <span class="panel-title"> 
+                                    <go:paginatorCounts controllerMBean="#{subComponenteController}"/>
+                                </span>
+
+                                <div class="panel-heading-controls">
+                                    <go:paginatorBtnsBt controllerMBean="#{subComponenteController}" update=":form"/>
+                                </div>
+                            </div>
+
+                            <div class="panel-body no-padding">
+                                <div class="table-responsive">
+                                    <h:dataTable id="panelG1" value="#{subComponenteController.items}" 
+                                                 styleClass="table table-hover"
+                                                 var="item">
+                                        <h:column >
+                                            <f:facet name="header">
+                                                <h:outputText value="Código"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.idSubComponente}"/>
+                                        </h:column>
+                                        
+                                        <h:column >
+                                            <f:facet name="header">
+                                                <h:outputText value="Nombre"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.nombre}"/>
+                                        </h:column>
+
+                                        <h:column >
+                                            <f:facet name="header">
+                                                <h:outputText value="descripción"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.descripcion}"/>
+                                        </h:column>
+
+                                        <h:column >
+                                            <f:facet name="header">
+                                                <h:outputText value="modelo"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.modelo}"/>
+                                        </h:column>
+
+                                        <h:column >
+                                            <f:facet name="header">
+                                                <h:outputText value="#{applicationBean.productComponentDescription}"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.idComponente}"/>
+                                        </h:column>
+
+                                        <h:column >
+                                            <f:facet name="header">
+                                                <h:outputText value="#{applicationBean.productDescription}"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.idProducto}"/>
+                                        </h:column>
+
+                                        <h:column >
+                                            <f:facet name="header">
+                                                <h:outputText value="productoContratadoList"/>
+                                            </f:facet>
+                                            <h:outputText rendered="#{item.productoContratadoList.size() gt 0}" value="#{item.productoContratadoList}"/>
+                                        </h:column>
+
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Acción"/>
+                                            </f:facet>
+                                            <div class="btn-toolbar">
+
+                                                <p:commandLink id="viewBtn" action="#{subComponenteController.prepareView(item)}" title="Ver" ajax="false"
+                                                               styleClass="btn btn-sm btn-outline btn-primary"
+                                                               >
+                                                    <i class="fa fa-eye"/>
+                                                </p:commandLink>
+
+                                                <p:commandLink id="editBtn" action="#{subComponenteController.prepareEdit(item)}" title="Editar" ajax="false" 
+                                                               styleClass="btn btn-sm btn-outline btn-primary"
+                                                               rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
+                                                    <i class="fa fa-edit"/>
+                                                </p:commandLink>
+
+                                                <p:commandLink  id="showDialogButton" 
+                                                                actionListener="#{subComponenteController.setSelected(item)}"
+                                                                rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
+                                                                styleClass="btn btn-sm btn-outline btn-danger"
+                                                                title="Eliminar"
+                                                                oncomplete="PF('confirmation').show()"
+                                                                update=":confirmDialog">
+                                                    <i class="fa fa-times"/>
+
+                                                </p:commandLink>
+                                            </div>
+                                        </h:column>
+
+                                    </h:dataTable>
+                                </div>
+                            </div>
+
+                            <div class="panel-footer">
+                                <div class="row text-center">
+                                    <go:paginatorCounts controllerMBean="#{subComponenteController}"/>
+                                </div>
+                            </div>
+
+                        </h:panelGroup>
+                    </h:form>
+                </div>
+            </div>
+        </ui:define>
+        <ui:define name="dialogs">
+
+
+            <p:confirmDialog closeOnEscape="true" global="true" showEffect="fade" hideEffect="explode" >
+                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/> 	
+            </p:confirmDialog>
+
+            <p:dialog id="confirmDialog" showEffect="fade" hideEffect="clip" modal="true"
+                      header="Iniciando proceso de eliminación" widgetVar="confirmation">
+                <h:form id="formDelete">
+                    <h:outputText value="Está seguro de eliminar el Sub componente #{subComponenteController.selected.nombre}?"/>
+                    <p:commandButton id="confirm" value="Si, Eliminar" actionListener="#{subComponenteController.destroy()}" action="/script/pagina"
+                                     update=":form0" oncomplete="PF('confirmation').hide()"/>
+                    <p:commandButton id="decline" value="No, Cancelar" onclick="PF('confirmation').hide()" type="button" /> 
+
+                </h:form>
+            </p:dialog>
 
 
 
-                        <p:column headerText="Código">
-                            <h:outputText value="#{item.idSubComponente}"/>
-                        </p:column>
-                        
-                         <p:column headerText="Nombre">
-                            <h:outputText value="#{item.nombre}"/>
-                        </p:column>
-                        
-                         <p:column headerText="descripcion">
-                            <h:outputText value="#{item.descripcion}"/>
-                        </p:column>
-                        
-                          <p:column headerText="modelo">
-                            <h:outputText value="#{item.modelo}"/>
-                        </p:column>
-                        
-                        <p:column headerText="#{applicationBean.productComponentDescription}">
-                            <h:outputText value="#{item.idComponente}"/>
-                        </p:column>
-                        
-                         <p:column headerText="#{applicationBean.productDescription}">
-                            <h:outputText value="#{item.idProducto}"/>
-                        </p:column>
-                        
-                          <p:column headerText="productoContratadoList">
-                              <h:outputText rendered="#{item.productoContratadoList.size() gt 0}" value="#{item.productoContratadoList}"/>
-                        </p:column>
 
-                        
-
-                        <p:column headerText="Acción">
-                            <p:commandButton id="viewBtn" ajax="false" action="#{subComponenteController.prepareView(item)}" title="Ver" icon="ui-icon ui-icon-document"/>
-                            <p:commandButton id="editBtn" ajax="false" action="#{subComponenteController.prepareEdit(item)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" title="Editar" icon="ui-icon ui-icon-pencil"/>
-                            <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" action="#{subComponenteController.setSelected(item)}" oncomplete="PF('confirmation').show()" icon="ui-icon ui-icon-trash"/>
-                        </p:column>
-
-
-
-                    </p:dataTable>
-
-                </h:panelGroup>
-
-
-
-
-
-                <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
-                          header="Iniciando proceso de eliminación" widgetVar="confirmation">
-
-                    <h:outputText value="Está seguro de eliminar #{applicationBean.productSubComponentDescription} #{subComponenteController.selected.nombre} ?"/>
-
-                    <f:facet name="footer">
-                        <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{subComponenteController.destroy()}" 
-                                         ajax="false"/>
-                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
-                    </f:facet>
-
-                </p:dialog>
-
-            </h:form>
         </ui:define>
     </ui:composition>
 
