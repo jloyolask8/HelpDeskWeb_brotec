@@ -7,110 +7,134 @@
       xmlns:go="http://java.sun.com/jsf/composite/go"
       xmlns:f="http://java.sun.com/jsf/core">
 
-    <ui:composition template="/script/template_inbox.xhtml">
-
-       
-
+    <ui:composition template="/script/template_inbox_bootstrap.xhtml">
         <ui:define name="title">
             <p:outputLabel value="#{bundle.SessionsTitle}"/>
         </ui:define>
-
-
-        <ui:define name="west">
-
-
-            <go:vistasList id="vistasList" update=":vistasList:vistasForm :mainform:messages :form" 
-                           controllerMBean="#{usuarioSessionLogController}"
-                           user="#{UserSessionBean.current}"/>
-
-
-           
+        <ui:define name="help">
+            <h:outputText  value="#{bundle.ayudaUsuarios}" escape="false"/>
         </ui:define>
 
-        <ui:define name="body">
 
+
+
+        <ui:define name="body">
+            <!-- page-header -->
             <div class="page-header">
-                <h1 class="col-xs-12 text-left-sm">
-                    <i class="fa fa-users page-header-icon"></i>&nbsp;&nbsp;#{bundle.SessionsTitle}</h1>
-            </div> <!-- / .page-header -->
+                <div class="row">
+                    <div class="col-sm-10 col-xs-10">
+                        <h1><i class="fa fa-users page-header-icon"></i>&nbsp;&nbsp;#{bundle.SessionsTitle}</h1>
+                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                            <i class="fa fa-info-circle"/>
+                        </p:commandLink> 
+                    </div>
+
+                </div>
+            </div><!-- / .page-header --> 
+
+
 
             <div class="row">
+                <go:vistasListBt id="vistasList" 
+                                 update=":vistasList:vistasForm :mainform:messages :form :form0" 
+                                 controllerMBean="#{usuarioSessionLogController}"
+                                 user="#{UserSessionBean.current}"/>
 
 
-                <div class="col-md-9 col-lg-10">
+                <div class="panel search-panel">
+                    <h:form id="form" styleClass="search-form">
+                        <go:filterView controllerMBean="#{usuarioSessionLogController}" vista="#{usuarioSessionLogController.vista}"
+                                       showSearchBar="true"
+                                       filterHelper="#{usuarioSessionLogController.filterHelper}" 
+                                       update=":mainform:messages :form0"
+                                       vistaControllerBackOutcome="/script/sessions/List"/>
 
-                    <h:form id="form">
-                        
-                          <p:messages />
+                        <h:panelGroup layout="block" styleClass="row alert alert-page alert-warning" rendered="#{usuarioSessionLogController.items.rowCount le 0}">
+                            <button type="button" class="close" data-dismiss="alert">x</button>
+                            Su busqueda no coincide con ningun log.
+                        </h:panelGroup>
+                    </h:form>
 
-                    <go:filterView controllerMBean="#{usuarioSessionLogController}" 
-                                    vista="#{usuarioSessionLogController.vista}"
-                                   filterHelper="#{usuarioSessionLogController.filterHelper}" 
-                                   update=":mainform:messages :form"
-                                   vistaControllerBackOutcome="/script/sessions/List"/>
+                    <h:form id="form0">
 
+                        <p:messages />
 
-                        <p:dataTable id="datalist" value="#{usuarioSessionLogController.items}" var="item"                                    
-                                     emptyMessage="#{bundle.EmptyList}"                                     
-                                     draggableColumns="true">
+                        <h:panelGroup layout="block" styleClass="panel panel-transparent" rendered="#{usuarioSessionLogController.items.rowCount gt 0}">
+                            <div class="panel-heading">
+                                <span class="panel-title"> 
+                                    <go:paginatorCounts controllerMBean="#{usuarioSessionLogController}"/>
+                                </span>
 
-                            <p:column headerText="IP">
-                                <h:outputText value="#{item.ip}"/>
-                            </p:column>
+                                <div class="panel-heading-controls">
+                                    <go:paginatorBtnsBt controllerMBean="#{usuarioSessionLogController}" update=":form"/>
+                                </div>
+                            </div>
+                            <div class="panel-body no-padding">
+                                <div class="table-responsive">
+                                    <h:dataTable id="panelG1" value="#{usuarioSessionLogController.items}" 
+                                                 styleClass="table table-hover"
+                                                 var="item">
 
-                            <p:column headerText="timestampLogin">
-                                <h:outputText value="#{item.timestampLogin}"/>
-                            </p:column>
-                            
-                            <p:column headerText="Logout">
-                                <h:outputText value="#{item.timestampLogout}"/>
-                            </p:column>
-                            
-                              <p:column headerText="Duration">
-                                  <h:outputText title="#{bundle.SessionDurationFormat}"
-                                      value="#{usuarioSessionLogController.formatDurationRange(item.timestampLogin, item.timestampLogout)}"/>
-                            </p:column>
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="IP"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.ip}"/>
+                                        </h:column>
 
-                            <p:column headerText="userAgent">
-                                <h:outputText value="#{item.userAgent}"/>
-                            </p:column>
-                            <p:column headerText="idUsuario">
-                                <h:outputText value="#{item.idUsuario}"/>
-                            </p:column>
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="TimeStampLogin"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.timestampLogin}"/>
+                                        </h:column>
 
-                            <f:facet name="header">
-                                <p:toolbar style="border: none;">
-                                    <p:toolbarGroup align="right">
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Logout"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.timestampLogout}"/>
+                                        </h:column>
 
-                                        <p:outputLabel value="Páginas de "/>
-                                        <p:selectOneMenu id="cant" value="#{usuarioSessionLogController.paginationPageSize}" style="top: 7px">
-                                            <p:ajax event="change" listener="#{usuarioSessionLogController.resetPageSize()}" update=":form"/>
-                                            <f:selectItems value="#{usuarioSessionLogController.pagination.pageSizesAvailable}"/>
-                                        </p:selectOneMenu>
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Duración"/>
+                                            </f:facet>
+                                            <h:outputText title="#{bundle.SessionDurationFormat}"
+                                                          value="#{usuarioSessionLogController.formatDurationRange(item.timestampLogin, item.timestampLogout)}"/>
+                                        </h:column>
 
-                                        <p:separator/>
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Usuario agente"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.userAgent}"/>
+                                        </h:column>
 
-                                        <p:commandButton ajax="false" action="#{usuarioSessionLogController.first}" disabled="#{not usuarioSessionLogController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{usuarioSessionLogController.pagination.itemsCount > 0}"/>
-
-                                        <p:commandButton ajax="false" action="#{usuarioSessionLogController.previous}" disabled="#{not usuarioSessionLogController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{usuarioSessionLogController.pagination.itemsCount > 0}"/>
-
-                                        <p:commandButton ajax="false" action="#{usuarioSessionLogController.next}" disabled="#{not usuarioSessionLogController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{usuarioSessionLogController.pagination.itemsCount > 0}"/>
-
-                                        <p:commandButton ajax="false" action="#{usuarioSessionLogController.last}" disabled="#{not usuarioSessionLogController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{usuarioSessionLogController.pagination.itemsCount > 0}"/>
-
-                                    </p:toolbarGroup>
-                                </p:toolbar>
-
-                            </f:facet> 
-
-
-                        </p:dataTable>
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="ID Usuario"/>
+                                            </f:facet>
+                                            <h:outputText value="#{item.idUsuario}"/>
+                                        </h:column>
+                                    </h:dataTable>
+                                </div>
+                            </div>
+                            <div class="panel-footer">
+                                <div class="row text-center">
+                                    <go:paginatorCounts controllerMBean="#{usuarioSessionLogController}"/>
+                                </div>
+                            </div>
+                        </h:panelGroup>
 
                     </h:form>
 
                 </div>
             </div>
 
+
+        </ui:define>
+        <ui:define name="dialogs">
 
 
         </ui:define>
