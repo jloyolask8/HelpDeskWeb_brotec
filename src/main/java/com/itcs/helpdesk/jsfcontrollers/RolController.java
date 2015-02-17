@@ -194,7 +194,7 @@ public class RolController extends AbstractManagedBean<Rol> implements Serializa
             if (EnumRoles.ADMINISTRADOR.getRol().getIdRol().equalsIgnoreCase(idRol)) {
                 JsfUtil.addErrorMessage("No se puede modificar este rol.");
             } else {
-                getJpaController().remove(Rol.class, current);
+                getJpaController().remove(Rol.class, current.getIdRol());
                 JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("RolDeleted").replace("{1}", idRol));
             }
 

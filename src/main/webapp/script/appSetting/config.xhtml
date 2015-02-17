@@ -103,6 +103,9 @@
                         <go:paginatorButtons controllerMBean="#{appSettingController}" update=":form"/>
                     </p:toolbarGroup>  
                 </p:toolbar>
+                
+                    <p:commandButton value="Guardar" action="#{appSettingController.submitForm}"  
+                                 ajax="false"  />  
 
                 <p:dataTable value="#{appSettingController.items}" 
                              var="data" styleClass="no-border paginated hide-column-names">

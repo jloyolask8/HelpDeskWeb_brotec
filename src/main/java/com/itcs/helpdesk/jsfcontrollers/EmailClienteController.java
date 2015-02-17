@@ -764,7 +764,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
 //    }
     private void performDestroy() {
         try {
-            getJpaController().remove(EmailCliente.class, current);
+            getJpaController().remove(EmailCliente.class, current.getEmailCliente());
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("EmailClienteDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));

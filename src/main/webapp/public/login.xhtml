@@ -19,7 +19,7 @@
                 <meta charset="utf-8"/>
                 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
                 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
-                <title><ui:insert name="title">#{applicationBean.helpdeskTitle}</ui:insert></title>           
+                <title><ui:insert name="title">GoDesk Platform</ui:insert></title>           
 
 
 
@@ -59,12 +59,14 @@
                     <a href="http://www.godesk.cl" class="logo">
                           <p:graphicImage library="images" name="LogoGODesk.png" title="GoDesk"/>
                     </a> <!-- / .logo -->
-                    <a href="signup.xhtml" class="btn btn-primary">Registrarse</a>
+                    <a href="signup.xhtml" class="btn btn-warning">Registrarse</a>
                 </div> <!-- / .header -->
 
                 <h1 class="form-header">Inicia Sesión en GoDesk</h1>
                 <!-- Form -->
                 <h:form id="form-signin" styleClass="panel">
+                    
+                    <p:focus/>
                     
                     <h:messages globalOnly="true" errorClass="text-danger"/>
                     
@@ -100,12 +102,13 @@
 
                     <div class="form-actions">
                         
-                        
-                         <p:commandButton type="submit" action="#{loginController.loginAction}" 
+                        <p:commandLink id="submit" type="submit" action="#{loginController.loginAction}" 
                                              update=":form-signin"
                                              styleClass="btn btn-primary btn-block btn-lg"
-                                             value="#{bundle.LoginUsuario}" 
-                                             onclick="jQuery(this).addClass('ui-state-disabled')"/>
+                                             onclick="jQuery(this).addClass('ui-state-disabled');
+                                                 jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                             <i class=""></i> #{bundle.LoginUsuario}
+                         </p:commandLink>
                          
 
                     </div> <!-- / .form-actions -->
@@ -153,26 +156,7 @@
                </script>
                 <![endif]-->
 
-                <script type="text/javascript">
-                    window.PixelAdmin.start([
-                        function() {
-                            $("#form-signin").validate({focusInvalid: true, errorPlacement: function() {
-                                }});
-
-                            // Validate username
-                            $("#username_id").rules("add", {
-                                required: true,
-                                minlength: 3
-                            });
-
-                            // Validate password
-                            $("#password_id").rules("add", {
-                                required: true,
-                                minlength: 6
-                            });
-                        }
-                    ]);
-                </script>
+                
 
 
             </h:body>

@@ -654,7 +654,7 @@ public class ReglaTriggerController extends AbstractManagedBean<ReglaTrigger> im
 
     private void performDestroy() {
         try {
-            getJpaController().remove(ReglaTrigger.class, current);
+            getJpaController().remove(ReglaTrigger.class, current.getIdTrigger());
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ReglaTriggerDeleted"));
         } catch (Exception e) {
             e.printStackTrace();

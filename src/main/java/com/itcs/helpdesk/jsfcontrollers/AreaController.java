@@ -168,7 +168,7 @@ public class AreaController extends AbstractManagedBean<Area> implements Seriali
 
     private void performDestroy() {
         try {
-            getJpaController().remove(Area.class, current);
+            getJpaController().remove(Area.class, current.getIdArea());
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AreaDeleted"));
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());

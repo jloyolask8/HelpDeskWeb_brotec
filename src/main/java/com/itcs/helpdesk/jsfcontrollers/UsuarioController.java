@@ -432,7 +432,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
 //    }
     private void performDestroy() {
         try {
-            getJpaController().remove(Usuario.class, current);
+            getJpaController().remove(Usuario.class, current.getIdUsuario());
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("UsuarioDeleted"));
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());

@@ -11,7 +11,7 @@ import com.itcs.helpdesk.persistence.jpa.EasyCriteriaQuery;
 import com.itcs.helpdesk.persistence.utils.OrderBy;
 import com.itcs.helpdesk.quartz.DownloadEmailJob;
 import com.itcs.helpdesk.quartz.HelpDeskScheluder;
-import com.itcs.helpdesk.util.ApplicationConfig;
+import com.itcs.helpdesk.util.ApplicationConfigs;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.MailClientFactory;
 
@@ -58,8 +58,8 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
     private String tmpEmailUsuario;
     private String tmpEmailInfo;
     private String tmpFreq;
-    private String tmpEmailConnectionTimeout = ApplicationConfig.DEFAULT_CONN_TIMEOUT;
-    private String tmpEmailUnreadEmailDownloadLimit = ApplicationConfig.DEFAULT_UNREAD_DOWNLOAD_LIMIT;
+    private String tmpEmailConnectionTimeout = ApplicationConfigs.DEFAULT_CONN_TIMEOUT;
+    private String tmpEmailUnreadEmailDownloadLimit = ApplicationConfigs.DEFAULT_UNREAD_DOWNLOAD_LIMIT;
     private boolean tmpEmailDebugEnabled;
     private boolean tmpEmailDownloadAttachments = true;
     private boolean tmpEmailFinalizeReady;
@@ -243,7 +243,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         tmpEmailFinalizeReady = false;
         tmpEmailFirstStepReady = false;
         tmpEmailDownloadAttachments = true;
-        tmpEmailUnreadEmailDownloadLimit = ApplicationConfig.DEFAULT_UNREAD_DOWNLOAD_LIMIT;
+        tmpEmailUnreadEmailDownloadLimit = ApplicationConfigs.DEFAULT_UNREAD_DOWNLOAD_LIMIT;
         prepareCreate();
     }
 
@@ -441,7 +441,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
 
     private void performDestroy() {
         try {
-            getJpaController().remove(Canal.class, current);
+            getJpaController().remove(Canal.class, current.getIdCanal());
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("CanalDeleted"));
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).logSevere(e.getMessage());

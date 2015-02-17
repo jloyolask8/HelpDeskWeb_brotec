@@ -51,7 +51,7 @@ public class ResourceController extends AbstractManagedBean<Resource> implements
 
     private void performDestroy() {
         try {
-            getJpaController().remove(Resource.class, current);
+            getJpaController().remove(Resource.class, current.getIdResource());
             addInfoMessage(ResourceBundle.getBundle("/Bundle").getString("ResourceDeleted"));
         } catch (Exception e) {
             addErrorMessage(ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));

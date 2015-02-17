@@ -57,7 +57,7 @@ public class SubComponenteController extends AbstractManagedBean<SubComponente> 
 
     private void performDestroy() {
         try {
-            getJpaController().remove(getEntityClass(), getSelected());
+            getJpaController().remove(getEntityClass(), getSelected().getIdSubComponente());
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ClienteDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -66,7 +66,7 @@ public class SubComponenteController extends AbstractManagedBean<SubComponente> 
 
     public void destroy(SubComponente item) {
         try {
-            getJpaController().remove(getEntityClass(), item);
+            getJpaController().remove(getEntityClass(), item.getIdSubComponente());
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("SubComponenteDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));

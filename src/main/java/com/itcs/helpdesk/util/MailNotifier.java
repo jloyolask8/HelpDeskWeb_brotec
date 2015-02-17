@@ -23,14 +23,15 @@ import org.quartz.SchedulerException;
  */
 public class MailNotifier {
 
-    public static void notifyCasoOwnerAlertChanged(String tenant, Caso caso) throws MailNotConfiguredException, EmailException, NoOutChannelException {
+    public static void notifyCasoOwnerAlertChanged(String tenant, Caso caso) throws MailNotConfiguredException, EmailException, NoOutChannelException, NoInstanceConfigurationException {
         if (caso != null) {
-            String asunto = ApplicationConfig.getNotificationTicketAlertChangeSubjectText(); //may contain place holders
-            String subject_ = ClippingsPlaceHolders.buildFinalText(asunto, caso);
+            final ApplicationConfigs configInstance = ApplicationConfigs.getInstance(tenant);
+            String asunto = configInstance.getNotificationTicketAlertChangeSubjectText(); //may contain place holders
+            String subject_ = ClippingsPlaceHolders.buildFinalText(asunto, caso, tenant);
 
-            String texto = ApplicationConfig.getNotificationTicketAlertChangeBodyText();//may contain place holders 
+            String texto = configInstance.getNotificationTicketAlertChangeBodyText();//may contain place holders 
 
-            String mensaje_ = ClippingsPlaceHolders.buildFinalText(texto, caso);
+            String mensaje_ = ClippingsPlaceHolders.buildFinalText(texto, caso, tenant);
 
             final String subject = ManagerCasos.formatIdCaso(caso.getIdCaso()) + " " + subject_;
             final String mensaje = mensaje_;
@@ -39,7 +40,7 @@ public class MailNotifier {
             Canal canal = chooseDefaultCanalToSendMail(caso);
 
             try {
-                if (ApplicationConfig.isAppDebugEnabled()) {
+                if (configInstance.isAppDebugEnabled()) {
                     Logger.getLogger(MailNotifier.class.getName()).log(Level.INFO, "notifyCasoOwnerAlertChanged");
                 }
                 HelpDeskScheluder.scheduleSendMailNow(tenant, caso.getIdCaso(), canal.getIdCanal(), mensaje,
@@ -55,16 +56,15 @@ public class MailNotifier {
         }
     }
 
-    public static void notifyCasoAsHtmlEmail(String tenant, Caso caso, String emailTo) throws MailNotConfiguredException, EmailException {
+    public static void notifyCasoAsHtmlEmail(String tenant, Caso caso, String emailTo) throws MailNotConfiguredException, EmailException, NoInstanceConfigurationException {
         if (caso != null) {
-            String asunto = "HELPDESK " + (caso.getIdCanal() != null ? caso.getIdCanal().getNombre() : "")
+            String asunto = "GODESK " + (caso.getIdCanal() != null ? caso.getIdCanal().getNombre() : "")
                     + " " + (caso.getTipoCaso() != null ? caso.getTipoCaso().getNombre() : EnumTipoCaso.CONTACTO.getTipoCaso().getNombre())
                     + " #" + caso.getIdCaso();//ApplicationConfig.getNotificationSubjectText(); //may contain place holders
 
-            String texto = ClippingsPlaceHolders.buildFinalText(CasoExporter.exportToHtmlText(caso), caso);//ApplicationConfig.getNotificationBodyText();//may contain place holders 
+            String texto = ClippingsPlaceHolders.buildFinalText(CasoExporter.exportToHtmlText(caso), caso, tenant);//ApplicationConfig.getNotificationBodyText();//may contain place holders 
 
-            if (caso.getIdCanal() != null && caso.getIdCanal().getEnabled() != null
-                    && caso.getIdCanal().getEnabled()) {
+            if (caso.getIdCanal() != null && caso.getIdCanal().getEnabled()) {
 
 //                if (caso.getIdCanal() != null) {
                 if (caso.getIdArea() != null && caso.getIdArea().getIdCanal() != null) {
@@ -87,14 +87,14 @@ public class MailNotifier {
 
     }
 
-    public static void notifyCasoAssigned(String tenant, Caso caso, String motivo) throws MailNotConfiguredException, EmailException, NoOutChannelException {
+    public static void notifyCasoAssigned(String tenant, Caso caso, String motivo) throws MailNotConfiguredException, EmailException, NoOutChannelException, NoInstanceConfigurationException {
         if (caso != null) {
-            String asunto = ApplicationConfig.getNotificationSubjectText(); //may contain place holders
-            String subject_ = ClippingsPlaceHolders.buildFinalText(asunto, caso);
+            String asunto = ApplicationConfigs.getInstance(tenant).getNotificationSubjectText(); //may contain place holders
+            String subject_ = ClippingsPlaceHolders.buildFinalText(asunto, caso, tenant);
 
-            String texto = ApplicationConfig.getNotificationBodyText();//may contain place holders 
+            String texto = ApplicationConfigs.getInstance(tenant).getNotificationBodyText();//may contain place holders 
             texto = texto + "<b>Motivo:<b/> " + (motivo != null ? motivo : "Pronta atención del caso");
-            String mensaje_ = ClippingsPlaceHolders.buildFinalText(texto, caso);
+            String mensaje_ = ClippingsPlaceHolders.buildFinalText(texto, caso, tenant);
 
             final String subject = ManagerCasos.formatIdCaso(caso.getIdCaso()) + " " + subject_;
             final String mensaje = mensaje_;
@@ -123,16 +123,16 @@ public class MailNotifier {
         }
     }
 
-    public static void notifyOwnerCasoUpdated(String tenant, Caso caso, String comments, String sentBy, Date fecha) throws MailNotConfiguredException, EmailException, NoOutChannelException {
+    public static void notifyOwnerCasoUpdated(String tenant, Caso caso, String comments, String sentBy, Date fecha) throws MailNotConfiguredException, EmailException, NoOutChannelException, NoInstanceConfigurationException {
         if (caso != null) {
-            String asunto = ApplicationConfig.getNotificationTicketUpdatedSubjectText(); //may contain place holders
-            String subject_ = ClippingsPlaceHolders.buildFinalText(asunto, caso);
+            String asunto = ApplicationConfigs.getInstance(tenant).getNotificationTicketUpdatedSubjectText(); //may contain place holders
+            String subject_ = ClippingsPlaceHolders.buildFinalText(asunto, caso,tenant);
 
-            String texto = ApplicationConfig.getNotificationTicketUpdatedBodyText();//may contain place holders 
+            String texto = ApplicationConfigs.getInstance(tenant).getNotificationTicketUpdatedBodyText();//may contain place holders 
             texto = texto + "<hr/><b>Comentario:<b/><br/> " + (comments != null ? comments : "no comments");
             texto = texto + "<br/><b>Enviado el:<b/><br/> " + (fecha != null ? fecha.toString() : "unknown");
             texto = texto + "<br/><b>Enviado por:<b/> " + (sentBy != null ? sentBy : "unknown") + "<hr/>";
-            String mensaje_ = ClippingsPlaceHolders.buildFinalText(texto, caso);
+            String mensaje_ = ClippingsPlaceHolders.buildFinalText(texto, caso,tenant);
 
             final String subject = ManagerCasos.formatIdCaso(caso.getIdCaso()) + " " + subject_;
             final String mensaje = mensaje_;
@@ -161,12 +161,12 @@ public class MailNotifier {
         }
     }
 
-    public static String emailClientCasoUpdatedByAgent(String tenant, Caso current) throws MailNotConfiguredException, EmailException, NoOutChannelException {
+    public static String emailClientCasoUpdatedByAgent(String tenant, Caso current) throws MailNotConfiguredException, EmailException, NoOutChannelException, NoInstanceConfigurationException {
         //TODO: use configure texts.
         if (current != null && current.getEmailCliente() != null) {
-            String asunto = ApplicationConfig.getNotificationClientSubjectText(); //may contain place holders
-            String newAsunto = ManagerCasos.formatIdCaso(current.getIdCaso()) + " " + ClippingsPlaceHolders.buildFinalText(asunto, current);
-            String texto = ClippingsPlaceHolders.buildFinalText(ApplicationConfig.getNotificationClientBodyText(), current);//may contain place holders 
+            String asunto = ApplicationConfigs.getInstance(tenant).getNotificationClientSubjectText(); //may contain place holders
+            String newAsunto = ManagerCasos.formatIdCaso(current.getIdCaso()) + " " + ClippingsPlaceHolders.buildFinalText(asunto, current, tenant);
+            String texto = ClippingsPlaceHolders.buildFinalText(ApplicationConfigs.getInstance(tenant).getNotificationClientBodyText(), current, tenant);//may contain place holders 
 
             Canal canal = chooseDefaultCanalToSendMail(current);
 
@@ -180,13 +180,13 @@ public class MailNotifier {
         }
         return null;
     }
-    
-    public static String emailClientCustomerSurvey(String tenant, Caso current) throws MailNotConfiguredException, EmailException, NoOutChannelException {
+
+    public static String emailClientCustomerSurvey(String tenant, Caso current) throws MailNotConfiguredException, EmailException, NoOutChannelException, NoInstanceConfigurationException {
         //TODO: use configure texts.
         if (current != null && current.getEmailCliente() != null && current.getEmailCliente().getEmailCliente() != null) {
-            String asunto = ApplicationConfig.getCustomerSurveySubjectText(); //may contain place holders
-            String newAsunto = ManagerCasos.formatIdCaso(current.getIdCaso()) + " " + ClippingsPlaceHolders.buildFinalText(asunto, current);
-            String texto = ClippingsPlaceHolders.buildFinalText(ApplicationConfig.getCustomerSurveyBodyText(), current);//may contain place holders 
+            String asunto = ApplicationConfigs.getInstance(tenant).getCustomerSurveySubjectText(); //may contain place holders
+            String newAsunto = ManagerCasos.formatIdCaso(current.getIdCaso()) + " " + ClippingsPlaceHolders.buildFinalText(asunto, current, tenant);
+            String texto = ClippingsPlaceHolders.buildFinalText(ApplicationConfigs.getInstance(tenant).getCustomerSurveyBodyText(), current, tenant);//may contain place holders 
 
             Canal canal = chooseDefaultCanalToSendMail(current);
 
@@ -209,10 +209,12 @@ public class MailNotifier {
 //            String passMD5 = UtilSecurity.getMD5(usuario.getPass());//TODO fix, unencrypt the pass.
             String subject_ = "Recuperación de contraseña";
             StringBuilder sb = new StringBuilder();
-            String mensaje_ = sb.append("Estimad@ ").append(usuario.getCapitalName()).append(",").append("<br/>")
-                    .append("Se ha solicido reestablecer su contraseña de acceso a GoDesk, Su contraseña temporal es:")
+            String mensaje_ = sb.append("Estimad@ ").append(usuario.getCapitalName()).append(",").append("<br/><br/>")
+                    .append("Se ha solicido reestablecer su contraseña de acceso a GoDesk, Su contraseña temporal es: ").append("<span>")
                     .append(newPassword)
-                    .append("<br/>Se recomienda cambiar esta contraseña lo antes posible.").toString();
+                    .append("</span>")
+                    .append("<br/>Se recomienda cambiar esta contraseña lo antes posible.<br/><br/>")
+                    .append("Equipo Godesk<br/>www.godesk.cl").toString();
             NoReplySystemMailSender.sendHTML(usuario.getEmail(), subject_, mensaje_, null);
             Logger.getLogger(MailNotifier.class.getName()).log(Level.INFO, "sendEmailRecoverPassword succeeded:{0}", usuario.getEmail());
         } catch (EmailException ex) {
@@ -220,12 +222,12 @@ public class MailNotifier {
         }
     }
 
-    public static void notifyClientCasoReceived(String tenant, Caso caso) throws NoOutChannelException, SchedulerException {
+    public static void notifyClientCasoReceived(String tenant, Caso caso) throws NoOutChannelException, SchedulerException, NoInstanceConfigurationException {
         //new: permit to have a global response in the config
         //new: if area is not enabled, send a receipt confirmation to client from same channel this should be the default.
         //TODO: record this notification as an activity (Nota) in the case.
 
-        if (ApplicationConfig.isSendNotificationToClientOnNewTicket()) {
+        if (ApplicationConfigs.getInstance(tenant).isSendNotificationToClientOnNewTicket()) {
 
             if (caso != null && caso.getEmailCliente() != null) {
 
@@ -237,12 +239,12 @@ public class MailNotifier {
                         if (!StringUtils.isEmpty(caso.getIdArea().getTextoRespAutomatica())
                                 && !StringUtils.isEmpty(caso.getIdArea().getSubjectRespAutomatica())) {
                             //use area config texts
-                            mensaje_ = (ClippingsPlaceHolders.buildFinalText(caso.getIdArea().getTextoRespAutomatica(), caso));
-                            subject_ = (ClippingsPlaceHolders.buildFinalText(caso.getIdArea().getSubjectRespAutomatica(), caso));
+                            mensaje_ = (ClippingsPlaceHolders.buildFinalText(caso.getIdArea().getTextoRespAutomatica(), caso, tenant));
+                            subject_ = (ClippingsPlaceHolders.buildFinalText(caso.getIdArea().getSubjectRespAutomatica(), caso, tenant));
                         } else {
                             //no tiene textos, use global config 
-                            mensaje_ = (ClippingsPlaceHolders.buildFinalText(ApplicationConfig.getNotificationClientBodyNewTicketText(), caso));
-                            subject_ = (ClippingsPlaceHolders.buildFinalText(ApplicationConfig.getNotificationClientSubjectNewTicketText(), caso));
+                            mensaje_ = (ClippingsPlaceHolders.buildFinalText(ApplicationConfigs.getInstance(tenant).getNotificationClientBodyNewTicketText(), caso, tenant));
+                            subject_ = (ClippingsPlaceHolders.buildFinalText(ApplicationConfigs.getInstance(tenant).getNotificationClientSubjectNewTicketText(), caso, tenant));
                         }
                     } else {
                         //area manda! si dice que no enviar entonces no enviar acuse
@@ -251,8 +253,8 @@ public class MailNotifier {
                     }
                 } else {
                     //no tiene area, use global config 
-                    mensaje_ = (ClippingsPlaceHolders.buildFinalText(ApplicationConfig.getNotificationClientBodyNewTicketText(), caso));
-                    subject_ = (ClippingsPlaceHolders.buildFinalText(ApplicationConfig.getNotificationClientSubjectNewTicketText(), caso));
+                    mensaje_ = (ClippingsPlaceHolders.buildFinalText(ApplicationConfigs.getInstance(tenant).getNotificationClientBodyNewTicketText(), caso, tenant));
+                    subject_ = (ClippingsPlaceHolders.buildFinalText(ApplicationConfigs.getInstance(tenant).getNotificationClientSubjectNewTicketText(), caso, tenant));
                 }
 
                 final String subject = ManagerCasos.formatIdCaso(caso.getIdCaso()) + " " + subject_;
@@ -270,31 +272,24 @@ public class MailNotifier {
 
     }
 
-    public static void notifyClientConfirmedEvent(String tenant, Caso caso) throws NoOutChannelException, SchedulerException {
+    public static void notifyClientConfirmedEvent(String tenant, Caso caso) throws NoOutChannelException, SchedulerException, NoInstanceConfigurationException {
         //TODO: USE THIS AS EVENT CONFIRMATION NOT CASO CREATION. SOON
-
-        if (ApplicationConfig.isSendNotificationOnSubscribedToEvent()) {
-
+        if (ApplicationConfigs.getInstance(tenant).isSendNotificationOnSubscribedToEvent()) {
             if (caso != null && caso.getEmailCliente() != null) {
-
-                final String mensaje = (ClippingsPlaceHolders.buildFinalText(ApplicationConfig.getNotificationClientBodySubscribedToEventText(), caso));
-                final String subject = ManagerCasos.formatIdCaso(caso.getIdCaso()) + " " + (ClippingsPlaceHolders.buildFinalText(ApplicationConfig.getNotificationClientSubjectSubscribedToEventText(), caso));
-
+                final String mensaje = (ClippingsPlaceHolders.buildFinalText(ApplicationConfigs.getInstance(tenant).getNotificationClientBodySubscribedToEventText(), caso, tenant));
+                final String subject = ManagerCasos.formatIdCaso(caso.getIdCaso()) + " " + (ClippingsPlaceHolders.buildFinalText(ApplicationConfigs.getInstance(tenant).getNotificationClientSubjectSubscribedToEventText(), caso, tenant));
                 Canal canal = chooseDefaultCanalToSendMail(caso);
-
                 HelpDeskScheluder.scheduleSendMailNow(tenant, caso.getIdCaso(), canal.getIdCanal(), mensaje,
                         caso.getEmailCliente().getEmailCliente(),
                         subject);
-
             }
-
         }
-
     }
 
     /**
      *
      * Use Same for all (config)
+     * TODO Add configurable subject and body for this message.
      *
      * @param tenant
      * @param grupo
@@ -367,16 +362,16 @@ public class MailNotifier {
      */
     public static Canal chooseDefaultCanalToSendMail(Caso caso) throws NoOutChannelException {
 
-        if (caso.getIdCanal() != null && caso.getIdCanal().getIdTipoCanal() != null 
+        if (caso.getIdCanal() != null && caso.getIdCanal().getIdTipoCanal() != null
                 && caso.getIdCanal().getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal())) {
             return caso.getIdCanal();
         } else {
 
             //choose canal, prioritize the area's default canal
             Canal chosenEmailChannel = (caso.getIdArea() != null && caso.getIdArea().getIdCanal() != null
-                    && caso.getIdArea().getIdCanal().getIdTipoCanal() != null 
+                    && caso.getIdArea().getIdCanal().getIdTipoCanal() != null
                     && caso.getIdArea().getIdCanal().getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal()))
-                    ? caso.getIdArea().getIdCanal() : null;
+                            ? caso.getIdArea().getIdCanal() : null;
 
 //            if (chosenEmailChannel == null) {
 //            //We do not use this since product may have a ventas email, and when a postventa user gets here there will be problems.
@@ -386,9 +381,8 @@ public class MailNotifier {
 //                        && caso.getIdProducto().getIdOutCanal().getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal()))
 //                        ? caso.getIdProducto().getIdOutCanal() : null;
 //            }
-
-            if (chosenEmailChannel != null 
-                    && chosenEmailChannel.getIdTipoCanal() != null 
+            if (chosenEmailChannel != null
+                    && chosenEmailChannel.getIdTipoCanal() != null
                     && chosenEmailChannel.getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal())
                     && !StringUtils.isEmpty(chosenEmailChannel.getIdCanal())) {
 

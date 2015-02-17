@@ -94,7 +94,7 @@ public class TipoNotaController extends AbstractManagedBean<TipoNota> implements
 
     private void performDestroy() {
         try {
-            getJpaController().remove(TipoNota.class, current);
+            getJpaController().remove(TipoNota.class, current.getIdTipoNota());
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("TipoNotaDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));

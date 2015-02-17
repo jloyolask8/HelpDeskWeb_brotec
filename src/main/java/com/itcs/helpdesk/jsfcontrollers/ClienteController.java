@@ -269,7 +269,7 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
 
     private void performDestroy() {
         try {
-            getJpaController().remove(Cliente.class, current);
+            getJpaController().remove(Cliente.class, current.getIdCliente());
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ClienteDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));

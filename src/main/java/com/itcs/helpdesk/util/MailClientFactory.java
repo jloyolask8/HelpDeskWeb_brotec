@@ -43,7 +43,7 @@ public class MailClientFactory {
                 instance = new PopImapEmailClientImpl(EmailAutoconfigClient.generateEmailProperties(canal.getMapSetting()));
             }
         } else if (canal.containsKey(EnumEmailSettingKeys.SERVER_TYPE.getKey()) && canal.getSetting(EnumEmailSettingKeys.SERVER_TYPE.getKey()).equals(Email.EXCHANGE)) {
-            instance = new ExchangeEmailClientImpl(ApplicationConfig.generateEmailPropertiesFromCanal(canal));
+            instance = new ExchangeEmailClientImpl(ApplicationConfigs.generateEmailPropertiesFromCanal(canal));
         }
 //        }
         clients.put(canal.getIdCanal(), instance);

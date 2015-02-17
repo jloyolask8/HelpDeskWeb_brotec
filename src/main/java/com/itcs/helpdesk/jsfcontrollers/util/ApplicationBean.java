@@ -26,7 +26,8 @@ import com.itcs.helpdesk.persistence.jpa.AbstractJPAController;
 import com.itcs.helpdesk.rules.Action;
 import com.itcs.helpdesk.rules.actionsimpl.NotifyGroupCasoReceivedAction;
 import com.itcs.helpdesk.rules.actionsimpl.SendCaseByEmailAction;
-import com.itcs.helpdesk.util.ApplicationConfig;
+import com.itcs.helpdesk.util.ApplicationConfigs;
+import com.itcs.helpdesk.util.NoInstanceConfigurationException;
 import com.itcs.helpdesk.webapputils.UserSessionListener;
 import java.awt.Color;
 import java.io.ByteArrayInputStream;
@@ -38,6 +39,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
@@ -249,47 +252,144 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
      * @return the appPageTitle
      */
     public String getHelpdeskTitle() {
-        return ApplicationConfig.getHelpdeskTitle();
+        try {
+            return ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).getHelpdeskTitle();
+        } catch (NoInstanceConfigurationException ex) {
+            Logger.getLogger(ApplicationBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "ERROR!";
     }
 
+    /**
+     * @deprecated @return
+     */
     public String getCompanyName() {
-        return ApplicationConfig.getCompanyName();
-    }
-    
-      public String getDiagnosticScripts() {
-        return ApplicationConfig.getDiagnosticScripts();
+        try {
+            return ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).getCompanyName();
+        } catch (NoInstanceConfigurationException ex) {
+            Logger.getLogger(ApplicationBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
+    /**
+     * @deprecated @return
+     */
+    public String getDiagnosticScripts() {
+        try {
+            return ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).getDiagnosticScripts();
+        } catch (NoInstanceConfigurationException ex) {
+            Logger.getLogger(ApplicationBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    /**
+     * @deprecated @return
+     */
     public String getCompanyLogo() {
-        return ApplicationConfig.getCompanyLogo();
+        try {
+            return ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).getCompanyLogo();
+        } catch (NoInstanceConfigurationException ex) {
+            Logger.getLogger(ApplicationBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
+    /**
+     * @deprecated @return
+     */
     public String getCompanyLoginBackground() {
-        return ApplicationConfig.getCompanyLoginBackground();
+        try {
+            return ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).getCompanyLoginBackground();
+        } catch (NoInstanceConfigurationException ex) {
+            Logger.getLogger(ApplicationBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
-//    public String getCompanyDefaultContactEmail() {
-////        if (defaultContactEmail == null) {
-////            String idDefaultArea = EnumAreas.DEFAULT_AREA.getArea().getIdArea();
-////            Area a = getJpaController().find(Area.class, idDefaultArea);
-////            if (a != null && !StringUtils.isEmpty(a.getMailInboundUser())) {
-////                defaultContactEmail = a.getMailInboundUser();
-////            }
-////        }
-//
-//        return defaultContactEmail;
-//
-//    }
+    /**
+     * @deprecated @return
+     */
     public String getProductDescription() {
-        return ApplicationConfig.getProductDescription();
+        try {
+            return ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).getProductDescription();
+        } catch (NoInstanceConfigurationException ex) {
+            Logger.getLogger(ApplicationBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
+    /**
+     * @deprecated @return
+     */
     public String getProductComponentDescription() {
-        return ApplicationConfig.getProductComponentDescription();
+        try {
+            return ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).getProductComponentDescription();
+        } catch (NoInstanceConfigurationException ex) {
+            Logger.getLogger(ApplicationBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
+    /**
+     * @deprecated @return
+     */
     public String getProductSubComponentDescription() {
-        return ApplicationConfig.getProductSubComponentDescription();
+        try {
+            return ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).getProductSubComponentDescription();
+        } catch (NoInstanceConfigurationException ex) {
+            Logger.getLogger(ApplicationBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    /**
+     * @deprecated @return
+     */
+    public boolean isShowCompanyLogo() {
+        try {
+            return ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).isShowCompanyLogo();
+        } catch (NoInstanceConfigurationException ex) {
+            Logger.getLogger(ApplicationBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    /**
+     * @deprecated @return
+     */
+    public boolean isAreaRequired() {
+        try {
+            return ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).isAreaRequired();
+        } catch (NoInstanceConfigurationException ex) {
+            Logger.getLogger(ApplicationBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    /**
+     * @deprecated @return
+     */
+    public boolean isCustomerSurveyEnabled() {
+        try {
+            return ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).isCustomerSurveyEnabled();
+        } catch (NoInstanceConfigurationException ex) {
+            Logger.getLogger(ApplicationBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    /**
+     * @deprecated @return
+     */
+    public boolean isProductoRequired() {
+        try {
+            return ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).isProductoRequired();
+        } catch (NoInstanceConfigurationException ex) {
+            Logger.getLogger(ApplicationBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
     }
 
     public List<TipoCaso> getTipoCasoAvailableList() {
@@ -303,30 +403,14 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
 //        //System.out.println("*** getAreasAvailableList()");
         return (List<Area>) getJpaController().findAll(Area.class);
     }
-    
-     public List<Grupo> getGruposAvailableList() {
+
+    public List<Grupo> getGruposAvailableList() {
 //        //System.out.println("*** getAreasAvailableList()");
         return (List<Grupo>) getJpaController().findAll(Grupo.class);
     }
 
     public List<Prioridad> getPrioridadItemsAvailableList() {
         return (List<Prioridad>) getJpaController().findAll(Prioridad.class);
-    }
-
-    public boolean isShowCompanyLogo() {
-        return ApplicationConfig.isShowCompanyLogo();
-    }
-
-    public boolean isAreaRequired() {
-        return ApplicationConfig.isAreaRequired();
-    }
-    
-     public boolean isCustomerSurveyEnabled() {
-        return ApplicationConfig.isCustomerSurveyEnabled();
-    }
-
-    public boolean isProductoRequired() {
-        return ApplicationConfig.isProductoRequired();
     }
 
     public StreamedContent getLogo() {

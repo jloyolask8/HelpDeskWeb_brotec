@@ -282,70 +282,32 @@
                                         </p:column>
 
                                         <p:column sortBy="#{item.idPrioridad.idPrioridad}" headerText="Prio" exportable="false">
-                                            <pe:switch id="prioridadCaso" value="#{item.idPrioridad.idPrioridad}" rendered="#{not empty item.idPrioridad}">  
-                                                <pe:case value="#{EnumPrioridad.BAJA.getPrioridad().getIdPrioridad()}">  
-                                                    <h:panelGroup id="prioridadCasox">
-                                                        <i class="fa fa-fw fa-flag-o"></i>
-                                                    </h:panelGroup>
-                                                    <p:tooltip for="prioridadCasox" value="#{item.idPrioridad.nombre}"/>
-                                                </pe:case>
 
-                                                <pe:case value="#{EnumPrioridad.MEDIA.getPrioridad().getIdPrioridad()}">  
-                                                    <h:panelGroup id="prioridadCasox" style="color: #006dcc;">
-                                                        <i class="fa fa-fw fa-flag" style=""></i>
-                                                    </h:panelGroup>
-                                                    <p:tooltip for="prioridadCasox" value="#{item.idPrioridad.nombre}"/>
-                                                </pe:case> 
+                                            <h:panelGroup id="prioridadCasox">
+                                                <i class="fa fa-fw fa-flag text-#{item.idPrioridad.styleClass}"></i>
+                                            </h:panelGroup>
+                                            <p:tooltip for="prioridadCasox" value="#{item.idPrioridad.nombre}"/>
 
-                                                <pe:case value="#{EnumPrioridad.ALTA.getPrioridad().getIdPrioridad()}">  
-                                                    <h:panelGroup id="prioridadCasox" style="color: #f0ad4e;">
-                                                        <i class="fa fa-fw fa-flag" style=""></i>
-                                                    </h:panelGroup>
-                                                    <p:tooltip for="prioridadCasox" value="#{item.idPrioridad.nombre}"/>
-                                                </pe:case> 
 
-                                                <pe:case value="#{EnumPrioridad.MAXIMA.getPrioridad().getIdPrioridad()}">  
-                                                    <h:panelGroup id="prioridadCasox" style="color: red;">
-                                                        <i class="fa fa-fw fa-flag" style=""></i>
-                                                    </h:panelGroup>
-                                                    <p:tooltip for="prioridadCasox" value="#{item.idPrioridad.nombre}"/>
-                                                </pe:case> 
-                                            </pe:switch>
+
                                         </p:column>
 
                                         <p:column sortBy="#{item.nextResponseDue}" headerText="SLA">
 
-                                            <pe:switch id="switchTicketAlertState" value="#{item.isOpen().toString()}">  
-                                                <pe:case value="true">  
-                                                    <pe:switch id="switchTicketAlertStateOpen" value="#{item.estadoAlerta}">  
-                                                        <pe:case value="#{EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta()}">  
-                                                            <h:panelGroup id="nextResponseDue" style="color: #5cb85c;"><i class="fa fa-fw fa-clock-o"></i> 
-                                                                #{casoController.formatShortDate(item.nextResponseDue)}
-                                                            </h:panelGroup>
-                                                            <p:tooltip for="nextResponseDue" value="Acuerdo de respuesta #{casoController.prettyDate(item.nextResponseDue)} - #{casoController.formatDate(item.nextResponseDue)}"/>
-                                                        </pe:case>
-                                                        <pe:case value="#{EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta()}">  
-                                                            <h:panelGroup id="nextResponseDue" style="color: #f0ad4e;"><i class="fa fa-fw fa-warning"></i> 
-                                                                #{casoController.formatShortDate(item.nextResponseDue)}
-                                                            </h:panelGroup>
-                                                            <p:tooltip for="nextResponseDue" value="Vence #{casoController.prettyDate(item.nextResponseDue)} - #{casoController.formatDate(item.nextResponseDue)}"/>
-                                                        </pe:case>
-                                                        <pe:case value="#{EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta()}">  
-                                                            <h:panelGroup id="nextResponseDue" style="color: #c9302c;"><i class="fa fa-fw fa-exclamation"></i> 
-                                                                #{casoController.formatShortDate(item.nextResponseDue)}
-                                                            </h:panelGroup>
-                                                            <p:tooltip for="nextResponseDue" value="Vencido #{casoController.prettyDate(item.nextResponseDue)} - #{casoController.formatDate(item.nextResponseDue)}"/>
-                                                        </pe:case>  
-                                                    </pe:switch>  
-                                                </pe:case>
+                                            <h:panelGroup id="nextResponseDue" layout="block"  rendered="#{item.isOpen()}">
+                                                <i class="fa fa-fw fa-clock-o text-#{item.estadoAlerta.styleClass}"></i> 
+                                                #{casoController.formatShortDate(item.nextResponseDue)}
+                                            </h:panelGroup>
+                                            <p:tooltip for="nextResponseDue" 
+                                                       value="Acuerdo de respuesta #{casoController.prettyDate(item.nextResponseDue)} - #{casoController.formatDate(item.nextResponseDue)}"/>
 
-                                                <pe:case value="false">  
-                                                    <h:panelGroup id="cerrado" style="color: #000;">
-                                                        <i class="fa fa-fw fa-lock"></i> #{casoController.formatShortDate(item.fechaCierre)}
-                                                    </h:panelGroup>
-                                                    <p:tooltip for="cerrado" value="Cerrado #{casoController.prettyDate(item.fechaCierre)} - #{casoController.formatDate(item.fechaCierre)}"/>
-                                                </pe:case>  
-                                            </pe:switch>
+
+                                            <h:panelGroup id="cerrado" rendered="#{item.isClosed()}">
+                                                <i class="fa fa-fw fa-lock text-default"></i> #{casoController.formatShortDate(item.fechaCierre)}
+                                            </h:panelGroup>
+                                            <p:tooltip for="cerrado" rendered="#{item.isClosed()}"
+                                                       value="Cerrado #{casoController.prettyDate(item.fechaCierre)} - #{casoController.formatDate(item.fechaCierre)}"/>
+
                                         </p:column>
 
                                     </p:dataTable>

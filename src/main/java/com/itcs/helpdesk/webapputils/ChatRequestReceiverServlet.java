@@ -9,10 +9,9 @@ import com.itcs.helpdesk.persistence.entityenums.EnumCanal;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso;
 import com.itcs.helpdesk.persistence.jpa.AbstractJPAController;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
-import com.itcs.helpdesk.util.ApplicationConfig;
+import com.itcs.helpdesk.util.ApplicationConfigs;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.ManagerCasos;
-import com.itcs.helpdesk.util.RulesEngine;
 import com.itcs.helpdesk.webservices.DatosCaso;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -27,17 +26,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
-import javax.annotation.Resource;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.UserTransaction;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import org.apache.commons.lang3.StringUtils;
+import org.atmosphere.cpr.ApplicationConfig;
 
 /**
  *
@@ -178,7 +173,7 @@ public class ChatRequestReceiverServlet extends AbstractServlet
             try {
                 //2010-10-18T01:48:18.623Z
 //                String fechaCreacionStr = caso_xml.getCreated_at().substring(0, caso_xml.getCreated_at().indexOf('T')+9);
-                if (ApplicationConfig.isAppDebugEnabled()) {
+                if (ApplicationConfigs.getInstance(schema).isAppDebugEnabled()) {
                     Log.createLogger(this.getClass().getName()).logInfo("caso_xml.getCreated_at(): " + caso_xml.getCreated_at());
 
                 }

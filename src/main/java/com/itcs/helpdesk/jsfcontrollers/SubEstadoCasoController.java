@@ -138,7 +138,7 @@ public class SubEstadoCasoController extends AbstractManagedBean<SubEstadoCaso> 
 
     private void performDestroy() {
         try {
-            getJpaController().remove(SubEstadoCaso.class, current);
+            getJpaController().remove(SubEstadoCaso.class, current.getIdSubEstado());
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("SubEstadoCasoDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
