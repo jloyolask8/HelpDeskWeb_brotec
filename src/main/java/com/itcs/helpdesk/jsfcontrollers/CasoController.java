@@ -2453,11 +2453,10 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             Nota nota = createNota(current, false, textoNota.trim(),
                     EnumTipoNota.NOTA_CIERRE.getTipoNota(), false, null);
             addNotaToCaso(current, nota);
-
+            changeLog.add(ManagerCasos.createLogReg(current, "Estado", userSessionBean.getCurrent().getCapitalName() + " cerró el caso.", ""));
             getJpaControllerThatListenRules().mergeCaso(current, changeLog);
 
             JsfUtil.addSuccessMessage(resourceBundle.getString("caso.cerrar.ok"));
-            changeLog.add(ManagerCasos.createLogReg(current, "Estado", userSessionBean.getCurrent().getCapitalName() + " cerró el caso.", ""));
 
             HelpDeskScheluder.unscheduleCambioAlertas(getUserSessionBean().getTenantId(), current.getIdCaso());
 
@@ -2780,12 +2779,12 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
             } else {
                 idCaserel = null;
-                JsfUtil.addErrorMessage(resourceBundle.getString("casorel.notfound"));
+                addErrorMessage(resourceBundle.getString("casorel.notfound"));
             }
         } catch (Exception e) {
             idCaserel = null;
             current = getJpaController().find(Caso.class, current.getIdCaso());
-            JsfUtil.addErrorMessage(resourceBundle.getString("casorel.nook"));
+            addErrorMessage(resourceBundle.getString("casorel.nook"));
         }
 //        current = getJpaController().find(Caso.class, current.getIdCaso());
         return "/script/caso/Edit";
@@ -3211,7 +3210,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 HelpDeskScheluder.scheduleAlertaPorVencer(getUserSessionBean().getTenantId(), current.getIdCaso(), ManagerCasos.calculaCuandoPasaAPorVencer(current));
             }
             getJpaControllerThatListenRules().mergeCaso(current, ManagerCasos.createLogReg(current, EnumTipoNota.NOTA.getTipoNota().getNombre(), nota.getTextExtract(), ""));
-          
+
             if (notifyClient) {
                 notifyClient();
             }
@@ -3536,6 +3535,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             current = getJpaControllerThatListenRules().find(Caso.class, current.getIdCaso());
             JsfUtil.addSuccessMessage("Archivo " + nombre + " borrado");
             getJpaControllerThatListenRules().persist(ManagerCasos.createLogReg(current, "Archivo borrado", "Archivo borrado: " + nombre, ""));
+            executeInClient("PF('borrarAttachment').hide()");
 
         } catch (Exception e) {
             JsfUtil.addSuccessMessage("No se ha podido borrar el archivo");

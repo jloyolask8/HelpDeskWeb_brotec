@@ -102,13 +102,12 @@
 
                     <div class="form-actions">
                         
-                        <p:commandLink id="submit" type="submit" action="#{loginController.loginAction}" 
-                                             update=":form-signin"
+                        <p:commandButton id="submit" type="submit" action="#{loginController.loginAction}" 
+                                         update=":form-signin" value="#{bundle.LoginUsuario}"
                                              styleClass="btn btn-primary btn-block btn-lg"
                                              onclick="jQuery(this).addClass('ui-state-disabled');
                                                  jQuery(this).children().addClass('fa fa-refresh fa-spin')">
-                             <i class=""></i> #{bundle.LoginUsuario}
-                         </p:commandLink>
+                         </p:commandButton>
                          
 
                     </div> <!-- / .form-actions -->

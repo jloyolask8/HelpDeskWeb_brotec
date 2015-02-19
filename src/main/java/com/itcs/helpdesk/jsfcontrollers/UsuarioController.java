@@ -411,25 +411,12 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
     }
 
     public String destroySelected() {
-
         performDestroy();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         recreateModel();
         return "List";
     }
 
-//    public String destroyAndView() {
-//        performDestroy();
-//        recreateModel();
-//        updateCurrentItem();
-//        if (selectedItemIndex >= 0) {
-//            return "View";
-//        } else {
-//            // all items were removed - go back to list
-//            recreateModel();
-//            return "List";
-//        }
-//    }
     private void performDestroy() {
         try {
             getJpaController().remove(Usuario.class, current.getIdUsuario());
@@ -440,65 +427,14 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
         }
     }
 
-//    private void updateCurrentItem() {
-//        System.out.println("updateCurrentItem");
-//        int count = getJpaController().count(Usuario.class).intValue();
-//        if (selectedItemIndex >= count) {
-//            // selected index cannot be bigger than number of items:
-//            selectedItemIndex = count - 1;
-//            // go to previous page if last page disappeared:
-//            if (pagination.getPageFirstItem() >= count) {
-//                pagination.previousPage();
-//            }
-//        }
-//        if (selectedItemIndex >= 0) {
-//            current = (Usuario) getJpaController().queryByRange(Usuario.class, 1, selectedItemIndex).get(0);
-//        }
-//    }
-//    public DataModel getItems() {
-//        if (items == null) {
-//            items = getPagination().createPageDataModel();
-//        }
-//        return items;
-//    }
-//    private void recreateModel() {
-//        items = null;
-//    }
-//
-//    public String last() {
-//        getPagination().lastPage();
-//        recreateModel();
-//        return "List";
-//    }
-//
-//    public String first() {
-//        getPagination().firstPage();
-//        recreateModel();
-//        return "List";
-//    }
-//
-//    public String next() {
-//        getPagination().nextPage();
-//        recreateModel();
-//        return "List";
-//    }
-//
-//    public String previous() {
-//        getPagination().previousPage();
-//        recreateModel();
-//        return "List";
-//    }
-//    public SelectItem[] getItemsAvailableSelectMany() {
-//        return JsfUtil.getSelectItems(getJpaController().getUsuarioFindAll(), false);
-//    }
-//
-//    public SelectItem[] getItemsAvailableSelectOne() {
-//        return JsfUtil.getSelectItems(getJpaController().getUsuarioFindAll(), true);
-//    }
     public SelectItem[] getItemsAvailableSelectOneNoSystem() {
         List<Usuario> lista = (List<Usuario>) getJpaController().findAll(Usuario.class);
-//        lista.remove(EnumUsuariosBase.SISTEMA.getUsuario());
         return JsfUtil.getSelectItems(lista, true);
+    }
+    
+     public SelectItem[] getItemsAvailableSelectManyNoSystem() {
+        List<Usuario> lista = (List<Usuario>) getJpaController().findAll(Usuario.class);
+        return JsfUtil.getSelectItems(lista, false);
     }
 
     public SelectItem[] getStringItemsAvailableSelectOneNoSystem() {
@@ -511,6 +447,10 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
         return JsfUtil.getSelectItems(ids, true);
     }
 
+    /**
+     * @deprecated 
+     * @return 
+     */
     public SelectItem[] getItemsAvailableSelectOneNoPropietario() {
         List<Usuario> lista = (List<Usuario>) getJpaController().findAll(Usuario.class);
 //        lista.remove(EnumUsuariosBase.SISTEMA.getUsuario());
@@ -518,113 +458,6 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
         return JsfUtil.getSelectItems(lista, true);
     }
 
-//    private void deleteThis() {
-//        setMaxValueForCasosClosedVsOpenModel(0);
-//        setCasosClosedVsOpenModel(new CartesianChartModel());
-//
-//        ChartSeries cerrados = new ChartSeries();
-//        cerrados.setLabel("Cerrados");
-//
-//        ChartSeries creados = new ChartSeries();
-//        creados.setLabel("Creados");
-//        Calendar cal = Calendar.getInstance();
-//
-//        if (getCasosClosedVsOpenYearTo() > getCasosClosedVsOpenYearfrom()) {
-//            //loop over each year, get casos created between start and end of the year.
-//
-//            for (int year = getCasosClosedVsOpenYearfrom(); year <= getCasosClosedVsOpenYearTo(); year++) {
-//                cal.set(year, Calendar.JANUARY, 1);
-//                cal.set(Calendar.HOUR_OF_DAY, 0);
-//                cal.set(Calendar.MINUTE, 0);
-//                cal.set(Calendar.SECOND, 0);
-//                cal.set(Calendar.MILLISECOND, 0);
-//
-//                Date from = cal.getTime();
-//
-//                cal.set(year + 1, Calendar.JANUARY, 1);
-//                cal.set(Calendar.HOUR_OF_DAY, 0);
-//                cal.set(Calendar.MINUTE, 0);
-//                cal.set(Calendar.SECOND, 0);
-//                cal.set(Calendar.MILLISECOND, 0);
-//
-//                Date to = cal.getTime();
-//
-//                ////System.out.println("from:" + from);
-//                ////System.out.println("To:" + to);
-////                long count = getJpaController().countByCreatedBetween(Caso.class, from, to, idArea, idGrupo, idUsuario);
-//                long count = getJpaController().countCasosByCreatedBetween(from, to, current);
-//
-//                creados.set(String.valueOf(year), count);
-//                if (count >= getMaxValueForCasosClosedVsOpenModel()) {
-//                    setMaxValueForCasosClosedVsOpenModel(count);
-//                }
-//                ////System.out.println("year:" + year + ", count:" + count);
-//
-//
-////                long count2 = getJpaController().countByClosedBetween(Caso.class, from, to, idArea, idGrupo, idUsuario);
-//                long count2 = getJpaController().countCasosByClosedBetween(from, to, current);
-//
-//                if (count2 >= getMaxValueForCasosClosedVsOpenModel()) {
-//                    setMaxValueForCasosClosedVsOpenModel(count2);
-//                }
-//                cerrados.set(String.valueOf(year), count2);
-//                ////System.out.println("year:" + year + ", count:" + count2);
-//
-//            }
-//
-//
-//        } else if (getCasosClosedVsOpenYearTo() == getCasosClosedVsOpenYearfrom()) {
-//            //loop over each MONTH of the year, get casos created between start and end of each month.
-//            for (int month = Calendar.JANUARY; month <= Calendar.DECEMBER; month++) {
-//                cal.set(casosClosedVsOpenYearTo, month, 1);
-//                cal.set(Calendar.HOUR_OF_DAY, 0);
-//                cal.set(Calendar.MINUTE, 0);
-//                cal.set(Calendar.SECOND, 0);
-//                cal.set(Calendar.MILLISECOND, 0);
-//
-//                Date from = cal.getTime();
-//
-//                cal.set(casosClosedVsOpenYearfrom, month + 1, 1);
-//                cal.set(Calendar.HOUR_OF_DAY, 0);
-//                cal.set(Calendar.MINUTE, 0);
-//                cal.set(Calendar.SECOND, 0);
-//                cal.set(Calendar.MILLISECOND, 0);
-//
-//                Date to = cal.getTime();
-//
-//                ////System.out.println("from:" + from);
-//                ////System.out.println("To:" + to);
-//
-////                long count = getJpaController().countByCreatedBetween(Caso.class, from, to, idArea, idGrupo, idUsuario);
-//                long count = getJpaController().countCasosByCreatedBetween(from, to, current);
-//
-//                if (count >= getMaxValueForCasosClosedVsOpenModel()) {
-//                    setMaxValueForCasosClosedVsOpenModel(count);
-//                }
-//                creados.set(GraphsManagedBean.traduceMonth(month), count);
-//                ////System.out.println("month:" + month + ", count:" + count);
-//
-//
-//                long count2 = getJpaController().countCasosByClosedBetween(from, to, current);
-//
-//                if (count2 >= getMaxValueForCasosClosedVsOpenModel()) {
-//                    setMaxValueForCasosClosedVsOpenModel(count2);
-//                }
-//                cerrados.set(GraphsManagedBean.traduceMonth(month), count2);
-//                ////System.out.println("month:" + month + ", count:" + count2);
-//
-//            }
-//
-//
-//        } else {
-//            //Error
-//            JsfUtil.addErrorMessage("Hay un problema con el periodo seleccionado: " + getCasosClosedVsOpenYearfrom() + " - " + getCasosClosedVsOpenYearTo());
-//        }
-//
-//        getCasosClosedVsOpenModel().addSeries(creados);
-//        getCasosClosedVsOpenModel().addSeries(cerrados);
-//
-//    }
     /**
      * @return the casosClosedVsOpenYearfrom
      */

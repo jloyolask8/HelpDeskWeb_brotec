@@ -644,7 +644,7 @@ public class RulesEngine implements CasoChangeListener {
                 auditLogAssignUser.setFecha(Calendar.getInstance().getTime());
                 auditLogAssignUser.setTabla("Caso");
                 auditLogAssignUser.setCampo("Agente");
-                auditLogAssignUser.setNewValue(usuario != null ? usuario.getCapitalName() : "Sin agente");
+                auditLogAssignUser.setNewValue(usuario.getCapitalName());
                 auditLogAssignUser.setOldValue(oldOwner);
                 auditLogAssignUser.setIdCaso(caso.getIdCaso());
 

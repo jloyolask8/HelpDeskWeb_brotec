@@ -66,6 +66,9 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
     private Usuario selectedUserToAddInvited;
     private Resource selectedResourceToAddInvited;
     private Cliente selectedClientToAddInvited;
+//    //temp vars for select2
+//    private List<Usuario> usuariosInvitedList;
+//    private List<Resource> resourceList;
 
     //selected client
     private ScheduleEventClient selectedScheduleEventClient;
@@ -192,7 +195,6 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
                     }
 
 //                    //System.out.println("VISTA=" + getVista());
-
                     final List<com.itcs.helpdesk.persistence.entities.ScheduleEvent> findEntities
                             = (List<com.itcs.helpdesk.persistence.entities.ScheduleEvent>) getJpaController().findAllEntities(getVista(), new OrderBy("startDate", OrderBy.OrderType.DESC), null);
 //                    //System.out.println("events:" + findEntities);
@@ -211,7 +213,6 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
         };
 
 //        //System.out.println("new CasoScheduleController()");
-
     }
 
     public String selectCasoByEvento(DefaultScheduleEvent scheduleEvent) {
@@ -265,16 +266,15 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
         }
 
     }
-    
-    public void closeViewEvent(){
-         this.event = null;
-         executeInClient("PF('viewEventDialog').hide()");
+
+    public void closeViewEvent() {
+        this.event = null;
+        executeInClient("PF('viewEventDialog').hide()");
     }
 
     public void quickSaveEvent() {
 
 //        //System.out.println("void quickSaveEvent called");
-
         try {
             com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) event.getData();
 
@@ -303,8 +303,8 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
         } catch (Exception ex) {
             addErrorMessage("No se pudo editar el evento:" + ex.getMessage());
             Logger.getLogger(CasoScheduleController.class.getName()).log(Level.SEVERE, "quickSaveEvent", ex);
-        }finally{
-             this.event = null;
+        } finally {
+            this.event = null;
         }
 
     }
@@ -312,7 +312,6 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
     public void saveEvent() {
 
 //        //System.out.println("void saveEvent called");
-
         try {
             com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) event.getData();
 
@@ -368,7 +367,6 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
     public void addEvent() {
 
         //System.out.println("void addEvent called");
-
         try {
             com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) event.getData();
 
@@ -459,10 +457,10 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
                 String jobId = HelpDeskScheluder.scheduleEventReminderJob(
                         getUserSessionBean().getTenantId(),
-                        entityEvent.getUsuariosInvitedList(), 
-                        entityEvent.getIdCaso().getIdCaso(), 
-                        eventIdString, 
-                        scheduleEventReminderIdString, 
+                        entityEvent.getUsuariosInvitedList(),
+                        entityEvent.getIdCaso().getIdCaso(),
+                        eventIdString,
+                        scheduleEventReminderIdString,
                         cal.getTime());
 
                 scheduleEventReminder.setQuartzJobId(jobId);
@@ -558,7 +556,6 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
     public void onEventMove(ScheduleEntryMoveEvent entryMoveEvent) {
 
         //System.out.println("onEventMove");
-
         com.itcs.helpdesk.persistence.entities.ScheduleEvent entityEvent = (com.itcs.helpdesk.persistence.entities.ScheduleEvent) entryMoveEvent.getScheduleEvent().getData();
 
         moveEventQuartzTriggers(entityEvent);
@@ -636,8 +633,9 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
         this.casoController = casoController;
     }
 
-   
-
+    /**
+     * @deprecated
+     */
     public List<Usuario> autoCompleteUsuario(String query) {
         //System.out.println(query);
         //List<EmailCliente> results = new ArrayList<EmailCliente>();
@@ -656,6 +654,9 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     }
 
+    /**
+     * @deprecated
+     */
     public List<Cliente> autoCompleteCliente(String query) {
         //System.out.println(query);
         //List<EmailCliente> results = new ArrayList<EmailCliente>();
@@ -674,6 +675,9 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     }
 
+    /**
+     * @deprecated
+     */
     public void usuarioFilterItemSelectEvent(SelectEvent event) {
         Object item = event.getObject();
         try {
@@ -690,6 +694,9 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     }
 
+    /**
+     * @deprecated
+     */
     public void clienteInvitedItemSelectEvent(SelectEvent selectEvent) {
         Object item = selectEvent.getObject();
 
@@ -712,7 +719,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
             if (!entityEvent.getScheduleEventClientList().contains(scheduleEventClient)) {
                 entityEvent.getScheduleEventClientList().add(scheduleEventClient);
-            }else{
+            } else {
                 addInfoMessage("El cliente ya existe en la lista.");
             }
 
@@ -725,6 +732,9 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     }
 
+    /**
+     * @deprecated
+     */
     public void usuarioInvitedItemSelectEvent(SelectEvent selectEvent) {
         Object item = selectEvent.getObject();
         //System.out.println("item:" + item);
@@ -749,6 +759,9 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     }
 
+    /**
+     * @deprecated
+     */
     public List<Resource> autoCompleteResource(String query) {
         //System.out.println(query);
         //List<EmailCliente> results = new ArrayList<EmailCliente>();
@@ -767,6 +780,9 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     }
 
+    /**
+     * @deprecated @param selectEvent
+     */
     public void resourceInvitedItemSelectEvent(SelectEvent selectEvent) {
         Object item = selectEvent.getObject();
         //System.out.println("item:" + item);
@@ -788,6 +804,9 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
 
     }
 
+    /**
+     * @deprecated
+     */
     public void resourceFilterItemSelectEvent(SelectEvent selectEvent) {
         Object item = selectEvent.getObject();
         try {
@@ -904,4 +923,33 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
     public void setSelectedScheduleEventClient(ScheduleEventClient selectedScheduleEventClient) {
         this.selectedScheduleEventClient = selectedScheduleEventClient;
     }
+
+//    /**
+//     * @return the usuariosInvitedList
+//     */
+//    public List<Usuario> getUsuariosInvitedList() {
+//        return usuariosInvitedList;
+//    }
+//
+//    /**
+//     * @param usuariosInvitedList the usuariosInvitedList to set
+//     */
+//    public void setUsuariosInvitedList(List<Usuario> usuariosInvitedList) {
+//        this.usuariosInvitedList = usuariosInvitedList;
+//        System.out.println("setUsuariosInvitedList: " + usuariosInvitedList);
+//    }
+//
+//    /**
+//     * @return the resourceList
+//     */
+//    public List<Resource> getResourceList() {
+//        return resourceList;
+//    }
+//
+//    /**
+//     * @param resourceList the resourceList to set
+//     */
+//    public void setResourceList(List<Resource> resourceList) {
+//        this.resourceList = resourceList;
+//    }
 }
