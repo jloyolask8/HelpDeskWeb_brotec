@@ -6,55 +6,114 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core">
 
-    <ui:composition template="/script/template_inbox.xhtml">
+    <ui:composition template="/script/template_inbox_bootstrap.xhtml">
         <ui:define name="title">
             <p:outputLabel value="Formulario de edici&oacute;n cliente"/>
         </ui:define>
-        <ui:define name="west">
-            <p:panel>
-                <h:outputLabel escape="false" value="#{bundle.ayudaClientes}"/>
-            </p:panel>
+        <ui:define name="help">
+            <h:outputText  value="#{bundle.ayudaClientes}" escape="false"/>
         </ui:define>
-        <ui:define name="body">     
+
+        <ui:define name="body">
+            <!-- page-header -->
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-sm-10 col-xs-10">
+                        <h1><i class="fa fa-users page-header-icon"></i>&nbsp;&nbsp;Editar Cliente</h1>
+                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                            <i class="fa fa-info-circle"/>
+                        </p:commandLink> 
+                    </div>
+
+                </div>
+            </div><!-- / .page-header --> 
             <h:form id="form">
                 <p:messages globalOnly="true"/>
+                <div class="row">
 
-                <h:panelGrid id="datosDelCliente" columns="3">
-                    <p:outputLabel id="rutLbl" value="#{bundle.CreateClienteLabel_rut}" for="rut" style="font-weight:bold"/>
-                    <p:inputText id="rut" value="#{clienteController.selected.rut}" 
-                                 title="#{bundle.CreateClienteTitle_rut}" validator="#{inputValidationBean.validarRut}">
-                        <p:ajax event="blur" listener="#{clienteController.onBlurRutInput}" update=":form"/>
-                    </p:inputText>
-                    <p:message id="rutMsg" display="both" for="rut"/>
+                    <div class="col-sm-12">
 
-                    <p:outputLabel value="#{bundle.CreateClienteLabel_nombres}" for="nombres" style="font-weight:bold"/>
-                    <p:inputText id="nombres" value="#{clienteController.selected.nombres}" title="#{bundle.CreateClienteTitle_nombres}" required="true" requiredMessage="El Nombre es un dato requerido."/>
-                    <p:message display="both" for="nombres"/>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label">#{bundle.CreateClienteLabel_rut}</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static"> 
+                                    <h:inputText styleClass="form-control" id="rut" value="#{clienteController.selected.rut}" 
+                                                 title="#{bundle.CreateClienteTitle_rut}" validator="#{inputValidationBean.validarRut}">
+                                        <p:ajax event="blur" listener="#{clienteController.onBlurRutInput}" update=":form"/>
+                                    </h:inputText>
+                                </p>
+                                <p:message id="rutMsg" display="both" for="rut"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label">#{bundle.CreateClienteLabel_nombres}</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static"> 
+                                    <h:inputText styleClass="form-control" id="nombres" value="#{clienteController.selected.nombres}" title="#{bundle.CreateClienteTitle_nombres}" required="true" requiredMessage="El Nombre es un dato requerido."/>
+                                </p>
+                                <p:message display="both" for="nombres"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label">#{bundle.CreateClienteLabel_apellidos}</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static"> 
+                                    <h:inputText styleClass="form-control" id="apellidos" value="#{clienteController.selected.apellidos}" title="#{bundle.CreateClienteTitle_apellidos}" />
+                                </p>
+                                <p:message display="both" for="apellidos"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label">Sexo:</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static"> 
+                                    <p:selectOneButton id="sexo" value="#{clienteController.selected.sexo}">  
+                                        <f:selectItem itemLabel="Hombre" itemValue="Hombre" />  
+                                        <f:selectItem itemLabel="Mujer" itemValue="Mujer" />  
+                                    </p:selectOneButton> 
+                                </p>
+                                <p:message display="both" for="sexo"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label">#{bundle.CreateClienteLabel_fono1}</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static"> 
+                                    <h:inputText styleClass="form-control" id="fono1" value="#{clienteController.selected.fono1}" title="#{bundle.CreateClienteTitle_fono1}" />
+                                </p>
+                                <p:message display="both" for="fono1"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label">#{bundle.CreateClienteLabel_fono2}</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static"> 
+                                    <h:inputText styleClass="form-control" id="fono2" value="#{clienteController.selected.fono2}" title="#{bundle.CreateClienteTitle_fono2}" />
+                                </p>
+                                <p:message display="both" for="fono2"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label">#{bundle.CreateClienteLabel_dirParticular}</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static"> 
+                                    <h:inputText styleClass="form-control" id="dirParticular" size="60" value="#{clienteController.selected.dirParticular}" title="#{bundle.CreateClienteTitle_dirParticular}" />
+                                </p>
+                                <p:message display="both" for="dirParticular"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label">#{bundle.CreateClienteLabel_dirComercial}</label>
+                            <div class="col-sm-4">
+                                <p class="form-control-static"> 
+                                    <h:inputText styleClass="form-control" id="dirComercial" size="60" value="#{clienteController.selected.dirComercial}" title="#{bundle.CreateClienteTitle_dirComercial}" />
+                                </p>
+                                <p:message display="both" for="dirComercial"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                    <p:outputLabel value="#{bundle.CreateClienteLabel_apellidos}" for="apellidos" style="font-weight:bold"/>
-                    <p:inputText id="apellidos" value="#{clienteController.selected.apellidos}" title="#{bundle.CreateClienteTitle_apellidos}" />
-                    <p:message display="both" for="apellidos"/>
-
-                    <p:outputLabel value="Sexo:" for="sexo" style="font-weight:bold"/>
-                    <p:selectOneButton id="sexo" value="#{clienteController.selected.sexo}">  
-                        <f:selectItem itemLabel="Hombre" itemValue="Hombre" />  
-                        <f:selectItem itemLabel="Mujer" itemValue="Mujer" />  
-                    </p:selectOneButton> 
-                    <p:message display="both" for="sexo"/>
-
-                    <p:outputLabel value="#{bundle.CreateClienteLabel_fono1}" for="fono1" style="font-weight:bold"/>
-                    <p:inputText id="fono1" value="#{clienteController.selected.fono1}" title="#{bundle.CreateClienteTitle_fono1}" />
-                    <p:message display="both" for="fono1"/>
-                    <p:outputLabel value="#{bundle.CreateClienteLabel_fono2}" for="fono2" style="font-weight:bold"/>
-                    <p:inputText id="fono2" value="#{clienteController.selected.fono2}" title="#{bundle.CreateClienteTitle_fono2}" />
-                    <p:message display="both" for="fono2"/>
-                    <p:outputLabel value="#{bundle.CreateClienteLabel_dirParticular}" for="dirParticular" style="font-weight:bold"/>
-                    <p:inputText id="dirParticular" size="60" value="#{clienteController.selected.dirParticular}" title="#{bundle.CreateClienteTitle_dirParticular}" />
-                    <p:message display="both" for="dirParticular"/>
-                    <p:outputLabel value="#{bundle.CreateClienteLabel_dirComercial}" for="dirComercial" style="font-weight:bold"/>
-                    <p:inputText id="dirComercial" size="60" value="#{clienteController.selected.dirComercial}" title="#{bundle.CreateClienteTitle_dirComercial}" />
-                    <p:message display="both" for="dirComercial"/>
-                </h:panelGrid>
 
 
                 <div class="formSeparator">
@@ -134,7 +193,7 @@
                                      actionListener="#{clienteController.chooseSubComponente}">
                         <p:ajax event="dialogReturn" listener="#{clienteController.onSubComponenteChosen}" update=":form:productos :mainform:messages" />
                     </p:commandButton>
-<br/>
+                    <br/>
                 </p:outputPanel>
 
                 <br/>
