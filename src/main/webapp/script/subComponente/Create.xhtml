@@ -8,7 +8,7 @@
 
     <ui:composition template="/script/template_inbox_bootstrap.xhtml">
         <ui:define name="title">
-            <h:outputText value="#{applicationBean.helpdeskTitle} #{bundle.CreateProductoTitle} #{applicationBean.productDescription}"></h:outputText>
+            <h:outputText value="#{applicationBean.helpdeskTitle} #{bundle.CreateSubComponenteTitle} #{applicationBean.productSubComponentDescription}"></h:outputText>
         </ui:define>
         <ui:define name="help">
             <h:outputText  value="#{bundle.ayudaProductos}" escape="false"/>
@@ -19,7 +19,7 @@
             <div class="page-header">
                 <div class="row">
                     <div class="col-sm-10 col-xs-10">
-                        <h1><i class="fa fa-users page-header-icon"></i>&nbsp;&nbsp;#{bundle.CreateProductoTitle} #{applicationBean.productDescription}</h1>
+                        <h1><i class="fa fa-users page-header-icon"></i>&nbsp;&nbsp;#{bundle.CreateSubComponenteTitle} #{applicationBean.productSubComponentDescription}</h1>
                         <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
                             <i class="fa fa-info-circle"/>
                         </p:commandLink> 
@@ -33,44 +33,41 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="form-group">
-                            <label class="col-sm-1 control-label">#{bundle.CreateProductoLabel_idProducto}</label>
+                            <label class="col-sm-1 control-label">#{bundle.CreateSubComponenteLabel_idSubComponente}</label>
                             <div class="col-sm-4">
                                 <p class="form-control-static"> 
-                                    <h:inputText styleClass="form-control" id="idProducto" value="#{productoController.selected.idProducto}" required="true" requiredMessage="#{bundle.RequiredMessage}"/>
+                                    <h:inputText styleClass="form-control" id="idSubComponente" value="#{subComponenteController.selected.idSubComponente}" required="true" requiredMessage="#{bundle.RequiredMessage}"/>
                                 </p>
-                                <p:message for="idProducto"/>
+                                <p:message for="idSubComponente"/>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-1 control-label">#{bundle.CreateProductoLabel_nombre}</label>
+                            <label class="col-sm-1 control-label">#{bundle.CreateSubComponenteLabel_nombre}</label>
                             <div class="col-sm-4">
                                 <p class="form-control-static"> 
-                                    <h:inputText styleClass="form-control" id="nombre" value="#{productoController.selected.nombre}" required="true" requiredMessage="#{bundle.RequiredMessage}" />
+                                    <h:inputText styleClass="form-control" id="nombre" value="#{subComponenteController.selected.nombre}" required="true" requiredMessage="#{bundle.RequiredMessage}" />
                                 </p>
                                 <p:message for="nombre"/>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-1 control-label">#{bundle.CreateProductoLabel_descripcion}</label>
+                            <label class="col-sm-1 control-label">#{bundle.CreateSubComponenteLabel_descripcion}</label>
                             <div class="col-sm-4">
                                 <p class="form-control-static"> 
-                                    <h:inputTextarea styleClass="form-control" id="descripcion" value="#{productoController.selected.descripcion}"  cols="50" />
+                                    <h:inputTextarea styleClass="form-control" id="descripcion" value="#{subComponenteController.selected.descripcion}"  cols="50" />
                                 </p>
                                 <p:message for="descripcion"/>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-1 control-label">Canal de salida por defecto:</label>
+                            <label class="col-sm-1 control-label">Componente Asociado:</label>
                             <div class="col-sm-4">
                                 <p class="form-control-static"> 
-                                    <h:selectOneMenu styleClass="form-control" id="idCanalSalida" style="width: 300px;"
-                                                     filter="true" filterMatchMode="contains"
-                                                     value="#{productoController.selected.idOutCanal}">
-                                        <f:selectItem itemLabel="" itemValue=""/>
-                                        <f:selectItems value="#{canalController.emailsAvailableSelectOne}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
+                                    <h:selectOneMenu styleClass="form-control" id="idProductoSubComponente" value="#{subComponenteController.selected.idComponente}">
+                                        <f:selectItems value="#{componenteController.itemsAvailableSelectOne}" />
                                     </h:selectOneMenu>
                                 </p>
-                                <p:message for="descripcion"/>
+                                <p:message for="idProductoSubComponente"/>
                             </div>
                         </div>
 
@@ -92,9 +89,9 @@
 
                 <p:toolbar> 
                     <p:toolbarGroup align="left">   
-                        <p:commandButton action="#{productoController.create}" value="#{bundle.SaveLink}" ajax="false" icon="ui-icon-disk"/>        
+                        <p:commandButton action="#{subComponenteController.create}" value="#{bundle.SaveLink}" ajax="false" icon="ui-icon-disk"/>        
                         <p:separator/>   
-                        <p:commandButton action="#{productoController.prepareList}" value="#{bundle.ShowAllLink}" immediate="true" ajax="false" icon="ui-icon-folder-open"/>
+                        <p:commandButton action="#{subComponenteController.prepareList}" value="#{bundle.ShowAllLink}" immediate="true" ajax="false" icon="ui-icon-folder-open"/>
                     </p:toolbarGroup>
                 </p:toolbar>
 
