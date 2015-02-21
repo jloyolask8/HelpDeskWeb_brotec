@@ -54,6 +54,17 @@ public class SubComponenteController extends AbstractManagedBean<SubComponente> 
         recreateModel();
         return getListPage();
     }
+    
+    public String create() {
+        try {
+            getJpaController().persist(current);
+            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("SubComponenteCreated"));
+            return prepareCreate();
+        } catch (Exception e) {
+            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
+            return null;
+        }
+    }
 
     private void performDestroy() {
         try {
