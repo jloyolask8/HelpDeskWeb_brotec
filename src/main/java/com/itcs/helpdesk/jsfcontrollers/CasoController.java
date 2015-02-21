@@ -232,11 +232,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //    private boolean adjuntarArchivosARespuesta = false;
     private boolean mergeHabilitado;
     private transient LinkedList<Caso> mergeCandidatesList;
-    private transient Map<Integer, Boolean> showReducedContentMap;
+//    private transient Map<Integer, Boolean> showReducedContentMap;
 
-    public static final String HEADER_HISTORY = "<br/><hr/><b>HISTORIA DEL CASO</b><hr/><br/>";
-    public static final String HEADER_HISTORY_NOTA_ALT = "HISTORIA DEL CASO";
-    public static final String FOOTER_HISTORY_NOTA = "FIN MENSAJE ORIGINAL";
+   
     public static final int MEGABYTE = (1024 * 1024);
 
     private static transient Comparator<Caso> comparadorCasosPorFechaCreacion = new Comparator<Caso>() {
@@ -427,8 +425,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         //set borrador
         this.textoNota = current.getRespuesta();
-
-        agregarHistoria();
 
         if (getOtroEmail() == null) {
             setOtroEmail(new LinkedList<String>());
@@ -1114,12 +1110,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
     }
 
-    public void agregarHistoria() {
-        StringBuilder textoMensaje = new StringBuilder(textoNota != null ? textoNota : "");
-        textoMensaje.append(obtenerHistorial());
-        textoNota = textoMensaje.toString();
-    }
-
     public String getIdFileDelete() {
         return idFileDelete;
     }
@@ -1788,62 +1778,43 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         selectedNota = nota;
     }
 
-    public String extractNotaNewPart(Nota nota) {
-        String ret = nota.getTexto();
-
-        int headerStartIndex = ret.indexOf(HEADER_HISTORY_NOTA_ALT);
-        int historyEndIndex = ret.lastIndexOf(FOOTER_HISTORY_NOTA);
-        headerStartIndex = (headerStartIndex > 0) ? headerStartIndex : ret.indexOf(HEADER_HISTORY_NOTA_ALT);
-        historyEndIndex = (historyEndIndex > 0) ? historyEndIndex : ret.indexOf(FOOTER_HISTORY_NOTA);
-        if (headerStartIndex > 0) {
-            ret = ret.substring(0, headerStartIndex);
-            if ((!debeMostrarContenidoReducido(nota)) && (historyEndIndex > headerStartIndex)) {
-                ret += nota.getTexto().substring(historyEndIndex + FOOTER_HISTORY_NOTA.length());
-            }
-        }
-        org.jsoup.nodes.Document doc = Jsoup.parse(ret);
-        Elements strongTag = doc.getElementsByTag("strong");
-        for (org.jsoup.nodes.Element style : strongTag) {
-            style.remove();
-        }
-        ret = doc.toString();
-        ////System.out.println("html ret:\n"+ret);
-        return ret;
+    public String extractNotaNewPart(String text) {
+        return ManagerCasos.extractNotaNewPart(text);
     }
 
-    public boolean existsNotaHistoryPart(Nota nota) {
-        return (nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT) > 0) || (nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT) > 0);
-    }
+//    private boolean existsNotaHistoryPart(Nota nota) {
+//        return (nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT) > 0) || (nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT) > 0);
+//    }
 
-    public String extractNotaHistoryPart(Nota nota) {
-        int headerStartIndex = nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT);
-        headerStartIndex = (headerStartIndex > 0) ? headerStartIndex : nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT);
-        if (headerStartIndex > 0) {
-            return nota.getTexto().substring(headerStartIndex);
-        }
-        return "";
-    }
+//    private String extractNotaHistoryPart(Nota nota) {
+//        int headerStartIndex = nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT);
+//        headerStartIndex = (headerStartIndex > 0) ? headerStartIndex : nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT);
+//        if (headerStartIndex > 0) {
+//            return nota.getTexto().substring(headerStartIndex);
+//        }
+//        return "";
+//    }
 
-    public void toogleMostrarContenidoReducido(Nota nota) {
-        if (showReducedContentMap == null) {
-            showReducedContentMap = new LinkedHashMap<>();
-        }
-        if (showReducedContentMap.get(nota.getIdNota()) != null) {
-            showReducedContentMap.put(nota.getIdNota(), showReducedContentMap.get(nota.getIdNota()) ? Boolean.FALSE : Boolean.TRUE);
-        } else {
-            showReducedContentMap.put(nota.getIdNota(), Boolean.TRUE);
-        }
-    }
-
-    public boolean debeMostrarContenidoReducido(Nota nota) {
-        if (showReducedContentMap == null) {
-            showReducedContentMap = new LinkedHashMap<>();
-        }
-        if (showReducedContentMap.get(nota.getIdNota()) != null) {
-            return showReducedContentMap.get(nota.getIdNota());
-        }
-        return false;
-    }
+//    public void toogleMostrarContenidoReducido(Nota nota) {
+//        if (showReducedContentMap == null) {
+//            showReducedContentMap = new LinkedHashMap<>();
+//        }
+//        if (showReducedContentMap.get(nota.getIdNota()) != null) {
+//            showReducedContentMap.put(nota.getIdNota(), showReducedContentMap.get(nota.getIdNota()) ? Boolean.FALSE : Boolean.TRUE);
+//        } else {
+//            showReducedContentMap.put(nota.getIdNota(), Boolean.TRUE);
+//        }
+//    }
+//
+//    public boolean debeMostrarContenidoReducido(Nota nota) {
+//        if (showReducedContentMap == null) {
+//            showReducedContentMap = new LinkedHashMap<>();
+//        }
+//        if (showReducedContentMap.get(nota.getIdNota()) != null) {
+//            return showReducedContentMap.get(nota.getIdNota());
+//        }
+//        return false;
+//    }
 
     /**
      * Opens ticket selected row
@@ -1878,11 +1849,12 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public void openCase(Caso caso) throws Exception {
         current = caso;
         setActiveIndexCasoSections(TAB_ACTIVIDADES_INDEX);
-        if (showReducedContentMap == null) {
-            showReducedContentMap = new LinkedHashMap<>();
-        } else {
-            showReducedContentMap.clear();
-        }
+//        if (showReducedContentMap == null) {
+//            showReducedContentMap = new LinkedHashMap<>();
+//        } else {
+//            showReducedContentMap.clear();
+//        }
+        selectedAttachmensForMail = null;
         if (current != null) {
             refreshCurrentCaso();
         }
@@ -1990,7 +1962,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 JsfUtil.addErrorMessage("Debe especificar el numero de caso.");
             }
         }
-        return null;
+        return getEditPage();
     }
 
     public String filterByIdCaso(Long idCaso) {
@@ -2746,7 +2718,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     @Override
     protected String getEditPage() {
-        return "/script/caso/Edit";
+        return "/script/caso/Edit.xhtml?faces-redirect=true";
     }
 
     public String agregarRelacionado() {
@@ -3086,6 +3058,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     protected void resetNotaForm() {
+        this.selectedAttachmensForMail = null;
         this.textoNota = null;
         this.replyMode = false;
         this.replyByEmail = false;//default option
@@ -3289,7 +3262,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      */
     public String responderMobile() {
 
-        boolean result = createEmailComment();
+        boolean result = createEmailComment(false);
         if (result) {
             return "pm:actividadesCaso";
         } else {
@@ -3301,11 +3274,11 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     /**
      * responder actionListener desde web page.
      */
-    public void responder() {
-        createEmailComment();
+    public void responder(boolean addHistory) {
+        createEmailComment(addHistory);
     }
 
-    private boolean createEmailComment() {
+    private boolean createEmailComment(boolean addHistory) {
 
         if (StringUtils.isEmpty(textoNota)) {
             addErrorMessage("La respuesta no tiene texto, verifíque e intente nuevamente");
@@ -3407,6 +3380,14 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 }
                 ccoEmails = sbuilder.toString();
             }
+
+            //Agregar Historia
+            if (addHistory) {
+                StringBuilder sb = new StringBuilder(mensaje != null ? mensaje : "");
+                sb.append(obtenerHistorial());
+                mensaje = sb.toString();
+            }
+
             HelpDeskScheluder.scheduleSendMailNota(
                     getUserSessionBean().getTenantId(),
                     canal.getIdCanal(), mensaje,
@@ -3456,7 +3437,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     }
 
     private String obtenerHistorial() {
-        StringBuilder sbuilder = new StringBuilder(HEADER_HISTORY);
+        StringBuilder sbuilder = new StringBuilder(ManagerCasos.HEADER_HISTORY);
         if (current != null && current.getNotaList() != null) {
             for (Nota nota : current.getNotaList()) {
                 if (nota.getVisible()) {
@@ -3496,7 +3477,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         sbuilder.append("<br/>");
         sbuilder.append(replaceEmbeddedImages(caso.getDescripcion()));
         sbuilder.append("<br/>");
-        sbuilder.append(FOOTER_HISTORY_NOTA);
+        sbuilder.append(ManagerCasos.FOOTER_HISTORY_NOTA);
         sbuilder.append("<hr/>");
         return sbuilder.toString();
     }
@@ -3519,7 +3500,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         sbuilder.append("<br/>");
         sbuilder.append("<b>Mensaje: </b>");
         sbuilder.append("<br/>");
-        sbuilder.append(replaceEmbeddedImages(extractNotaNewPart(nota)));
+        sbuilder.append(replaceEmbeddedImages(extractNotaNewPart(nota.getTexto())));
         sbuilder.append("<hr/>");
         return sbuilder.toString();
     }
@@ -3980,8 +3961,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     @Override
     public void recreateModel() {
-        this.items = null;
-        this.recreatePagination();
+        super.recreateModel();
         this.emailClienteSeleccionadoTransfer = null;
         this.usuarioSeleccionadoTransfer = null;
     }

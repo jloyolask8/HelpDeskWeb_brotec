@@ -22,7 +22,6 @@
             </p>
         </p:panel>
 
-
         <h:panelGroup layout="block" id="message-details-reply"  styleClass="panel form-horizontal"
                       rendered="#{(casoController.replyMode) and ((casoController.verificarCrearActividad()))}"> 
 
@@ -35,27 +34,30 @@
 
                         <ul class="dropdown-menu">
                             <li>
-                                <p:commandLink rendered="#{casoController.verificarCrearActividad()}" immediate="true"
+                                <p:commandLink rendered="#{casoController.replyByEmail}" immediate="true"
                                                styleClass="btn-link" actionListener="#{casoController.enableCommentMode()}"
                                                disabled="#{casoController.selected.closed}"
                                                update="@parent"
+                                               process="@form"
                                                ajax="true">
-                                    <i class="fa fa-comment"></i> Agregar un Comentario       
+                                    <i class="fa fa-comment"></i> Cambiar a modo Comentario       
                                 </p:commandLink>
                             </li>
                             <li>
-                                <p:commandLink rendered="#{casoController.verificarCrearActividad()}" immediate="true"
+                                <p:commandLink rendered="#{not casoController.replyByEmail}" immediate="true"
                                                styleClass="btn-link" actionListener="#{casoController.enableReplyMode(false)}"
                                                disabled="#{casoController.selected.closed}"
                                                update="@parent"
+                                               process="@form"
                                                ajax="true">
                                     <i class="fa fa-reply"></i> Responder a #{casoController.selected.emailCliente.emailCliente}        
                                 </p:commandLink>
                             </li><li>
-                                <p:commandLink rendered="#{casoController.verificarCrearActividad()}" immediate="true"
+                                <p:commandLink rendered="#{not casoController.replyByEmail}" immediate="true"
                                                styleClass="btn-link" actionListener="#{casoController.enableReplyMode(true)}"
                                                disabled="#{casoController.selected.closed}"
                                                update="@parent"
+                                               process="@form"
                                                ajax="true">
                                     <i class="fa fa-reply-all"></i> Responder a todos         
                                 </p:commandLink>
@@ -66,10 +68,12 @@
                 <div class="panel-heading-controls">
 
                     <div class="btn-group">
-                        <h:selectOneMenu id="clipping" value="#{casoController.selectedClipping}" styleClass="form-control input-sm select2Input">
+                        <h:selectOneMenu id="clipping" value="#{casoController.selectedClipping}" 
+                                         styleClass="form-control">
                             <f:selectItem itemValue="" itemLabel="#{bundle.textoPredefinido}" />
                             <f:selectItems value="#{clippingController.itemsAvailableSelectMany}"/>
-                            <p:ajax update="@parent" process="@this" listener="#{casoController.handleClippingSelectChangeEvent}" />
+                            <p:ajax update="@form" process="@form" 
+                                    listener="#{casoController.handleClippingSelectChangeEvent}" />
                         </h:selectOneMenu>
                     </div>
                     <h:panelGroup layout="block"  class="btn-group btn-group-xs pull-right" rendered="#{not casoController.replyByEmail}">
@@ -77,11 +81,11 @@
                             id="textoNotaVisibilidadPublica" value="#{casoController.textoNotaVisibilidadPublica}" 
                             styleClass="switcher form-control input-sm"/>
                         <script type="text/javascript">
-                            $('.switcher').switcher({
+                            $(function () {$('.switcher').switcher({
                                 theme: 'square',
                                 on_state_content: ' Público ',
                                 off_state_content: ' Privado '
-                            });
+                            });});
                         </script>
                     </h:panelGroup>
                 </div>
@@ -105,14 +109,14 @@
                         <div class="form-group">
                             <div class="btn-group">
                                 <p:commandLink id="cclink" immediate="true" rendered="#{casoController.replyByEmail}"
-                                               value="cc" process="@this,otroEmail,otroEmailcc,otroEmailcco"
+                                               value="cc" process="@form"
                                                actionListener="#{casoController.changeCCO(true)}"
                                                update="@form" styleClass="btn-link">
                                 </p:commandLink>
                             </div>
                             <div class="btn-group">
                                 <p:commandLink id="ccolink" immediate="true" rendered="#{casoController.replyByEmail}"
-                                               value="cco" process="@this,otroEmail,otroEmailcc,otroEmailcco"
+                                               value="cco" process="@form"
                                                actionListener="#{casoController.changeCCO(false)}"
                                                update="@form" styleClass="btn-link">
                                 </p:commandLink>
@@ -145,14 +149,19 @@
                 </h:panelGroup>
 
 
-                <h:panelGroup layout="block" styleClass="form-group no-padding-hr no-padding-t">
-                    <go:textAreaEditor id="textonota" fieldValue="#{casoController.textoNota}"
-                                       mobile="#{casoController.mobileClient}" watermark="Comments"
-                                       required="true" requiredMessage="Ingrese sus comentarios"/>
+                <h:panelGroup layout="block" styleClass="no-margin-t no-padding-t">
+                    <pe:ckEditor id="textonota" value="#{casoController.textoNota}" 
+                                 language="es" rendered="#{not casoController.mobileClient}"
+                                 toolbar="#{applicationBean.ckEditorToolbar}"
+                                 customConfig="#{request.contextPath}/resources/js/ckeditor.js"
+                                 required="true"  width="100%" /> 
+                    <p:watermark for="textonota" value="Comments" rendered="#{not casoController.mobileClient}"/>
+                    <h:message for="textonota" errorClass="text-danger" />
+
                 </h:panelGroup> 
 
 
-                <h:panelGroup layout="block" styleClass="row">
+                <h:panelGroup layout="block">
 
                     <div class="col-sm-3">
                         <div class="form-group no-margin-hr">
@@ -181,20 +190,21 @@
                                 <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
                             </h:inputText>
 
+
                             <script type="text/javascript">
-                                $('.datepicker').datetimepicker({
-                                    language: 'es',
-                                    format: 'dd/mm/yyyy hh:ii',
-                                    viewformat: 'dd/mm/yyyy hh:ii',
-                                    todayBtn: true,
-                                    autoclose: true,
-                                    todayHighlight: true,
-                                    weekStart: 1,
-                                    forceParse: true
+                                $(function () {
+                                    $('.datepicker').datetimepicker({
+                                        language: 'es',
+                                        format: 'dd/mm/yyyy hh:ii',
+                                        viewformat: 'dd/mm/yyyy hh:ii',
+                                        todayBtn: true,
+                                        autoclose: true,
+                                        todayHighlight: true,
+                                        weekStart: 1,
+                                        forceParse: true
+                                    });
                                 });
-
                             </script>
-
 
                         </div>
                     </h:panelGroup><!-- col-sm-6 -->
@@ -206,7 +216,7 @@
                                 value="Adjuntos" for="listaadjuntosrespuesta" />
 
                             <h:selectManyListbox id="listaadjuntosrespuesta" 
-                                                 styleClass="form-control input-sm select2Multiple"
+                                                 styleClass="form-control select2Multiple"
                                                  value="#{casoController.selectedAttachmensForMail}" 
                                                  converter="attachmentConverter">
                                 <f:selectItems value="#{casoController.selected.attachmentsNotEmbedded}" 
@@ -215,17 +225,19 @@
 
                         </div>
 
+
                         <script type="text/javascript">
-                            $(".select2Input").select2({
-                                dropdownAutoWidth: true,
-                                allowClear: true
-                            });
+                            $(function () {
+                                $("select.select2Input").select2({
+                                    dropdownAutoWidth: true,
+                                    allowClear: true
+                                });
 
-                            $(".select2Multiple").select2({
-                                dropdownAutoWidth: true,
-                                allowClear: true
+                                $("select.select2Multiple").select2({
+                                    dropdownAutoWidth: true,
+                                    allowClear: true
+                                });
                             });
-
                         </script>
 
                     </h:panelGroup>
@@ -244,49 +256,37 @@
 
 
                 <div class="btn-group">
-                    <p:commandLink action="#{casoController.disableReplyMode()}" styleClass="btn btn-default"
+                    <p:commandLink action="#{casoController.disableReplyMode()}" styleClass="btn btn-default btn-flat"
                                    immediate="true" update=":message-details-reply">
-                        <i class="fa fa-chevron-left"></i> Cancelar
+                        Cancelar
+                    </p:commandLink>
+                </div>
+
+                <div class="btn-group">
+                    <p:commandLink actionListener="#{casoController.crearNota(true)}" 
+                                   styleClass="btn btn-info btn-flat" rendered="#{not casoController.replyByEmail}"
+                                   update=":mainform:messages :formint1 :info-panel :formact :message-details-reply"
+                                   onclick="jQuery(this).addClass('ui-state-disabled');
+                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                        <i class="fa fa-comment"></i> Guardar y notificar al cliente
                     </p:commandLink>
                 </div>
 
                 <div class="btn-group">
                     <p:commandLink actionListener="#{casoController.crearNota(false)}" 
-                                   styleClass="btn btn-primary"
+                                   styleClass="btn btn-primary btn-flat"
                                    rendered="#{not casoController.replyByEmail}"
                                    update=":mainform:messages :formint1 :info-panel :formact :message-details-reply"
                                    onclick="jQuery(this).addClass('ui-state-disabled');
                                            jQuery(this).children().addClass('fa fa-refresh fa-spin')">
-                        <i class="fa fa-comment"></i> Guardar comentario
-                    </p:commandLink>
-
-
-                </div>
-
-                <div class="btn-group">
-                    <p:commandLink actionListener="#{casoController.crearNota(true)}" 
-                                   styleClass="btn btn-primary" rendered="#{not casoController.replyByEmail}"
-                                   update=":mainform:messages :formint1 :info-panel :formact :message-details-reply"
-                                   onclick="jQuery(this).addClass('ui-state-disabled');
-                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
-                        <i class="fa fa-comment"></i> Guardar comentario y notificar al cliente
-                    </p:commandLink>
-                </div>
-
-                <div class="btn-group">
-                    <p:commandLink actionListener="#{casoController.responder()}" 
-                                   styleClass="btn btn-primary" rendered="#{casoController.replyByEmail}"
-                                   update=":mainform:messages :formint1 :info-panel :formact :message-details-reply"
-                                   onclick="jQuery(this).addClass('ui-state-disabled');
-                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
-                        <i class="fa fa-envelope"></i> Enviar
+                        <i class="fa fa-comment"></i> Guardar
                     </p:commandLink>
                 </div>
 
                 <div class="btn-group">
                     <div class="btn-group dropup pull-right">
 
-                        <button type="button" class="btn btn-primary btn-outline dropdown-toggle" data-toggle="dropdown">
+                        <button type="button" class="btn btn-primary btn-outline dropdown-toggle btn-flat" data-toggle="dropdown">
                             <i class="fa fa-caret-up"></i></button>
                         <ul class="dropdown-menu">
 
@@ -307,7 +307,31 @@
                     </div>
                 </div>
 
+                <div class="btn-group">
+                    <p:commandLink actionListener="#{casoController.responder(true)}" 
+                                   styleClass="btn btn-info btn-flat" rendered="#{casoController.replyByEmail}"
+                                   update=":mainform:messages :formint1 :info-panel :formact :message-details-reply"
+                                   onclick="jQuery(this).addClass('ui-state-disabled');
+                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                        <i class="fa fa-envelope"></i> Enviar c/Historia
+                    </p:commandLink>
+                </div>
+
+                <div class="btn-group">
+                    <p:commandLink actionListener="#{casoController.responder(false)}" 
+                                   styleClass="btn btn-primary btn-flat" rendered="#{casoController.replyByEmail}"
+                                   update=":mainform:messages :formint1 :info-panel :formact :message-details-reply"
+                                   onclick="jQuery(this).addClass('ui-state-disabled');
+                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                        <i class="fa fa-envelope"></i> Enviar
+                    </p:commandLink>
+                </div>
+
+
+
             </div>
+
+
 
         </h:panelGroup>
 

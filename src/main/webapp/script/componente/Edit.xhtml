@@ -8,10 +8,10 @@
 
     <ui:composition template="/script/template_inbox_bootstrap.xhtml">
         <ui:define name="title">
-            <h:outputText value="#{applicationBean.helpdeskTitle} #{bundle.CreateComponenteTitle} #{applicationBean.productComponentDescription}"></h:outputText>
+            <h:outputText value="#{applicationBean.helpdeskTitle} #{bundle.EditComponenteTitle} #{applicationBean.productComponentDescription}"></h:outputText>
         </ui:define>
         <ui:define name="help">
-            <h:outputText  value="#{bundle.ayudaProductos}" escape="false"/>
+            crear ayuda componentes
         </ui:define>
 
         <ui:define name="body">
@@ -19,7 +19,7 @@
             <div class="page-header">
                 <div class="row">
                     <div class="col-sm-10 col-xs-10">
-                        <h1><i class="fa fa-users page-header-icon"></i>&nbsp;&nbsp;#{bundle.CreateComponenteTitle} #{applicationBean.productComponentDescription}</h1>
+                        <h1><i class="fa fa-users page-header-icon"></i>&nbsp;&nbsp;#{bundle.EditComponenteTitle} #{applicationBean.productComponentDescription}</h1>
                         <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
                             <i class="fa fa-info-circle"/>
                         </p:commandLink> 
@@ -34,7 +34,7 @@
                     <div class="col-sm-6 col-lg-4">
                         <div class="form-group">
                             <label class="control-label">#{bundle.CreateComponenteLabel_idComponente}</label>
-                            <h:inputText styleClass="form-control" id="idComponente" 
+                            <h:inputText styleClass="form-control" id="idComponente" readonly="true" disabled="true"
                                          value="#{componenteController.selected.idComponente}" required="true" 
                                          requiredMessage="#{bundle.RequiredMessage}"/>
                             <h:message for="idComponente" errorClass="text-danger"/>
@@ -70,7 +70,7 @@
                         </div>
 
                         <div class="btn-group">
-                            <p:commandLink action="#{componenteController.create}" 
+                            <p:commandLink action="#{componenteController.update()}" 
                                            ajax="false"
                                            styleClass="btn btn-primary btn-flat" 
                                            onclick="jQuery(this).addClass('ui-state-disabled');

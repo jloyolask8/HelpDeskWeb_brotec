@@ -28,7 +28,7 @@
                 <div class="btn-group">
                     <p:commandLink rendered="#{casoController.verificarTomarCaso()}"
                                    styleClass="btn btn-default" type="button"
-                                   ajax="true" title="Asignármelo" onclick="tomarCaso.show()" >
+                                   ajax="true" title="Asignármelo" onclick="PF('tomarCaso').show()" >
                         <i class="fa fa-inbox"></i>         
                     </p:commandLink>
                 </div>
@@ -36,14 +36,14 @@
                 <div class="btn-group">
                     <p:commandLink rendered="#{casoController.verificarReabrirCaso()}"
                                    styleClass="btn btn-default" 
-                                   ajax="true" title="Reabrir Caso" onclick="openCase.show();" >
+                                   ajax="true" title="Reabrir Caso" onclick="PF('openCase').show();" >
                         <i class="fa fa-folder-open-o"></i>         
                     </p:commandLink>
                 </div>
                 
                 <div class="btn-group">
                     <p:commandLink id="TagAsBtn" title="Etiquetas" 
-                                   styleClass="btn btn-default" onclick="TagPanel.loadContents()">
+                                   styleClass="btn btn-default" onclick="PF('TagPanel').loadContents()">
                         <i class="fa fa-tags"></i>
                     </p:commandLink>
 
@@ -99,7 +99,7 @@
                         </li>
                         <li>
                             <p:commandLink rendered="#{casoController.verificarTransferirCaso()}"
-                                           ajax="true" title="Transferir" onclick="transferir.show();">
+                                           ajax="true" title="Transferir" onclick="PF('transferir').show();">
                                 <i class="fa fa-users"></i> Transferir        
                             </p:commandLink>
                         </li>
@@ -112,20 +112,20 @@
                         </li>
                         <li>
                             <p:commandLink rendered="#{casoController.verificarAsignarCaso()}"
-                                           ajax="true" title="Asignar" onclick="transferir.show();">
+                                           ajax="true" title="Asignar" onclick="PF('transferir').show();">
                                 <i class="fa fa-users"></i> Asignar        
                             </p:commandLink>
                         </li>
                         <li>
                             <p:commandLink rendered="#{casoController.verificarRelacionarCaso()}"
-                                           ajax="true" title="Relacionar Caso" onclick="casosRela.show();">
+                                           ajax="true" title="Relacionar Caso" onclick="PF('casosRela').show();">
                                 <i class="fa fa-random"></i> Relacionar a otro Caso        
                             </p:commandLink>
                         </li>
 
                         <li>
                             <p:commandLink rendered="#{casoController.verificarCerrarCaso()}"
-                                           ajax="true" title="Cerrar Caso" onclick="closeCase.show();">
+                                           ajax="true" title="Cerrar Caso" onclick="PF('closeCase').show();">
                                 <i class="fa fa-stop"></i> Cerrar Caso      
                             </p:commandLink>
                         </li>
@@ -133,7 +133,7 @@
                         <li class="divider"></li>
                         <li>
                             <p:commandLink rendered="#{casoController.verificarEliminarCaso()}"
-                                           ajax="true" title="Eliminar Caso" onclick="destroyCase.show();">
+                                           ajax="true" title="Eliminar Caso" onclick="PF('destroyCase').show();">
                                 <i class="fa fa-trash-o"></i> Eliminar Caso
                             </p:commandLink>
                         </li>

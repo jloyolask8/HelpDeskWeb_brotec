@@ -4,7 +4,8 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:go="http://java.sun.com/jsf/composite/go">
 
     <ui:composition template="/script/template_inbox_bootstrap.xhtml">
         <ui:define name="title">
@@ -233,62 +234,8 @@
 
                             <div class="tab-pane fade" id="profile-tabs-tickets">
                                 <h:panelGroup id="panelG1">
-                                    <p:dataTable id="ID_TABLA" value="#{clienteController.selected.casoList}" var="item"
-                                                 selection="#{casoController.selected}" selectionMode="single"
-                                                 emptyMessage="#{bundle.ListCasoEmpty}" 
-                                                 rowKey="#{item.idCaso}" 
-                                                 rowStyleClass="#{item.revisarActualizacion eq true ? 'updated':''}"
-                                                 sortBy="#{item.fechaCreacion}"
-                                                 sortOrder="descending"
-                                                 draggableColumns="true">
-                                        <f:facet name="header">
-                                            <h:outputText value="Casos creados por el Cliente (#{clienteController.selected.casoList.size()} casos)"></h:outputText>
-                                        </f:facet>
-
-                                        <p:column headerText="ID" sortBy="#{item.idCaso}">
-                                            <p:commandLink id="editBtn" ajax="false" action="#{casoController.prepareEdit(item)}" value="#{item.idCaso}"  title="Abrir caso"/>
-                                        </p:column>
-
-                                        <p:column headerText="A" exportable="false">
-                                            <h:graphicImage value="/images/user-available.png" title="Caso pendiente (entre 0 y 50% del tiempo asignado)" rendered="#{item.estadoAlerta.idalerta eq 1 and item.idEstado.idEstado eq 'abierto'}"/>
-                                            <h:graphicImage value="/images/dialog-warning-3.png" title="Caso por vencer (mas del 50% del tiempo asignado)" rendered="#{item.estadoAlerta.idalerta eq 2 and item.idEstado.idEstado eq 'abierto'}"/>
-                                            <h:graphicImage value="/images/software-update-urgent-2.png" title="Caso vencido (mas del 100% del tiempo asignado)" rendered="#{item.estadoAlerta.idalerta eq 3 and item.idEstado.idEstado eq 'abierto'}"/>
-                                            <h:graphicImage value="/images/locked.png" title="Caso cerrado" rendered="#{item.idEstado.idEstado eq 'cerrado'}"/>
-                                        </p:column>
-
-                                        <p:column headerText="P" exportable="false">
-                                            <h:outputText value="" rendered="#{item.esPrioritario eq false}"/>
-                                            <h:graphicImage value="/images/bookmarks.png" rendered="#{item.esPrioritario eq true}"/>
-                                        </p:column>
-
-
-
-                                        <p:column sortBy="#{item.fechaCreacion}" headerText="Fecha creación">
-                                            <h:outputText value="#{item.fechaCreacion}">
-                                                <f:convertDateTime pattern="#{bundle.dateFormat2}" />
-                                            </h:outputText>
-                                        </p:column>
-
-                                        <p:column sortBy="#{item.nextResponseDue}" headerText="SLA">
-                                            <h:outputText value="#{item.nextResponseDue}">
-                                                <f:convertDateTime pattern="#{bundle.dateFormat2}" />
-                                            </h:outputText>
-                                        </p:column>
-
-                                        <p:column headerText="Tema" sortBy="#{item.tema}">
-                                            <p:commandLink action="#{casoController.prepareEdit(item)}" ajax="false" value="#{item.tema}" />
-                                        </p:column>                                                                         
-
-                                        <p:column headerText="#{bundle.ListCasoTitle_owner}" sortBy="#{item.owner.capitalName}">
-                                            <p:commandLink rendered="#{not (item.owner eq null)}" action="#{usuarioController.prepareView(item.owner)}" ajax="false" value="#{item.owner.capitalName}" />
-
-                                        </p:column>
-
-                                        <p:column headerText="Estado" sortBy="#{item.idSubEstado.nombre}">
-                                            <h:outputText value="#{item.idSubEstado.nombre}"/>
-                                        </p:column>
-
-                                    </p:dataTable>
+                                    <go:casoListNoForm casosList="#{clienteController.selected.casoList}" header="Casos creados por el Cliente"/>
+                                    
                                 </h:panelGroup>
                             </div>
 
@@ -309,7 +256,7 @@
                                                          value="#{bundle.showAll}" icon="ui-icon-folder-open" ajax="false"/>
 
                                         <p:separator/>
-                                        <p:commandButton id="showDialogButton" value="#{bundle.destroy}" onclick="confirmation.show()" 
+                                        <p:commandButton id="showDialogButton" value="#{bundle.destroy}" onclick="PF('confirmation').show()" 
                                                          rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" 
                                                          icon="ui-icon ui-icon-trash" 
                                                          disabled="#{not clienteController.puedeEliminar(clienteController.selected)}"/> 
@@ -351,8 +298,8 @@
 
                     <f:facet name="footer">
                         <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{clienteController.destroySelected}" 
-                                         update=":form" oncomplete="confirmation.hide()"/>
-                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
+                                         update=":form" oncomplete="PF('confirmation').hide()"/>
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
                     </f:facet>
 
                 </p:dialog>

@@ -44,7 +44,7 @@
                     <p:column headerText="" exportable="false">
                         <h:commandLink id="prio" disabled="#{(not item.open) or not (item.owner eq UserSessionBean.current)}">
                             <p:graphicImage library="images" name="#{item.esPrioritario ? 'star-enabled.png':'star-disabled.png'}" title="Prioritario"/>
-                            <p:ajax id="aj2" listener="#{casoController.changePriority(item, item.esPrioritario)}" update="prio :formTopMenu"/>
+                            <p:ajax id="aj2" listener="#{casoController.changePriority(item, item.esPrioritario)}" update="prio :main-navbar-form"/>
                         </h:commandLink>
                     </p:column>
 

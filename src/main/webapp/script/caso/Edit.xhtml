@@ -30,7 +30,7 @@
 
             <h:form id="botoneraCaso">
                 <div class="page-header">
-                    <div class="row">
+                    <div class="row padding-sm">
 
 
                         <h:commandLink id="prio" disabled="#{casoController.selected.closed}" styleClass="valign-middle m-details-star">
@@ -1094,10 +1094,10 @@
                                 </div>
 
                                 <script type="text/javascript">
-                                    $(".select2Multiple").select2({
+                                    $(function () {$(".select2Multiple").select2({
                                         dropdownAutoWidth: true,
                                         allowClear: true
-                                    });
+                                    });});
                                 </script>
 
                             </h:panelGroup>

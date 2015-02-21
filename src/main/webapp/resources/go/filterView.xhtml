@@ -130,31 +130,29 @@
 
 
                 <script type="text/javascript">
-                    $(".select2Input").select2({
-                        dropdownAutoWidth: true,
-                        allowClear: true
-                    });
-
-                    $(".select2Multiple").select2({
-                        dropdownAutoWidth: true,
-                        allowClear: true
-                    });
-
-                    $('.datepicker').datetimepicker({
-                        language: 'es',
-                        format: 'dd/mm/yyyy hh:ii',
-                        viewformat: 'dd/mm/yyyy hh:ii',
-                        todayBtn: true,
-                        autoclose: true,
-                        todayHighlight: true,
-                        weekStart: 1,
-                        forceParse: true
-                    });
-
-
-
                     $(function () {
-                        jQuery(".typeahead").typeahead({
+                        $(".select2Input").select2({
+                            dropdownAutoWidth: true,
+                            allowClear: true
+                        });
+
+                        $(".select2Multiple").select2({
+                            dropdownAutoWidth: true,
+                            allowClear: true
+                        });
+
+                        $('.datepicker').datetimepicker({
+                            language: 'es',
+                            format: 'dd/mm/yyyy hh:ii',
+                            viewformat: 'dd/mm/yyyy hh:ii',
+                            todayBtn: true,
+                            autoclose: true,
+                            todayHighlight: true,
+                            weekStart: 1,
+                            forceParse: true
+                        });
+                    
+                        $(".typeahead").typeahead({
                             remote: '#{facesContext.externalContext.requestContextPath}/EmailClienteListServlet?tenant=#{UserSessionBean.tenantId}&amp;q=%QUERY',
                             highlight: true,
                             displayKey: 'email',

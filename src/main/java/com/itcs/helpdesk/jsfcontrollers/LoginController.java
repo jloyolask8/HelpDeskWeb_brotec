@@ -66,15 +66,15 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
                         JsfUtil.addSuccessMessage("La contraseña ha sido cambiada exitósamente.");
                         executeInClient("PF('panelChangePass').hide()");
                     } else {
-                        JsfUtil.addErrorMessage("La nueva contraseña no coincide!");
+                        addErrorMessage("La nueva contraseña no coincide!");
                     }
 
                 } else {
-                    JsfUtil.addErrorMessage("La contraseña ingresada no coincide con su contraseña actual!");
+                    addErrorMessage("La contraseña ingresada no coincide con su contraseña actual!");
 
                 }
             } else {
-                JsfUtil.addErrorMessage("Debe ingresar su contraseña actual.");
+                addErrorMessage("Debe ingresar su contraseña actual.");
 
             }
         } catch (Exception ex) {

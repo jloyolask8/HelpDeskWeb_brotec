@@ -119,7 +119,7 @@
                                     <p:commandLink id="linkGuardar" 
 
                                                    actionListener="#{casoController.prepareGuardarVista()}"    
-                                                   update="" oncomplete="saveViewDialog.show()" 
+                                                   update="" oncomplete="PF('saveViewDialog').show()" 
                                                    immediate="true">
                                         <i class=""></i>Guardar como una vista
                                     </p:commandLink>
@@ -177,13 +177,13 @@
 
                             <div class="btn-group">
                                 <p:commandLink id="spamBtn"   styleClass="btn" title="Spam!"
-                                               oncomplete="blackListSelected.show();" update=":formBlackList"
+                                               oncomplete="PF('blackListSelected').show();" update=":formBlackList"
                                                rendered="#{not empty casoController.selectedItems}">
                                     <i class="fa fa-exclamation-circle"></i>
                                 </p:commandLink>
                                 <p:commandLink id="deleteBtn"  styleClass="btn" title="Borrar"
                                                rendered="#{not empty casoController.selectedItems and casoController.verificarEliminarCaso()}"
-                                               oncomplete="deleteSelectedCasos.show();" update=":formdeleteSelectedCasos">
+                                               oncomplete="PF('deleteSelectedCasos').show();" update=":formdeleteSelectedCasos">
                                     <i class="fa fa-trash-o"></i>
                                 </p:commandLink>
                             </div>

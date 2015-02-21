@@ -22,11 +22,11 @@
             <script type="text/javascript">
                 //<![CDATA[
                 function start() {
-                    excelStatusDialog.show();
+                    PF('excelStatusDialog').show();
                 }
 
                 function stop() {
-                    excelStatusDialog.hide();
+                    PF('excelStatusDialog').hide();
                 }
                 //]]>
             </script>
@@ -103,7 +103,7 @@
                                 <p:poll id="polling" widgetVar="poll" interval="150" listener="#{casoController.refresh}" update=":form0" />
 
 
-                                <div class="row">
+                                <div class="form-group">
                                     <div class="btn-toolbar wide-btns pull-left" role="toolbar">
                                         <div class="btn-group">
                                             <p:commandLink  id="updateList" title="Actualizar" styleClass="btn" 
@@ -115,13 +115,13 @@
 
                                         <div class="btn-group hidden-xs">
                                             <p:commandLink id="spamBtn"   styleClass="btn" title="Spam!"
-                                                           oncomplete="blackListSelected.show();" update=":formBlackList"
+                                                           oncomplete="PF('blackListSelected').show();" update=":formBlackList"
                                                            rendered="#{not empty casoController.selectedItems}">
                                                 <i class="fa fa-exclamation-circle"></i>
                                             </p:commandLink>
                                             <p:commandLink id="deleteBtn"  styleClass="btn" title="Borrar"
                                                            rendered="#{not empty casoController.selectedItems and casoController.verificarEliminarCaso()}"
-                                                           oncomplete="deleteSelectedCasos.show();" update=":formdeleteSelectedCasos">
+                                                           oncomplete="PF('deleteSelectedCasos').show();" update=":formdeleteSelectedCasos">
                                                 <i class="fa fa-trash-o"></i>
                                             </p:commandLink>
                                         </div>
@@ -189,19 +189,14 @@
 
                                     </div>
 
-
-
-                                    <div class="btn-toolbar pull-right valign-middle" role="toolbar">
-
-
-                                        <go:paginatorBtnsBt controllerMBean="#{casoController}" update=":form0"/>
-
+                                    <div class="btn-toolbar wide-btns pull-right" role="toolbar">
+                                        <go:paginatorBtnsBt controllerMBean="#{casoController}" update="@form"/>
                                     </div>
+
 
 
                                 </div>
 
-                                <hr/>
 
                                 <h:panelGroup rendered="#{casoController.items.rowCount le 0}">
                                     <div class="alert alert-page alert-warning">
@@ -210,7 +205,7 @@
                                     </div>
                                     <br/>
                                 </h:panelGroup>
-                                <div class="table-responsive">
+                                <h:panelGroup layout="block" styleClass="table-responsive">
                                     <p:dataTable id="ID_TABLA" value="#{casoController.items}" var="item"
                                                  rendered="#{not casoController.mobileClient and casoController.items.rowCount gt 0}"  
                                                  emptyMessage="#{bundle.ListCasoEmpty}" 
@@ -311,7 +306,7 @@
                                         </p:column>
 
                                     </p:dataTable>
-                                </div>
+                                </h:panelGroup>
 
 
                                 <h:panelGroup id="ID_TABLA_X" 
@@ -354,13 +349,15 @@
                                     </ui:repeat>
                                 </h:panelGroup>
 
+                                <h:panelGroup layout="block" styleClass="text-center">
+                                    <go:paginatorCounts controllerMBean="#{casoController}"/>
+                                </h:panelGroup>
+
                             </h:form>
 
                         </div>
 
-                        <div class="panel-footer">
-                            <go:paginatorCounts controllerMBean="#{casoController}"/>
-                        </div>
+
                     </div>
 
                 </div>

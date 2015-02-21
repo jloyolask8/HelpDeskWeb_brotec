@@ -117,12 +117,6 @@
                                             </f:facet>
                                             <div class="btn-toolbar">
 
-                                                <p:commandLink id="viewBtn" action="#{componenteController.prepareView(item)}" title="Ver" ajax="false"
-                                                               styleClass="btn btn-sm btn-outline btn-primary"
-                                                               >
-                                                    <i class="fa fa-eye"/>
-                                                </p:commandLink>
-
                                                 <p:commandLink id="editBtn" action="#{componenteController.prepareEdit(item)}" title="Editar" ajax="false" 
                                                                styleClass="btn btn-sm btn-outline btn-primary"
                                                                rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">

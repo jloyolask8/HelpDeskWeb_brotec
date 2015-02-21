@@ -13,8 +13,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.model.ListDataModel;
+import javax.persistence.EntityExistsException;
 import org.primefaces.model.SelectableDataModel;
-
 
 @ManagedBean(name = "componenteController")
 @SessionScoped
@@ -28,10 +28,9 @@ public class ComponenteController extends AbstractManagedBean<Componente> implem
 
     @Override
     protected String getListPage() {
-       return "/script/componente/List";
+        return "/script/componente/List";
     }
 
-   
 //    public String prepareView() {
 //        if (getSelectedItems().length != 1) {
 //            JsfUtil.addSuccessMessage("Es requerido que seleccione una fila para visualizar.");
@@ -42,7 +41,6 @@ public class ComponenteController extends AbstractManagedBean<Componente> implem
 //        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
 //        return "View";
 //    }
-
     public String prepareCreate() {
         current = new Componente();
         selectedItemIndex = -1;
@@ -53,9 +51,13 @@ public class ComponenteController extends AbstractManagedBean<Componente> implem
         try {
             getJpaController().persist(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ComponenteCreated"));
-            return prepareCreate();
+            return prepareList();
         } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
+            if (e instanceof EntityExistsException) {
+                addErrorMessage(ResourceBundle.getBundle("/Bundle").getString("EntityExistsError"));
+            } else {
+                addErrorMessage(ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
+            }
             return null;
         }
     }
@@ -67,13 +69,10 @@ public class ComponenteController extends AbstractManagedBean<Componente> implem
 //            JsfUtil.addWarningMessage("Se requiere un elemento para editar.");
 //        }
 //    }
-
     @Override
     protected String getEditPage() {
-        return super.getEditPage(); //To change body of generated methods, choose Tools | Templates.
+        return "/script/componente/Edit";
     }
-    
-    
 
 //    public String prepareEdit() {
 //        if (getSelectedItems().length != 1) {
@@ -85,12 +84,11 @@ public class ComponenteController extends AbstractManagedBean<Componente> implem
 //        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
 //        return "Edit";
 //    }
-
     public String update() {
         try {
             getJpaController().merge(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ComponenteUpdated"));
-            return "View";
+            return prepareList();
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
             return null;
@@ -134,7 +132,6 @@ public class ComponenteController extends AbstractManagedBean<Componente> implem
 //        recreateModel();
 //        return "List";
 //    }
-
 //    public String destroyAndView() {
 //        performDestroy();
 //        recreateModel();
@@ -147,7 +144,6 @@ public class ComponenteController extends AbstractManagedBean<Componente> implem
 //            return "List";
 //        }
 //    }
-
     private void performDestroy() {
         try {
             getJpaController().remove(Componente.class, current.getIdComponente());
@@ -171,12 +167,9 @@ public class ComponenteController extends AbstractManagedBean<Componente> implem
 //            current = (Componente) getJpaController().queryByRange(Componente.class, 1, selectedItemIndex).get(0);
 //        }
 //    }
-
-    
-
     @Override
     public Class getDataModelImplementationClass() {
-      return ComponenteDataModel.class;
+        return ComponenteDataModel.class;
     }
 
 //    /**
@@ -202,7 +195,6 @@ public class ComponenteController extends AbstractManagedBean<Componente> implem
 //    public SelectItem[] getItemsAvailableSelectOne() {
 //        return JsfUtil.getSelectItems(getJpaController().getComponenteFindAll(), true);
 //    }
-
     @FacesConverter(forClass = Componente.class)
     public static class ComponenteControllerConverter implements Converter {
 
@@ -211,9 +203,9 @@ public class ComponenteController extends AbstractManagedBean<Componente> implem
             if (value == null || value.length() == 0) {
                 return null;
             }
-           UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
-                getValue(facesContext.getELContext(), null, "UserSessionBean");
-        return controller.getJpaController().find(Componente.class, getKey(value));
+            UserSessionBean controller = (UserSessionBean) facesContext.getApplication().getELResolver().
+                    getValue(facesContext.getELContext(), null, "UserSessionBean");
+            return controller.getJpaController().find(Componente.class, getKey(value));
         }
 
         java.lang.String getKey(String value) {
@@ -242,6 +234,7 @@ public class ComponenteController extends AbstractManagedBean<Componente> implem
         }
     }
 }
+
 class ComponenteDataModel extends ListDataModel<Componente> implements SelectableDataModel<Componente> {
 
     public ComponenteDataModel() {
