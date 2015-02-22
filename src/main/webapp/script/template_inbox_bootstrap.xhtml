@@ -21,16 +21,16 @@
                 <meta charset="utf-8"/>
                 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
                 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
-                <title><ui:insert name="title">#{applicationBean.helpdeskTitle}</ui:insert></title>           
+                <title><ui:insert name="title">GoDesk Platform</ui:insert></title>           
 
                 <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&amp;subset=latin" rel="stylesheet" type="text/css"></link>
                 <!-- Pixel Admin's stylesheets -->
 
-                <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-                <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/pixel-admin.min.css" rel="stylesheet" type="text/css"/>
-                <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/widgets.min.css" rel="stylesheet" type="text/css"/>
-                <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/pages.min.css" rel="stylesheet" type="text/css"/>
-                <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/themes.min.css" rel="stylesheet" type="text/css"/>
+                <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/bootstrap.css" rel="stylesheet" type="text/css"/>
+                <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/pixel-admin.css" rel="stylesheet" type="text/css"/>
+                <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/widgets.css" rel="stylesheet" type="text/css"/>
+                <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/pages.css" rel="stylesheet" type="text/css"/>
+                <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/themes.css" rel="stylesheet" type="text/css"/>
                 <link href="#{facesContext.externalContext.requestContextPath}/resources/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css"/>
 
                 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet"/>
@@ -99,7 +99,6 @@
             <h:body id="mainbody" styleClass="#{UserSessionBean.current.templateTheme ne null ? UserSessionBean.current.templateTheme:'theme-default'} main-navbar-fixed main-menu-animated mmc main-menu-fixed">           
 
 
-
                 <f:event type="preRenderView" listener="#{casoController.initializeData}" />
 
                 <pe:ajaxErrorHandler /> 
@@ -140,6 +139,7 @@
 
 
 
+
                                     <!-- Main navbar toggle -->
                                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-navbar-collapse">
                                         <i class="navbar-icon fa fa-bars"></i>
@@ -149,6 +149,70 @@
 
                                 <div id="main-navbar-collapse" class="collapse navbar-collapse main-navbar-collapse">
                                     <!--<div>-->
+
+
+
+                                    <ul class="nav navbar-nav">
+
+
+                                        <li>
+                                            <p:commandLink title="Reportes" rendered="#{filtroAcceso.verificarAccesoAFuncionSupervision()}"
+                                                           action="/script/report_graphs/reports" ajax="false"
+                                                           immediate="true">
+                                                <i class="menu-icon fa fa-bar-chart-o"></i>
+                                                <span class="mm-text">Reportes</span>
+                                            </p:commandLink>
+
+                                        </li>
+
+                                        <h:panelGroup rendered="#{filtroAcceso.verificarAccesoAFuncionSupervision()}">
+                                            <li class="dropdown">
+                                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                                    <i class="menu-icon fa fa-eye"></i><span class="mm-text"> Supervisión</span></a>
+                                                <ul class="dropdown-menu">
+
+                                                    <li>
+                                                        <p:commandLink title="Logs de Casos" 
+                                                                       action="#{auditLogController.prepareList()}" ajax="false"
+                                                                       immediate="true">
+                                                            <i class="menu-icon fa fa-bullhorn"></i>
+                                                            <span class="mm-text">Logs de Casos</span>
+                                                        </p:commandLink>
+
+                                                    </li>
+
+                                                    <li>
+                                                        <p:commandLink title="#{bundle.SessionsTitle}" 
+                                                                       action="#{usuarioSessionLogController.prepareList}"  ajax="false"
+                                                                       immediate="true">
+                                                            <i class="menu-icon fa fa-info-circle"></i>
+                                                            <span class="mm-text">#{bundle.SessionsTitle}</span>
+                                                        </p:commandLink>
+
+                                                    </li>
+
+
+                                                </ul>
+                                            </li>
+
+
+
+                                        </h:panelGroup>
+
+
+                                        <li>
+                                            <p:commandLink title="Settings" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
+                                                           action="#{appSettingController.goToConfigPage}" ajax="false"
+                                                           immediate="true">
+                                                <i class="menu-icon fa fa-cogs"></i>
+                                                <span class="mm-text">Settings</span>
+                                            </p:commandLink>
+
+                                        </li>
+
+
+
+                                    </ul> <!-- / .navbar-nav -->
 
                                     <h:panelGroup layout="block" styleClass="right clearfix">
                                         <ul class="nav navbar-nav pull-right right-navbar-nav">
@@ -262,7 +326,7 @@
                                             -->
                                             <li class="nav-icon-btn nav-icon-btn-danger dropdown">
                                                 <a href="#notifications" class="dropdown-toggle" data-toggle="dropdown">
-                                                    <span class="label">5</span>
+                                                    <span class="label">#{auditLogController.getActivityLogs(UserSessionBean.current.idUsuario).size()}</span>
                                                     <i class="nav-icon fa fa-bell"></i>
                                                     <span class="small-screen-text">Notificationes</span>
                                                 </a>
@@ -278,14 +342,19 @@
                                                 <div class="dropdown-menu widget-notifications no-padding" style="width: 300px">
                                                     <div class="notifications-list" id="main-navbar-notifications">
 
-                                                        <div class="notification">
-                                                            <div class="notification-title text-danger">SYSTEM</div>
-                                                            <div class="notification-description"><strong>Error 500</strong>: Syntax error in index.php at line <strong>461</strong>.</div>
-                                                            <div class="notification-ago">12h ago</div>
-                                                            <div class="notification-icon fa fa-hdd-o bg-danger"></div>
-                                                        </div> <!-- / .notification -->
+                                                        <c:forEach items="#{auditLogController.getActivityLogs(UserSessionBean.current.idUsuario)}" var="item" varStatus="loop">
 
-                                                        <!-- / .notification -->
+                                                            <div class="notification">
+                                                                <div class="notification-title text-primary">#{item.idUser}</div>
+                                                                <div class="notification-description"><strong><h:outputText value="[ref\##{item.idCaso}]"/></strong>: #{item.idCampo eq null ? '':'ha cambiado el valor de '.concat(item.idCampo)} #{item.newValue}.</div>
+                                                                <div class="notification-ago" title="#{casoController.formatDate(item.fecha)}">#{casoController.prettyDate(item.fecha)}</div>
+                                                                <div class="notification-icon fa fa-hdd-o bg-info"></div>
+                                                            </div> <!-- / .notification -->
+
+
+                                                        </c:forEach>
+
+
 
                                                     </div> <!-- / .notifications-list -->
                                                     <a href="#" class="notifications-link">MORE NOTIFICATIONS</a>
@@ -328,7 +397,7 @@
                                                         <h:commandLink immediate="true" action="myAccount"><i class="dropdown-icon fa fa-user"></i>  Perfil</h:commandLink>
                                                     </li>
                                                     <li>
-                                                        <p:commandLink immediate="true" onclick="panelChangePass.show()"><i class="dropdown-icon fa fa-sign-in"/>  Cambiar Contraseña</p:commandLink>
+                                                        <p:commandLink immediate="true" onclick="PF('panelChangePass').show()"><i class="dropdown-icon fa fa-sign-in"/>  Cambiar Contraseña</p:commandLink>
                                                     </li>                                                 
                                                     <li class="divider"></li>
                                                     <li><p:commandLink action="#{loginController.logout_action}" ajax="false" immediate="true"><i class="dropdown-icon fa fa-power-off"/>  Cerrar Sesión</p:commandLink>
@@ -466,54 +535,9 @@
 
 
 
-                                    <li>
-                                        <p:commandLink title="Reportes" rendered="#{filtroAcceso.verificarAccesoAFuncionSupervision()}"
-                                                       action="/script/report_graphs/reports" ajax="false">
-                                            <i class="menu-icon fa fa-bar-chart-o"></i>
-                                            <span class="mm-text">Reportes</span>
-                                        </p:commandLink>
-
-                                    </li>
-
-                                    <h:panelGroup rendered="#{filtroAcceso.verificarAccesoAFuncionSupervision()}">
-                                        <li class="mm-dropdown">
-                                            <a href="#"><i class="menu-icon fa fa-eye"></i><span class="mm-text">Supervisión</span></a>
-                                            <ul>
-
-
-                                                <li>
-                                                    <p:commandLink title="Logs de Casos" 
-                                                                   action="#{auditLogController.prepareList()}" ajax="false">
-                                                        <i class="menu-icon fa fa-bullhorn"></i>
-                                                        <span class="mm-text">Logs de Casos</span>
-                                                    </p:commandLink>
-
-                                                </li>
-
-                                                <li>
-                                                    <p:commandLink title="Alertas" 
-                                                                   action="#{auditLogController.prepareList()}" ajax="false">
-                                                        <i class="menu-icon fa fa-exclamation-triangle"></i>
-                                                        <span class="mm-text">Alertas</span>
-                                                    </p:commandLink>
-
-                                                </li>
-
-                                                <li>
-                                                    <p:commandLink title="#{bundle.SessionsTitle}" 
-                                                                   action="#{usuarioSessionLogController.prepareList}"  ajax="false">
-                                                        <i class="menu-icon fa fa-info-circle"></i>
-                                                        <span class="mm-text">#{bundle.SessionsTitle}</span>
-                                                    </p:commandLink>
-
-                                                </li>
 
 
 
-                                            </ul>
-                                        </li>
-
-                                    </h:panelGroup>
 
                                     <li class="mm-dropdown">
                                         <a href="#"><i class="menu-icon fa fa-user"></i>
@@ -539,18 +563,7 @@
                                     </li>
 
 
-                                    <h:panelGroup rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
 
-                                        <li>
-                                            <p:commandLink title="Settings" 
-                                                           action="#{appSettingController.goToConfigPage}" ajax="false">
-                                                <i class="menu-icon fa fa-cogs"></i>
-                                                <span class="mm-text">Settings</span>
-                                            </p:commandLink>
-
-                                        </li>
-
-                                    </h:panelGroup>
 
 
 
@@ -606,25 +619,7 @@
                         <!-- Content here -->
                         <ui:insert name="west"/>  
 
-
-
-                        <p:ajaxStatus>
-                            <f:facet name="start">
-                                <div class="pull-right"  style="z-index: 1011; margin-left: auto;
-                                     margin-right: auto;
-                                     width: 200px;
-                                     position: absolute;" >
-                                    <a href="#"><span class="label label-warning">Loading...</span></a>
-                                </div>
-                            </f:facet>
-                        </p:ajaxStatus>
-
-
-
                         <ui:insert name="body"/>  
-
-
-
 
                     </div> <!-- / #content-wrapper -->
 
@@ -655,9 +650,11 @@
 
                 <script src="#{facesContext.externalContext.requestContextPath}/resources/javascripts/bootstrap.min.js"></script>
 
-                <script src="#{facesContext.externalContext.requestContextPath}/resources/javascripts/pixel-admin.min.js"></script>
+                <script src="#{facesContext.externalContext.requestContextPath}/resources/javascripts/pixel-admin.js"></script>
                 <script src="#{facesContext.externalContext.requestContextPath}/resources/js/bootstrap-datetimepicker.min.js"></script>
                 <script src="#{facesContext.externalContext.requestContextPath}/resources/js/jquery.expander.min.js"></script>
+
+                <script src="#{facesContext.externalContext.requestContextPath}/resources/js/typeahead.min.js"></script>
 
                 <!--[if lt IE 9]>
                     <script src="#{facesContext.externalContext.requestContextPath}/resources/javascripts/ie.min.js"></script>
@@ -670,28 +667,26 @@
                     init.push(function () {
                         $('div.notifications-list').slimScroll({height: 250});
                         $('.nav-pills, .nav-tabs').tabdrop();
-                    });
+                        $("select.select2Input").select2({
+                            dropdownAutoWidth: true,
+                            allowClear: true
+                        });
 
+                        $("select.select2Multiple").select2({
+                            dropdownAutoWidth: true,
+                            allowClear: true
+                        });
 
-                    $(".select2Input").select2({
-                        dropdownAutoWidth: true,
-                        allowClear: true
-                    });
-
-                    $(".select2Multiple").select2({
-                        dropdownAutoWidth: true,
-                        allowClear: true
-                    });
-
-                    $('.datepicker').datetimepicker({
-                        language: 'es',
-                        format: 'dd/mm/yyyy hh:ii',
-                        viewformat: 'dd/mm/yyyy hh:ii',
-                        todayBtn: true,
-                        autoclose: true,
-                        todayHighlight: true,
-                        weekStart: 1,
-                        forceParse: true
+                        $('.datepicker').datetimepicker({
+                            language: 'es',
+                            format: 'dd/mm/yyyy hh:ii',
+                            viewformat: 'dd/mm/yyyy hh:ii',
+                            todayBtn: true,
+                            autoclose: true,
+                            todayHighlight: true,
+                            weekStart: 1,
+                            forceParse: true
+                        });
                     });
 
                     window.PixelAdmin.start(init);
@@ -704,11 +699,12 @@
 
 
 
-                <p:dialog modal="false" widgetVar="statusDialog" header="Espere..."   
+                <p:dialog modal="false" widgetVar="ajaxStatus" header="Cargando..."   
                           draggable="false" closable="false" resizable="false">  
                     <p:graphicImage library="images" name="ajaxloadingbar.gif" />
                 </p:dialog>
 
+                <p:ajaxStatus onstart="PF('ajaxStatus').show()" onsuccess="PF('ajaxStatus').hide()" />
 
 
                 <p:dialog id="helpDialog" showEffect="fade" hideEffect="clip" modal="true"
@@ -726,26 +722,72 @@
                 </p:dialog>
 
 
-                <p:dialog id="panelChangePassId" appendTo="@(body)" closeOnEscape="true" widgetVar="panelChangePass" header="Cambiar Contraseña" modal="true">
+                <p:dialog id="panelChangePassId" appendTo="@(body)" closeOnEscape="true" 
+                          widgetVar="panelChangePass" header="Cambiar Contraseña" modal="true">
                     <h:form id="changePassForm">
-                        <p:messages id="messages" showDetail="false" autoUpdate="true"/>  
-                        <h:panelGrid columns="2" id="matchGrid">                     
-                            <p:outputLabel for="pwd" value="Contraseña Actual: " style="font-weight: bold;"/>  
-                            <p:password id="pwd" value="#{loginController.passwordCurrent}" label="Contraseña Actual" required="true" />  
 
-                            <p:outputLabel for="pwd1" value="Nueva Contraseña: " style="font-weight: bold;"/>  
-                            <p:password id="pwd1" value="#{loginController.passwordNew1}" match="pwd2" label="Nueva Contraseña" required="true" feedback="true" 
-                                        promptLabel="Favor ingrese contraseña" weakLabel="Débil"  
-                                        goodLabel="Buena" strongLabel="Fuerte" />  
+                        <h:panelGroup layout="block" styleClass="panel no-border form-horizontal">
 
-                            <p:outputLabel for="pwd2" value="Repita Nueva Contraseña: " style="font-weight: bold;"/>  
-                            <p:password id="pwd2" value="#{loginController.passwordNew2}" label="Repita Nueva Contraseña" required="true" feedback="true"   
-                                        promptLabel="Favor repita contraseña" weakLabel="Débil"  
-                                        goodLabel="Buena" strongLabel="Fuerte"/>  
-                        </h:panelGrid> 
-                        <br/>
-                        <p:separator/>
-                        <p:commandButton id="saveButton" update=":changePassForm" value="Cambiar" action="#{loginController.changePass()}"/>  
+                            <div class="panel-body">
+                                <p:messages globalOnly="true"/>
+
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label" for="pwd">Contraseña actual</label>
+                                    <div class="col-sm-8">
+                                        <p:password id="pwd" value="#{loginController.passwordCurrent}"  styleClass="form-control"
+                                                    requiredMessage="Ingrese su contraseña actual."
+                                                    label="Contraseña Actual" required="true" /> 
+                                        <h:message for="pwd" errorClass="text-danger"/>
+                                    </div>
+
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label" for="pwd1">Nueva contraseña</label>
+                                    <div class="col-sm-8">
+                                        <p:password id="pwd1" value="#{loginController.passwordNew1}" styleClass="form-control"
+                                                    label="Nueva Contraseña" required="true" feedback="true" requiredMessage="Ingrese su nueva contraseña."
+                                                    promptLabel="Favor ingrese su nueva contraseña" weakLabel="Débil"  
+                                                    goodLabel="Buena" strongLabel="Fuerte" />  
+                                        <h:message for="pwd1" errorClass="text-danger"/>
+                                    </div>
+
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label" for="pwd2">Confirmar nueva contraseña</label>
+                                    <div class="col-sm-8">
+                                        <p:password id="pwd2" value="#{loginController.passwordNew2}"  
+                                                    match="pwd1" validatorMessage="Las contraseñas no coinciden."
+                                                    styleClass="form-control" requiredMessage="Confirme su nueva contraseña."
+                                                    label="Repita Nueva Contraseña" required="true" feedback="true"   
+                                                    promptLabel="Favor repita su nueva contraseña" weakLabel="Débil"  
+                                                    goodLabel="Buena" strongLabel="Fuerte"/>  
+                                        <h:message for="pwd2" errorClass="text-danger"/>
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+                            <div class="panel-footer bg-panel">
+
+                                <div class="btn-group">
+                                    <p:commandLink styleClass="btn btn-default btn-flat" value="Cancelar" ajax="true"  
+                                                   onclick="PF('panelChangePass').hide()"   />
+
+                                </div>
+
+                                <div class="btn-group">
+                                    <p:commandLink id="saveButton" styleClass="btn btn-primary btn-flat"  
+                                                   update="@form" value="Cambiar" action="#{loginController.changePass()}"/>  
+                                </div>
+
+                            </div>
+                        </h:panelGroup>
+
+
+
+
+
 
 
                     </h:form>

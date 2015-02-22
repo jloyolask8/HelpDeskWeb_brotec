@@ -9,10 +9,10 @@
 
     <ui:composition template="/script/template_inbox_bootstrap.xhtml">
         <ui:define name="title">
-            <p:outputLabel value="Lista de #{applicationBean.productComponentDescription}"></p:outputLabel>
+            <h:outputText value="Lista de #{applicationBean.productComponentDescription}"></h:outputText>
         </ui:define>
         <ui:define name="menutitle">
-            <p:outputLabel value="Listado de #{applicationBean.productComponentDescription}(s)"></p:outputLabel>
+            <h:outputText value="Listado de #{applicationBean.productComponentDescription}(s)"></h:outputText>
         </ui:define>
         <ui:define name="help">
             <h:outputText  value="#{bundle.ayudaProductos}" escape="false"/>
@@ -25,16 +25,24 @@
             <!-- page-header -->
             <div class="page-header">
                 <div class="row">
-                    <div class="col-sm-10 col-xs-10">
+                    <div class="col-sm-6 col-xs-12">
                         <h1><i class="fa fa-cubes page-header-icon"></i>&nbsp;&nbsp;<p:outputLabel value="Listado de #{applicationBean.productComponentDescription}(s)"></p:outputLabel></h1>
                         <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
                             <i class="fa fa-info-circle"/>
                         </p:commandLink> 
                     </div>
-                    <div class="col-sm-2 col-xs-2">
-                        <h:form>
+                    <div class="col-sm-6 col-xs-12">
 
-                            <div class="btn-group pull-right">
+                        <h:form id="buttonsForm">
+
+                            <div class="pull-right">
+
+                                <div class="btn-group">
+                                    <go:paginatorCounts controllerMBean="#{componenteController}"/>
+                                </div>
+
+                                <go:paginatorBtnsBt controllerMBean="#{componenteController}" update="@(form)"/>
+
                                 <button type="button" class="btn dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i></button>
                                 <ul class="dropdown-menu">
                                     <li>
@@ -50,13 +58,15 @@
 
                         </h:form>
 
+
+
                     </div>
                 </div>
             </div><!-- / .page-header --> 
 
             <div class="row">
                 <go:vistasListBt id="vistasList" 
-                                 update=":vistasList:vistasForm :mainform:messages :form :form0" 
+                                 update="@(form)" 
                                  controllerMBean="#{componenteController}"
                                  user="#{UserSessionBean.current}"/>
                 <div class="panel search-panel">
@@ -65,97 +75,66 @@
                                        showSearchBar="true"
                                        filterHelper="#{componenteController.filterHelper}" 
                                        canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
-                                       update=":mainform:messages :form0"
+                                       update="@(form)"
                                        vistaControllerBackOutcome="/script/componente/List"/>
-
-                        <h:panelGroup layout="block" styleClass="row alert alert-page alert-warning" rendered="#{componenteController.items.rowCount le 0}">
-                            <button type="button" class="close" data-dismiss="alert">x</button>
-                            Su busqueda no coincide con ningun componente.
-                        </h:panelGroup>
                     </h:form>
-                    <h:form id="form0">
-
-                        <h:panelGroup layout="block" styleClass="panel panel-transparent" rendered="#{componenteController.items.rowCount gt 0}">
-                            <div class="panel-heading">
-                                <span class="panel-title"> 
-                                    <go:paginatorCounts controllerMBean="#{componenteController}"/>
-                                </span>
-
-                                <div class="panel-heading-controls">
-                                    <go:paginatorBtnsBt controllerMBean="#{componenteController}" update=":form"/>
-                                </div>
-                            </div>
-
-                            <div class="panel-body no-padding">
-                                <div class="table-responsive">
-                                    <h:dataTable id="panelG1" value="#{componenteController.items}" 
-                                                 styleClass="table table-hover"
-                                                 var="item">
-
-                                        <h:column >
-                                            <f:facet name="header">
-                                                <h:outputText value="Código"/>
-                                            </f:facet>
-                                            <h:outputText value="#{item.idComponente}" />
-                                        </h:column>
-                                        <h:column >
-                                            <f:facet name="header">
-                                                <h:outputText value="Nombre"/>
-                                            </f:facet>
-                                            <h:outputText value="#{item.nombre}" />
-                                        </h:column>
-                                        <h:column >
-                                            <f:facet name="header">
-                                                <h:outputText value="#{applicationBean.productDescription}"/>
-                                            </f:facet>
-                                            <h:outputText value="#{item.idProducto.nombre}" />
-                                        </h:column>
-
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Acción"/>
-                                            </f:facet>
-                                            <div class="btn-toolbar">
-
-                                                <p:commandLink id="viewBtn" action="#{componenteController.prepareView(item)}" title="Ver" ajax="false"
-                                                               styleClass="btn btn-sm btn-outline btn-primary"
-                                                               >
-                                                    <i class="fa fa-eye"/>
-                                                </p:commandLink>
-
-                                                <p:commandLink id="editBtn" action="#{componenteController.prepareEdit(item)}" title="Editar" ajax="false" 
-                                                               styleClass="btn btn-sm btn-outline btn-primary"
-                                                               rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
-                                                    <i class="fa fa-edit"/>
-                                                </p:commandLink>
-
-                                                <p:commandLink  id="showDialogButton" 
-                                                                actionListener="#{componenteController.setSelected(item)}"
-                                                                rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
-                                                                styleClass="btn btn-sm btn-outline btn-danger"
-                                                                title="Eliminar"
-                                                                oncomplete="PF('confirmation').show()"
-                                                                update=":confirmDialog">
-                                                    <i class="fa fa-times"/>
-
-                                                </p:commandLink>
-                                            </div>
-                                        </h:column>  
-
-
-                                    </h:dataTable>
-                                </div>
-                            </div>
-
-                            <div class="panel-footer">
-                                <div class="row text-center">
-                                    <go:paginatorCounts controllerMBean="#{componenteController}"/>
-                                </div>
-                            </div>
-                        </h:panelGroup>
-                    </h:form>
-
                 </div>
+            </div>
+            <div class="row">
+                <h:form id="form0">
+
+                    <h:panelGroup layout="block" styleClass="alert alert-warning" 
+                                  rendered="#{componenteController.items.rowCount le 0}">
+                        <button type="button" class="close" data-dismiss="alert">x</button>
+                        Su búsqueda no arrojó ningún resultado.
+                    </h:panelGroup>
+
+                    <h:panelGroup layout="block" styleClass="table-responsive" rendered="#{componenteController.items.rowCount gt 0}">
+
+                        <p:dataTable widgetVar="dataTable" var="item" value="#{componenteController.items}" selectionMode="single"
+                                     emptyMessage="#{bundle.emptyList}">
+
+                            <p:column headerText="Código" sortBy="#{item.idComponente}">
+                                <h:outputText value="#{item.idComponente}" />
+                            </p:column>
+
+                            <p:column headerText="Nombre" sortBy="#{item.nombre}">
+                                <h:outputText value="#{item.nombre}" />
+                            </p:column>
+
+                            <p:column headerText="#{applicationBean.productDescription}" sortBy="#{item.idProducto.nombre}">
+                                <h:outputText value="#{item.idProducto.nombre}" />
+                            </p:column>
+
+                            <p:column headerText="Acción">
+                                <div class="btn-toolbar">
+
+                                    <p:commandLink id="editBtn" action="#{componenteController.prepareEdit(item)}" title="Editar" ajax="false" 
+                                                   styleClass="btn btn-sm btn-outline btn-primary"
+                                                   rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
+                                        <i class="fa fa-edit"/>
+                                    </p:commandLink>
+
+                                    <p:commandLink  id="showDialogButton" 
+                                                    actionListener="#{componenteController.setSelected(item)}"
+                                                    rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
+                                                    styleClass="btn btn-sm btn-outline btn-danger"
+                                                    title="Eliminar"
+                                                    oncomplete="PF('confirmation').show()"
+                                                    update=":confirmDialog">
+                                        <i class="fa fa-times"/>
+
+                                    </p:commandLink>
+                                </div>
+                            </p:column>
+                        </p:dataTable>
+                        
+
+                        <div class="row text-center">
+                            <go:paginatorCounts controllerMBean="#{componenteController}"/>
+                        </div>
+                    </h:panelGroup>
+                </h:form>
             </div>
 
         </ui:define>

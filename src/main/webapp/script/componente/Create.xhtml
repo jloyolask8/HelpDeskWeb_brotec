@@ -31,69 +31,56 @@
 
                 <p:messages globalOnly="true"/>
                 <div class="row">
-                    <div class="col-sm-12">
+                    <div class="col-sm-6 col-lg-4">
                         <div class="form-group">
-                            <label class="col-sm-1 control-label">#{bundle.CreateComponenteLabel_idComponente}</label>
-                            <div class="col-sm-4">
-                                <p class="form-control-static"> 
-                                    <h:inputText styleClass="form-control" id="idComponente" value="#{componenteController.selected.idComponente}" required="true" requiredMessage="#{bundle.RequiredMessage}"/>
-                                </p>
-                                <p:message for="idComponente"/>
-                            </div>
+                            <label class="control-label">#{bundle.CreateComponenteLabel_idComponente}</label>
+                            <h:inputText styleClass="form-control" id="idComponente" 
+                                         value="#{componenteController.selected.idComponente}" required="true" 
+                                         requiredMessage="#{bundle.RequiredMessage}"/>
+                            <h:message for="idComponente" errorClass="text-danger"/>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-1 control-label">#{bundle.CreateComponenteLabel_nombre}</label>
-                            <div class="col-sm-4">
-                                <p class="form-control-static"> 
-                                    <h:inputText styleClass="form-control" id="nombre" value="#{componenteController.selected.nombre}" required="true" requiredMessage="#{bundle.RequiredMessage}" />
-                                </p>
-                                <p:message for="nombre"/>
-                            </div>
+                            <label class="control-label">#{bundle.CreateComponenteLabel_nombre}</label>
+                            <h:inputText styleClass="form-control" id="nombre" value="#{componenteController.selected.nombre}" 
+                                         required="true" requiredMessage="#{bundle.RequiredMessage}" />
+                            <h:message for="nombre" errorClass="text-danger"/>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-1 control-label">#{bundle.CreateComponenteLabel_descripcion}</label>
-                            <div class="col-sm-4">
-                                <p class="form-control-static"> 
-                                    <h:inputTextarea styleClass="form-control" id="descripcion" value="#{componenteController.selected.descripcion}"  cols="50" />
-                                </p>
-                                <p:message for="descripcion"/>
-                            </div>
+                            <label class="control-label">#{bundle.CreateComponenteLabel_descripcion}</label>
+                            <h:inputTextarea styleClass="form-control" id="descripcion" 
+                                             value="#{componenteController.selected.descripcion}"  cols="50" />
+                            <h:message for="descripcion" errorClass="text-danger"/>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-1 control-label">Producto Asociado:</label>
-                            <div class="col-sm-4">
-                                <p class="form-control-static"> 
-                                    <h:selectOneMenu styleClass="form-control" id="idProductoComponente" value="#{componenteController.selected.idProducto}">
-                                        <f:selectItems value="#{productoController.itemsAvailableSelectOne}"/>
-                                    </h:selectOneMenu>
-                                </p>
-                                <p:message for="idProductoComponente"/>
-                            </div>
+                            <label class="control-label">Producto Asociado:</label>
+                            <h:selectOneMenu styleClass="form-control" id="idProductoComponente" value="#{componenteController.selected.idProducto}">
+                                <f:selectItems value="#{productoController.itemsAvailableSelectOne}"/>
+                            </h:selectOneMenu>
+                            <h:message for="idProductoComponente" errorClass="text-danger"/>
                         </div>
 
+                        <div class="btn-group">
+                            <p:commandLink action="#{componenteController.prepareList}" 
+                                           styleClass="btn btn-default btn-flat" 
+                                           ajax="false" immediate="true"
+                                           onclick="jQuery(this).addClass('ui-state-disabled');
+                                                   jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                <i class=""></i> #{bundle.Cancel}
+                            </p:commandLink>
+                        </div>
 
-
-
-
-
-
-
-
+                        <div class="btn-group">
+                            <p:commandLink action="#{componenteController.create}" 
+                                           ajax="false"
+                                           styleClass="btn btn-primary btn-flat" 
+                                           onclick="jQuery(this).addClass('ui-state-disabled');
+                                                   jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                <i class=""></i> #{bundle.SaveLink}
+                            </p:commandLink>
+                        </div>
 
                     </div>
                 </div>
-
-
-
-
-
-                <p:toolbar> 
-                    <p:toolbarGroup align="left">   
-                        <p:commandButton action="#{componenteController.create}" value="#{bundle.SaveLink}" ajax="false" icon="ui-icon-disk"/>        
-                        <p:separator/>   
-                        <p:commandButton action="#{componenteController.prepareList}" value="#{bundle.ShowAllLink}" immediate="true" ajax="false" icon="ui-icon-folder-open"/>
-                    </p:toolbarGroup>
-                </p:toolbar>
 
 
             </h:form>
