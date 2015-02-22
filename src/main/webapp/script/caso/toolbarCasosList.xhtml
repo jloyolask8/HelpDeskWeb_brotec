@@ -1,0 +1,112 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:pe="http://primefaces.org/ui/extensions"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:go="http://java.sun.com/jsf/composite/go">
+
+
+        <div class="btn-toolbar wide-btns  pull-right" role="toolbar">
+            <div class="btn-group">
+                <p:commandLink  id="updateList" title="Actualizar" styleClass="btn" 
+                                disabled="#{not empty casoController.selectedItems}" 
+                                actionListener="#{casoController.refresh()}" update=":form0">
+                    <i class="fa fa-refresh"></i>
+                </p:commandLink>
+            </div>
+
+            <div class="btn-group hidden-xs">
+                <p:commandLink id="spamBtn"   styleClass="btn" title="Spam!"
+                               oncomplete="PF('blackListSelected').show();" update=":formBlackList"
+                               disabled="#{empty casoController.selectedItems}">
+                    <i class="fa fa-exclamation-circle"></i>
+                </p:commandLink>
+                <p:commandLink id="deleteBtn"  styleClass="btn" title="Borrar"
+                               disabled="#{empty casoController.selectedItems and casoController.verificarEliminarCaso()}"
+                               oncomplete="PF('deleteSelectedCasos').show();" update=":formdeleteSelectedCasos">
+                    <i class="fa fa-trash-o"></i>
+                </p:commandLink>
+            </div>
+
+            <div class="btn-group hidden-xs">
+
+                <p:commandLink styleClass="btn" title="Aplicar regla"
+                               update=":applyRuleForm"
+                               rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
+                               onclick="PF('applyRuleDialog').show()">
+                    <i class="fa fa-cogs"></i>
+                </p:commandLink>
+
+
+                <p:commandLink styleClass="btn" title="Ejecutar Acción" onclick="PF('runActionDialog').show()" 
+                               update=":runActionForm"
+                               rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
+                    <i class="fa fa-flash"></i>
+                </p:commandLink>
+
+
+                <p:commandLink id="TagAsBtn" styleClass="btn" onclick="PF('TagPanel').loadContents()" title="Etiquetar"
+                               disabled="#{empty casoController.selectedItems}">
+                    <i class="fa fa-tags"></i>
+                </p:commandLink> 
+
+
+                <p:overlayPanel id="TagPanel" widgetVar="TagPanel" style="width: 200px !important;"
+                                for="TagAsBtn" hideEffect="fade" dynamic="true">                                     
+
+                    <h:panelGrid>
+                        <p:dataTable id="tabletags" var="tag" value="#{tagCloudBean.etiquetasByUsuario}" 
+                                     emptyMessage="No se encontraron etiquetas." 
+                                     rowKey="#{tag.tagId}"
+                                     selection="#{casoController.selectedEtiquetas}"
+                                     scrollRows="10" scrollable="true" liveScroll="true" scrollHeight="200">  
+
+                            <p:column selectionMode="multiple" style="width:2%"/>  
+
+                            <p:column filterBy="#{tag.tagId}">
+                                <h:outputText value="#{tag.tagId}" />  
+                            </p:column>  
+
+                        </p:dataTable>  
+                    </h:panelGrid>
+
+                    <p:commandButton value="Aplicar"  icon="ui-icon-tag"  
+                                     actionListener="#{casoController.tagManyCasosManyTags}"
+                                     update=":mainform:messages :form0" oncomplete="PF('TagPanel').hide()"/> 
+
+                </p:overlayPanel>  
+
+            </div>
+
+            <div class="btn-group hidden-xs">
+                <p:commandLink styleClass="btn" title="Descargar casos en planilla excel"
+                               ajax="false" onclick="PrimeFaces.monitorDownload(start, stop)"
+                               disabled="#{casoController.items.rowCount le 0}" immediate="true">
+                    <i class="fa fa-download"></i>
+
+                    <p:fileDownload value="#{casoController.exportAllItems()}" />
+
+                </p:commandLink>
+            </div>
+
+       
+            
+            <go:paginatorBtnsBt controllerMBean="#{casoController}" update="@(form)"/>
+        
+            <div class="btn-group">
+            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i></button>
+            <ul class="dropdown-menu">
+                <li>
+                    <p:commandLink action="#{casoController.prepareCreate}" ajax="false"
+                                   value="Crear caso"
+                                   rendered="#{filtroAcceso.verificarAccesoAFuncionAgregarCaso()}" >
+                    </p:commandLink>
+                </li>
+            </ul>
+        </div>
+            
+        </div>
+
+</ui:composition>

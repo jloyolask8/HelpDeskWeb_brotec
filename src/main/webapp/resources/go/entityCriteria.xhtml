@@ -22,8 +22,8 @@
     <!-- IMPLEMENTATION -->
     <cc:implementation>
 
-        <div class="row">
-            <div class="col-xs-4 col-sm-4">
+        <div class="col-sm-12 no-padding">
+            <div class="col-xs-4 col-sm-4 no-padding">
                 <div class="form-group no-margin-hr">
 
                     <h:selectOneMenu id="idCampo"  value="#{cc.attrs.filtro.idCampo}" disabled="#{not cc.attrs.canChangeFilters}"
@@ -33,10 +33,11 @@
                         <f:selectItems value="#{cc.attrs.filterHelper.comparableFields}" var="comparableField" itemValue="#{comparableField.idCampo}" itemLabel="#{comparableField.label}"/>
                         <p:ajax update="@(form :not(.noupdate)) #{cc.attrs.update}" listener="#{cc.attrs.filterHelper.handleIdCampoChangeEvent(cc.attrs.filtro)}"/>
                     </h:selectOneMenu>
+                    <h:message for="idCampo" errorClass="text-danger"/>
 
                 </div>
             </div>
-            <div class="col-xs-3 col-sm-2">
+            <div class="col-xs-3 col-sm-2 no-padding">
                 <div class="form-group no-margin-hr">
                     <h:selectOneMenu id="idComparador" value="#{cc.attrs.filtro.idComparador}" rendered="#{cc.attrs.filtro.idCampo ne null}" disabled="#{not cc.attrs.canChangeFilters}"
                                      required="true" requiredMessage="Favor Seleccione Operador." styleClass="form-control input-sm select2Input">
@@ -48,10 +49,10 @@
 
                 </div>
             </div>
-            <div class="col-xs-4 col-sm-5">
+            <div class="col-xs-4 col-sm-5 no-padding">
                 <div class="form-group no-margin-hr">
-                     
-                        <h:inputText id="valortext" value="#{cc.attrs.filtro.valor}" 
+
+                    <h:inputText id="valortext" value="#{cc.attrs.filtro.valor}" 
                                  rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null and cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'TEXT'}" 
                                  required="true" requiredMessage="Se necesita un valor para comparar." disabled="#{not cc.attrs.canChangeFilters}" 
                                  styleClass="form-control input-sm">
@@ -93,7 +94,7 @@
                         </h:selectManyListbox>
                     </div>
 
-                
+
                     <p:autoComplete styleClass="form-control input-sm" value="#{cc.attrs.filtro.valoresList}" forceSelection="true"  
                                     disabled="#{not cc.attrs.canChangeFilters}"
                                     required="true" requiredMessage="Se necesita un valor para comparar."
@@ -150,28 +151,27 @@
 
                 </div>
             </div>
-                <div class="col-xs-1 col-sm-1">
-                    <div class="form-group no-margin-hr">
+            <div class="col-sm-1  no-padding">
+               
 
-                        <p:commandLink actionListener="#{cc.attrs.removeActionListener}" 
-                                       ajax="true" immediate="false" rendered="#{not empty cc.attrs.removeActionListener}"
-                                       update="@(form :not(.noupdate)) #{cc.attrs.update}" title="Eliminar criterio"
-                                       disabled="#{(not cc.attrs.canChangeFilters) or (not cc.attrs.canRemoveFilter)}" process="@this"
-                                       styleClass="btn btn-outline btn-danger">
-                            <i class="fa fa-times"></i>
-                            <p:resetInput target="@form" />
-                        </p:commandLink>
+                <p:commandLink actionListener="#{cc.attrs.addActionListener}" 
+                               immediate="true" rendered="#{not empty cc.attrs.addActionListener}"
+                               update="@(form :not(.noupdate)) #{cc.attrs.update}" title="Agregar criterio"
+                               styleClass="btn btn-outline btn-primary btn-xs">
+                    <i class="fa fa-plus"></i>
+                </p:commandLink>
+                
+                 <p:commandLink actionListener="#{cc.attrs.removeActionListener}" 
+                               ajax="true" immediate="false" rendered="#{not empty cc.attrs.removeActionListener}"
+                               update="@(form :not(.noupdate)) #{cc.attrs.update}" title="Eliminar criterio"
+                               disabled="#{(not cc.attrs.canChangeFilters) or (not cc.attrs.canRemoveFilter)}" process="@this"
+                               styleClass="btn btn-outline btn-danger btn-xs">
+                    <i class="fa fa-times"></i>
+                    <p:resetInput target="@form" />
+                </p:commandLink>
 
-                        <p:commandLink actionListener="#{cc.attrs.addActionListener}" 
-                                       immediate="true" rendered="#{not empty cc.attrs.addActionListener}"
-                                       update="@(form :not(.noupdate)) #{cc.attrs.update}" title="Agregar criterio"
-                                       styleClass="btn btn-outline btn-primary">
-                            <i class="fa fa-plus"></i>
-                        </p:commandLink>
-
-                    </div>
-                </div>
-           
+            </div>
+<hr/>
         </div>
 
 

@@ -326,7 +326,7 @@
                                             -->
                                             <li class="nav-icon-btn nav-icon-btn-danger dropdown">
                                                 <a href="#notifications" class="dropdown-toggle" data-toggle="dropdown">
-                                                    <span class="label">5</span>
+                                                    <span class="label">#{auditLogController.getActivityLogs(UserSessionBean.current.idUsuario).size()}</span>
                                                     <i class="nav-icon fa fa-bell"></i>
                                                     <span class="small-screen-text">Notificationes</span>
                                                 </a>
@@ -342,14 +342,19 @@
                                                 <div class="dropdown-menu widget-notifications no-padding" style="width: 300px">
                                                     <div class="notifications-list" id="main-navbar-notifications">
 
-                                                        <div class="notification">
-                                                            <div class="notification-title text-danger">SYSTEM</div>
-                                                            <div class="notification-description"><strong>Error 500</strong>: Syntax error in index.php at line <strong>461</strong>.</div>
-                                                            <div class="notification-ago">12h ago</div>
-                                                            <div class="notification-icon fa fa-hdd-o bg-danger"></div>
-                                                        </div> <!-- / .notification -->
+                                                        <c:forEach items="#{auditLogController.getActivityLogs(UserSessionBean.current.idUsuario)}" var="item" varStatus="loop">
 
-                                                        <!-- / .notification -->
+                                                            <div class="notification">
+                                                                <div class="notification-title text-primary">#{item.idUser}</div>
+                                                                <div class="notification-description"><strong><h:outputText value="[ref\##{item.idCaso}]"/></strong>: #{item.idCampo eq null ? '':'ha cambiado el valor de '.concat(item.idCampo)} #{item.newValue}.</div>
+                                                                <div class="notification-ago" title="#{casoController.formatDate(item.fecha)}">#{casoController.prettyDate(item.fecha)}</div>
+                                                                <div class="notification-icon fa fa-hdd-o bg-info"></div>
+                                                            </div> <!-- / .notification -->
+
+
+                                                        </c:forEach>
+
+
 
                                                     </div> <!-- / .notifications-list -->
                                                     <a href="#" class="notifications-link">MORE NOTIFICATIONS</a>

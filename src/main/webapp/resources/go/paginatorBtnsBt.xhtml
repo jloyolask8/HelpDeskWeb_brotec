@@ -24,12 +24,12 @@
                 </div>
 
                 <div id="nav_buttons" class="btn-group">
-                    <p:commandLink action="#{cc.attrs.controllerMBean.previous()}" styleClass="btn btn-primary btn-outline" 
+                    <p:commandLink action="#{cc.attrs.controllerMBean.previous()}" styleClass="btn" 
                                    update="#{cc.attrs.update}" 
                                    disabled="#{not cc.attrs.controllerMBean.pagination.hasPreviousPage}">
                         <i class="fa fa-chevron-left"></i>
                     </p:commandLink>
-                    <p:commandLink action="#{cc.attrs.controllerMBean.next()}" styleClass="btn btn-primary btn-outline" 
+                    <p:commandLink action="#{cc.attrs.controllerMBean.next()}" styleClass="btn" 
                                    update="#{cc.attrs.update}" 
                                    disabled="#{not cc.attrs.controllerMBean.pagination.hasNextPage}">
                         <i class="fa fa-chevron-right"></i>

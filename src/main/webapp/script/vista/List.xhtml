@@ -4,72 +4,117 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:p="http://primefaces.org/ui"
       xmlns:go="http://java.sun.com/jsf/composite/go">
 
-    <ui:composition template="/script/template_inbox.xhtml">
+    <ui:composition template="/script/template_inbox_bootstrap.xhtml">
         <ui:define name="title">
             <h:outputText value="Vistas"></h:outputText>
         </ui:define>
 
-        <ui:define name="west" id="west">
-
-            <go:vistasList id="vistasList" update=":vistasList:vistasForm :mainform:messages :formfilter:panelFilter0:panelFilter :form" 
-                           controllerMBean="#{vistaController}"
-                           user="#{UserSessionBean.current}"/>
-
-
-            <br/>
-
-            <h:outputLabel escape="false" value="Las vistas reúnen un grupo de entidades del sistema según un conjunto de criterios o filtros que 
+        <ui:define name="help">
+            <h:outputText escape="false" value="Las vistas reúnen un grupo de entidades del sistema según un conjunto de criterios o filtros que 
                            expresan una variedad de estados de dicha entidad. Por ejemplo para un caso, el estado del caso puede ser Nuevo, En proceso o Solucionado, una Vista podría mostrar todos los casos que estén en estado Nuevo. 
                            Las vistas permiten crear grupos coherentes de datos para asi poder acceder más rapidamente a la información de interés."/>
 
         </ui:define>
 
 
-
         <ui:define name="body">
 
-            <h:form id="formfilter">
-                <go:filterView id="panelFilter0" titleIconClass="fa fa-filter page-header-icon"
-                               controllerMBean="#{vistaController}" 
-                               vista="#{vistaController.vista}"
-                               filterHelper="#{vistaController.filterHelper}" 
-                               canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
-                               update=":mainform:messages :form" vistaControllerBackOutcome="/script/vista/List"/>
+            <!-- page-header -->
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-sm-6 col-xs-12">
+                        <h1><i class="fa fa-filter page-header-icon"></i>&nbsp;&nbsp;Vistas</h1>
+                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                            <i class="fa fa-info-circle"/>
+                        </p:commandLink> 
+                    </div>
+                    <div class="col-sm-6 col-xs-12">
 
-            </h:form>
+                        <h:form id="buttonsForm">
 
-            <h:form id="form">
+                            <div class="pull-right">
+
+                                <div class="btn-group">
+                                    <p:commandLink id="deleteBtn"  styleClass="btn" title="Borrar"
+                                                   disabled="#{empty vistaController.selectedItems}"
+                                                   oncomplete="PF('deleteSelectedVistas').show();" 
+                                                   update="@(form)">
+                                        <i class="fa fa-trash-o"></i>
+                                    </p:commandLink>
+                                </div>
+
+                                <go:paginatorBtnsBt controllerMBean="#{vistaController}" update="@(form)"/>
+
+                                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i></button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <h:commandLink action="#{vistaController.prepareCreate}" 
+                                                       value="Agregar"
+                                                       title="Agregar/Crear nuevo">
+                                        </h:commandLink>
+                                    </li>
+                                </ul>
+                            </div>
+
+
+                        </h:form>
+
+                    </div>
+                </div>
+            </div><!-- / .page-header -->
+
+
+            <go:vistasListBt id="vistasList" 
+                             update="@(form)"
+                             controllerMBean="#{vistaController}"
+                             user="#{UserSessionBean.current}"/>
+
+            <div class="panel search-panel">
+
+                <h:form id="formfilter" styleClass="search-form">
+                    <go:filterView id="panelFilter0" titleIconClass="fa fa-filter page-header-icon"
+                                   controllerMBean="#{vistaController}" 
+                                   vista="#{vistaController.vista}"
+                                   filterHelper="#{vistaController.filterHelper}" 
+                                   canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
+                                   update="@(form)" vistaControllerBackOutcome="/script/vista/List"/>
+                </h:form>
+
+            </div>
+
+
+
+
+            <h:form id="form0">
 
                 <p:messages/>
 
+                <h:panelGroup rendered="#{casoController.items.rowCount le 0}">
+                    <div class="alert alert-page alert-warning">
+                        <button type="button" class="close" data-dismiss="alert">ok</button>
+                        Your search did not match any cases.
+                    </div>
+                    <br/>
+                </h:panelGroup>
+                <h:panelGroup layout="block" styleClass="table-responsive">
 
-                <h:panelGroup>
 
-                    <p:toolbar>
+                    <p:dataTable id="datatableVistas" value="#{vistaController.items}" 
+                                 selection="#{vistaController.selectedItems}"
+                                 rowSelectMode="add"
+                                 var="item" emptyMessage="#{bundle.ListVistaEmpty}">
 
-                        <p:toolbarGroup align="left">
-                            <p:commandButton icon="fa fa-download" ajax="false">  
-                                <p:dataExporter type="xls" target="datatableVistas" fileName="export_casos" postProcessor="#{casoController.postProcessXLS}"/>  
-                            </p:commandButton>
-                        </p:toolbarGroup>
+                        <p:ajax event="toggleSelect" update="@(form)" />
+                        <p:ajax event="rowSelect"  update=":buttonsForm" />
+                        <p:ajax event="rowUnselect" update=":buttonsForm" />
+                        <p:ajax event="rowSelectCheckbox" update=":buttonsForm" />
+                        <p:ajax event="rowUnselectCheckbox" update=":buttonsForm" />
 
-                        <p:toolbarGroup align="right">
-
-                            <go:paginatorButtons controllerMBean="#{vistaController}" update=":form"/>
-                            <p:separator/>
-                            <p:commandButton ajax="false" action="#{vistaController.prepareCreate}" immediate="true"
-                                             rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}" value="#{bundle.ListVistaCreateLink}" icon="fa fa-plus-circle" />
-
-                        </p:toolbarGroup>  
-
-                    </p:toolbar>
-
-                    <p:dataTable id="datatableVistas" value="#{vistaController.items}" var="item" emptyMessage="#{bundle.ListVistaEmpty}">
-
-                      
+                        <p:column selectionMode="multiple" />
 
                         <p:column sortBy="#{item.nombre}">
                             <f:facet name="header">
@@ -118,8 +163,9 @@
                                              rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarVistas() and (item.idUsuarioCreadaPor eq UserSessionBean.current or filtroAcceso.administradorDelSistema)}"/>
                             <h:outputText value=" "/>                         
 
-                            <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog"  immediate="true"
-                                             oncomplete="PF('confirmation').show()" rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarVistas() and (item.idUsuarioCreadaPor eq UserSessionBean.current or filtroAcceso.administradorDelSistema)}" icon="ui-icon ui-icon-trash">
+                            <p:commandButton id="showDialogButton" title="Eliminar" update=":confirmDialogForm"  immediate="true"
+                                             oncomplete="PF('confirmation').show()" 
+                                             rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarVistas() and (item.idUsuarioCreadaPor eq UserSessionBean.current or filtroAcceso.administradorDelSistema)}" icon="ui-icon ui-icon-trash">
                                 <f:setPropertyActionListener value="#{item}" target="#{vistaController.selected}" />
                             </p:commandButton>
                         </p:column>
@@ -131,26 +177,68 @@
 
 
                     </p:dataTable>
+
                 </h:panelGroup>
 
-
-                <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
-                          header="Iniciando proceso de eliminación" widgetVar="confirmation">
-
-                    <h:outputText value="Está seguro de eliminar la vista #{vistaController.selected.nombre} ?"/>
-
-                    <f:facet name="footer">
-                        <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{vistaController.destroy()}" 
-                                         ajax="false"/>
-                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
-                    </f:facet>
-
-                </p:dialog>
-
-
-
+                <h:panelGroup layout="block" styleClass="text-center">
+                    <go:paginatorCounts controllerMBean="#{vistaController}"/>
+                </h:panelGroup>
 
             </h:form>
+
+
+
+
+
+        </ui:define>
+        <ui:define name="dialogs">
+
+            <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
+                      header="Iniciando proceso de eliminación" widgetVar="confirmation">
+
+                <h:form id="confirmDialogForm">
+                    <h:outputText value="Está seguro de eliminar la vista #{vistaController.selected.nombre} ?"/>
+
+                    <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{vistaController.destroy()}" 
+                                     ajax="false"/>
+                    <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
+                </h:form>
+
+
+            </p:dialog>
+            
+            
+            
+            <p:dialog  widgetVar="deleteSelectedVistas" header="Eliminar" resizable="false" 
+                       closeOnEscape="true" modal="true" appendTo="@(body)" dynamic="true">  
+                <h:form id="formdeleteSelectedVistas">
+                    
+                    
+
+                    <p:scrollPanel id="scrollpaneActividades" mode="native" style="height: 300px;border-color: window;border: 0;">
+                        <h:panelGrid columns="1">
+                            <c:forEach items="#{vistaController.selectedItems}" var="item" >
+                                <h:outputText styleClass="label label-info" value="#{item.nombre}"/>
+                            </c:forEach>
+                        </h:panelGrid>
+                    </p:scrollPanel>
+
+                    <p:separator/>
+                    <p:commandButton value="#{bundle.decline}" 
+                                     onclick="PF('deleteSelectedVistas').hide()" type="button" /> 
+
+                    <p:commandButton value="#{bundle.yesDelete}" styleClass="btn btn-danger" style="float: right"
+                                     actionListener="#{vistaController.destroySelected()}" 
+                                     disabled="#{empty vistaController.selectedItems}"
+                                     update=":form0" />
+
+                </h:form>
+
+
+            </p:dialog> 
+            
+            
+
         </ui:define>
     </ui:composition>
 
