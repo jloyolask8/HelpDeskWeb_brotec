@@ -51,6 +51,7 @@ public class ComponenteController extends AbstractManagedBean<Componente> implem
         try {
             getJpaController().persist(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ComponenteCreated"));
+            recreatePagination();
             return prepareList();
         } catch (Exception e) {
             if (e instanceof EntityExistsException) {
