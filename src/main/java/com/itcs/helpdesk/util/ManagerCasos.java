@@ -60,6 +60,8 @@ import javax.persistence.NoResultException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
+import org.jsoup.Jsoup;
+import org.jsoup.select.Elements;
 import org.quartz.SchedulerException;
 
 /**
@@ -67,6 +69,10 @@ import org.quartz.SchedulerException;
  * @author jorge
  */
 public class ManagerCasos implements Serializable {
+
+    public static final String HEADER_HISTORY = "<br/><hr/><b>HISTORIA DEL CASO</b><hr/><br/>";
+    public static final String HEADER_HISTORY_NOTA_ALT = "HISTORIA DEL CASO";
+    public static final String FOOTER_HISTORY_NOTA = "FIN MENSAJE ORIGINAL";
 
     public static final String PATTERN_ID_CASO = "(\\[ref#)(\\d*)(\\])";
     public static final String PATTERN_ID_CASO_LEGACY = "(N°\\[)(\\d+)(\\])";
@@ -922,7 +928,8 @@ public class ManagerCasos implements Serializable {
 //          textoBody = parseHtmlToText(textoBody);
             if (textoBody != null) {
                 nota.setTextoOriginal(textoBody);
-                final String removeScriptsAndStyles = HtmlUtils.stripInvalidMarkup(textoBody);
+                String removeScriptsAndStyles = ManagerCasos.extractNotaNewPart(textoBody);
+                removeScriptsAndStyles = HtmlUtils.stripInvalidMarkup(removeScriptsAndStyles);
                 nota.setTexto(removeScriptsAndStyles);
             }
 
@@ -933,8 +940,8 @@ public class ManagerCasos implements Serializable {
             nota.setFechaCreacion(new Date());
             if (emailMessage.getSubject().startsWith("Undeliverable:")) {
                 nota.setTipoNota(EnumTipoNota.RESPUESTA_SERVIDOR.getTipoNota());
-                nota.setTexto("El servidor de correos comuníca que su respuesta "
-                        + "anterior no pudo ser entregada al destinatario");
+                nota.setTextoOriginal(textoBody);
+                nota.setTexto(textoBody);
             } else {
 
                 for (EmailAttachment attachment : emailMessage.getAttachments()) {
@@ -1338,5 +1345,28 @@ public class ManagerCasos implements Serializable {
         cal.setTime(fechaEntrega);
         cal.add(Calendar.MONTH, 6);
         return cal.getTime();
+    }
+
+    public static String extractNotaNewPart(String text) {
+        String ret = text;
+
+        int headerStartIndex = ret.indexOf(HEADER_HISTORY_NOTA_ALT);
+//        int historyEndIndex = ret.lastIndexOf(FOOTER_HISTORY_NOTA);
+        headerStartIndex = (headerStartIndex > 0) ? headerStartIndex : ret.indexOf(HEADER_HISTORY_NOTA_ALT);
+//        historyEndIndex = (historyEndIndex > 0) ? historyEndIndex : ret.indexOf(FOOTER_HISTORY_NOTA);
+        if (headerStartIndex > 0) {
+            ret = ret.substring(0, headerStartIndex);
+//            if ((!debeMostrarContenidoReducido(nota)) && (historyEndIndex > headerStartIndex)) {
+//                ret += nota.getTexto().substring(historyEndIndex + FOOTER_HISTORY_NOTA.length());
+//            }
+        }
+        org.jsoup.nodes.Document doc = Jsoup.parse(ret);
+        Elements strongTag = doc.getElementsByTag("strong");
+        for (org.jsoup.nodes.Element style : strongTag) {
+            style.remove();
+        }
+        ret = doc.toString();
+        ////System.out.println("html ret:\n"+ret);
+        return ret;
     }
 }

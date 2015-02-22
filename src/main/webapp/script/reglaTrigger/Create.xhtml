@@ -278,7 +278,7 @@
 
                             <p:commandButton rendered="#{reglaTriggerController.esAccionEnviarEmail(accion)}" update=":form:accionesTable :formrespuesta"
                                              value="Componer email" ajax="true" immediate="true" actionListener="#{reglaTriggerController.crearEmailTemp(accion)}"
-                                             oncomplete="#{p:widgetVar('mailcomposer')}.show()"
+                                             oncomplete="PF('mailcomposer').show()"
                                              styleClass="full-width"/>
 
                         </p:column>

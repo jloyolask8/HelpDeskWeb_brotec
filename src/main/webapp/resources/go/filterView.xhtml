@@ -65,33 +65,26 @@
 
             </h:panelGroup>
 
-            <p:panel id="panelFilter"  styleClass="panelFilter no-border-radius"  
-                     style="border: none !important;"  visible="#{cc.attrs.controllerMBean.filterViewToggle}">
+            <h:panelGroup id="panelFilter"  styleClass="panel"  
+                          style="border: none !important;"  rendered="#{cc.attrs.controllerMBean.filterViewToggle}">
 
+                <div class="panel-body">
+                    <ui:repeat id="filtrosVista" 
+                               value="#{cc.attrs.vista.filtrosVistaList}" var="filtro">  
 
+                        <go:entityCriteria id="entityCriteria"
+                                           removeActionListener="#{cc.attrs.vista.removeFiltroFromVista(filtro)}"
+                                           addActionListener="#{cc.attrs.vista.addNewFiltroVista(filtro)}"
+                                           filterHelper="#{cc.attrs.filterHelper}" filtro="#{filtro}" 
+                                           canChangeFilters="#{cc.attrs.canChangeFilters}"
+                                           canRemoveFilter="#{cc.attrs.vista.canRemoveFiltroVista()}"
+                                           requiredAttribute="#{cc.attrs.showApplyAction?'false':'true'}"/>
 
-                <ui:repeat id="filtrosVista" 
-                           value="#{cc.attrs.vista.filtrosVistaList}" var="filtro">  
+                    </ui:repeat>
+                </div>
 
-                    <go:entityCriteria id="entityCriteria"
-                                       removeActionListener="#{cc.attrs.vista.removeFiltroFromVista(filtro)}"
-                                       addActionListener="#{cc.attrs.vista.addNewFiltroVista(filtro)}"
-                                       filterHelper="#{cc.attrs.filterHelper}" filtro="#{filtro}" 
-                                       canChangeFilters="#{cc.attrs.canChangeFilters}"
-                                       canRemoveFilter="#{cc.attrs.vista.canRemoveFiltroVista()}"
-                                       requiredAttribute="#{cc.attrs.showApplyAction?'false':'true'}"/>
-
-                </ui:repeat>
-                <br/>
-
-
-
-                <!--<p:fieldset legend="Filtros">-->
-
-
-
-
-                <div align="right" style="width: 730px;">
+                <div class="panel-footer">
+                    <div align="center">
                     <p:outputLabel for="allMustMatch" value="Cuando "/>
                     <p:selectBooleanButton id="allMustMatch" style="height: 20px; font-size: x-small !important;"
                                            value="#{cc.attrs.vista.allMustMatch}" 
@@ -126,35 +119,34 @@
 
 
                 </div>
-
+                </div>
+               
 
 
                 <script type="text/javascript">
-                    $(".select2Input").select2({
-                        dropdownAutoWidth: true,
-                        allowClear: true
-                    });
-
-                    $(".select2Multiple").select2({
-                        dropdownAutoWidth: true,
-                        allowClear: true
-                    });
-
-                    $('.datepicker').datetimepicker({
-                        language: 'es',
-                        format: 'dd/mm/yyyy hh:ii',
-                        viewformat: 'dd/mm/yyyy hh:ii',
-                        todayBtn: true,
-                        autoclose: true,
-                        todayHighlight: true,
-                        weekStart: 1,
-                        forceParse: true
-                    });
-
-
-
                     $(function () {
-                        jQuery(".typeahead").typeahead({
+                        $("select.select2Input").select2({
+                            dropdownAutoWidth: true,
+                            allowClear: true
+                        });
+
+                        $("select.select2Multiple").select2({
+                            dropdownAutoWidth: true,
+                            allowClear: true
+                        });
+
+                        $('.datepicker').datetimepicker({
+                            language: 'es',
+                            format: 'dd/mm/yyyy hh:ii',
+                            viewformat: 'dd/mm/yyyy hh:ii',
+                            todayBtn: true,
+                            autoclose: true,
+                            todayHighlight: true,
+                            weekStart: 1,
+                            forceParse: true
+                        });
+
+                        $(".typeahead").typeahead({
                             remote: '#{facesContext.externalContext.requestContextPath}/EmailClienteListServlet?tenant=#{UserSessionBean.tenantId}&amp;q=%QUERY',
                             highlight: true,
                             displayKey: 'email',
@@ -163,7 +155,7 @@
                     });
                 </script>
 
-            </p:panel>
+            </h:panelGroup>
 
 
         </composite:implementation>

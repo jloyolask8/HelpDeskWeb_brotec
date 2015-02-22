@@ -14,12 +14,9 @@
 
     <!-- IMPLEMENTATION -->
     <cc:implementation>
-            
-
                 <div class="btn-group">
                     <h:selectOneMenu id="cant" styleClass="form-control input-sm"  
-                                     value="#{cc.attrs.controllerMBean.paginationPageSize}"
-                                     rendered="#{cc.attrs.controllerMBean.pagination.itemsCount > 0}">
+                                     value="#{cc.attrs.controllerMBean.paginationPageSize}">
                         <p:ajax event="change" listener="#{cc.attrs.controllerMBean.resetPageSize()}"
                                 update="#{cc.attrs.update}"/>
                         <f:selectItems value="#{cc.attrs.controllerMBean.pagination.pageSizesAvailable}"/>
@@ -27,16 +24,14 @@
                 </div>
 
                 <div id="nav_buttons" class="btn-group">
-                    <p:commandLink action="#{cc.attrs.controllerMBean.previous}" styleClass="btn btn-primary btn-outline" 
-                                   update="#{cc.attrs.update}" disabled="#{not cc.attrs.controllerMBean.pagination.hasPreviousPage}" 
-                                   rendered="#{cc.attrs.controllerMBean.pagination.itemsCount > 0}">
+                    <p:commandLink action="#{cc.attrs.controllerMBean.previous()}" styleClass="btn" 
+                                   update="#{cc.attrs.update}" 
+                                   disabled="#{not cc.attrs.controllerMBean.pagination.hasPreviousPage}">
                         <i class="fa fa-chevron-left"></i>
                     </p:commandLink>
-                    <h:outputText value=" "/>
-                    <p:commandLink action="#{cc.attrs.controllerMBean.next}" styleClass="btn btn-primary btn-outline" 
+                    <p:commandLink action="#{cc.attrs.controllerMBean.next()}" styleClass="btn" 
                                    update="#{cc.attrs.update}" 
-                                   disabled="#{not cc.attrs.controllerMBean.pagination.hasNextPage}" 
-                                   rendered="#{cc.attrs.controllerMBean.pagination.itemsCount > 0}">
+                                   disabled="#{not cc.attrs.controllerMBean.pagination.hasNextPage}">
                         <i class="fa fa-chevron-right"></i>
                     </p:commandLink>
 

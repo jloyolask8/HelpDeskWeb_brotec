@@ -159,7 +159,7 @@
 
                         <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{customFieldController.destroy()}" 
                                          ajax="false"/>
-                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="confirmation.hide()" type="button" /> 
+                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
                     </f:facet>
 
                 </p:dialog>
@@ -253,7 +253,7 @@
                     </div>
                     <div class="panel-footer text-right">
 
-                        <p:commandLink type="button" onclick="CustomFieldCreateDialog.hide()">
+                        <p:commandLink type="button" onclick="PF('CustomFieldCreateDialog').hide()">
                             <i class=""></i>#{bundle.Cancel}
                         </p:commandLink>
                         &nbsp;
@@ -350,7 +350,7 @@
                     </div>
                     <div class="panel-footer text-right">
 
-                        <p:commandLink type="button" onclick="CustomFieldEditDialog.hide()">
+                        <p:commandLink type="button" onclick="PF('CustomFieldEditDialog').hide()">
                             <i class=""></i>#{bundle.Cancel}
                         </p:commandLink>
                         &nbsp;
@@ -384,7 +384,7 @@
                             <p:selectBooleanCheckbox value="#{customFieldController.selected.visibleToCustomers}" disabled="true"/>
 
                         </p:panelGrid>
-                        <p:commandButton value="#{bundle.Close}" onclick="CustomFieldViewDialog.hide()"/>
+                        <p:commandButton value="#{bundle.Close}" onclick="PF('CustomFieldViewDialog').hide()"/>
                     </h:panelGroup>
                 </h:form>
             </p:dialog>

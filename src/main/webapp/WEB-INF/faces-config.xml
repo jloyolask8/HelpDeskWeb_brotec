@@ -60,6 +60,11 @@
     </converter>
     
     <converter>
+        <converter-id>resourceConverter</converter-id>
+        <converter-class>com.itcs.helpdesk.jsfcontrollers.ResourceController$ResourceControllerConverter</converter-class>
+    </converter>
+    
+    <converter>
         <converter-id>GrupoConverter</converter-id>
         <converter-class>com.itcs.helpdesk.jsfcontrollers.GrupoController$GrupoControllerConverter</converter-class>
     </converter>

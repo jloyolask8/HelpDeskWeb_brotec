@@ -29,7 +29,7 @@
                             <h4 class="text-default">
                                 <h:outputText value="\##{item.idNota} #{item.creadaPor ne null ? item.creadaPor.capitalName:(item.enviadoPor ne null ? item.enviadoPor:'unknown sender')}"/></h4>
                             <div class="expandable">
-                                <h:outputText value="#{casoController.extractNotaNewPart(item)}" escape="false"/>
+                                <h:outputText value="#{casoController.extractNotaNewPart(item.getTexto())}" escape="false"/>
                             </div>
 
                             <h:panelGroup rendered="#{not empty item.attachmentList}">
@@ -99,19 +99,20 @@
 
                 <script type="text/javascript">
 
-                    $('div.expandable').expander({
-                        slicePoint: 50,
-                        widow: 2,
-                        expandEffect: 'fadeIn',
-                        expandSpeed: 250,
-                        collapseEffect: 'fadeOut',
-                        collapseSpeed: 200,
-                        // allow the user to re-collapse the expanded text.
-                        userCollapse: true,
-                        expandText: '[ + ]', // default is 'read more'
-                        userCollapseText: '[ - ]'  // default is 'read less'
+                    $(function () {
+                        $('div.expandable').expander({
+                            slicePoint: 50,
+                            widow: 2,
+                            expandEffect: 'fadeIn',
+                            expandSpeed: 250,
+                            collapseEffect: 'fadeOut',
+                            collapseSpeed: 200,
+                            // allow the user to re-collapse the expanded text.
+                            userCollapse: true,
+                            expandText: '[ + ]', // default is 'read more'
+                            userCollapseText: '[ - ]'  // default is 'read less'
+                        });
                     });
-
                 </script>
 
             </h:panelGroup>

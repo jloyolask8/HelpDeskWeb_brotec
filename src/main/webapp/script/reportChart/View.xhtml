@@ -57,7 +57,7 @@
                         <h:outputText value="#{bundle.ViewReportChartLabel_idGrupo}"/>
                         <h:outputText value="#{reportChartController.selected.idGrupo}" title="#{bundle.ViewReportChartTitle_idGrupo}"/>
                     </p:panelGrid>
-                    <p:commandButton value="#{bundle.Close}" onclick="ReportChartViewDialog.hide()"/>
+                    <p:commandButton value="#{bundle.Close}" onclick="PF('ReportChartViewDialog').hide()"/>
                 </h:panelGroup>
             </h:form>
         </p:dialog>

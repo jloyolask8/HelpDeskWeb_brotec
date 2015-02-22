@@ -11,7 +11,6 @@ import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
 import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.FiltroVista;
-import com.itcs.helpdesk.persistence.entities.SubComponente;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
@@ -45,7 +44,6 @@ import javax.faces.model.DataModel;
 import javax.faces.model.SelectItem;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
-import javax.resource.NotSupportedException;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.UserTransaction;
 import javax.ws.rs.core.HttpHeaders;
@@ -796,6 +794,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     public String prepareList() {
         beforePrepareList();
         recreateModel();
+        setFilterViewToggle(false);
         return getListPage();
     }
 

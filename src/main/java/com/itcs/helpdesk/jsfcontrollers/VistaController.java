@@ -97,6 +97,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         current = new Vista(Caso.class);
         current.addNewFiltroVista();
         selectedItemIndex = -1;
+        setFilterViewToggle(true);
         return "/script/vista/Create";
     }
 
@@ -271,6 +272,40 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         resetVistas();
         return prepareList();
     }
+    
+    public void destroySelected() {
+        try {
+            if (getSelectedItems() != null) {
+                int countDeleted = 0;
+                ArrayList<Vista> notDeleted = new ArrayList<>();
+                if (getSelectedItems().size() <= 0) {
+                    JsfUtil.addErrorMessage("Debe seleccionar al menos un caso.");
+                } else {
+                    if (getSelectedItems() != null) {
+                        for (Vista cs : getSelectedItems()) {
+                            if (performDestroy(cs)) {
+                                countDeleted++;
+                            } else {
+                                addErrorMessage("La vista #" + cs.getNombre()+ " no se pudo eliminar.");
+                                notDeleted.add(cs);
+                            }
+                        }
+                    }
+
+                    JsfUtil.addSuccessMessage(countDeleted + " Vistas fueron eliminadas exitósamente.");
+                }
+                selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
+                setSelectedItems(notDeleted);
+                recreateModel();
+                recreatePagination();
+            }
+
+            executeInClient("PF('deleteSelectedVistas').hide()");
+
+        } catch (Exception e) {
+            addErrorMessage(e.getLocalizedMessage());
+        }
+    }
 
 //    public String destroyAndView() {
 //        performDestroy();
@@ -290,6 +325,16 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
         }
+    }
+    
+    private boolean performDestroy(Vista v) {
+        try {
+            getJpaController().remove(Vista.class, v.getIdVista());
+            return true;
+        } catch (Exception e) {
+            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
+        }
+        return false;
     }
 
 //    private void updateCurrentItem() {

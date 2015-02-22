@@ -25,14 +25,14 @@
                          customConfig="#{request.contextPath}/resources/js/ckeditor.js"
                          required="#{cc.attrs.required}"  width="100%" /> 
             <p:watermark for="ckEditor" value="#{cc.attrs.watermark}" rendered="#{not cc.attrs.mobile}"/>
-
+            <p:message for="inputTextarea" rendered="#{cc.attrs.mobile}"/>
+            
             <h:inputTextarea id="inputTextarea" value="#{cc.attrs.fieldValue}" rendered="#{cc.attrs.mobile}"
                              required="#{cc.attrs.required}" requiredMessage="#{cc.attrs.requiredMessage}"
                              styleClass="form-control summernote" >
 
             </h:inputTextarea>
             <p:watermark for="inputTextarea" value="#{cc.attrs.watermark}" rendered="#{cc.attrs.mobile}"/>
-            <p:message for="inputTextarea" rendered="#{cc.attrs.mobile}"/>
             <p:message for="ckEditor" rendered="#{not cc.attrs.mobile}"/>
 
         </h:panelGroup>
