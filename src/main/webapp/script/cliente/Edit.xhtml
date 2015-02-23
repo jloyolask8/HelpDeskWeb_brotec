@@ -136,8 +136,8 @@
                     </p:dataTable>
                 </p:outputPanel>
 
-                <p:commandButton type="button" onclick="PF('addEmail').show()" style="float: right"
-                                 value="Agregar email"/>
+                <p:commandLink styleClass="btn btn-primary btn-flat" type="button" onclick="PF('addEmail').show()" style="float: right"
+                               value="Agregar email"/>
 
 
 
@@ -189,28 +189,42 @@
 
                     </p:dataTable>
 
-                    <p:commandButton value="Agregar" icon="ui-icon-extlink" style="float: right"
-                                     actionListener="#{clienteController.chooseSubComponente}">
+                    <p:commandLink styleClass="btn btn-primary btn-flat" value="Agregar" style="float: right"
+                                   actionListener="#{clienteController.chooseSubComponente}">
                         <p:ajax event="dialogReturn" listener="#{clienteController.onSubComponenteChosen}" update=":form:productos :mainform:messages" />
-                    </p:commandButton>
+                    </p:commandLink>
                     <br/>
                 </p:outputPanel>
 
                 <br/>
+                <div class="btn-group">
+                    <p:commandLink action="#{clienteController.prepareList}" 
+                                   styleClass="btn btn-default btn-flat" 
+                                   ajax="false" immediate="true"
+                                   onclick="jQuery(this).addClass('ui-state-disabled');
+                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                        <i class=""></i> #{bundle.goBack}
+                    </p:commandLink>
+                </div>
 
-                <p:toolbar>  
-                    <p:toolbarGroup align="left">   
-                        <p:commandButton action="#{clienteController.prepareList}" value="#{bundle.goBack}" 
-                                         immediate="true" ajax="false" icon="fa fa-chevron-left"/>
-                        <p:separator/> 
-                        <p:commandButton ajax="false" action="View" value="#{bundle.EditUsuarioViewLink}" 
-                                         immediate="true" icon="fa fa-eye"/>
-                    </p:toolbarGroup>
+                <div class="btn-group">
+                    <p:commandLink action="View"
+                                   ajax="false"
+                                   immediate="true"
+                                   styleClass="btn btn-primary btn-flat">
+                        <i class=""></i> #{bundle.EditUsuarioViewLink}
+                    </p:commandLink>
+                </div>
+                <div class="btn-group">
+                    <p:commandLink action="#{clienteController.update}" 
+                                   ajax="false"
+                                   styleClass="btn btn-primary btn-flat" 
+                                   onclick="jQuery(this).addClass('ui-state-disabled');
+                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                        <i class=""></i> #{bundle.Save}
+                    </p:commandLink>
+                </div>
 
-                    <p:toolbarGroup align="right">   
-                        <p:commandButton ajax="false" action="#{clienteController.update}" value="#{bundle.Save}" icon="fa fa-save"/>
-                    </p:toolbarGroup>
-                </p:toolbar>
 
 
 
@@ -222,16 +236,15 @@
         <ui:define name="dialogs">
             <p:dialog header="Agregar e-mail" widgetVar="addEmail" modal="true" dynamic="true" closeOnEscape="true" closable="true">
                 <h:form>
-                    <h:panelGrid columns="2" cellpadding="5">
-                        <h:outputLabel value="e-mail" for="txt_title"></h:outputLabel>
-                        <p:inputText id="txt_title" value="#{clienteController.emailToAdd.emailCliente}" required="true"/>
 
-                        <p:commandButton type="button" onclick="PF('addEmail').hide()" value="Cerrar"/>
-                        <p:commandButton id="btn_add" value="Agregar" update=":form:emails @parent" action="#{clienteController.reinit()}" >
-                            <p:collector value="#{clienteController.emailToAdd}" 
-                                         addTo="#{clienteController.selected.emailClienteList}" unique="true"/>
-                        </p:commandButton>
-                    </h:panelGrid>
+                    <h:outputLabel value="e-mail:" for="txt_title"></h:outputLabel>
+                    <h:inputText styleClass="form-control" id="txt_title" value="#{clienteController.emailToAdd.emailCliente}" required="true"/><br/>
+                    <p:commandLink styleClass="btn btn-default btn-flat" type="button" onclick="PF('addEmail').hide()" value="Cerrar"/>&nbsp;
+                    <p:commandLink styleClass="btn btn-primary btn-flat" id="btn_add" value="Agregar" update=":form:emails @parent" action="#{clienteController.reinit()}" >
+                        <p:collector value="#{clienteController.emailToAdd}" 
+                                     addTo="#{clienteController.selected.emailClienteList}" unique="true"/>
+                    </p:commandLink>
+
                 </h:form>
             </p:dialog>
 
