@@ -24,16 +24,21 @@
             <!-- page-header -->
             <div class="page-header">
                 <div class="row">
-                    <div class="col-sm-10 col-xs-10">
+                    <div class="col-sm-6 col-xs-12">
                         <h1><i class="fa fa-users page-header-icon"></i>&nbsp;&nbsp; Lista de Clientes</h1>
                         <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
                             <i class="fa fa-info-circle"/>
                         </p:commandLink> 
                     </div>
-                    <div class="col-sm-2 col-xs-2">
+                    <div class="col-sm-6 col-xs-12">
                         <h:form>
 
-                            <div class="btn-group pull-right">
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                    <go:paginatorCounts controllerMBean="#{clienteController}"/>
+                                </div>
+
+                                <go:paginatorBtnsBt controllerMBean="#{clienteController}" update="@(form)"/>
                                 <button type="button" class="btn dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i></button>
                                 <ul class="dropdown-menu">
                                     <li>
@@ -66,127 +71,85 @@
                                        update=":mainform:messages :form0"
                                        vistaControllerBackOutcome="/script/cliente/List"/>
 
-                        <h:panelGroup layout="block" styleClass="row alert alert-page alert-warning" rendered="#{clienteController.items.rowCount le 0}">
-                            <button type="button" class="close" data-dismiss="alert">x</button>
-                            Su busqueda no coincide con ningun caso.
-                        </h:panelGroup>
+
                     </h:form>
-
-
-                    <h:form id="form0">
-
-
-
-                        <h:panelGroup layout="block" styleClass="panel panel-transparent" rendered="#{clienteController.items.rowCount gt 0}">
-                            <div class="panel-heading">
-                                <span class="panel-title"> 
-                                    <go:paginatorCounts controllerMBean="#{clienteController}"/>
-                                </span>
-
-                                <div class="panel-heading-controls">
-                                    <go:paginatorBtnsBt controllerMBean="#{clienteController}" update=":form0"/>
-                                </div>
-                            </div>
-                            <div class="panel-body no-padding">
-                                <div class="table-responsive">
-                                    <h:dataTable id="panelG1" value="#{clienteController.items}" 
-                                                 styleClass="table table-hover"
-                                                 var="item">
-
-                                        <h:column >
-                                            <f:facet name="header">
-                                                <h:outputText value="Nombre"/>
-                                            </f:facet>
-                                            <h:outputText value="#{item.capitalFullName}"/>
-                                        </h:column>
-
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Rut"/>
-                                            </f:facet>
-                                            <h:outputText value="#{item.rut}"/>
-                                        </h:column>
-
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Email"/>
-
-                                            </f:facet>
-                                            <ui:repeat value="#{item.emailClienteList}" var="r" >
-                                                <p:outputLabel value="#{r.emailCliente} (#{r.casoList.size()} casos)"/>
-                                            </ui:repeat>
-                                        </h:column>
-
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Casos"/>
-                                            </f:facet>
-                                            <p:outputLabel value="#{item.casoList.size()} "/>
-                                        </h:column>
-
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="TPC"/>
-                                            </f:facet>
-                                            <h:outputText value="#{not empty item.productoContratadoList ? 'Si':'No'}"/>
-                                        </h:column>
-
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Acción"/>
-                                            </f:facet>
-
-
-                                            <div class="btn-toolbar">
-
-                                                <p:commandLink id="viewBtn" action="#{clienteController.prepareView(item)}" title="Ver" ajax="false"
-                                                               styleClass="btn btn-sm btn-outline btn-primary"
-                                                               >
-                                                    <i class="fa fa-eye"/>
-                                                </p:commandLink>
-
-                                                <p:commandLink id="editBtn" action="#{clienteController.prepareEdit(item)}" title="Editar" ajax="false"
-                                                               styleClass="btn btn-sm btn-outline btn-primary"
-                                                               rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
-                                                    <i class="fa fa-edit"/>
-                                                </p:commandLink>
-
-                                                <p:commandLink  id="showDialogButton" 
-                                                                actionListener="#{clienteController.prepareEditPK(item.idCliente)}"
-                                                                rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
-                                                                styleClass="btn btn-sm btn-outline btn-danger"
-                                                                title="Eliminar"
-                                                                oncomplete="PF('confirmation').show()"
-                                                                update=":confirmDialog"
-                                                                disabled="#{not clienteController.puedeEliminar(item)}">
-                                                    <i class="fa fa-times"/>
-
-                                                </p:commandLink>
-                                            </div>
-
-                                        </h:column>
-
-
-
-
-                                    </h:dataTable>
-                                </div>
-                            </div>
-
-                            <div class="panel-footer">
-                                <div class="row text-center">
-                                    <go:paginatorCounts controllerMBean="#{clienteController}"/>
-                                </div>
-                            </div>
-                        </h:panelGroup>
-
-
-
-
-
-                    </h:form> 
                 </div>
             </div>
+            <div class="row">
+                <h:form id="form0">
+
+                    <h:panelGroup layout="block" styleClass="row alert alert-page alert-warning" rendered="#{clienteController.items.rowCount le 0}">
+                        <button type="button" class="close" data-dismiss="alert">x</button>
+                        Su busqueda no coincide con ningun caso.
+                    </h:panelGroup>
+
+                    <h:panelGroup layout="block" styleClass="panel panel-transparent" rendered="#{clienteController.items.rowCount gt 0}">
+
+                        <p:dataTable widgetVar="dataTable" var="item" value="#{clienteController.items}" selectionMode="single"
+                                     emptyMessage="#{bundle.emptyList}">
+
+                            <p:column headerText="Nombre" sortBy="#{item.capitalFullName}">
+                                <h:outputText value="#{item.capitalFullName}"/>
+                            </p:column>
+
+                            <p:column headerText="Rut" sortBy="#{item.rut}">
+                                <h:outputText value="#{item.rut}"/>
+                            </p:column>
+
+                            <p:column headerText="Email">
+                                <ui:repeat value="#{item.emailClienteList}" var="r" >
+                                    <p:outputLabel value="#{r.emailCliente} (#{r.casoList.size()} casos)"/>
+                                </ui:repeat>
+                            </p:column>
+
+                            <p:column headerText="Casos">
+                                <p:outputLabel value="#{item.casoList.size()} "/>
+                            </p:column>
+
+                            <p:column headerText="TPC">
+                                <h:outputText value="#{not empty item.productoContratadoList ? 'Si':'No'}"/>
+                            </p:column>
+
+                            <p:column headerText="Acción">
+                                <div class="btn-toolbar">
+
+                                    <p:commandLink id="viewBtn" action="#{clienteController.prepareView(item)}" title="Ver" ajax="false"
+                                                   styleClass="btn btn-sm btn-outline btn-primary"
+                                                   >
+                                        <i class="fa fa-eye"/>
+                                    </p:commandLink>
+
+                                    <p:commandLink id="editBtn" action="#{clienteController.prepareEdit(item)}" title="Editar" ajax="false"
+                                                   styleClass="btn btn-sm btn-outline btn-primary"
+                                                   rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
+                                        <i class="fa fa-edit"/>
+                                    </p:commandLink>
+
+                                    <p:commandLink  id="showDialogButton" 
+                                                    actionListener="#{clienteController.prepareEditPK(item.idCliente)}"
+                                                    rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
+                                                    styleClass="btn btn-sm btn-outline btn-danger"
+                                                    title="Eliminar"
+                                                    oncomplete="PF('confirmation').show()"
+                                                    update=":confirmDialog"
+                                                    disabled="#{not clienteController.puedeEliminar(item)}">
+                                        <i class="fa fa-times"/>
+
+                                    </p:commandLink>
+                                </div>
+                            </p:column>
+
+
+                        </p:dataTable>
+                        <div class="panel-footer">
+                            <div class="row text-center">
+                                <go:paginatorCounts controllerMBean="#{clienteController}"/>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </h:form> 
+            </div>
+
         </ui:define>
 
         <ui:define name="dialogs">
@@ -207,10 +170,10 @@
             <p:dialog id="confirmDialog" showEffect="fade" hideEffect="clip" modal="true"
                       header="Iniciando proceso de eliminación" widgetVar="confirmation">
                 <h:form id="formDelete">
-                    <h:outputText value="Está seguro de eliminar al cliente #{clienteController.selected.nombres} #{clienteController.selected.apellidos}?"/>
-                    <p:commandButton id="confirm" value="Si, Eliminar" actionListener="#{clienteController.destroy()}" action="/script/pagina"
-                                     update=":form0" oncomplete="PF('confirmation').hide()"/>
-                    <p:commandButton id="decline" value="No, Cancelar" onclick="PF('confirmation').hide()" type="button" /> 
+                    <h:outputText value="Está seguro de eliminar al cliente #{clienteController.selected.nombres} #{clienteController.selected.apellidos}?"/><br/><br/>
+                    <p:commandLink styleClass="btn btn-primary btn-flat" id="confirm" value="Si, Eliminar" actionListener="#{clienteController.destroy()}" action="/script/pagina"
+                                   update=":form0" oncomplete="PF('confirmation').hide()"/>&nbsp;&nbsp;
+                    <p:commandLink styleClass="btn btn-default btn-flat" id="decline" value="No, Cancelar" onclick="PF('confirmation').hide()" type="button" /> 
 
                 </h:form>
             </p:dialog>

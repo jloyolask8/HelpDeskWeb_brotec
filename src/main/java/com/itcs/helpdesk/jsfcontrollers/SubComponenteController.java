@@ -74,6 +74,17 @@ public class SubComponenteController extends AbstractManagedBean<SubComponente> 
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
         }
     }
+    
+    public String update() {
+        try {
+            getJpaController().merge(current);
+            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("SubComponenteUpdated"));
+            return prepareList();
+        } catch (Exception e) {
+            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
+            return null;
+        }
+    }
 
     public void destroy(SubComponente item) {
         try {

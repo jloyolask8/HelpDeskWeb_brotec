@@ -138,19 +138,34 @@
 
 
                 <br/>
-                <p:toolbar>  
-                    <p:toolbarGroup align="left">   
-                        <p:commandButton action="#{clienteController.prepareList}" value="#{bundle.goBack}" 
-                                         immediate="true" ajax="false" icon="fa fa-chevron-left"/>
-                        <p:separator/> 
-                        <p:commandButton type="button" onclick="PF('addEmail').show()" disabled="#{not clienteController.canCreate}"
-                                         value="Agregar email"/>
-                    </p:toolbarGroup>
+                <div class="btn-group">
+                    <p:commandLink action="#{clienteController.prepareList}" 
+                                   styleClass="btn btn-default btn-flat" 
+                                   ajax="false" immediate="true"
+                                   onclick="jQuery(this).addClass('ui-state-disabled');
+                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                        <i class=""></i> #{bundle.goBack}
+                    </p:commandLink>
+                </div>
 
-                    <p:toolbarGroup align="right">   
-                        <p:commandButton ajax="false" action="#{clienteController.create}" value="#{bundle.Save}" icon="fa fa-save" disabled="#{not clienteController.canCreate}"/>
-                    </p:toolbarGroup>
-                </p:toolbar>
+                <div class="btn-group">
+                    <p:commandLink disabled="#{not clienteController.canCreate}"
+                                   styleClass="btn btn-primary btn-flat" 
+                                   onclick="PF('addEmail').show()">
+                        <i class=""></i> Agregar email
+                    </p:commandLink>
+                </div>
+                <div class="btn-group">
+                    <p:commandLink action="#{clienteController.create}" 
+                                   ajax="false"
+                                   styleClass="btn btn-primary btn-flat" 
+                                   disabled="#{not clienteController.canCreate}"
+                                   onclick="jQuery(this).addClass('ui-state-disabled');
+                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                        <i class=""></i> #{bundle.Save}
+                    </p:commandLink>
+                </div>
+
 
             </h:form>
         </ui:define>

@@ -146,12 +146,12 @@
             </p:confirmDialog>
 
             <p:dialog id="confirmDialog" showEffect="fade" hideEffect="clip" modal="true"
-                      header="Iniciando proceso de eliminación" widgetVar="confirmation">
+                      header="Eliminar" widgetVar="confirmation">
                 <h:form id="formDelete">
-                    <h:outputText value="Está seguro de eliminar el componente #{componenteController.selected.nombre} ??"/>
-                    <p:commandButton id="confirm" value="Si, Eliminar" actionListener="#{componenteController.destroy()}" action="/script/pagina"
-                                     update=":form0" oncomplete="PF('confirmation').hide()"/>
-                    <p:commandButton id="decline" value="No, Cancelar" onclick="PF('confirmation').hide()" type="button" /> 
+                    <h:outputText value="Está seguro de eliminar el componente #{componenteController.selected.nombre} ??"/><br/><br/>
+                    <p:commandLink styleClass="btn btn-primary btn-flat" id="confirm" value="Si, Eliminar" actionListener="#{componenteController.destroy()}" action="/script/pagina"
+                                     update=":form0" oncomplete="PF('confirmation').hide()"/>&nbsp;&nbsp;
+                    <p:commandLink styleClass="btn btn-default btn-flat" id="decline" value="No, Cancelar" onclick="PF('confirmation').hide()" type="button" /> 
 
                 </h:form>
             </p:dialog>

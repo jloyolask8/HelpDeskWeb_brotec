@@ -31,71 +31,55 @@
 
                 <p:messages globalOnly="true"/>
                 <div class="row">
-                    <div class="col-sm-12">
+                    <div class="col-sm-6 col-lg-4">
                         <div class="form-group">
-                            <label class="col-sm-1 control-label">#{bundle.CreateSubComponenteLabel_idSubComponente}</label>
-                            <div class="col-sm-4">
-                                <p class="form-control-static"> 
-                                    <h:inputText styleClass="form-control" id="idSubComponente" value="#{subComponenteController.selected.idSubComponente}" required="true" requiredMessage="#{bundle.RequiredMessage}"/>
-                                </p>
-                                <p:message for="idSubComponente"/>
-                            </div>
+                            <label class="control-label">#{bundle.CreateSubComponenteLabel_idSubComponente}</label>
+                            <h:inputText styleClass="form-control" id="idSubComponente" 
+                                         value="#{subComponenteController.selected.idSubComponente}" 
+                                         required="true" requiredMessage="#{bundle.RequiredMessage}"/>
+                            <h:message for="idSubComponente" errorClass="text-danger"/>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-1 control-label">#{bundle.CreateSubComponenteLabel_nombre}</label>
-                            <div class="col-sm-4">
-                                <p class="form-control-static"> 
-                                    <h:inputText styleClass="form-control" id="nombre" value="#{subComponenteController.selected.nombre}" required="true" requiredMessage="#{bundle.RequiredMessage}" />
-                                </p>
-                                <p:message for="nombre"/>
-                            </div>
+                            <label class="control-label">#{bundle.CreateSubComponenteLabel_nombre}</label>
+                            <h:inputText styleClass="form-control" id="nombre" 
+                                         value="#{subComponenteController.selected.nombre}" 
+                                         required="true" requiredMessage="#{bundle.RequiredMessage}" />
+                            <h:message for="nombre" errorClass="text-danger"/>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-1 control-label">#{bundle.CreateSubComponenteLabel_descripcion}</label>
-                            <div class="col-sm-4">
-                                <p class="form-control-static"> 
-                                    <h:inputTextarea styleClass="form-control" id="descripcion" value="#{subComponenteController.selected.descripcion}"  cols="50" />
-                                </p>
-                                <p:message for="descripcion"/>
-                            </div>
+                            <label class="control-label">#{bundle.CreateSubComponenteLabel_descripcion}</label>
+                            <h:inputTextarea styleClass="form-control" id="descripcion" value="#{subComponenteController.selected.descripcion}"  cols="50" />
+
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-1 control-label">Componente Asociado:</label>
-                            <div class="col-sm-4">
-                                <p class="form-control-static"> 
-                                    <h:selectOneMenu styleClass="form-control" id="idProductoSubComponente" value="#{subComponenteController.selected.idComponente}">
-                                        <f:selectItems value="#{componenteController.itemsAvailableSelectOne}" />
-                                    </h:selectOneMenu>
-                                </p>
-                                <p:message for="idProductoSubComponente"/>
-                            </div>
+                            <label class="control-label">Componente Asociado:</label>
+                            <h:selectOneMenu styleClass="form-control" id="idProductoSubComponente" value="#{subComponenteController.selected.idComponente}">
+                                <f:selectItems value="#{componenteController.itemsAvailableSelectOne}" />
+                            </h:selectOneMenu>
+                            <h:message for="descripcion" errorClass="text-danger"/>
                         </div>
 
+                        <div class="btn-group">
+                            <p:commandLink action="#{subComponenteController.prepareList}" 
+                                           styleClass="btn btn-default btn-flat" 
+                                           ajax="false" immediate="true"
+                                           onclick="jQuery(this).addClass('ui-state-disabled');
+                                                   jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                <i class=""></i> #{bundle.Cancel}
+                            </p:commandLink>
+                        </div>
 
-
-
-
-
-
-
-
-
+                        <div class="btn-group">
+                            <p:commandLink action="#{subComponenteController.create}" 
+                                           ajax="false"
+                                           styleClass="btn btn-primary btn-flat" 
+                                           onclick="jQuery(this).addClass('ui-state-disabled');
+                                                   jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                <i class=""></i> #{bundle.SaveLink}
+                            </p:commandLink>
+                        </div>
                     </div>
                 </div>
-
-
-
-
-
-                <p:toolbar> 
-                    <p:toolbarGroup align="left">   
-                        <p:commandButton action="#{subComponenteController.create}" value="#{bundle.SaveLink}" ajax="false" icon="ui-icon-disk"/>        
-                        <p:separator/>   
-                        <p:commandButton action="#{subComponenteController.prepareList}" value="#{bundle.ShowAllLink}" immediate="true" ajax="false" icon="ui-icon-folder-open"/>
-                    </p:toolbarGroup>
-                </p:toolbar>
-
-
             </h:form>
         </ui:define>
     </ui:composition>
