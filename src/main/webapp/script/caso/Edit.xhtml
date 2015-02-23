@@ -19,7 +19,7 @@
             <style type="text/css">
 
                 .ui-dialog .ui-dialog-content {
-                    padding: 0 !important;
+                    /*padding: 0 !important;*/
                 }
 
             </style>
@@ -65,7 +65,7 @@
 
 
 
-            <div class="row">
+            <div>
 
                 <div class="col-sm-7 col-md-8 col-lg-9  main">
 
@@ -998,205 +998,12 @@
                 </h:form>
             </p:dialog>
 
-
             <p:dialog id="createEventDialog" widgetVar="createEventDialog" header="Evento" 
                       showEffect="fade" hideEffect="fade" closeOnEscape="true" appendTo="@(body)">  
                 <h:form id="createEventForm">
-
-                    <h:panelGroup id="eventDetails" layout="block" styleClass="panel form-horizontal no-border">
-
-                        <div class="panel-body">
-                            <p:messages globalOnly="true"/>
-
-                            <div class="row form-group">
-                                <label class="col-sm-2 control-label" for="title">Titulo</label>
-                                <div class="col-sm-10">
-                                    <h:inputText id="title" value="#{casoScheduleController.event.title}" styleClass="form-control"
-                                                 required="true" requiredMessage="Favor ingrese un titulo para el evento."/> 
-                                    <h:message for="title" errorClass="text-danger" infoClass="text-info"/>
-                                </div>
-
-                            </div>
-                            <h:panelGroup id="Fechapanel" layout="block" styleClass="row form-group" >
-                                <label class="col-sm-2 control-label" for="">Fecha</label>
-                                <div class="col-sm-10">
-                                    <h:panelGroup styleClass="row">
-                                        <div class="col-sm-4 form-group">
-                                            <p:inputMask id="from" value="#{casoScheduleController.event.startDate}" size="14"
-                                                         styleClass="form-control datepicker"
-                                                         mask="99/99/9999 99:99" required="true" requiredMessage="Favor ingrese fecha y hora de comienzo.">  
-                                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />  
-                                            </p:inputMask>  
-                                        </div>
-                                        <div class="col-sm-2 form-group">
-                                            <h:outputLabel for="to" value="Hasta " />  
-
-                                        </div>
-                                        <div class="col-sm-4 form-group">
-                                            <p:inputMask id="to" value="#{casoScheduleController.event.endDate}" size="14"
-                                                         styleClass="form-control datepicker"
-                                                         mask="99/99/9999 99:99" required="true" requiredMessage="Favor ingrese fecha y hora de término.">  
-                                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />  
-                                            </p:inputMask>
-                                        </div>
-
-                                        <div class="row col-sm-2 form-group">
-                                            <div class="col-sm-6">
-                                                <h:selectBooleanCheckbox id="allDay" value="#{casoScheduleController.event.allDay}"
-                                                                         label="Todo el dia"/>
-                                            </div>
-                                            <div class="col-sm-6">
-                                                <h:outputLabel for="allDay" value="Todo el día"/> 
-                                            </div>
-
-                                        </div>
-
-                                    </h:panelGroup>
-
-                                    <p:message for="from"/>
-                                    <p:message for="to"/>
-                                    <p:message for="allDay"/>
-                                </div>
-
-                                <script type="text/javascript">
-
-                                    $('.datepicker').datetimepicker({
-                                        language: 'es',
-                                        format: 'dd/mm/yyyy hh:ii',
-                                        viewformat: 'dd/mm/yyyy hh:ii',
-                                        todayBtn: true,
-                                        autoclose: true,
-                                        todayHighlight: true,
-                                        weekStart: 1,
-                                        forceParse: true
-                                    });
-
-                                </script>
-
-                            </h:panelGroup>
-
-                            <h:panelGroup id="invitadospanel" layout="block" styleClass="row" >
-                                <div class="form-group no-margin-hr">
-                                    <label class="col-sm-2 control-label" for="invitados">Invitados</label>
-                                    <div class="col-sm-10">
-                                        <h:selectManyListbox id="invitados" label="Seleccione un agente" 
-                                                             value="#{casoScheduleController.event.data.usuariosInvitedList}"
-                                                             styleClass="form-control input-sm select2Multiple"
-                                                             required="true" requiredMessage="Debe Seleccionar un ejecutivo/agente a invitar."
-                                                             converter="UsuarioConverter" converterMessage="Error de conversión.">
-
-                                            <f:selectItems value="#{usuarioController.itemsAvailableForSelect}" var="user"
-                                                           itemLabel="#{user.capitalName}" itemValue="#{user}"/>
-                                        </h:selectManyListbox>
-                                        <h:message for="invitados" errorClass="text-danger" infoClass="text-info"/>
-                                    </div>
-
-                                </div>
-
-                                <script type="text/javascript">
-                                    $(function () {$(".select2Multiple").select2({
-                                        dropdownAutoWidth: true,
-                                        allowClear: true
-                                    });});
-                                </script>
-
-                            </h:panelGroup>
-
-
-                            <div class="row form-group">
-                                <label class="col-sm-2 control-label" for="">Recursos</label>
-                                <div class="col-sm-10">
-                                    <h:selectManyListbox id="resources" label="Seleccione un recurso" 
-                                                         value="#{casoScheduleController.event.data.resourceList}"
-                                                         styleClass="form-control input-sm select2Multiple"
-                                                         converter="resourceConverter" converterMessage="Error de conversión.">
-                                        <f:selectItems value="#{resourceController.itemsAvailableForSelect}" var="r"
-                                                       itemLabel="#{r.nombre}" itemValue="#{r}"/>
-                                    </h:selectManyListbox>
-                                    <h:message for="resources" errorClass="text-danger" infoClass="text-info"/>
-                                </div>
-
-                            </div>
-
-                            <div class="row form-group">
-                                <label class="col-sm-2 control-label pull-left" for="recordatorios">Recordatorios</label>
-                                <div class="col-sm-10">
-                                    <p:panel id="recordatpanel">
-
-                                        <ui:repeat id="recordatorios" value="#{casoScheduleController.event.data.scheduleEventReminderList}" var="reminder" >
-
-                                            <h:panelGrid columns="4">
-                                                <h:selectOneMenu id="reminderType" styleClass="form-control"
-                                                                 value="#{reminder.reminderType}" 
-                                                                 required="true" requiredMessage="Se requiere ...">
-
-                                                    <f:selectItem itemLabel="Correo" itemValue="EMAIL"/>
-                                                    <f:selectItem itemLabel="Ventana emergente" itemValue="POPUP" itemDisabled="true"/>
-                                                </h:selectOneMenu>
-
-                                                <h:inputText id="quantityTime" value="#{reminder.quantityTime}" size="3" required="true" 
-                                                             styleClass="form-control"/>
-
-                                                <h:selectOneMenu id="unitOfTimeInMinutes" styleClass="form-control"
-                                                                 value="#{reminder.unitOfTimeInMinutes}" 
-                                                                 required="true" requiredMessage="Se requiere ...">
-                                                    <f:selectItem itemLabel="minutos" itemValue="1"/>
-                                                    <f:selectItem itemLabel="horas" itemValue="60"/>
-                                                    <f:selectItem itemLabel="días" itemValue="1440"/>
-                                                    <f:selectItem itemLabel="semanas" itemValue="10080"/>
-                                                </h:selectOneMenu>
-
-                                                <p:commandLink update=":createEventForm:eventDetails" process="@this"
-                                                               styleClass="btn btn-danger btn-outline"
-                                                               actionListener="#{casoScheduleController.removeScheduleEventReminder(reminder)}" >
-                                                    <i class="fa fa-times"></i>
-                                                </p:commandLink>
-
-                                            </h:panelGrid>
-
-
-                                        </ui:repeat>
-                                        <p:commandLink value="Agregar recordatorio" style="color: #006dcc" immediate="true"
-                                                       actionListener="#{casoScheduleController.addNewScheduleEventReminder()}" 
-                                                       update=":createEventForm:recordatpanel"/>
-                                    </p:panel>
-                                </div>
-
-
-
-
-                            </div>
-                        </div>
-                        <div class="panel-footer bg-panel">
-
-                            <div class="btn-group">
-                                <p:commandLink value="Cancelar" 
-                                               styleClass="btn btn-default btn-flat"
-                                               type="button"  onclick="PF('createEventDialog').hide()"  immediate="true" />
-                            </div>
-                            
-                            <div class="btn-group">
-                                <p:commandLink type="reset"  styleClass="btn btn-default btn-flat"
-                                               value="Reset" update=":createEventForm:eventDetails"/>  
-                            </div>
-                            <div class="btn-group">
-                                <p:commandLink styleClass="btn btn-primary btn-flat" id="addButton" 
-                                               actionListener="#{casoScheduleController.addEvent()}"
-                                               update=":createEventForm:eventDetails" >
-                                    <i class="fa fa-disk"></i>Guardar                        
-                                </p:commandLink>
-                            </div>
-                        </div>
-
-                    </h:panelGroup>
-
-
+                    <go:scheduleEventDialog controllerMBean="#{casoScheduleController}"/>
                 </h:form>
             </p:dialog>
-
-
-
-
 
         </ui:define>
 

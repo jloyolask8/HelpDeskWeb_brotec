@@ -29,7 +29,7 @@
                     <h:selectOneMenu id="idCampo"  value="#{cc.attrs.filtro.idCampo}" disabled="#{not cc.attrs.canChangeFilters}"
                                      styleClass="form-control input-sm select2Input"
                                      required="#{cc.attrs.requiredAttribute}" requiredMessage="Favor Seleccione Attributo." >
-                        <f:selectItem itemLabel="seleccione un atributo" itemValue="" noSelectionOption="true"/>
+                        <f:selectItem itemLabel="Add filter" itemValue="" noSelectionOption="true"/>
                         <f:selectItems value="#{cc.attrs.filterHelper.comparableFields}" var="comparableField" itemValue="#{comparableField.idCampo}" itemLabel="#{comparableField.label}"/>
                         <p:ajax update="@(form :not(.noupdate)) #{cc.attrs.update}" listener="#{cc.attrs.filterHelper.handleIdCampoChangeEvent(cc.attrs.filtro)}"/>
                     </h:selectOneMenu>

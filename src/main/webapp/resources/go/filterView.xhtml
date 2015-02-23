@@ -65,8 +65,9 @@
 
             </h:panelGroup>
 
-            <h:panelGroup id="panelFilter"  styleClass="panel"  
-                          style="border: none !important;"  rendered="#{cc.attrs.controllerMBean.filterViewToggle}">
+            <h:panelGroup id="panelFilter" layout="block" styleClass="panel "  
+                          style="border: none !important;"  
+                          rendered="#{cc.attrs.showSearchBar ? cc.attrs.controllerMBean.filterViewToggle:true}">
 
                 <div class="panel-body">
                     <ui:repeat id="filtrosVista" 
@@ -85,42 +86,42 @@
 
                 <div class="panel-footer">
                     <div align="center">
-                    <p:outputLabel for="allMustMatch" value="Cuando "/>
-                    <p:selectBooleanButton id="allMustMatch" style="height: 20px; font-size: x-small !important;"
-                                           value="#{cc.attrs.vista.allMustMatch}" 
-                                           onLabel="Todas" offLabel="Cualquiera" 
-                                           >
-                        <p:ajax update="@form #{cc.attrs.update}" listener="#{cc.attrs.controllerMBean.filter()}" />
-                    </p:selectBooleanButton>
-                    <p:outputLabel for="allMustMatch" value="se cumplan"/>
-                    &nbsp;
-                    <p:commandButton value="Editar Vista" style="height: 20px; font-size: x-small !important;"
-                                     rendered="#{(cc.attrs.showEdit) and (cc.attrs.vista.idUsuarioCreadaPor eq UserSessionBean.current
-                                                 or filtroAcceso.administradorDelSistema)}" 
-                                     disabled="#{cc.attrs.vista.idVista eq null or not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
-                                     action="#{vistaController.prepareEditPK(cc.attrs.vista.idVista, cc.attrs.vistaControllerBackOutcome)}"                                                  
-                                     immediate="true" ajax="false"
-                                     icon="ui-icon-pencil"/>
-                    &nbsp;
-                    <p:commandButton id="linkGuardar" style="height: 20px; font-size: x-small !important;"
-                                     rendered="#{cc.attrs.showSaveAs}"
-                                     action="#{vistaController.prepareCreate(cc.attrs.vista, cc.attrs.vistaControllerBackOutcome)}"
-                                     ajax="false"
-                                     disabled="#{not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
-                                     value="Guardar como.."
-                                     immediate="true" icon="ui-icon-disk"/>
-                    &nbsp;
-                    <p:commandButton id="linkAplicar" ajax="true" update="@form #{cc.attrs.update}" icon="ui-icon-play" 
-                                     rendered="#{cc.attrs.showApplyAction}" style="height: 20px; font-size: x-small !important;"
-                                     title="Aplicar Filtro" 
-                                     disabled="#{not cc.attrs.canChangeFilters}"
-                                     value="#{empty cc.attrs.vista.filtrosVistaList ? 'Desplegar Todo':'Filtrar' }"
-                                     actionListener="#{cc.attrs.controllerMBean.filter()}"/>      
+                        <p:outputLabel for="allMustMatch" value="Cuando "/>
+                        <p:selectBooleanButton id="allMustMatch" style="height: 20px; font-size: x-small !important;"
+                                               value="#{cc.attrs.vista.allMustMatch}" 
+                                               onLabel="Todas" offLabel="Cualquiera" 
+                                               >
+                            <p:ajax update="@form #{cc.attrs.update}" listener="#{cc.attrs.controllerMBean.filter()}" />
+                        </p:selectBooleanButton>
+                        <p:outputLabel for="allMustMatch" value="se cumplan"/>
+                        &nbsp;
+                        <p:commandButton value="Editar Vista" style="height: 20px; font-size: x-small !important;"
+                                         rendered="#{(cc.attrs.showEdit) and (cc.attrs.vista.idUsuarioCreadaPor eq UserSessionBean.current
+                                                     or filtroAcceso.administradorDelSistema)}" 
+                                         disabled="#{cc.attrs.vista.idVista eq null or not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
+                                         action="#{vistaController.prepareEditPK(cc.attrs.vista.idVista, cc.attrs.vistaControllerBackOutcome)}"                                                  
+                                         immediate="true" ajax="false"
+                                         icon="ui-icon-pencil"/>
+                        &nbsp;
+                        <p:commandButton id="linkGuardar" style="height: 20px; font-size: x-small !important;"
+                                         rendered="#{cc.attrs.showSaveAs}"
+                                         action="#{vistaController.prepareCreate(cc.attrs.vista, cc.attrs.vistaControllerBackOutcome)}"
+                                         ajax="false"
+                                         disabled="#{not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
+                                         value="Guardar como.."
+                                         immediate="true" icon="ui-icon-disk"/>
+                        &nbsp;
+                        <p:commandButton id="linkAplicar" ajax="true" update="@form #{cc.attrs.update}" icon="ui-icon-play" 
+                                         rendered="#{cc.attrs.showApplyAction}" style="height: 20px; font-size: x-small !important;"
+                                         title="Aplicar Filtro" 
+                                         disabled="#{not cc.attrs.canChangeFilters}"
+                                         value="#{empty cc.attrs.vista.filtrosVistaList ? 'Desplegar Todo':'Filtrar' }"
+                                         actionListener="#{cc.attrs.controllerMBean.filter()}"/>      
 
 
+                    </div>
                 </div>
-                </div>
-               
+
 
 
                 <script type="text/javascript">

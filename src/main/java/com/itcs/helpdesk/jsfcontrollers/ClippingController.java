@@ -104,10 +104,11 @@ public class ClippingController extends AbstractManagedBean<Clipping> implements
 
             }
 
+            current.setFechaCreacion(new java.util.Date());
             getJpaController().persist(current);
             addInfoMessage(ResourceBundle.getBundle("/Bundle").getString("ClippingCreated"));
-            getPrimefacesRequestContext().execute("PF('editCreateDialog').hide()");
-            getPrimefacesRequestContext().update("form:panelG1");
+//            getPrimefacesRequestContext().execute("PF('editCreateDialog').hide()");
+//            getPrimefacesRequestContext().update("form:panelG1");
             return prepareList();
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));

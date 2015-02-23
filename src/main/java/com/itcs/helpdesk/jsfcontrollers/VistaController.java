@@ -96,7 +96,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         current = new Vista(Caso.class);
         current.addNewFiltroVista();
         selectedItemIndex = -1;
-        setFilterViewToggle(true);
+//        setFilterViewToggle(true);
         return "/script/vista/Create";
     }
 

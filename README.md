@@ -13,6 +13,8 @@ http://jqueryui.com/autocomplete/#multiple-remote
 http://goodies.pixabay.com/jquery/tag-editor/demo.html
 http://brianreavis.github.io/selectize.js/
 
+- add dashboards
+- add get started page with instructions on how to proceed.
 - cache de notificaciones para no pajear la app.
 - implementar logout countdown cuando se detecte inactividad.
 - foto de perfil de clientes y agentes =)
@@ -39,3 +41,6 @@ http://brianreavis.github.io/selectize.js/
 
                         </div>
                     </h:panelGroup>
+
+
+- Enter in your credit card information to continue your service beyond the free trial

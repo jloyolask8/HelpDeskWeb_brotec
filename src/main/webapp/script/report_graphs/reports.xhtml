@@ -251,7 +251,7 @@
 
                                 <go:filterView id="panelFilter0" titleIconClass="fa fa-filter page-header-icon"
                                                controllerMBean="#{reporteController}" 
-                                               vista="#{reporteController.vista}"
+                                               vista="#{reporteController.vista}" showSearchBar="false"
                                                filterHelper="#{reporteController.filterHelper}" 
                                                canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
                                                update=":mainform:messages :reportForm" vistaControllerBackOutcome="/script/report_graphs/reports"/>

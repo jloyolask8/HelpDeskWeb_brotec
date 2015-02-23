@@ -72,7 +72,7 @@
                                          styleClass="form-control">
                             <f:selectItem itemValue="" itemLabel="#{bundle.textoPredefinido}" />
                             <f:selectItems value="#{clippingController.itemsAvailableSelectMany}"/>
-                            <p:ajax update="@form" process="@form" 
+                            <p:ajax update="@(textarea)" process="@this" 
                                     listener="#{casoController.handleClippingSelectChangeEvent}" />
                         </h:selectOneMenu>
                     </div>

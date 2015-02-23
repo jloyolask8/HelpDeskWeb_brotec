@@ -44,24 +44,24 @@ public class ClippingsPlaceHolders {
     public static final String GODESK_CONTEXT_URL = "ContextUrl";
     public static final String NUMERO_CASO = "NumeroCaso";
 
+    //got to be ordered
     static {
         placeHolders = new Properties();
-        placeHolders.put(FechaCreacion, "FechaCreacion");
-        placeHolders.put(NumeroCaso, NUMERO_CASO);
-        placeHolders.put(NombreCliente, "NombreCliente");
-        placeHolders.put(EmailCliente, "EmailCliente");
-        placeHolders.put(NombreAgente, "NombreAgente");
+        placeHolders.put(asunto, "Asunto");
+        placeHolders.put(Canal, "Canal");
+        placeHolders.put(descripcion, "Descripcion");
         placeHolders.put(EmailAgente, "EmailAgente");
-        placeHolders.put(FirmaAgente, "FirmaAgente");
+        placeHolders.put(EmailCliente, "EmailCliente");
         placeHolders.put(EstadoAlerta, "EstadoAlerta");
-        placeHolders.put(SubEstado, "SubEstado");
+        placeHolders.put(FirmaAgente, "FirmaAgente");
+        placeHolders.put(FechaCreacion, "FechaCreacion");
+        placeHolders.put(NombreAgente, "NombreAgente");
+        placeHolders.put(NombreCliente, "NombreCliente");
+        placeHolders.put(NumeroCaso, NUMERO_CASO);
         placeHolders.put(Producto, "Producto");
         placeHolders.put(Prioridad, "Prioridad");
-        placeHolders.put(Canal, "Canal");
+        placeHolders.put(SubEstado, "SubEstado");
         placeHolders.put(tipoCaso, "TipoCaso");
-        placeHolders.put(asunto, "Asunto");
-        placeHolders.put(descripcion, "Descripcion");
-
     }
 
     public static Collection<Object> getAvailablePlaceHolders() {
@@ -71,15 +71,14 @@ public class ClippingsPlaceHolders {
     }
 
     public static String buildFinalText(String templateString, Caso caso, String schema) throws NoInstanceConfigurationException {
-        
-         final ApplicationConfigs configInstance = ApplicationConfigs.getInstance(schema);
-         
+
+        final ApplicationConfigs configInstance = ApplicationConfigs.getInstance(schema);
+
 //        //System.out.println("templateString:" + templateString);
         Map<String, String> valuesMap = new HashMap<>();
         for (Object key : placeHolders.keySet()) {
             valuesMap.put(placeHolders.getProperty((String) key), StringUtils.defaultString(String.valueOf(getValueObjectFor((String) key, caso))));
         }
-       
 
         try {
             final String saludoH = configInstance.getSaludoClienteHombre();
@@ -88,7 +87,7 @@ public class ClippingsPlaceHolders {
         } catch (Exception e) {
             valuesMap.put(SALUDO_CLIENTE, configInstance.getSaludoClienteUnknown());
         }
-        
+
         valuesMap.put(GODESK_CONTEXT_URL, configInstance.getCompanyContextURL());
 
         StrSubstitutor sub = new StrSubstitutor(valuesMap);

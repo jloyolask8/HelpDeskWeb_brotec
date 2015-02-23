@@ -37,6 +37,11 @@
 
                 <style type="text/css">
 
+                    .filtersGrid td {
+                        border-style: hidden !important;
+                        vertical-align: top;
+                    }
+
                     .ui-growl{
                         z-index: 1011;
                         top: 10%;
@@ -464,9 +469,9 @@
                                 </div>
                                 <ul class="navigation">
                                     <li>
-                                        <a href="#" class="disabled">
+                                         <p:commandLink action="#{dashboardController.prepareList()}" ajax="false">
                                             <i class="menu-icon fa fa-dashboard"></i><span class="mm-text">Dashboard</span>
-                                        </a>
+                                        </p:commandLink>
                                     </li>
                                     <li>
                                         <p:commandLink action="#{casoController.inbox}" ajax="false">
