@@ -113,7 +113,7 @@ public class UsuarioController extends AbstractManagedBean<Usuario> implements S
             filtroEstado.setIdVista(vista1);
             vista1.getFiltrosVistaList().add(filtroEstado);
 
-            count = getJpaController().countEntities(vista1);
+            count = getJpaController().countEntities(vista1, getUserSessionBean().getCurrent(), null);
 
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, "ClassNotFoundException", ex);

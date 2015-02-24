@@ -10,45 +10,72 @@
 
 
 
-    <ui:composition template="/script/template_inbox.xhtml">
-
-
+    <ui:composition template="/script/template_inbox_bootstrap_config.xhtml">
 
         <ui:define name="title">
-            <p:outputLabel value="#{bundle.ListCustomFieldTitle}"/>
+            <h:outputText value="#{bundle.ListCustomFieldTitle}"/>
         </ui:define>
 
 
-        <ui:define name="west">
-
-            <go:vistasList id="vistasList" update=":vistasList:vistasForm :mainform:messages :form" 
-                           controllerMBean="#{customFieldController}"
-                           user="#{UserSessionBean.current}"/>
-
-
-            <br/>
-
-            <p:panel>
-                <p><h:outputText escape="false" value="#{bundle.ayudaCustomFields}"/></p>
-
-            </p:panel>
-
-
+        <ui:define name="help">
+            <p><h:outputText escape="false" value="#{bundle.ayudaCustomFields}"/></p>
         </ui:define>
 
+        
+        <ui:define name="content_header">
+            <script>
+                var init = [];
+                init.push(function () {
+                    $('body').addClass('mmc');
+                });
+            </script>
+
+            <!-- page-header -->
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-sm-6 col-xs-12">
+                        <h1>  <i class="fa fa-puzzle-piece page-header-icon"></i>&nbsp;&nbsp;#{bundle.ListCustomFieldTitle}</h1>
+                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                            <i class="fa fa-info-circle"/>
+                        </p:commandLink> 
+                    </div>
+                    <div class="col-sm-6 col-xs-12">
+                        <h:form id="buttonsForm">
+
+                            <div class="pull-right">
+
+                                <div class="btn-group">
+                                    <go:paginatorCounts controllerMBean="#{customFieldController}"/>
+                                </div>
+
+                                <go:paginatorBtnsBt controllerMBean="#{customFieldController}" update="@(form)"/>
+
+                                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i></button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <p:commandLink value="#{bundle.CreateCustomFieldTitle}" 
+                                                         actionListener="#{customFieldController.prepareCreate}" 
+                                                         rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" 
+                                                         update=":CustomFieldCreateForm" oncomplete="PF('CustomFieldCreateDialog').show()">
+                                        </p:commandLink>
+                                    </li>
+                                </ul>
+
+                            </div>
+                        </h:form>
+                    </div>
+                </div>
+            </div><!-- / .page-header --> 
+        </ui:define>
+        
         <ui:define name="body">
 
-            <div class="page-header">
-                <h1 class="col-xs-12 text-left-sm">
-                    <i class="fa fa-puzzle-piece page-header-icon"></i>&nbsp;&nbsp;#{bundle.ListCustomFieldTitle}</h1>
-            </div> <!-- / .page-header -->
-
-            <div class="row">
-
-
-                <div class="col-md-9 col-lg-10">
-
-                    <h:form id="formfilter">
+          <go:vistasListBt id="vistasList" 
+                             update="@(form)" 
+                             controllerMBean="#{customFieldController}"
+                             user="#{UserSessionBean.current}"/>
+            <div class="panel search-panel">
+                <h:form id="formfilter">
                         <go:filterView id="panelFilter0" titleIconClass="fa fa-filter page-header-icon"
                                        controllerMBean="#{customFieldController}" 
                                        vista="#{customFieldController.vista}"
@@ -57,8 +84,11 @@
                                        update=":mainform:messages :formfilter:panelFilter0:panelFilter :form" vistaControllerBackOutcome="/script/customField/List"/>
 
                     </h:form>
+            </div>
 
-                    <h:form id="form">
+          
+
+           <h:form id="form">
 
                         <p:dataTable id="datalist" value="#{customFieldController.items}" var="item"                                    
                                      emptyMessage="No hay custom fields"                                 
@@ -88,41 +118,12 @@
                                 <p:commandButton id="showDialogButton" title="#{bundle.Delete}" update=":deleteForm" action="#{customFieldController.setSelected(item)}" oncomplete="PF('confirmation').show()" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" icon="ui-icon ui-icon-trash"/>
                             </p:column>
 
-                            <f:facet name="footer">
-                                <p:toolbar style="border: none;">
-                                    <p:toolbarGroup align="center">
-
-                                        <p:outputLabel value="Páginas de "/>
-                                        <p:selectOneMenu id="cant" value="#{customFieldController.paginationPageSize}" style="top: 7px">
-                                            <p:ajax event="change" listener="#{customFieldController.resetPageSize()}" update=":form"/>
-                                            <f:selectItems value="#{customFieldController.pagination.pageSizesAvailable}"/>
-                                        </p:selectOneMenu>
-
-                                        <p:separator/>
-
-                                        <p:commandButton ajax="false" action="#{customFieldController.first}" disabled="#{not customFieldController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{customFieldController.pagination.itemsCount > 0}"/>
-
-                                        <p:commandButton ajax="false" action="#{customFieldController.previous}" disabled="#{not customFieldController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{customFieldController.pagination.itemsCount > 0}"/>
-
-                                        <p:commandButton ajax="false" action="#{customFieldController.next}" disabled="#{not customFieldController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{customFieldController.pagination.itemsCount > 0}"/>
-
-                                        <p:commandButton ajax="false" action="#{customFieldController.last}" disabled="#{not customFieldController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{customFieldController.pagination.itemsCount > 0}"/>
-                                        <p:separator/>
-                                        <p:commandButton id="createButton" icon="ui-icon ui-icon-plus"   value="#{bundle.CreateCustomFieldTitle}" actionListener="#{customFieldController.prepareCreate}" 
-                                                         rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" update=":CustomFieldCreateForm" oncomplete="PF('CustomFieldCreateDialog').show()"/>
-
-                                    </p:toolbarGroup>
-                                </p:toolbar>
-
-                            </f:facet> 
+                            
 
 
                         </p:dataTable>
 
                     </h:form>
-
-                </div>
-            </div>
 
 
 
@@ -227,7 +228,7 @@
                             <label class="col-xs-12 col-sm-4 control-label">#{bundle.CustomField_tipoCaso}</label>
                             <div class="col-xs-12 col-sm-8">
                                 <p:selectCheckboxMenu id="tipoCaso" label="#{bundle.CustomField_tipoCaso}" converter="TipoCasoControllerConverter"
-                                                      rendered="#{customFieldController.selected ne null and customFieldController.selected.entity eq 'case'}"
+                                                      rendered="#{customFieldController.selected ne null and customFieldController.selected.entity eq 'com.itcs.helpdesk.persistence.entities.Caso'}"
                                                       value="#{customFieldController.selected.tipoCasoList}" 
                                                       filter="true" filterMatchMode="contains">
                                     <f:selectItems value="#{applicationBean.tipoCasoAvailableList}" var="tipo" 

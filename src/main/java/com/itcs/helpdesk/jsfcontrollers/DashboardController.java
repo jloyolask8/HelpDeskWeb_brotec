@@ -1,6 +1,7 @@
 package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.persistence.entities.Caso;
+import com.itcs.helpdesk.persistence.entities.Vista;
 import java.io.Serializable;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -24,9 +25,8 @@ public class DashboardController extends AbstractManagedBean<Caso>  implements S
     protected String getListPage() {
         return "/script/dashboard?faces-redirect=true";
     }
-    
-    
 
+   
     
 }
 

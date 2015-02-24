@@ -184,7 +184,7 @@
                             <h:outputLabel 
                                 styleClass="control-label"
                                 value="#{bundle.EditCasoLabel_nextResponseDue}" for="nextResponseDue" />
-                            <h:inputText id="nextResponseDue" styleClass="form-control datepicker" disabled="#{casoController.selected.closed}" 
+                            <h:inputText id="nextResponseDue" styleClass="form-control datetimepicker" disabled="#{casoController.selected.closed}" 
                                          title="#{bundle.EditCasoTitle_nextResponseDue}" value="#{casoController.selected.nextResponseDue}" 
                                          required="true" requiredMessage="Favor ingrese un valor para el sla.">
                                 <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
@@ -193,7 +193,7 @@
 
                             <script type="text/javascript">
                                 $(function () {
-                                    $('.datepicker').datetimepicker({
+                                    $('.datetimepicker').datetimepicker({
                                         language: 'es',
                                         format: 'dd/mm/yyyy hh:ii',
                                         viewformat: 'dd/mm/yyyy hh:ii',

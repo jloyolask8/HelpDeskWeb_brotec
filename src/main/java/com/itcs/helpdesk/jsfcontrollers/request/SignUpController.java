@@ -11,11 +11,15 @@ import com.itcs.helpdesk.persistence.jpa.AbstractJPAController;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.persistence.jpa.service.TenantDataPopulator;
 import com.itcs.helpdesk.persistence.utils.vo.RegistrationVO;
+import com.itcs.helpdesk.util.MailNotifier;
+import com.itcs.helpdesk.webapputils.AppStarter;
 import java.io.Serializable;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -27,7 +31,7 @@ import org.apache.commons.lang3.StringUtils;
  * @author jonathan
  */
 @ManagedBean
-@ViewScoped
+@SessionScoped
 public class SignUpController extends AbstractManagedBean<Usuario> implements Serializable {
 
     private RegistrationVO registrationVO = new RegistrationVO();
@@ -48,10 +52,9 @@ public class SignUpController extends AbstractManagedBean<Usuario> implements Se
     public String signup() {
 
         if (!agreedToTermsConditions) {
-            addErrorMessage("Lo siento, Debe estar de acuerdo con los términos y condiciones antes de crear su cuenta.");
+            addErrorMessage("Debe estar de acuerdo con los términos del servicio antes de crear su cuenta.");
             return null;
         }
-        
 
         if (!StringUtils.isEmpty(registrationVO.getCompanyName())) {
             try {
@@ -66,12 +69,18 @@ public class SignUpController extends AbstractManagedBean<Usuario> implements Se
                 dataPopulator.populateBaseData();
 
                 //Insert the Admin user
-                Usuario admin = dataPopulator.insertAdminUser(registrationVO);
+                String verificationCode = UUID.randomUUID().toString();
+                Usuario admin = dataPopulator.insertAdminUser(verificationCode, registrationVO);
 
+                //for now we will trust the email is valid. and login the user inmediately.
                 getUserSessionBean().setCurrent(admin);
                 getUserSessionBean().setTenantId(admin.getTenantId());
+                AppStarter.initTenant(utx, emf, admin.getTenantId());
 
-                return "/script/index.xhtml?faces-redirect=true";
+                //send verification email
+                MailNotifier.sendGreetingsToNewAccount(admin.getTenantId(), admin.getEmail(), admin.getCapitalName(), verificationCode);
+
+                return "inbox";
 
             } catch (Exception e) {
                 e.printStackTrace();

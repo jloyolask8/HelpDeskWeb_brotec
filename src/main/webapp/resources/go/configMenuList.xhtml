@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://java.sun.com/jsf/composite"
+      xmlns:p="http://primefaces.org/ui">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <div class="list-group">
+            <p:commandLink action="#{appSettingController.goToConfigPage}" 
+                           styleClass="list-group-item #{view.viewId.contains('appSetting')? 'active':''}"
+                           ajax="false">
+                <p:resetInput target="@form" />
+                <i class="fa fa-wrench"/> Configuración Global 
+            </p:commandLink>
+
+
+            <p:commandLink action="#{areaController.prepareList}" ajax="false"
+                           styleClass="list-group-item #{view.viewId.contains('area' )? 'active':''}">
+                <p:resetInput target="@form" />
+                <i class="fa fa-building"/> Áreas 
+            </p:commandLink>
+
+
+
+            <p:commandLink action="#{canalController.prepareList}" ajax="false"
+                           styleClass="list-group-item #{view.viewId.contains('canal' )? 'active':''}">
+                <p:resetInput target="@form" />
+                <i class="fa fa-exchange"/> Canales 
+            </p:commandLink>
+
+
+
+            <p:commandLink action="#{rolController.prepareList}" ajax="false"
+                           styleClass="list-group-item #{view.viewId.contains('rol' )? 'active':''}">
+                <p:resetInput target="@form" />
+                <i class="fa fa-key"/> Roles de Usuario 
+            </p:commandLink>
+
+
+
+            <p:commandLink action="#{usuarioController.prepareList}" ajax="false"
+                           styleClass="list-group-item #{view.viewId.contains('usuario' )? 'active':''}">
+                <p:resetInput target="@form" />
+                <i class="fa fa-user"/> Usuarios 
+            </p:commandLink>
+
+
+
+            <p:commandLink action="#{grupoController.prepareList}" ajax="false"
+                           styleClass="list-group-item #{view.viewId.contains('grupo' )? 'active':''}">
+                <p:resetInput target="@form" />
+                <i class="fa fa-users"/> Grupos 
+            </p:commandLink>
+
+
+
+
+
+            <p:commandLink action="#{resourceController.prepareList}" ajax="false"
+                           styleClass="list-group-item #{view.viewId.contains('resource' )? 'active':''}">
+                <p:resetInput target="@form" />
+                <i class="fa fa-barcode"/> Recursos de su empresa 
+            </p:commandLink>
+
+
+
+            <p:commandLink action="#{tipoCasoController.prepareList}" ajax="false"
+                           styleClass="list-group-item #{view.viewId.contains('tipoCaso' )? 'active':''}">
+                <p:resetInput target="@form" />
+                <i class="fa fa-exclamation"/> Tipos de Casos 
+            </p:commandLink>
+
+
+
+            <p:commandLink action="#{subEstadoCasoController.prepareList}" ajax="false"
+                           styleClass="list-group-item #{view.viewId.contains('sub_estado_caso' )? 'active':''}">
+                <p:resetInput target="@form" />
+                <i class="fa fa-bookmark"/> Sub Estados de Casos 
+            </p:commandLink>
+
+
+
+            <p:commandLink action="#{prioridadController.prepareList}" ajax="false"
+                           styleClass="list-group-item #{view.viewId.contains('prioridad' )? 'active':''}">
+                <p:resetInput target="@form" />
+                <i class="fa fa-bell"/> SLA y Prioridades de Casos 
+            </p:commandLink>
+
+
+
+            <p:commandLink action="#{customFieldController.prepareList()}" ajax="false"
+                           styleClass="list-group-item #{view.viewId.contains('customField' )? 'active':''}">
+                <p:resetInput target="@form" />
+                <i class="fa fa-puzzle-piece"/> Campos personalizados de casos 
+            </p:commandLink>
+
+
+
+            <p:commandLink action="#{vistaController.prepareList()}" ajax="false"
+                           rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
+                           styleClass="list-group-item #{view.viewId.contains('vista' )? 'active':''}">
+                <p:resetInput target="@form" />
+                <i class="fa fa-filter"/> Vistas 
+            </p:commandLink>
+
+
+
+            <p:commandLink action="#{reglaTriggerController.prepareList()}" ajax="false"
+                           styleClass="list-group-item #{view.viewId.contains('regla' )? 'active':''}">
+                <p:resetInput target="@form" />
+                <i class="fa fa-cogs"/> Reglas de Negocio 
+            </p:commandLink>
+
+
+
+            <p:commandLink action="#{itemController.prepareList}" ajax="false"
+                           styleClass="list-group-item #{view.viewId.contains('item' )? 'active':''}">
+                <p:resetInput target="@form" />
+                <i class="fa fa-briefcase"/> Items de pre-entrega 
+            </p:commandLink>
+
+
+
+
+            <p:commandLink action="#{blackListController.prepareList}" ajax="false"
+                           styleClass="list-group-item #{view.viewId.contains('black' )? 'active':''}">
+                <p:resetInput target="@form" />
+                <i class="fa fa-ban"/> Lista negra (Correos) 
+            </p:commandLink>
+
+
+        </div>
+    </cc:implementation>
+</html>

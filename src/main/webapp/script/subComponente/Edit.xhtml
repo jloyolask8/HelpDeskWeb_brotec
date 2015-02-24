@@ -8,7 +8,7 @@
 
     <ui:composition template="/script/template_inbox_bootstrap.xhtml">
         <ui:define name="title">
-            <p:outputLabel value="Detalles del Producto #{subComponenteController.selected.idSubComponente}"/>
+            <h:outputText value="Detalles del Producto #{subComponenteController.selected.idSubComponente}"/>
         </ui:define>
         <ui:define name="help">
             crear ayuda SubComponentes
@@ -71,7 +71,7 @@
                         </div>
 
                         <div class="btn-group">
-                            <p:commandLink action="#{subComponenteController.update()}" 
+                            <p:commandLink action="#{subComponenteController.update}" 
                                            ajax="false"
                                            styleClass="btn btn-primary btn-flat" 
                                            onclick="jQuery(this).addClass('ui-state-disabled');

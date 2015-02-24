@@ -12,7 +12,7 @@
             <div class="btn-group">
                 <p:commandLink  id="updateList" title="Actualizar" styleClass="btn" 
                                 disabled="#{not empty casoController.selectedItems}" 
-                                actionListener="#{casoController.refresh()}" update=":form0">
+                                actionListener="#{casoController.refresh()}" update="@(form)">
                     <i class="fa fa-refresh"></i>
                 </p:commandLink>
             </div>
@@ -74,7 +74,7 @@
 
                     <p:commandButton value="Aplicar"  icon="ui-icon-tag"  
                                      actionListener="#{casoController.tagManyCasosManyTags}"
-                                     update=":mainform:messages :form0" oncomplete="PF('TagPanel').hide()"/> 
+                                     update="@(form)" oncomplete="PF('TagPanel').hide()"/> 
 
                 </p:overlayPanel>  
 

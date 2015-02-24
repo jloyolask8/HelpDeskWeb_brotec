@@ -234,7 +234,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     private transient LinkedList<Caso> mergeCandidatesList;
 //    private transient Map<Integer, Boolean> showReducedContentMap;
 
-   
     public static final int MEGABYTE = (1024 * 1024);
 
     private static transient Comparator<Caso> comparadorCasosPorFechaCreacion = new Comparator<Caso>() {
@@ -1785,7 +1784,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //    private boolean existsNotaHistoryPart(Nota nota) {
 //        return (nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT) > 0) || (nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT) > 0);
 //    }
-
 //    private String extractNotaHistoryPart(Nota nota) {
 //        int headerStartIndex = nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT);
 //        headerStartIndex = (headerStartIndex > 0) ? headerStartIndex : nota.getTexto().indexOf(HEADER_HISTORY_NOTA_ALT);
@@ -1794,7 +1792,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //        }
 //        return "";
 //    }
-
 //    public void toogleMostrarContenidoReducido(Nota nota) {
 //        if (showReducedContentMap == null) {
 //            showReducedContentMap = new LinkedHashMap<>();
@@ -1815,7 +1812,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 //        }
 //        return false;
 //    }
-
     /**
      * Opens ticket selected row
      *
@@ -2081,35 +2077,87 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 setVista(vista0);
                 setSelectedViewId(vista0.getIdVista());
             } else {
-                //damn, there are no vistas for this madafaka, lets give him some default shit
-                Vista vista1 = new Vista(Caso.class);
-                vista1.setIdVista(1);
-                vista1.setNombre("Inbox");
-
-                vista1.setIdUsuarioCreadaPor(userSessionBean.getCurrent());
-
-                FiltroVista filtroOwner = new FiltroVista();
-                filtroOwner.setIdFiltro(1);//otherwise i dont know what to remove dude.
-                filtroOwner.setIdCampo("owner");
-                filtroOwner.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
-                filtroOwner.setValor(AbstractJPAController.PLACE_HOLDER_CURRENT_USER);
-                filtroOwner.setIdVista(vista1);
-                vista1.getFiltrosVistaList().add(filtroOwner);
-
-                FiltroVista filtroEstado = new FiltroVista();
-                filtroEstado.setIdFiltro(2);//otherwise i dont know what to remove dude.
-                filtroEstado.setIdCampo("idEstado");
-                filtroEstado.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
-                filtroEstado.setValor(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
-                filtroEstado.setIdVista(vista1);
-                vista1.getFiltrosVistaList().add(filtroEstado);
-
-                setVista(vista1);
-                setSelectedViewId(vista1.getIdVista());
+                throw new UnsupportedOperationException("If you see this it means the code is not working well. This should never happen since change getDefaultVista creates one vista by default");
+//                //damn, there are no vistas for this madafaka, lets give him some default shit
+//                Vista vista1 = new Vista(Caso.class);
+//                vista1.setIdVista(1);
+//                vista1.setNombre("Inbox");
+//
+//                vista1.setIdUsuarioCreadaPor(userSessionBean.getCurrent());
+//
+//                FiltroVista filtroOwner = new FiltroVista();
+//                filtroOwner.setIdFiltro(1);//otherwise i dont know what to remove dude.
+//                filtroOwner.setIdCampo("owner");
+//                filtroOwner.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+//                filtroOwner.setValor(AbstractJPAController.PLACE_HOLDER_CURRENT_USER);
+//                filtroOwner.setIdVista(vista1);
+//                vista1.getFiltrosVistaList().add(filtroOwner);
+//
+//                FiltroVista filtroEstado = new FiltroVista();
+//                filtroEstado.setIdFiltro(2);//otherwise i dont know what to remove dude.
+//                filtroEstado.setIdCampo("idEstado");
+//                filtroEstado.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+//                filtroEstado.setValor(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
+//                filtroEstado.setIdVista(vista1);
+//                vista1.getFiltrosVistaList().add(filtroEstado);
+//
+//                setVista(vista1);
+//                setSelectedViewId(vista1.getIdVista());
             }
 
         }
 
+    }
+
+    @Override
+    protected Vista getDefaultVista() {
+
+        Vista vista1 = new Vista(Caso.class);
+
+        vista1.setNombre("Inbox");
+        vista1.setIdVista(-1);//just a random id to know which is which
+
+        if (userSessionBean.isValidatedCustomerSession()) {
+            //customer view!
+            FiltroVista filtroEmailCliente = new FiltroVista();
+            filtroEmailCliente.setIdFiltro(1);//otherwise i dont know what to remove dude.
+            filtroEmailCliente.setIdCampo("emailCliente");
+            filtroEmailCliente.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+            filtroEmailCliente.setValor(userSessionBean.getEmailCliente().getEmailCliente());
+            filtroEmailCliente.setIdVista(vista1);
+
+            vista1.getFiltrosVistaList().add(filtroEmailCliente);
+
+            FiltroVista filtroEstado = new FiltroVista();
+            filtroEstado.setIdFiltro(2);//otherwise i dont know what to remove dude.
+            filtroEstado.setIdCampo(Caso_.ESTADO_FIELD_NAME);
+            filtroEstado.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+            filtroEstado.setValor(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
+            filtroEstado.setIdVista(vista1);
+
+            vista1.getFiltrosVistaList().add(filtroEstado);
+
+        } else if (userSessionBean.isValidatedSession()) {
+            vista1.setIdUsuarioCreadaPor(userSessionBean.getCurrent());
+
+            FiltroVista filtroOwner = new FiltroVista();
+            filtroOwner.setIdFiltro(1);//otherwise i dont know what to remove dude.
+            filtroOwner.setIdCampo("owner");
+            filtroOwner.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+            filtroOwner.setValor(AbstractJPAController.PLACE_HOLDER_CURRENT_USER);
+            filtroOwner.setIdVista(vista1);
+            vista1.getFiltrosVistaList().add(filtroOwner);
+
+            FiltroVista filtroEstado = new FiltroVista();
+            filtroEstado.setIdFiltro(2);//otherwise i dont know what to remove dude.
+            filtroEstado.setIdCampo("idEstado");
+            filtroEstado.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
+            filtroEstado.setValor(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
+            filtroEstado.setIdVista(vista1);
+            vista1.getFiltrosVistaList().add(filtroEstado);
+        }
+
+        return vista1;
     }
 
     /**

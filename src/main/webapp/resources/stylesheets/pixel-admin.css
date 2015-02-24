@@ -12122,7 +12122,7 @@ body .ui-tooltip {
 .datepicker {
   direction: ltr;
   padding: 0;
-  width: auto !important;
+  /* width: auto !important; */
 }
 .datepicker.datepicker-inline {
   border: 1px solid #eee;

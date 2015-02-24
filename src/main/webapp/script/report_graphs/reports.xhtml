@@ -133,7 +133,7 @@
                                                              required="true" requiredMessage="Favor Seleccione La Serie del Eje X.">
                                                 <p:ajax update=":mainform:messages :advancedReportForm" listener="#{reporteController.handleIdCampoChangeEvent()}"/>
                                                 <f:selectItem itemLabel="seleccione un atributo" itemValue="" noSelectionOption="true"/>
-                                                <f:selectItems value="#{reporteController.filterHelper.entityComparableFields}" var="comparableField" itemValue="#{comparableField.idCampo}" itemLabel="#{comparableField.label}"/>
+                                                <f:selectItems value="#{reporteController.filterHelper.entityOrCalendarComparableFields}" var="comparableField" itemValue="#{comparableField.idCampo}" itemLabel="#{comparableField.label}"/>
                                             </h:selectOneMenu>
                                             <p:message for="idCampoX"/>
                                         </div>
@@ -199,6 +199,44 @@
 
                                                 </p:selectCheckboxMenu>
 
+                                                <script>
+
+                                                    $(function () {
+
+                                                        $("#advancedReportForm\\:from").datetimepicker({
+                                                            language: 'es',
+                                                            format: 'dd/mm/yyyy hh:ii',
+                                                            viewformat: 'dd/mm/yyyy hh:ii',
+                                                            todayBtn: true,
+                                                            autoclose: true,
+                                                            todayHighlight: true,
+                                                            weekStart: 1,
+                                                            forceParse: true
+                                                        });
+
+                                                        $("#advancedReportForm\\:to").datetimepicker({
+                                                            language: 'es',
+                                                            format: 'dd/mm/yyyy hh:ii',
+                                                            viewformat: 'dd/mm/yyyy hh:ii',
+                                                            todayBtn: true,
+                                                            autoclose: true,
+                                                            todayHighlight: true,
+                                                            weekStart: 1,
+                                                            forceParse: true
+                                                        });
+
+                                                    });
+                                                </script>
+
+                                                <p:outputLabel value="Desde:"  rendered="#{reporteController.filterHelper.getComparableField(reporteController.campoCompCasoEjeXSeriesEntity.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR'}"/>
+                                                <p:inputText label="Desde" id="from"  value="#{reporteController.campoCompCasoEjeXSeriesEntity.valor}"  title="Desde:" styleClass="form-control input-sm"
+                                                             rendered="#{reporteController.filterHelper.getComparableField(reporteController.campoCompCasoEjeXSeriesEntity.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR'}" >
+                                                </p:inputText>
+
+                                                <p:outputLabel value="Hasta:"  rendered="#{reporteController.filterHelper.getComparableField(reporteController.campoCompCasoEjeXSeriesEntity.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR'}"/>
+                                                <p:inputText label="Hasta" id="to" value="#{reporteController.campoCompCasoEjeXSeriesEntity.valor2}"  title="Hasta:" styleClass="form-control input-sm"
+                                                             rendered="#{reporteController.filterHelper.getComparableField(reporteController.campoCompCasoEjeXSeriesEntity.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR'}" >
+                                                </p:inputText>
 
                                             </h:panelGroup>
 
@@ -251,7 +289,7 @@
 
                                 <go:filterView id="panelFilter0" titleIconClass="fa fa-filter page-header-icon"
                                                controllerMBean="#{reporteController}" 
-                                               vista="#{reporteController.vista}" showSearchBar="false"
+                                               vista="#{reporteController.vista}" showSearchBar="false" showEdit="false" showSaveAs="false"
                                                filterHelper="#{reporteController.filterHelper}" 
                                                canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
                                                update=":mainform:messages :reportForm" vistaControllerBackOutcome="/script/report_graphs/reports"/>
@@ -301,31 +339,31 @@
                                 <h:panelGroup layout="block">                   
 
 
-                    <p:barChart id="barChart" value="#{reporteController.categoryModel}" zoom="true" xaxisAngle="-50" legendCols="3" 
-                                style="height: 500px;" 
-                                rendered="#{reporteController.categoryModel ne null and reporteController.tipoGraficoSelected eq 'barChart'}" legendPosition="ne"  widgetVar="chart" 
-                                stacked="#{reporteController.stacked}" barMargin="30" shadow="true" animate="false" 
-                                yaxisLabel="#{reporteController.yaxisLabel}"
-                                xaxisLabel="#{reporteController.xaxisLabel}">
-                        <p:ajax event="itemSelect" listener="#{reporteController.itemSelect}" update=":reportForm:messages" />  
-                    </p:barChart>
+                                    <p:barChart id="barChart" value="#{reporteController.categoryModel}" zoom="true" xaxisAngle="-50" legendCols="3" 
+                                                style="height: 500px;" 
+                                                rendered="#{reporteController.categoryModel ne null and reporteController.tipoGraficoSelected eq 'barChart'}" legendPosition="ne"  widgetVar="chart" 
+                                                stacked="#{reporteController.stacked}" barMargin="30" shadow="true" animate="false" 
+                                                yaxisLabel="#{reporteController.yaxisLabel}"
+                                                xaxisLabel="#{reporteController.xaxisLabel}">
+                                        <p:ajax event="itemSelect" listener="#{reporteController.itemSelect}" update=":reportForm:messages" />  
+                                    </p:barChart>
 
-                    <p:lineChart id="lineChart" value="#{reporteController.categoryModel}" fill="#{reporteController.fill}" zoom="true" xaxisAngle="-50" legendCols="3" style="height: 500px;" 
-                                 rendered="#{reporteController.categoryModel ne null and reporteController.tipoGraficoSelected eq 'lineChart'}" legendPosition="ne" widgetVar="chart"
-                                 stacked="#{reporteController.stacked}" shadow="true" animate="true" 
-                                 yaxisLabel="#{reporteController.yaxisLabel}"
-                                 xaxisLabel="#{reporteController.xaxisLabel}">
-                        <p:ajax event="itemSelect" listener="#{reporteController.itemSelect}" update=":reportForm:messages" />  
-                    </p:lineChart>
+                                    <p:lineChart id="lineChart" value="#{reporteController.categoryModel}" fill="#{reporteController.fill}" zoom="true" xaxisAngle="-50" legendCols="3" style="height: 500px;" 
+                                                 rendered="#{reporteController.categoryModel ne null and reporteController.tipoGraficoSelected eq 'lineChart'}" legendPosition="ne" widgetVar="chart"
+                                                 stacked="#{reporteController.stacked}" shadow="true" animate="true" 
+                                                 yaxisLabel="#{reporteController.yaxisLabel}"
+                                                 xaxisLabel="#{reporteController.xaxisLabel}">
+                                        <p:ajax event="itemSelect" listener="#{reporteController.itemSelect}" update=":reportForm:messages" />  
+                                    </p:lineChart>
 
-                    <p:pieChart id="pieChart" value="#{reporteController.pieModel}" rendered="#{reporteController.pieModel ne null}"  
-                                legendPosition="e" fill="true" widgetVar="chart"
-                                showDataLabels="true"  dataFormat="#{reporteController.dataFormat}" style="height: 500px;" legendCols="3" 
-                                sliceMargin="5" diameter="200" >
-                        <p:ajax event="itemSelect" listener="#{reporteController.itemSelect}" update=":reportForm:messages" />  
-                    </p:pieChart>
+                                    <p:pieChart id="pieChart" value="#{reporteController.pieModel}" rendered="#{reporteController.pieModel ne null}"  
+                                                legendPosition="e" fill="true" widgetVar="chart"
+                                                showDataLabels="true"  dataFormat="#{reporteController.dataFormat}" style="height: 500px;" legendCols="3" 
+                                                sliceMargin="5" diameter="200" >
+                                        <p:ajax event="itemSelect" listener="#{reporteController.itemSelect}" update=":reportForm:messages" />  
+                                    </p:pieChart>
 
-                </h:panelGroup>
+                                </h:panelGroup>
 
                             </div>
 
@@ -335,81 +373,81 @@
 
                                 <h:panelGroup layout="block" rendered="#{reporteController.variables eq 1}">
 
-                    <p:dataTable id="oneDimTable" value="#{reporteController.oneDimList}" var="entry1" emptyMessage="No se encontraron datos">
-                        <f:facet name="header">  
-                            Estadísticas  
-                        </f:facet> 
-                        <p:column headerText="#{reporteController.xaxisLabel}">
-                            <h:outputText value="#{entry1.key}" />
-                        </p:column>
-                        <p:column headerText="Cantidad">
-                            <h:outputText value="#{entry1.value}" />
-                        </p:column>
+                                    <p:dataTable id="oneDimTable" value="#{reporteController.oneDimList}" var="entry1" emptyMessage="No se encontraron datos">
+                                        <f:facet name="header">  
+                                            Estadísticas  
+                                        </f:facet> 
+                                        <p:column headerText="#{reporteController.xaxisLabel}">
+                                            <h:outputText value="#{entry1.key}" />
+                                        </p:column>
+                                        <p:column headerText="Cantidad">
+                                            <h:outputText value="#{entry1.value}" />
+                                        </p:column>
 
-                        <p:columnGroup type="footer">  
-                            <p:row>  
-                                <p:column footerText="Total: " style="text-align:right;font-weight: bold;"/>  
-                                <p:column footerText="#{reporteController.calcularTotal(reporteController.oneDimList)}" style="text-align: left;font-weight: bold;"/>  
+                                        <p:columnGroup type="footer">  
+                                            <p:row>  
+                                                <p:column footerText="Total: " style="text-align:right;font-weight: bold;"/>  
+                                                <p:column footerText="#{reporteController.calcularTotal(reporteController.oneDimList)}" style="text-align: left;font-weight: bold;"/>  
 
-                            </p:row>  
-                        </p:columnGroup> 
+                                            </p:row>  
+                                        </p:columnGroup> 
 
-                        <f:facet name="footer">
-                            <p:commandButton ajax="false" immediate="true" value="Exportar" icon="excelicon">  
-                                <p:dataExporter type="xls" target="oneDimTable" fileName="export_casos" />  
-                            </p:commandButton>
-                        </f:facet>
-                    </p:dataTable>
-
-
-
-                </h:panelGroup>
-
-                <h:panelGroup layout="block" rendered="#{reporteController.variables eq 2}">
-
-                    <p:dataTable id="twoDimTable" value="#{reporteController.twoDimList}" var="entry" emptyMessage="No se encontraron datos">
-
-                        <f:facet name="header">  
-                            Estadísticas  
-                        </f:facet> 
-
-                        <p:columnGroup type="header">  
-                            <p:row>  
-                                <p:column headerText="#{reporteController.xaxisLabel}" />  
-                                <p:column headerText="Cantidad" />  
-                            </p:row>  
-
-                        </p:columnGroup>  
-
-                        <p:subTable var="stats" value="#{entry.value}">  
-                            <f:facet name="header">  
-                                #{entry.key}   
-                            </f:facet>  
-
-                            <p:column>  
-                                #{stats.key}  
-                            </p:column>  
-
-                            <p:column>  
-                                #{stats.value}  
-                            </p:column>                          
-
-                            <p:columnGroup type="footer">  
-                                <p:row>  
-                                    <p:column footerText="Total: " style="text-align:right"/>  
-                                    <p:column footerText="#{reporteController.calcularTotal(entry.value)}" />  
-
-                                </p:row>  
-                            </p:columnGroup>  
+                                        <f:facet name="footer">
+                                            <p:commandButton ajax="false" immediate="true" value="Exportar" icon="excelicon">  
+                                                <p:dataExporter type="xls" target="oneDimTable" fileName="export_casos" />  
+                                            </p:commandButton>
+                                        </f:facet>
+                                    </p:dataTable>
 
 
 
-                        </p:subTable>                        
+                                </h:panelGroup>
+
+                                <h:panelGroup layout="block" rendered="#{reporteController.variables eq 2}">
+
+                                    <p:dataTable id="twoDimTable" value="#{reporteController.twoDimList}" var="entry" emptyMessage="No se encontraron datos">
+
+                                        <f:facet name="header">  
+                                            Estadísticas  
+                                        </f:facet> 
+
+                                        <p:columnGroup type="header">  
+                                            <p:row>  
+                                                <p:column headerText="#{reporteController.xaxisLabel}" />  
+                                                <p:column headerText="Cantidad" />  
+                                            </p:row>  
+
+                                        </p:columnGroup>  
+
+                                        <p:subTable var="stats" value="#{entry.value}">  
+                                            <f:facet name="header">  
+                                                #{entry.key}   
+                                            </f:facet>  
+
+                                            <p:column>  
+                                                #{stats.key}  
+                                            </p:column>  
+
+                                            <p:column>  
+                                                #{stats.value}  
+                                            </p:column>                          
+
+                                            <p:columnGroup type="footer">  
+                                                <p:row>  
+                                                    <p:column footerText="Total: " style="text-align:right"/>  
+                                                    <p:column footerText="#{reporteController.calcularTotal(entry.value)}" />  
+
+                                                </p:row>  
+                                            </p:columnGroup>  
 
 
-                    </p:dataTable>
 
-                </h:panelGroup>
+                                        </p:subTable>                        
+
+
+                                    </p:dataTable>
+
+                                </h:panelGroup>
                             </div>
                         </div>
 
@@ -434,8 +472,8 @@
         </ui:define>
 
         <ui:define name="dialogs">
-           
-             <p:dialog widgetVar="dlg" showEffect="fade" modal="true" header="Chart as an Image" appendTo="@(body)">
+
+            <p:dialog widgetVar="dlg" showEffect="fade" modal="true" header="Chart as an Image" appendTo="@(body)">
                 <p:outputPanel id="output" layout="block" style="width:500px;height:300px"/>
                 <p:commandButton value="Imprimir" type="button" icon="ui-icon-print">  
                     <p:printer target=":output" />  

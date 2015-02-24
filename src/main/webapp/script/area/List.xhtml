@@ -6,15 +6,51 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:go="http://java.sun.com/jsf/composite/go">
 
-    <ui:composition template="/script/template_inbox.xhtml">
+    <ui:composition template="/script/template_inbox_bootstrap_config.xhtml">
         <ui:define name="title">
-            <p:outputLabel value="#{bundle.ListAreaTitle}"/>
+            <h:outputText value="#{bundle.ListAreaTitle}"/>
         </ui:define>
 
-        <ui:define name="west">
+        <ui:define name="help">
             <ui:include src="help.xhtml"/>
         </ui:define>
 
+        <ui:define name="content_header">
+            <script>
+                var init = [];
+                init.push(function () {
+                    $('body').addClass('mmc');
+                });
+            </script>
+
+            <!-- page-header -->
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-sm-6 col-xs-12">
+                        <h1><i class="fa fa-building page-header-icon"></i>&nbsp;&nbsp;Areas de la organización</h1>
+                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                            <i class="fa fa-info-circle"/>
+                        </p:commandLink> 
+                    </div>
+                    <div class="col-sm-6 col-xs-12">
+                        <h:form id="buttonsForm">
+
+                            <div class="pull-right">
+
+                                <div class="btn-group">
+                                    <go:paginatorCounts controllerMBean="#{areaController}"/>
+                                </div>
+
+                                <go:paginatorBtnsBt controllerMBean="#{areaController}" update="@(form)"/>
+
+
+                            </div>
+                        </h:form>
+                    </div>
+                </div>
+            </div><!-- / .page-header --> 
+        </ui:define>
+        
         <ui:define name="body">
             <h:form id="form">
 

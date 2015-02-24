@@ -4,22 +4,58 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:go="http://java.sun.com/jsf/composite/go">
 
-    <ui:composition template="/script/template_inbox.xhtml">
+    <ui:composition template="/script/template_inbox_bootstrap_config.xhtml">
         <ui:define name="title">
-            <p:outputLabel value="#{bundle.ListCanalTitle}"/>
+            <h:outputText value="#{bundle.ListCanalTitle}"/>
         </ui:define>
         <ui:define name="menutitle">
-            <p:outputLabel value="#{bundle.ListCanalMenuTitle}"/>
+            <h:outputText value="#{bundle.ListCanalMenuTitle}"/>
         </ui:define>
 
-        <ui:define name="west">
-
+        <ui:define name="help">
             <h:outputLabel escape="false" value="#{bundle.ayudaCanales}"/>
-
         </ui:define>
 
+        <ui:define name="content_header">
+            <script>
+                var init = [];
+                init.push(function () {
+                    $('body').addClass('mmc');
+                });
+            </script>
+
+            <!-- page-header -->
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-sm-6 col-xs-12">
+                        <h1><i class="fa fa-exchange page-header-icon"></i>&nbsp;&nbsp;#{bundle.ListCanalTitle}</h1>
+                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                            <i class="fa fa-info-circle"/>
+                        </p:commandLink> 
+                    </div>
+                    <div class="col-sm-6 col-xs-12">
+                        <h:form id="buttonsForm">
+
+                            <div class="pull-right">
+
+                                <div class="btn-group">
+                                    <go:paginatorCounts controllerMBean="#{canalController}"/>
+                                </div>
+
+                                <go:paginatorBtnsBt controllerMBean="#{canalController}" update="@(form)"/>
+
+
+                            </div>
+                        </h:form>
+                    </div>
+                </div>
+            </div><!-- / .page-header --> 
+        </ui:define>
+        
+        
         <ui:define name="body">
             <h:form id="form">
                 <h:panelGroup >                  
@@ -29,9 +65,6 @@
                                  emptyMessage="#{bundle.ListCanalEmpty}" 
                                  resizableColumns="true" >
 
-                        <f:facet name="header">  
-                            <h:outputText value="#{bundle.ListCanalTitle} (#{canalController.pagination.pageFirstItem + 1} - #{canalController.pagination.pageLastItem + 1} de #{canalController.pagination.itemsCount})"/>                           
-                        </f:facet>
 
                         <p:column headerText="Estado" width="120">
                             <div align="center">
@@ -78,28 +111,6 @@
                         </p:column>
 
                         <f:facet name="footer">
-                            <p:toolbar style="border: none;">
-                                <p:toolbarGroup align="left">
-
-                                    <p:outputLabel value="Páginas de "/>
-
-                                    <p:selectOneMenu id="cant" value="#{canalController.paginationPageSize}" style="top: 7px">
-                                        <p:ajax event="change" listener="#{canalController.resetPageSize()}" update=":form"/>
-                                        <f:selectItems value="#{canalController.pagination.pageSizesAvailable}"/>
-                                    </p:selectOneMenu>
-
-                                    <p:separator/>
-
-                                    <p:commandButton ajax="false" action="#{canalController.first}" disabled="#{not canalController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{canalController.pagination.itemsCount > 0}"/>
-
-                                    <p:commandButton ajax="false" action="#{canalController.previous}" disabled="#{not canalController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{canalController.pagination.itemsCount > 0}"/>
-
-                                    <p:commandButton ajax="false" action="#{canalController.next}" disabled="#{not canalController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{canalController.pagination.itemsCount > 0}"/>
-
-                                    <p:commandButton ajax="false" action="#{canalController.last}" disabled="#{not canalController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{canalController.pagination.itemsCount > 0}"/>
-
-                                    <p:separator/>
-
                                     <p:menuButton value="Agregar canal">
                                         <p:menuitem value="Correo electr&oacute;nico" icon="fa fa-envelope-o"
                                                     action="#{canalController.prepareCreateEmail()}" oncomplete="PF('addEditEmailDialogWidget').show();" 
@@ -115,8 +126,6 @@
                                                     update=":formAddEdit"/>
 
                                     </p:menuButton>
-                                </p:toolbarGroup>
-                            </p:toolbar>
 
                         </f:facet> 
                     </p:dataTable>

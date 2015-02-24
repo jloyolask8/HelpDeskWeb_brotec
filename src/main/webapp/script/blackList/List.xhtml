@@ -4,22 +4,85 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:go="http://java.sun.com/jsf/composite/go">
 
-    <ui:composition template="/script/template_inbox.xhtml">
+    <ui:composition template="/script/template_inbox_bootstrap_config.xhtml">
         <ui:define name="title">
-            <p:outputLabel value="Email Black List"/>
+            <h:outputText value="Email Black List"/>
         </ui:define>
 
-        <ui:define name="west">
-            <p:accordionPanel multiple="true" cache="true" >
-                <p:tab title="Black List" >
-                    <h:outputLabel escape="false" value=""/>
-                </p:tab>
-            </p:accordionPanel>
+        <ui:define name="help">
+                    <h:outputText escape="false" value="Email Black List"/>
+        </ui:define>
+        
+        <ui:define name="content_header">
+            <script>
+                var init = [];
+                init.push(function () {
+                    $('body').addClass('mmc');
+                });
+            </script>
+
+            <!-- page-header -->
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-sm-6 col-xs-12">
+                        <h1><i class="fa fa-ban page-header-icon"></i>&nbsp;&nbsp;Email Black List</h1>
+                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                            <i class="fa fa-info-circle"/>
+                        </p:commandLink> 
+                    </div>
+                    <div class="col-sm-6 col-xs-12">
+                        <h:form id="buttonsForm">
+
+                            <div class="pull-right">
+
+                                <div class="btn-group">
+                                    <go:paginatorCounts controllerMBean="#{blackListController}"/>
+                                </div>
+
+                                <go:paginatorBtnsBt controllerMBean="#{blackListController}" update="@(form)"/>
+
+                                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i></button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <p:commandLink action="#{blackListController.prepareCreate()}" oncomplete="PF('addEditDialog').show();" 
+                                                      update=":formAddEdit"
+                                                     value="Agregar Dirección a Lista Negra"
+                                     rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
+                                        </p:commandLink>
+                                    </li>
+
+                                </ul>
+
+                            </div>
+                        </h:form>
+                    </div>
+                </div>
+            </div><!-- / .page-header --> 
         </ui:define>
 
         <ui:define name="body">
+            
+            <go:vistasListBt id="vistasList" 
+                             update="@(form)" 
+                             controllerMBean="#{blackListController}"
+                             user="#{UserSessionBean.current}"/>
+            <div class="panel search-panel">
+                <h:form id="formfilter">
+                    <go:filterView id="panelFilter0" titleIconClass="fa fa-ban page-header-icon"
+                                   controllerMBean="#{blackListController}" 
+                                   vista="#{blackListController.vista}"
+                                   filterHelper="#{blackListController.filterHelper}" 
+                                   canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
+                                   update=":mainform:messages :form"
+                                   vistaControllerBackOutcome="/script/blackList/List"/>
+
+                </h:form>
+            </div>
+
+            
             <h:form id="form">
                 <h:panelGroup >                  
 
@@ -27,9 +90,7 @@
                                  emptyMessage="No se encontraron direcciones en esta lista." 
                                  resizableColumns="true" >
 
-                        <f:facet name="header">  
-                            <h:outputText value="Lista negra de direcciones email (#{blackListController.pagination.pageFirstItem + 1} - #{blackListController.pagination.pageLastItem + 1} de #{blackListController.pagination.itemsCount})"/>                           
-                        </f:facet>   
+                       
 
                         <p:column headerText="Correo">
                             <h:outputText value="#{item.emailAddress}"/>
@@ -51,36 +112,7 @@
                                              rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
                         </p:column>
 
-                        <f:facet name="footer">
-                            <p:toolbar style="border: none;">
-                                <p:toolbarGroup align="left">
-
-                                    <p:outputLabel value="Páginas de "/>
-
-                                    <p:selectOneMenu id="cant" value="#{blackListController.paginationPageSize}" style="top: 7px">
-                                        <p:ajax event="change" listener="#{blackListController.resetPageSize()}" update=":form"/>
-                                        <f:selectItems value="#{blackListController.pagination.pageSizesAvailable}"/>
-                                    </p:selectOneMenu>
-
-                                    <p:separator/>
-
-                                    <p:commandButton ajax="false" action="#{blackListController.first}" disabled="#{not blackListController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{blackListController.pagination.itemsCount > 0}"/>
-
-                                    <p:commandButton ajax="false" action="#{blackListController.previous}" disabled="#{not blackListController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{blackListController.pagination.itemsCount > 0}"/>
-
-                                    <p:commandButton ajax="false" action="#{blackListController.next}" disabled="#{not blackListController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{blackListController.pagination.itemsCount > 0}"/>
-
-                                    <p:commandButton ajax="false" action="#{blackListController.last}" disabled="#{not blackListController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{blackListController.pagination.itemsCount > 0}"/>
-
-                                    <p:separator/>
-
-                                    <p:commandButton action="#{blackListController.prepareCreate()}" oncomplete="PF('addEditDialog').show();" 
-                                                      update=":formAddEdit"
-                                                     value="Agregar Dirección a Lista Negra"  icon="ui-icon ui-icon-plus" /> 
-                                </p:toolbarGroup>
-                            </p:toolbar>
-
-                        </f:facet> 
+                         
                     </p:dataTable>
                 </h:panelGroup>
 

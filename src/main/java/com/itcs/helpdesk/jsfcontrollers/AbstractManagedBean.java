@@ -94,6 +94,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     List<Vista> allMyVistas = null;
 
     private Vista vista;
+    private Vista defaultVista;
 
     protected String backOutcome;
 
@@ -880,7 +881,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
      */
     public List<Vista> getAllAgentVistasItems() {
 
-        if (allMyVistas == null) {
+        if (allMyVistas == null) {//cache
             List<Vista> lista = new ArrayList<>();
             final List<Vista> visibleForAllItems = getVisibleForAllItems(getEntityClass().getName());
             final UserSessionBean userSessionBean = getUserSessionBean();
@@ -920,6 +921,9 @@ public abstract class AbstractManagedBean<E> implements Serializable {
                 }
             }
             Collections.sort(lista, comparadorVistas);
+
+            lista.add(0, getDefaultVista());
+
             this.allMyVistas = lista;
 //            //System.out.println("allMyVistas:"+allMyVistas);
         }
@@ -982,6 +986,19 @@ public abstract class AbstractManagedBean<E> implements Serializable {
      */
     public void setVista(Vista vista) {
         this.vista = vista;
+    }
+
+    protected Vista getDefaultVista() {
+
+        if (defaultVista == null) {
+            defaultVista = new Vista(entityClass);
+            defaultVista.setNombre("All Items");
+            if (defaultVista.getFiltrosVistaList() == null || defaultVista.getFiltrosVistaList().isEmpty()) {
+                defaultVista.addNewFiltroVista();
+            }
+        }
+        return defaultVista;
+
     }
 
 }

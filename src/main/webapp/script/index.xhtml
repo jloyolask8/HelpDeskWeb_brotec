@@ -43,9 +43,8 @@
                             <i class="fa fa-info-circle"/>
                         </p:commandLink> 
                     </div>
-                    <div class="col-sm-6 col-xs-12">
+                    <div id="toolbarTour" class="col-sm-6 col-xs-12">
                         <h:form id="buttonsForm">
-
                             <ui:include src="caso/toolbarCasosList.xhtml"/>
                         </h:form>
                     </div>
@@ -64,32 +63,26 @@
                     <!-- Search form -->
                     <h:form id="formfilter" styleClass="search-form">
 
-
-
                         <go:filterView id="panelFilter0" titleIconClass="fa fa-inbox page-header-icon hidden-xs"
                                        showSearchBar="true"
                                        controllerMBean="#{casoController}" 
                                        vista="#{casoController.vista}"
                                        filterHelper="#{casoController.filterHelper}" 
                                        canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
-                                       update="@(form)"
+                                       update=":formTabla :vistasList :buttonsForm :formfilter:panelFilter0:panelFilter"
                                        vistaControllerBackOutcome="/script/index" rendered="#{casoController.searchBarVisible}"/>
-
-
 
                     </h:form>
 
-
                     <!-- / Search form -->
-
                     <!-- Search results -->
 
                 </div>
 
 
 
-                <h:form id="form0">
-                    <p:poll id="polling" widgetVar="poll" interval="150" listener="#{casoController.refresh}" update=":form0 :buttonsForm :vistasList" />
+                <h:form id="formTabla">
+                    <p:poll id="polling" widgetVar="poll" interval="150" listener="#{casoController.refresh}" update=":formTabla :buttonsForm :vistasList" />
 
 
                    
@@ -349,7 +342,7 @@
 
                     <p:separator/>
 
-                    <p:commandButton actionListener="#{casoController.applyReglaToSelectedCasos}" update=":mainform:messages :form0"
+                    <p:commandButton actionListener="#{casoController.applyReglaToSelectedCasos}" update=":mainform:messages :formTabla"
                                      value="Ejecutar"/>
                 </h:form>
 
@@ -392,7 +385,7 @@
                     <p:commandButton value="#{bundle.yesDelete}" styleClass="btn btn-danger" style="float: right"
                                      actionListener="#{casoController.destroySelected()}" 
                                      disabled="#{empty casoController.selectedItems}"
-                                     update=":form0" />
+                                     update=":formTabla" />
 
                 </h:form>
 
@@ -418,7 +411,7 @@
 
                     <p:commandButton value="Aplicar" icon="ui-icon-circle-minus" 
                                      actionListener="#{casoController.saveBlackList}"
-                                     update=":mainform:messages :form0" oncomplete="PF('blackListSelected').hide()"/> 
+                                     update=":mainform:messages :formTabla" oncomplete="PF('blackListSelected').hide()"/> 
 
                     <p:commandButton value="#{bundle.decline}" onclick="PF('blackListSelected').hide()" type="button" /> 
                 </h:form>

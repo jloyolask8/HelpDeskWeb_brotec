@@ -69,7 +69,7 @@
                                 <h:panelGroup styleClass="row">
                                     <div class="col-sm-4 form-group">
                                         <p:inputMask id="from" value="#{cc.attrs.controllerMBean.event.startDate}" size="14"
-                                                     styleClass="form-control datepicker"
+                                                     styleClass="form-control datetimepicker"
                                                      mask="99/99/9999 99:99" required="true" requiredMessage="Favor ingrese fecha y hora de comienzo.">  
                                             <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />  
                                         </p:inputMask>  
@@ -80,7 +80,7 @@
                                     </div>
                                     <div class="col-sm-4 form-group">
                                         <p:inputMask id="to" value="#{cc.attrs.controllerMBean.event.endDate}" size="14"
-                                                     styleClass="form-control datepicker"
+                                                     styleClass="form-control datetimepicker"
                                                      mask="99/99/9999 99:99" required="true" requiredMessage="Favor ingrese fecha y hora de término.">  
                                             <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />  
                                         </p:inputMask>
@@ -106,7 +106,7 @@
 
                             <script type="text/javascript">
 
-                                $('.datepicker').datetimepicker({
+                                $('.datetimepicker').datetimepicker({
                                     language: 'es',
                                     format: 'dd/mm/yyyy hh:ii',
                                     viewformat: 'dd/mm/yyyy hh:ii',

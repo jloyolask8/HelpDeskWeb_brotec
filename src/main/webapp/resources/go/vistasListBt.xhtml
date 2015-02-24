@@ -18,7 +18,7 @@
     <cc:implementation>
         <!-- Tabs -->
         <h:form id="vistasForm">
-            <div class="search-tabs">
+            <div id="vistasTour" class="search-tabs">
                 <ul class="nav nav-tabs">
                     <ui:repeat value="#{cc.attrs.controllerMBean.getAllAgentVistasItems()}" var="vista1" >
                         <li class="#{cc.attrs.controllerMBean.vista eq vista1 ? 'active':''}">

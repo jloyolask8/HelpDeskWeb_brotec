@@ -6,15 +6,47 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 
-    <ui:composition template="/script/template_inbox.xhtml">
+    <ui:composition template="/script/template_inbox_bootstrap_config.xhtml">
         <ui:define name="title">
             <p:outputLabel value="#{bundle.ListPrioridadTitle}"/>
         </ui:define>
-        <ui:define name="west">
+        <ui:define name="help">
 
             <ui:include src="help.xhtml"/>
 
         </ui:define>
+        
+        
+        
+        <ui:define name="content_header">
+            <script>
+                var init = [];
+                init.push(function () {
+                    $('body').addClass('mmc');
+                });
+            </script>
+
+            <!-- page-header -->
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-sm-6 col-xs-12">
+                        <h1><i class="fa fa-bell page-header-icon"></i>&nbsp;&nbsp;#{bundle.ListPrioridadTitle} - add button save all</h1>
+                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                            <i class="fa fa-info-circle"/>
+                        </p:commandLink> 
+                    </div>
+                    <div class="col-sm-6 col-xs-12">
+                        <h:form id="buttonsForm">
+
+                            <div class="pull-right">
+
+                            </div>
+                        </h:form>
+                    </div>
+                </div>
+            </div><!-- / .page-header --> 
+        </ui:define>
+        
         <ui:define name="body">
             <h:form id="form">
                 <h:panelGroup>
@@ -27,9 +59,7 @@
                                  sortBy="slaHoras"
                                  resizableColumns="true" >
 
-                        <f:facet name="header">  
-                            <h:outputText value="#{bundle.ListPrioridadTitle}"></h:outputText>                           
-                        </f:facet>
+                       
 
                         <p:ajax event="toggleSelect" update=":form:tabla" />                             
                         <p:ajax event="rowSelect" update=":form:tabla" />  
@@ -37,7 +67,7 @@
                         <p:ajax event="rowSelectCheckbox" update=":form:tabla" />  
                         <p:ajax event="rowUnselectCheckbox" update=":form:tabla" />  
 
-                        <p:column selectionMode="multiple"  style="width:2%" /> 
+                        <p:column selectionMode="multiple"  style="width:5%" /> 
 
                         <p:column  sortBy="#{item.idPrioridad}"  headerText="#{bundle.ListPrioridadTitle_idPrioridad}">
                             <h:outputText value="#{item.idPrioridad}"/>

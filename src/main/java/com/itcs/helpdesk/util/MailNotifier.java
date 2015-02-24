@@ -221,6 +221,47 @@ public class MailNotifier {
             Logger.getLogger(MailNotifier.class.getName()).log(Level.SEVERE, "sendEmailRecoverPassword", ex);
         }
     }
+    
+    public static void sendEmailVerifyNewAccount(String tenant, String email, String userName, String code) {
+        if (StringUtils.isEmpty(email) || StringUtils.isEmpty(userName)) {
+            throw new IllegalStateException("email/userName no puede ser null");
+        }
+        try {
+//            String passMD5 = UtilSecurity.getMD5(usuario.getPass());//TODO fix, unencrypt the pass.
+            String subject_ = "Godesk Account Verification";
+            StringBuilder sb = new StringBuilder();
+            String mensaje_ = sb.append("Estimad@ ").append(userName).append(",").append("<br/><br/>")
+                    .append("<a href=\"http://www.godesk.cl/go/public/verifyAccount.xhtml?email=").append(email)
+                    .append("&code=").append(code).append("&tenant=").append(tenant).append(">Click here</a>")
+                    .append("<br/>")
+                    .append("<br/><br/>")
+                    .append("Equipo Godesk<br/>www.godesk.cl").toString();
+            NoReplySystemMailSender.sendHTML(email, subject_, mensaje_, null);
+            Logger.getLogger(MailNotifier.class.getName()).log(Level.INFO, "sendEmailVerifyNewAccount succeeded:{0}", email);
+        } catch (EmailException ex) {
+            Logger.getLogger(MailNotifier.class.getName()).log(Level.SEVERE, "sendEmailVerifyNewAccount", ex);
+        }
+    }
+    
+    public static void sendGreetingsToNewAccount(String tenant, String email, String userName, String code) {
+        if (StringUtils.isEmpty(email) || StringUtils.isEmpty(userName)) {
+            throw new IllegalStateException("email/userName no puede ser null");
+        }
+        try {
+//            String passMD5 = UtilSecurity.getMD5(usuario.getPass());//TODO fix, unencrypt the pass.
+            String subject_ = "Thanks for using GoDesk";
+            StringBuilder sb = new StringBuilder();
+            String mensaje_ = sb.append("Estimad@ ").append(userName).append(",").append("<br/><br/>")
+                    .append("[Thanks email here]")
+                    .append("<br/>")
+                    .append("<br/><br/>")
+                    .append("Equipo Godesk<br/>www.godesk.cl").toString();
+            NoReplySystemMailSender.sendHTML(email, subject_, mensaje_, null);
+            Logger.getLogger(MailNotifier.class.getName()).log(Level.INFO, "sendEmailVerifyNewAccount succeeded:{0}", email);
+        } catch (EmailException ex) {
+            Logger.getLogger(MailNotifier.class.getName()).log(Level.SEVERE, "sendEmailVerifyNewAccount", ex);
+        }
+    }
 
     public static void notifyClientCasoReceived(String tenant, Caso caso) throws NoOutChannelException, SchedulerException, NoInstanceConfigurationException {
         //new: permit to have a global response in the config

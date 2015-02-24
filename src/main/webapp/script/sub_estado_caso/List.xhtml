@@ -7,41 +7,91 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:go="http://java.sun.com/jsf/composite/go">
 
-    <ui:composition template="/script/template_inbox.xhtml">
+    <ui:composition template="/script/template_inbox_bootstrap_config.xhtml">
         <ui:define name="title">
-            <p:outputLabel value="#{bundle.ListSubEstadoCasoTitle}"/>
+            <h:outputText value="#{bundle.ListSubEstadoCasoTitle}"/>
         </ui:define>
-        <ui:define name="west">
-
-            <go:vistasList id="vistasList" update=":vistasList:vistasForm :mainform:messages :form" 
-                           controllerMBean="#{subEstadoCasoController}"
-                           user="#{UserSessionBean.current}"/>
-
-            <br/>
-
-            <h:outputLabel escape="false" value="#{bundle.ayudaSubestados}"/>
+        <ui:define name="help">
+            <h:outputText escape="false" value="#{bundle.ayudaSubestados}"/>
         </ui:define>
+        
+        
+        <ui:define name="content_header">
+            <script>
+                var init = [];
+                init.push(function () {
+                    $('body').addClass('mmc');
+                });
+            </script>
+
+            <!-- page-header -->
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-sm-6 col-xs-12">
+                        <h1><i class="fa fa-bookmark page-header-icon"></i>&nbsp;&nbsp;#{bundle.ListSubEstadoCasoTitle}</h1>
+                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                            <i class="fa fa-info-circle"/>
+                        </p:commandLink> 
+                    </div>
+                    <div class="col-sm-6 col-xs-12">
+                        <h:form id="buttonsForm">
+
+                            <div class="pull-right">
+
+                                <div class="btn-group">
+                                    <go:paginatorCounts controllerMBean="#{subEstadoCasoController}"/>
+                                </div>
+
+                                <go:paginatorBtnsBt controllerMBean="#{subEstadoCasoController}" update="@(form)"/>
+
+                                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i></button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <h:commandLink action="#{subEstadoCasoController.prepareCreate}" 
+                                                       value="#{bundle.createNew}"
+                                     rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
+                                        </h:commandLink>
+                                    </li>
+
+                                </ul>
+
+                            </div>
+                        </h:form>
+                    </div>
+                </div>
+            </div><!-- / .page-header --> 
+        </ui:define>
+        
         <ui:define name="body">
+            
+            
+              <go:vistasListBt id="vistasList" 
+                             update="@(form)" 
+                             controllerMBean="#{subEstadoCasoController}"
+                             user="#{UserSessionBean.current}"/>
+            <div class="panel search-panel">
+                <h:form id="formfilter">
+                    <go:filterView id="panelFilter0" titleIconClass="fa fa-users page-header-icon"
+                                   controllerMBean="#{subEstadoCasoController}" 
+                                   vista="#{subEstadoCasoController.vista}"
+                                   filterHelper="#{subEstadoCasoController.filterHelper}" 
+                                   canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
+                                   update=":mainform:messages :form"
+                                   vistaControllerBackOutcome="/script/sub_estado_caso/List"/>
+
+                </h:form>
+            </div>
+              
+              
             <h:form id="form">
 
-                <go:filterView controllerMBean="#{subEstadoCasoController}" 
-                               vista="#{subEstadoCasoController.vista}"
-                               filterHelper="#{subEstadoCasoController.filterHelper}" 
-                               vistaControllerBackOutcome="/script/sub_estado_caso/List"/>
+            
 
                 <h:panelGroup >
 
 
                     <p:dataTable id="SubEstadoCaso_Table" widgetVar="SubEstadoCasoTable" var="item" value="#{subEstadoCasoController.items}" selectionMode="single"
                                  emptyMessage="#{bundle.ListSubEstadoCasoEmpty}" >
-
-
-                        <f:facet name="header">
-                            <h:outputText value="Lista de Sub Estados"></h:outputText>
-                            <h:outputText value=" (#{subEstadoCasoController.pagination.pageFirstItem + 1} - #{subEstadoCasoController.pagination.pageLastItem + 1} de #{subEstadoCasoController.pagination.itemsCount})" rendered="#{subEstadoCasoController.pagination.itemsCount gt 0}"></h:outputText>
-                        </f:facet>
-
-
 
                         <p:column sortBy="#{item.idEstado.nombre}" headerText="#{bundle.ListSubEstadoCasoTitle_idEstado}">
                             <h:outputText value="#{item.idEstado.nombre}"/>
@@ -55,7 +105,7 @@
                             <h:outputText value="#{item.idSubEstado}"/>
                         </p:column>
                         <p:column sortBy="#{item.nombre}" headerText="#{bundle.ListSubEstadoCasoTitle_nombre}">
-                            <h:outputText id="stat" styleClass="ticket-status" style="background: \##{item.backgroundColor}; color: \##{item.fontColor};" 
+                            <h:outputText id="stat" styleClass="badge" style="background: \##{item.backgroundColor}; color: \##{item.fontColor};" 
                                           value="#{item.nombre}"/> 
                             <p:tooltip for="stat" value="#{item.descripcion}"/>
 
@@ -66,32 +116,7 @@
                             <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" action="#{subEstadoCasoController.setSelected(item)}" oncomplete="PF('confirmation').show()" disabled="#{not subEstadoCasoController.puedeEditar(item)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" icon="ui-icon ui-icon-trash"/>
                         </p:column>
 
-                        <f:facet name="footer">
-                            <p:toolbar style="border: none;">
-                                <p:toolbarGroup align="left">
-
-                                    <p:outputLabel value="Páginas de "/>
-                                    <p:selectOneMenu id="cant" value="#{subEstadoCasoController.paginationPageSize}" style="top: 7px">
-                                        <p:ajax event="change" listener="#{subEstadoCasoController.resetPageSize()}" update=":form"/>
-                                        <f:selectItems value="#{subEstadoCasoController.pagination.pageSizesAvailable}"/>
-                                    </p:selectOneMenu>
-
-                                    <p:separator/>
-
-                                    <p:commandButton ajax="false" action="#{subEstadoCasoController.first}" disabled="#{not subEstadoCasoController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{subEstadoCasoController.pagination.itemsCount > 0}"/>
-
-                                    <p:commandButton ajax="false" action="#{subEstadoCasoController.previous}" disabled="#{not subEstadoCasoController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{subEstadoCasoController.pagination.itemsCount > 0}"/>
-
-                                    <p:commandButton ajax="false" action="#{subEstadoCasoController.next}" disabled="#{not subEstadoCasoController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{subEstadoCasoController.pagination.itemsCount > 0}"/>
-
-                                    <p:commandButton ajax="false" action="#{subEstadoCasoController.last}" disabled="#{not subEstadoCasoController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{subEstadoCasoController.pagination.itemsCount > 0}"/>
-
-                                    <p:separator/>
-                                    <p:commandButton ajax="false" action="#{subEstadoCasoController.prepareCreate}" value="Crear SubEstado" icon="ui-icon ui-icon-plus" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
-
-                                </p:toolbarGroup>
-                            </p:toolbar>
-                        </f:facet>
+                       
                     </p:dataTable>
                 </h:panelGroup>
 

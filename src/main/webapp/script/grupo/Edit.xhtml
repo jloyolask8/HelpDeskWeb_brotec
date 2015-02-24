@@ -6,15 +6,39 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core">
 
-    <ui:composition template="/script/template_inbox.xhtml">
+    
+<ui:composition template="/script/template_inbox_bootstrap_config.xhtml">
         <ui:define name="title">
-            <p:outputLabel value="#{bundle.EditGrupoTitle}"/>
+            <h:outputText value="#{bundle.EditGrupoTitle}"/>
         </ui:define>
-        <ui:define name="west">
-            <p:panel>
-                <h:outputLabel escape="false" value="#{bundle.ayudaGrupos}"/>
-            </p:panel>
+        <ui:define name="help">
+            <h:outputText escape="false" value="#{bundle.ayudaGrupos}"/>
         </ui:define>
+        
+        <ui:define name="content_header">
+            <script>
+                var init = [];
+                init.push(function () {
+                    $('body').addClass('mmc');
+                });
+            </script>
+
+            <!-- page-header -->
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-sm-6 col-xs-12">
+                        <h1><i class="fa fa-key page-header-icon"></i>&nbsp;&nbsp;#{bundle.EditGrupoTitle}</h1>
+                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                            <i class="fa fa-info-circle"/>
+                        </p:commandLink> 
+                    </div>
+                    <div class="col-sm-6 col-xs-12">
+                        
+                    </div>
+                </div>
+            </div><!-- / .page-header --> 
+        </ui:define>
+    
         <ui:define name="body">
 
             <h:form id="form">
