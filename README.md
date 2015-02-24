@@ -6,6 +6,12 @@ HelpDeskWeb_brotec
 
 Pedientes Godesk
 
+- disable tour debug on production.
+
+- disable cache selectively. enable for casos.
+
+- setting nombre de empresa asignarle el valor ingresado en el register.
+
 - explicar la creacion de eventos publicos y mostrar formulario de inscripcion + form new casos embedded.
 hacer una pagina de test.
 

@@ -4,7 +4,7 @@
 
     <groupId>com.itcs.apps</groupId>
     <artifactId>HelpDeskWeb_Brotec</artifactId>
-    <version>2.2</version>
+    <version>3.0</version>
     <packaging>war</packaging>
 
     <name>HelpDeskWeb_brotec</name>
