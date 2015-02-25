@@ -98,10 +98,14 @@
                         <p:commandButton id="refreshTree" value="Actualizar" actionListener="#{areaController.refreshTree()}" immediate="true"
                                          update=":form:tree" />
                         
-                          <p:commandButton ajax="false" action="#{areaController.prepareCreate}" immediate="true"
+                        <p:commandButton ajax="false" action="#{areaController.prepareCreate()}" immediate="true"
                                                      rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" value="#{bundle.ListAreaCreateLink}" icon="fa fa-plus-circle" />
 
                           
+                        <p:commandButton ajax="false" action="#{grupoController.prepareCreate()}" immediate="true"
+                                         rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" value="#{bundle.ListGrupoCreateLink}" icon="fa fa-plus-circle" />
+
+                         
                     </div>
                     
             </div>

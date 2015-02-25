@@ -28,9 +28,6 @@ import org.primefaces.context.RequestContext;
 @RequestScoped
 public class LoginController extends AbstractManagedBean<Usuario> implements Serializable {
 
-    @ManagedProperty(value = "#{applicationBean}")
-    private ApplicationBean applicationBean;
-
     //private LengthValidator passwordLengthValidator = new LengthValidator();
     private String username;
     private String password;
@@ -323,19 +320,7 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    /**
-     * @return the applicationBean
-     */
-    public ApplicationBean getApplicationBean() {
-        return applicationBean;
-    }
-
-    /**
-     * @param applicationBean the applicationBean to set
-     */
-    public void setApplicationBean(ApplicationBean applicationBean) {
-        this.applicationBean = applicationBean;
-    }
+  
 
     /**
      * @return the tenantId

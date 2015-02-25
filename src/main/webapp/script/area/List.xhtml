@@ -43,6 +43,16 @@
 
                                 <go:paginatorBtnsBt controllerMBean="#{areaController}" update="@(form)"/>
 
+                                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i></button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <h:commandLink action="#{areaController.prepareCreate}" 
+                                                       value="#{bundle.ListAreaCreateLink}"
+                                     rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
+                                        </h:commandLink>
+                                    </li>
+
+                                </ul>
 
                             </div>
                         </h:form>
@@ -60,17 +70,7 @@
 
                         <h:outputText escape="false" value="#{bundle.ListAreaEmpty}" rendered="#{areaController.items.rowCount == 0}"/>
                         <h:panelGroup rendered="#{areaController.items.rowCount > 0}">
-                            <p:toolbar>
-                                <p:toolbarGroup align="right">
-
-                                    <go:paginatorButtons controllerMBean="#{areaController}" update=":form"/>
-                                    <p:separator/>
-                                    <p:commandButton ajax="false" action="#{areaController.prepareCreate}" immediate="true"
-                                                     rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" value="#{bundle.ListAreaCreateLink}" icon="fa fa-plus-circle" />
-
-                                </p:toolbarGroup>  
-
-                            </p:toolbar>
+                            
 
                             <p:dataTable widgetVar="AreaTable" var="item" value="#{areaController.items}" selectionMode="single"
                                          emptyMessage="#{bundle.ListAreaEmpty}" >

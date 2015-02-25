@@ -124,6 +124,16 @@
     </navigation-rule>
     
     <navigation-rule>
+		
+        <navigation-case>
+            <from-outcome>dashboard</from-outcome>
+            <to-view-id>/script/dashboard.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+    </navigation-rule>
+    
+    <navigation-rule>
         <navigation-case>
             <from-outcome>inboxMobile</from-outcome>
             <to-view-id>/mobile/index.xhtml</to-view-id>

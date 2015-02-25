@@ -447,6 +447,10 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     protected final UserSessionBean getUserSessionBean() {
         return (UserSessionBean) JsfUtil.getManagedBean("UserSessionBean");
     }
+    
+    protected final ApplicationBean getApplicationBean() {
+        return (ApplicationBean) JsfUtil.getManagedBean("applicationBean");
+    }
 
     protected CasoController getCasoControllerBean() {
         return (CasoController) JsfUtil.getManagedBean("casoController");

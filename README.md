@@ -6,6 +6,11 @@ HelpDeskWeb_brotec
 
 Pedientes Godesk
 
+- separar tours, 1. dashboard, 2. inbox. 3. settings.
+- al registrarse preguntar que areas de la empresa desea crear!
+
+en editar area agregar link directo a crear el canal necesario para la comunicación.
+
 - disable tour debug on production.
 
 - disable cache selectively. enable for casos.
@@ -83,3 +88,18 @@ Your site is looking pretty drab. Cheer it up by editing your site design to mak
 
 
 - Enter in your credit card information to continue your service beyond the free trial
+
+
+
+Open/Future items
+==================
+    Bug 355458: Provide admin user access data from multiple tenants
+
+BUG for sequences numbers
+=========================
+
+    Tenant column when part of the entity identifier
+        Incorporate sequence generators
+
+
+

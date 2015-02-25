@@ -90,6 +90,15 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         return "/script/vista/View";
     }
+    
+    public String prepareCreateVista() {
+        filterHelper2 = null;
+        current = new Vista(Vista.class);
+        current.addNewFiltroVista();
+        selectedItemIndex = -1;
+//        setFilterViewToggle(true);
+        return "/script/vista/Create";
+    }
 
     public String prepareCreate() {
         filterHelper2 = null;

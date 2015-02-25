@@ -130,7 +130,7 @@
 
                             <div class="form-group w-icon">
                                 <p:password id="signup_password2" value="#{signUpController.registrationVO.passwordConfirm}"  
-                                           
+
                                             styleClass="form-control input-lg" requiredMessage="Confirme su nueva contraseña."
                                             label="Repita Nueva Contraseña" required="true" feedback="true"   
                                             promptLabel="Favor repita su nueva contraseña" weakLabel="Débil"  
@@ -156,6 +156,36 @@
                                 <h:message for="companyName" errorClass="text-danger"/>
                             </div>
 
+                            <div class="form-group">
+                                <label class="control-label" for="areas">En qué áreas deseas usar godesk?</label>
+
+                                <h:selectManyListbox id="areas" label="Selecciona al menos una..."  
+                                                     value="#{signUpController.registrationVO.defaultAreas}"  styleClass="form-control input-sm select2Multiple"
+                                                     required="true" requiredMessage="Favor indiquenos al menos un Área en la cual desea usar godesk dentro de su empresa."
+                                                     >
+                                    <f:selectItem itemLabel="Administración" itemValue="Administración" />
+                                    <f:selectItem itemLabel="Colaboración Interna" itemValue="Colaboración Interna" />
+                                    <f:selectItem itemLabel="Ventas" itemValue="Ventas" />
+                                    <f:selectItem itemLabel="Servicio al cliente" itemValue="Servicio al cliente" />
+                                    <f:selectItem itemLabel="Soporte técnico" itemValue="Soporte técnico" />
+                                </h:selectManyListbox>
+
+                                <p class="help-block">No te preocupes puedes cambiar y agregar mas áreas una vez dentro del sistema.</p>
+
+                                <script type="text/javascript">
+                                    $(function () {
+                                        $("select.select2Multiple").select2({
+                                            dropdownAutoWidth: true,
+                                            allowClear: true
+                                        });
+                                    });
+                                </script>
+
+                            </div>
+
+
+
+                            
 
                             <div class="form-group" style="margin-top: 20px;margin-bottom: 20px;">
                                 <label class="checkbox-inline">
@@ -168,7 +198,7 @@
 
                             <div class="form-actions">
                                 <p:commandButton id="submit" action="#{signUpController.signup()}" 
-                                                 styleClass="signup-btn bg-primary" update=":signup-form_id"
+                                                 styleClass="signup-btn bg-primary" update="@form @(:not(#recaptcha))"
                                                  onclick="jQuery(this).addClass('ui-state-disabled')"
                                                  value="COMENZAR" />
 
@@ -219,6 +249,15 @@
                     // Resize BG
                     //<![CDATA[
                     init.push(function () {
+
+                    });
+
+                    $(function () {
+
+                        $("select.select2Multiple").select2({
+                            dropdownAutoWidth: true,
+                            allowClear: true
+                        });
 
                     });
 
