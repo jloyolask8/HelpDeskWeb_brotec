@@ -131,7 +131,7 @@ public class EmbeddedFromNewTicketController extends CustomerCasoController {
     }
 
     protected ManagerCasos getManagerCasosLocal() {
-        if (!StringUtils.isEmpty(this.getTenantId())) {
+        if (!StringUtils.isEmpty(getCurrentTenantId())) {
             ManagerCasos managerCasos = new ManagerCasos();
             managerCasos.setJpaController(getJpaControllerLocal());
             return managerCasos;
@@ -140,8 +140,8 @@ public class EmbeddedFromNewTicketController extends CustomerCasoController {
     }
 
     public JPAServiceFacade getJpaControllerLocal() {
-        if (!StringUtils.isEmpty(this.getTenantId())) {
-            JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf, this.getTenantId());
+        if (!StringUtils.isEmpty(getCurrentTenantId())) {
+            JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf, getCurrentTenantId());
             return jpaController;
         }
         throw new IllegalAccessError("Error al acceder al jpa");

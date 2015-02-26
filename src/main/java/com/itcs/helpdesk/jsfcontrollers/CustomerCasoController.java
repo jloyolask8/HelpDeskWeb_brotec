@@ -229,7 +229,6 @@ public class CustomerCasoController extends CasoController {
     /**
      * @return the tenantId
      */
-    @Override
     public String getTenantId() {
         return tenantId;
     }

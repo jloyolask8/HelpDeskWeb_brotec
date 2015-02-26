@@ -9,7 +9,7 @@ Multitenant branches:
 
 email doesnt need multinenant version.
 
-1.$ ssh www.godesk.cl
+1.$ ssh www.godesk.cl -l jonathan
 2.$ cd /home/glassfish/deploy/github-sources/
 3. Compilation Order:
 drwxr-xr-x. 5 jonathan root 4096 Feb  3 15:23 Email
@@ -37,6 +37,17 @@ if all success you will get a war file inside the server files
 deploy it directly
 
 context name of our multitenant is "go" 
+
+
+## Possible install errors
+
+error: Your local changes to the following files would be overwritten by checkout:
+commit or reset changes 
+$ git commit -m 'message'
+or $ git reset --hard HEAD
+bum
+
+
 
 ## Pedientes Godesk
 
