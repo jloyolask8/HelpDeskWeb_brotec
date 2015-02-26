@@ -1033,7 +1033,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         }
 
 //        getManagerCasos().agendarAlertas(newCaso);
-        HelpDeskScheluder.scheduleAlertaPorVencer(getUserSessionBean().getTenantId(), newCaso.getIdCaso(), ManagerCasos.calculaCuandoPasaAPorVencer(newCaso));
+        HelpDeskScheluder.scheduleAlertaPorVencer(getCurrentTenantId(), newCaso.getIdCaso(), ManagerCasos.calculaCuandoPasaAPorVencer(newCaso));
         JsfUtil.addSuccessMessage("El Caso " + newCaso.getIdCaso() + " ha sido creado con éxito.");
 
     }
@@ -1348,7 +1348,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         try {
             Vista vistaCasosPendientes = createVistaCurrentUserByAlert(EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta(), EnumEstadoCaso.ABIERTO.getEstado());
-            casosPendientes = getJpaControllerThatListenRules().countEntities(vistaCasosPendientes, userSessionBean.getCurrent(), null);
+            casosPendientes = getJpaController().countEntities(vistaCasosPendientes, userSessionBean.getCurrent(), null);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
             casosPendientes = 0L;
@@ -1356,7 +1356,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         try {
             Vista vistaCasosPorVencer = createVistaCurrentUserByAlert(EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta(), EnumEstadoCaso.ABIERTO.getEstado());
-            casosPorVencer = getJpaControllerThatListenRules().countEntities(vistaCasosPorVencer, userSessionBean.getCurrent(), null);
+            casosPorVencer = getJpaController().countEntities(vistaCasosPorVencer, userSessionBean.getCurrent(), null);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
             casosPorVencer = 0L;
@@ -1364,7 +1364,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         try {
             Vista vistaCasosVencidos = createVistaCurrentUserByAlert(EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta(), EnumEstadoCaso.ABIERTO.getEstado());
-            casosVencidos = getJpaControllerThatListenRules().countEntities(vistaCasosVencidos, userSessionBean.getCurrent(), null);
+            casosVencidos = getJpaController().countEntities(vistaCasosVencidos, userSessionBean.getCurrent(), null);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
             casosVencidos = 0L;
@@ -1372,7 +1372,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         try {
             Vista vistaCasosCerrados = createVistaMisCasosCerrados();
-            casosCerrados = getJpaControllerThatListenRules().countEntities(vistaCasosCerrados, userSessionBean.getCurrent(), null);
+            casosCerrados = getJpaController().countEntities(vistaCasosCerrados, userSessionBean.getCurrent(), null);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
             casosCerrados = 0L;
@@ -1380,7 +1380,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         try {
             Vista vistaMyReviewUpdate = createVistaMyReviewUpdate();
-            casosRevisarActualizacion = getJpaControllerThatListenRules().countEntities(vistaMyReviewUpdate, userSessionBean.getCurrent(), null);
+            casosRevisarActualizacion = getJpaController().countEntities(vistaMyReviewUpdate, userSessionBean.getCurrent(), null);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
             casosRevisarActualizacion = 0L;
@@ -1388,19 +1388,19 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
         try {
             Vista vistacasosPrioritarios = createVistaOpenPrio();
-            casosPrioritarios = getJpaControllerThatListenRules().countEntities(vistacasosPrioritarios, userSessionBean.getCurrent(), null);
+            casosPrioritarios = getJpaController().countEntities(vistacasosPrioritarios, userSessionBean.getCurrent(), null);
 
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
             casosPrioritarios = 0L;
         }
 
-//                    casosPendientes = getJpaControllerThatListenRules().getCasoCount(userSessionBean.getCurrent(), EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta());
-//            casosPorVencer = getJpaControllerThatListenRules().getCasoCount(userSessionBean.getCurrent(), EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta());
-//            casosVencidos = getJpaControllerThatListenRules().getCasoCount(userSessionBean.getCurrent(), EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta());
-//            casosPrioritarios = getJpaControllerThatListenRules().getCasoCountPrioritarieOpen(userSessionBean.getCurrent());
-//            casosCerrados = getJpaControllerThatListenRules().getCasoCountClosed(userSessionBean.getCurrent());
-//            casosRevisarActualizacion = getJpaControllerThatListenRules().getCasoCountActualizados(userSessionBean.getCurrent());
+//                    casosPendientes = getJpaController().getCasoCount(userSessionBean.getCurrent(), EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta());
+//            casosPorVencer = getJpaController().getCasoCount(userSessionBean.getCurrent(), EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta());
+//            casosVencidos = getJpaController().getCasoCount(userSessionBean.getCurrent(), EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta());
+//            casosPrioritarios = getJpaController().getCasoCountPrioritarieOpen(userSessionBean.getCurrent());
+//            casosCerrados = getJpaController().getCasoCountClosed(userSessionBean.getCurrent());
+//            casosRevisarActualizacion = getJpaController().getCasoCountActualizados(userSessionBean.getCurrent());
     }
 
     public Long getCasosPrioritarios() {
@@ -2478,7 +2478,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
             JsfUtil.addSuccessMessage(resourceBundle.getString("caso.cerrar.ok"));
 
-            HelpDeskScheluder.unscheduleCambioAlertas(getUserSessionBean().getTenantId(), current.getIdCaso());
+            HelpDeskScheluder.unscheduleCambioAlertas(getCurrentTenantId(), current.getIdCaso());
 
             if (current.getCasosHijosList() != null) {
                 for (Caso casoHijo : current.getCasosHijosList()) {
@@ -2496,7 +2496,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                         changeLog.add(ManagerCasos.createLogReg(casoHijo, "Estado", userSessionBean.getCurrent().getCapitalName() + " cerró el caso.", ""));
                         getJpaControllerThatListenRules().mergeCaso(casoHijo, changeLog);
 
-                        HelpDeskScheluder.unscheduleCambioAlertas(getUserSessionBean().getTenantId(), casoHijo.getIdCaso());
+                        HelpDeskScheluder.unscheduleCambioAlertas(getCurrentTenantId(), casoHijo.getIdCaso());
                     }
                 }
             }
@@ -2504,8 +2504,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             refreshCurrentCaso();
 
             try {
-                if (ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).isCustomerSurveyEnabled()) {
-                    MailNotifier.emailClientCustomerSurvey(getUserSessionBean().getTenantId(), current);
+                if (ApplicationConfigs.getInstance(getCurrentTenantId()).isCustomerSurveyEnabled()) {
+                    MailNotifier.emailClientCustomerSurvey(getCurrentTenantId(), current);
                 }
             } catch (NoInstanceConfigurationException noconfig) {
                 //no config no survey no money
@@ -2676,7 +2676,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     && !StringUtils.isEmpty(entityEvent.getIdTipoAccion().getImplementationClassName())) {
                 //we must schedule the selected action
                 String jobID = HelpDeskScheluder.scheduleActionClassExecutorJob(
-                        getUserSessionBean().getTenantId(),
+                        getCurrentTenantId(),
                         getSelected().getIdCaso(),
                         entityEvent.getIdTipoAccion().getImplementationClassName(),
                         entityEvent.getParametrosAccion(),
@@ -2911,9 +2911,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     addInfoMessage("El caso se ha tranferido con éxito al agente " + usuarioSeleccionadoTransfer.getIdUsuario());
 
                     try {
-                        if (ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).isSendNotificationOnTransfer()) {
+                        if (ApplicationConfigs.getInstance(getCurrentTenantId()).isSendNotificationOnTransfer()) {
                             try {
-                                MailNotifier.notifyCasoAssigned(getUserSessionBean().getTenantId(), current, motivo);
+                                MailNotifier.notifyCasoAssigned(getCurrentTenantId(), current, motivo);
                             } catch (Exception ex) {
                                 addWarnMessage(ex.getMessage());
                             }
@@ -3228,7 +3228,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             if (current.getNextResponseDue().after(Calendar.getInstance().getTime())) {
                 current.setEstadoAlerta(EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta());
                 //re-schedule alert
-                HelpDeskScheluder.scheduleAlertaPorVencer(getUserSessionBean().getTenantId(), current.getIdCaso(), ManagerCasos.calculaCuandoPasaAPorVencer(current));
+                HelpDeskScheluder.scheduleAlertaPorVencer(getCurrentTenantId(), current.getIdCaso(), ManagerCasos.calculaCuandoPasaAPorVencer(current));
             }
             getJpaControllerThatListenRules().mergeCaso(current, ManagerCasos.createLogReg(current, EnumTipoNota.NOTA.getTipoNota().getNombre(), nota.getTextExtract(), ""));
 
@@ -3254,7 +3254,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         try {
             List<AuditLog> changeLog = new ArrayList<>();
 
-            correoEnviado = MailNotifier.emailClientCasoUpdatedByAgent(getUserSessionBean().getTenantId(), current);
+            correoEnviado = MailNotifier.emailClientCasoUpdatedByAgent(getCurrentTenantId(), current);
 
             if (correoEnviado != null) {
                 final String message = "Cliente ha sido notificado por email sobre la actualización del caso. "
@@ -3356,7 +3356,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             if (current.getNextResponseDue().after(Calendar.getInstance().getTime())) {
                 current.setEstadoAlerta(EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta());
                 //re-schedule alert
-                HelpDeskScheluder.scheduleAlertaPorVencer(getUserSessionBean().getTenantId(), current.getIdCaso(), ManagerCasos.calculaCuandoPasaAPorVencer(current));
+                HelpDeskScheluder.scheduleAlertaPorVencer(getCurrentTenantId(), current.getIdCaso(), ManagerCasos.calculaCuandoPasaAPorVencer(current));
             }
 
             String mensaje = textoNota;
@@ -3437,7 +3437,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             }
 
             HelpDeskScheluder.scheduleSendMailNota(
-                    getUserSessionBean().getTenantId(),
+                    getCurrentTenantId(),
                     canal.getIdCanal(), mensaje,
                     destinatario, ccEmails, ccoEmails, subject,
                     current.getIdCaso(), nota.getIdNota(), listIdAtt.toString());
@@ -3894,7 +3894,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     if (casoToUpdate.getNextResponseDue().after(Calendar.getInstance().getTime())) {
                         casoToUpdate.setEstadoAlerta(EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta());
                         //re-schedule alert
-                        HelpDeskScheluder.scheduleAlertaPorVencer(getUserSessionBean().getTenantId(), casoToUpdate.getIdCaso(), ManagerCasos.calculaCuandoPasaAPorVencer(casoToUpdate));
+                        HelpDeskScheluder.scheduleAlertaPorVencer(getCurrentTenantId(), casoToUpdate.getIdCaso(), ManagerCasos.calculaCuandoPasaAPorVencer(casoToUpdate));
                     }
                 } else if (auditLog.getCampo().equalsIgnoreCase(Caso_.AREA_FIELD_NAME)) {
                     cambiaArea = true;
@@ -3929,7 +3929,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         if (performDestroy(current)) {
             JsfUtil.addSuccessMessage("El caso #" + current.getIdCaso() + " fue eliminado exitósamente.");
             try {
-                HelpDeskScheluder.unscheduleCambioAlertas(getUserSessionBean().getTenantId(), current.getIdCaso());
+                HelpDeskScheluder.unscheduleCambioAlertas(getCurrentTenantId(), current.getIdCaso());
 
             } catch (SchedulerException ex) {
                 Logger.getLogger(CasoController.class
@@ -4022,7 +4022,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         //textoNota = null;
         if (selectedClipping != null && selectedClipping.getTexto() != null) {
             try {
-                StringBuilder sb = new StringBuilder(ClippingsPlaceHolders.buildFinalText(selectedClipping.getTexto(), current, getUserSessionBean().getTenantId()));
+                StringBuilder sb = new StringBuilder(ClippingsPlaceHolders.buildFinalText(selectedClipping.getTexto(), current, getCurrentTenantId()));
                 sb.append("<br/>");
                 sb.append(textoNota);
                 textoNota = sb.toString();

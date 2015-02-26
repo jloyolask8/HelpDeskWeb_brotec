@@ -29,12 +29,12 @@
 
                                            rendered="#{cc.attrs.controllerMBean.vista ne vista1}">
 
-                                #{vista1.nombre}<span class="label label-default">#{cc.attrs.controllerMBean.countItemsVista(vista1)}</span>
+                                #{vista1.nombre}<span class="label label-default">#{vistaController.countItemsVista(vista1)}</span>
                             </p:commandLink>
                             <p:tooltip for="vistalink1" value="#{vista1.descripcion}" rendered="#{not empty vista1.descripcion}" />  
 
                             <h:panelGroup rendered="#{cc.attrs.controllerMBean.vista eq vista1}">
-                                <a href="#" data-toggle="tab">#{vista1.nombre} <span class="label label-info">#{cc.attrs.controllerMBean.countItemsVista(vista1)}</span></a>
+                                <a href="#" data-toggle="tab">#{vista1.nombre} <span class="label label-info">#{vistaController.countItemsVista(vista1)}</span></a>
                             </h:panelGroup>
 
                         </li>

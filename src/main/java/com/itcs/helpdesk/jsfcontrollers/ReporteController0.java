@@ -305,8 +305,14 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
                     SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", LOCALE_ES_CL);
                     SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", LOCALE_ES_CL);
 //                    SimpleDateFormat dateFormatTZ = new SimpleDateFormat("dd/MM/yyyy Z", LOCALE_ES_CL);
-                    Date from_date = format.parse(campoCompCasoEjeXSeriesEntity.getValor());
-                    Date to_date = format.parse(campoCompCasoEjeXSeriesEntity.getValor2());
+
+                    String[] splitDates = campoCompCasoEjeXSeriesEntity.getValor().split("-");
+
+                    Date from_date = dateFormat.parse(splitDates[0].trim());
+                    Date to_date = dateFormat.parse(splitDates[1].trim());
+
+//                    Date from_date = format.parse(campoCompCasoEjeXSeriesEntity.getValor());
+//                    Date to_date = format.parse(campoCompCasoEjeXSeriesEntity.getValor2());
 
                     //less than one year
                     int daysBetween = Days.daysBetween(new DateTime(from_date), new DateTime(to_date)).getDays();
@@ -1445,7 +1451,6 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         setChartModelTitle("Estado de Casos");
 
         //System.out.println("oneDimData:" + oneDimData);
-
         return "reports";
 
     }
@@ -1889,8 +1894,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         return vista1;
     }
 
-    
-     public SelectItem[] getTiposDeGrafico() {
+    public SelectItem[] getTiposDeGrafico() {
 
         SelectItem[] types = null;
 
@@ -1908,7 +1912,7 @@ public class ReporteController0 extends AbstractManagedBean<Caso> implements Ser
         return types;
 
     }
-     
+
     @Override
     public PaginationHelper getPagination() {
         throw new UnsupportedOperationException("Not supported yet.");

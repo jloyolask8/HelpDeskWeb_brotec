@@ -129,7 +129,12 @@
 
 
                     <script type="text/javascript">
+
+
+
                         $(function () {
+
+
                             $("select.select2Input").select2({
                                 dropdownAutoWidth: true,
                                 allowClear: true
@@ -156,6 +161,14 @@
                                 highlight: true,
                                 displayKey: 'email',
                                 minLength: 3
+                            });
+
+
+
+                            $(".daterangepicker").daterangepicker({
+                                timePicker: true,
+                                timePickerIncrement: 15,
+                                format: 'DD/MM/YYYY h:mm'
                             });
                         });
                     </script>

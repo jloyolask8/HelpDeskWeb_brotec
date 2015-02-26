@@ -934,14 +934,7 @@
                                 <h:message for="owner1" errorClass="text-danger" infoClass="text-info"/>
 
 
-                                <script type="text/javascript">
-                                    $(function () {
-                                        $("select.select2Input").select2({
-                                            dropdownAutoWidth: true,
-                                            allowClear: true
-                                        });
-                                    });
-                                </script>
+                                
 
                                 <p:autoComplete id="emailCl" value="#{casoController.emailClienteSeleccionadoTransfer}" 
                                                 completeMethod="#{emailClienteController.completeEmailCliente}"  

@@ -62,6 +62,18 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         return userSessionBean.getCurrent();
     }
 
+    public int countItemsVista(Vista vista) {
+        try {
+            final Long countEntities = getJpaController().countEntities(vista, userSessionBean.getCurrent(), null);
+            return countEntities.intValue();
+        } catch (Exception ex) {
+            addErrorMessage(ex.getMessage());
+            Logger.getLogger(VistaController.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+
+    }
+
     /**
      * This one is not used to filter the data displayed, is used to create a
      * View with filters.
@@ -90,7 +102,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         return "/script/vista/View";
     }
-    
+
     public String prepareCreateVista() {
         filterHelper2 = null;
         current = new Vista(Vista.class);
@@ -197,7 +209,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
             }
 
         } catch (RollbackFailureException ex) {
-             addErrorMessage("Lo sentimos, no se puede guardar. _Error: " + ex.getMessage());
+            addErrorMessage("Lo sentimos, no se puede guardar. _Error: " + ex.getMessage());
             Logger.getLogger(VistaController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
             addErrorMessage("Lo sentimos, no se puede guardar. _Error: " + ex.getMessage());
@@ -280,7 +292,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
         resetVistas();
         return prepareList();
     }
-    
+
     public void destroySelected() {
         try {
             if (getSelectedItems() != null) {
@@ -294,7 +306,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
                             if (performDestroy(cs)) {
                                 countDeleted++;
                             } else {
-                                addErrorMessage("La vista #" + cs.getNombre()+ " no se pudo eliminar.");
+                                addErrorMessage("La vista #" + cs.getNombre() + " no se pudo eliminar.");
                                 notDeleted.add(cs);
                             }
                         }
@@ -334,7 +346,7 @@ public class VistaController extends AbstractManagedBean<Vista> implements Seria
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
         }
     }
-    
+
     private boolean performDestroy(Vista v) {
         try {
             getJpaController().remove(Vista.class, v.getIdVista());

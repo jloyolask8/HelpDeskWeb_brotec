@@ -84,7 +84,6 @@
                         <h:message for="valorentity1" errorClass="text-danger"/>
                     </p:autoComplete>   
 
-                    <div class="select2-primary">
                         <h:selectManyListbox id="valorentity2" label="Selección..."  disabled="#{not cc.attrs.canChangeFilters}" 
                                              value="#{cc.attrs.filtro.valoresList}"  styleClass="form-control input-sm select2Multiple"
                                              required="true" requiredMessage="Se necesita un valor para comparar."
@@ -93,7 +92,6 @@
                                                          and cc.attrs.filtro.idComparador.idComparador eq 'SC'}">
                             <f:selectItems value="#{cc.attrs.filterHelper.findPosibleOptions(cc.attrs.filtro.idCampo, UserSessionBean.current)}" />
                         </h:selectManyListbox>
-                    </div>
 
 
                     <p:autoComplete styleClass="form-control input-sm" value="#{cc.attrs.filtro.valoresList}" forceSelection="true"  
@@ -133,7 +131,7 @@
                     </h:selectOneMenu>
 
 
-                    <h:inputText id="valorcalendar1" styleClass="datetimepicker form-control input-sm" disabled="#{not cc.attrs.canChangeFilters}" 
+                    <h:inputText id="datetimepicker" styleClass="datetimepicker form-control input-sm" disabled="#{not cc.attrs.canChangeFilters}" 
                                  value="#{cc.attrs.filtro.valor}"  title="Desde:"
                                  required="true" requiredMessage="Se necesita un valor para comparar."
                                  rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null 
@@ -141,25 +139,17 @@
                                              and cc.attrs.filtro.idComparador.idComparador ne 'BW'}">
                         <p:ajax update="@(form :not(.noupdate)) #{cc.attrs.update}"/>
                     </h:inputText>
+                    
+                    <h:inputText id="daterangepicker" disabled="#{not cc.attrs.canChangeFilters}" 
+                                 value="#{cc.attrs.filtro.valor}"  title="Rango:" styleClass="daterangepicker form-control input-sm"
+                                 required="true" requiredMessage="Se necesita un valor para comparar."
+                                 rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null 
+                                             and cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR'
+                                             and cc.attrs.filtro.idComparador.idComparador eq 'BW'}">
+                        <p:ajax update="@(form :not(.noupdate)) #{cc.attrs.update}"/>
+                    </h:inputText>
 
-                    <h:panelGroup layout="block" styleClass="input-daterange input-group" id="bs-datepicker-range"
-                                  rendered="#{cc.attrs.filtro.idCampo ne null and cc.attrs.filtro.idComparador ne null 
-                                              and cc.attrs.filterHelper.getComparableField(cc.attrs.filtro.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR' 
-                                              and cc.attrs.filtro.idComparador.idComparador eq 'BW'}">
-
-                        <h:inputText id="valorcalendar22" styleClass="datetimepicker form-control input-sm" disabled="#{not cc.attrs.canChangeFilters}" 
-                                     value="#{cc.attrs.filtro.valor}"  title="Desde:"
-                                     required="true" requiredMessage="Se necesita un valor para comparar.">
-                            
-                        </h:inputText>
-
-                        <span class="input-group-addon">to</span>
-                        <h:inputText id="valorcalendar2" styleClass="datetimepicker form-control input-sm" value="#{cc.attrs.filtro.valor2}" 
-                                     disabled="#{not cc.attrs.canChangeFilters}"  title="Hasta:"
-                                     required="true" requiredMessage="Se necesita un valor para comparar.">
-                            <p:ajax update="@(form :not(.noupdate)) #{cc.attrs.update}" process="@this valorcalendar22"/>
-                        </h:inputText>
-                    </h:panelGroup>
+                    
 
 
                 </div>

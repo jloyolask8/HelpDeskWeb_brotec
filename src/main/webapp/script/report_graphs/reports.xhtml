@@ -19,6 +19,12 @@
                     //show the dialog
                     PF('dlg').show();
                 }
+
+                $(".daterangepicker").daterangepicker({
+                    timePicker: true,
+                    timePickerIncrement: 15,
+                    format: 'DD/MM/YYYY h:mm'
+                });
                 //]]>
             </script>
 
@@ -228,15 +234,15 @@
                                                     });
                                                 </script>
 
-                                                <p:outputLabel value="Desde:"  rendered="#{reporteController.filterHelper.getComparableField(reporteController.campoCompCasoEjeXSeriesEntity.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR'}"/>
-                                                <p:inputText label="Desde" id="from"  value="#{reporteController.campoCompCasoEjeXSeriesEntity.valor}"  title="Desde:" styleClass="form-control input-sm"
-                                                             rendered="#{reporteController.filterHelper.getComparableField(reporteController.campoCompCasoEjeXSeriesEntity.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR'}" >
-                                                </p:inputText>
 
-                                                <p:outputLabel value="Hasta:"  rendered="#{reporteController.filterHelper.getComparableField(reporteController.campoCompCasoEjeXSeriesEntity.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR'}"/>
-                                                <p:inputText label="Hasta" id="to" value="#{reporteController.campoCompCasoEjeXSeriesEntity.valor2}"  title="Hasta:" styleClass="form-control input-sm"
-                                                             rendered="#{reporteController.filterHelper.getComparableField(reporteController.campoCompCasoEjeXSeriesEntity.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR'}" >
-                                                </p:inputText>
+                                                <h:inputText id="daterangepicker" 
+                                                             value="#{reporteController.campoCompCasoEjeXSeriesEntity.valor}"  
+                                                             title="Rango:" styleClass="daterangepicker form-control input-sm"
+                                                             required="true" requiredMessage="Se necesita un valor para comparar."
+                                                             rendered="#{reporteController.filterHelper.getComparableField(reporteController.campoCompCasoEjeXSeriesEntity.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR'}">
+                                                </h:inputText>
+
+                                               
 
                                             </h:panelGroup>
 

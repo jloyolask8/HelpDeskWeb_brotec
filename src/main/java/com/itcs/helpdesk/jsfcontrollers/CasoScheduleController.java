@@ -426,7 +426,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
                 && !StringUtils.isEmpty(entityEvent.getIdTipoAccion().getImplementationClassName())) {
             //we must schedule the selected action
             String jobID = HelpDeskScheluder.scheduleActionClassExecutorJob(
-                    getUserSessionBean().getTenantId(),
+                    getCurrentTenantId(),
                     entityEvent.getIdCaso().getIdCaso(),
                     entityEvent.getIdTipoAccion().getImplementationClassName(),
                     entityEvent.getParametrosAccion(),
@@ -456,7 +456,7 @@ public class CasoScheduleController extends AbstractManagedBean<com.itcs.helpdes
                 final String scheduleEventReminderIdString = scheduleEventReminder.getIdReminder().toString();
 
                 String jobId = HelpDeskScheluder.scheduleEventReminderJob(
-                        getUserSessionBean().getTenantId(),
+                        getCurrentTenantId(),
                         entityEvent.getUsuariosInvitedList(),
                         entityEvent.getIdCaso().getIdCaso(),
                         eventIdString,

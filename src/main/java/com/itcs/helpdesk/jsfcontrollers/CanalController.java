@@ -323,7 +323,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
                     it.remove(); // avoids a ConcurrentModificationException
                 }
                 getJpaController().merge(current);
-                MailClientFactory.createInstance(getUserSessionBean().getTenantId(), current);
+                MailClientFactory.createInstance(getCurrentTenantId(), current);
             } else {
                 current.setIdCanal(tmpEmailCorreoElectronico);
                 current.setIdTipoCanal(EnumTipoCanal.EMAIL.getTipoCanal());
@@ -361,7 +361,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
 
     private void initializeMailRead() {
         try {
-            MailClientFactory.createInstance(getUserSessionBean().getTenantId(), current);
+            MailClientFactory.createInstance(getCurrentTenantId(), current);
             String freqStr = current.getSetting(EnumEmailSettingKeys.CHECK_FREQUENCY.getKey());
             int freq = HelpDeskScheluder.DEFAULT_CHECK_EMAIL_INTERVAL;
             try {
@@ -372,7 +372,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
 
             }
 
-            HelpDeskScheluder.scheduleRevisarCorreo(getUserSessionBean().getTenantId(), current.getIdCanal(), freq);
+            HelpDeskScheluder.scheduleRevisarCorreo(getCurrentTenantId(), current.getIdCanal(), freq);
         } catch (IOException | SchedulerException e) {
             Log.createLogger(this.getClass().getName()).logSevere("Error inicializando lectura del correo. " + e.getMessage());
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -428,7 +428,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
     public void destroySelected() {
         if (current != null) {
             try {
-                final String downloadEmailJobId = DownloadEmailJob.formatJobId(current.getIdCanal(), getUserSessionBean().getTenantId());
+                final String downloadEmailJobId = DownloadEmailJob.formatJobId(current.getIdCanal(), getCurrentTenantId());
                 final JobKey jobKey = JobKey.jobKey(downloadEmailJobId, HelpDeskScheluder.GRUPO_CORREO);
                 HelpDeskScheluder.unschedule(jobKey);
             } catch (SchedulerException ex) {

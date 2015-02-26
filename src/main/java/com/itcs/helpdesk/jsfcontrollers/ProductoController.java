@@ -532,7 +532,7 @@ public class ProductoController extends AbstractManagedBean<Producto> implements
         String productComponentDescription = "Componente";
          String productSubComponentDescription = "SubComponente";
         try {
-            configinstance = ApplicationConfigs.getInstance(getUserSessionBean().getTenantId());
+            configinstance = ApplicationConfigs.getInstance(getCurrentTenantId());
             productDescription = configinstance.getProductDescription();
             productComponentDescription = configinstance.getProductComponentDescription();
             productSubComponentDescription = configinstance.getProductSubComponentDescription();

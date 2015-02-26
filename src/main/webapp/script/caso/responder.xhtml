@@ -228,12 +228,9 @@
 
                         <script type="text/javascript">
                             $(function () {
-                                $("select.select2Input").select2({
-                                    dropdownAutoWidth: true,
-                                    allowClear: true
-                                });
+                                
 
-                                $("select.select2Multiple").select2({
+                                $("select.select2Multiple").select2("destroy").select2({
                                     dropdownAutoWidth: true,
                                     allowClear: true
                                 });
