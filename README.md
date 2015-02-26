@@ -1,9 +1,55 @@
 HelpDeskWeb_brotec
 ==================
+## Installation (git download, compile and deploy)
 
-HelpDeskWeb_brotec
+Multitenant branches:
 
-Pedientes Godesk
+- https://github.com/jloyolask8/HelpDesk_Persistence_Brotec/tree/multitenant_persistence
+- https://github.com/jloyolask8/HelpDeskWeb_brotec/tree/multitenant-godesk-testing-merge
+
+email doesnt need multinenant version.
+
+1.$ ssh www.godesk.cl
+2.$ cd /home/glassfish/deploy/github-sources/
+3. Compilation Order:
+drwxr-xr-x. 5 jonathan root 4096 Feb  3 15:23 Email
+drwxr-xr-x. 5 jonathan root 4096 Feb  9 13:18 HelpDesk_Persistence_Brotec
+drwxr-xr-x  5 jonathan root 4096 Feb  9 13:19 HelpDeskWeb_brotec
+
+
+4. $ cd Email, $ git pull, $ mvn clean install
+
+5.
+
+$ cd HelpDesk_Persistence_Brotec
+$ git checkout multitenant_persistence  (if you are already in this branch use pull)
+$ git pull (if you have not downloaded the branches yet use $ git fetch )
+$ mvn -Pgodesk_prod clean install
+
+5.
+
+$ cd HelpDeskWeb_brotec
+$ git checkout multitenant-godesk-testing-merge  (if you are already in this branch use pull)
+$ git pull (if you have not downloaded the branches yet use $ git fetch )
+$ mvn -Pgodesk_prod clean install
+
+if all success you will get a war file inside the server files
+deploy it directly
+
+context name of our multitenant is "go" 
+
+## Pedientes Godesk
+
+deploy jwatch
+http://code.google.com/p/jwatch/wiki/Installation
+remove all links to see jobs inside the app.
+
+MANIWIS DEBE PROVEER UN DOC CON LOS TERMINOS DE NUSTRO SERVICIO. LUEGO ATACHAR ESE DOC A LA PAGINA REGISTRARSE.
+
+embeddedFromNewTicketController  - newTicketEmbedded.xhtml NOT WORKING
+WE TO MAKE ACCESS TO ALL DATA IN A MULTITENANT WAY, IT STILL ACCESS DATA OLD WAY.
+THE IDEA HERE IS NOT TO USE ANY OTHER BEANCONTROLLER, INSTEAD CREATE ALL NEEDED METHOS TO GET DATA INSIDE 
+embeddedFromNewTicketController, THE TENANT ID IS PASSED AS A PARAMETER TO THIS BEAN AND IT GETS DATA USING PARENTS UTILITIES.
 
 no se pq al editar un canal de email no me salen las opciones de debug, etc.
 
