@@ -9,36 +9,235 @@
       xmlns:go="http://java.sun.com/jsf/composite/go">
 
 
-    <ui:composition template="/script/template_inbox.xhtml">
+    <ui:composition template="/script/template_inbox_bootstrap_config.xhtml">
         <ui:define name="title">
-            <p:outputLabel value="#{bundle.ListAppSettingTitle}"/>
+            <h:outputText value="Global Settings"/>
         </ui:define>
 
         <ui:define name="westHeader">
             <h:outputText value="..." style="font-weight: bold"></h:outputText>
         </ui:define>
 
+         <ui:define name="help">
+            <h:outputText value="Global Settings"/>
+        </ui:define>
+        
         <ui:define name="head">
             <style type="text/css">
 
-                .ui-datatable thead th, .ui-datatable tbody td, .ui-datatable tfoot td {
-                    border-width: 0px  !important;
-                    border : 0px !important;
-                }
-
-                .no-border.ui-widget-content.ui-datatable table, .no-border{
-                    border-width: 0px  !important;
-                    border : 0px !important;
-                }
             </style>
+        </ui:define>
+
+        <ui:define name="content_header">
+            <script>
+                var init = [];
+                init.push(function () {
+                    $('body').addClass('mmc');
+                });
+            </script>
+
+            <!-- page-header -->
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-sm-6 col-xs-12">
+                        <h1><i class="fa fa-wrench page-header-icon"></i>&nbsp;&nbsp;Global Settings</h1>
+                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                            <i class="fa fa-info-circle"/>
+                        </p:commandLink> 
+                    </div>
+                    <div class="col-sm-6 col-xs-12">
+                        <h:form id="buttonsForm">
+
+                            <div class="pull-right">
+
+                                <div class="btn-group">
+                                    <go:paginatorCounts controllerMBean="#{appSettingController}"/>
+                                </div>
+
+                                <go:paginatorBtnsBt controllerMBean="#{appSettingController}" update="@(form)"/>
+
+
+                            </div>
+                        </h:form>
+                    </div>
+                </div>
+            </div><!-- / .page-header --> 
+        </ui:define>
+        <ui:define name="body">
+
+            <go:vistasListBt id="vistasList" 
+                             update="@(form)" 
+                             controllerMBean="#{appSettingController}"
+                             user="#{UserSessionBean.current}"/>
+            <div class="panel search-panel">
+                <h:form id="formfilter">
+                    <go:filterView id="panelFilter0" titleIconClass="fa fa-filter page-header-icon"
+                                   controllerMBean="#{appSettingController}" 
+                                   vista="#{appSettingController.vista}"
+                                   filterHelper="#{appSettingController.filterHelper}" 
+                                   canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
+                                   update=":mainform:messages :form" vistaControllerBackOutcome="/script/appSetting/config"/>
+
+                </h:form>
+            </div>
+
+
+            <h:form id="form" enctype="multipart/form-data">
+
+                <div class="btn-toolbar pull-right">
+                    <div class="btn-group">
+                        <p:commandLink styleClass="btn btn-primary btn-flat" 
+                                       action="#{appSettingController.submitForm}"  
+                                       ajax="false"  >
+                            <i class="fa fa-save"></i> #{bundle.Save}
+                        </p:commandLink>  
+                    </div> 
+                </div>
+                <div>
+                    <p:dataTable value="#{appSettingController.items}" 
+                                 var="data" styleClass="no-border paginated hide-column-names">
+
+                        <p:column width="200">
+                            <p:outputLabel value="#{data.label}" style="font-weight: bold;" styleClass="panel-padding"/>
+                        </p:column>
+
+                        <p:column>
+
+                            <p:inputText id="txt" value="#{data.settingValue}" size="60" required="#{data.required}" 
+                                         rendered="#{data.type eq 'input'}"/> 
+
+
+                            <h:panelGrid columns="1" rendered="#{data.type eq 'inputhtml'}">
+
+                                <p:inplace editor="true">
+                                    <f:facet name="output">
+                                        <h:outputText value="#{data.settingValue}" escape="false"/>
+                                    </f:facet>
+                                    <f:facet name="input">
+                                        <pe:ckEditor id="settingValue" value="#{data.settingValue}" required="#{data.required}" width="560" height="210" language="es"
+                                                     toolbar="#{applicationBean.ckEditorToolbar}"
+                                                     customConfig="#{request.contextPath}/resources/js/ckeditor.js"/>
+                                        <p:watermark for="settingValue" value="#{data.descripcion}"/>
+
+                                    </f:facet>
+                                </p:inplace>
+
+                                <p:commandLink id="overlayBtn" value="Marcadores" />
+                                <p:overlayPanel id="MarcadoresPanel" for="overlayBtn" hideEffect="fade" dynamic="true"> 
+                                    <p:dataTable value="#{clippingController.availablePlaceHolders}" var="holder" 
+                                                 emptyMessage="No hay placeholders disponibles.">
+                                        <p:column headerText="Marcadores de posición">
+                                            <h:outputText value="\${#{holder}}"/>
+                                        </p:column>
+                                        <f:facet name="footer">
+                                            <h:outputText value="Utilice marcadores de posición para insertar información (del caso) usada con frecuencia fácilmente en el texto."/>
+                                        </f:facet>
+                                    </p:dataTable>
+                                </p:overlayPanel>
+
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="1" rendered="#{data.type eq 'inputtextarea'}">
+                                <p:inplace editor="true" rendered="#{not empty data.settingValue}">
+                                    <f:facet name="output">
+                                        <h:outputText value="#{data.settingValue}" escape="false"/>
+                                    </f:facet>
+                                    <f:facet name="input">
+                                        <p:inputTextarea  value="#{data.settingValue}" required="#{data.required}" />
+                                    </f:facet>
+                                </p:inplace>
+
+                                <p:inputTextarea  value="#{data.settingValue}" required="#{data.required}" rendered="#{empty data.settingValue}"/>
+                            </h:panelGrid>
+
+
+
+                            <h:panelGrid columns="3"  rendered="#{data.type eq 'inputfile'}">
+
+                                <h:panelGrid columns="2">
+                                    <p:row>
+                                        <p:graphicImage id="imageLogoPreview0" value="#{applicationBean.logo}" cache="false" width="200"/>
+
+                                    </p:row>
+
+                                    <p:row>
+                                        <p:fileUpload id="logo" value="#{appSettingController.logoUploadFile}" uploadLabel="envia" 
+                                                      mode="simple" update=":form"/>  
+
+                                    </p:row>
+
+
+
+
+                                </h:panelGrid>
+                            </h:panelGrid>  
+
+                            <p:selectOneButton value="#{data.settingValue}" required="#{data.required}"   rendered="#{data.type eq 'booleanchoice'}"
+                                               style="vertical-align:middle;">
+                                <f:selectItem itemLabel="Habilitado" itemValue="true"/>
+                                <f:selectItem itemLabel="Desabilitado" itemValue="false"/>
+                            </p:selectOneButton>
+
+                            <br/>
+                            <h:outputText value="#{data.descripcion}" style="color: #666666;line-height: 17px;margin: 5px 0 0;padding-bottom: 3px;"/>  
+
+                            <br/>
+                        </p:column>
+
+
+                        <p:column>
+                            <h:inputText value="#{data.grupo}"/>
+                        </p:column>
+
+
+                    </p:dataTable>
+                </div>  
+                <div class="btn-toolbar pull-right">
+                    <div class="btn-group">
+                        <p:commandLink styleClass="btn btn-primary btn-flat" 
+                                       action="#{appSettingController.submitForm}"  
+                                       ajax="false"  >
+                            <i class="fa fa-save"></i> #{bundle.Save}
+                        </p:commandLink>  
+                    </div> 
+                </div> 
+
+
+                <div class="row text-center">
+                    <go:paginatorCounts controllerMBean="#{appSettingController}"/>
+                </div>
+
+
+            </h:form>
+
+            <p:panel>
+                <p:outputLabel value="URL Para crear casos en su pagina web:" style="font-weight: bold;"/>
+                <h:outputText id="clipboard_text" 
+                              value="http://#{facesContext.externalContext.requestServerName}:#{facesContext.externalContext.requestServerPort}#{facesContext.externalContext.requestContextPath}/faces/public/newTicketEmbedded.xhtml?tenant=#{UserSessionBean.tenantId}"/>
+
+                <button id="copy-button" aria-label="Copy the url" title="Copy the url"
+                        class="js-zeroclipboard button-outline zeroclipboard-button" 
+                        data-clipboard-target="clipboard_text" 
+                        data-copied-hint="Copied!" type="button"><span class="fa fa-clipboard"></span></button>
+
+            </p:panel>
+
+
+            <br/>
+
+
+        </ui:define>
+
+        <ui:define name="dialogs">
+
         </ui:define>
 
         <ui:define name="scripts">
             <h:outputScript name="ZeroClipboard.min.js" library="js"/>
 
             <script type="text/javascript">
-                ZeroClipboard.config( { swfPath: "http://#{facesContext.externalContext.requestServerName}:#{facesContext.externalContext.requestServerPort}#{facesContext.externalContext.requestContextPath}/public/res/ZeroClipboard.swf" } );
-                
+                ZeroClipboard.config({swfPath: "http://#{facesContext.externalContext.requestServerName}:#{facesContext.externalContext.requestServerPort}#{facesContext.externalContext.requestContextPath}/public/res/ZeroClipboard.swf"});
+
                 var client = new ZeroClipboard(document.getElementById("copy-button"));
 
                 client.on("ready", function (readyEvent) {
@@ -52,170 +251,6 @@
                     });
                 });
             </script>
-
-        </ui:define>
-
-        <ui:define name="west" id="west">
-
-            <go:vistasList id="vistasList" update=":vistasList:vistasForm :mainform:messages :formfilter:panelFilter0:panelFilter :form" 
-                           controllerMBean="#{appSettingController}"
-                           user="#{UserSessionBean.current}"/>
-
-            <br/>
-
-
-        </ui:define>
-
-        <ui:define name="body">
-
-            <h:form id="formfilter">
-                <go:filterView id="panelFilter0" titleIconClass="fa fa-filter page-header-icon"
-                               controllerMBean="#{appSettingController}" 
-                               vista="#{appSettingController.vista}"
-                               filterHelper="#{appSettingController.filterHelper}" 
-                               canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
-                               update=":mainform:messages :form" vistaControllerBackOutcome="/script/appSetting/config"/>
-
-            </h:form>
-
-            <p:panel>
-                <p:outputLabel value="URL Para crear casos en su pagina web:" style="font-weight: bold;"/>
-                <h:outputText id="clipboard_text" 
-                              value="http://#{facesContext.externalContext.requestServerName}:#{facesContext.externalContext.requestServerPort}#{facesContext.externalContext.requestContextPath}/faces/public/newTicketEmbedded.xhtml?tenant=#{UserSessionBean.tenantId}"/>
-          
-              
-                
-                
-                <button id="copy-button" aria-label="Copy the url" title="Copy the url"
-                        class="js-zeroclipboard button-outline zeroclipboard-button" 
-                        data-clipboard-target="clipboard_text" 
-                        data-copied-hint="Copied!" type="button"><span class="fa fa-clipboard"></span></button>
-                
-            </p:panel>
-            <br/>
-
-            <h:form id="form" enctype="multipart/form-data">
-
-                <p:messages id="messages" showSummary="true"/> 
-
-                <p:toolbar>
-                    <p:toolbarGroup align="right">
-                        <go:paginatorButtons controllerMBean="#{appSettingController}" update=":form"/>
-                    </p:toolbarGroup>  
-                </p:toolbar>
-                
-                    <p:commandButton value="Guardar" action="#{appSettingController.submitForm}"  
-                                 ajax="false"  />  
-
-                <p:dataTable value="#{appSettingController.items}" 
-                             var="data" styleClass="no-border paginated hide-column-names">
-
-                    <p:column width="200">
-                        <p:outputLabel value="#{data.label}" style="font-weight: bold;"/>
-                    </p:column>
-
-                    <p:column>
-
-                        <p:inputText id="txt" value="#{data.settingValue}" size="60" required="#{data.required}" 
-                                     rendered="#{data.type eq 'input'}"/> 
-
-
-                        <h:panelGrid columns="1" rendered="#{data.type eq 'inputhtml'}">
-
-                            <p:inplace editor="true">
-                                <f:facet name="output">
-                                    <h:outputText value="#{data.settingValue}" escape="false"/>
-                                </f:facet>
-                                <f:facet name="input">
-                                    <pe:ckEditor id="settingValue" value="#{data.settingValue}" required="#{data.required}" width="560" height="210" language="es"
-                                                 toolbar="#{applicationBean.ckEditorToolbar}"
-                                                 customConfig="#{request.contextPath}/resources/js/ckeditor.js"/>
-                                    <p:watermark for="settingValue" value="#{data.descripcion}"/>
-
-                                </f:facet>
-                            </p:inplace>
-
-                            <p:commandLink id="overlayBtn" value="Marcadores" />
-                            <p:overlayPanel id="MarcadoresPanel" for="overlayBtn" hideEffect="fade" dynamic="true"> 
-                                <p:dataTable value="#{clippingController.availablePlaceHolders}" var="holder" 
-                                             emptyMessage="No hay placeholders disponibles.">
-                                    <p:column headerText="Marcadores de posición">
-                                        <h:outputText value="\${#{holder}}"/>
-                                    </p:column>
-                                    <f:facet name="footer">
-                                        <h:outputText value="Utilice marcadores de posición para insertar información (del caso) usada con frecuencia fácilmente en el texto."/>
-                                    </f:facet>
-                                </p:dataTable>
-                            </p:overlayPanel>
-
-                        </h:panelGrid>
-
-                        <h:panelGrid columns="1" rendered="#{data.type eq 'inputtextarea'}">
-                            <p:inplace editor="true" rendered="#{not empty data.settingValue}">
-                                <f:facet name="output">
-                                    <h:outputText value="#{data.settingValue}" escape="false"/>
-                                </f:facet>
-                                <f:facet name="input">
-                                    <p:inputTextarea  value="#{data.settingValue}" required="#{data.required}" />
-                                </f:facet>
-                            </p:inplace>
-
-                            <p:inputTextarea  value="#{data.settingValue}" required="#{data.required}" rendered="#{empty data.settingValue}"/>
-                        </h:panelGrid>
-
-
-
-                        <h:panelGrid columns="3"  rendered="#{data.type eq 'inputfile'}">
-
-                            <h:panelGrid columns="2">
-                                <p:row>
-                                    <p:graphicImage id="imageLogoPreview0" value="#{applicationBean.logo}" cache="false" width="200"/>
-
-                                </p:row>
-
-                                <p:row>
-                                    <p:fileUpload id="logo" value="#{appSettingController.logoUploadFile}" uploadLabel="envia" 
-                                                  mode="simple" update=":form"/>  
-
-                                </p:row>
-
-
-
-
-                            </h:panelGrid>
-                        </h:panelGrid>  
-
-                        <p:selectOneButton value="#{data.settingValue}" required="#{data.required}"   rendered="#{data.type eq 'booleanchoice'}"
-                                           style="vertical-align:middle;">
-                            <f:selectItem itemLabel="Habilitado" itemValue="true"/>
-                            <f:selectItem itemLabel="Desabilitado" itemValue="false"/>
-                        </p:selectOneButton>
-
-                        <br/>
-                        <h:outputText value="#{data.descripcion}" style="color: #666666;line-height: 17px;margin: 5px 0 0;padding-bottom: 3px;"/>  
-
-                        <br/>
-                    </p:column>
-
-
-                    <p:column>
-                        <p:outputLabel value="#{data.grupo}" style="font-weight: bold;"/>
-                    </p:column>
-
-
-                </p:dataTable>
-
-                <p:commandButton value="Guardar" action="#{appSettingController.submitForm}"  
-                                 ajax="false"  />  
-
-
-
-
-
-            </h:form>
-        </ui:define>
-
-        <ui:define name="dialogs">
 
         </ui:define>
     </ui:composition>

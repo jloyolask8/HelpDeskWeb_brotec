@@ -157,17 +157,17 @@
                             </p:selectOneMenu>
                             <script>
                                 $(function() {
-                                    $(".datepicker").datepicker({
+                                    $(".datetimepicker").datetimepicker({
                                         dateFormat: "dd/mm/yy"
                                     });
                                 });
                             </script>
-                            <p:inputText style="width: 100px;" id="valorcalendar1" styleClass="datepicker" value="#{filtro.valor}"  title="Desde:"
+                            <p:inputText style="width: 100px;" id="valorcalendar1" styleClass="datetimepicker" value="#{filtro.valor}"  title="Desde:"
                                          rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelperForConditions.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR'}">
                                 <p:ajax/>
                             </p:inputText>
                             &nbsp;
-                            <p:inputText style="width: 100px;" id="valorcalendar2" styleClass="datepicker" value="#{filtro.valor2}"  title="Hasta:"
+                            <p:inputText style="width: 100px;" id="valorcalendar2" styleClass="datetimepicker" value="#{filtro.valor2}"  title="Hasta:"
                                          rendered="#{filtro.idCampo ne null and filtro.idComparador ne null and reglaTriggerController.filterHelperForConditions.getComparableField(filtro.idCampo).fieldTypeId.fieldTypeId eq 'CALENDAR' and filtro.idComparador.idComparador eq 'BW'}" >
                                 <p:ajax/>
                             </p:inputText>

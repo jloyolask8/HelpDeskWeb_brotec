@@ -31,13 +31,12 @@
             <h:panelGroup layout="block" styleClass="input-group input-group-lg" rendered="#{cc.attrs.showSearchBar}">
 
                 <h:inputText id="query" styleClass="form-control no-border" 
-                             style="#{cc.attrs.controllerMBean.filterViewToggle ? 'border-bottom-left-radius: 0px;':''}" 
                              value="#{cc.attrs.controllerMBean.query}"  />
                 <p:watermark for="query" value="#{empty cc.attrs.controllerMBean.vista ? 'Search':'Search in '.concat(cc.attrs.controllerMBean.vista.nombre)}"/>
 
-                <span class="input-group-btn">
+                <span  class="input-group-btn">
 
-                    <p:commandButton id="simpleSearchBtn" ajax="true" update="@form panelFilter #{cc.attrs.update}"                                                      
+                    <p:commandButton id="simpleSearchBtn" ajax="true" update="@(form :not(.collapse))  #{cc.attrs.update}"                                                      
                                      style="background: white;width: 1px;" 
                                      styleClass="btn btn-outline no-border no-border-radius" value=""
                                      actionListener="#{cc.attrs.controllerMBean.filter()}">
@@ -48,115 +47,134 @@
 
                 <span class="input-group-btn hidden-xs">
 
-                    <p:commandButton id="filterPanelToggle"  styleClass="btn no-border"
-                                     style="background: white;#{cc.attrs.controllerMBean.filterViewToggle ? 'border-bottom-right-radius: 0px;':''}" 
+                    <button id="filterBtnTour" class="btn btn-default" type="button" 
+                            data-toggle="collapse" data-target="#filtersCollapse" 
+                            aria-expanded="false" aria-controls="filtersCollapse">
+                        <i class="fa fa-filter"></i>
+                    </button>
 
-                                     ajax="true"  icon="#{cc.attrs.controllerMBean.filterViewToggle ? 'ui-icon-minus':'ui-icon-triangle-1-s'}" iconPos="notext"
-                                     update="@form panelFilter #{cc.attrs.update}"
-                                     disabled="#{not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
-                                     title="#{cc.attrs.controllerMBean.filterViewToggle ? 'Ocultar filtros':'Ver filtro avanzado'}"
-                                     immediate="true">
-                        <f:setPropertyActionListener target="#{cc.attrs.controllerMBean.filterViewToggle}" 
-                                                     value="#{not cc.attrs.controllerMBean.filterViewToggle}"/>
-                    </p:commandButton>
+
 
                 </span>
 
 
             </h:panelGroup>
 
-            <h:panelGroup id="panelFilter"  styleClass="panel"  
-                          style="border: none !important;"  rendered="#{cc.attrs.controllerMBean.filterViewToggle}">
+            <div id="filtersCollapse" class="#{cc.attrs.showSearchBar ? 'collapse':''}">
 
-                <div class="panel-body">
-                    <ui:repeat id="filtrosVista" 
-                               value="#{cc.attrs.vista.filtrosVistaList}" var="filtro">  
+                <h:panelGroup id="panelFilter" layout="block" styleClass="panel"  
+                              style="border: none !important;"  
+                              >
 
-                        <go:entityCriteria id="entityCriteria"
-                                           removeActionListener="#{cc.attrs.vista.removeFiltroFromVista(filtro)}"
-                                           addActionListener="#{cc.attrs.vista.addNewFiltroVista(filtro)}"
-                                           filterHelper="#{cc.attrs.filterHelper}" filtro="#{filtro}" 
-                                           canChangeFilters="#{cc.attrs.canChangeFilters}"
-                                           canRemoveFilter="#{cc.attrs.vista.canRemoveFiltroVista()}"
-                                           requiredAttribute="#{cc.attrs.showApplyAction?'false':'true'}"/>
+                    <div class="panel-body">
+                        <ui:repeat id="filtrosVista" 
+                                   value="#{cc.attrs.vista.filtrosVistaList}" var="filtro">  
 
-                    </ui:repeat>
-                </div>
+                            <go:entityCriteria id="entityCriteria"
+                                               removeActionListener="#{cc.attrs.vista.removeFiltroFromVista(filtro)}"
+                                               addActionListener="#{cc.attrs.vista.addNewFiltroVista(filtro)}"
+                                               filterHelper="#{cc.attrs.filterHelper}" filtro="#{filtro}" 
+                                               canChangeFilters="#{cc.attrs.canChangeFilters}"
+                                               canRemoveFilter="#{cc.attrs.vista.canRemoveFiltroVista()}"
+                                               requiredAttribute="#{cc.attrs.showApplyAction?'false':'true'}"/>
 
-                <div class="panel-footer">
-                    <div align="center">
-                    <p:outputLabel for="allMustMatch" value="Cuando "/>
-                    <p:selectBooleanButton id="allMustMatch" style="height: 20px; font-size: x-small !important;"
-                                           value="#{cc.attrs.vista.allMustMatch}" 
-                                           onLabel="Todas" offLabel="Cualquiera" 
-                                           >
-                        <p:ajax update="@form #{cc.attrs.update}" listener="#{cc.attrs.controllerMBean.filter()}" />
-                    </p:selectBooleanButton>
-                    <p:outputLabel for="allMustMatch" value="se cumplan"/>
-                    &nbsp;
-                    <p:commandButton value="Editar Vista" style="height: 20px; font-size: x-small !important;"
-                                     rendered="#{(cc.attrs.showEdit) and (cc.attrs.vista.idUsuarioCreadaPor eq UserSessionBean.current
-                                                 or filtroAcceso.administradorDelSistema)}" 
-                                     disabled="#{cc.attrs.vista.idVista eq null or not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
-                                     action="#{vistaController.prepareEditPK(cc.attrs.vista.idVista, cc.attrs.vistaControllerBackOutcome)}"                                                  
-                                     immediate="true" ajax="false"
-                                     icon="ui-icon-pencil"/>
-                    &nbsp;
-                    <p:commandButton id="linkGuardar" style="height: 20px; font-size: x-small !important;"
-                                     rendered="#{cc.attrs.showSaveAs}"
-                                     action="#{vistaController.prepareCreate(cc.attrs.vista, cc.attrs.vistaControllerBackOutcome)}"
-                                     ajax="false"
-                                     disabled="#{not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
-                                     value="Guardar como.."
-                                     immediate="true" icon="ui-icon-disk"/>
-                    &nbsp;
-                    <p:commandButton id="linkAplicar" ajax="true" update="@form #{cc.attrs.update}" icon="ui-icon-play" 
-                                     rendered="#{cc.attrs.showApplyAction}" style="height: 20px; font-size: x-small !important;"
-                                     title="Aplicar Filtro" 
-                                     disabled="#{not cc.attrs.canChangeFilters}"
-                                     value="#{empty cc.attrs.vista.filtrosVistaList ? 'Desplegar Todo':'Filtrar' }"
-                                     actionListener="#{cc.attrs.controllerMBean.filter()}"/>      
+                        </ui:repeat>
+                    </div>
+
+                    <div class="panel-footer bg-overlay">
+                        <div class="btn-toolbar">
+                            <div class="btn-group">
+                                <p:outputLabel for="allMustMatch" value="Cuando "/>
+                                <p:selectBooleanButton id="allMustMatch" style="height: 20px; font-size: x-small !important;"
+                                                       value="#{cc.attrs.vista.allMustMatch}" 
+                                                       onLabel="Todas" offLabel="Cualquiera" 
+                                                       >
+                                    <p:ajax update="#{cc.attrs.update}" listener="#{cc.attrs.controllerMBean.filter()}" />
+                                </p:selectBooleanButton>
+                                <p:outputLabel for="allMustMatch" value="se cumplan"/>
+                            </div>
+                            <div class="btn-group">
+                                <p:commandLink styleClass="btn btn-sm btn-default btn-flat" 
+                                               rendered="#{(cc.attrs.showEdit) and (cc.attrs.vista.idUsuarioCreadaPor eq UserSessionBean.current
+                                                           or filtroAcceso.administradorDelSistema)}" 
+                                               disabled="#{cc.attrs.vista.idVista eq null or not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
+                                               action="#{vistaController.prepareEditPK(cc.attrs.vista.idVista, cc.attrs.vistaControllerBackOutcome)}"                                                  
+                                               immediate="true" ajax="false">
+                                    <i class="fa fa-edit"></i> Editar Vista
+                                </p:commandLink>
+                            </div>
+                            <div class="btn-group">
+                                <p:commandLink id="linkGuardar" styleClass="btn btn-sm btn-default btn-flat"
+                                               rendered="#{cc.attrs.showSaveAs}"
+                                               action="#{vistaController.prepareCreate(cc.attrs.vista, cc.attrs.vistaControllerBackOutcome)}"
+                                               ajax="false"
+                                               disabled="#{not filtroAcceso.verificarAccesoAFuncionAdministrarVistas()}"
+                                               immediate="true" >
+                                    <i class="fa fa-save"></i> Guardar como..
+                                </p:commandLink>
+                            </div>
+                            <div class="btn-group">
+                                <p:commandLink id="linkAplicar" ajax="true" update="#{cc.attrs.update}" 
+                                               rendered="#{cc.attrs.showApplyAction}" styleClass="btn btn-sm btn-primary btn-flat"
+                                               title="Aplicar Filtro" 
+                                               disabled="#{not cc.attrs.canChangeFilters}"
+                                               actionListener="#{cc.attrs.controllerMBean.filter()}">
+                                    <i class="fa fa-filter"></i> #{empty cc.attrs.vista.filtrosVistaList ? 'Desplegar Todo':'Filtrar' }
+                                </p:commandLink>  
+                            </div>
+
+                        </div>
+                    </div>
 
 
-                </div>
-                </div>
-               
+
+                    <script type="text/javascript">
 
 
-                <script type="text/javascript">
-                    $(function () {
-                        $("select.select2Input").select2({
-                            dropdownAutoWidth: true,
-                            allowClear: true
+
+                        $(function () {
+
+
+                            $("select.select2Input").select2({
+                                dropdownAutoWidth: true,
+                                allowClear: true
+                            });
+
+                            $("select.select2Multiple").select2({
+                                dropdownAutoWidth: true,
+                                allowClear: true
+                            });
+
+                            $('.datetimepicker').datetimepicker({
+                                language: 'es',
+                                format: 'dd/mm/yyyy hh:ii',
+                                viewformat: 'dd/mm/yyyy hh:ii',
+                                todayBtn: true,
+                                autoclose: true,
+                                todayHighlight: true,
+                                weekStart: 1,
+                                forceParse: true
+                            });
+
+                            $(".typeahead").typeahead({
+                                remote: '#{facesContext.externalContext.requestContextPath}/EmailClienteListServlet?tenant=#{UserSessionBean.tenantId}&amp;q=%QUERY',
+                                highlight: true,
+                                displayKey: 'email',
+                                minLength: 3
+                            });
+
+
+
+                            $(".daterangepicker").daterangepicker({
+                                timePicker: true,
+                                timePickerIncrement: 15,
+                                format: 'DD/MM/YYYY h:mm'
+                            });
                         });
+                    </script>
 
-                        $("select.select2Multiple").select2({
-                            dropdownAutoWidth: true,
-                            allowClear: true
-                        });
-
-                        $('.datepicker').datetimepicker({
-                            language: 'es',
-                            format: 'dd/mm/yyyy hh:ii',
-                            viewformat: 'dd/mm/yyyy hh:ii',
-                            todayBtn: true,
-                            autoclose: true,
-                            todayHighlight: true,
-                            weekStart: 1,
-                            forceParse: true
-                        });
-
-                        $(".typeahead").typeahead({
-                            remote: '#{facesContext.externalContext.requestContextPath}/EmailClienteListServlet?tenant=#{UserSessionBean.tenantId}&amp;q=%QUERY',
-                            highlight: true,
-                            displayKey: 'email',
-                            minLength: 3
-                        });
-                    });
-                </script>
-
-            </h:panelGroup>
-
+                </h:panelGroup>
+            </div>
 
         </composite:implementation>
     </html>

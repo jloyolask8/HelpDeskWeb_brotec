@@ -41,9 +41,9 @@
                 <ui:insert name="scripts"></ui:insert>
             </h:head>
 
-            <h:body id="mainbody" styleClass="theme-default page-signup">  
-                
-                 <script>
+            <h:body id="mainbody" styleClass="theme-default page-signup" style="background: #f6f6f6!important;">  
+
+                <script>
                     var init = [];
                 </script>
 
@@ -57,17 +57,10 @@
                     </div>
                 </p:dialog>
 
-                <!-- Page background -->
-                <div id="page-signup-bg">
-                    <!-- Background overlay -->
-                    <div class="overlay"></div>
 
-                    <p:graphicImage library="images" name="signin-bg-1.jpg" title="GoDesk"/>
-                </div>
-                <!-- / Page background -->
 
                 <!-- Container -->
-                <div class="signup-container">
+                <div class="signup-container" style="margin-top: 20px;">
                     <!-- Header -->
                     <div class="signup-header">
                         <a href="#" class="logo">
@@ -87,13 +80,14 @@
                                 <span>1 mes de prueba gratis</span>
                             </div>
 
-                            <p:messages/>
+                            <p:messages globalOnly="true"/>
 
                             <div class="form-group w-icon">
                                 <h:inputText id="signup_name" required="true" requiredMessage="Nombre completo is required"
                                              styleClass="form-control input-lg" value="#{signUpController.registrationVO.fullName}" autocomplete="off"/>  
                                 <p:watermark for="signup_name" value="Nombre completo"/>
                                 <span class="fa fa-info signup-form-icon"></span>
+                                <h:message for="signup_name" errorClass="text-danger"/>
                             </div>
 
                             <div class="form-group w-icon">
@@ -102,6 +96,7 @@
                                              styleClass="form-control input-lg" value="#{signUpController.registrationVO.email}" autocomplete="off"/> 
                                 <p:watermark for="signup_email" value="E-Mail"/>
                                 <span class="fa fa-envelope signup-form-icon"></span>
+                                <h:message for="signup_email" errorClass="text-danger"/>
                             </div>
 
                             <div class="form-group w-icon">
@@ -110,6 +105,7 @@
                                              styleClass="form-control input-lg" value="#{signUpController.registrationVO.phoneNumber}" autocomplete="off"/> 
                                 <p:watermark for="signup_phone" value="Phone"/>
                                 <span class="fa fa-phone signup-form-icon"></span>
+                                <h:message for="signup_phone" errorClass="text-danger"/>
                             </div>
 
                             <div class="form-group w-icon">
@@ -119,24 +115,29 @@
                                 <p:watermark for="signup_username" value="Nombre de usuario"/>
 
                                 <span class="fa fa-user signup-form-icon"></span>
+                                <h:message for="signup_username" errorClass="text-danger"/>
                             </div>
 
                             <div class="form-group w-icon">
-                                <p:password id="signup_password" required="true" requiredMessage="Contraseña is required"
-                                            feedback="true" 
-                                            styleClass="form-control input-lg" autocomplete="off"
-                                            value="#{signUpController.registrationVO.password}"/>  
+                                <p:password id="signup_password" value="#{signUpController.registrationVO.password}" styleClass="form-control input-lg"
+                                            label="Nueva Contraseña" required="true" feedback="true" requiredMessage="Ingrese su nueva contraseña."
+                                            promptLabel="Favor ingrese su nueva contraseña" weakLabel="Débil"  
+                                            goodLabel="Buena" strongLabel="Fuerte" />  
                                 <p:watermark for="signup_password" value="Contraseña"/>
                                 <span class="fa fa-lock signup-form-icon"></span>
+                                <h:message for="signup_password" errorClass="text-danger"/>
                             </div>
 
                             <div class="form-group w-icon">
-                                <p:password id="signup_password2" required="true" requiredMessage="Confirma tu contraseña"
-                                            feedback="true" 
-                                            styleClass="form-control input-lg" autocomplete="off"
-                                            value="#{signUpController.registrationVO.passwordConfirm}"/>  
+                                <p:password id="signup_password2" value="#{signUpController.registrationVO.passwordConfirm}"  
+
+                                            styleClass="form-control input-lg" requiredMessage="Confirme su nueva contraseña."
+                                            label="Repita Nueva Contraseña" required="true" feedback="true"   
+                                            promptLabel="Favor repita su nueva contraseña" weakLabel="Débil"  
+                                            goodLabel="Buena" strongLabel="Fuerte"/>  
                                 <p:watermark for="signup_password2" value="Confirma tu contraseña"/>
                                 <span class="fa fa-lock signup-form-icon"></span>
+                                <h:message for="signup_password2" errorClass="text-danger"/>
                             </div>
 
                             <div class="form-group w-icon">
@@ -152,8 +153,39 @@
                                 <p:watermark for="companyName" value="Empresa u organización"/>
 
                                 <span class="fa fa-building signup-form-icon"></span>
+                                <h:message for="companyName" errorClass="text-danger"/>
                             </div>
 
+                            <div class="form-group">
+                                <label class="control-label" for="areas">En qué áreas deseas usar godesk?</label>
+
+                                <h:selectManyListbox id="areas" label="Selecciona al menos una..."  
+                                                     value="#{signUpController.registrationVO.defaultAreas}"  styleClass="form-control input-sm select2Multiple"
+                                                     required="true" requiredMessage="Favor indiquenos al menos un Área en la cual desea usar godesk dentro de su empresa."
+                                                     >
+                                    <f:selectItem itemLabel="Administración" itemValue="Administración" />
+                                    <f:selectItem itemLabel="Colaboración Interna" itemValue="Colaboración Interna" />
+                                    <f:selectItem itemLabel="Ventas" itemValue="Ventas" />
+                                    <f:selectItem itemLabel="Servicio al cliente" itemValue="Servicio al cliente" />
+                                    <f:selectItem itemLabel="Soporte técnico" itemValue="Soporte técnico" />
+                                </h:selectManyListbox>
+
+                                <p class="help-block">No te preocupes puedes cambiar y agregar mas áreas una vez dentro del sistema.</p>
+
+                                <script type="text/javascript">
+                                    $(function () {
+                                        $("select.select2Multiple").select2({
+                                            dropdownAutoWidth: true,
+                                            allowClear: true
+                                        });
+                                    });
+                                </script>
+
+                            </div>
+
+
+
+                            
 
                             <div class="form-group" style="margin-top: 20px;margin-bottom: 20px;">
                                 <label class="checkbox-inline">
@@ -161,11 +193,12 @@
                                                              value="#{signUpController.agreedToTermsConditions}"/>
                                     <span class="lbl">I agree with the <a href="#" target="_blank">Terms and Conditions</a></span>
                                 </label>
+                                <h:message for="confirm_id" errorClass="text-danger"/>
                             </div>
 
                             <div class="form-actions">
                                 <p:commandButton id="submit" action="#{signUpController.signup()}" 
-                                                 styleClass="signup-btn bg-primary" update=":signup-form_id"
+                                                 styleClass="signup-btn bg-primary" update="@form @(:not(#recaptcha))"
                                                  onclick="jQuery(this).addClass('ui-state-disabled')"
                                                  value="COMENZAR" />
 
@@ -175,20 +208,17 @@
 
 
                         <!-- "Sign In with" block -->
-                        <div class="signup-with">
+                        <div align="center" class="signup-with">
                             <!-- Facebook -->
-                            <a href="index.html" class="signup-with-btn" style="background:#4f6faa;background:rgba(79, 111, 170, .8);">Sign Up with <span>Facebook</span></a>
+                            <a href="login.xhtml" class="btn btn-flat">Already have an account? <strong>Sign In</strong></a>
 
-                            <a href="index.html" class="signup-with-btn" style="background:#4f6faa;background:rgba(79, 111, 170, .8);">Sign Up with <span>LinkedIn</span></a>
                         </div>
                         <!-- / "Sign In with" block -->
                     </div>
                     <!-- Right side -->
                 </div>
 
-                <div class="have-account">
-                    Already have an account? <a href="login.xhtml">Sign In</a>
-                </div>
+
 
 
                 <script src="#{facesContext.externalContext.requestContextPath}/resources/javascripts/bootstrap.min.js"></script>
@@ -219,52 +249,16 @@
                     // Resize BG
                     //<![CDATA[
                     init.push(function () {
-                        var $ph = $('#page-signup-bg'),
-                                $img = $ph.find('> img');
 
-                        $(window).on('resize', function () {
-                            $img.attr('style', '');
-                            if ($img.height() < $ph.height()) {
-                                $img.css({
-                                    height: '100%',
-                                    width: 'auto'
-                                });
-                            }
+                    });
+
+                    $(function () {
+
+                        $("select.select2Multiple").select2({
+                            dropdownAutoWidth: true,
+                            allowClear: true
                         });
 
-                        $("#signup-form_id").validate({focusInvalid: true, errorPlacement:
-                                    function () {
-                                    }
-                        });
-
-                        // Validate name
-                        $("#name_id").rules("add", {
-                            required: true,
-                            minlength: 1
-                        });
-
-                        // Validate email
-                        $("#email_id").rules("add", {
-                            required: true,
-                            email: true
-                        });
-
-                        // Validate username
-                        $("#username_id").rules("add", {
-                            required: true,
-                            minlength: 3
-                        });
-
-                        // Validate password
-                        $("#password_id").rules("add", {
-                            required: true,
-                            minlength: 6
-                        });
-
-                        // Validate confirm checkbox
-                        $("#confirm_id").rules("add", {
-                            required: true
-                        });
                     });
 
                     window.PixelAdmin.start(init);

@@ -5,15 +5,17 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:pe="http://primefaces.org/ui/extensions">
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:go="http://java.sun.com/jsf/composite/go">
 
     <ui:composition template="/script/template_inbox_bootstrap.xhtml">
         <ui:define name="title">
-            <p:outputLabel value="#{filtroAcceso.hasAccessToViewAllCalendars() ? bundle.agendaTitle:'Mi agenda'}"/>
+            <h:outputText value="#{filtroAcceso.hasAccessToViewAllCalendars() ? bundle.agendaTitle:'Mi agenda'}"/>
         </ui:define>
 
         <ui:define name="menutitle">
-            <p:outputLabel value="#{bundle.agendaMenuTitle}"/>
+            <h:outputText value="#{bundle.agendaMenuTitle}"/>
         </ui:define>
 
         <ui:define name="head" id="head">
@@ -26,7 +28,7 @@
 
         </ui:define>
 
- 
+
 
         <ui:define name="body" id="body">
 
@@ -47,537 +49,229 @@
             <div class="row">
 
                 <div class="col-md-3">
-<h:form id="filterSchedule">
-                <p:panelGrid columns="1" styleClass="filtersGrid" >
-                    <p:row rendered="#{filtroAcceso.hasAccessToViewAllCalendars()}">
-                        <p:column>
-                            <h:outputLabel for="invitados" value="Filtrar Usuarios:" style="font-weight: bold;"/>
-                        </p:column>
+                    <h:form id="filterSchedule">
 
-                        <p:column>
-                            <p:autoComplete id="invitados" value="#{globalScheduleController.selectedUserToAddInvited}" 
-                                            completeMethod="#{globalScheduleController.autoCompleteUsuario}"  dropdown="true"
-                                            var="u"  itemValue="#{u}" itemLabel="#{u.capitalName}">  
+                        <p:autoComplete id="invitados" value="#{globalScheduleController.selectedUserToAddInvited}" 
+                                        rendered="#{filtroAcceso.hasAccessToViewAllCalendars()}"
+                                        completeMethod="#{globalScheduleController.autoCompleteUsuario}"  dropdown="true"
+                                        var="u"  itemValue="#{u}" itemLabel="#{u.capitalName}">  
 
-                                <p:ajax  event="itemSelect"  listener="#{globalScheduleController.usuarioFilterItemSelectEvent}"  
-                                         update=":filterSchedule :formAgendarEvento"  />
+                            <p:ajax  event="itemSelect"  listener="#{globalScheduleController.usuarioFilterItemSelectEvent}"  
+                                     update=":filterSchedule :formAgendarEvento"  />
 
-                                <f:facet name="itemtip">
-                                    <h:panelGrid  columns="2" cellpadding="5">  
-                                        <f:facet name="header">  
-                                            <h:outputText value="#{u.capitalName}" />  
-                                        </f:facet>  
-
-                                        <h:outputText value="Nombre: " />  
+                            <f:facet name="itemtip">
+                                <h:panelGrid  columns="2" cellpadding="5">  
+                                    <f:facet name="header">  
                                         <h:outputText value="#{u.capitalName}" />  
+                                    </f:facet>  
 
-                                        <h:outputText value="Email: " />  
-                                        <h:outputText value="#{u.email}" /> 
+                                    <h:outputText value="Nombre: " />  
+                                    <h:outputText value="#{u.capitalName}" />  
 
-
-                                    </h:panelGrid>  
-                                </f:facet>  
-
-                            </p:autoComplete>   
-                            <p:watermark for="invitados" value="Agregar filtro..."/>
-                        </p:column>
-                    </p:row>
-
-                    <p:row>
-                        <p:column>
-
-                        </p:column>
-
-                        <p:column>
-                            <p:panel>
-
-                                <p:dataTable id="invitadosList" value="#{globalScheduleController.filtrosUsuario}" var="userFilter"
-                                             styleClass="hide-column-names"
-                                             emptyMessage="Favor agregue un usuario para ver su agenda." 
-                                             scrollRows="22" scrollable="true" liveScroll="true" scrollHeight="250">  
+                                    <h:outputText value="Email: " />  
+                                    <h:outputText value="#{u.email}" /> 
 
 
-                                    <p:column width="5%">
-                                        <span style="overflow: hidden;width: 1em;
+                                </h:panelGrid>  
+                            </f:facet>  
+
+                        </p:autoComplete>   
+                        <p:watermark for="invitados" value="Filtrar usuarios..."/>
+                        <br/><br/>
+
+
+                        <h:panelGroup layout="block" styleClass="panel widget-followers">
+                            <div class="panel-heading">
+                                <span class="panel-title"><i class="panel-title-icon fa fa-users"></i>Ver Usuarios</span>
+                            </div> <!-- / .panel-heading -->
+
+                            <h:panelGroup layout="block" styleClass="alert alert-page alert-warning alert-dark"
+                                          rendered="#{empty globalScheduleController.filtrosUsuario}">
+                                <button type="button" class="close" data-dismiss="alert">×</button>
+                                <strong>Agregue Usuarios!</strong> Seleccione algún usuario para ver su agenda.
+                            </h:panelGroup>
+
+                            <div class="panel-body">
+
+                                <c:forEach var="userFilter" items="#{globalScheduleController.filtrosUsuario}">
+
+                                    <div class="follower">
+
+                                        <span class="follower-avatar" style="overflow: hidden;width: 1em;
                                               height: 1em;display: block;border: solid 1px #000;text-indent: 1em;white-space: nowrap;background-color: ##{userFilter.randomColor};">
                                         </span>
-                                    </p:column>
-                                    <p:column>
-                                        <h:outputText   value="#{userFilter.capitalName} (#{userFilter.idUsuario})"/>
-                                    </p:column>  
 
-                                    <p:column width="5%" rendered="#{filtroAcceso.hasAccessToViewAllCalendars()}">
-                                        <p:commandLink update=":filterSchedule :formAgendarEvento" 
-                                                       process="@form"
-                                                       style="border: none !important;"
-                                                       styleClass="btn-outline">
-                                            <p:collector unique="true" value="#{userFilter}" 
-                                                         removeFrom="#{globalScheduleController.filtrosUsuario}"/>
-                                            <i class="fa fa-times"></i>
-                                        </p:commandLink>
-                                    </p:column>
+                                        <div class="body">
+                                            <div class="follower-controls">
 
-                                </p:dataTable>  
+                                                <p:commandLink update=":filterSchedule :formAgendarEvento" 
+                                                               process="@form"
+                                                               style="border: none !important;"
+                                                               styleClass="btn btn-xs btn-danger btn-outline">
+                                                    <p:collector unique="true" value="#{userFilter}" 
+                                                                 removeFrom="#{globalScheduleController.filtrosUsuario}"/>
+                                                    <i class="fa fa-times"></i>
+                                                </p:commandLink>
 
+
+
+                                            </div>
+                                            <a href="#" class="follower-name">#{userFilter.capitalName}</a><br/>
+                                            <a href="#" class="follower-username">@#{userFilter.idUsuario}</a>
+
+
+
+                                        </div>
+                                    </div>
+
+                                </c:forEach>
+
+                            </div> <!-- / .panel-body -->
+                            <div class="panel-footer">
                                 <p:commandLink update=":filterSchedule :formAgendarEvento" rendered="#{globalScheduleController.filtrosUsuario.size() gt 1}"
                                                actionListener="#{globalScheduleController.removeAllUsuariosFilters()}"
                                                process="@this">                                    
                                     <i class="fa fa-times"></i>&nbsp;Quitar todos
                                 </p:commandLink>
+                            </div>
+                        </h:panelGroup>
 
-                                <style type="text/css">
-                                    <ui:repeat value="#{globalScheduleController.filtrosUsuario}" var="user">
-                                    <h:outputText value=".#{user.idUsuario}{background: \##{user.randomColor}; border: 1px solid \##{user.randomColor}; color: #FFFFFF;} " />          
-                                    </ui:repeat>
-                                </style>
+                        <style type="text/css">
+                            <ui:repeat value="#{globalScheduleController.filtrosUsuario}" var="user">
+                            <h:outputText value=".#{user.idUsuario}{background: \##{user.randomColor}; border: 1px solid \##{user.randomColor}; color: #FFFFFF;} " />          
+                            </ui:repeat>
+                            
+                            <ui:repeat value="#{globalScheduleController.filtrosRecurso}" var="r">
+                            <h:outputText value=".res#{r.idResource}{background: \##{r.randomColor}; border: 1px solid \##{r.randomColor}; color: #FFFFFF;} " />          
+                            </ui:repeat>
+                        </style>
 
+                        <p:autoComplete id="resources" value="#{globalScheduleController.selectedResourceToAddInvited}" 
+                                        completeMethod="#{globalScheduleController.autoCompleteResource}"  dropdown="true"
+                                        var="rr"  itemValue="#{rr}" itemLabel="#{rr.nombre}">  
 
-                            </p:panel>
-                            <p:message for="invitadosList"/>
-                        </p:column>
-                    </p:row>
+                            <p:ajax  event="itemSelect"  listener="#{globalScheduleController.resourceFilterItemSelectEvent}" 
+                                     update=":filterSchedule :formAgendarEvento"  />
 
-
-
-
-
-
-
-                    <p:row>
-                        <p:column>
-                            <h:outputLabel for="resources" value="Filtrar Recursos:" style="font-weight: bold;"/>  
-                        </p:column>
-
-                        <p:column>
-                            <p:autoComplete id="resources" value="#{globalScheduleController.selectedResourceToAddInvited}" 
-                                            completeMethod="#{globalScheduleController.autoCompleteResource}"  dropdown="true"
-                                            var="rr"  itemValue="#{rr}" itemLabel="#{rr.nombre}">  
-
-                                <p:ajax  event="itemSelect"  listener="#{globalScheduleController.resourceFilterItemSelectEvent}" 
-                                         update=":filterSchedule :formAgendarEvento"  />
-
-                                <f:facet name="itemtip">
-                                    <h:panelGrid  columns="2" cellpadding="5">  
-                                        <f:facet name="header">  
-                                            <h:outputText value="#{rr.nombre}" />  
-                                        </f:facet>  
-
-                                        <h:outputText value="Nombre: " />  
+                            <f:facet name="itemtip">
+                                <h:panelGrid  columns="2" cellpadding="5">  
+                                    <f:facet name="header">  
                                         <h:outputText value="#{rr.nombre}" />  
+                                    </f:facet>  
 
-                                        <h:outputText value="Tipo: " />  
-                                        <h:outputText value="#{rr.tipo}" /> 
+                                    <h:outputText value="Nombre: " />  
+                                    <h:outputText value="#{rr.nombre}" />  
+
+                                    <h:outputText value="Tipo: " />  
+                                    <h:outputText value="#{rr.tipo}" /> 
 
 
-                                    </h:panelGrid>  
-                                </f:facet>  
+                                </h:panelGrid>  
+                            </f:facet>  
 
-                            </p:autoComplete>   
-                            <p:watermark for="resources" value="Agregar filtro..."/>
+                        </p:autoComplete>   
+                        <p:watermark for="resources" value="Filtrar recursos..."/>
 
-                            <p:message for="resources"/>
-                        </p:column>
-                    </p:row>
+                        <p:message for="resources"/>
+                        <br/><br/>
 
-                    <p:row>
-                        <p:column>
+                        <h:panelGroup layout="block" styleClass="panel widget-followers">
+                            <div class="panel-heading">
+                                <span class="panel-title"><i class="panel-title-icon fa fa-users"></i>Ver Recursos</span>
+                            </div> <!-- / .panel-heading -->
 
-                        </p:column>
+                            <h:panelGroup layout="block" styleClass="alert alert-page alert-warning alert-dark"
+                                          rendered="#{empty globalScheduleController.filtrosRecurso}">
+                                <button type="button" class="close" data-dismiss="alert">×</button>
+                                <strong>Agregue Recursos!</strong> Seleccione algún Recurso para ver su agenda.
+                            </h:panelGroup>
 
-                        <p:column>
-                            <p:panel>
+                            <div class="panel-body">
 
-                                <h:outputText value="mostrar agenda de todos los recursos" rendered="#{empty globalScheduleController.filtrosRecurso}"/>
-                                <ui:repeat id="rList" value="#{globalScheduleController.filtrosRecurso}" var="rSelected">
-                                    <h:panelGroup styleClass="ticket-status" style="background: #4abf5a; color: #FFFFFF;"
-                                                  layout="block">
-                                        <h:outputText   value="#{rSelected.nombre}"/>
-                                        <p:commandLink value="x" update=":filterSchedule :formAgendarEvento" 
-                                                       process="@form"
-                                                       style="border: none !important;"
-                                                       styleClass="btn btn-xs btn-danger btn-outline">
+                                <c:forEach var="rSelected" items="#{globalScheduleController.filtrosRecurso}">
 
-                                            <p:collector unique="true" value="#{rSelected}" 
-                                                         removeFrom="#{globalScheduleController.filtrosRecurso}"/>
-                                        </p:commandLink>
-                                    </h:panelGroup>&nbsp;
+                                    <div class="follower">
 
-                                </ui:repeat>
-                            </p:panel>
-                            <p:message for="rList"/>   
-                        </p:column>
-                    </p:row>
-                </p:panelGrid>
-            </h:form>
+                                        <span class="follower-avatar" style="overflow: hidden;width: 1em;
+                                              height: 1em;display: block;border: solid 1px #000;text-indent: 1em;white-space: nowrap;background-color: ##{rSelected.randomColor};">
+                                        </span>
+
+                                        <div class="body">
+                                            <div class="follower-controls">
+
+                                                <p:commandLink update=":filterSchedule :formAgendarEvento" 
+                                                               process="@form"
+                                                               style="border: none !important;"
+                                                               styleClass="btn btn-xs btn-danger btn-outline">
+                                                    <p:collector unique="true" value="#{rSelected}" 
+                                                                 removeFrom="#{globalScheduleController.filtrosRecurso}"/>
+                                                    <i class="fa fa-times"></i>
+                                                </p:commandLink>
+
+
+
+                                            </div>
+                                            <a href="#" class="follower-name">#{rSelected.nombre}</a><br/>
+                                            <a href="#" class="follower-username">@#{rSelected.descripcion}</a>
+
+
+
+                                        </div>
+                                    </div>
+
+                                </c:forEach>
+
+                            </div> <!-- / .panel-body -->
+                            <div class="panel-footer">
+                                <p:commandLink update=":filterSchedule :formAgendarEvento" rendered="#{globalScheduleController.filtrosRecurso.size() gt 1}"
+                                               actionListener="#{globalScheduleController.removeAllResourcesFilters()}"
+                                               process="@this">                                    
+                                    <i class="fa fa-times"></i>&nbsp;Quitar todos
+                                </p:commandLink>
+                            </div>
+                        </h:panelGroup>
+                        
+                        
+                    </h:form>
                 </div>
 
                 <div class="col-md-9">
-     <div style="margin-top: 12px !important;">
+                    <div style="margin-top: 12px !important;">
 
-                <h:panelGroup id="panel">
+                        <h:panelGroup id="panel">
 
-                    <h:form id="formAgendarEvento">
-                        <p:schedule id="myschedule" value="#{globalScheduleController.lazyScheduleEventsModel}" 
-                                    aspectRatio="2"
-                                    firstHour="8" widgetVar="myschedule">
-                            <p:ajax event="dateSelect" listener="#{globalScheduleController.onDateSelect}" 
-                                    update=":createEventForm:eventDetails" oncomplete="PF('createEventDialog').show()" />  
-                            <p:ajax event="eventSelect" listener="#{globalScheduleController.onEventSelect}" 
-                                    update=":createEventForm:eventDetails" oncomplete="PF('createEventDialog').show()" />  
+                            <h:form id="formAgendarEvento">
+                                <p:schedule id="myschedule" value="#{globalScheduleController.lazyScheduleEventsModel}" 
+                                            aspectRatio="2"
+                                            firstHour="8" widgetVar="myschedule">
+                                    <p:ajax event="dateSelect" listener="#{globalScheduleController.onDateSelect}" 
+                                            update=":createEventForm" oncomplete="PF('createEventDialog').show()" />  
+                                    <p:ajax event="eventSelect" listener="#{globalScheduleController.onEventSelect}" 
+                                            update=":createEventForm" oncomplete="PF('createEventDialog').show()" />  
 
-                            <p:ajax event="eventMove" listener="#{globalScheduleController.onEventMove}" update=":mainform:messages" />  
-                            <p:ajax event="eventResize" listener="#{globalScheduleController.onEventResize}" update=":mainform:messages" /> 
-                        </p:schedule>
-                    </h:form>
+                                    <p:ajax event="eventMove" listener="#{globalScheduleController.onEventMove}" update=":mainform:messages" />  
+                                    <p:ajax event="eventResize" listener="#{globalScheduleController.onEventResize}" update=":mainform:messages" /> 
+                                </p:schedule>
+                            </h:form>
 
-                </h:panelGroup>
-            </div>
+                        </h:panelGroup>
+                    </div>
                 </div>
             </div>
-       
+
 
         </ui:define>
 
         <ui:define name="dialogs">
 
 
-            <p:dialog id="createEventDialog" widgetVar="createEventDialog" header="Evento" 
+              <p:dialog id="createEventDialog" widgetVar="createEventDialog" header="Evento" 
                       showEffect="fade" hideEffect="fade" closeOnEscape="true" appendTo="@(body)">  
                 <h:form id="createEventForm">
-
-                    <p:panelGrid id="eventDetails" columns="1" 
-                                 style="margin-bottom:10px;" styleClass="filtersGrid" >
-
-                        <p:messages globalOnly="true"/>
-
-
-
-
-                        <p:row>
-                            <p:column>
-                                <p:inputText id="title" value="#{globalScheduleController.event.title}" style="width: 100%;"
-                                             required="true" requiredMessage="Favor ingrese un titulo para el evento."/> 
-                                <p:watermark for="title" value="Titulo del evento"/>
-                                <p:message for="title"/>
-                            </p:column>
-                        </p:row>
-
-                        <p:separator />
-                        <p:row rendered="#{globalScheduleController.event.data.idCaso ne null}">
-                            <p:column>
-                                <h:outputLabel value="Caso:" style="font-weight: bold;"/>  
-                            </p:column>
-
-                            <p:column>
-                                <h:commandLink action="#{casoScheduleController.selectCasoByEvento(globalScheduleController.event)}" >
-                                    <h:outputText styleClass="ticket-status" 
-                                                  style="background: \##{globalScheduleController.event.data.idCaso.idSubEstado.backgroundColor}; color: \##{globalScheduleController.event.data.idCaso.idSubEstado.fontColor};" value="#{globalScheduleController.event.data.idCaso.idSubEstado.nombre}"
-                                                  />
-                                    <h:outputText value=" #{globalScheduleController.event.data.idCaso.tipoCaso.nombre} N°#{globalScheduleController.event.data.idCaso.idCaso} - #{globalScheduleController.event.data.idCaso.tema}"/>
-                                </h:commandLink>
-                            </p:column>
-                        </p:row>
-
-                        <p:row rendered="#{globalScheduleController.event.data.idCaso eq null}">
-                            <p:column>
-                                <h:outputLabel value="Caso:" style="font-weight: bold;"/>  
-                            </p:column>
-
-                            <p:column>
-                                <p:inputText id="caso" value="#{globalScheduleController.event.data.idCaso}" required="true" requiredMessage="El caso es requerido para agendar un evento."/>
-                                <p:watermark for="caso" value="Id del caso"/>
-                                <p:message for="caso"/>
-                            </p:column>
-                        </p:row>
-
-                        <p:separator/>
-                        <p:row>
-
-                            <p:column>
-                                <h:outputLabel value="Fecha:" style="font-weight: bold;"/>  
-                            </p:column>
-
-                            <p:column>
-                                <p:panelGrid columns="6">
-                                    <h:outputLabel for="from" value="Desde:" style="font-weight: bold;"/>  
-                                    <p:calendar id="from" value="#{globalScheduleController.event.startDate}" size="14"
-                                                pattern="dd/MM/yyyy HH:mm"
-                                                required="true" requiredMessage="Favor ingrese fecha y hora de comienzo.">  
-                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />  
-                                    </p:calendar>  
-                                    <h:outputLabel for="to" value="Hasta:" style="font-weight: bold;"/>  
-                                    <p:calendar id="to" value="#{globalScheduleController.event.endDate}" size="14"
-                                                pattern="dd/MM/yyyy HH:mm"
-                                                required="true" requiredMessage="Favor ingrese fecha y hora de término.">  
-                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />  
-                                    </p:calendar>
-                                    <h:selectBooleanCheckbox id="allDay" value="#{globalScheduleController.event.allDay}"
-                                                             label="Todo el dia"/>  
-                                    <h:outputLabel for="allDay" value="Todo el día" style="font-weight: bold;"/> 
-                                </p:panelGrid>
-
-                                <p:message for="from"/>
-                                <p:message for="to"/>
-                                <p:message for="allDay"/>
-
-
-                            </p:column>
-
-
-                        </p:row>
-
-                        <p:separator/>
-
-                        <p:row>
-                            <p:column>
-                                <h:outputLabel for="invitados" value="Usuarios:" style="font-weight: bold;"/>
-                            </p:column>
-
-                            <p:column>
-
-                                <p:panelGrid columns="2">
-                                    <p:autoComplete id="invitados" value="#{globalScheduleController.selectedUserToAddInvited}" 
-                                                    rendered="#{filtroAcceso.hasAccessToAdminAllCalendars()}"
-                                                    completeMethod="#{globalScheduleController.autoCompleteUsuario}"  
-                                                    var="u"  itemValue="#{u}" itemLabel="#{u.capitalName}">  
-
-                                        <p:ajax  event="itemSelect"  process="@this"
-                                                 listener="#{globalScheduleController.usuarioInvitedItemSelectEvent}"  
-                                                 update=":createEventForm:panelUsuarios"  />
-
-                                        <f:facet name="itemtip">
-                                            <h:panelGrid  columns="2" cellpadding="5">  
-                                                <f:facet name="header">  
-                                                    <h:outputText value="#{u.capitalName}" />  
-                                                </f:facet>  
-
-                                                <h:outputText value="Nombre: " />  
-                                                <h:outputText value="#{u.capitalName}" />  
-
-                                                <h:outputText value="Email: " />  
-                                                <h:outputText value="#{u.email}" /> 
-
-
-                                            </h:panelGrid>  
-                                        </f:facet>  
-
-                                    </p:autoComplete> 
-
-                                    <p:panel id="panelUsuarios">
-
-                                        <h:outputText value="favor agregar usuarios al evento" rendered="#{empty globalScheduleController.event.data.usuariosInvitedList}"/>
-
-                                        <ui:repeat id="invitadosList" value="#{globalScheduleController.event.data.usuariosInvitedList}" var="userSelected">
-                                            <h:panelGroup styleClass="ticket-status" style="background: #4abf5a; color: #FFFFFF;"
-                                                          layout="block">
-                                                <h:outputText   value="#{userSelected.capitalName} (#{userSelected.idUsuario})"/>
-                                                <p:commandLink value="x" update=":createEventForm:panelUsuarios" rendered="#{filtroAcceso.hasAccessToAdminAllCalendars()}"
-                                                               process="@this"
-                                                               style="border: none !important;"
-                                                               styleClass="btn btn-xs btn-danger btn-outline">
-
-                                                    <p:collector unique="true" value="#{userSelected}" 
-                                                                 removeFrom="#{globalScheduleController.event.data.usuariosInvitedList}"/>
-                                                </p:commandLink>
-                                            </h:panelGroup>&nbsp;
-                                        </ui:repeat>
-
-                                    </p:panel>
-
-                                </p:panelGrid>
-
-                                <p:watermark for="invitados" value="Buscar usuario..."/>
-                            </p:column>
-                        </p:row>
-                        <p:separator/>
-                        <p:row>
-                            <p:column>
-                                <h:outputLabel for="resources" value="Recursos:" style="font-weight: bold;"/>  
-                            </p:column>
-
-                            <p:column>
-
-                                <p:panelGrid columns="2">
-                                    <p:autoComplete id="resources" value="#{globalScheduleController.selectedResourceToAddInvited}" 
-                                                    completeMethod="#{globalScheduleController.autoCompleteResource}"  
-                                                    var="rr"  itemValue="#{rr}" itemLabel="#{rr.nombre}">  
-
-                                        <p:ajax  event="itemSelect" process="@this" listener="#{globalScheduleController.resourceInvitedItemSelectEvent}" 
-                                                 update=":createEventForm:panelRecursos"  />
-
-                                        <f:facet name="itemtip">
-                                            <h:panelGrid  columns="2" cellpadding="5">  
-                                                <f:facet name="header">  
-                                                    <h:outputText value="#{rr.nombre}" />  
-                                                </f:facet>  
-
-                                                <h:outputText value="Nombre: " />  
-                                                <h:outputText value="#{rr.nombre}" />  
-
-                                                <h:outputText value="Tipo: " />  
-                                                <h:outputText value="#{rr.tipo}" /> 
-
-
-                                            </h:panelGrid>  
-                                        </f:facet>  
-
-                                    </p:autoComplete>   
-
-                                    <p:panel id="panelRecursos">
-
-                                        <h:outputText value="sin recursos" rendered="#{empty globalScheduleController.event.data.resourceList}"/>
-                                        <ui:repeat id="rList" value="#{globalScheduleController.event.data.resourceList}" var="rSelected">
-                                            <h:panelGroup styleClass="ticket-status" style="background: #4abf5a; color: #FFFFFF;"
-                                                          layout="block">
-                                                <h:outputText   value="#{rSelected.nombre}"/>
-                                                <p:commandLink value="x" update=":createEventForm:panelRecursos" 
-                                                               process="@this"
-                                                               style="border: none !important;"
-                                                               styleClass="btn btn-xs btn-danger btn-outline">
-
-                                                    <p:collector unique="true" value="#{rSelected}" 
-                                                                 removeFrom="#{globalScheduleController.event.data.resourceList}"/>
-                                                </p:commandLink>
-                                            </h:panelGroup>&nbsp;
-
-                                        </ui:repeat>
-                                    </p:panel>
-                                </p:panelGrid>
-                                <p:watermark for="resources" value="Buscar recurso..."/>
-
-
-                            </p:column>
-                        </p:row>
-                        <p:separator/>
-                        <p:row>
-                            <p:column>
-                                <h:outputLabel for="recordatorios" value="Recordatorios:" style="font-weight: bold;"/>  
-                            </p:column>
-
-                            <p:column>
-                                <p:panel id="reminders">
-
-                                    <ui:repeat id="recordatorios" value="#{globalScheduleController.event.data.scheduleEventReminderList}" var="reminder" >
-
-                                        <h:panelGrid columns="4" cellpadding="5" cellspacing="5">
-
-                                            <h:selectOneMenu id="reminderType" 
-                                                             value="#{reminder.reminderType}" 
-                                                             required="true" requiredMessage="Se requiere ...">
-
-                                                <f:selectItem itemLabel="Correo" itemValue="EMAIL"/>
-                                                <f:selectItem itemLabel="Ventana emergente" itemValue="POPUP" itemDisabled="true"/>
-                                            </h:selectOneMenu>
-
-                                            <h:inputText id="quantityTime" value="#{reminder.quantityTime}" size="3" required="true" />
-
-                                            <h:selectOneMenu id="unitOfTimeInMinutes" 
-                                                             value="#{reminder.unitOfTimeInMinutes}" 
-                                                             required="true" requiredMessage="Se requiere ...">
-                                                <f:selectItem itemLabel="minutos" itemValue="1"/>
-                                                <f:selectItem itemLabel="horas" itemValue="60"/>
-                                                <f:selectItem itemLabel="días" itemValue="1440"/>
-                                                <f:selectItem itemLabel="semanas" itemValue="10080"/>
-                                            </h:selectOneMenu>
-
-                                            <p:commandLink value="eliminar" update=":createEventForm:eventDetails" 
-                                                           style="color: #006dcc"
-                                                           actionListener="#{globalScheduleController.removeScheduleEventReminder(reminder)}" >
-
-                                            </p:commandLink>
-
-                                        </h:panelGrid>
-
-
-                                    </ui:repeat>
-                                    <p:commandLink value="Agregar recordatorio" style="color: #006dcc"
-                                                   actionListener="#{globalScheduleController.addNewScheduleEventReminder()}" 
-                                                   immediate="true"
-                                                   update=":createEventForm:reminders"/>
-                                </p:panel>
-
-                            </p:column>
-                        </p:row>
-
-
-
-
-
-
-                        <p:row>
-                            <p:column>
-
-                            </p:column>
-
-                            <p:column>
-                                <h:panelGrid columns="2">
-                                    <h:selectBooleanCheckbox id="accionAutomaticaBool" value="#{globalScheduleController.event.data.executeAction}">
-                                        <p:ajax update=":createEventForm:action" process="@this"/>  
-                                    </h:selectBooleanCheckbox>
-                                    <h:outputLabel for="accionAutomaticaBool" value="Programar una acción automática" 
-                                                   title="Programar una tarea o acción que se ejecutará automáticamente cuando se cumpla la fecha del evento..."/>  
-                                </h:panelGrid>
-
-                                <p:message for="accionAutomaticaBool"/>
-
-                                <p:panel id="action" visible="#{globalScheduleController.event.data.executeAction}">
-                                    <p:panelGrid>
-
-                                        <p:row rendered="#{globalScheduleController.event.data.executeAction}">
-                                            <p:column>
-                                                <h:outputLabel id="labelTipoAccion" value="Acción:" for="idTipoAccion" style="font-weight: bold;" 
-                                                               />
-                                            </p:column>
-
-                                            <p:column>
-                                                <h:selectOneMenu id="idTipoAccion" styleClass="form-control"
-                                                                 value="#{globalScheduleController.event.data.idTipoAccion}" 
-                                                                 required="true" requiredMessage="Se requiere que seleccione el nombre de una clase que implemente la Accion."
-                                                                 >
-                                                    <p:ajax update=":createEventForm:action" />
-                                                    <f:selectItems value="#{nombreAccionController.itemsAvailableSelectOneImplementingActionClass}"/>
-                                                </h:selectOneMenu>
-                                                <p:message for="idTipoAccion"/>
-                                            </p:column>
-                                        </p:row>
-
-
-
-
-                                        <p:row rendered="#{globalScheduleController.event.data.executeAction}">
-                                            <p:column>
-                                                <h:outputLabel id="labelidAccionCustom" value="Param:" for="idAccionCustom" style="font-weight: bold;" 
-                                                               />
-
-                                            </p:column>
-
-                                            <p:column>
-                                                <h:inputText id="idAccionCustom" value="#{globalScheduleController.event.data.parametrosAccion}"  styleClass="form-control"
-
-                                                             title="#{bundle.CreateAccionLabel_parametros}"/>
-                                                <p:message for="idAccionCustom"/>
-                                            </p:column>
-                                        </p:row>
-
-                                    </p:panelGrid>
-                                </p:panel>
-                            </p:column>
-                        </p:row>
-
-
-
-                    </p:panelGrid>  
-
-
-
-
-                    <p:separator/>
-                    <p:commandButton type="reset" value="Reset" update=":createEventForm:eventDetails"/>  
-                    <p:commandButton id="addButton" value="Guardar" 
-                                     actionListener="#{globalScheduleController.addEvent()}"
-                                     update=":createEventForm:eventDetails" />  
+                    <go:scheduleEventDialog controllerMBean="#{globalScheduleController}" showCasoInput="true"/>
                 </h:form>
             </p:dialog>
+            
 
         </ui:define>
     </ui:composition>

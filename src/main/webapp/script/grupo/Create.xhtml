@@ -4,77 +4,100 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:go="http://java.sun.com/jsf/composite/go">
 
-    <ui:composition template="/script/template_inbox.xhtml">
+    <ui:composition template="/script/template_inbox_bootstrap_config.xhtml">
         <ui:define name="title">
-            <p:outputLabel value="#{bundle.CreateGrupoTitle}"></p:outputLabel>
+            <h:outputText value="#{bundle.CreateGrupoTitle}"/>
         </ui:define>
-        <ui:define name="west">
-            <p:accordionPanel multiple="true" cache="true" id="accionesaccordion1">
-                <p:tab title="Grupos" id="accionestab1">
-                    <h:outputLabel escape="false" value="#{bundle.ayudaGrupos}"/>
-                </p:tab>
-            </p:accordionPanel>
+        <ui:define name="help">
+            <h:outputText escape="false" value="#{bundle.ayudaGrupos}"/>
         </ui:define>
+        
+        <ui:define name="content_header">
+            <script>
+                var init = [];
+                init.push(function () {
+                    $('body').addClass('mmc');
+                });
+            </script>
+
+            <!-- page-header -->
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-sm-6 col-xs-12">
+                        <h1><i class="fa fa-key page-header-icon"></i>&nbsp;&nbsp;#{bundle.CreateGrupoTitle}</h1>
+                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                            <i class="fa fa-info-circle"/>
+                        </p:commandLink> 
+                    </div>
+                    <div class="col-sm-6 col-xs-12">
+                        
+                    </div>
+                </div>
+            </div><!-- / .page-header --> 
+        </ui:define>
+        
+        
         <ui:define name="body">
 
             <h:form>
-           
-                    <p:fieldset legend="Datos generales">
-                        <h:panelGrid columns="3" cellpadding="5">
-                            <h:outputLabel value="#{bundle.CreateGrupoLabel_idGrupo}" for="idGrupo" style="font-weight:bold"/>
-                            <p:inputText id="idGrupo" value="#{grupoController.selected.idGrupo}" title="#{bundle.CreateGrupoTitle_idGrupo}" size="40"
-                                         required="true" requiredMessage="#{bundle.CreateGrupoRequiredMessage_idGrupo}"/>
-                            <p:message for="idGrupo"/>
-                            <h:outputLabel value="#{bundle.CreateGrupoLabel_nombre}" for="nombre" style="font-weight:bold"/>
-                            <p:inputText id="nombre" value="#{grupoController.selected.nombre}" title="#{bundle.CreateGrupoTitle_nombre}" size="40"/>
-                            <p:message for="nombre"/>
-                            
-                            <p:outputLabel value="Área:" for="idArea" style="font-weight: bold;"/>
-                            <p:selectOneMenu id="idArea"  value="#{grupoController.selected.idArea}" required="true" requiredMessage="Seleccione el Area a la cual esta asociada este grupo.">
-                                <f:selectItems value="#{areaController.itemsAvailableSelectOne}" />
-                            </p:selectOneMenu>
-                             <p:message for="idArea"/>
 
-                            <h:outputLabel value="#{bundle.CreateGrupoLabel_descripcion}" for="descripcion" style="font-weight:bold"/>
-                            <p:inputTextarea rows="4" cols="50" id="descripcion" value="#{grupoController.selected.descripcion}" title="#{bundle.CreateGrupoTitle_descripcion}" />
-                            <p:message for="descripcion"/>
-                        </h:panelGrid>
-                    </p:fieldset>
-                    <br/>
-                  
-                    <p:fieldset legend=" Usuarios del Grupo">
-                        <p:pickList id="pojoPickList"  value="#{grupoController.usuariosDualListModel}" var="u" effect="slide" 
-                                        itemValue="#{u}" itemLabel="#{u.capitalName} (#{u.idUsuario})" converter="UsuarioConverter"
-                                        showSourceControls="true" showTargetControls="true"  
-                                        showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains" > 
+                <p:fieldset legend="Datos generales">
+                    <h:panelGrid columns="3" cellpadding="5">
+                        <h:outputLabel value="#{bundle.CreateGrupoLabel_idGrupo}" for="idGrupo" style="font-weight:bold"/>
+                        <p:inputText id="idGrupo" value="#{grupoController.selected.idGrupo}" title="#{bundle.CreateGrupoTitle_idGrupo}" size="40"
+                                     required="true" requiredMessage="#{bundle.CreateGrupoRequiredMessage_idGrupo}"/>
+                        <p:message for="idGrupo"/>
+                        <h:outputLabel value="#{bundle.CreateGrupoLabel_nombre}" for="nombre" style="font-weight:bold"/>
+                        <p:inputText id="nombre" value="#{grupoController.selected.nombre}" title="#{bundle.CreateGrupoTitle_nombre}" size="40"/>
+                        <p:message for="nombre"/>
 
-                                <f:facet name="sourceCaption">Usuarios</f:facet> 
-                                <f:facet name="targetCaption">Seleccionados</f:facet> 
+                        <p:outputLabel value="Área:" for="idArea" style="font-weight: bold;"/>
+                        <p:selectOneMenu id="idArea"  value="#{grupoController.selected.idArea}" required="true" requiredMessage="Seleccione el Area a la cual esta asociada este grupo.">
+                            <f:selectItems value="#{areaController.itemsAvailableSelectOne}" />
+                        </p:selectOneMenu>
+                        <p:message for="idArea"/>
 
-                                <p:column> 
-                                    #{u.capitalName} 
-                                </p:column> 
+                        <h:outputLabel value="#{bundle.CreateGrupoLabel_descripcion}" for="descripcion" style="font-weight:bold"/>
+                        <p:inputTextarea rows="4" cols="50" id="descripcion" value="#{grupoController.selected.descripcion}" title="#{bundle.CreateGrupoTitle_descripcion}" />
+                        <p:message for="descripcion"/>
+                    </h:panelGrid>
+                </p:fieldset>
+                <br/>
 
-                            </p:pickList>  
-                    </p:fieldset>
-                          
+                <p:fieldset legend=" Usuarios del Grupo">
+                    <p:pickList id="pojoPickList"  value="#{grupoController.usuariosDualListModel}" var="u" effect="slide" 
+                                itemValue="#{u}" itemLabel="#{u.capitalName} (#{u.idUsuario})" converter="UsuarioConverter"
+                                showSourceControls="true" showTargetControls="true"  
+                                showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains" > 
 
-                    
+                        <f:facet name="sourceCaption">Usuarios</f:facet> 
+                        <f:facet name="targetCaption">Seleccionados</f:facet> 
 
-                        <p:toolbar>  
-                            <p:toolbarGroup align="left">   
-                                <p:commandButton action="#{grupoController.create}" value="#{bundle.CreateGrupoSaveLink}" ajax="false" icon="ui-icon-disk" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>  
-                                <p:separator/>                         
-                                <p:commandButton action="#{grupoController.prepareList}" value="#{bundle.showAll}" immediate="true" ajax="false" icon="ui-icon-folder-open"/>
-                            </p:toolbarGroup>
+                        <p:column> 
+                            #{u.capitalName} 
+                        </p:column> 
 
-                        </p:toolbar>
+                    </p:pickList>  
+                </p:fieldset>
 
 
 
-                     
+
+                <p:toolbar>  
+                    <p:toolbarGroup align="left">   
+                        <p:commandButton action="#{grupoController.create}" value="#{bundle.CreateGrupoSaveLink}" ajax="false" icon="ui-icon-disk" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>  
+                        <p:separator/>                         
+                        <p:commandButton action="#{grupoController.prepareList}" value="#{bundle.showAll}" immediate="true" ajax="false" icon="ui-icon-folder-open"/>
+                    </p:toolbarGroup>
+
+                </p:toolbar>
+
+
+
+
 
 
 

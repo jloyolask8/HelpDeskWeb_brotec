@@ -50,8 +50,15 @@
                                      rendered="#{cc.attrs.controllerMBean.visibilityOption eq 3}">
                         <f:selectItems value="#{areaController.itemsAvailableSelectOne}"/>
                     </p:selectOneMenu>
+                     
                 </h:panelGrid>
+                
+             
+                
             </h:panelGrid>  
+            
+               <h:message for="idAreaSelect" errorClass="text-danger"/>
+                <h:message for="idGrupoSelect" errorClass="text-danger"/>
         </p:panel>
     </cc:implementation>
 </html>

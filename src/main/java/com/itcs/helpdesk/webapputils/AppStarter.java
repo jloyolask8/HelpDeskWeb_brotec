@@ -87,7 +87,7 @@ public class AppStarter implements ServletContextListener {
                                 && !schema.equalsIgnoreCase("information_schema")
                                 && !schema.equalsIgnoreCase("pg_catalog")
                                 && !schema.equalsIgnoreCase("base_schema")) {//,
-                            initTenant(schema);
+                            AppStarter.initTenant(utx, emf, schema);
                         } else {
                             System.out.println("schema not allowed to load:" + schema);
                         }
@@ -100,7 +100,7 @@ public class AppStarter implements ServletContextListener {
 
     }
 
-    private void initTenant(String schema) {
+    public static void initTenant(UserTransaction utx, EntityManagerFactory emf, String schema) {
         //loop over schemas in db. and do this
         Logger.getLogger(AppStarter.class.getName()).log(Level.INFO, "Loading tenant {0}...", schema);
 

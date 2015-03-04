@@ -19,6 +19,7 @@ import com.itcs.helpdesk.persistence.entities.TipoAlerta;
 import com.itcs.helpdesk.persistence.entities.TipoCaso;
 import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.entityenums.EnumEstadoCaso;
+import com.itcs.helpdesk.persistence.entityenums.EnumPrioridad;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
@@ -33,6 +34,7 @@ import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -253,7 +255,7 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
      */
     public String getHelpdeskTitle() {
         try {
-            return ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).getHelpdeskTitle();
+            return ApplicationConfigs.getInstance(getCurrentTenantId()).getHelpdeskTitle();
         } catch (NoInstanceConfigurationException ex) {
             Logger.getLogger(ApplicationBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -265,7 +267,7 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
      */
     public String getCompanyName() {
         try {
-            return ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).getCompanyName();
+            return ApplicationConfigs.getInstance(getCurrentTenantId()).getCompanyName();
         } catch (NoInstanceConfigurationException ex) {
             Logger.getLogger(ApplicationBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -277,7 +279,7 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
      */
     public String getDiagnosticScripts() {
         try {
-            return ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).getDiagnosticScripts();
+            return ApplicationConfigs.getInstance(getCurrentTenantId()).getDiagnosticScripts();
         } catch (NoInstanceConfigurationException ex) {
             Logger.getLogger(ApplicationBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -289,7 +291,7 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
      */
     public String getCompanyLogo() {
         try {
-            return ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).getCompanyLogo();
+            return ApplicationConfigs.getInstance(getCurrentTenantId()).getCompanyLogo();
         } catch (NoInstanceConfigurationException ex) {
             Logger.getLogger(ApplicationBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -301,7 +303,7 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
      */
     public String getCompanyLoginBackground() {
         try {
-            return ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).getCompanyLoginBackground();
+            return ApplicationConfigs.getInstance(getCurrentTenantId()).getCompanyLoginBackground();
         } catch (NoInstanceConfigurationException ex) {
             Logger.getLogger(ApplicationBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -312,8 +314,12 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
      * @deprecated @return
      */
     public String getProductDescription() {
+        return getProductDescription(getCurrentTenantId());
+    }
+
+    public String getProductDescription(String tenant) {
         try {
-            return ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).getProductDescription();
+            return ApplicationConfigs.getInstance(tenant).getProductDescription();
         } catch (NoInstanceConfigurationException ex) {
             Logger.getLogger(ApplicationBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -324,8 +330,12 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
      * @deprecated @return
      */
     public String getProductComponentDescription() {
+        return getProductComponentDescription(getCurrentTenantId());
+    }
+
+    public String getProductComponentDescription(String tenant) {
         try {
-            return ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).getProductComponentDescription();
+            return ApplicationConfigs.getInstance(tenant).getProductComponentDescription();
         } catch (NoInstanceConfigurationException ex) {
             Logger.getLogger(ApplicationBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -336,8 +346,12 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
      * @deprecated @return
      */
     public String getProductSubComponentDescription() {
+        return getProductSubComponentDescription(getCurrentTenantId());
+    }
+
+    public String getProductSubComponentDescription(String tenant) {
         try {
-            return ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).getProductSubComponentDescription();
+            return ApplicationConfigs.getInstance(tenant).getProductSubComponentDescription();
         } catch (NoInstanceConfigurationException ex) {
             Logger.getLogger(ApplicationBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -349,7 +363,7 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
      */
     public boolean isShowCompanyLogo() {
         try {
-            return ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).isShowCompanyLogo();
+            return ApplicationConfigs.getInstance(getCurrentTenantId()).isShowCompanyLogo();
         } catch (NoInstanceConfigurationException ex) {
             Logger.getLogger(ApplicationBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -361,7 +375,7 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
      */
     public boolean isAreaRequired() {
         try {
-            return ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).isAreaRequired();
+            return ApplicationConfigs.getInstance(getCurrentTenantId()).isAreaRequired();
         } catch (NoInstanceConfigurationException ex) {
             Logger.getLogger(ApplicationBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -373,7 +387,7 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
      */
     public boolean isCustomerSurveyEnabled() {
         try {
-            return ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).isCustomerSurveyEnabled();
+            return ApplicationConfigs.getInstance(getCurrentTenantId()).isCustomerSurveyEnabled();
         } catch (NoInstanceConfigurationException ex) {
             Logger.getLogger(ApplicationBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -385,7 +399,7 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
      */
     public boolean isProductoRequired() {
         try {
-            return ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).isProductoRequired();
+            return ApplicationConfigs.getInstance(getCurrentTenantId()).isProductoRequired();
         } catch (NoInstanceConfigurationException ex) {
             Logger.getLogger(ApplicationBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -410,7 +424,12 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
     }
 
     public List<Prioridad> getPrioridadItemsAvailableList() {
-        return (List<Prioridad>) getJpaController().findAll(Prioridad.class);
+//        return (List<Prioridad>) Arrays.asList(EnumPrioridad.values());
+        List<Prioridad> lista = new ArrayList<>();
+        for (EnumPrioridad value : EnumPrioridad.values()) {
+            lista.add(value.getPrioridad());
+        }
+        return lista;
     }
 
     public StreamedContent getLogo() {

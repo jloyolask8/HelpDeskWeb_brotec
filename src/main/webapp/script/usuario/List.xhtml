@@ -7,38 +7,83 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:go="http://java.sun.com/jsf/composite/go">
 
-    <ui:composition template="/script/template_inbox.xhtml">
+    <ui:composition template="/script/template_inbox_bootstrap_config.xhtml">
         <ui:define name="title">
             <h:outputText value="Usuarios"></h:outputText>
         </ui:define>
-        <ui:define name="west">
+        <ui:define name="help">
 
+            <h:outputText escape="false" value="#{bundle.ayudaUsuarios}"/>
 
-            <go:vistasList id="vistasList" update=":vistasList:vistasForm :mainform:messages :formfilter:panelFilter0:panelFilter :form" 
-                           controllerMBean="#{usuarioController}"
-                           user="#{UserSessionBean.current}"/>
-
-
-            <p:accordionPanel multiple="true" cache="true" id="accionesaccordion1">
-                <p:tab title="Usuarios" id="accionestab1">
-                    <h:outputLabel escape="false" value="#{bundle.ayudaUsuarios}"/>
-                </p:tab>
-            </p:accordionPanel>
         </ui:define>
+
+
+        <ui:define name="content_header">
+            <script>
+                var init = [];
+                init.push(function () {
+                    $('body').addClass('mmc');
+                });
+            </script>
+
+            <!-- page-header -->
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-sm-6 col-xs-12">
+                        <h1><i class="fa fa-key page-header-icon"></i>&nbsp;&nbsp;Usuarios</h1>
+                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                            <i class="fa fa-info-circle"/>
+                        </p:commandLink> 
+                    </div>
+                    <div class="col-sm-6 col-xs-12">
+                        <h:form id="buttonsForm">
+
+                            <div class="pull-right">
+
+                                <div class="btn-group">
+                                    <go:paginatorCounts controllerMBean="#{usuarioController}"/>
+                                </div>
+
+                                <go:paginatorBtnsBt controllerMBean="#{usuarioController}" update="@(form)"/>
+
+                                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i></button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <h:commandLink action="#{usuarioController.prepareCreate}" 
+                                                       value="#{bundle.ListUsuarioCreateLink}"
+                                     rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
+                                        </h:commandLink>
+                                    </li>
+
+                                </ul>
+
+                            </div>
+                        </h:form>
+                    </div>
+                </div>
+            </div><!-- / .page-header --> 
+        </ui:define>
+
+
         <ui:define name="body">
 
+            <go:vistasListBt id="vistasList" 
+                             update="@(form)" 
+                             controllerMBean="#{usuarioController}"
+                             user="#{UserSessionBean.current}"/>
+            <div class="panel search-panel">
+                <h:form id="formfilter">
+                    <go:filterView id="panelFilter0" titleIconClass="fa fa-users page-header-icon"
+                                   controllerMBean="#{usuarioController}" 
+                                   vista="#{usuarioController.vista}"
+                                   filterHelper="#{usuarioController.filterHelper}" 
+                                   canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
+                                   update=":mainform:messages :form"
+                                   vistaControllerBackOutcome="/script/usuario/List"/>
 
+                </h:form>
+            </div>
 
-
-            <h:form id="formfilter">
-                <go:filterView id="panelFilter0" titleIconClass="fa fa-users page-header-icon"
-                               controllerMBean="#{usuarioController}" 
-                               vista="#{usuarioController.vista}"
-                               filterHelper="#{usuarioController.filterHelper}" 
-                               canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
-                               update=":mainform:messages :form"
-                               vistaControllerBackOutcome="/script/usuario/List"/>
-            </h:form>
 
             <h:form id="form">
 
@@ -46,49 +91,17 @@
 
                     <p:messages/>
 
-                    <p:toolbar id="toolbar1">
-                        <p:toolbarGroup align="right">
-
-                            <p:selectOneMenu id="cant" value="#{usuarioController.paginationPageSize}" style="top: 7px">
-                                <p:ajax event="change" listener="#{usuarioController.resetPageSize()}" update=":form"/>
-                                <f:selectItems value="#{usuarioController.pagination.pageSizesAvailable}"/>
-                            </p:selectOneMenu>
-                            <p:separator/>
-                            <p:commandButton ajax="false" action="#{usuarioController.first}" disabled="#{not usuarioController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-first" rendered="#{usuarioController.pagination.itemsCount > 0}"/>
-
-                            <p:commandButton ajax="false" action="#{usuarioController.previous}" disabled="#{not usuarioController.pagination.hasPreviousPage}" icon="ui-icon ui-icon-seek-prev" rendered="#{usuarioController.pagination.itemsCount > 0}"/>
-
-                            &nbsp;
-                            <h:outputText value="#{usuarioController.pagination.pageFirstItem + 1}-#{usuarioController.pagination.pageLastItem + 1} de #{usuarioController.pagination.itemsCount}" rendered="#{usuarioController.pagination.itemsCount gt 0}"></h:outputText>
-                            &nbsp;
-
-                            <p:commandButton ajax="false" action="#{usuarioController.next}" disabled="#{not usuarioController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-next" rendered="#{usuarioController.pagination.itemsCount > 0}"/>
-
-                            <p:commandButton ajax="false" action="#{usuarioController.last}" disabled="#{not usuarioController.pagination.hasNextPage}" icon="ui-icon ui-icon-seek-end" rendered="#{usuarioController.pagination.itemsCount > 0}"/>
-
-                            <p:commandButton ajax="false" action="#{usuarioController.prepareCreate}" value="#{bundle.ListUsuarioCreateLink}"
-                                             rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" icon="fa fa-plus-circle"/>
-
-                        </p:toolbarGroup>
-                    </p:toolbar>
-
                     <p:dataTable id="tablausuarios" widgetVar="UsuarioTable" var="item" value="#{usuarioController.items}"
+                                 styleClass="table"
                                  emptyMessage="#{bundle.ListUsuarioEmpty}">
-
-
-
-
 
                         <p:column headerText="#{bundle.ListUsuarioTitle_idUsuario}" sortBy="#{item.idUsuario}">
                             <h:outputText value="#{item.idUsuario}"/>
                         </p:column>
                         <p:column headerText="#{bundle.ListUsuarioTitle_nombres}" sortBy="#{item.nombres}">
-                            <h:outputText value="#{item.nombres}"/>
+                            <h:outputText value="#{item.capitalName}"/>
                         </p:column>
-                        <p:column headerText="#{bundle.ListUsuarioTitle_apellidos}" sortBy="#{item.apellidos}">
-
-                            <h:outputText value="#{item.apellidos}"/>
-                        </p:column>
+                     
                         <p:column headerText="#{bundle.ListUsuarioTitle_email}" sortBy="#{item.email}">
 
                             <h:outputText value="#{item.email}"/>
@@ -113,7 +126,7 @@
                                 #{g.nombre}
                             </p:dataList>
                         </p:column>
-                        
+
                         <p:column headerText="#{bundle.ListUsuarioTitle_activo}" sortBy="#{item.activo}">
 
                             <h:outputText value="#{item.activo ? 'Si':'No'}"/>

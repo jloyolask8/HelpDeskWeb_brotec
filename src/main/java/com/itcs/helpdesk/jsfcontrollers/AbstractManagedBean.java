@@ -94,6 +94,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     List<Vista> allMyVistas = null;
 
     private Vista vista;
+    private Vista defaultVista;
 
     protected String backOutcome;
 
@@ -103,7 +104,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
 
     public ApplicationConfigs getApplicationConfigInstance() {
         try {
-            return ApplicationConfigs.getInstance(getUserSessionBean().getTenantId());
+            return ApplicationConfigs.getInstance(getCurrentTenantId());
         } catch (NoInstanceConfigurationException ex) {
             Logger.getLogger(ApplicationBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -129,7 +130,6 @@ public abstract class AbstractManagedBean<E> implements Serializable {
 
     public AbstractManagedBean(Class<E> entityClass) {
         this.entityClass = entityClass;
-//        this.schemaName = getUserSessionBean().getCurrent().getTenantId();
         Logger.getLogger(this.getClass().getName()).log(Level.INFO, "{0} for {1} created", new Object[]{this.getClass().getSimpleName(), entityClass.getSimpleName()});
     }
 
@@ -338,15 +338,8 @@ public abstract class AbstractManagedBean<E> implements Serializable {
      * @return
      */
     public JPAServiceFacade getJpaControllerThatListenRules() {
-//        if (jpaController == null) {
-//            jpaController = new JPAServiceFacade(utx, emf, getUserSessionBean().getTenantId());
-//            RulesEngine rulesEngine = new RulesEngine(jpaController);
-//            jpaController.setCasoChangeListener(rulesEngine);
-//            System.out.println("getJpaControllerThatListenRules() schema :" + jpaController.getSchema());
-//        }
-//        return jpaController;
-        if (!StringUtils.isEmpty(getUserSessionBean().getTenantId())) {
-            JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf, getUserSessionBean().getTenantId());
+        if (!StringUtils.isEmpty(getCurrentTenantId())) {
+            JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf, getCurrentTenantId());
             RulesEngine rulesEngine = new RulesEngine(jpaController);
             jpaController.setCasoChangeListener(rulesEngine);
             return jpaController;
@@ -355,20 +348,15 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     }
 
     public JPAServiceFacade getJpaController() {
-//        System.out.println("AbstractManagedBean.getJpaController() " + getUserSessionBean().getTenantId());
-//        if (jpaController == null && !StringUtils.isEmpty(getUserSessionBean().getTenantId())) {
-//            jpaController = new JPAServiceFacade(utx, emf, getUserSessionBean().getTenantId());
-//        }
-//        return jpaController;
-        if (!StringUtils.isEmpty(getUserSessionBean().getTenantId())) {
-            JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf, getUserSessionBean().getTenantId());
+        if (!StringUtils.isEmpty(getCurrentTenantId())) {
+            JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf, getCurrentTenantId());
             return jpaController;
         }
         throw new IllegalAccessError("Error al acceder al jpa");
     }
 
     protected ManagerCasos getManagerCasos() {
-        if (!StringUtils.isEmpty(getUserSessionBean().getTenantId())) {
+        if (!StringUtils.isEmpty(getCurrentTenantId())) {
             ManagerCasos managerCasos = new ManagerCasos();
             managerCasos.setJpaController(getJpaController());
             return managerCasos;
@@ -445,6 +433,10 @@ public abstract class AbstractManagedBean<E> implements Serializable {
 
     protected final UserSessionBean getUserSessionBean() {
         return (UserSessionBean) JsfUtil.getManagedBean("UserSessionBean");
+    }
+    
+    protected final ApplicationBean getApplicationBean() {
+        return (ApplicationBean) JsfUtil.getManagedBean("applicationBean");
     }
 
     protected CasoController getCasoControllerBean() {
@@ -860,18 +852,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
         allMyVistas = null;
     }
 
-    public int countItemsVista(Vista vista) {
-        try {
-            UserSessionBean userSessionBean = getUserSessionBean();
-            final Long countEntities = getJpaController().countEntities(vista, userSessionBean.getCurrent(), null);
-            return countEntities.intValue();
-        } catch (Exception ex) {
-            addErrorMessage(ex.getMessage());
-            Logger.getLogger(VistaController.class.getName()).log(Level.SEVERE, null, ex);
-            return 0;
-        }
-
-    }
+ 
 
     /**
      *
@@ -880,7 +861,7 @@ public abstract class AbstractManagedBean<E> implements Serializable {
      */
     public List<Vista> getAllAgentVistasItems() {
 
-        if (allMyVistas == null) {
+        if (allMyVistas == null) {//cache
             List<Vista> lista = new ArrayList<>();
             final List<Vista> visibleForAllItems = getVisibleForAllItems(getEntityClass().getName());
             final UserSessionBean userSessionBean = getUserSessionBean();
@@ -920,6 +901,9 @@ public abstract class AbstractManagedBean<E> implements Serializable {
                 }
             }
             Collections.sort(lista, comparadorVistas);
+
+            lista.add(0, getDefaultVista());
+
             this.allMyVistas = lista;
 //            //System.out.println("allMyVistas:"+allMyVistas);
         }
@@ -982,6 +966,24 @@ public abstract class AbstractManagedBean<E> implements Serializable {
      */
     public void setVista(Vista vista) {
         this.vista = vista;
+    }
+
+    protected Vista getDefaultVista() {
+
+        if (defaultVista == null) {
+            defaultVista = new Vista(entityClass);
+            defaultVista.setNombre("All Items");
+            if (defaultVista.getFiltrosVistaList() == null || defaultVista.getFiltrosVistaList().isEmpty()) {
+                defaultVista.addNewFiltroVista();
+            }
+        }
+        return defaultVista;
+
+    }
+
+    protected String getCurrentTenantId() {
+        return getUserSessionBean().getTenantId();
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

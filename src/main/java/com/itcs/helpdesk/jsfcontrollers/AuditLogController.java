@@ -45,9 +45,9 @@ public class AuditLogController extends AbstractManagedBean<AuditLog> implements
     public AuditLogController() {
         super(AuditLog.class);
     }
-    
-    public void prepareFilterAlertas(){
-        
+
+    public void prepareFilterAlertas() {
+
         Vista vista1 = new Vista(AuditLog.class);
         vista1.setNombre("Alertas");
 
@@ -58,14 +58,25 @@ public class AuditLogController extends AbstractManagedBean<AuditLog> implements
         f1.setIdVista(vista1);
 
         vista1.getFiltrosVistaList().add(f1);
-        
+
         setVista(vista1);
-        
+
         recreateModel();
         recreatePagination();
     }
-    
-    public void resetVista(){
+
+    public String prepareVerTodasLasNotifications() {
+
+        Vista vista1 = createVistaForNotifications(getUserSessionBean().getCurrent().getIdUsuario());
+
+        setVista(vista1);
+
+        recreateModel();
+        recreatePagination();
+        return getListPage();
+    }
+
+    public void resetVista() {
         Vista vista1 = new Vista(AuditLog.class);
         vista1.setNombre("Logs");
         setVista(vista1);
@@ -73,28 +84,44 @@ public class AuditLogController extends AbstractManagedBean<AuditLog> implements
         recreatePagination();
     }
 
-    public List<AuditLog> getActivityLogs(String idUsuario) {
+    public String countNotifications(String idUsuario) {
         if (idUsuario == null) {
-            return null;
+            return "0";
         }
-        Vista vista1 = new Vista(AuditLog.class);
-        vista1.setNombre("Activity Logs");
+        Vista vista1 = createVistaForNotifications(idUsuario);
 
+        try {
+            return getJpaController().countEntities(vista1, getUserSessionBean().getCurrent(), null).toString();
+
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, "ClassNotFoundException", ex);
+        }
+        return "0";
+    }
+
+    private Vista createVistaForNotifications(String idUsuario) {
+        Vista vista1 = new Vista(AuditLog.class);
+        vista1.setNombre("Notificaciones");
         FiltroVista f1 = new FiltroVista();
         f1.setIdCampo("owner");
         f1.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
         f1.setValor(idUsuario);
         f1.setIdVista(vista1);
-
         vista1.getFiltrosVistaList().add(f1);
-        
         FiltroVista f2 = new FiltroVista();
         f2.setIdCampo("idUser");
         f2.setIdComparador(EnumTipoComparacion.NE.getTipoComparacion());
         f2.setValor(idUsuario);
         f2.setIdVista(vista1);
-
         vista1.getFiltrosVistaList().add(f2);
+        return vista1;
+    }
+
+    public List<AuditLog> getActivityLogs(String idUsuario) {
+        if (idUsuario == null) {
+            return null;
+        }
+        Vista vista1 = createVistaForNotifications(idUsuario);
 
         try {
             return (List<AuditLog>) getJpaController()
@@ -206,7 +233,7 @@ public class AuditLogController extends AbstractManagedBean<AuditLog> implements
 //    }
     @Override
     protected String getListPage() {
-        return "/script/audit_log/List";
+        return "/script/audit_log/List?faces-redirect=true";
     }
 
 //    public String prepareView() {

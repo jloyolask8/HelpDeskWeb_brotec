@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:go="http://java.sun.com/jsf/composite/go">
+
+    <ui:composition template="/script/template_inbox_bootstrap.xhtml">
+        <ui:define name="title">
+            <h:outputText value="Dashboard"/>
+        </ui:define>
+
+        <ui:define name="menutitle">
+            <h:outputText value="#{bundle.agendaMenuTitle}"/>
+        </ui:define>
+
+        <ui:define name="head" id="head">
+
+            <style type="text/css">
+                .ui-datatable thead th, .ui-datatable tbody td, .ui-datatable tfoot td {
+                    border-width: 0px  !important;
+                }
+            </style>
+
+        </ui:define>
+
+
+
+        <ui:define name="body" id="body">
+
+            <!-- page-header -->
+            <div id="dashboardtest1Tour" class="page-header">
+                <div class="row">
+                    <div class="col-sm-10 col-xs-10">
+                        <h1><i class="fa fa-dashboard page-header-icon"></i>&nbsp;&nbsp;Dashboard</h1>
+                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                            <i class="fa fa-info-circle"/>
+                        </p:commandLink> 
+                    </div>
+
+                </div>
+            </div><!-- / .page-header --> 
+
+            <!--First widget: X people interacted with your account in the last <year, month, week, day>-->
+            <!--Tickets by channel-->
+            <!--open vs closed tickets-->
+            
+               <h:form id="form">
+            <div class="panel panel-dark panel-light-green">
+                    <div class="panel-heading">
+                            <span class="panel-title">
+                                <i class="panel-title-icon fa fa-building"></i>Organigrama</span>
+                            <div class="panel-heading-controls">
+                                    
+                            </div> <!-- / .panel-heading-controls -->
+                    </div> <!-- / .panel-heading -->
+
+                 
+                    <p:tree id="tree" value="#{areaController.root}" var="item"  orientation="horizontal" animate="true" style="border: none;" >  
+                            <p:treeNode expandedIcon="ui-icon-folder-open"  
+                                        collapsedIcon="ui-icon-folder-collapsed">  
+                                <h:outputText value="#{item}"/>  
+                            </p:treeNode>
+
+                            <p:treeNode type="areas">
+                                <i class="fa fa-building-o"></i>&nbsp;
+                                <p:commandLink ajax="false" action="#{areaController.prepareEdit(item.idArea)}" value="#{item.nombre}"/>
+                                <h:panelGroup rendered="#{(item.class.name eq 'com.itcs.helpdesk.persistence.entities.Area') and (item.idCanal ne null)}">
+                                    <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <i class="#{(item.idCanal.idTipoCanal.idTipo eq 'EMAIL') ? 'fa fa-envelope-o':((item.idCanal.idTipoCanal.idTipo eq 'CHAT') ? 'fa fa-comment-o':((item.idCanal.idTipoCanal.idTipo eq 'MANUAL') ? 'fa fa-pencil-square-o':((item.idCanal.idTipoCanal.idTipo eq 'FORMULARIO') ? 'fa fa-list-alt':'')))}"></i>
+                                    &nbsp;
+                                    <h:outputText value="#{item.idCanal.nombre}"/>
+                                </h:panelGroup>  
+                            </p:treeNode>                          
+
+                            <p:treeNode type="grupos">  
+                                <i class="fa fa-users"></i>&nbsp;
+                                <p:outputLabel value="#{item.nombre}"/>
+                            </p:treeNode>  
+
+
+                            <p:treeNode type="agentes" >  
+                                <i class="fa fa-user"></i>&nbsp;
+                                <p:commandLink ajax="false" action="#{usuarioController.prepareEdit(item)}" value="#{item.capitalName}"/>
+                                <i class="fa #{item.activo ? 'fa-check':'fa-times'}"></i>                                
+                            </p:treeNode>
+                        </p:tree> 
+                    
+                    <div class="panel-footer">
+                        
+                         <p:commandButton id="expandTree" value="#{areaController.expanded ? 'Colapsar':'Expandir'}" actionListener="#{areaController.toggleAllTree()}" immediate="true"
+                                         update=":form:tree expandTree" />
+
+                        <p:commandButton id="refreshTree" value="Actualizar" actionListener="#{areaController.refreshTree()}" immediate="true"
+                                         update=":form:tree" />
+                        
+                        <p:commandButton ajax="false" action="#{areaController.prepareCreate()}" immediate="true"
+                                                     rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" value="#{bundle.ListAreaCreateLink}" icon="fa fa-plus-circle" />
+
+                          
+                        <p:commandButton ajax="false" action="#{grupoController.prepareCreate()}" immediate="true"
+                                         rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" value="#{bundle.ListGrupoCreateLink}" icon="fa fa-plus-circle" />
+
+                         
+                    </div>
+                    
+            </div>
+
+               </h:form>
+        </ui:define>
+
+        <ui:define name="dialogs">
+
+
+
+        </ui:define>
+    </ui:composition>
+</html>
+

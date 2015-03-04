@@ -8,7 +8,9 @@ import com.itcs.helpdesk.jsfcontrollers.*;
 import com.itcs.helpdesk.persistence.entities.Cliente;
 import com.itcs.helpdesk.persistence.entities.EmailCliente;
 import com.itcs.helpdesk.persistence.entities.ProductoContratado;
+import com.itcs.helpdesk.persistence.entities.TipoCaso;
 import com.itcs.helpdesk.persistence.entityenums.EnumCanal;
+import com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso;
 import com.itcs.helpdesk.persistence.jpa.exceptions.RollbackFailureException;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
 import com.itcs.helpdesk.util.Log;
@@ -34,10 +36,23 @@ public class EmbeddedFromNewTicketController extends CustomerCasoController {
     private boolean embeddedFlag = false;
     private boolean showAttachmentsFlag = false;
 
-    private String tenantId;
+    private String currentTenantId;
 
     public void toggleShowAttachments() {
         showAttachmentsFlag = !showAttachmentsFlag;
+    }
+    
+    @Override
+    public String getCurrentTenantId(){
+        return this.currentTenantId;
+    }
+    
+    
+    public List<TipoCaso> getTipoCasoAvailableList() {
+        final List<TipoCaso> tipos = (List<TipoCaso>) getJpaController().findAll(TipoCaso.class);
+        tipos.remove(EnumTipoCaso.INTERNO.getTipoCaso());
+//        //System.out.println("*** getTipoCasoAvailableList()");
+        return tipos;
     }
 
     @Override
@@ -57,7 +72,7 @@ public class EmbeddedFromNewTicketController extends CustomerCasoController {
         String tenant = req.getParameter("tenant");
         if (tenant != null && !tenant.isEmpty()) {
             System.out.println("tenant=" + tenant);
-            this.tenantId = tenant;
+            this.currentTenantId = tenant;
         }
     }
 
@@ -116,7 +131,7 @@ public class EmbeddedFromNewTicketController extends CustomerCasoController {
     }
 
     protected ManagerCasos getManagerCasosLocal() {
-        if (!StringUtils.isEmpty(this.getTenantId())) {
+        if (!StringUtils.isEmpty(getCurrentTenantId())) {
             ManagerCasos managerCasos = new ManagerCasos();
             managerCasos.setJpaController(getJpaControllerLocal());
             return managerCasos;
@@ -125,8 +140,8 @@ public class EmbeddedFromNewTicketController extends CustomerCasoController {
     }
 
     public JPAServiceFacade getJpaControllerLocal() {
-        if (!StringUtils.isEmpty(this.getTenantId())) {
-            JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf, this.getTenantId());
+        if (!StringUtils.isEmpty(getCurrentTenantId())) {
+            JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf, getCurrentTenantId());
             return jpaController;
         }
         throw new IllegalAccessError("Error al acceder al jpa");
@@ -192,17 +207,7 @@ public class EmbeddedFromNewTicketController extends CustomerCasoController {
         this.showAttachmentsFlag = showAttachmentsFlag;
     }
 
-    /**
-     * @return the tenantId
-     */
-    public String getTenantId() {
-        return tenantId;
-    }
+ 
 
-    /**
-     * @param tenantId the tenantId to set
-     */
-    public void setTenantId(String tenantId) {
-        this.tenantId = tenantId;
-    }
+    
 }

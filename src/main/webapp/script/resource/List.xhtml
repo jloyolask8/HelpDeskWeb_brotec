@@ -8,25 +8,72 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:go="http://java.sun.com/jsf/composite/go">
 
-    <ui:composition template="/script/template_inbox.xhtml">
+    <ui:composition template="/script/template_inbox_bootstrap_config.xhtml">
         <ui:define name="title">
-            <p:outputLabel value="Recursos"></p:outputLabel>
+            <h:outputText value="Recursos"/>
         </ui:define>
-        <ui:define name="menutitle">
-            <p:outputLabel value="Vistas de Recursos"></p:outputLabel>
+        <ui:define name="help">
+            <h:outputText escape="false" value="Recursos"/>
         </ui:define>
-        <ui:define name="west">
+        
+        
+        <ui:define name="content_header">
+            <script>
+                var init = [];
+                init.push(function () {
+                    $('body').addClass('mmc');
+                });
+            </script>
 
-            <go:vistasList id="vistasList" update=":vistasList:vistasForm :mainform:messages :formfilter:panelFilter0:panelFilter :form" 
-                           controllerMBean="#{resourceController}"
-                           user="#{UserSessionBean.current}"/>
+            <!-- page-header -->
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-sm-6 col-xs-12">
+                        <h1><i class="fa fa-key page-header-icon"></i>&nbsp;&nbsp;Recursos</h1>
+                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                            <i class="fa fa-info-circle"/>
+                        </p:commandLink> 
+                    </div>
+                    <div class="col-sm-6 col-xs-12">
+                        <h:form id="buttonsForm">
 
-            <br/>
+                            <div class="pull-right">
 
+                                <div class="btn-group">
+                                    <go:paginatorCounts controllerMBean="#{resourceController}"/>
+                                </div>
+
+                                <go:paginatorBtnsBt controllerMBean="#{resourceController}" update="@(form)"/>
+
+                                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i></button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <p:commandLink actionListener="#{resourceController.prepareCreate}" 
+                                             oncomplete="PF('createDialog').show()" update=":createForm" 
+                                                       value="#{bundle.ListResourceCreateLink}"
+                                     rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
+                                        </p:commandLink>
+                                    </li>
+
+                                </ul>
+
+                            </div>
+                        </h:form>
+                    </div>
+                </div>
+            </div><!-- / .page-header --> 
         </ui:define>
+        
+   
         <ui:define name="body">
-
-            <h:form id="formfilter">
+            
+            
+            <go:vistasListBt id="vistasList" 
+                             update="@(form)" 
+                             controllerMBean="#{resourceController}"
+                             user="#{UserSessionBean.current}"/>
+            <div class="panel search-panel">
+               <h:form id="formfilter">
                 <go:filterView id="panelFilter0" titleIconClass="fa fa-users page-header-icon"
                                controllerMBean="#{resourceController}" 
                                vista="#{resourceController.vista}"
@@ -36,25 +83,13 @@
                                vistaControllerBackOutcome="/script/cliente/List"/>
 
             </h:form>
+            </div>
+
+
+            
 
             <h:form id="form">
                 <h:panelGroup>
-
-                    <p:toolbar >
-
-                        <p:toolbarGroup align="right">
-
-                            <go:paginatorButtons controllerMBean="#{resourceController}" update=":form"/>
-                            <p:separator/>
-                            <p:commandButton actionListener="#{resourceController.prepareCreate}" 
-                                             oncomplete="PF('createDialog').show()" update=":createForm"
-                                             value="Nuevo" icon="fa fa-plus-circle" />
-
-                        </p:toolbarGroup>  
-
-
-                    </p:toolbar>
-
 
                     <p:dataTable widgetVar="dataTable" var="item" value="#{resourceController.items}" selectionMode="single"
                                  emptyMessage="#{bundle.emptyList}">

@@ -7,7 +7,7 @@
       xmlns:p="http://primefaces.org/ui"
        xmlns:go="http://java.sun.com/jsf/composite/go">
 
-    <ui:composition template="/script/template_inbox.xhtml">
+    <ui:composition template="/script/template_inbox_bootstrap_config.xhtml">
         <ui:define name="title">
             <h:outputText value="#{bundle.EditVistaTitle}"></h:outputText>
         </ui:define>
@@ -19,11 +19,31 @@
                                    Las vistas permiten crear grupos coherentes de casos para asi poder acceder más rapidamente a los casos de interés."/>
                 </p:panel>
         </ui:define>
+        
+        <ui:define name="content_header">
+            <script>
+                var init = [];
+                init.push(function () {
+                    $('body').addClass('mmc');
+                });
+            </script>
+        <!-- page-header -->
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-sm-6 col-xs-12">
+                        <h1><i class="fa fa-building page-header-icon"></i>&nbsp;&nbsp;#{bundle.EditVistaTitle}</h1>
+                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                            <i class="fa fa-info-circle"/>
+                        </p:commandLink> 
+                    </div>
+                    
+                </div>
+            </div><!-- / .page-header --> 
+        </ui:define>
 
         <ui:define name="body">
            
             <h:form id="form">
-                <h1>#{bundle.EditVistaTitle}</h1>
                 <p:messages id="messages"/>
                 <h:panelGrid columns="2">
                     <h:outputLabel value="#{bundle.VistaLabel_nombre}" for="nombre" style="font-weight: bold"/>

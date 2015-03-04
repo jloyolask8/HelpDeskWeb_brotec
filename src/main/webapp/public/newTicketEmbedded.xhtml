@@ -13,7 +13,7 @@
                 <meta charset="utf-8"/>
                 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
                 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
-        <title>#{applicationBean.helpdeskTitle} - Nueva Solicitud</title>
+        <title>Crear Nueva Solicitud</title>
 
         <link rel="dns-prefetch" href="//netdna.bootstrapcdn.com" />            
         <!-- Latest compiled and minified CSS -->
@@ -148,20 +148,20 @@
                 
 
                 <h:panelGroup layout="block" styleClass="form-group" rendered="#{embeddedFromNewTicketController.stepNewCasoIndex eq 3}">
-                    <label for="idProducto">#{applicationBean.productDescription}:</label>
+                    <label for="idProducto">#{applicationBean.productDescription(param['tenant'])}:</label>
 
                     <h:selectOneMenu id="idProducto" value="#{embeddedFromNewTicketController.selected.idProducto}" styleClass="form-control">
                         <f:selectItems value="#{productoController.itemsAvailableSelectOne}"/>
                         <p:ajax event="change" update="idComponente"  listener="#{embeddedFromNewTicketController.handleProductChange}" />
                     </h:selectOneMenu>
-                    <span class="help-block">Seleccione #{applicationBean.productDescription} relacionado a su solicitud. Útil para derivar su solicitud al área indicada. <h:message for="idProducto" errorClass="text-danger" /></span>
+                    <span class="help-block">Este dato es requerido. Útil para derivar su solicitud al área indicada. <h:message for="idProducto" errorClass="text-danger" /></span>
 
 
                 </h:panelGroup>
                 <h:panelGroup layout="block" styleClass="form-group" rendered="#{embeddedFromNewTicketController.stepNewCasoIndex eq 3}">
-                    <label for="idComponente">#{applicationBean.productComponentDescription}:</label>
+                    <label for="idComponente">#{applicationBean.productComponentDescription(param['tenant'])}:</label>
                     <h:selectOneMenu id="idComponente" value="#{embeddedFromNewTicketController.selected.idComponente}" 
-                                     required="#{not empty embeddedFromNewTicketController.selected.idProducto.componenteList}" requiredMessage="favor seleccione #{applicationBean.productComponentDescription}." 
+                                     required="#{not empty embeddedFromNewTicketController.selected.idProducto.componenteList}" requiredMessage="favor seleccione un item de la lista." 
                                      styleClass="form-control"
                                      disabled="#{embeddedFromNewTicketController.selected.idProducto eq null}">
                         <f:selectItem itemLabel="---" itemValue=""/>
@@ -200,7 +200,7 @@
                                      required="true" requiredMessage="El tipo de caso es requerido."
                                      converter="TipoCasoControllerConverter"
                                      value="#{embeddedFromNewTicketController.selected.tipoCaso}" >                                  
-                        <f:selectItems value="#{applicationBean.tipoCasoAvailableList}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
+                        <f:selectItems value="#{embeddedFromNewTicketController.tipoCasoAvailableList}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
 
                     </h:selectOneMenu>
 

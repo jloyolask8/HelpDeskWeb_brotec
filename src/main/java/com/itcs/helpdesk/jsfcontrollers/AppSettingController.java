@@ -89,7 +89,7 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
                     final String format = "png";
 
                     BufferedImage originalImage = ImageIO.read(logoUploadFile.getInputstream());
-                    BufferedImage resizedImage = Scalr.resize(originalImage, ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).getCompanyLogoSize());
+                    BufferedImage resizedImage = Scalr.resize(originalImage, ApplicationConfigs.getInstance(getCurrentTenantId()).getCompanyLogoSize());
 
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     ImageIO.write(resizedImage, format, baos);
@@ -123,7 +123,7 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
         for (AppSetting appSetting : (List<AppSetting>)items.getWrappedData()) {
             try {
                 getJpaController().merge(appSetting);
-                ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).getConfiguration().put(appSetting.getSettingKey(), appSetting.getSettingValue());
+                ApplicationConfigs.getInstance(getCurrentTenantId()).getConfiguration().put(appSetting.getSettingKey(), appSetting.getSettingValue());
             } catch (Exception ex) {
                 Logger.getLogger(AppSettingController.class.getName()).log(Level.SEVERE, null, ex);
                 addMessage(FacesMessage.SEVERITY_FATAL, "No se pudo actualizar la propiedad del sistema." + appSetting);
@@ -138,7 +138,7 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
                     final String format = "png";
 
                     BufferedImage originalImage = ImageIO.read(logoUploadFile.getInputstream());
-                    BufferedImage resizedImage = Scalr.resize(originalImage, ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).getCompanyLogoSize());
+                    BufferedImage resizedImage = Scalr.resize(originalImage, ApplicationConfigs.getInstance(getCurrentTenantId()).getCompanyLogoSize());
 
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     ImageIO.write(resizedImage, format, baos);
@@ -238,7 +238,7 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
     public String update() {
         try {
             getJpaController().merge(current);
-            ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).getConfiguration().put(current.getSettingKey(), current.getSettingValue());
+            ApplicationConfigs.getInstance(getCurrentTenantId()).getConfiguration().put(current.getSettingKey(), current.getSettingValue());
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("AppSettingUpdated"));
             return getViewPage();
         } catch (Exception e) {
@@ -320,7 +320,7 @@ public class AppSettingController extends AbstractManagedBean<AppSetting> implem
      * @return the currentConfiguration
      */
     public String getCurrentConfiguration() throws NoInstanceConfigurationException {
-        return ApplicationConfigs.getInstance(getUserSessionBean().getTenantId()).getConfiguration().toString();
+        return ApplicationConfigs.getInstance(getCurrentTenantId()).getConfiguration().toString();
     }
 
     /**

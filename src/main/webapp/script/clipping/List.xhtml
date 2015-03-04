@@ -23,176 +23,162 @@
             <!-- page-header -->
             <div class="page-header">
                 <div class="row">
-                    <div class="col-sm-10 col-xs-10">
+                    <div class="col-sm-6 col-xs-12">
                         <h1><i class="fa fa-heart-o page-header-icon"></i>&nbsp;&nbsp;Respuestas predefinidas</h1>
                         <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
                             <i class="fa fa-info-circle"/>
                         </p:commandLink> 
                     </div>
-                    <div class="col-sm-2 col-xs-2">
-                        <h:form>
+                    <div class="col-sm-6 col-xs-12">
 
-                            <div class="btn-group pull-right">
+                        <h:form id="buttonsForm">
+
+                            <div class="pull-right">
+
+                                <div class="btn-group">
+                                    <go:paginatorCounts controllerMBean="#{clippingController}"/>
+                                </div>
+
+                                <go:paginatorBtnsBt controllerMBean="#{clippingController}" update="@(form)"/>
+
+                                <div class="btn-group">
+                                    <p:commandLink  id="updateList" title="Actualizar" styleClass="btn" 
+                                                    actionListener="#{clippingController.prepareList()}" update="@(form)">
+                                        <i class="fa fa-refresh"></i>
+                                    </p:commandLink>
+                                </div>
+
                                 <button type="button" class="btn dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i></button>
                                 <ul class="dropdown-menu">
                                     <li>
                                         <h:commandLink action="#{clippingController.prepareCreate}" 
-                                                       value="Agregar Respuesta predefinida"
+                                                       value="Agregar"
                                                        title="Agregar/Crear nueva">
                                         </h:commandLink>
                                     </li>
+
                                 </ul>
                             </div>
-
-
                         </h:form>
-
                     </div>
                 </div>
-            </div><!-- / .page-header -->
-
-
+            </div><!-- / .page-header --> 
 
             <div class="row">
                 <go:vistasListBt id="vistasList" 
-                                 update=":vistasList:vistasForm :mainform:messages :form :form0" 
+                                 update="@(form)" 
                                  controllerMBean="#{clippingController}"
                                  user="#{UserSessionBean.current}"/>
-
-
 
                 <div class="panel search-panel">
 
                     <h:form id="form" styleClass="search-form">
-
-
-
                         <go:filterView controllerMBean="#{clippingController}" vista="#{clippingController.vista}"
                                        showSearchBar="true"
                                        filterHelper="#{clippingController.filterHelper}" 
                                        update=":mainform:messages :form0"
                                        vistaControllerBackOutcome="/script/clipping/List"/>
-
-                        <h:panelGroup layout="block" styleClass="row alert alert-page alert-warning" rendered="#{clippingController.items.rowCount le 0}">
-                            <button type="button" class="close" data-dismiss="alert">x</button>
-                            Your search did not match any cases.
-                        </h:panelGroup>
-
-                    </h:form>
-
-                    <h:form id="form0">
-
-
-
-                        <h:panelGroup layout="block" styleClass="panel panel-transparent" rendered="#{clippingController.items.rowCount gt 0}">
-                            <div class="panel-heading">
-                                <span class="panel-title"> 
-                                    <go:paginatorCounts controllerMBean="#{clippingController}" />
-                                </span>
-
-                                <div class="panel-heading-controls">
-                                    <go:paginatorBtnsBt controllerMBean="#{clippingController}" update=":form"/>
-                                </div>
-                            </div>
-                            <div class="panel-body no-padding">
-                                <div class="table-responsive">
-                                    <h:dataTable id="panelG1" value="#{clippingController.items}" 
-                                                 styleClass="table table-hover  table-condensed"
-                                                 var="item">
-
-                                        <h:column >
-                                            <f:facet name="header">
-                                                <h:outputText value="#{bundle.ListClippingTitle_nombre}"/>
-                                            </f:facet>
-                                            <h:outputText id="name" value="#{item.nombre}"/>
-                                            <p:overlayPanel id="overlayPanel" for="name" hideEffect="fade" dynamic="true">  
-                                                <h:outputText value="#{item.texto}" escape="false"/>
-                                            </p:overlayPanel>
-
-                                        </h:column>
-
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="#{bundle.ListClippingTitle_visibleToAll}"/>
-                                            </f:facet>
-                                            <h:outputText value="#{item.visibleToAll ? 'Si':'No'}"/>
-                                        </h:column>
-
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="#{bundle.ListClippingTitle_idGrupo}"/>
-                                            </f:facet>
-                                            <h:outputText value="#{item.idGrupo.nombre}"/>
-                                        </h:column>
-
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="#{bundle.ListClippingTitle_idArea}"/>
-                                            </f:facet>
-                                            <h:outputText value="#{item.idArea.nombre}"/>
-                                        </h:column>
-
-                                        <h:column >
-                                            <f:facet name="header">
-                                                <h:outputText value="Agente"/>
-                                            </f:facet>
-                                            <p:commandLink value="#{item.idUsuarioCreadaPor.capitalName}"
-                                                           styleClass="btn-link"
-                                                           rendered="#{not empty item.idUsuarioCreadaPor}" 
-                                                           action="#{usuarioController.prepareView(item.idUsuarioCreadaPor, '/script/clipping/List')}" ajax="false" immediate="true"/>
-                                        </h:column>
-
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="&nbsp;"/>
-                                            </f:facet>
-
-                                            <div class="btn-toolbar">
-                                                <p:commandLink id="editBtn" action="#{clippingController.prepareEdit()}" ajax="false"
-                                                               styleClass="btn btn-sm btn-outline btn-primary"
-                                                               rendered="#{item.idUsuarioCreadaPor eq UserSessionBean.current}">
-                                                    <i class="fa fa-edit"/>
-                                                </p:commandLink>
-
-                                                <p:commandLink  actionListener="#{clippingController.destroy()}" 
-                                                                styleClass="btn btn-sm btn-outline btn-danger"
-                                                                update=":form :mainform:messages">
-                                                    <i class="fa fa-times"/>
-                                                    <p:confirm header="Confirmación" message="Esta seguro de eliminar #{item.nombre} ??" 
-                                                               icon="ui-icon-alert"/>
-                                                </p:commandLink>
-                                            </div>
-
-
-                                        </h:column>
-
-
-
-
-                                    </h:dataTable>
-                                </div>
-                            </div>
-
-                            <div class="panel-footer">
-                                <div class="row text-center">
-                                    <go:paginatorCounts controllerMBean="#{clippingController}" />
-                                </div>
-                            </div>
-                        </h:panelGroup>
-
-
-
-
-
                     </h:form>
 
 
                 </div>
-
             </div>
 
 
+            <div class="row">
+                <h:form id="form0">
+                    <h:panelGroup layout="block" styleClass="alert alert-warning" rendered="#{clippingController.items.rowCount le 0}">
+                        <button type="button" class="close" data-dismiss="alert">x</button>
+                        Your search did not match any cases.
+                    </h:panelGroup>
 
+                    <h:panelGroup layout="block"  rendered="#{clippingController.items.rowCount gt 0}">
+
+                        <ui:repeat value="#{clippingController.items}" var="item">
+
+                            <div class="panel panel-success panel-dark">
+                                <div class="panel-heading">
+                                    <span class="panel-title"><strong>#{item.nombre}</strong></span>
+                                    <div class="panel-heading-controls">
+                                        <span class="panel-heading-text"><em>#{item.visibleToAll ? 'To anyone':(item.idGrupo ne null)?'Only members of group'.concat(item.idGrupo.nombre):((item.idArea ne null)?'Only members of area'.concat(item.idArea.nombre):'Only owner')}</em>
+                                            &nbsp;&nbsp;<span style="color: #ccc">|</span>&nbsp;&nbsp;</span>
+
+                                        <p:commandLink id="editBtn" action="#{clippingController.prepareEdit()}" ajax="false"
+                                                       styleClass="btn btn-xs btn-outline btn-primary"
+                                                       rendered="#{item.idUsuarioCreadaPor eq UserSessionBean.current}">
+                                            <i class="fa fa-edit"/>
+                                        </p:commandLink>
+
+                                        <p:commandLink  actionListener="#{clippingController.destroy()}" 
+                                                        styleClass="btn btn-xs btn-outline btn-danger"
+                                                        update="@(form)">
+                                            <i class="fa fa-times"/>
+                                            <p:confirm header="Confirmación" message="Esta seguro de eliminar #{item.nombre} ??" 
+                                                       icon="ui-icon-alert"/>
+                                        </p:commandLink>
+
+                                    </div>
+                                </div> <!-- / .panel-heading -->
+                                <div class="panel-body">
+
+                                    <div class="expandable">
+                                        <h:outputText value="#{item.texto}" escape="false"/>
+                                    </div>
+
+                                </div>
+
+                                <div class="panel-footer">
+                                    <div class="btn-toolbar">
+                                        <div class="btn-group">
+                                            Created by 
+                                        </div>
+                                        <div class="btn-group">
+                                            <p:commandLink value="#{item.idUsuarioCreadaPor.capitalName}"
+                                                           styleClass="btn-link"
+                                                           rendered="#{not empty item.idUsuarioCreadaPor}" 
+                                                           action="#{usuarioController.prepareView(item.idUsuarioCreadaPor, '/script/clipping/List')}" ajax="false" immediate="true"/>
+
+                                        </div>
+                                        <div class="btn-group">
+                                            #{usuarioController.formatShortDateTime(item.fechaCreacion)}
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+                        </ui:repeat>
+
+
+                        <script type="text/javascript">
+
+                            $(function () {
+                                $('div.expandable').expander({
+                                    slicePoint: 50,
+                                    widow: 2,
+                                    expandEffect: 'fadeIn',
+                                    expandSpeed: 250,
+                                    collapseEffect: 'fadeOut',
+                                    collapseSpeed: 200,
+                                    // allow the user to re-collapse the expanded text.
+                                    userCollapse: true,
+                                    expandText: '[ + ]', // default is 'read more'
+                                    userCollapseText: '[ - ]'  // default is 'read less'
+                                });
+                            });
+                        </script>
+
+
+                        <div class="row text-center">
+                            <go:paginatorCounts controllerMBean="#{clippingController}" />
+                        </div>
+                    </h:panelGroup>
+
+                </h:form>
+            </div>
 
 
 
@@ -202,8 +188,17 @@
         <ui:define name="dialogs">
 
             <p:confirmDialog closeOnEscape="true" global="true" showEffect="fade" hideEffect="explode" >
-                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
-                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/> 	
+
+                <div class="btn-group">
+                    <p:commandLink styleClass="btn btn-default btn-flat ui-confirmdialog-no" value="No" type="button" /> 	
+
+                </div>
+                <div class="btn-group">
+                    <p:commandLink styleClass="btn btn-danger btn-flat ui-confirmdialog-yes" type="button" >
+                        <i class="fa fa-trash-o"></i> #{bundle.yesDelete}
+                    </p:commandLink>
+                </div>
+
             </p:confirmDialog>
 
 

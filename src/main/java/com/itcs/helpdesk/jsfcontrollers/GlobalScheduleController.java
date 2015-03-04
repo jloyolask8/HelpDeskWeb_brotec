@@ -58,8 +58,8 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
     private ScheduleModel lazyScheduleEventsModel;
     private DefaultScheduleEvent event = new DefaultScheduleEvent();
 
-    private List<Usuario> filtrosUsuario = new LinkedList<Usuario>();
-    private List<Resource> filtrosRecurso = new LinkedList<Resource>();
+    private List<Usuario> filtrosUsuario = new LinkedList<>();
+    private List<Resource> filtrosRecurso = new LinkedList<>();
     private boolean insideCasoDisplay = false;//global
 
     //temp vars
@@ -98,27 +98,6 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
 
                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
-//                    if (filtrosUsuario != null && !filtrosUsuario.isEmpty()) {
-//                        //add current caso filter
-//                        FiltroVista f4_0 = new FiltroVista();
-//                        f4_0.setIdFiltro(4);//otherwise i dont know what to remove dude.
-//                        f4_0.setIdCampo("idUsuario");
-//                        f4_0.setIdComparador(EnumTipoComparacion.SC.getTipoComparacion());
-//                        String commaSeparatedIdOfUsuariosFilter = "";
-//                        boolean first = true;
-//                        for (Usuario usuario : filtrosUsuario) {
-//                            if (first) {
-//                                commaSeparatedIdOfUsuariosFilter += usuario.getIdUsuario();
-//                                first = false;
-//                            } else {
-//                                commaSeparatedIdOfUsuariosFilter += ("," + usuario.getIdUsuario());
-//                            }
-//                        }
-//
-//                        f4_0.setValor(commaSeparatedIdOfUsuariosFilter);
-//                        f4_0.setIdVista(getFilterHelper().getVista());
-//                        getFilterHelper().getVista().getFiltrosVistaList().add(f4_0);
-//                    }
                     if (filtrosUsuario != null && !filtrosUsuario.isEmpty()) {
 
                         for (Usuario usuario : filtrosUsuario) {
@@ -136,13 +115,13 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
                             filtrosVistaList.add(filtroFechaDesdeHasta);
 
                             //usuariosInvitedList filter
-                            FiltroVista filtroUsuariosInvitedList = new FiltroVista();
-                            filtroUsuariosInvitedList.setIdFiltro(2);//otherwise i dont know what to remove dude.
-                            filtroUsuariosInvitedList.setIdCampo("usuariosInvitedList");
-                            filtroUsuariosInvitedList.setIdComparador(EnumTipoComparacion.IM.getTipoComparacion());
-                            filtroUsuariosInvitedList.setValor(usuario.getIdUsuario());
-                            filtroUsuariosInvitedList.setIdVista(getVista());
-                            filtrosVistaList.add(filtroUsuariosInvitedList);
+                            FiltroVista fu = new FiltroVista();
+                            fu.setIdFiltro(2);//otherwise i dont know what to remove dude.
+                            fu.setIdCampo("usuariosInvitedList");
+                            fu.setIdComparador(EnumTipoComparacion.IM.getTipoComparacion());
+                            fu.setValor(usuario.getIdUsuario());
+                            fu.setIdVista(getVista());
+                            filtrosVistaList.add(fu);
 
                             //set filters to vista
                             getVista().setFiltrosVistaList(filtrosVistaList);
@@ -160,32 +139,54 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
 
                                 addEvent(defaultScheduleEvent);
                             }
-
                         }
-
                     }
 
-//                    if (filtrosRecurso != null && !filtrosRecurso.isEmpty()) {
-//                        //add current caso filter
-//                        FiltroVista f5 = new FiltroVista();
-//                        f5.setIdFiltro(4);//otherwise i dont know what to remove dude.
-//                        f5.setIdCampo("resourceList");
-//                        f5.setIdComparador(EnumTipoComparacion.IM.getTipoComparacion());
-//                        String commaSeparatedIdOfResourcesFilter = "";
-//                        boolean first = true;
-//                        for (Resource r : filtrosRecurso) {
-//                            if (first) {
-//                                commaSeparatedIdOfResourcesFilter += r.getIdResource();
-//                                first = false;
-//                            } else {
-//                                commaSeparatedIdOfResourcesFilter += ("," + r.getIdResource());
-//                            }
-//                        }
-//
-//                        f5.setValor(commaSeparatedIdOfResourcesFilter);
-//                        f5.setIdVista(getFilterHelper().getVista());
-//                        getFilterHelper().getVista().getFiltrosVistaList().add(f5);
-//                    }
+                    if (filtrosRecurso != null && !filtrosRecurso.isEmpty()) {
+
+                        for (Resource r : filtrosRecurso) {
+
+                            List<FiltroVista> filtrosVistaList = new ArrayList<>(2);
+
+                            //add date filter
+                            FiltroVista filtroFechaDesdeHasta = new FiltroVista();
+                            filtroFechaDesdeHasta.setIdFiltro(1);//otherwise i dont know what to remove dude.
+                            filtroFechaDesdeHasta.setIdCampo("startDate");
+                            filtroFechaDesdeHasta.setIdComparador(EnumTipoComparacion.BW.getTipoComparacion());
+                            filtroFechaDesdeHasta.setValor(sdf.format(start));//desde
+                            filtroFechaDesdeHasta.setValor2(sdf.format(end));//hasta
+                            filtroFechaDesdeHasta.setIdVista(getVista());
+                            filtrosVistaList.add(filtroFechaDesdeHasta);
+
+                            //usuariosInvitedList filter
+                            FiltroVista fu = new FiltroVista();
+                            fu.setIdFiltro(2);//otherwise i dont know what to remove dude.
+                            fu.setIdCampo("resourceList");
+                            fu.setIdComparador(EnumTipoComparacion.IM.getTipoComparacion());
+                            fu.setValor(r.getIdResource().toString());
+                            fu.setIdVista(getVista());
+                            filtrosVistaList.add(fu);
+
+                            //set filters to vista
+                            getVista().setFiltrosVistaList(filtrosVistaList);
+
+                            final List<com.itcs.helpdesk.persistence.entities.ScheduleEvent> findEntities
+                                    = (List<com.itcs.helpdesk.persistence.entities.ScheduleEvent>) getJpaController().findAllEntities(getVista(), new OrderBy("startDate", OrderBy.OrderType.DESC), null);
+//                    //System.out.println("events:" + findEntities);
+                            for (com.itcs.helpdesk.persistence.entities.ScheduleEvent scheduleEvent : findEntities) {
+                                final DefaultScheduleEvent defaultScheduleEvent
+                                        = new DefaultScheduleEvent(scheduleEvent.getTitle(),
+                                                scheduleEvent.getStartDate(), scheduleEvent.getEndDate());
+                                defaultScheduleEvent.setAllDay(scheduleEvent.getAllDay());
+                                defaultScheduleEvent.setData(scheduleEvent);
+                                defaultScheduleEvent.setStyleClass("res"+r.getIdResource().toString());
+
+                                addEvent(defaultScheduleEvent);
+                            }
+                        }
+                    }
+                    
+                   
 //                    //System.out.println("VISTA=" + getFilterHelper().getVista());
                 } catch (Exception ex) {
                     Logger.getLogger(GlobalScheduleController.class.getName()).log(Level.SEVERE, "loadEvents", ex);
@@ -198,14 +199,21 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
 
     }
 
+    @Override
+    protected String getListPage() {
+        return "/script/agenda?faces-redirect=true";
+    }
+
+    
+    @Override
     public String prepareList() {
         recreateModel();
         recreatePagination();
         if(this.filtrosUsuario == null || this.filtrosUsuario.isEmpty()){
-            filtrosUsuario = new LinkedList<Usuario>();
+            filtrosUsuario = new LinkedList<>();
             addUsuarioToTheList(userSessionBean.getCurrent());
         }
-        return "/script/agenda";
+        return getListPage();
     }
 
     public DefaultScheduleEvent getEvent() {
@@ -217,7 +225,11 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
     }
 
     public void removeAllUsuariosFilters() {
-        this.filtrosUsuario = new LinkedList<Usuario>();
+        this.filtrosUsuario = new LinkedList<>();
+    }
+    
+    public void removeAllResourcesFilters() {
+        this.filtrosRecurso = new LinkedList<>();
     }
 
     public void addEvent() {
@@ -285,7 +297,7 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
                 && !StringUtils.isEmpty(entityEvent.getIdTipoAccion().getImplementationClassName())) {
             //we must schedule the selected action
             String jobID = HelpDeskScheluder.scheduleActionClassExecutorJob(
-                    getUserSessionBean().getTenantId(),
+                    getCurrentTenantId(),
                     entityEvent.getIdCaso().getIdCaso(),
                     entityEvent.getIdTipoAccion().getImplementationClassName(),
                     entityEvent.getParametrosAccion(),
@@ -312,7 +324,7 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
                 cal.add(Calendar.MINUTE, minituesAmount);
 
                 String jobId = HelpDeskScheluder.scheduleEventReminderJob(
-                        getUserSessionBean().getTenantId(),
+                        getCurrentTenantId(),
                         entityEvent.getUsuariosInvitedList(),
                         entityEvent.getIdCaso().getIdCaso(),
                         scheduleEventReminder.getEventId().getEventId().toString(),
@@ -509,11 +521,48 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
 
     }
 
+     public void resourceFilterItemSelectEvent(SelectEvent event) {
+        Object item = event.getObject();
+        try {
+
+            if (this.filtrosRecurso == null) {
+                filtrosRecurso = new LinkedList<>();
+            }
+
+            final Resource res = (Resource) item;
+            addResToTheList(res);
+        } catch (Exception ex) {
+            addInfoMessage("No se pudo Agregar el recurso al filtro: " + item);
+            Log.createLogger(CasoController.class.getName()).log(Level.SEVERE, "resourceFilterItemSelectEvent", ex);
+        }
+
+    }
+     
+     private void addResToTheList(final Resource r) {
+        if (!filtrosRecurso.contains(r)) {
+            if (StringUtils.isEmpty(r.getRandomColor())) {
+                final String color = Colors.getNextColor();
+                if (color != null) {
+                    r.setRandomColor(color);
+                    filtrosRecurso.add(r);
+                } else {
+                    addInfoMessage("No puede agregar más Resources, favor quitar algunos que no necesite ver, para agregar más!");
+                }
+                
+            }
+            
+            selectedResourceToAddInvited = null;//reset selection
+            
+        } else {
+            addInfoMessage("Este Resource ya existe en la lista!");
+        }
+    }
+     
     public void usuarioFilterItemSelectEvent(SelectEvent event) {
         Object item = event.getObject();
         try {
             if (this.filtrosUsuario == null) {
-                filtrosUsuario = new LinkedList<Usuario>();
+                filtrosUsuario = new LinkedList<>();
             }
 
             final Usuario usuario = (Usuario) item;
@@ -606,28 +655,7 @@ public class GlobalScheduleController extends AbstractManagedBean<com.itcs.helpd
 
     }
 
-    public void resourceFilterItemSelectEvent(SelectEvent event) {
-        Object item = event.getObject();
-        try {
-
-            if (this.filtrosRecurso == null) {
-                filtrosRecurso = new LinkedList<Resource>();
-            }
-
-            final Resource res = (Resource) item;
-            if (!filtrosRecurso.contains(res)) {
-                filtrosRecurso.add(res);
-                setSelectedResourceToAddInvited(null);//reset selection
-
-            } else {
-                addInfoMessage("Filtro recurso ya existe!");
-            }
-        } catch (Exception ex) {
-            addInfoMessage("No se pudo Agregar el recurso al filtro: " + item);
-            Log.createLogger(CasoController.class.getName()).log(Level.SEVERE, "resourceFilterItemSelectEvent", ex);
-        }
-
-    }
+   
 
     /**
      * @return the selectedUserToAddInvited

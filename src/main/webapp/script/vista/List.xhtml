@@ -8,7 +8,7 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:go="http://java.sun.com/jsf/composite/go">
 
-    <ui:composition template="/script/template_inbox_bootstrap.xhtml">
+    <ui:composition template="/script/template_inbox_bootstrap_config.xhtml">
         <ui:define name="title">
             <h:outputText value="Vistas"></h:outputText>
         </ui:define>
@@ -21,7 +21,13 @@
         </ui:define>
 
 
-        <ui:define name="body">
+        <ui:define name="content_header">
+            <script>
+                var init = [];
+                init.push(function () {
+                    $('body').addClass('mmc');
+                });
+            </script>
 
             <!-- page-header -->
             <div class="page-header">
@@ -52,9 +58,9 @@
                                 <button type="button" class="btn dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i></button>
                                 <ul class="dropdown-menu">
                                     <li>
-                                        <h:commandLink action="#{vistaController.prepareCreate}" 
-                                                       value="Agregar"
-                                                       title="Agregar/Crear nuevo">
+                                        <h:commandLink action="#{vistaController.prepareCreateVista}" 
+                                                       value="Crear nueva Vista"
+                                                       title="Agregar/Crear nueva">
                                         </h:commandLink>
                                     </li>
                                 </ul>
@@ -66,6 +72,11 @@
                     </div>
                 </div>
             </div><!-- / .page-header -->
+        </ui:define>
+        
+        <ui:define name="body">
+
+            
 
 
             <go:vistasListBt id="vistasList" 
@@ -93,14 +104,14 @@
 
                 <p:messages/>
 
-                <h:panelGroup rendered="#{casoController.items.rowCount le 0}">
-                    <div class="alert alert-page alert-warning">
+                <h:panelGroup rendered="#{vistaController.items.rowCount le 0}">
+                    <div class="alert  alert-warning">
                         <button type="button" class="close" data-dismiss="alert">ok</button>
                         Your search did not match any cases.
                     </div>
                     <br/>
                 </h:panelGroup>
-                <h:panelGroup layout="block" styleClass="table-responsive">
+                <h:panelGroup layout="block" styleClass="table-responsive" rendered="#{vistaController.items.rowCount gt 0}">
 
 
                     <p:dataTable id="datatableVistas" value="#{vistaController.items}" 

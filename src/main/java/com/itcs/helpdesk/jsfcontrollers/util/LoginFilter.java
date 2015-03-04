@@ -61,6 +61,8 @@ public class LoginFilter implements Filter {
                             return;
                         }
                     }
+                }else if(requestedPage.endsWith("signup.xhtml")){
+                    //let pass
                 } else {
                     if (userSessionBean == null) {
                         System.out.println("userSessionBean == null LoginFilter.sendRedirect:/public/login.xhtml");

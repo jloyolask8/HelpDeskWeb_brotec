@@ -40,7 +40,7 @@ public class AreaController extends AbstractManagedBean<Area> implements Seriali
     private transient TreeNode root = null;
     private int editActiveIndex;
     private int editActiveIndex2;
-    private boolean expanded = false;
+    private boolean expanded = true;
 
     public AreaController() {
         super(Area.class);

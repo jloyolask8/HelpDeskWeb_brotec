@@ -32,10 +32,21 @@
                 <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/pages.css" rel="stylesheet" type="text/css"/>
                 <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/themes.css" rel="stylesheet" type="text/css"/>
                 <link href="#{facesContext.externalContext.requestContextPath}/resources/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css"/>
+                <link href="#{facesContext.externalContext.requestContextPath}/resources/css/bootstrap-tour.min.css" rel="stylesheet" type="text/css"/>
+                <link href="#{facesContext.externalContext.requestContextPath}/resources/css/daterangepicker-bs3.css" rel="stylesheet" type="text/css"/>
 
                 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet"/>
 
                 <style type="text/css">
+
+                    .ui-datatable thead th, .ui-datatable tbody td, .ui-datatable tfoot td {
+                        border-width: 0px  !important;
+                    }
+
+                    .filtersGrid td {
+                        border-style: hidden !important;
+                        vertical-align: top;
+                    }
 
                     .ui-growl{
                         z-index: 1011;
@@ -87,8 +98,7 @@
                         week: 'Semana',
                         day: 'Día',
                         allDayText: 'Todo el día'
-                    };
-                </script>
+                    };</script>
 
                 <h:outputScript name="jsf.js" library="javax.faces"/>
 
@@ -110,8 +120,7 @@
                 </p:idleMonitor>
 
                 <script>
-                    var init = [];
-                </script>
+                    var init = [];</script>
 
                 <h:form id="mainform">
                     <p:growl id="messages" life="5000" autoUpdate="true"  globalOnly="true" widgetVar="messages"/>
@@ -155,7 +164,7 @@
                                     <ul class="nav navbar-nav">
 
 
-                                        <li>
+                                        <li  id="reportsLi">
                                             <p:commandLink title="Reportes" rendered="#{filtroAcceso.verificarAccesoAFuncionSupervision()}"
                                                            action="/script/report_graphs/reports" ajax="false"
                                                            immediate="true">
@@ -166,7 +175,7 @@
                                         </li>
 
                                         <h:panelGroup rendered="#{filtroAcceso.verificarAccesoAFuncionSupervision()}">
-                                            <li class="dropdown">
+                                            <li  id="supervisionLi" class="dropdown">
                                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                                     <i class="menu-icon fa fa-eye"></i><span class="mm-text"> Supervisión</span></a>
                                                 <ul class="dropdown-menu">
@@ -200,11 +209,11 @@
                                         </h:panelGroup>
 
 
-                                        <li>
+                                        <li id="settingsLi">
                                             <p:commandLink title="Settings" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
                                                            action="#{appSettingController.goToConfigPage}" ajax="false"
                                                            immediate="true">
-                                                <i class="menu-icon fa fa-cogs"></i>
+                                                <i class="menu-icon fa fa-wrench"></i>
                                                 <span class="mm-text">Settings</span>
                                             </p:commandLink>
 
@@ -215,7 +224,7 @@
                                     </ul> <!-- / .navbar-nav -->
 
                                     <h:panelGroup layout="block" styleClass="right clearfix">
-                                        <ul class="nav navbar-nav pull-right right-navbar-nav">
+                                        <ul id="indicatorsTour" class="nav navbar-nav pull-right right-navbar-nav">
 
                                             <!-- CASOS STARRED -->
                                             <li class="nav-icon-btn nav-icon-btn-primary">
@@ -326,7 +335,7 @@
                                             -->
                                             <li class="nav-icon-btn nav-icon-btn-danger dropdown">
                                                 <a href="#notifications" class="dropdown-toggle" data-toggle="dropdown">
-                                                    <span class="label">#{auditLogController.getActivityLogs(UserSessionBean.current.idUsuario).size()}</span>
+                                                    <span class="label">#{auditLogController.countNotifications(UserSessionBean.current.idUsuario)}</span>
                                                     <i class="nav-icon fa fa-bell"></i>
                                                     <span class="small-screen-text">Notificationes</span>
                                                 </a>
@@ -344,11 +353,19 @@
 
                                                         <c:forEach items="#{auditLogController.getActivityLogs(UserSessionBean.current.idUsuario)}" var="item" varStatus="loop">
 
+
+
                                                             <div class="notification">
                                                                 <div class="notification-title text-primary">#{item.idUser}</div>
-                                                                <div class="notification-description"><strong><h:outputText value="[ref\##{item.idCaso}]"/></strong>: #{item.idCampo eq null ? '':'ha cambiado el valor de '.concat(item.idCampo)} #{item.newValue}.</div>
+                                                                <div class="notification-description">
+                                                                    <strong><h:outputText value="[ref\##{item.idCaso}]"/></strong>:
+                                                                    #{item.idCampo eq null ? '':'ha cambiado el valor de '.concat(item.idCampo)} #{item.newValue}.</div>
                                                                 <div class="notification-ago" title="#{casoController.formatDate(item.fecha)}">#{casoController.prettyDate(item.fecha)}</div>
-                                                                <div class="notification-icon fa fa-hdd-o bg-info"></div>
+
+                                                                <p:commandLink action="#{casoController.prepareEditPK(item.idCaso)}" 
+                                                                               rendered="#{not empty item.idCaso}"
+                                                                               ajax="false" styleClass="notification-icon fa fa-ticket" immediate="true">
+                                                                </p:commandLink>
                                                             </div> <!-- / .notification -->
 
 
@@ -357,14 +374,19 @@
 
 
                                                     </div> <!-- / .notifications-list -->
-                                                    <a href="#" class="notifications-link">MORE NOTIFICATIONS</a>
+                                                    <p:commandLink title="Logs de Casos" 
+                                                                   styleClass="notifications-link"
+                                                                   action="#{auditLogController.prepareVerTodasLasNotifications()}" ajax="false"
+                                                                   immediate="true">
+                                                        Ver Todas
+                                                    </p:commandLink>
                                                 </div> <!-- / .dropdown-menu -->
                                             </li>
 
                                             <!-- /3. $END_NAVBAR_ICON_BUTTONS -->
 
-                                            <li>
-                                                <div class="input-group">
+                                            <li >
+                                                <div id="goToCasoBox" class="input-group">
                                                     <div class="navbar-form pull-left">
 
 
@@ -388,7 +410,7 @@
                                             </li>
 
                                             <li class="dropdown">
-                                                <a href="#" class="dropdown-toggle user-menu" data-toggle="dropdown">
+                                                <a id="userBox" href="#" class="dropdown-toggle user-menu" data-toggle="dropdown">
                                                     <img src="#{facesContext.externalContext.requestContextPath}/resources/images/pixel-admin/avatar.png" alt=""/>
                                                     <span>#{UserSessionBean.current.capitalName}</span>
                                                 </a>
@@ -463,12 +485,12 @@
                                     </div>
                                 </div>
                                 <ul class="navigation">
-                                    <li>
-                                        <a href="#" class="disabled">
+                                    <li id="dashboardTour" class="#{view.viewId.contains('dashboard') ? 'active':''}" >
+                                        <p:commandLink action="#{dashboardController.prepareList()}" ajax="false">
                                             <i class="menu-icon fa fa-dashboard"></i><span class="mm-text">Dashboard</span>
-                                        </a>
+                                        </p:commandLink>
                                     </li>
-                                    <li>
+                                    <li id="inboxmenu" >
                                         <p:commandLink action="#{casoController.inbox}" ajax="false">
                                             <i class="menu-icon fa fa-inbox"></i><span class="mm-text">Inbox</span>
                                         </p:commandLink>
@@ -539,7 +561,7 @@
 
 
 
-                                    <li class="mm-dropdown">
+                                    <li id="connectedUsersTour" class="mm-dropdown">
                                         <a href="#"><i class="menu-icon fa fa-user"></i>
                                             <span class="mm-text" title="TotalActiveSessions: #{applicationBean.totalActiveSession}">
                                                 Usuarios Conectados (#{applicationBean.usersLoggedIn.size()})
@@ -549,12 +571,13 @@
                                             <c:forEach items="#{applicationBean.usersLoggedIn}"
                                                        var="userLoggedIn" >
                                                 <li>
-                                                    <p:commandLink title="Chat with #{userLoggedIn}" 
-                                                                   action="#" ajax="false">
-                                                        <i class="menu-icon fa fa-comments"></i>
-                                                        <span class="mm-text">#{userLoggedIn}</span>
-                                                    </p:commandLink>
-
+                                                    <h:panelGroup rendered="#{userLoggedIn ne UserSessionBean.current.idUsuario}">
+                                                        <a title="Chat with #{userLoggedIn}" 
+                                                           onclick="startChat('#{UserSessionBean.current.idUsuario}', '#{userLoggedIn}', '#{UserSessionBean.current.tenantId}');">
+                                                            <i class="menu-icon fa fa-comments"></i>
+                                                            <span class="mm-text">#{userLoggedIn}</span>
+                                                        </a>
+                                                    </h:panelGroup>
                                                 </li>
 
 
@@ -653,7 +676,10 @@
                 <script src="#{facesContext.externalContext.requestContextPath}/resources/javascripts/pixel-admin.js"></script>
                 <script src="#{facesContext.externalContext.requestContextPath}/resources/js/bootstrap-datetimepicker.min.js"></script>
                 <script src="#{facesContext.externalContext.requestContextPath}/resources/js/jquery.expander.min.js"></script>
+                <script src="#{facesContext.externalContext.requestContextPath}/resources/js/bootstrap-tour.js"></script>
 
+                <script src="#{facesContext.externalContext.requestContextPath}/resources/js/moment-with-locales.min.js"></script>
+                <script src="#{facesContext.externalContext.requestContextPath}/resources/js/daterangepicker.js"></script>
                 <script src="#{facesContext.externalContext.requestContextPath}/resources/js/typeahead.min.js"></script>
 
                 <!--[if lt IE 9]>
@@ -663,33 +689,306 @@
 
                 <ui:insert name="startscript">
                     <script type="text/javascript">
+                    //<![CDATA[
+                    // Instance the tour
+
+                    var tour = new Tour({
+                        name: "tour",
+                        steps: [
+                            {
+                                element: "#dashboardTour",
+                                title: "Estás a un paso de comenzar",
+                                content: "Para comenzar, debes realizar algunas configuraciones básicas para que tu GoDesk funcione correctamente. Haz click en el dashboard (<i class='fa fa-dashboard'/>) para ver tus opciones de configuración."
+                            },
+                            {
+                                element: "#dashboardtest1Tour",
+                                title: "Getting Started with the setup",
+                                content: "Config instructions",
+                                placement: "bottom"
+                            },
+                            {
+                                element: "#inboxmenu",
+                                title: "Menú Lateral",
+                                content: "Aqui encontrará los accesos a la información de interés del agente. Inbox de Casos, Agenda, Clientes, Productos y mucho más...",
+                            },
+                            {
+                                element: "#connectedUsersTour",
+                                title: "Usuarios conectados",
+                                content: "Vea rapidamente que usuarios estan conectados y comienze a chatear con ellos.",
+                            },
+                            {
+                                element: "#reportsLi",
+                                title: "Resportes Avanzados",
+                                content: "Vea rápidamente como va su empresa!!",
+                                placement: "bottom"
+                            }
+                            ,
+                            {
+                                element: "#supervisionLi",
+                                title: "Supervisión y Log de eventos",
+                                content: "Sepa todo lo que ha pasado con los casos!",
+                                placement: "bottom"
+                            }
+                            ,
+                            {
+                                element: "#settingsLi",
+                                title: "Settings",
+                                content: "Configure su GoDesk a su medida!!",
+                                placement: "bottom"
+                            }
+                            ,
+                            {
+                                element: "#indicatorsTour",
+                                title: "Indicadores del Agente",
+                                content: "Indicadores que le avisan del estado de los casos del agente, haga click para filtrar los casos.",
+                                placement: "left"
+                            }
+                            ,
+                            {
+                                element: "#goToCasoBox",
+                                title: "Acceso directo a un caso",
+                                content: "Ingrese el número de caso que desea abrir.",
+                                placement: "bottom"
+                            }
+                            ,
+                            {
+                                element: "#toolbarTour",
+                                title: "Toolbar",
+                                content: "TODO. Operations Toolbar.",
+                                placement: "left",
+                                backdrop: "true"
+                            }
+                            ,
+                            {
+                                element: "#vistasTour",
+                                title: "Vistas",
+                                content: "Views represent a subset of data. Views hide the complexity of quering data.",
+                                placement: "bottom",
+                                backdrop: "true"
+                            }
+                            ,
+                            {
+                                element: "#filterBtnTour",
+                                title: "Filtro avanzado de búsquedas",
+                                content: "Presione el boton para hacer una búsqueda avanzada.",
+                                placement: "left",
+                                backdrop: "true"
+                            }
+                        ],
+                        container: "body",
+                        keyboard: true,
+                        storage: window.localStorage,
+                        debug: true,
+                        backdrop: false,
+                        backdropPadding: 0,
+                        redirect: true,
+                        orphan: false,
+                        duration: false,
+                        delay: false,
+                        basePath: "",
+                        afterGetState: function (key, value) {
+                        },
+                        afterSetState: function (key, value) {
+                        },
+                        afterRemoveState: function (key, value) {
+                        },
+                        onStart: function (tour) {
+                        },
+                        onEnd: function (tour) {
+                        },
+                        onShow: function (tour) {
+                        },
+                        onShown: function (tour) {
+                        },
+                        onHide: function (tour) {
+                        },
+                        onHidden: function (tour) {
+                        },
+                        onNext: function (tour) {
+                        },
+                        onPrev: function (tour) {
+                        },
+                        onPause: function (tour, duration) {
+                        },
+                        onResume: function (tour, duration) {
+                        }
+                    });
+
+                    tour.init();
+                    tour.start();
+
+
+
+
+
+
+                    function addStyleString(str) {
+                        console.log("addStyleString: " + str);
+                        var node = document.createElement('style');
+                        node.innerHTML = str;
+                        document.body.appendChild(node);
+                    }
+
+                    function minimizeChatUI(iframeid) {
+                        console.log("minimizeChatUI(" + iframeid + ")");
+                        document.getElementById(iframeid).style.width = '231px';
+                        document.getElementById(iframeid).style.height = '28px';
+                        document.getElementById(iframeid).className = "chatWindowButton" + iframeid;
+                    }
+
+                    function bringToFrontChatUI(iframeid) {
+                        console.log("bringToFrontChatUI(" + iframeid + ")");
+                        document.getElementById(iframeid).style.width = '290px';
+                        document.getElementById(iframeid).style.height = '400px';
+                        document.getElementById(iframeid).className = "chatWindow" + iframeid;
+                    }
+
+                    function setStyleChatFrame(iframeid, posx) {
+                        var chatStyle = '.chatWindow' + iframeid + ' {position: absolute;right: ' + posx + 'px;bottom: 0px;box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);-webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);}';
+                        var chatButtonStyle = '.chatWindowButton' + iframeid + ' {position: absolute;right: ' + posx + 'px;bottom: 0px;}';
+                        addStyleString(chatStyle);
+                        addStyleString(chatButtonStyle);
+                    }
+
+                    function createChatIFrame(idframe, url) {
+                        var chatIFrame = document.createElement("IFRAME");
+                        chatIFrame.id = idframe;
+                        chatIFrame.name = idframe;
+                        chatIFrame.src = url;
+                        chatIFrame.style.border = '0px';
+                        chatIFrame.style.background = 'transparent';
+                        chatIFrame.style.display = "block";
+                        document.body.appendChild(chatIFrame);
+                        console.log("se ha creado iframe id=" + chatIFrame.id);
+                        return chatIFrame;
+                    }
+
+                    function createChatHiddenFrame(username, idsite) {
+                        var idFrame = "chatIFrame" + username;
+                        var existentFrame = document.getElementById(idFrame);
+                        if (existentFrame === null) {
+                            addStyleString('.chatWindowHidden {position: absolute;left: -1000px;top: -1000px;}');
+                            var url = "http://www.godesk.cl:8090/golivechat/?type=internalReg&name=" + username + "&site=" + idsite +
+                                    "&frameid=" + idFrame + "&referrer=" + document.referrer;
+                            var chatIFrame = createChatIFrame(idFrame, url);
+                            chatIFrame.className = "chatWindowHidden";
+                        } else {
+                            console.log("ya existe el iframe id=" + existentFrame.id);
+                        }
+                    }
+
+                    function createChatClientMode() {
+                        var idFrame = "chatIFrame" + '#{UserSessionBean.current.idUsuario}';
+                        var url = "http://www.godesk.cl:8090/golivechat/?type=cliente&name=#{UserSessionBean.current.capitalName}&frameid=" + idFrame;
+                        var chatIFrame = createChatIFrame(idFrame, url);
+                        chatIFrame.style.width = '290px';
+                        chatIFrame.style.height = '400px';
+                    }
+
+                    function startChat(myusername, client, idsite) {
+                        console.log("function startChat called");
+                        var idFrame = "chatIFrame" + client;
+                        var existentFrame = document.getElementById(idFrame);
+                        if (existentFrame === null) {
+                            addStyleString('.chatWindowHidden {position: absolute;left: -1000px;top: -1000px;}');
+                            var jscall = "startChat;" + myusername + ";" + client + ";" + idsite;
+                            var url = "http://www.godesk.cl:8090/golivechat/?type=startNewInternalChat&name=" +
+                                    myusername + "&site=" + idsite + "&client=" + client + "&jscall=" + jscall +
+                                    "&frameid=" + idFrame;
+                            var chatIFrame = createChatIFrame(idFrame, url);
+                            chatIFrame.className = "chatWindowHidden";
+                        } else {
+                            console.log("ya existe el iframe id=" + existentFrame.id);
+                        }
+                    }
+
+                    function closeChat(chatId) {
+                        console.log("function closeChat(" + chatId + ") called");
+                        var existentFrame = document.getElementById(chatId);
+                        if (existentFrame !== null) {
+                            document.body.removeChild(existentFrame);
+                        } else {
+                            console.log("iframe " + chatId + " not found!!!");
+                        }
+                    }
+
+                    function joinInternalChat(myusername, client, idsite) {
+                        var idFrame = "chatIFrame" + myusername;
+                        var existentFrame = document.getElementById(idFrame);
+                        if (existentFrame === null) {
+                            addStyleString('.chatWindowHidden {position: absolute;left: -1000px;top: -1000px;}');
+                            var jscall = "joinInternalChat;" + myusername + ";" + client + ";" + idsite;
+                            var url = "http://www.godesk.cl:8090/golivechat/?type=joinInternalChat&name=" +
+                                    myusername + "&site=" + idsite + "&client=" + client + "&jscall=" + jscall +
+                                    "&frameid=" + idFrame;
+                            var chatIFrame = createChatIFrame(idFrame, url);
+                            chatIFrame.className = "chatWindowHidden";
+                        } else {
+                            console.log("ya existe el iframe id=" + existentFrame.id);
+                        }
+                    }
+
+                    function boomerangForCookie() {
+                        var mainURL = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                        window.location = "http://www.godesk.cl:8090/golivechat/?type=boomerangForCookie&url='" + mainURL + "'";
+                    }
+
+                    function processPostMessage(data) {
+                        var message = data.split(';');
+                        console.log("message[0]:" + message[0]);
+                        switch (message[0]) {
+                            case "boomerangForCookie":
+                                boomerangForCookie();
+                                break;
+                            case "minimizeChatUIPlease":
+                                minimizeChatUI(message[1]);
+                                break;
+                            case "maximizeChatUIPlease":
+                                bringToFrontChatUI(message[1]);
+                                break;
+                            case "setStyleChatFrame":
+                                setStyleChatFrame(message[2], message[1]);
+                                break;
+                            case "joinInternalChat":
+                                joinInternalChat(message[1], message[2], message[3]);
+                                break;
+                            case "startChat":
+                                startChat(message[1], message[2], message[3]);
+                                break;
+                            case "closeChat":
+                                closeChat(message[1]);
+                                break;
+                        }
+                    }
+
+
+
+
+                    createChatHiddenFrame('#{UserSessionBean.current.idUsuario}', '#{UserSessionBean.current.tenantId}');
+
 
                     init.push(function () {
                         $('div.notifications-list').slimScroll({height: 250});
                         $('.nav-pills, .nav-tabs').tabdrop();
-                        $("select.select2Input").select2({
-                            dropdownAutoWidth: true,
-                            allowClear: true
-                        });
 
-                        $("select.select2Multiple").select2({
-                            dropdownAutoWidth: true,
-                            allowClear: true
-                        });
 
-                        $('.datepicker').datetimepicker({
-                            language: 'es',
-                            format: 'dd/mm/yyyy hh:ii',
-                            viewformat: 'dd/mm/yyyy hh:ii',
-                            todayBtn: true,
-                            autoclose: true,
-                            todayHighlight: true,
-                            weekStart: 1,
-                            forceParse: true
-                        });
+
+
+
+                    });
+
+                    window.addEventListener("message", function (event) {
+                        console.log("message " + event.data);
+                        processPostMessage(event.data);
                     });
 
                     window.PixelAdmin.start(init);
+
+
+
+
+
+                    //]]>
                     </script>
                 </ui:insert>
 

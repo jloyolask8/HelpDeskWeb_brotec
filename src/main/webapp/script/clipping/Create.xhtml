@@ -6,91 +6,126 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
       xmlns:pe="http://primefaces.org/ui/extensions"
-      xmlns:go="http://java.sun.com/jsf/composite/go">
+      xmlns:go="http://java.sun.com/jsf/composite/go"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
 
-    <ui:composition template="/script/template_inbox.xhtml">
+    <ui:composition template="/script/template_inbox_bootstrap.xhtml">
         <ui:define name="title">
-            <p:outputLabel value="#{bundle.CreateClippingTitle}"/>
+            <h:outputText value="#{bundle.CreateClippingTitle}"/>
         </ui:define>
 
-        <ui:define name="west">
-            <p:accordionPanel multiple="true" cache="true" >
-                <p:tab title="#{bundle.clippingDesc}" >
-                    <p:outputLabel escape="false" value="#{bundle.clippingHelp}"/>
-                    <br/><br/>
-                    
-                                <p:dataTable value="#{clippingController.availablePlaceHolders}" 
-                                             var="holder" emptyMessage="No hay placeholders disponibles.">
-                                    <p:column headerText="Marcadores de posición">
-                                        <h:outputText value="\${#{holder}}"/>
-                                    </p:column>
-                                    <f:facet name="footer">
-                                        <h:outputText value="Utilice marcadores de posición para insertar información (del caso) usada con frecuencia fácilmente en el texto. Copie el marcador y péguelo en el area de texto de la Respuesta Predefinida."/>
-                                    </f:facet>
-                                </p:dataTable>
-
-                </p:tab>
-            </p:accordionPanel>
+        <ui:define name="help">
+            <h:outputText escape="false" value="#{bundle.clippingHelp}"/>
         </ui:define>
+
+
 
         <ui:define name="body">
 
-             
+            <script language="JavaScript" type="text/javascript">
+                $(document).ready(function ()
+                {
+                    $('#ClickWordList li').click(function () {
+                        $('textarea#createEditform\\:respuesta').ckeditor().editor.insertText($(this).text());
+                        return false;
+                    });
 
-               <h:form id="createEditform">
-                    <p:messages globalOnly="true"/>
-                    <h:panelGrid columns="1">
-                        <h:panelGrid>
-                            <p:inputText id="nombre" value="#{clippingController.selected.nombre}" style="width: 600px"
+                });
+
+
+            </script>
+
+            <!-- page-header -->
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-sm-10 col-xs-10">
+                        <h1><i class="fa fa-heart-o page-header-icon"></i>&nbsp;&nbsp;#{bundle.CreateClippingTitle}</h1>
+                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                            <i class="fa fa-info-circle"/>
+                        </p:commandLink> 
+                    </div>
+
+                </div>
+            </div><!-- / .page-header --> 
+
+            <h:form id="createEditform">
+
+                <p:messages globalOnly="true"/>
+                <div class="row">
+                    <div class="col-sm-6 col-lg-6">
+                        <div class="form-group">
+                            <label class="control-label">#{bundle.EditClippingTitle_nombre}</label>
+                            <p:inputText id="nombre" value="#{clippingController.selected.nombre}" styleClass="form-control"
                                          title="#{bundle.EditClippingTitle_nombre}" required="true" 
                                          requiredMessage="#{bundle.EditClippingRequiredMessage_nombre}"/>
+                            <h:message for="nombre" errorClass="text-danger"/>
                             <p:watermark for="nombre" value="#{bundle.EditClippingLabel_nombre}"/>
-                            <p:message for="nombre"/>
-                        </h:panelGrid>
 
-
-
-                        <h:panelGrid>
-
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Clipping text</label>
                             <pe:ckEditor id="respuesta" value="#{clippingController.selected.texto}" widgetVar="textoHtml"
-                                         required="true"
+                                         required="true" 
                                          width="100%" language="es"
                                          customConfig="#{request.contextPath}/resources/js/ckeditor.js"
                                          toolbar="#{applicationBean.ckEditorToolbar}"/>
-                            <p:message for="respuesta"/>
-                        </h:panelGrid>
+                            <h:message for="respuesta" errorClass="text-danger"/>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Visibilidad</label>
+
+                            <go:visibility id="VisibilidadPanel" controllerMBean="#{clippingController}"/>
 
 
+                        </div>
 
 
+                        <div class="btn-group">
+                            <p:commandLink process="@this" immediate="true" ajax="false"
+                                           styleClass="btn btn-default btn-flat" 
+                                           action="#{clippingController.prepareList()}" 
+                                           onclick="jQuery(this).addClass('ui-state-disabled');
+                                                   jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                <p:resetInput target="@form" />
+                                <i class=""></i> #{bundle.Cancel}
+                            </p:commandLink>
 
-                        <go:visibility id="VisibilidadPanel" controllerMBean="#{clippingController}"/>
-                         
+                        </div>
+
+                        <div class="btn-group">
+                            <p:commandLink action="#{clippingController.create}" 
+                                           ajax="false"
+                                           styleClass="btn btn-primary btn-flat" 
+                                           onclick="jQuery(this).addClass('ui-state-disabled');
+                                                   jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                <i class=""></i> #{bundle.CreateClippingSaveLink}
+                            </p:commandLink>
+                        </div>
+
+                    </div>
+
+                    <div class="col-sm-6 col-lg-6">
+
                        
-                    </h:panelGrid>
 
-                    <p:separator/>
+                        <h:outputText styleClass="text-primary" value="Utilice marcadores de posición para insertar información (del caso) usada con frecuencia fácilmente en el texto. Copie el marcador y péguelo en el area de texto de la Respuesta Predefinida."/>
 
-                    <p:commandButton value="Cancelar" process="@this" immediate="true" ajax="false"
-                                     icon="ui-icon-arrowreturnthick-1-w" action="#{clippingController.prepareList()}" >
-                        <p:resetInput target="@form" />
-                    </p:commandButton>
-
-                   
-                    
-                    <p:commandButton action="#{clippingController.create}" ajax="false" style="float: right;"
-                                     value="#{bundle.CreateClippingSaveLink}" 
-                                     icon="ui-icon-disk" rendered="#{clippingController.selected.idClipping eq null}"/>
+                        <legend>Click to insert:</legend>
+                        <ul id="ClickWordList" class="list-group">
+                            <c:forEach items="#{clippingController.availablePlaceHolders}" var="holder">
+                                <li class="list-group-item">\${#{holder}}</li>
+                            </c:forEach>
+                        </ul>
 
 
+                    </div>
+                </div>
 
-
-                </h:form>
-         
+            </h:form>
 
         </ui:define>
 
-       
+
 
     </ui:composition>
 

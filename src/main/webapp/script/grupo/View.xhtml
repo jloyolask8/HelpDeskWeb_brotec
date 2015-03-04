@@ -6,11 +6,43 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 
-    <ui:composition template="/script/template_inbox.xhtml">
+
+    <ui:composition template="/script/template_inbox_bootstrap_config.xhtml">
         <ui:define name="title">
-            <p:outputLabel value="#{bundle.ViewGrupoTitle}"/>
+            <h:outputText value="#{bundle.ViewGrupoTitle}"/>
         </ui:define>
-        <ui:define name="west">
+        <ui:define name="help">
+            <h:outputText escape="false" value="#{bundle.ayudaGrupos}"/>
+        </ui:define>
+
+        <ui:define name="content_header">
+            <script>
+                var init = [];
+                init.push(function () {
+                    $('body').addClass('mmc');
+                });
+            </script>
+
+            <!-- page-header -->
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-sm-6 col-xs-12">
+                        <h1><i class="fa fa-key page-header-icon"></i>&nbsp;&nbsp;#{bundle.ViewGrupoTitle}</h1>
+                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                            <i class="fa fa-info-circle"/>
+                        </p:commandLink> 
+                    </div>
+                    <div class="col-sm-6 col-xs-12">
+
+                    </div>
+                </div>
+            </div><!-- / .page-header --> 
+        </ui:define>
+
+
+
+        <ui:define name="body">
+
             <h:form id="form0">
                 <p:tabView id="tabs" dynamic="true">
 
@@ -26,6 +58,75 @@
 
                         <br/>
 
+                        <p:tabView id="tabs" dynamic="true">
+
+                            <p:tab id="lista" title="Agentes/Usuarios del Grupo" >
+
+
+                                <p:dataTable widgetVar="usuariosTableByGrupo" var="user" value="#{grupoController.selected.usuarioList}"     
+
+                                             emptyMessage="(No se han encontrado usuarios asociados al grupo)" paginatorAlwaysVisible="false"
+                                             resizableColumns="true" paginator="true" rows="15"
+                                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                             rowsPerPageTemplate="5,10,15,30,50">
+
+
+
+                                    <p:column headerText="Id Usuario">
+                                        <h:outputText value="#{user.idUsuario}"/>
+                                    </p:column>
+                                    <p:column headerText="Nombre">
+                                        <h:outputText value="#{user.capitalName}"/>
+                                    </p:column>
+                                    <p:column headerText="Email">
+                                        <h:outputText value="#{user.email}"/>
+                                    </p:column>
+                                    <p:column headerText="Activo">
+                                        <h:outputText value="#{user.activo eq true ? 'Activo':'Desactivo'}"/>
+                                    </p:column>
+                                    <p:column headerText="Acción">
+                                        <p:commandButton id="viewBtn" ajax="false" action="#{usuarioController.prepareView(user, '/script/grupo/View')}" disabled="#{not usuarioController.puedeEditar(user)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" title="Ver" icon="ui-icon ui-icon-document"/>
+                                        <p:commandButton id="editBtn" ajax="false" action="#{usuarioController.prepareEdit(user, '/script/grupo/View')}" disabled="#{not usuarioController.puedeEditar(user)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" title="Editar" icon="ui-icon ui-icon-pencil"/>
+                                    </p:column>
+
+
+                                </p:dataTable>
+
+
+
+                            </p:tab>
+                            
+                            <p:tab id="lista2" title="Productos del Grupo" >
+
+
+                                <p:dataTable widgetVar="productoList" var="p" value="#{grupoController.selected.productoList}"     
+
+                                             emptyMessage="(No se han encontrado productoList asociados al grupo)" paginatorAlwaysVisible="false"
+                                             resizableColumns="true" paginator="true" rows="15"
+                                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                             rowsPerPageTemplate="5,10,15,30,50">
+
+
+
+                                    <p:column>
+                                        <h:outputText value="#{p}"/>
+                                    </p:column>
+                                    
+                                    <p:column headerText="Acción">
+                                        <p:commandButton id="viewBtn" ajax="false" action="#{productoController.prepareView(user, '/script/grupo/View')}"  rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" title="Ver" icon="ui-icon ui-icon-document"/>
+                                        <p:commandButton id="editBtn" ajax="false" action="#{productoController.prepareEdit(user, '/script/grupo/View')}"  rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" title="Editar" icon="ui-icon ui-icon-pencil"/>
+                                    </p:column>
+
+
+                                </p:dataTable>
+
+
+
+                            </p:tab>
+                        </p:tabView>
+
+                        <br/>
+
                         <p:toolbar>  
                             <p:toolbarGroup align="left">   
                                 <p:commandButton ajax="false" action="#{grupoController.goBack()}" value="#{bundle.goBack}" immediate="true" icon="fa fa-chevron-left"/>
@@ -38,11 +139,7 @@
 
                             </p:toolbarGroup> 
 
-                            <p:toolbarGroup align="right">   
-                                <p:separator/>
-                                <p:commandButton id="showDialogButton" value="#{bundle.destroy}" onclick="PF('confirmation').show()"
-                                                 icon="ui-icon ui-icon-trash" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>         
-                            </p:toolbarGroup>
+                            
 
                         </p:toolbar>
 
@@ -50,71 +147,11 @@
                 </p:tabView>
 
             </h:form>
-            <br/>
-            <p:panel>
-                <h:outputLabel escape="false" value="#{bundle.ayudaGrupos}"/>
-            </p:panel>
+
         </ui:define>
-        <ui:define name="body">
-
-            <h:form id="form">
-
-                <p:tabView id="tabs" dynamic="true">
-
-                    <p:tab id="lista" title="Agentes/Usuarios del Grupo" >
-
-
-                        <p:dataTable widgetVar="usuariosTableByGrupo" var="user" value="#{grupoController.selected.usuarioList}"     
-                                     
-                                     emptyMessage="(No se han encontrado usuarios asociados al grupo)" paginatorAlwaysVisible="false"
-                                     resizableColumns="true" paginator="true" rows="15"
-                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                     rowsPerPageTemplate="5,10,15,30,50">
-
-
-
-                            <p:column headerText="Id Usuario">
-                                <h:outputText value="#{user.idUsuario}"/>
-                            </p:column>
-                            <p:column headerText="Nombre">
-                                <h:outputText value="#{user.capitalName}"/>
-                            </p:column>
-                            <p:column headerText="Email">
-                                <h:outputText value="#{user.email}"/>
-                            </p:column>
-                            <p:column headerText="Activo">
-                                <h:outputText value="#{user.activo eq true ? 'Activo':'Desactivo'}"/>
-                            </p:column>
-                            <p:column headerText="Acción">
-                            <p:commandButton id="viewBtn" ajax="false" action="#{usuarioController.prepareView(user, '/script/grupo/View')}" disabled="#{not usuarioController.puedeEditar(user)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" title="Ver" icon="ui-icon ui-icon-document"/>
-                            <p:commandButton id="editBtn" ajax="false" action="#{usuarioController.prepareEdit(user, '/script/grupo/View')}" disabled="#{not usuarioController.puedeEditar(user)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" title="Editar" icon="ui-icon ui-icon-pencil"/>
-                        </p:column>
-
-
-                        </p:dataTable>
-
-
-
-                    </p:tab>
-                </p:tabView>
-
-
-
-
-                <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
-                          header="Iniciando proceso de eliminación" widgetVar="confirmation">
-
-                    <h:outputText value="Está seguro de eliminar el grupo #{grupoController.selected.nombre}?"/>
-
-                    <f:facet name="footer">
-                        <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{grupoController.destroy()}" 
-                                         ajax="false" oncomplete="PF('confirmation').hide()"/>
-                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
-                    </f:facet>
-
-                </p:dialog>
-
-            </h:form>
+        
+        <ui:define name="dialogs">
+            
         </ui:define>
     </ui:composition>
 
