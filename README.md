@@ -51,11 +51,20 @@ bum
 
 ## Pedientes Godesk
 
+- guardar caso no hacer redirect sino update.
+- concurrent problem at auditLogController.getActivityLogs(
+- descripcion del caso no debe ser editable con inline. ya que afecta al [+] ademas agregar prettyDate al escribió...
+- notificacion al cliente deben ser publicas por defecto!!
+- Cuando se descarta el borrador, no guarda el descarte, se debe
+- el chat sube con la pagina.
+- problemas con las sessiones de chat.
+- desplegar fecha y hora de adjunto.
+
 deploy jwatch
 http://code.google.com/p/jwatch/wiki/Installation
 remove all links to see jobs inside the app.
 
-MANIWIS DEBE PROVEER UN DOC CON LOS TERMINOS DE NUSTRO SERVICIO. LUEGO ATACHAR ESE DOC A LA PAGINA REGISTRARSE.
+MANIWIS DEBE PROVEER UN DOC CON LOS TERMINOS DE NUSTRO SERVICIO. LUEGO ATACHAR/insertar ESE DOC A LA PAGINA REGISTRARSE.
 
 embeddedFromNewTicketController  - newTicketEmbedded.xhtml NOT WORKING
 WE TO MAKE ACCESS TO ALL DATA IN A MULTITENANT WAY, IT STILL ACCESS DATA OLD WAY.
