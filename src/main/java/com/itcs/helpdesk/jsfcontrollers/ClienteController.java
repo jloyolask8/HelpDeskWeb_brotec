@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
@@ -71,7 +72,6 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
                 Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            
         } else {
             JsfUtil.addWarningMessage("No se puede asociar, el cliente ya tiene asociado el mismo item.");
         }
@@ -207,6 +207,14 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
         } else {
             current = getSelectedItems().get(0);
         }
+        
+        final List<Cliente> findClientesByRut = getJpaController().findClientesByRut(current.getRut());
+        if(findClientesByRut != null && findClientesByRut.size() > 1){
+            //more than one
+            showMessageInDialog(FacesMessage.SEVERITY_ERROR, "Acción requerida", "Existe más de un cliente con el mismo rut, favor eliminar los clientes repetidos.");
+           
+        }
+        
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         return "/script/cliente/Edit";
     }
@@ -214,17 +222,22 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
     public String update() {
         try {
             List<EmailCliente> listaEmails = current.getEmailClienteList();
-            for (EmailCliente emailCliente : listaEmails) {
-                if (getJpaController().find(EmailCliente.class, emailCliente.getEmailCliente()) == null) {
-                    emailCliente.setCliente(current);
-                    getJpaController().persist(emailCliente);
+            if (listaEmails != null) {
+                for (EmailCliente emailCliente : listaEmails) {
+                    if (getJpaController().find(EmailCliente.class, emailCliente.getEmailCliente()) == null) {
+                        emailCliente.setCliente(current);
+                        getJpaController().persist(emailCliente);
+                    }
                 }
             }
+
             getJpaController().mergeCliente(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("ClienteUpdated"));
             return "/script/cliente/View";
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
+            addWarnMessage("Favor revisar que no exista otro cliente con el mismo rut o email.");
+            Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, e);
             return null;
         }
     }
