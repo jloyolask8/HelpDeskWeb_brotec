@@ -21,34 +21,7 @@
                 </div> <!-- / .panel-heading -->
                 <div class="panel-body">
 
-                    <c:forEach items="#{auditLogController.getActivityLogs(UserSessionBean.current.idUsuario)}" var="item" varStatus="loop">
-
-                        <div class="comment">
-                            <img src="#{facesContext.externalContext.requestContextPath}/resources/images/pixel-admin/avatar.png" alt="" class="comment-avatar"/>
-                            <div class="comment-body">
-                                <div class="comment-by">
-                                    <span class="btn-link">#{item.idUser}</span> 
-                                    #{item.idCampo eq null ? '':'ha cambiado el valor de '.concat(item.idCampo)} en <span class="btn-link">
-                                        <h:outputText value="[ref\##{item.idCaso}]"/>
-                                    </span>
-                                </div>
-                                <div class="comment-text">
-                                    #{item.newValue}
-                                </div>
-                                <div class="comment-actions">
-                                    <p:commandLink action="#{casoController.prepareEditCaso(item.idCaso)}" 
-                                                   ajax="false" styleClass="btn-link" immediate="true">
-                                        <i class="fa fa-pencil"></i>Abrir Caso
-                                    </p:commandLink>
-                                    <span class="pull-right" title="#{casoController.formatDate(item.fecha)}">
-                                        #{casoController.prettyDate(item.fecha)}
-                                    </span>
-                                </div>
-                            </div> <!-- / .comment-body -->
-                        </div> <!-- / .comment -->
-
-                    </c:forEach>
-
+                    
                 </div> <!-- / .panel-body -->
             </div>
 

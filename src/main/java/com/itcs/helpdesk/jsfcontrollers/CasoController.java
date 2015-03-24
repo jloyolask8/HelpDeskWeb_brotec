@@ -3851,19 +3851,21 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         return null;
     }
 
-    public String update() {
+    public void update() {
         try {
 
             if (validateEdit()) {
-                return null;
+                return;
             }
 
             update(current);
-            return getEditPage();
+            addInfoMessage(resourceBundle.getString("CasoUpdated"));
+//            return getEditPage();
+//            return null;
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).log(Level.SEVERE, resourceBundle.getString("PersistenceErrorOccured"), e);
             JsfUtil.addErrorMessage(e, e.getMessage());
-            return null;
+//            return null;
         }
 
     }
@@ -3913,13 +3915,13 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 
     }
 
-    public String updateDescripcion() {
-        String salida = update();
-//        if (salida != null) {
-//            ManagerCasos.createLogReg("Descripcion", "Descripcion actualizada", "");
-//        }
-        return salida;
-    }
+//    public String updateDescripcion() {
+//        String salida = update();
+////        if (salida != null) {
+////            ManagerCasos.createLogReg("Descripcion", "Descripcion actualizada", "");
+////        }
+//        return salida;
+//    }
 
     public String destroy() {
         if (current == null) {

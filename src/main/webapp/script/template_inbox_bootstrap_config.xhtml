@@ -351,25 +351,7 @@
                                                 <div class="dropdown-menu widget-notifications no-padding" style="width: 300px">
                                                     <div class="notifications-list" id="main-navbar-notifications">
 
-                                                        <c:forEach items="#{auditLogController.getActivityLogs(UserSessionBean.current.idUsuario)}" var="item" varStatus="loop">
-
-
-
-                                                            <div class="notification">
-                                                                <div class="notification-title text-primary">#{item.idUser}</div>
-                                                                <div class="notification-description">
-                                                                    <strong><h:outputText value="[ref\##{item.idCaso}]"/></strong>:
-                                                                    #{item.idCampo eq null ? '':'ha cambiado el valor de '.concat(item.idCampo)} #{item.newValue}.</div>
-                                                                <div class="notification-ago" title="#{casoController.formatDate(item.fecha)}">#{casoController.prettyDate(item.fecha)}</div>
-
-                                                                <p:commandLink action="#{casoController.prepareEditPK(item.idCaso)}" 
-                                                                               rendered="#{not empty item.idCaso}"
-                                                                               ajax="false" styleClass="notification-icon fa fa-ticket" immediate="true">
-                                                                </p:commandLink>
-                                                            </div> <!-- / .notification -->
-
-
-                                                        </c:forEach>
+                                                        
 
 
 

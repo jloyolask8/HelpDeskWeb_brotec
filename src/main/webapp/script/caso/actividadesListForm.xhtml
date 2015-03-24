@@ -122,33 +122,18 @@
 
             <div class="panel panel-body-colorful">
                 <div class="panel-heading">
-                    <span class="panel-title">#{casoController.selected.emailCliente.nombreOEmailCliente} escribió: </span>
+                    <span class="panel-title">#{casoController.prettyDate(casoController.selected.fechaCreacion)} #{casoController.selected.emailCliente.nombreOEmailCliente} escribió: </span>
                     <div class="panel-heading-controls">
                         <div class="panel-heading-icon"><i class="fa fa-inbox"></i></div>
                     </div>
                 </div>
                 <div class="panel-body">
 
-
-                    <p:inplace editor="true" disabled="#{casoController.selected.closed}">
-                        <f:facet name="output">
-
                             <div class="expandable">
                                 <h:outputText 
                                     value="#{casoController.selected.descripcionTxt}" 
                                     escape="false"/>
                             </div>
-
-
-                        </f:facet>
-                        <f:facet name="input">
-
-                            <go:textAreaEditor fieldValue="#{casoController.selected.descripcionTxt}"
-                                               mobile="#{casoController.mobileClient}"  watermark="Descripción del caso"
-                                               required="true" requiredMessage="Ingrese Descripción del caso"/>
-                        </f:facet>
-                    </p:inplace>
-
                 </div>
                 <div class="panel-footer">
 

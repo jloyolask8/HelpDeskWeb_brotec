@@ -51,14 +51,17 @@ bum
 
 ## Pedientes Godesk
 
-- guardar caso no hacer redirect sino update.
-- concurrent problem at auditLogController.getActivityLogs(
-- descripcion del caso no debe ser editable con inline. ya que afecta al [+] ademas agregar prettyDate al escribió...
-- notificacion al cliente deben ser publicas por defecto!!
+- guardar caso no hacer redirect sino update. ok - falta test
+- concurrent problem at auditLogController.getActivityLogs( - ok - falta test
+- descripcion del caso no debe ser editable con inline. 
+ya que afecta al [+] ademas agregar prettyDate al escribió... ok falta test
+- notificacion al cliente deben ser publicas por defecto!! - creo que no se puede. ya qie SendMailJob se usa para todos los emails. pero test sendmailjob
+
 - Cuando se descarta el borrador, no guarda el descarte, se debe
 - el chat sube con la pagina.
 - problemas con las sessiones de chat.
-- desplegar fecha y hora de adjunto.
+- desplegar fecha y hora de adjunto. add field fechaCreacion to Attachment.
+- implementar checks tipo whatsapp para mostrar un email que esta en proceso de envio y cuando esta enviado dos check.
 
 deploy jwatch
 http://code.google.com/p/jwatch/wiki/Installation
