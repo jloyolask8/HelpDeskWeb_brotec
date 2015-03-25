@@ -3877,6 +3877,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public void update(Caso casoToUpdate) throws IllegalOrphanException, NonexistentEntityException, RollbackFailureException, Exception {
 
         boolean cambiaArea = false;
+        boolean cambiaSLa = false;
 
         //Recintos brotec-icafal specifics
         if (casoToUpdate.getIdRecinto() != null && null == getJpaControllerThatListenRules().find(Recinto.class, casoToUpdate.getIdRecinto())) {
@@ -3896,7 +3897,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     if (casoToUpdate.getNextResponseDue().after(Calendar.getInstance().getTime())) {
                         casoToUpdate.setEstadoAlerta(EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta());
                         //re-schedule alert
-                        HelpDeskScheluder.scheduleAlertaPorVencer(getCurrentTenantId(), casoToUpdate.getIdCaso(), ManagerCasos.calculaCuandoPasaAPorVencer(casoToUpdate));
+                        cambiaSLa = true;
                     }
                 } else if (auditLog.getCampo().equalsIgnoreCase(Caso_.AREA_FIELD_NAME)) {
                     cambiaArea = true;
@@ -3904,11 +3905,15 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             }
         }
 
-        if (cambiaArea) {
-            getJpaControllerThatListenRules().mergeCasoWithoutNotify(casoToUpdate, lista);
-            getJpaControllerThatListenRules().notifyCasoEventListeners(casoToUpdate, true, lista);
-        } else {
-            getJpaControllerThatListenRules().mergeCaso(casoToUpdate, lista);
+//        if (cambiaArea) {
+//            getJpaController().mergeCasoWithoutNotify(casoToUpdate, lista);
+//            getJpaController().notifyCasoEventListeners(casoToUpdate, true, lista);
+//        } else {
+        getJpaControllerThatListenRules().mergeCaso(casoToUpdate, lista);
+//        }
+
+        if (cambiaSLa) {
+            HelpDeskScheluder.scheduleAlertaPorVencer(getCurrentTenantId(), casoToUpdate.getIdCaso(), ManagerCasos.calculaCuandoPasaAPorVencer(casoToUpdate));
         }
 
         JsfUtil.addSuccessMessage(resourceBundle.getString("CasoUpdated"));
@@ -3922,7 +3927,6 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
 ////        }
 //        return salida;
 //    }
-
     public String destroy() {
         if (current == null) {
             return null;

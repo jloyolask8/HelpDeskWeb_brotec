@@ -550,15 +550,16 @@
                                             </span>
                                         </a>
                                         <ul>
-                                            <c:forEach items="#{applicationBean.usersLoggedIn}"
+                                           <c:forEach items="#{applicationBean.usersLoggedIn}"
                                                        var="userLoggedIn" >
                                                 <li>
-                                                    <p:commandLink title="Chat with #{userLoggedIn}" 
-                                                                   action="#" ajax="false">
-                                                        <i class="menu-icon fa fa-comments"></i>
-                                                        <span class="mm-text">#{userLoggedIn}</span>
-                                                    </p:commandLink>
-
+                                                    <h:panelGroup rendered="#{userLoggedIn ne UserSessionBean.current.idUsuario}">
+                                                        <a title="Chat with #{userLoggedIn}" 
+                                                           onclick="startChat('#{UserSessionBean.current.idUsuario}', '#{userLoggedIn}', '#{UserSessionBean.current.tenantId}');">
+                                                            <i class="menu-icon fa fa-comments"></i>
+                                                            <span class="mm-text">#{userLoggedIn}</span>
+                                                        </a>
+                                                    </h:panelGroup>
                                                 </li>
 
 
@@ -685,7 +686,9 @@
                 <![endif]-->
 
 
-                <ui:insert name="startscript">
+                
+                
+                     <ui:insert name="startscript">
                     <script type="text/javascript">
                     //<![CDATA[
                     // Instance the tour
@@ -815,21 +818,177 @@
                     tour.init();
                     tour.start();
 
+
+
+
+
+
+                    function addStyleString(str) {
+                        console.log("addStyleString: " + str);
+                        var node = document.createElement('style');
+                        node.innerHTML = str;
+                        document.body.appendChild(node);
+                    }
+
+                    function minimizeChatUI(iframeid) {
+                        console.log("minimizeChatUI(" + iframeid + ")");
+                        document.getElementById(iframeid).style.width = '231px';
+                        document.getElementById(iframeid).style.height = '28px';
+                        document.getElementById(iframeid).className = "chatWindowButton" + iframeid;
+                    }
+
+                    function bringToFrontChatUI(iframeid) {
+                        console.log("bringToFrontChatUI(" + iframeid + ")");
+                        document.getElementById(iframeid).style.width = '290px';
+                        document.getElementById(iframeid).style.height = '400px';
+                        document.getElementById(iframeid).className = "chatWindow" + iframeid;
+                    }
+
+                    function setStyleChatFrame(iframeid, posx) {
+                        var chatStyle = '.chatWindow' + iframeid + ' {position: fixed;right: ' + posx + 'px;bottom: 0px;box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);-webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);}';
+                        var chatButtonStyle = '.chatWindowButton' + iframeid + ' {position: fixed;right: ' + posx + 'px;bottom: 0px;}';
+                        addStyleString(chatStyle);
+                        addStyleString(chatButtonStyle);
+                    }
+
+                    function createChatIFrame(idframe, url) {
+                        var chatIFrame = document.createElement("IFRAME");
+                        chatIFrame.id = idframe;
+                        chatIFrame.name = idframe;
+                        chatIFrame.src = url;
+                        chatIFrame.style.border = '0px';
+                        chatIFrame.style.background = 'transparent';
+                        chatIFrame.style.display = "block";
+                        document.body.appendChild(chatIFrame);
+                        console.log("se ha creado iframe id=" + chatIFrame.id);
+                        return chatIFrame;
+                    }
+
+                    function createChatHiddenFrame(username, idsite) {
+                        var idFrame = "chatIFrame" + username;
+                        var existentFrame = document.getElementById(idFrame);
+                        if (existentFrame === null) {
+                            addStyleString('.chatWindowHidden {position: fixed;left: -1000px;top: -1000px;}');
+                            var url = "http://www.godesk.cl:8090/golivechat/?type=internalReg&name=" + username + "&site=" + idsite +
+                                    "&frameid=" + idFrame + "&referrer=" + document.referrer;
+                            var chatIFrame = createChatIFrame(idFrame, url);
+                            chatIFrame.className = "chatWindowHidden";
+                        } else {
+                            console.log("ya existe el iframe id=" + existentFrame.id);
+                        }
+                    }
+
+                    function createChatClientMode() {
+                        var idFrame = "chatIFrame" + '#{UserSessionBean.current.idUsuario}';
+                        var url = "http://www.godesk.cl:8090/golivechat/?type=cliente&name=#{UserSessionBean.current.capitalName}&frameid=" + idFrame;
+                        var chatIFrame = createChatIFrame(idFrame, url);
+                        chatIFrame.style.width = '290px';
+                        chatIFrame.style.height = '400px';
+                    }
+
+                    function startChat(myusername, client, idsite) {
+                        console.log("function startChat called");
+                        var idFrame = "chatIFrame" + client;
+                        var existentFrame = document.getElementById(idFrame);
+                        if (existentFrame === null) {
+                            addStyleString('.chatWindowHidden {position: fixed;left: -1000px;top: -1000px;}');
+                            var jscall = "startChat;" + myusername + ";" + client + ";" + idsite;
+                            var url = "http://www.godesk.cl:8090/golivechat/?type=startNewInternalChat&name=" +
+                                    myusername + "&site=" + idsite + "&client=" + client + "&jscall=" + jscall +
+                                    "&frameid=" + idFrame;
+                            var chatIFrame = createChatIFrame(idFrame, url);
+                            chatIFrame.className = "chatWindowHidden";
+                        } else {
+                            console.log("ya existe el iframe id=" + existentFrame.id);
+                        }
+                    }
+
+                    function closeChat(chatId) {
+                        console.log("function closeChat(" + chatId + ") called");
+                        var existentFrame = document.getElementById(chatId);
+                        if (existentFrame !== null) {
+                            document.body.removeChild(existentFrame);
+                        } else {
+                            console.log("iframe " + chatId + " not found!!!");
+                        }
+                    }
+
+                    function joinInternalChat(myusername, client, idsite) {
+                        var idFrame = "chatIFrame" + myusername;
+                        var existentFrame = document.getElementById(idFrame);
+                        if (existentFrame === null) {
+                            addStyleString('.chatWindowHidden {position: fixed;left: -1000px;top: -1000px;}');
+                            var jscall = "joinInternalChat;" + myusername + ";" + client + ";" + idsite;
+                            var url = "http://www.godesk.cl:8090/golivechat/?type=joinInternalChat&name=" +
+                                    myusername + "&site=" + idsite + "&client=" + client + "&jscall=" + jscall +
+                                    "&frameid=" + idFrame;
+                            var chatIFrame = createChatIFrame(idFrame, url);
+                            chatIFrame.className = "chatWindowHidden";
+                        } else {
+                            console.log("ya existe el iframe id=" + existentFrame.id);
+                        }
+                    }
+
+                    function boomerangForCookie() {
+                        var mainURL = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                        window.location = "http://www.godesk.cl:8090/golivechat/?type=boomerangForCookie&url='" + mainURL + "'";
+                    }
+
+                    function processPostMessage(data) {
+                        var message = data.split(';');
+                        console.log("message[0]:" + message[0]);
+                        switch (message[0]) {
+                            case "boomerangForCookie":
+                                boomerangForCookie();
+                                break;
+                            case "minimizeChatUIPlease":
+                                minimizeChatUI(message[1]);
+                                break;
+                            case "maximizeChatUIPlease":
+                                bringToFrontChatUI(message[1]);
+                                break;
+                            case "setStyleChatFrame":
+                                setStyleChatFrame(message[2], message[1]);
+                                break;
+                            case "joinInternalChat":
+                                joinInternalChat(message[1], message[2], message[3]);
+                                break;
+                            case "startChat":
+                                startChat(message[1], message[2], message[3]);
+                                break;
+                            case "closeChat":
+                                closeChat(message[1]);
+                                break;
+                        }
+                    }
+
+
+
+
+                    createChatHiddenFrame('#{UserSessionBean.current.idUsuario}', '#{UserSessionBean.current.tenantId}');
+
+
                     init.push(function () {
                         $('div.notifications-list').slimScroll({height: 250});
                         $('.nav-pills, .nav-tabs').tabdrop();
-                        $("select.select2Input").select2({
-                            dropdownAutoWidth: true,
-                            allowClear: true
-                        });
-                        $("select.select2Multiple").select2({
-                            dropdownAutoWidth: true,
-                            allowClear: true
-                        });
-                        // Initialize the tour
+
+
+
+
 
                     });
+
+                    window.addEventListener("message", function (event) {
+                        console.log("message " + event.data);
+                        processPostMessage(event.data);
+                    });
+
                     window.PixelAdmin.start(init);
+
+
+
+
+
                     //]]>
                     </script>
                 </ui:insert>
