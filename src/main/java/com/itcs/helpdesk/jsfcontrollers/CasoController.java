@@ -88,6 +88,7 @@ import javax.faces.convert.FacesConverter;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
+import javax.print.attribute.standard.Severity;
 import javax.servlet.http.HttpServletRequest;
 import jxl.Workbook;
 import jxl.format.UnderlineStyle;
@@ -3915,8 +3916,12 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         if (cambiaSLa) {
             HelpDeskScheluder.scheduleAlertaPorVencer(getCurrentTenantId(), casoToUpdate.getIdCaso(), ManagerCasos.calculaCuandoPasaAPorVencer(casoToUpdate));
         }
-
-        JsfUtil.addSuccessMessage(resourceBundle.getString("CasoUpdated"));
+        
+        if (cambiaArea) {
+            showMessageInDialog(FacesMessage.SEVERITY_WARN, "Atención",
+                    "Ud. ha Asignado el caso a un Area distinta a la cúal estaba asignado el caso. "
+                            + "Asegurese de cambiar tambien al Agente asignado de ser necesario.");
+        }
 
     }
 
