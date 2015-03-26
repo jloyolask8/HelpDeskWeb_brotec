@@ -49,9 +49,9 @@
                     }
                 }
 
-                $(document).ready(function() {
+                $(document).ready(function () {
                     $(document).off('keyup').on('keyup',
-                            function(e) {
+                            function (e) {
                                 //chrome and IE dont get the key, only keyCode
                                 if (e.shiftKey && e.ctrlKey && (e.keyCode === 70))
                                 {
@@ -129,12 +129,12 @@
             <h:form id="formfilter">
                 <go:filterView id="panelFilter0" titleIconClass="fa fa-inbox page-header-icon"
                                controllerMBean="#{casoController}" 
-                                vista="#{casoController.vista}"
+                               vista="#{casoController.vista}"
                                filterHelper="#{casoController.filterHelper}" 
                                canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
                                update=":mainform:messages  :form0:panelG1"
                                vistaControllerBackOutcome="/script/index" rendered="#{casoController.searchBarVisible}"/>
-                
+
             </h:form>
 
             <h:form id="form0">
@@ -160,10 +160,17 @@
                                              update=":applyRuleForm" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/> 
 
                             <p:commandButton title="Ejecutar Acción" icon="fa fa-flash" onclick="PF('runActionDialog').show()" 
-                                             type="button" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>  
+                                             type="button" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/> 
+                            
 
-                            <p:separator />  
+                            <p:commandButton id="combinarBtn" onclick="PF('confirmaCombinacion').show()"
+                                             update=":formCombinarCasos"
+                                             title="combinar"
+                                             icon="fa fa-random"
+                                             type="button"
+                                             disabled="#{casoController.selectedItems.size() le 1}"/> <!-- actionListener="#casoController.mergeSelectedCasos()}" rendered="#casoController.mergeHabilitado}" -->
 
+                            <p:separator />
                             <p:commandButton id="deleteBtn" icon="ui-icon-trash"  disabled="#{empty casoController.selectedItems}" iconPos="notext"
                                              rendered="#{casoController.verificarEliminarCaso()}"
                                              oncomplete="PF('deleteSelectedCasos').show();" update=":formdeleteSelectedCasos" /> 
@@ -291,37 +298,37 @@
                         </p:column>
 
                         <p:column sortBy="#{item.idPrioridad.idPrioridad}" headerText="Prio" exportable="false">
-                           <pe:switch id="prioridadCaso" value="#{item.idPrioridad.idPrioridad}" rendered="#{not empty item.idPrioridad}">  
-                                    <pe:case value="#{EnumPrioridad.BAJA.getPrioridad().getIdPrioridad()}">  
-                                        <h:panelGroup id="prioridadCasox">
-                                            <i class="fa fa-fw fa-flag-o"></i>
-                                        </h:panelGroup>
-                                        <p:tooltip for="prioridadCasox" value="#{item.idPrioridad.nombre}"/>
-                                    </pe:case>
+                            <pe:switch id="prioridadCaso" value="#{item.idPrioridad.idPrioridad}" rendered="#{not empty item.idPrioridad}">  
+                                <pe:case value="#{EnumPrioridad.BAJA.getPrioridad().getIdPrioridad()}">  
+                                    <h:panelGroup id="prioridadCasox">
+                                        <i class="fa fa-fw fa-flag-o"></i>
+                                    </h:panelGroup>
+                                    <p:tooltip for="prioridadCasox" value="#{item.idPrioridad.nombre}"/>
+                                </pe:case>
 
-                                    <pe:case value="#{EnumPrioridad.MEDIA.getPrioridad().getIdPrioridad()}">  
-                                        <h:panelGroup id="prioridadCasox" style="color: #006dcc;">
-                                            <i class="fa fa-fw fa-flag" style=""></i>
-                                        </h:panelGroup>
-                                        <p:tooltip for="prioridadCasox" value="#{item.idPrioridad.nombre}"/>
-                                    </pe:case> 
+                                <pe:case value="#{EnumPrioridad.MEDIA.getPrioridad().getIdPrioridad()}">  
+                                    <h:panelGroup id="prioridadCasox" style="color: #006dcc;">
+                                        <i class="fa fa-fw fa-flag" style=""></i>
+                                    </h:panelGroup>
+                                    <p:tooltip for="prioridadCasox" value="#{item.idPrioridad.nombre}"/>
+                                </pe:case> 
 
-                                    <pe:case value="#{EnumPrioridad.ALTA.getPrioridad().getIdPrioridad()}">  
-                                        <h:panelGroup id="prioridadCasox" style="color: #f0ad4e;">
-                                            <i class="fa fa-fw fa-flag" style=""></i>
-                                        </h:panelGroup>
-                                        <p:tooltip for="prioridadCasox" value="#{item.idPrioridad.nombre}"/>
-                                    </pe:case> 
+                                <pe:case value="#{EnumPrioridad.ALTA.getPrioridad().getIdPrioridad()}">  
+                                    <h:panelGroup id="prioridadCasox" style="color: #f0ad4e;">
+                                        <i class="fa fa-fw fa-flag" style=""></i>
+                                    </h:panelGroup>
+                                    <p:tooltip for="prioridadCasox" value="#{item.idPrioridad.nombre}"/>
+                                </pe:case> 
 
-                                    <pe:case value="#{EnumPrioridad.MAXIMA.getPrioridad().getIdPrioridad()}">  
-                                        <h:panelGroup id="prioridadCasox" style="color: red;">
-                                            <i class="fa fa-fw fa-flag" style=""></i>
-                                        </h:panelGroup>
-                                        <p:tooltip for="prioridadCasox" value="#{item.idPrioridad.nombre}"/>
-                                    </pe:case> 
-                                </pe:switch>
+                                <pe:case value="#{EnumPrioridad.MAXIMA.getPrioridad().getIdPrioridad()}">  
+                                    <h:panelGroup id="prioridadCasox" style="color: red;">
+                                        <i class="fa fa-fw fa-flag" style=""></i>
+                                    </h:panelGroup>
+                                    <p:tooltip for="prioridadCasox" value="#{item.idPrioridad.nombre}"/>
+                                </pe:case> 
+                            </pe:switch>
                         </p:column>
-                        
+
                         <p:column sortBy="#{item.nextResponseDue}" headerText="SLA">
 
                             <pe:switch id="switchTicketAlertState" value="#{item.isOpen().toString()}">  
@@ -441,7 +448,7 @@
                         <f:param value="#{casoController.selectedItemsCount}" />
                     </h:outputFormat>
 
-                        <p:scrollPanel id="scrollpaneActividades" mode="native" style="height: 300px;border-color: window;border: 0;">
+                    <p:scrollPanel id="scrollpaneActividades" mode="native" style="height: 300px;border-color: window;border: 0;">
                         <h:panelGrid columns="1">
                             <c:forEach items="#{casoController.selectedItems}" var="item" >
                                 <h:commandLink action="#{casoController.filterByIdCaso(item.idCaso)}" >
@@ -493,7 +500,34 @@
 
             </p:dialog> 
 
+            <p:dialog  widgetVar="confirmaCombinacion" header="Confirmar combinación de casos" resizable="false" closeOnEscape="true" modal="true" appendTo="@(body)" dynamic="true">  
+                <h:form id="formCombinarCasos">
+                    <p:outputLabel value="Está seguro que desea combinar los siguientes casos ?"/>
 
+                    <br/>
+
+                    <p:scrollPanel id="scrollpaneActividades" mode="native" style="height: 300px;border-color: window;border: 0;">
+                        <h:panelGrid columns="1">
+                            <c:forEach items="#{casoController.selectedItems}" var="item" >
+                                <h:commandLink action="#{casoController.filterByIdCaso(item.idCaso)}" >
+                                    <h:outputText styleClass="ticket-status" 
+                                                  style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};" value="#{item.idSubEstado.nombre}"
+                                                  />
+                                    <h:outputText value=" #{item.tipoCaso.nombre} N°#{item.idCaso} - #{item.tema}"/>
+                                </h:commandLink>
+                            </c:forEach>
+                        </h:panelGrid>
+                    </p:scrollPanel> 
+
+                    <p:commandButton value="Aplicar" icon="ui-icon-circle-minus" 
+                                     actionListener="#{casoController.mergeSelectedCasos()}"
+                                     update=":mainform:messages :form0:ID_TABLA" oncomplete="PF('confirmaCombinacion').hide()"/> 
+
+                    <p:commandButton value="#{bundle.decline}" onclick="PF('confirmaCombinacion').hide()" type="button" /> 
+                </h:form>
+
+
+            </p:dialog>
 
         </ui:define>
     </ui:composition>
