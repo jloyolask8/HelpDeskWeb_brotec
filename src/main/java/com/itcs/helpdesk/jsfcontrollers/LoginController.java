@@ -3,6 +3,7 @@ package com.itcs.helpdesk.jsfcontrollers;
 import com.itcs.helpdesk.jsfcontrollers.util.ApplicationBean;
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.jsfcontrollers.util.PaginationHelper;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entities.UsuarioSessionLog;
 import com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade;
@@ -46,6 +47,14 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
      */
     public LoginController() {
         super(Usuario.class);
+        try {
+            UserSessionBean userSessionBean = getUserSessionBean();
+            if (userSessionBean != null && userSessionBean.getTenantId() != null) {
+                this.tenantId = userSessionBean.getTenantId();
+            }
+        } catch (Exception e) {
+            //ignore e
+        }
     }
 
     public String changePass() {
@@ -244,7 +253,6 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
 //        } else {
 //            return "/public/login.xhtml?faces-redirect=true";
 //        }
-        
         return "/public/login.xhtml?faces-redirect=true";
 
     }
@@ -319,8 +327,6 @@ public class LoginController extends AbstractManagedBean<Usuario> implements Ser
     public Class getDataModelImplementationClass() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
-  
 
     /**
      * @return the tenantId

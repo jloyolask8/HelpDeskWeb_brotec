@@ -318,7 +318,7 @@
                                                                           styleClass="text-semibold"
                                                                           title="#{fileitem.nombreArchivo} (#{fileitem.fileSizeHuman})"/> 
 
-                                                            <h:outputText value="#{fileitem.fileSizeHuman}  " style="color: #7A7A7A" styleClass="pull-right"/>
+                                                            <h:outputText value="#{casoController.prettyDate(fileitem.fechaCreacion)} " style="color: #7A7A7A" styleClass="pull-right"/>
                                                         </div>
                                                         <div class="row">
                                                             <p:commandLink styleClass="col-xs-1" ajax="false">

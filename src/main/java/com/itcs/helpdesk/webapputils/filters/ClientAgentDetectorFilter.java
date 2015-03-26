@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.itcs.helpdesk.util;
+package com.itcs.helpdesk.webapputils.filters;
 
 import com.itcs.helpdesk.webapputils.UAgentInfo;
 import java.io.IOException;
@@ -135,13 +135,13 @@ public class ClientAgentDetectorFilter implements Filter {
         Throwable problem = null;
         try {
             String mobileLoginPage = filterConfig.getInitParameter("mobileLoginPage");            
-            boolean mobile = isThisRequestCommingFromAMobileDevice((HttpServletRequest)request);            
-            if(mobile){                
-               res.sendRedirect(req.getContextPath() + mobileLoginPage);
-            }else{
-//                log("IS NOT MOBILE AGENT!");
-            }
-            chain.doFilter(request, response);
+//            boolean mobile = isThisRequestCommingFromAMobileDevice((HttpServletRequest)request);            
+//            if(mobile){                
+//               res.sendRedirect(req.getContextPath() + mobileLoginPage);
+//            }else{
+////                log("IS NOT MOBILE AGENT!");
+//            }
+            
         } catch (Throwable t) {
             // If an exception is thrown somewhere down the filter chain,
             // we still want to execute our after processing, and then
@@ -163,6 +163,8 @@ public class ClientAgentDetectorFilter implements Filter {
 //            }
 //            sendProcessingError(problem, response);
 //        }
+        
+        chain.doFilter(request, response);
     }
 
     /**

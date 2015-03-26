@@ -17,51 +17,61 @@ drwxr-xr-x. 5 jonathan root 4096 Feb  9 13:18 HelpDesk_Persistence_Brotec
 drwxr-xr-x  5 jonathan root 4096 Feb  9 13:19 HelpDeskWeb_brotec
 
 
-4. $ cd Email, $ git pull, $ mvn clean install
+4. $ cd Email, $ git status, $ git pull, $ mvn clean install
 
 5.
 
 $ cd HelpDesk_Persistence_Brotec
-$ git checkout multitenant_persistence  (if you are already in this branch use pull)
+$ git status #check where in what branch you are
+$ git checkout multitenant_persistence  (if you are already in this branch go ahead and use pull)
 $ git pull (if you have not downloaded the branches yet use $ git fetch )
 $ mvn -Pgodesk_prod clean install
 
-5.
+6.
 
 $ cd HelpDeskWeb_brotec
-$ git checkout multitenant-godesk-testing-merge  (if you are already in this branch use pull)
-$ git pull (if you have not downloaded the branches yet use $ git fetch )
+$ git status #check where in what branch you are
+$ git checkout multitenant-godesk-testing-merge  #(if you are already in this branch use pull)
+$ git pull #(if you have not downloaded the branches yet use $ git fetch )
 $ mvn -Pgodesk_prod clean install
 
 if all success you will get a war file inside the server files
 deploy it directly
 
-context name of our multitenant is "go" 
+context name of the multitenant deployment is "go" 
 
 
 ## Possible install errors
 
 error: Your local changes to the following files would be overwritten by checkout:
-commit or reset changes 
+commit 
+
 $ git commit -m 'message'
-or $ git reset --hard HEAD
-bum
+
+# or reset all changes 
+
+$ git reset --hard HEAD
+
+# buuum
 
 
 
 ## Pedientes Godesk
 
-- guardar caso no hacer redirect sino update. ok - falta test
-- concurrent problem at auditLogController.getActivityLogs( - ok - falta test
-- descripcion del caso no debe ser editable con inline. 
-ya que afecta al [+] ademas agregar prettyDate al escribió... ok falta test
-- notificacion al cliente deben ser publicas por defecto!! - creo que no se puede. ya qie SendMailJob se usa para todos los emails. pero test sendmailjob
+
+- desplegar fecha y hora de adjunto. add field fechaCreacion to Attachment.ok done
+
+- no se pq al editar un canal de email no me salen las opciones de debug, etc.
+- quitar palabras HISTORIA DEL CASO de la historia del caso.
+- notificacion al cliente deben ser publicas por defecto!! - 
+ya qie SendMailJob se usa para todos los emails. add public param to sendmailjob
 
 - Cuando se descarta el borrador, no guarda el descarte, se debe
-- el chat sube con la pagina.
+
 - problemas con las sessiones de chat.
-- desplegar fecha y hora de adjunto. add field fechaCreacion to Attachment.
+
 - implementar checks tipo whatsapp para mostrar un email que esta en proceso de envio y cuando esta enviado dos check.
+solo para minimizar espacio.
 
 deploy jwatch
 http://code.google.com/p/jwatch/wiki/Installation
@@ -74,10 +84,10 @@ WE TO MAKE ACCESS TO ALL DATA IN A MULTITENANT WAY, IT STILL ACCESS DATA OLD WAY
 THE IDEA HERE IS NOT TO USE ANY OTHER BEANCONTROLLER, INSTEAD CREATE ALL NEEDED METHOS TO GET DATA INSIDE 
 embeddedFromNewTicketController, THE TENANT ID IS PASSED AS A PARAMETER TO THIS BEAN AND IT GETS DATA USING PARENTS UTILITIES.
 
-no se pq al editar un canal de email no me salen las opciones de debug, etc.
+
 
 en convinar casos, crear un nuevo caso. y convinar todo en el nuevo caso. cerrar los convinados.
-y permitir que esta operacion deshacer. se elimina el nuevo caso convinado y se reabren los casos cerrados.
+y permitir que esta operacion se pueda deshacer. se elimina el nuevo caso convinado y se reabren los casos cerrados.
 ojo que falta convinar los emails de clientes, cc, etc.
 
 separar asunto de list casos, para ordernar.
@@ -112,12 +122,12 @@ hacer una pagina de test.
 
 - mejorar el mail con historia, ver "slack" or zendesk ...
 
-- crear caso de prueba cuando se crea la cuenta.
+- crear un caso de prueba cuando se crea la cuenta.
 
 Graficar el customer satisfaction en el dashboard.
 
 - Remover historia del area de texto responder.godesk done. pending betterlife/beltec/brotec.
-- facilitar la creacion de clientes contactos, agregar tabla organizacion.
+- facilitar la creacion de clientes contactos, agregar tabla organizacion/empresa.
 - Implementar drag and drop en Direcciones de correos - respuestas por correos.
 http://jqueryui.com/autocomplete/#multiple-remote
 http://goodies.pixabay.com/jquery/tag-editor/demo.html
@@ -151,7 +161,7 @@ Your site is looking pretty drab. Cheer it up by editing your site design to mak
 
 - implementar logout countdown cuando se detecte inactividad.
 - foto de perfil de clientes y agentes =)
-- +Inbox FiltroVista by default  
+- +Inbox FiltroVista by default  . ok - falta test
 - mostrar tags como Vistas in tabs de vistas
 
 <h:panelGroup layout="block" styleClass="panel panel-transparent hidden-xs" 
@@ -178,66 +188,11 @@ Your site is looking pretty drab. Cheer it up by editing your site design to mak
 
 - Enter in your credit card information to continue your service beyond the free trial
 
-
-ERROR CUACULA: Probablemente problema del Cache Policy =(
-=============
-
-
-javax.el.ELException: /script/template_inbox_bootstrap.xhtml @112,93 listener="#{casoController.initializeData}": java.util.ConcurrentModificationException
-
-Caused by: java.util.ConcurrentModificationException
-	at java.util.HashMap$HashIterator.nextEntry(HashMap.java:922)
-	at java.util.HashMap$KeyIterator.next(HashMap.java:956)
-	at org.eclipse.persistence.descriptors.ClassDescriptor.notifyReferencingDescriptorsOfIsolation(ClassDescriptor.java:3914)
-	at org.eclipse.persistence.descriptors.CachePolicy.postInitialize(CachePolicy.java:177)
-	at org.eclipse.persistence.descriptors.ClassDescriptor.postInitialize(ClassDescriptor.java:3902)
-	at org.eclipse.persistence.internal.sessions.AbstractSession.updateTablePerTenantDescriptors(AbstractSession.java:1390)
-	at org.eclipse.persistence.sessions.server.ClientSession.<init>(ClientSession.java:136)
-	at org.eclipse.persistence.sessions.server.ServerSession.acquireClientSession(ServerSession.java:394)
-	at org.eclipse.persistence.internal.jpa.EntityManagerImpl.getActivePersistenceContext(EntityManagerImpl.java:1933)
-	at org.eclipse.persistence.internal.jpa.EntityManagerImpl.getActiveSession(EntityManagerImpl.java:1232)
-	at org.eclipse.persistence.internal.jpa.EntityManagerImpl.getQueryHints(EntityManagerImpl.java:2587)
-	at org.eclipse.persistence.internal.jpa.EntityManagerImpl.find(EntityManagerImpl.java:588)
-	at com.itcs.helpdesk.persistence.jpa.AbstractJPAController.createPredicate(AbstractJPAController.java:396)
-	at com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade.countEntities(JPAServiceFacade.java:638)
-	at com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade.countEntities(JPAServiceFacade.java:620)
-	at com.itcs.helpdesk.jsfcontrollers.CasoController.initializeData(CasoController.java:1351)
+- crear un modelo de datos "public" en el cual manejar la informacion de todas las cuentas creadas.
+una sola tabla es suficiente.
 
 
 
-2
-=
-[#|2015-02-25T19:15:19.979-0300|SEVERE|oracle-glassfish3.1.2|com.itcs.helpdesk.quartz.DownloadEmailJob|_ThreadID=325;_ThreadName=Thread-2;|error on execute DownloadEmailJob. Canal:contacto@godesk.cl
-java.util.ConcurrentModificationException
-	at java.util.HashMap$HashIterator.nextEntry(HashMap.java:922)
-	at java.util.HashMap$KeyIterator.next(HashMap.java:956)
-	at org.eclipse.persistence.descriptors.ClassDescriptor.notifyReferencingDescriptorsOfIsolation(ClassDescriptor.java:3914)
-	at org.eclipse.persistence.descriptors.CachePolicy.postInitialize(CachePolicy.java:177)
-	at org.eclipse.persistence.descriptors.ClassDescriptor.postInitialize(ClassDescriptor.java:3902)
-	at org.eclipse.persistence.internal.sessions.AbstractSession.updateTablePerTenantDescriptors(AbstractSession.java:1390)
-	at org.eclipse.persistence.sessions.server.ClientSession.<init>(ClientSession.java:136)
-	at org.eclipse.persistence.sessions.server.ServerSession.acquireClientSession(ServerSession.java:394)
-	at org.eclipse.persistence.internal.jpa.EntityManagerImpl.getActivePersistenceContext(EntityManagerImpl.java:1933)
-	at org.eclipse.persistence.internal.jpa.EntityManagerImpl.getActiveSession(EntityManagerImpl.java:1232)
-	at org.eclipse.persistence.internal.jpa.EntityManagerImpl.getQueryHints(EntityManagerImpl.java:2587)
-	at org.eclipse.persistence.internal.jpa.EntityManagerImpl.find(EntityManagerImpl.java:588)
-	at com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade.find(JPAServiceFacade.java:390)
-	at com.itcs.helpdesk.persistence.jpa.service.JPAServiceFacade.find(JPAServiceFacade.java:369)
-	at com.itcs.helpdesk.quartz.DownloadEmailJob.revisarCorreo(DownloadEmailJob.java:113)
-	at com.itcs.helpdesk.quartz.DownloadEmailJob.execute(DownloadEmailJob.java:65)
-	at org.quartz.core.JobRunShell.run(JobRunShell.java:202)
-	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:573)
-|#]
-
-Open/Future items
-==================
-    Bug 355458: Provide admin user access data from multiple tenants
-
-BUG for sequences numbers
-=========================
-
-    Tenant column when part of the entity identifier
-        Incorporate sequence generators
 
 
 

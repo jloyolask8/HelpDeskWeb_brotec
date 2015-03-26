@@ -49,7 +49,11 @@
                                         <p:fileDownload value="#{casoController.bajarArchivo(nota_f_attachment.idAttachment)}" />
                                     </p:commandLink>
 
-                                    <h:outputText value="(#{nota_f_attachment.fileSizeHuman})" style="color: #7A7A7A"/>
+                                    <h:outputText value=" (#{nota_f_attachment.fileSizeHuman}) " style="color: #7A7A7A"/>
+                                    
+                                    <h:outputText value=" uploaded: #{casoController.prettyDate(nota_f_attachment.fechaCreacion)}" 
+                                                  rendered="#{nota_f_attachment.fechaCreacion ne null}"
+                                                  styleClass="text-info"/>
 
 
                                     <p:lightBox iframe="true" iframeTitle="#{nota_f_attachment.nombreArchivoOriginal}"

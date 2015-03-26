@@ -1,5 +1,7 @@
-package com.itcs.helpdesk.jsfcontrollers.util;
+package com.itcs.helpdesk.webapputils.filters;
 
+import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,8 +45,30 @@ public class LoginFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) response;
         HttpSession session = req.getSession();
         String requestedPage = req.getPathTranslated();//java.lang.NullPointerException in WLS
-//         String requestedPage = req.getRequestURI();//Bug in login filter in GF
+//      String requestedPage = req.getRequestURI();//Bug in login filter in GF
+
+//        System.out.println("Filtering Request:" + req.getRequestURL().toString());
+
         UserSessionBean userSessionBean = (UserSessionBean) session.getAttribute("UserSessionBean");
+
+        if (userSessionBean != null) {
+            //System.out.println("userSessionBean:" + userSessionBean);
+//            if (StringUtils.isEmpty(userSessionBean.getTenantId())) {
+                /*not set yet, set tenant from url*/
+            if (!userSessionBean.isValidatedSession()) {
+                String tenantId = JsfUtil.getHostSubDomain(req.getRequestURL().toString());
+                System.out.println("tenantId:" + tenantId);
+                if (tenantId != null) {
+                    userSessionBean.setTenantId(tenantId);
+                } else {
+                    res.sendRedirect(req.getContextPath() + "/faces/customer/system_failure.xhtml");
+                    return;
+                }
+            }
+//            }
+        } else {
+            System.out.println("userSessionBean is null now");
+        }
 
 //        //System.out.println("LoginFilter.doFilter:" + requestedPage);
 //        for (Enumeration e = req.getHeaderNames(); e.hasMoreElements();) {
@@ -61,7 +85,7 @@ public class LoginFilter implements Filter {
                             return;
                         }
                     }
-                }else if(requestedPage.endsWith("signup.xhtml")){
+                } else if (requestedPage.endsWith("signup.xhtml")) {
                     //let pass
                 } else {
                     if (userSessionBean == null) {

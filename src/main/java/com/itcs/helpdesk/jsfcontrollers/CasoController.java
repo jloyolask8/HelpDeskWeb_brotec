@@ -2125,6 +2125,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             filtroEmailCliente.setIdCampo("emailCliente");
             filtroEmailCliente.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
             filtroEmailCliente.setValor(userSessionBean.getEmailCliente().getEmailCliente());
+            filtroEmailCliente.setValorLabel(userSessionBean.getEmailCliente().getEmailCliente());
             filtroEmailCliente.setIdVista(vista1);
 
             vista1.getFiltrosVistaList().add(filtroEmailCliente);
@@ -2134,6 +2135,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             filtroEstado.setIdCampo(Caso_.ESTADO_FIELD_NAME);
             filtroEstado.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
             filtroEstado.setValor(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
+            filtroEstado.setValorLabel(EnumEstadoCaso.ABIERTO.getEstado().getNombre());
             filtroEstado.setIdVista(vista1);
 
             vista1.getFiltrosVistaList().add(filtroEstado);
@@ -2146,6 +2148,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             filtroOwner.setIdCampo("owner");
             filtroOwner.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
             filtroOwner.setValor(AbstractJPAController.PLACE_HOLDER_CURRENT_USER);
+            filtroOwner.setValorLabel(JPAFilterHelper.PLACE_HOLDER_CURRENT_USER_LABEL);
             filtroOwner.setIdVista(vista1);
             vista1.getFiltrosVistaList().add(filtroOwner);
 
@@ -2154,6 +2157,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             filtroEstado.setIdCampo("idEstado");
             filtroEstado.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
             filtroEstado.setValor(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
+            filtroEstado.setValorLabel(EnumEstadoCaso.ABIERTO.getEstado().getNombre());
             filtroEstado.setIdVista(vista1);
             vista1.getFiltrosVistaList().add(filtroEstado);
         }

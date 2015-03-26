@@ -1,7 +1,10 @@
-package com.itcs.helpdesk.jsfcontrollers.util;
+package com.itcs.helpdesk.webapputils.filters;
 
+import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import com.itcs.helpdesk.util.Log;
 import java.io.*;
+import java.net.URL;
 import java.util.logging.Level;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -10,6 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.*;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -22,21 +26,6 @@ public class LoginCustomerFilter implements Filter {
     public LoginCustomerFilter() {
     }
 
-//    private String getHostSubDomain(String url) {
-//        try {
-//            URL url_ = new URL(url);
-//            String host = url_.getHost();
-//            if (host != null && !host.equalsIgnoreCase("localhost")) {
-//                return host.substring(0, host.indexOf(".godesk.cl"));
-//            } else {
-//                return host;
-//            }
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
@@ -46,19 +35,33 @@ public class LoginCustomerFilter implements Filter {
         HttpSession session = req.getSession();
         String requestedPage = req.getPathTranslated();//getRequestURL().toString();
 
+        /*create or get user session*/
         UserSessionBean userSessionBean = (UserSessionBean) session.getAttribute("UserSessionBean");
 
-        //System.out.println("userSessionBean:" + userSessionBean);
-
-        //System.out.println("Filtering Request:" + req.getRequestURL().toString());
-
-//        String tenantId = null;
-//        if (userSessionBean != null && userSessionBean.getTenantId() != null) {
-//            tenantId = userSessionBean.getTenantId();
-//        } else {
-//            tenantId = getHostSubDomain(req.getRequestURL().toString());
+        if (userSessionBean != null) {
+            //System.out.println("userSessionBean:" + userSessionBean);
+            //System.out.println("Filtering Request:" + req.getRequestURL().toString());
+//            if (StringUtils.isEmpty(userSessionBean.getTenantId())) {
+                /*not set yet, set tenant from url*/
+                if (!userSessionBean.isValidatedCustomerSession()) {
+                    String tenantId = JsfUtil.getHostSubDomain(req.getRequestURL().toString());
+                    System.out.println("tenantId:" + tenantId);
+                    if (tenantId != null) {
+                        userSessionBean.setTenantId(tenantId);
+                    } else {
+                        res.sendRedirect(req.getContextPath() + "/faces/customer/system_failure.xhtml");
+                        return;
+                    }
+                }
+//            }
+        }else{
+            System.out.println("userSessionBean is null now");
+        }
+//        else {
+//            res.sendRedirect(req.getContextPath() + "/faces/customer/system_failure.xhtml");
+//            return;
 //        }
-//        //System.out.println("tenantId:" + tenantId);
+
         try {
 
             if (requestedPage.endsWith(".xhtml")) {

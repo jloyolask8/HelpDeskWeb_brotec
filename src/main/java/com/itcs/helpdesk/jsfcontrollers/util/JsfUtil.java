@@ -2,6 +2,7 @@ package com.itcs.helpdesk.jsfcontrollers.util;
 
 import com.itcs.helpdesk.util.Log;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -114,6 +115,28 @@ public class JsfUtil {
             }
         }
         return items;
+    }
+    
+    public static String getHostSubDomain(String url) {
+        try {
+            URL url_ = new URL(url);
+            String host = url_.getHost();
+            System.out.println("host:" + host);
+
+            if (!host.contains("localhost") && !host.contains("localhost.localdomain")) {
+                //must run on godesk.cl
+                return host.substring(0, host.indexOf(".godesk.cl"));
+            } else if (host.contains("localhost.localdomain")) {
+                //for development please create a tenant named localhost =) and use localhost.localdomain as the url.
+                return host.substring(0, host.indexOf(".localdomain"));
+            } else {
+                return host;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static void addErrorMessage(Exception ex, String defaultMsg) {

@@ -54,8 +54,13 @@ public class TipoCasoController extends AbstractManagedBean<TipoCaso> implements
         
         SubEstadoCaso initialSe = new SubEstadoCaso(current, "", "Nuevo", EnumEstadoCaso.ABIERTO.getEstado(), 
                 "", true, "ffffff", "00aeed", true);
+        
+        SubEstadoCaso initialSe2 = new SubEstadoCaso(current, "", "Solucionado", EnumEstadoCaso.CERRADO.getEstado(), 
+                "", true, "ffffff", "563d7c", false);
+                        
         final LinkedList<SubEstadoCaso> linkedList = new LinkedList<>();
         linkedList.add(initialSe);
+        linkedList.add(initialSe2);
                 
         current.setSubEstadoCasoList(linkedList);
         selectedItemIndex = -1;
@@ -88,6 +93,7 @@ public class TipoCasoController extends AbstractManagedBean<TipoCaso> implements
             checkValidateSubEstados();
             if(!isOnlyOneSubEstadoFirst()){
                 addErrorMessage("Solo un sub-estado puede ser el inicial.");
+                return null;
             }
             getJpaController().persist(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("TipoCasoCreated"));
@@ -132,6 +138,7 @@ public class TipoCasoController extends AbstractManagedBean<TipoCaso> implements
             checkValidateSubEstados();
             if(!isOnlyOneSubEstadoFirst()){
                 addErrorMessage("Solo un sub-estado puede ser el inicial.");
+                return null;
             }
             getJpaController().merge(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("TipoCasoUpdated"));

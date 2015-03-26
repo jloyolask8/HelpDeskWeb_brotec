@@ -3,10 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
       xmlns:pe="http://primefaces.org/ui/extensions"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+      xmlns:p="http://primefaces.org/ui">
 
     <ui:composition template="/script/template_inbox_bootstrap_config.xhtml">
         <ui:define name="title">
@@ -28,7 +26,7 @@
             <div class="page-header">
                 <div class="row">
                     <div class="col-sm-6 col-xs-12">
-                        <h1><i class="fa fa-building page-header-icon"></i>&nbsp;&nbsp;#{bundle.CreateTipoCasoTitle}</h1>
+                        <h1><i class="fa fa-bookmark page-header-icon"></i>&nbsp;&nbsp;#{bundle.CreateTipoCasoTitle}</h1>
                         <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
                             <i class="fa fa-info-circle"/>
                         </p:commandLink> 
@@ -54,7 +52,7 @@
             <h:form>
 
                 <div class="row">
-                    <div class="col-sm-5 col-lg-5">
+                    <div class="col-sm-3 col-lg-3">
 
 
                         <div class="form-group">
@@ -69,51 +67,13 @@
 
                         <div class="form-group">
                             <label class="control-label">#{bundle.CreateTipoCasoLabel_descripcion}</label>
-                            <h:inputTextarea styleClass="form-control" id="descripcion" value="#{tipoCasoController.selected.descripcion}"  cols="50" />
+                            <h:inputTextarea styleClass="form-control" id="descripcion" value="#{tipoCasoController.selected.descripcion}" rows="6"  cols="50" />
                         </div>
 
-                        <div class="row">
-                            <div class="col-sm-4 col-lg-4">
-                                <label class="control-label">Inicial</label>
-
-                                <ul>
-                                    <li>
-                                        <h:outputText id="stat" styleClass="badge" 
-                                                      style="background: \##{tipoCasoController.selected.subEstadoInicial.backgroundColor}; color: \##{tipoCasoController.selected.subEstadoInicial.fontColor};" 
-                                                      value="#{tipoCasoController.selected.subEstadoInicial.nombre}"/> 
-                                    </li>
-
-                                </ul>
-
-                            </div>
-
-                            <div class="col-sm-4 col-lg-4">
-                                <label class="control-label">Abierto</label>
-                                <h:dataTable value="#{tipoCasoController.selected.getSubEstadosAbierto()}" var="se">
-                                    <h:column class="padding-sm">
-                                        <h:outputText styleClass="badge" 
-                                                      style="background: \##{se.backgroundColor}; color: \##{se.fontColor};" 
-                                                      value="#{se.nombre}"/> 
-                                    </h:column>
-                                </h:dataTable>
-
-                            </div>
-
-                            <div class="col-sm-4 col-lg-4">
-                                <label class="control-label">Cerrado</label>
-                                <h:dataTable value="#{tipoCasoController.selected.getSubEstadosCerrado()}" var="se">
-                                    <h:column class="padding-sm">
-                                        <h:outputText styleClass="badge" 
-                                                      style="background: \##{se.backgroundColor}; color: \##{se.fontColor};" 
-                                                      value="#{se.nombre}"/> 
-                                    </h:column>
-                                </h:dataTable>
-                            </div>
-                        </div>
-
+                        
                     </div>
 
-                    <div class="col-sm-7 col-lg-7">
+                    <div class="col-sm-9 col-lg-9">
                         <div class="form-group">
                             <label class="control-label">Configuración de SubEstados (Workflow del caso)</label>
 
@@ -148,6 +108,12 @@
                                     <p:colorPicker id="backgroundColor" value="#{item.backgroundColor}" />
                                 </p:column>
 
+                                <p:column headerText="Preview">
+                                    <h:outputText styleClass="badge" 
+                                                  style="background: \##{item.backgroundColor}; color: \##{item.fontColor};" 
+                                                  value="#{item.nombre}"/> 
+                                </p:column>
+                                
                                 <p:column headerText="Acción">
 
                                     <p:commandLink update="SubEstadoCaso_Table" 
@@ -179,7 +145,7 @@
                                 <div class="btn-group">
                                     <p:commandLink actionListener="#{tipoCasoController.processAnyValueChange()}"
                                                    styleClass="btn btn-xs btn-default btn-flat" 
-                                                   ajax="true" immediate="true" update="SubEstadoCaso_Table @this"
+                                                   ajax="true" immediate="true" update="@form"
                                                    onclick="jQuery(this).addClass('ui-state-disabled');
                                                            jQuery(this).children().addClass('fa fa-refresh fa-spin')">
                                         <i class=""></i> Reset
@@ -189,7 +155,7 @@
                                 <div class="btn-group">
                                     <p:commandLink actionListener="#{tipoCasoController.addNewSubEstadoAbierto()}"
                                                    styleClass="btn btn-xs btn-default btn-flat" 
-                                                   ajax="true" immediate="true" update="SubEstadoCaso_Table @this"
+                                                   ajax="true" process="@form" update="@form"
                                                    onclick="jQuery(this).addClass('ui-state-disabled');
                                                            jQuery(this).children().addClass('fa fa-refresh fa-spin')">
                                         <i class="fa fa-plus"></i> Agregar Sub-Estado (Abierto)
@@ -199,7 +165,7 @@
                                 <div class="btn-group">
                                     <p:commandLink actionListener="#{tipoCasoController.addNewSubEstadoCerrado()}"
                                                    styleClass="btn btn-xs btn-default btn-flat" 
-                                                   ajax="true" immediate="true" update="SubEstadoCaso_Table @this"
+                                                   ajax="true" process="@form" update="@form"
                                                    onclick="jQuery(this).addClass('ui-state-disabled');
                                                            jQuery(this).children().addClass('fa fa-refresh fa-spin')">
                                         <i class="fa fa-plus"></i> Agregar Sub-Estado (Cerrado)

@@ -146,8 +146,8 @@ public class InputValidationBean {
         Matcher m = p.matcher(strValue);
         if (!m.matches()) {
             throw new ValidatorException(new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, "Formato de teléfono inválido, debe contener entre 9 y 15 Dígitos.",
-                    ""));
+                    FacesMessage.SEVERITY_ERROR, "Formato de teléfono inválido.",
+                    "Formato de teléfono inválido."));
         }
 
     }

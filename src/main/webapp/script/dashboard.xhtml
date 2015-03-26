@@ -48,69 +48,103 @@
             <!--First widget: X people interacted with your account in the last <year, month, week, day>-->
             <!--Tickets by channel-->
             <!--open vs closed tickets-->
-            
-               <h:form id="form">
-            <div class="panel panel-dark panel-light-green">
+
+            <h:form id="form">
+                <div class="panel panel-dark panel-light-green">
                     <div class="panel-heading">
-                            <span class="panel-title">
-                                <i class="panel-title-icon fa fa-building"></i>Organigrama</span>
-                            <div class="panel-heading-controls">
-                                    
-                            </div> <!-- / .panel-heading-controls -->
+                        <span class="panel-title">
+                            <i class="panel-title-icon fa fa-building"></i>Organigrama</span>
+                        <div class="panel-heading-controls">
+
+                        </div> <!-- / .panel-heading-controls -->
                     </div> <!-- / .panel-heading -->
 
-                 
+
                     <p:tree id="tree" value="#{areaController.root}" var="item"  orientation="horizontal" animate="true" style="border: none;" >  
-                            <p:treeNode expandedIcon="ui-icon-folder-open"  
-                                        collapsedIcon="ui-icon-folder-collapsed">  
-                                <h:outputText value="#{item}"/>  
-                            </p:treeNode>
+                        <p:treeNode expandedIcon="ui-icon-folder-open"  
+                                    collapsedIcon="ui-icon-folder-collapsed">  
+                            <h:outputText value="#{item}"/>  
+                        </p:treeNode>
 
-                            <p:treeNode type="areas">
-                                <i class="fa fa-building-o"></i>&nbsp;
-                                <p:commandLink ajax="false" action="#{areaController.prepareEdit(item.idArea)}" value="#{item.nombre}"/>
-                                <h:panelGroup rendered="#{(item.class.name eq 'com.itcs.helpdesk.persistence.entities.Area') and (item.idCanal ne null)}">
-                                    <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    <i class="#{(item.idCanal.idTipoCanal.idTipo eq 'EMAIL') ? 'fa fa-envelope-o':((item.idCanal.idTipoCanal.idTipo eq 'CHAT') ? 'fa fa-comment-o':((item.idCanal.idTipoCanal.idTipo eq 'MANUAL') ? 'fa fa-pencil-square-o':((item.idCanal.idTipoCanal.idTipo eq 'FORMULARIO') ? 'fa fa-list-alt':'')))}"></i>
-                                    &nbsp;
-                                    <h:outputText value="#{item.idCanal.nombre}"/>
-                                </h:panelGroup>  
-                            </p:treeNode>                          
+                        <p:treeNode type="areas">
+                            <i class="fa fa-building-o"></i>&nbsp;
+                            <p:commandLink ajax="false" action="#{areaController.prepareEdit(item.idArea)}" value="#{item.nombre}"/>
+                            <h:panelGroup rendered="#{(item.class.name eq 'com.itcs.helpdesk.persistence.entities.Area') and (item.idCanal ne null)}">
+                                <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <i class="#{(item.idCanal.idTipoCanal.idTipo eq 'EMAIL') ? 'fa fa-envelope-o':((item.idCanal.idTipoCanal.idTipo eq 'CHAT') ? 'fa fa-comment-o':((item.idCanal.idTipoCanal.idTipo eq 'MANUAL') ? 'fa fa-pencil-square-o':((item.idCanal.idTipoCanal.idTipo eq 'FORMULARIO') ? 'fa fa-list-alt':'')))}"></i>
+                                &nbsp;
+                                <h:outputText value="#{item.idCanal.nombre}"/>
+                            </h:panelGroup>  
+                        </p:treeNode>                          
 
-                            <p:treeNode type="grupos">  
-                                <i class="fa fa-users"></i>&nbsp;
-                                <p:outputLabel value="#{item.nombre}"/>
-                            </p:treeNode>  
+                        <p:treeNode type="grupos">  
+                            <i class="fa fa-users"></i>&nbsp;
+                            <p:outputLabel value="#{item.nombre}"/>
+                        </p:treeNode>  
 
 
-                            <p:treeNode type="agentes" >  
-                                <i class="fa fa-user"></i>&nbsp;
-                                <p:commandLink ajax="false" action="#{usuarioController.prepareEdit(item)}" value="#{item.capitalName}"/>
-                                <i class="fa #{item.activo ? 'fa-check':'fa-times'}"></i>                                
-                            </p:treeNode>
-                        </p:tree> 
-                    
+                        <p:treeNode type="agentes" >  
+                            <i class="fa fa-user"></i>&nbsp;
+                            <p:commandLink ajax="false" action="#{usuarioController.prepareEdit(item)}" value="#{item.capitalName}"/>
+                            <i class="fa #{item.activo ? 'fa-check':'fa-times'}"></i>                                
+                        </p:treeNode>
+                    </p:tree> 
+
                     <div class="panel-footer">
-                        
-                         <p:commandButton id="expandTree" value="#{areaController.expanded ? 'Colapsar':'Expandir'}" actionListener="#{areaController.toggleAllTree()}" immediate="true"
-                                         update=":form:tree expandTree" />
 
-                        <p:commandButton id="refreshTree" value="Actualizar" actionListener="#{areaController.refreshTree()}" immediate="true"
-                                         update=":form:tree" />
-                        
-                        <p:commandButton ajax="false" action="#{areaController.prepareCreate()}" immediate="true"
-                                                     rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" value="#{bundle.ListAreaCreateLink}" icon="fa fa-plus-circle" />
+                        <div class="row">
+                            <div class="btn-group">
+                                <p:commandLink id="expandTree" 
+                                               actionListener="#{areaController.toggleAllTree()}" immediate="true"
+                                               update=":form:tree expandTree @this"
+                                               styleClass="btn btn-xs btn-default btn-flat" 
+                                               ajax="true" process="@this" 
+                                               onclick="jQuery(this).addClass('ui-state-disabled');
+                                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                    <i class=""></i> #{areaController.expanded ? 'Colapsar':'Expandir'}
+                                </p:commandLink>
+                            </div>
 
-                          
-                        <p:commandButton ajax="false" action="#{grupoController.prepareCreate()}" immediate="true"
-                                         rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" value="#{bundle.ListGrupoCreateLink}" icon="fa fa-plus-circle" />
+                            <div class="btn-group">
+                                <p:commandLink id="refreshTree"  actionListener="#{areaController.refreshTree()}" immediate="true"
+                                               update=":form:tree @this"
+                                               styleClass="btn btn-xs btn-default btn-flat" 
+                                               ajax="true"  
+                                               onclick="jQuery(this).addClass('ui-state-disabled');
+                                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                    <i class=""></i> Actualizar
+                                </p:commandLink>
+                            </div>
 
-                         
+                            <div class="btn-group">
+                                <p:commandLink ajax="false" action="#{areaController.prepareCreate()}" immediate="true"
+                                               rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" 
+                                               styleClass="btn btn-xs btn-default btn-flat" 
+                                               onclick="jQuery(this).addClass('ui-state-disabled');
+                                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                    <i class="fa fa-building"></i> #{bundle.ListAreaCreateLink}
+                                </p:commandLink>
+                            </div>
+
+                            <div class="btn-group">
+                                <p:commandLink ajax="false" action="#{grupoController.prepareCreate()}" immediate="true"
+                                               rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
+                                               styleClass="btn btn-xs btn-default btn-flat" 
+                                               onclick="jQuery(this).addClass('ui-state-disabled');
+                                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                    <i class="fa fa-users"></i> #{bundle.ListGrupoCreateLink}
+                                </p:commandLink>
+                            </div>
+                        </div>
+
+
+
+
                     </div>
-                    
-            </div>
 
-               </h:form>
+                </div>
+
+            </h:form>
         </ui:define>
 
         <ui:define name="dialogs">
