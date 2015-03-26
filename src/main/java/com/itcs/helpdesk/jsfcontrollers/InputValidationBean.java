@@ -142,7 +142,7 @@ public class InputValidationBean {
     public void validatePhoneNumber(FacesContext context, UIComponent component,
             Object value) throws ValidatorException {
         String strValue = (String) value;
-        Pattern p = Pattern.compile("^[0-9\\-\\ ]{9,15}$");
+        Pattern p = Pattern.compile("^[0-9\\-\\ \\+]{8,20}$");
         Matcher m = p.matcher(strValue);
         if (!m.matches()) {
             throw new ValidatorException(new FacesMessage(

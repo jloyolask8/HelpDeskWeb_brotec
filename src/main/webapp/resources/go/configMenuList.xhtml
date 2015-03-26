@@ -73,18 +73,8 @@
             <p:commandLink action="#{tipoCasoController.prepareList}" ajax="false"
                            styleClass="list-group-item #{view.viewId.contains('tipoCaso' )? 'active':''}">
                 <p:resetInput target="@form" />
-                <i class="fa fa-exclamation"/> Tipos de Casos 
+                <i class="fa fa-bookmark"/> Tipos de Casos 
             </p:commandLink>
-
-
-
-            <p:commandLink action="#{subEstadoCasoController.prepareList}" ajax="false"
-                           styleClass="list-group-item #{view.viewId.contains('sub_estado_caso' )? 'active':''}">
-                <p:resetInput target="@form" />
-                <i class="fa fa-bookmark"/> Sub Estados de Casos 
-            </p:commandLink>
-
-
 
             <p:commandLink action="#{prioridadController.prepareList}" ajax="false"
                            styleClass="list-group-item #{view.viewId.contains('prioridad' )? 'active':''}">

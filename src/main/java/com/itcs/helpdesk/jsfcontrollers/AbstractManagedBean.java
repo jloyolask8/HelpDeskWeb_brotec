@@ -40,6 +40,7 @@ import javax.faces.application.ViewHandler;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.DataModel;
 import javax.faces.model.SelectItem;
 import javax.persistence.EntityManagerFactory;
@@ -97,6 +98,14 @@ public abstract class AbstractManagedBean<E> implements Serializable {
     private Vista defaultVista;
 
     protected String backOutcome;
+    
+    public void processAnyValueChange(ValueChangeEvent event){
+        //...
+    }
+    
+    public void processAnyValueChange(){
+        //...
+    }
 
     public void selectEntityFromDialog(E o) {
         RequestContext.getCurrentInstance().closeDialog(o);
