@@ -75,35 +75,39 @@
                         <div class="row">
                             <div class="col-sm-4 col-lg-4">
                                 <label class="control-label">Inicial</label>
-                                <h:outputText id="stat" styleClass="badge" 
-                                              style="background: \##{tipoCasoController.selected.subEstadoInicial.backgroundColor}; color: \##{tipoCasoController.selected.subEstadoInicial.fontColor};" 
-                                              value="#{tipoCasoController.selected.subEstadoInicial.nombre}"/> 
+
+                                <ul>
+                                    <li>
+                                        <h:outputText id="stat" styleClass="badge" 
+                                                      style="background: \##{tipoCasoController.selected.subEstadoInicial.backgroundColor}; color: \##{tipoCasoController.selected.subEstadoInicial.fontColor};" 
+                                                      value="#{tipoCasoController.selected.subEstadoInicial.nombre}"/> 
+                                    </li>
+
+                                </ul>
+
                             </div>
 
                             <div class="col-sm-4 col-lg-4">
                                 <label class="control-label">Abierto</label>
-                                <ul class="list-group">
-                                    <c:forEach items="#{tipoCasoController.selected.getSubEstadosAbierto()}" var="se">
-                                        <li class="list-group-item">
-                                            <h:outputText styleClass="badge" 
-                                                          style="background: \##{se.backgroundColor}; color: \##{se.fontColor};" 
-                                                          value="#{se.nombre}"/> 
-                                        </li>
-                                    </c:forEach>
-                                </ul>
+                                <h:dataTable value="#{tipoCasoController.selected.getSubEstadosAbierto()}" var="se">
+                                    <h:column class="padding-sm">
+                                        <h:outputText styleClass="badge" 
+                                                      style="background: \##{se.backgroundColor}; color: \##{se.fontColor};" 
+                                                      value="#{se.nombre}"/> 
+                                    </h:column>
+                                </h:dataTable>
+
                             </div>
 
                             <div class="col-sm-4 col-lg-4">
                                 <label class="control-label">Cerrado</label>
-                                <ul class="list-group">
-                                    <c:forEach items="#{tipoCasoController.selected.getSubEstadosCerrado()}" var="se">
-                                        <li class="list-group-item">
-                                            <h:outputText styleClass="badge" 
-                                                          style="background: \##{se.backgroundColor}; color: \##{se.fontColor};" 
-                                                          value="#{se.nombre}"/> 
-                                        </li>
-                                    </c:forEach>
-                                </ul>
+                                <h:dataTable value="#{tipoCasoController.selected.getSubEstadosCerrado()}" var="se">
+                                    <h:column class="padding-sm">
+                                        <h:outputText styleClass="badge" 
+                                                      style="background: \##{se.backgroundColor}; color: \##{se.fontColor};" 
+                                                      value="#{se.nombre}"/> 
+                                    </h:column>
+                                </h:dataTable>
                             </div>
                         </div>
 

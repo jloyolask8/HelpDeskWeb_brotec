@@ -77,7 +77,7 @@ public class TipoCasoController extends AbstractManagedBean<TipoCaso> implements
         }
         
         SubEstadoCaso se = new SubEstadoCaso(current, "", "Sub Estado " + (current.getSubEstadoCasoList().size()+1) , e, 
-                "", true, "ffffff", "00aeed", true);
+                "", true, "ffffff", "00aeed", false);
         
         current.getSubEstadoCasoList().add(se);
     }
@@ -86,6 +86,9 @@ public class TipoCasoController extends AbstractManagedBean<TipoCaso> implements
         try {
             current.setIdTipoCaso(current.getNombre().trim().toLowerCase().replace(" ", "_"));
             checkValidateSubEstados();
+            if(!isOnlyOneSubEstadoFirst()){
+                addErrorMessage("Solo un sub-estado puede ser el inicial.");
+            }
             getJpaController().persist(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("TipoCasoCreated"));
             return prepareList();
@@ -104,6 +107,18 @@ public class TipoCasoController extends AbstractManagedBean<TipoCaso> implements
             }
         }
     }
+    
+    private boolean isOnlyOneSubEstadoFirst() {
+        int count = 0;
+        if(current.getSubEstadoCasoList() != null){
+            for (SubEstadoCaso subEstadoCaso : current.getSubEstadoCasoList()) {
+                if(subEstadoCaso.isFirst()){
+                    count++;
+                }
+            }
+        }
+        return (count == 1);
+    }
 
     public String prepareEdit() {
         current = (TipoCaso) getItems().getRowData();
@@ -113,7 +128,11 @@ public class TipoCasoController extends AbstractManagedBean<TipoCaso> implements
 
     public String update() {
         try {
+            
             checkValidateSubEstados();
+            if(!isOnlyOneSubEstadoFirst()){
+                addErrorMessage("Solo un sub-estado puede ser el inicial.");
+            }
             getJpaController().merge(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("TipoCasoUpdated"));
             return "/script/tipoCaso/List";

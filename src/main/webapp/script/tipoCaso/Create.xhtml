@@ -5,7 +5,8 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:pe="http://primefaces.org/ui/extensions"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
 
     <ui:composition template="/script/template_inbox_bootstrap_config.xhtml">
         <ui:define name="title">
@@ -74,17 +75,39 @@
                         <div class="row">
                             <div class="col-sm-4 col-lg-4">
                                 <label class="control-label">Inicial</label>
-                               
+
+                                <ul>
+                                    <li>
+                                        <h:outputText id="stat" styleClass="badge" 
+                                                      style="background: \##{tipoCasoController.selected.subEstadoInicial.backgroundColor}; color: \##{tipoCasoController.selected.subEstadoInicial.fontColor};" 
+                                                      value="#{tipoCasoController.selected.subEstadoInicial.nombre}"/> 
+                                    </li>
+
+                                </ul>
+
                             </div>
 
                             <div class="col-sm-4 col-lg-4">
                                 <label class="control-label">Abierto</label>
-                                
+                                <h:dataTable value="#{tipoCasoController.selected.getSubEstadosAbierto()}" var="se">
+                                    <h:column class="padding-sm">
+                                        <h:outputText styleClass="badge" 
+                                                      style="background: \##{se.backgroundColor}; color: \##{se.fontColor};" 
+                                                      value="#{se.nombre}"/> 
+                                    </h:column>
+                                </h:dataTable>
+
                             </div>
 
                             <div class="col-sm-4 col-lg-4">
                                 <label class="control-label">Cerrado</label>
-                                
+                                <h:dataTable value="#{tipoCasoController.selected.getSubEstadosCerrado()}" var="se">
+                                    <h:column class="padding-sm">
+                                        <h:outputText styleClass="badge" 
+                                                      style="background: \##{se.backgroundColor}; color: \##{se.fontColor};" 
+                                                      value="#{se.nombre}"/> 
+                                    </h:column>
+                                </h:dataTable>
                             </div>
                         </div>
 
@@ -104,9 +127,11 @@
                                 </p:column>
 
                                 <p:column headerText="Inicial">
-                                        <p:selectBooleanCheckbox id="first" value="#{item.first}" 
+                                    <p:selectBooleanCheckbox id="first" value="#{item.first}" 
                                                              rendered="#{EnumEstadoCaso.ABIERTO.getEstado() eq item.idEstado}"
-                                                             label="Es el primer sub-estado de un caso de este tipo." /> 
+                                                             label="Es el primer sub-estado de un caso de este tipo." >
+
+                                    </p:selectBooleanCheckbox>
                                 </p:column>
 
 
@@ -146,7 +171,7 @@
                                                    styleClass="btn btn-xs btn-default btn-flat" 
                                                    ajax="true" process="@form" update="@form"
                                                    onclick="jQuery(this).addClass('ui-state-disabled');
-                                                               jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
                                         <i class=""></i> Preview
                                     </p:commandLink>
                                 </div>
@@ -156,7 +181,7 @@
                                                    styleClass="btn btn-xs btn-default btn-flat" 
                                                    ajax="true" immediate="true" update="SubEstadoCaso_Table @this"
                                                    onclick="jQuery(this).addClass('ui-state-disabled');
-                                                               jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
                                         <i class=""></i> Reset
                                     </p:commandLink>
                                 </div>
@@ -166,7 +191,7 @@
                                                    styleClass="btn btn-xs btn-default btn-flat" 
                                                    ajax="true" immediate="true" update="SubEstadoCaso_Table @this"
                                                    onclick="jQuery(this).addClass('ui-state-disabled');
-                                                               jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
                                         <i class="fa fa-plus"></i> Agregar Sub-Estado (Abierto)
                                     </p:commandLink>
                                 </div>
@@ -176,7 +201,7 @@
                                                    styleClass="btn btn-xs btn-default btn-flat" 
                                                    ajax="true" immediate="true" update="SubEstadoCaso_Table @this"
                                                    onclick="jQuery(this).addClass('ui-state-disabled');
-                                                               jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
                                         <i class="fa fa-plus"></i> Agregar Sub-Estado (Cerrado)
                                     </p:commandLink>
                                 </div>
