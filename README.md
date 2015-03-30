@@ -58,6 +58,7 @@ $ git reset --hard HEAD
 
 ## Pedientes Godesk
 
+- asignar casos automaticamente sin necesidad de reglas de negocio. usar organigrama.
 
 - desplegar fecha y hora de adjunto. add field fechaCreacion to Attachment.ok done
 
