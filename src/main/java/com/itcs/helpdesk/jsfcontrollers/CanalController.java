@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -281,7 +282,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
         tmpEmailSuNombre = current.getSetting(EnumEmailSettingKeys.SMTP_FROMNAME.getKey());
         tmpEmailCorreoElectronico = current.getSetting(EnumEmailSettingKeys.SMTP_FROM.getKey());
         tmpEmailContrasena = current.getSetting(EnumEmailSettingKeys.SMTP_PASS.getKey());
-        tmpEmailIncommingType = current.getSetting(EnumEmailSettingKeys.STORE_PROTOCOL.getKey()).equals("imaps") ? "imap" : "pop3";
+        tmpEmailIncommingType = current.getSetting(EnumEmailSettingKeys.STORE_PROTOCOL.getKey()).startsWith("imap") ? "imap" : "pop3";
         tmpEmailIncommingHost = current.getSetting(EnumEmailSettingKeys.INBOUND_SERVER.getKey());
         tmpEmailIncommingPort = current.getSetting(EnumEmailSettingKeys.INBOUND_PORT.getKey());
         tmpEmailIncommingSsl = current.getSetting(EnumEmailSettingKeys.INBOUND_SSL_ENABLED.getKey()).equals("true") ? "SSL/TLS"
@@ -330,7 +331,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
                 current.setNombre(tmpEmailCorreoElectronico);
                 current.setDescripcion("Canal email, para la cuenta " + tmpEmailCorreoElectronico);
                 getJpaController().persistCanal(current);
-//                current.setCanalSettingList(new LinkedList<CanalSetting>());
+                current.setCanalSettingList(new LinkedList<CanalSetting>());
                 Map<String, String> settingsMap = createEmailSettingsMap();
                 Iterator it = settingsMap.entrySet().iterator();
                 while (it.hasNext()) {
