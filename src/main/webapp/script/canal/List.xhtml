@@ -353,8 +353,8 @@
                             &nbsp;
                             <p:commandButton value="Verificar" actionListener="#{canalController.verifyEmailAccount()}" process="@form" update=":formAddEditEmail"/>
                             &nbsp;
-                            <p:commandButton action="#{canalController.createCanalEmail()}" value="Finalizado" update=":form"
-                                             oncomplete="PF('addEditEmailDialogWidget').hide()" disabled="#{not canalController.tmpEmailFinalizeReady}"/>
+                            <p:commandButton action="#{canalController.createCanalEmail()}" value="Finalizar" update=":form"
+                                             oncomplete="PF('addEditEmailDialogWidget').hide()" />
                         </div>
                     </h:panelGroup>
 
