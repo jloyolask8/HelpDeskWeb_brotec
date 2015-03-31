@@ -58,6 +58,7 @@ $ git reset --hard HEAD
 
 ## Pedientes Godesk
 
+- seria interesante poder enviar mensajes internos a todos los usuarios del sistema.
 
 - desplegar fecha y hora de adjunto. add field fechaCreacion to Attachment.ok done
 
