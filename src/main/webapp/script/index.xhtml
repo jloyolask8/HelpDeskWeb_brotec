@@ -108,9 +108,16 @@
                         </p:column>  
 
                         <p:column width="5%">
-                            <p:commandLink disabled="true" title="Chat with #{userLoggedIn}">  
-                                <i class="fa fa-comments"></i>
-                            </p:commandLink>
+                            <h:panelGroup rendered="#{userLoggedIn ne UserSessionBean.current.idUsuario}">
+                            <a title="Chat with #{userLoggedIn}" 
+                                onclick="startChat('#{UserSessionBean.current.idUsuario}', '#{userLoggedIn}', '#{applicationBean.companyName}');">
+                                                            <i class="menu-icon fa fa-comments"></i>
+                                                           
+                                                        </a>
+                            </h:panelGroup>
+                             
+                            
+                           
                         </p:column>
 
                     </p:dataTable>  
