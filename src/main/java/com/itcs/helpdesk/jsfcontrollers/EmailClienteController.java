@@ -10,6 +10,7 @@ import com.itcs.helpdesk.persistence.entities.ProductoContratadoPK;
 import com.itcs.helpdesk.persistence.entities.SubComponente;
 import com.itcs.helpdesk.persistence.entities.Vista;
 import com.itcs.helpdesk.persistence.entities.EmailCliente_;
+import com.itcs.helpdesk.persistence.entities.FiltroVista;
 import com.itcs.helpdesk.persistence.entities.Usuario;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
 import com.itcs.helpdesk.persistence.utils.OrderBy;
@@ -17,6 +18,7 @@ import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.UtilesRut;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +36,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
+import javax.resource.NotSupportedException;
 import jxl.CellReferenceHelper;
 import jxl.Sheet;
 import jxl.Workbook;
@@ -109,7 +112,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
             f1.setIdVista(vista1);
             vista1.getFiltrosVistaList().add(f1);
 
-            List<EmailCliente> emailClientes = (List<EmailCliente>) getJpaController().findEntitiesFirstChunk(vista1, getDefaultOrderBy(), query);
+            List<EmailCliente> emailClientes = (List<EmailCliente>) getJpaController().findEntities(vista1, 10, 0, getDefaultOrderBy(), null, query);
             if (emailClientes != null && !emailClientes.isEmpty()) {
                 for (EmailCliente emailCliente : emailClientes) {
                      if (!StringUtils.isEmpty(emailCliente.getEmailCliente())) {
@@ -126,7 +129,7 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
             filtroEmail.setIdVista(vista2);
             vista2.getFiltrosVistaList().add(filtroEmail);
 
-            List<Usuario> emailUsers = (List<Usuario>) getJpaController().findEntitiesFirstChunk(vista2, new OrderBy("email", OrderBy.OrderType.ASC), query);
+            List<Usuario> emailUsers = (List<Usuario>) getJpaController().findEntities(vista2, 10, 0, new OrderBy("email", OrderBy.OrderType.ASC), null, query);
             if (emailUsers != null && !emailUsers.isEmpty()) {
                 for (Usuario u : emailUsers) {
                     if (!StringUtils.isEmpty(u.getEmail())) {
@@ -140,6 +143,13 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
         }
 
         return results;
+        
+        }catch(IllegalStateException | NotSupportedException | ClassNotFoundException e){
+            addErrorMessage(e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return Collections.EMPTY_LIST;
     }
 
     public String prepareCreateProductoContratado() {
