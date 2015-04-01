@@ -27,7 +27,7 @@
             <div class="page-header">
                 <div class="row">
                     <div class="col-sm-6 col-xs-12">
-                        <h1><i class="fa fa-key page-header-icon"></i>&nbsp;&nbsp;#{bundle.ListTipoCasoTitle}</h1>
+                        <h1><i class="fa fa-bookmark page-header-icon"></i>&nbsp;&nbsp;#{bundle.ListTipoCasoTitle}</h1>
                         <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
                             <i class="fa fa-info-circle"/>
                         </p:commandLink> 
@@ -70,12 +70,7 @@
                     <p:dataTable id="tablatipoCasos" widgetVar="UsuarioTable" var="item" value="#{tipoCasoController.items}"
                                  emptyMessage="#{bundle.ListTipoCasoEmpty}">
 
-                        <p:column sortBy="#{item.idTipoCaso}">
-                            <f:facet name="header">
-                                <h:outputText value="#{bundle.ListTipoCasoTitle_idTipoCaso}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.idTipoCaso}"/>
-                        </p:column>
+                        
                         <p:column sortBy="#{item.nombre}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListTipoCasoTitle_nombre}"/>

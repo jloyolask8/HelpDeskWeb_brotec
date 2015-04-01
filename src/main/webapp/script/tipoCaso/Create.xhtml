@@ -3,51 +3,205 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:pe="http://primefaces.org/ui/extensions"
       xmlns:p="http://primefaces.org/ui">
 
-    <ui:composition template="/script/template_inbox.xhtml">
+    <ui:composition template="/script/template_inbox_bootstrap_config.xhtml">
         <ui:define name="title">
             <h:outputText value="#{bundle.CreateTipoCasoTitle}"></h:outputText>
         </ui:define>
-        <ui:define name="west">
-            <p:accordionPanel multiple="true" cache="true" id="accionesaccordion1">
-                <p:tab title="Tipos de Casos" id="accionestab1">
-                      <h:outputLabel escape="false" value="#{bundle.ayudaTiposDeCasos}"/>
-                </p:tab>
-            </p:accordionPanel>
+
+        <ui:define name="help">
+            <h:outputLabel escape="false" value="#{bundle.ayudaTiposDeCasos}"/>
         </ui:define>
+
+        <ui:define name="content_header">
+            <script>
+                var init = [];
+                init.push(function () {
+                    $('body').addClass('mmc');
+                });
+            </script>
+            <!-- page-header -->
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-sm-6 col-xs-12">
+                        <h1><i class="fa fa-bookmark page-header-icon"></i>&nbsp;&nbsp;#{bundle.CreateTipoCasoTitle}</h1>
+                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                            <i class="fa fa-info-circle"/>
+                        </p:commandLink> 
+                    </div>
+
+                </div>
+            </div><!-- / .page-header --> 
+        </ui:define>
+
+        <ui:define name="help">
+
+            <p class="help-block">Cualquiera sea el tipo, un caso puede estar en dos estados: "Abierto" o "Cerrado".
+                Para definir los sub-estados en los cuales puede estar el caso ud. debe indicar a que estado pertenece el sub-estado.
+                Por ejemplo: Un caso del tipo Contacto cuando esta abierto puede tener los subestados: "Nuevo", "En proceso"... Al cerrarlo este puede
+                estar en sub-estado: "Solucionado", "Respondido", "Invalido", Etc..</p>
+
+        </ui:define>
+
         <ui:define name="body">
 
+            <pe:importEnum type="com.itcs.helpdesk.persistence.entityenums.EnumEstadoCaso" var="EnumEstadoCaso" allSuffix="ALL_ENUM_VALUES" />
+
             <h:form>
-                <p:panel header="#{bundle.CreateTipoCasoTitle}">
 
-                    <h:panelGrid columns="3">
-
-                        <p:outputLabel value="#{bundle.CreateTipoCasoLabel_idTipoCaso}" for="idTipoCaso" style="font-weight:bold"/>
-                        <p:inputText id="idTipoCaso" value="#{tipoCasoController.selected.idTipoCaso}" title="#{bundle.CreateTipoCasoTitle_idTipoCaso}" required="true" requiredMessage="#{bundle.CreateTipoCasoRequiredMessage_idTipoCaso}"/>
-                        <p:message for="idTipoCaso"/>
+                <div class="row">
+                    <div class="col-sm-3 col-lg-3">
 
 
-                        <p:outputLabel value="#{bundle.CreateTipoCasoLabel_nombre}" for="nombre" style="font-weight:bold"/>
-                        <p:inputText id="nombre" value="#{tipoCasoController.selected.nombre}" title="#{bundle.CreateTipoCasoTitle_nombre}" required="true" requiredMessage="#{bundle.CreateTipoCasoRequiredMessage_nombre}"/>
-                        <p:message for="nombre"/>
-
-                        <h:outputLabel value="#{bundle.CreateTipoCasoLabel_descripcion}" for="descripcion" style="font-weight:bold"/>
-                        <p:inputTextarea id="descripcion" value="#{tipoCasoController.selected.descripcion}" title="#{bundle.CreateTipoCasoTitle_descripcion}" />
-                        <p:message for="descripcion"/>
-
-
-                    </h:panelGrid>
-
-                    <f:facet name="footer">
-                        <p:commandButton action="#{tipoCasoController.create}" value="#{bundle.CreateTipoCasoSaveLink}" ajax="false" icon="ui-icon-disk"/>                     
-                        <p:commandButton action="#{tipoCasoController.prepareList}" value="#{bundle.CreateTipoCasoShowAllLink}" immediate="true" ajax="false" icon="ui-icon-folder-open"/>
-                    </f:facet> 
+                        <div class="form-group">
+                            <label class="control-label">#{bundle.CreateTipoCasoLabel_nombre}</label>
+                            <p:inputText id="nombre" styleClass="form-control" value="#{tipoCasoController.selected.nombre}" 
+                                         title="#{bundle.CreateTipoCasoTitle_nombre}" 
+                                         required="true" requiredMessage="#{bundle.CreateTipoCasoRequiredMessage_nombre}"/>
+                            <h:message for="nombre" errorClass="text-danger"/>
+                        </div>
 
 
 
-                </p:panel>
+                        <div class="form-group">
+                            <label class="control-label">#{bundle.CreateTipoCasoLabel_descripcion}</label>
+                            <h:inputTextarea styleClass="form-control" id="descripcion" value="#{tipoCasoController.selected.descripcion}" rows="6"  cols="50" />
+                        </div>
+
+                        
+                    </div>
+
+                    <div class="col-sm-9 col-lg-9">
+                        <div class="form-group">
+                            <label class="control-label">Configuración de SubEstados (Workflow del caso)</label>
+
+                            <p:dataTable id="SubEstadoCaso_Table" widgetVar="SubEstadoCasoTable" var="item" 
+                                         value="#{tipoCasoController.selected.subEstadoCasoList}" 
+                                         emptyMessage="#{bundle.ListSubEstadoCasoEmpty}" 
+                                         sortBy="#{item.idEstado.nombre}">
+
+                                <p:column sortBy="#{item.idEstado.nombre}" headerText="#{bundle.ListSubEstadoCasoTitle_idEstado}">
+                                    <h:outputText value="#{item.idEstado.nombre}"/>
+                                </p:column>
+
+                                <p:column headerText="Inicial">
+                                    <p:selectBooleanCheckbox id="first" value="#{item.first}" 
+                                                             rendered="#{EnumEstadoCaso.ABIERTO.getEstado() eq item.idEstado}"
+                                                             label="Es el primer sub-estado de un caso de este tipo." >
+
+                                    </p:selectBooleanCheckbox>
+                                </p:column>
+
+
+                                <p:column sortBy="#{item.nombre}" headerText="#{bundle.ListSubEstadoCasoTitle_nombre}">
+                                    <h:inputText styleClass="form-control" value="#{item.nombre}" required="true"
+                                                 requiredMessage="El nombre del subestado es requerido."/> 
+                                </p:column>
+
+                                <p:column headerText="font">
+                                    <p:colorPicker id="fontColor" value="#{item.fontColor}" />
+                                </p:column>
+
+                                <p:column headerText="background">
+                                    <p:colorPicker id="backgroundColor" value="#{item.backgroundColor}" />
+                                </p:column>
+
+                                <p:column headerText="Preview">
+                                    <h:outputText styleClass="badge" 
+                                                  style="background: \##{item.backgroundColor}; color: \##{item.fontColor};" 
+                                                  value="#{item.nombre}"/> 
+                                </p:column>
+                                
+                                <p:column headerText="Acción">
+
+                                    <p:commandLink update="SubEstadoCaso_Table" 
+                                                   process="@this"
+                                                   style="border: none !important;"
+                                                   styleClass="btn btn-xs btn-danger btn-outline">
+                                        <p:collector unique="true" value="#{item}" 
+                                                     removeFrom="#{tipoCasoController.selected.subEstadoCasoList}"/>
+                                        <i class="fa fa-times"></i>
+                                    </p:commandLink>
+                                </p:column>
+
+
+                            </p:dataTable>
+
+                            <p class="help-block">Nota: 'Inicial' quiere decir el primer sub-estado (del caso) cuando este es creado (Abierto). Sólo un subEstado puede ser inicial (Seleccione sólo uno).</p>
+
+                            <div class="row">
+                                <div class="btn-group">
+                                    <p:commandLink actionListener="#{tipoCasoController.processAnyValueChange()}"
+                                                   styleClass="btn btn-xs btn-default btn-flat" 
+                                                   ajax="true" process="@form" update="@form"
+                                                   onclick="jQuery(this).addClass('ui-state-disabled');
+                                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                        <i class=""></i> Preview
+                                    </p:commandLink>
+                                </div>
+
+                                <div class="btn-group">
+                                    <p:commandLink actionListener="#{tipoCasoController.processAnyValueChange()}"
+                                                   styleClass="btn btn-xs btn-default btn-flat" 
+                                                   ajax="true" immediate="true" update="@form"
+                                                   onclick="jQuery(this).addClass('ui-state-disabled');
+                                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                        <i class=""></i> Reset
+                                    </p:commandLink>
+                                </div>
+
+                                <div class="btn-group">
+                                    <p:commandLink actionListener="#{tipoCasoController.addNewSubEstadoAbierto()}"
+                                                   styleClass="btn btn-xs btn-default btn-flat" 
+                                                   ajax="true" process="@form" update="@form"
+                                                   onclick="jQuery(this).addClass('ui-state-disabled');
+                                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                        <i class="fa fa-plus"></i> Agregar Sub-Estado (Abierto)
+                                    </p:commandLink>
+                                </div>
+
+                                <div class="btn-group">
+                                    <p:commandLink actionListener="#{tipoCasoController.addNewSubEstadoCerrado()}"
+                                                   styleClass="btn btn-xs btn-default btn-flat" 
+                                                   ajax="true" process="@form" update="@form"
+                                                   onclick="jQuery(this).addClass('ui-state-disabled');
+                                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                        <i class="fa fa-plus"></i> Agregar Sub-Estado (Cerrado)
+                                    </p:commandLink>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-4 col-lg-4">
+                        <div class="btn-group">
+                            <p:commandLink action="#{tipoCasoController.prepareList}" 
+                                           styleClass="btn btn-default btn-flat" 
+                                           ajax="false" immediate="true"
+                                           onclick="jQuery(this).addClass('ui-state-disabled');
+                                                   jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                <i class=""></i> #{bundle.Cancel}
+                            </p:commandLink>
+                        </div>
+
+                        <div class="btn-group">
+                            <p:commandLink action="#{tipoCasoController.create()}" 
+                                           ajax="false"
+                                           styleClass="btn btn-primary btn-flat" 
+                                           onclick="jQuery(this).addClass('ui-state-disabled');
+                                                   jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                <i class=""></i> #{bundle.SaveLink}
+                            </p:commandLink>
+                        </div>
+                    </div>
+                </div>
+
+
             </h:form>
 
 
@@ -55,3 +209,4 @@
     </ui:composition>
 
 </html>
+

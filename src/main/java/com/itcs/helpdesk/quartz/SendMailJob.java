@@ -17,6 +17,7 @@ import com.itcs.helpdesk.util.ManagerCasos;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -47,6 +48,7 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
     public static final String EMAIL_SUBJECT = "subject";
     public static final String EMAIL_TEXT = "email_text";
     public static final String EMAIL_DESCRIPTION = "email_desc";
+    public static final String EMAIL_PUBLIC = "public";
 //    public static final String INTENT = "intent";
 //    public static final int RETRY = 3;
 
@@ -73,6 +75,7 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
             //---
             String subject = (String) map.get(EMAIL_SUBJECT);
             String email_text = (String) map.get(EMAIL_TEXT);
+            String publicEmail = (String) (map.get(EMAIL_PUBLIC) != null ? map.get(EMAIL_PUBLIC) : "false");
 //            String email_desc = (String) map.get(EMAIL_DESCRIPTION);
 
             emails_to = emails_to.trim().replace(" ", "");
@@ -92,9 +95,8 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
                         EntityManagerFactory emf = createEntityManagerFactory();
                         EntityManager em = null;
                         UserTransaction utx = UserTransactionHelper.lookupUserTransaction();
-                        
-//                        JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf);
 
+//                        JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf);
                         try {
 
                             final long idCasoLong = Long.parseLong(idCaso);
@@ -108,19 +110,20 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
                             nota.setEnviadoA(Arrays.toString(split_emails));
                             nota.setCreadaPor(EnumUsuariosBase.SISTEMA.getUsuario());//TODO remove
                             nota.setEnviado(Boolean.TRUE);
-                            nota.setFechaCreacion(Calendar.getInstance().getTime());
-                            nota.setFechaEnvio(Calendar.getInstance().getTime());
-                            nota.setFechaModificacion(Calendar.getInstance().getTime());
+                            final Date time = Calendar.getInstance().getTime();
+                            nota.setFechaEnvio(time);
+                            nota.setFechaCreacion(time);
+                            nota.setFechaModificacion(time);
                             nota.setIdCaso(caso);
                             nota.setTexto(HtmlUtils.stripInvalidMarkup(email_text));
-                            nota.setVisible(Boolean.FALSE);//registro interno
+                            nota.setVisible(Boolean.valueOf(publicEmail));//registro interno??
                             nota.setTipoNota(EnumTipoNota.REG_ENVIO_CORREO.getTipoNota());
                             nota.setEnviadoPorQuartzJobId(formatJobId);
-                            
+
                             em.persist(nota);
 
                             CopyOnWriteArrayList<AuditLog> changeLog = new CopyOnWriteArrayList<>();
-                            changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "Se agrega comentario #"+nota.getIdNota(), ""));
+                            changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "Se agrega comentario #" + nota.getIdNota(), ""));
                             changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "Se envía correo, subject:'" + subject + "' a: " + nota.getEnviadoA(), ""));
 
                             for (AuditLog auditLog : changeLog) {

@@ -80,14 +80,14 @@
                                 <span>1 mes de prueba gratis</span>
                             </div>
 
-                            <p:messages globalOnly="true"/>
+                            <p:messages />
 
                             <div class="form-group w-icon">
                                 <h:inputText id="signup_name" required="true" requiredMessage="Nombre completo is required"
                                              styleClass="form-control input-lg" value="#{signUpController.registrationVO.fullName}" autocomplete="off"/>  
                                 <p:watermark for="signup_name" value="Nombre completo"/>
                                 <span class="fa fa-info signup-form-icon"></span>
-                                <h:message for="signup_name" errorClass="text-danger"/>
+                                <p:message for="signup_name"/>
                             </div>
 
                             <div class="form-group w-icon">
@@ -96,17 +96,20 @@
                                              styleClass="form-control input-lg" value="#{signUpController.registrationVO.email}" autocomplete="off"/> 
                                 <p:watermark for="signup_email" value="E-Mail"/>
                                 <span class="fa fa-envelope signup-form-icon"></span>
-                                <h:message for="signup_email" errorClass="text-danger"/>
+                                <p:message for="signup_email"/>
                             </div>
 
                             <div class="form-group w-icon">
                                 <h:inputText id="signup_phone" required="true" requiredMessage="Phone is required" 
                                              validator="#{inputValidationBean.validatePhoneNumber}"
                                              styleClass="form-control input-lg" value="#{signUpController.registrationVO.phoneNumber}" autocomplete="off"/> 
-                                <p:watermark for="signup_phone" value="Phone"/>
+                                <p:watermark for="signup_phone" value="Phone Ej: +56 9 81393253"/>
                                 <span class="fa fa-phone signup-form-icon"></span>
-                                <h:message for="signup_phone" errorClass="text-danger"/>
+
+                                <p:message for="signup_phone" />
                             </div>
+
+
 
                             <div class="form-group w-icon">
                                 <h:inputText id="signup_username" required="true" requiredMessage="Nombre de usuario is required"
@@ -115,7 +118,7 @@
                                 <p:watermark for="signup_username" value="Nombre de usuario"/>
 
                                 <span class="fa fa-user signup-form-icon"></span>
-                                <h:message for="signup_username" errorClass="text-danger"/>
+                                <p:message for="signup_username"/>
                             </div>
 
                             <div class="form-group w-icon">
@@ -125,7 +128,7 @@
                                             goodLabel="Buena" strongLabel="Fuerte" />  
                                 <p:watermark for="signup_password" value="Contraseña"/>
                                 <span class="fa fa-lock signup-form-icon"></span>
-                                <h:message for="signup_password" errorClass="text-danger"/>
+                                <p:message for="signup_password"/>
                             </div>
 
                             <div class="form-group w-icon">
@@ -137,7 +140,7 @@
                                             goodLabel="Buena" strongLabel="Fuerte"/>  
                                 <p:watermark for="signup_password2" value="Confirma tu contraseña"/>
                                 <span class="fa fa-lock signup-form-icon"></span>
-                                <h:message for="signup_password2" errorClass="text-danger"/>
+                                <p:message for="signup_password2"/>
                             </div>
 
                             <div class="form-group w-icon">
@@ -150,17 +153,21 @@
 
 
                                 </h:inputText>
-                                <p:watermark for="companyName" value="Empresa u organización"/>
+                                <p:watermark for="companyName" value="Nombre Empresa Ej: my-company"/>
 
                                 <span class="fa fa-building signup-form-icon"></span>
-                                <h:message for="companyName" errorClass="text-danger"/>
+                                <p:message for="companyName"/>
                             </div>
+
+
+
 
                             <div class="form-group">
                                 <label class="control-label" for="areas">En qué áreas deseas usar godesk?</label>
 
                                 <h:selectManyListbox id="areas" label="Selecciona al menos una..."  
-                                                     value="#{signUpController.registrationVO.defaultAreas}"  styleClass="form-control input-sm select2Multiple"
+                                                     value="#{signUpController.registrationVO.defaultAreas}"  
+                                                     styleClass="form-control input-sm select2Multiple"
                                                      required="true" requiredMessage="Favor indiquenos al menos un Área en la cual desea usar godesk dentro de su empresa."
                                                      >
                                     <f:selectItem itemLabel="Administración" itemValue="Administración" />
@@ -169,6 +176,8 @@
                                     <f:selectItem itemLabel="Servicio al cliente" itemValue="Servicio al cliente" />
                                     <f:selectItem itemLabel="Soporte técnico" itemValue="Soporte técnico" />
                                 </h:selectManyListbox>
+                                
+                                <p:message for="areas"/>
 
                                 <p class="help-block">No te preocupes puedes cambiar y agregar mas áreas una vez dentro del sistema.</p>
 
@@ -184,8 +193,15 @@
                             </div>
 
 
+                            <div class="form-group no-padding">
 
-                            
+                                <label for="Captcha">Eres Spam o un bot?</label>
+                                <p:captcha id="Captcha" label="Captcha" language="es" 
+                                           required="true" requiredMessage="Introduzca el texto que se visualiza en la imagen." />  
+                                <p:message for="Captcha" />
+
+                            </div>
+
 
                             <div class="form-group" style="margin-top: 20px;margin-bottom: 20px;">
                                 <label class="checkbox-inline">
@@ -193,12 +209,12 @@
                                                              value="#{signUpController.agreedToTermsConditions}"/>
                                     <span class="lbl">I agree with the <a href="#" target="_blank">Terms and Conditions</a></span>
                                 </label>
-                                <h:message for="confirm_id" errorClass="text-danger"/>
+                                <p:message for="confirm_id"/>
                             </div>
 
                             <div class="form-actions">
                                 <p:commandButton id="submit" action="#{signUpController.signup()}" 
-                                                 styleClass="signup-btn bg-primary" update="@form @(:not(#recaptcha))"
+                                                 styleClass="signup-btn bg-primary" update="@this @(.ui-message)"
                                                  onclick="jQuery(this).addClass('ui-state-disabled')"
                                                  value="COMENZAR" />
 

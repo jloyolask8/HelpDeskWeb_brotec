@@ -25,5 +25,15 @@ Any customization to the template goes here.
     font-weight: bold !important;
 }
 
+.notaactualizado
+{
+    font-weight: bold !important;
+    background-color: #FFFFAA ! important;
+    background: #FFFFAA ! important;
+}
+.actualizado
+{
+    font-weight: bold !important;
+}
 
 

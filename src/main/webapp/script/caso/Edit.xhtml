@@ -130,6 +130,7 @@
                                                                      value="#{casoController.selected.idArea}" >
                                                         <f:selectItem itemLabel="" itemValue=""/>
                                                         <f:selectItems value="#{applicationBean.areasAvailableList}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
+                                                        <p:ajax update="idGrupoCaso"  listener="#{casoController.handleProductChange}" />
                                                     </h:selectOneMenu>
                                                 </div>
                                             </div><!-- col-sm-6 -->
@@ -219,7 +220,7 @@
                                                        styleClass="btn btn-primary"
                                                        onclick="jQuery(this).addClass('ui-state-disabled');
                                                                jQuery(this).children().addClass('fa fa-refresh fa-spin')"
-                                                       ajax="true" update="@this @(.panel) @(.ui-panel) @(form)" action="#{casoController.update}" >
+                                                       ajax="true" update="@this @(.panel) @(.ui-panel) @(form)" actionListener="#{casoController.update}" >
                                             <i class=""></i> Guardar
                                         </p:commandLink>
                                     </div>
@@ -317,7 +318,7 @@
                                                                           styleClass="text-semibold"
                                                                           title="#{fileitem.nombreArchivo} (#{fileitem.fileSizeHuman})"/> 
 
-                                                            <h:outputText value="#{fileitem.fileSizeHuman}  " style="color: #7A7A7A" styleClass="pull-right"/>
+                                                            <h:outputText value="#{casoController.prettyDate(fileitem.fechaCreacion)} " style="color: #7A7A7A" styleClass="pull-right"/>
                                                         </div>
                                                         <div class="row">
                                                             <p:commandLink styleClass="col-xs-1" ajax="false">
@@ -934,7 +935,7 @@
                                 <h:message for="owner1" errorClass="text-danger" infoClass="text-info"/>
 
 
-                                
+
 
                                 <p:autoComplete id="emailCl" value="#{casoController.emailClienteSeleccionadoTransfer}" 
                                                 completeMethod="#{emailClienteController.completeEmailCliente}"  

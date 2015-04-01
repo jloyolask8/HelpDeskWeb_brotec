@@ -88,6 +88,7 @@ import javax.faces.convert.FacesConverter;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
+import javax.print.attribute.standard.Severity;
 import javax.servlet.http.HttpServletRequest;
 import jxl.Workbook;
 import jxl.format.UnderlineStyle;
@@ -2124,6 +2125,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             filtroEmailCliente.setIdCampo("emailCliente");
             filtroEmailCliente.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
             filtroEmailCliente.setValor(userSessionBean.getEmailCliente().getEmailCliente());
+            filtroEmailCliente.setValorLabel(userSessionBean.getEmailCliente().getEmailCliente());
             filtroEmailCliente.setIdVista(vista1);
 
             vista1.getFiltrosVistaList().add(filtroEmailCliente);
@@ -2133,6 +2135,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             filtroEstado.setIdCampo(Caso_.ESTADO_FIELD_NAME);
             filtroEstado.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
             filtroEstado.setValor(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
+            filtroEstado.setValorLabel(EnumEstadoCaso.ABIERTO.getEstado().getNombre());
             filtroEstado.setIdVista(vista1);
 
             vista1.getFiltrosVistaList().add(filtroEstado);
@@ -2145,6 +2148,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             filtroOwner.setIdCampo("owner");
             filtroOwner.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
             filtroOwner.setValor(AbstractJPAController.PLACE_HOLDER_CURRENT_USER);
+            filtroOwner.setValorLabel(JPAFilterHelper.PLACE_HOLDER_CURRENT_USER_LABEL);
             filtroOwner.setIdVista(vista1);
             vista1.getFiltrosVistaList().add(filtroOwner);
 
@@ -2153,6 +2157,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             filtroEstado.setIdCampo("idEstado");
             filtroEstado.setIdComparador(EnumTipoComparacion.EQ.getTipoComparacion());
             filtroEstado.setValor(EnumEstadoCaso.ABIERTO.getEstado().getIdEstado());
+            filtroEstado.setValorLabel(EnumEstadoCaso.ABIERTO.getEstado().getNombre());
             filtroEstado.setIdVista(vista1);
             vista1.getFiltrosVistaList().add(filtroEstado);
         }
@@ -3851,19 +3856,21 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         return null;
     }
 
-    public String update() {
+    public void update() {
         try {
 
             if (validateEdit()) {
-                return null;
+                return;
             }
 
             update(current);
-            return getEditPage();
+            addInfoMessage(resourceBundle.getString("CasoUpdated"));
+//            return getEditPage();
+//            return null;
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).log(Level.SEVERE, resourceBundle.getString("PersistenceErrorOccured"), e);
             JsfUtil.addErrorMessage(e, e.getMessage());
-            return null;
+//            return null;
         }
 
     }
@@ -3875,6 +3882,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
     public void update(Caso casoToUpdate) throws IllegalOrphanException, NonexistentEntityException, RollbackFailureException, Exception {
 
         boolean cambiaArea = false;
+        boolean cambiaSLa = false;
 
         //Recintos brotec-icafal specifics
         if (casoToUpdate.getIdRecinto() != null && null == getJpaControllerThatListenRules().find(Recinto.class, casoToUpdate.getIdRecinto())) {
@@ -3894,7 +3902,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                     if (casoToUpdate.getNextResponseDue().after(Calendar.getInstance().getTime())) {
                         casoToUpdate.setEstadoAlerta(EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta());
                         //re-schedule alert
-                        HelpDeskScheluder.scheduleAlertaPorVencer(getCurrentTenantId(), casoToUpdate.getIdCaso(), ManagerCasos.calculaCuandoPasaAPorVencer(casoToUpdate));
+                        cambiaSLa = true;
                     }
                 } else if (auditLog.getCampo().equalsIgnoreCase(Caso_.AREA_FIELD_NAME)) {
                     cambiaArea = true;
@@ -3902,25 +3910,32 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             }
         }
 
+//        if (cambiaArea) {
+//            getJpaController().mergeCasoWithoutNotify(casoToUpdate, lista);
+//            getJpaController().notifyCasoEventListeners(casoToUpdate, true, lista);
+//        } else {
+        getJpaControllerThatListenRules().mergeCaso(casoToUpdate, lista);
+//        }
+
+        if (cambiaSLa) {
+            HelpDeskScheluder.scheduleAlertaPorVencer(getCurrentTenantId(), casoToUpdate.getIdCaso(), ManagerCasos.calculaCuandoPasaAPorVencer(casoToUpdate));
+        }
+        
         if (cambiaArea) {
-            getJpaControllerThatListenRules().mergeCasoWithoutNotify(casoToUpdate, lista);
-            getJpaControllerThatListenRules().notifyCasoEventListeners(casoToUpdate, true, lista);
-        } else {
-            getJpaControllerThatListenRules().mergeCaso(casoToUpdate, lista);
+            showMessageInDialog(FacesMessage.SEVERITY_WARN, "Atención",
+                    "Ud. ha Asignado el caso a un Area distinta a la cúal estaba asignado el caso. "
+                            + "Asegurese de cambiar tambien al Agente asignado de ser necesario.");
         }
 
-        JsfUtil.addSuccessMessage(resourceBundle.getString("CasoUpdated"));
-
     }
 
-    public String updateDescripcion() {
-        String salida = update();
-//        if (salida != null) {
-//            ManagerCasos.createLogReg("Descripcion", "Descripcion actualizada", "");
-//        }
-        return salida;
-    }
-
+//    public String updateDescripcion() {
+//        String salida = update();
+////        if (salida != null) {
+////            ManagerCasos.createLogReg("Descripcion", "Descripcion actualizada", "");
+////        }
+//        return salida;
+//    }
     public String destroy() {
         if (current == null) {
             return null;

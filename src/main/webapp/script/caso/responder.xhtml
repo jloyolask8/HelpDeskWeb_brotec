@@ -173,6 +173,7 @@
 
                                 <f:selectItems value="#{casoController.itemsSubEstadoCasoAvailableSelectOneCasoAbierto}" var="subEstad" itemDescription="#{subEstad.description}"/>
                             </h:selectOneMenu>
+                            <h:message for="idSubEstado" errorClass="text-danger"/>
                             <h:outputText styleClass="label" 
                                           style="background: \##{casoController.selected.idSubEstado.backgroundColor}; color: \##{casoController.selected.idSubEstado.fontColor};" value="#{casoController.selected.idSubEstado.nombre}"
                                           rendered="#{casoController.selected.closed}"/>
@@ -189,6 +190,7 @@
                                          required="true" requiredMessage="Favor ingrese un valor para el sla.">
                                 <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
                             </h:inputText>
+                            <h:message for="nextResponseDue" errorClass="text-danger"/>
 
 
                             <script type="text/javascript">

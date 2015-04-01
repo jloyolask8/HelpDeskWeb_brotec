@@ -31,8 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 @SessionScoped
 public class EmbeddedFromNewTicketController extends CustomerCasoController {
 
-    //customer
-    private int stepNewCasoIndex;
+    
     private boolean embeddedFlag = false;
     private boolean showAttachmentsFlag = false;
 
@@ -179,19 +178,7 @@ public class EmbeddedFromNewTicketController extends CustomerCasoController {
         return null;
     }
 
-    /**
-     * @return the stepNewCasoIndex
-     */
-    public int getStepNewCasoIndex() {
-        return stepNewCasoIndex;
-    }
-
-    /**
-     * @param stepNewCasoIndex the stepNewCasoIndex to set
-     */
-    public void setStepNewCasoIndex(int stepNewCasoIndex) {
-        this.stepNewCasoIndex = stepNewCasoIndex;
-    }
+    
 
     /**
      * @return the showAttachmentsFlag

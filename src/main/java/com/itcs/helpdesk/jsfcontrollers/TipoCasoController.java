@@ -2,15 +2,20 @@ package com.itcs.helpdesk.jsfcontrollers;
 
 import com.itcs.helpdesk.jsfcontrollers.util.JsfUtil;
 import com.itcs.helpdesk.persistence.entities.Caso;
+import com.itcs.helpdesk.persistence.entities.EstadoCaso;
+import com.itcs.helpdesk.persistence.entities.SubEstadoCaso;
 import com.itcs.helpdesk.persistence.entities.TipoCaso;
+import com.itcs.helpdesk.persistence.entityenums.EnumEstadoCaso;
 import com.itcs.helpdesk.persistence.jpa.EasyCriteriaQuery;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.model.ListDataModel;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.model.SelectableDataModel;
 
 @ManagedBean(name = "tipoCasoController")
@@ -26,6 +31,7 @@ public class TipoCasoController extends AbstractManagedBean<TipoCaso> implements
         super(TipoCaso.class);
     }
 
+    @Override
     public String prepareList() {
         recreateModel();
         return "/script/tipoCaso/List";
@@ -37,6 +43,7 @@ public class TipoCasoController extends AbstractManagedBean<TipoCaso> implements
         return "/script/tipoCaso/View";
     }
 
+    @Override
     public String prepareEdit(TipoCaso item) {
         current = item;
         return "/script/tipoCaso/Edit";
@@ -44,12 +51,50 @@ public class TipoCasoController extends AbstractManagedBean<TipoCaso> implements
 
     public String prepareCreate() {
         current = new TipoCaso();
+        
+        SubEstadoCaso initialSe = new SubEstadoCaso(current, "", "Nuevo", EnumEstadoCaso.ABIERTO.getEstado(), 
+                "", true, "ffffff", "00aeed", true);
+        
+        SubEstadoCaso initialSe2 = new SubEstadoCaso(current, "", "Solucionado", EnumEstadoCaso.CERRADO.getEstado(), 
+                "", true, "ffffff", "563d7c", false);
+                        
+        final LinkedList<SubEstadoCaso> linkedList = new LinkedList<>();
+        linkedList.add(initialSe);
+        linkedList.add(initialSe2);
+                
+        current.setSubEstadoCasoList(linkedList);
         selectedItemIndex = -1;
         return "/script/tipoCaso/Create";
+    }
+    
+    public void addNewSubEstadoAbierto(){
+        addNewSubEstado(EnumEstadoCaso.ABIERTO.getEstado());
+    }
+    
+    public void addNewSubEstadoCerrado(){
+        addNewSubEstado(EnumEstadoCaso.CERRADO.getEstado());
+    }
+    
+    
+    private void addNewSubEstado(EstadoCaso e){
+        if(current.getSubEstadoCasoList() == null){
+            current.setSubEstadoCasoList(new LinkedList<SubEstadoCaso>());
+        }
+        
+        SubEstadoCaso se = new SubEstadoCaso(current, "", "Sub Estado " + (current.getSubEstadoCasoList().size()+1) , e, 
+                "", true, "ffffff", "00aeed", false);
+        
+        current.getSubEstadoCasoList().add(se);
     }
 
     public String create() {
         try {
+            current.setIdTipoCaso(current.getNombre().trim().toLowerCase().replace(" ", "_"));
+            checkValidateSubEstados();
+            if(!isOnlyOneSubEstadoFirst()){
+                addErrorMessage("Solo un sub-estado puede ser el inicial.");
+                return null;
+            }
             getJpaController().persist(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("TipoCasoCreated"));
             return prepareList();
@@ -57,6 +102,28 @@ public class TipoCasoController extends AbstractManagedBean<TipoCaso> implements
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
             return null;
         }
+    }
+
+    private void checkValidateSubEstados() {
+        if(current.getSubEstadoCasoList() != null){
+            for (SubEstadoCaso subEstadoCaso : current.getSubEstadoCasoList()) {
+                if(StringUtils.isEmpty(subEstadoCaso.getIdSubEstado())){
+                    subEstadoCaso.setIdSubEstado(current.getIdTipoCaso() + "_" + subEstadoCaso.getNombre().trim().toLowerCase().replace(" ", "_"));
+                }
+            }
+        }
+    }
+    
+    private boolean isOnlyOneSubEstadoFirst() {
+        int count = 0;
+        if(current.getSubEstadoCasoList() != null){
+            for (SubEstadoCaso subEstadoCaso : current.getSubEstadoCasoList()) {
+                if(subEstadoCaso.isFirst()){
+                    count++;
+                }
+            }
+        }
+        return (count == 1);
     }
 
     public String prepareEdit() {
@@ -67,6 +134,12 @@ public class TipoCasoController extends AbstractManagedBean<TipoCaso> implements
 
     public String update() {
         try {
+            
+            checkValidateSubEstados();
+            if(!isOnlyOneSubEstadoFirst()){
+                addErrorMessage("Solo un sub-estado puede ser el inicial.");
+                return null;
+            }
             getJpaController().merge(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("TipoCasoUpdated"));
             return "/script/tipoCaso/List";
@@ -108,7 +181,7 @@ public class TipoCasoController extends AbstractManagedBean<TipoCaso> implements
     }
 
     public Long countCasosByTipo(TipoCaso tipo) {
-        EasyCriteriaQuery<Caso> c = new EasyCriteriaQuery<Caso>(getJpaController(), Caso.class);
+        EasyCriteriaQuery<Caso> c = new EasyCriteriaQuery<>(getJpaController(), Caso.class);
         c.addEqualPredicate("tipoCaso", tipo);
         return c.count();
     }

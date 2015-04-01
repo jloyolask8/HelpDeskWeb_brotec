@@ -117,7 +117,8 @@ public class AuditLogController extends AbstractManagedBean<AuditLog> implements
         return vista1;
     }
 
-    public List<AuditLog> getActivityLogs(String idUsuario) {
+    //Ugly patch for concurrent access from two parts in the page =(
+    public synchronized List<AuditLog> getActivityLogs(String idUsuario) {
         if (idUsuario == null) {
             return null;
         }

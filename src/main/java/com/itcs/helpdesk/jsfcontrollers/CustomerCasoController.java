@@ -16,7 +16,6 @@ import com.itcs.helpdesk.util.ManagerCasos;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 import org.apache.commons.lang3.StringUtils;
 
@@ -28,13 +27,13 @@ import org.apache.commons.lang3.StringUtils;
 @SessionScoped
 public class CustomerCasoController extends CasoController {
 
-//    //customer
-//    private int stepNewCasoIndex;
+    //customer
+    private int stepNewCasoIndex;
 //    private boolean embeddedFlag = false;
 //    private boolean showAttachmentsFlag = false;
 
-    @ManagedProperty(value = "#{param.tenant}")
-    private String tenantId;
+//    @ManagedProperty(value = "#{param.tenant}")
+//    private String tenantId;
 
     @Override
     protected String getListPage() {
@@ -137,6 +136,20 @@ public class CustomerCasoController extends CasoController {
         }
         return "/customer/newSR";
     }
+    
+    /**
+     * @return the stepNewCasoIndex
+     */
+    public int getStepNewCasoIndex() {
+        return stepNewCasoIndex;
+    }
+
+    /**
+     * @param stepNewCasoIndex the stepNewCasoIndex to set
+     */
+    public void setStepNewCasoIndex(int stepNewCasoIndex) {
+        this.stepNewCasoIndex = stepNewCasoIndex;
+    }
 
 //    public String createCasoCustomerStep() {
 //
@@ -226,17 +239,5 @@ public class CustomerCasoController extends CasoController {
 //        return null;
 //    }
 
-    /**
-     * @return the tenantId
-     */
-    public String getTenantId() {
-        return tenantId;
-    }
-
-    /**
-     * @param tenantId the tenantId to set
-     */
-    public void setTenantId(String tenantId) {
-        this.tenantId = tenantId;
-    }
+    
 }

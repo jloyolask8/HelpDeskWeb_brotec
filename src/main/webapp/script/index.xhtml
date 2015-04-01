@@ -85,7 +85,7 @@
                     <p:poll id="polling" widgetVar="poll" interval="150" listener="#{casoController.refresh}" update=":formTabla :buttonsForm :vistasList" />
 
 
-                   
+
                     <h:panelGroup rendered="#{casoController.items.rowCount le 0}">
                         <div class="alert alert-page alert-warning">
                             <button type="button" class="close" data-dismiss="alert">ok</button>
@@ -112,15 +112,22 @@
 
                             <p:column selectionMode="multiple" />
 
-                            <p:column headerText="" exportable="false">
-                                <h:commandLink id="prio" disabled="#{not item.open}">
-                                    <p:graphicImage library="images" name="#{item.esPrioritario ? 'star-enabled.png':'star-disabled.png'}" title="Prioritario"/>
-                                    <p:ajax id="aj2" listener="#{casoController.changePriority(item, item.esPrioritario)}" update="prio :main-navbar-form"/>
-                                </h:commandLink>
+                            <p:column headerText="#" sortBy="#{item.idCaso}">
+                                \##{item.idCaso}
                             </p:column>
 
                             <p:column headerText="Vía">
                                 <i title="Creado vía #{item.idCanal.nombre}" class="#{(item.idCanal.idTipoCanal.idTipo eq 'EMAIL') ? 'fa fa-envelope-o fa-lg':((item.idCanal.idTipoCanal.idTipo eq 'CHAT') ? 'fa fa-comments fa-lg':((item.idCanal.idTipoCanal.idTipo eq 'MANUAL') ? 'fa fa-pencil-square-o fa-lg':((item.idCanal.idTipoCanal.idTipo eq 'FORMULARIO') ? 'fa fa-list-alt fa-lg':'')))}"></i>
+                            </p:column>
+                            
+                             <p:column sortBy="#{item.tipoCaso.nombre}" headerText="Tipo">
+                               #{item.tipoCaso.nombre}
+                            </p:column>
+                            
+                              <p:column sortBy="#{item.idSubEstado.nombre}" headerText="Estado">
+                                 <span class="label ticket-label" style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};">
+                                            #{item.idSubEstado.nombre}
+                                        </span>
                             </p:column>
 
                             <p:column sortBy="#{item.clientName}" headerText="Solicitante">
@@ -129,20 +136,25 @@
                                     ajax="false" value="#{item.clientName}" title="#{item.emailCliente.emailCliente}"
                                     immediate="true"/>
                             </p:column>
+                            
+                          
 
                             <p:column sortBy="#{item.tema}" headerText="Asunto">
                                 <h:panelGroup layout="block">
+                                     <h:commandLink id="prio" disabled="#{not item.open}">
+                                    <p:graphicImage library="images" name="#{item.esPrioritario ? 'star-enabled.png':'star-disabled.png'}" title="Prioritario"/>
+                                    <p:ajax id="aj2" listener="#{casoController.changePriority(item, item.esPrioritario)}" update="prio :main-navbar-form"/>
+                                </h:commandLink>
+                                    
                                     <p:commandLink id="temalink" action="#{casoController.prepareEdit()}" 
                                                    ajax="false" style="color: #000" immediate="true">
-                                        <span class="label ticket-label" style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};">
-                                            #{item.idSubEstado.nombre}
-                                        </span>
-                                        #{item.tipoCaso.nombre} \##{item.idCaso} #{item.tema} (#{item.notaList.size()})
+                                       
+                                        #{item.tema} (#{item.notaList.size()})
                                     </p:commandLink>
                                     <h:panelGroup rendered="#{item.hasScheduledEvents}">
                                         <i class="fa fa-calendar"></i>
                                     </h:panelGroup>
-                                    <h:panelGroup rendered="#{item.hasAttachments}">
+                                    <h:panelGroup rendered="#{not empty item.attachmentList}">
                                         <i class="fa fa-paperclip"></i>    
                                     </h:panelGroup>
                                 </h:panelGroup>
@@ -197,44 +209,58 @@
                     </h:panelGroup>
 
 
-                    <h:panelGroup id="ID_TABLA_X" 
+                    <h:panelGroup id="ID_TABLA_X" layout="block"
                                   rendered="#{casoController.mobileClient and casoController.items.rowCount gt 0}"
-                                  styleClass="list-group">
+                                  styleClass="panel widget-support-tickets">
+                        
+                        <div class="panel-body tab-content-padding">
+                             <div class="panel-padding no-padding-vr">
 
-                        <ui:repeat value="#{casoController.items}" var="item">
+                            <ui:repeat value="#{casoController.items}" var="item">
 
-                            <div class="ticket">							
-                                <span class="label ticket-label" style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};">
-                                    #{item.idSubEstado.nombre}
-                                </span>
-                                <p:commandLink id="temalink" action="#{casoController.prepareEdit()}" 
-                                               ajax="false" style="color: #000" immediate="true" styleClass="ticket-title">
-                                    #{item.tema}<span>#{item.tipoCaso.nombre} [\##{item.idCaso}]</span>
-                                </p:commandLink>
-
-                                <span class="ticket-info">
-                                    <h:commandLink id="prio">
-                                        <p:ajax id="aj2" listener="#{casoController.changePriority(item, item.esPrioritario)}" update="@parent"/>
-                                    </h:commandLink>
-
-                                    Creado por <a href="#" title="">#{item.emailCliente.nombreOEmailCliente}</a> &nbsp;
-
-                                    <h:outputText value="#{casoController.prettyDate(item.fechaCreacion)}" style="color: #000" title="#{casoController.formatDate(item.fechaCreacion)}"/>
-                                    <h:panelGroup rendered="#{item.estadoAlerta eq EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta() and item.isOpen()}" >
-                                        <i class="profile-list-icon fa fa-fw fa-clock-o" style="color: #4BB14B" title="#{casoController.formatDate(item.nextResponseDue)} - Vence #{casoController.prettyDate(item.nextResponseDue)}"></i>
+                                <div class="ticket">							
+                                    <span class="label ticket-label" style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};">
+                                        #{item.idSubEstado.nombre}
+                                    </span>
+                                    <p:commandLink id="temalink" action="#{casoController.prepareEdit()}" 
+                                                   ajax="false"  immediate="true" styleClass="ticket-title">
+                                        #{item.tema} (#{item.notaList.size()}) 
+                                        <h:panelGroup rendered="#{item.hasScheduledEvents}">
+                                        <i class="fa fa-calendar"></i>
                                     </h:panelGroup>
-                                    <h:panelGroup rendered="#{item.estadoAlerta eq EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta() and item.isOpen()}" >
-                                        <i class="profile-list-icon fa fa-fw fa-clock-o" style="color: #f4b04f" title="#{casoController.formatDate(item.nextResponseDue)} - Vence #{casoController.prettyDate(item.nextResponseDue)}"></i>
+                                    <h:panelGroup rendered="#{item.hasAttachments}">
+                                        <i class="fa fa-paperclip"></i>    
                                     </h:panelGroup>
-                                    <h:panelGroup rendered="#{item.estadoAlerta eq EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta() and item.isOpen()}" >
-                                        <i class="profile-list-icon fa fa-fw fa-clock-o" style="color: #d54848" title="#{casoController.formatDate(item.nextResponseDue)} - Venció #{casoController.prettyDate(item.nextResponseDue)}"></i>
-                                    </h:panelGroup>
+                                        <span>#{item.tipoCaso.nombre} [\##{item.idCaso}]</span>
+                                    </p:commandLink>
 
-                                </span>
-                            </div> <!-- / .ticket -->
+                                    <span class="ticket-info">
+                                        <h:commandLink id="prio">
+                                            <p:ajax id="aj2" listener="#{casoController.changePriority(item, item.esPrioritario)}" update="@parent"/>
+                                        </h:commandLink>
+
+                                        Creado por <a href="#" title="">#{item.emailCliente.nombreOEmailCliente}</a> &nbsp;
+
+                                        <h:outputText value="#{casoController.prettyDate(item.fechaCreacion)}" style="color: #000" title="#{casoController.formatDate(item.fechaCreacion)}"/>
+                                        <h:panelGroup rendered="#{item.estadoAlerta eq EnumTipoAlerta.TIPO_ALERTA_PENDIENTE.getTipoAlerta() and item.isOpen()}" >
+                                            <i class="profile-list-icon fa fa-fw fa-clock-o" style="color: #4BB14B" title="#{casoController.formatDate(item.nextResponseDue)} - Vence #{casoController.prettyDate(item.nextResponseDue)}"></i>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{item.estadoAlerta eq EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta() and item.isOpen()}" >
+                                            <i class="profile-list-icon fa fa-fw fa-clock-o" style="color: #f4b04f" title="#{casoController.formatDate(item.nextResponseDue)} - Vence #{casoController.prettyDate(item.nextResponseDue)}"></i>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{item.estadoAlerta eq EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta() and item.isOpen()}" >
+                                            <i class="profile-list-icon fa fa-fw fa-clock-o" style="color: #d54848" title="#{casoController.formatDate(item.nextResponseDue)} - Venció #{casoController.prettyDate(item.nextResponseDue)}"></i>
+                                        </h:panelGroup>
+
+                                    </span>
+                                </div> <!-- / .ticket -->
 
 
-                        </ui:repeat>
+                            </ui:repeat>
+                        </div>
+                        </div>
+
+                       
                     </h:panelGroup>
 
                     <h:panelGroup layout="block" styleClass="text-center">

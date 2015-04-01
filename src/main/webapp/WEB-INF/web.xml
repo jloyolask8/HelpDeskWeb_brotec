@@ -15,11 +15,11 @@
     </context-param>
     <filter>
         <filter-name>LoginFilter</filter-name>
-        <filter-class>com.itcs.helpdesk.jsfcontrollers.util.LoginFilter</filter-class>
+        <filter-class>com.itcs.helpdesk.webapputils.filters.LoginFilter</filter-class>
     </filter>
     <filter>
         <filter-name>LoginCustomerFilter</filter-name>
-        <filter-class>com.itcs.helpdesk.jsfcontrollers.util.LoginCustomerFilter</filter-class>
+        <filter-class>com.itcs.helpdesk.webapputils.filters.LoginCustomerFilter</filter-class>
         <async-supported>true</async-supported>
     </filter>
     <filter>
@@ -30,11 +30,11 @@
     </filter>
     <filter>
         <filter-name>Character Encoding Filter</filter-name>
-        <filter-class>com.itcs.helpdesk.util.CharacterEncodingFilter</filter-class>
+        <filter-class>com.itcs.helpdesk.webapputils.filters.CharacterEncodingFilter</filter-class>
     </filter>
     <filter>
         <filter-name>ClientAgentDetectorFilter</filter-name>
-        <filter-class>com.itcs.helpdesk.util.ClientAgentDetectorFilter</filter-class>
+        <filter-class>com.itcs.helpdesk.webapputils.filters.ClientAgentDetectorFilter</filter-class>
         <init-param>
             <param-name>loginPage</param-name>
             <param-value>/faces/public/login.xhtml</param-value>
