@@ -126,13 +126,13 @@ public class MailNotifier {
     public static void notifyOwnerCasoUpdated(String tenant, Caso caso, String comments, String sentBy, Date fecha) throws MailNotConfiguredException, EmailException, NoOutChannelException, NoInstanceConfigurationException {
         if (caso != null) {
             String asunto = ApplicationConfigs.getInstance(tenant).getNotificationTicketUpdatedSubjectText(); //may contain place holders
-            String subject_ = ClippingsPlaceHolders.buildFinalText(asunto, caso,tenant);
+            String subject_ = ClippingsPlaceHolders.buildFinalText(asunto, caso, tenant);
 
             String texto = ApplicationConfigs.getInstance(tenant).getNotificationTicketUpdatedBodyText();//may contain place holders 
             texto = texto + "<hr/><b>Comentario:<b/><br/> " + (comments != null ? comments : "no comments");
             texto = texto + "<br/><b>Enviado el:<b/><br/> " + (fecha != null ? fecha.toString() : "unknown");
             texto = texto + "<br/><b>Enviado por:<b/> " + (sentBy != null ? sentBy : "unknown") + "<hr/>";
-            String mensaje_ = ClippingsPlaceHolders.buildFinalText(texto, caso,tenant);
+            String mensaje_ = ClippingsPlaceHolders.buildFinalText(texto, caso, tenant);
 
             final String subject = ManagerCasos.formatIdCaso(caso.getIdCaso()) + " " + subject_;
             final String mensaje = mensaje_;
@@ -221,35 +221,104 @@ public class MailNotifier {
             Logger.getLogger(MailNotifier.class.getName()).log(Level.SEVERE, "sendEmailRecoverPassword", ex);
         }
     }
-    
-    public static void sendEmailVerifyNewAccount(String tenant, String email, String userName, String code) {
+
+    public static void sendEmailVerifyNewAccount(String tenantCompanyName, String email, String userName, String token) {
         if (StringUtils.isEmpty(email) || StringUtils.isEmpty(userName)) {
             throw new IllegalStateException("email/userName no puede ser null");
         }
         try {
 //            String passMD5 = UtilSecurity.getMD5(usuario.getPass());//TODO fix, unencrypt the pass.
-            String subject_ = "Godesk Account Verification";
+            String subject_ = "Please verify this email address";
             StringBuilder sb = new StringBuilder();
-            String mensaje_ = sb.append("Estimad@ ").append(userName).append(",").append("<br/><br/>")
-                    .append("<a href=\"http://www.godesk.cl/go/public/verifyAccount.xhtml?email=").append(email)
-                    .append("&code=").append(code).append("&tenant=").append(tenant).append(">Click here</a>")
-                    .append("<br/>")
-                    .append("<br/><br/>")
-                    .append("Equipo Godesk<br/>www.godesk.cl").toString();
+            
+            String mensaje_ = sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n"
+                    + "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n"
+                    + "    <head>\n"
+                    + "        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n"
+                    + "        <title>Please verify this email address</title>\n"
+                    + "    </head>\n"
+                    + "    <body>\n"
+                    + "        <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#f5f5f5\">\n"
+                    + "            <tr>\n"
+                    + "                <td><table width=\"500\" border=\"0\" align=\"center\" cellpadding=\"0\" cellspacing=\"0\">\n"
+                    + "                        <tr>\n"
+                    + "                            <td>\n"
+                    + "                                <p align=\"center\" style=\"font:9px Helvetica Neue, Helvetica, Arial, sans-serif;margin:0;padding:0;color:#777777;display:none !important\">Activate your account</p>\n"
+                    + "                            </td>\n"
+                    + "                        </tr>\n"
+                    + "                        <tr>\n"
+                    + "                            <td>\n"
+                    + "                                <table width=\"500\" height=\"122\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n"
+                    + "                                    <tr>\n"
+                    + "                                        <td width=\"161\"><a href=\"http://www.godesk.cl\"><img src=\"http://www.godesk.cl/images/LogGoDesk2.png\" alt=\"Godesk\"  border=\"0\" /></a></td>\n"
+                    + "                                        <td width=\"338\" align=\"right\"><p style=\"font:9px Helvetica Neue, Helvetica, Arial, sans-serif;letter-spacing:3px;margin:0;padding:0;\"><span style=\"color:#1a1a1a;\">EMAIL VERIFICATION</span></p></td>\n"
+                    + "                                        <td width=\"1\"><img src=\"http://www.squarespace.com/storage/newsletter/images/dot.gif\" alt=\"\" width=\"1\" height=\"122\" /></td>\n"
+                    + "                                    </tr>\n"
+                    + "                                </table></td>\n"
+                    + "                        </tr>\n"
+                    + "                        <tr>\n"
+                    + "                            <td height=\"50\"><table width=\"500\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#ffffff\" style=\"border:1px solid #e3e3e3;padding:0;margin:0;\">\n"
+                    + "                                    <tr>\n"
+                    + "                                        <td width=\"60\" height=\"50\"><img src=\"http://www.squarespace.com/storage/newsletter/images/dot.gif\" alt=\"\" width=\"60\" height=\"50\" border=\"0\" /></td>\n"
+                    + "                                        <td width=\"380\"><img src=\"http://www.squarespace.com/storage/newsletter/images/dot.gif\" alt=\"\" width=\"380\" height=\"1\" align=\"top\" border=\"0\" /></td>\n"
+                    + "                                        <td width=\"60\"><img src=\"http://www.squarespace.com/storage/newsletter/images/dot.gif\" alt=\"\" width=\"60\" height=\"1\" border=\"0\" /></td>\n"
+                    + "                                    </tr>\n"
+                    + "                                    <tr>\n"
+                    + "                                        <td>&nbsp;</td>\n"
+                    + "                                        <td>\n"
+                    + "                                            <p style=\"font:22px Helvetica Neue, Helvetica, Arial, sans-serif;font-weight:bold;margin:0px 0 0 0;padding:0;color:#000;\">Welcome, and thanks for signing up for Godesk!</p>\n"
+                    + "                                            <p style=\"font:14px Helvetica Neue, Helvetica, Arial, sans-serif;color:#777777;line-height:21px;margin:15px 0 0 0;padding:0;\">You are one step away from using godesk, please click on the link below to activate your account.</p><br/>\n"
+                    + "<a style=\"font:14px Helvetica Neue, Helvetica, Arial, sans-serif;\" href=\"{{ACTIVATION_LINK}}\">Activate your account</a>\n"
+                    + "                                        </td>\n"
+                    + "                                        <td>&nbsp;</td>\n"
+                    + "                                    </tr>\n"
+                    + "                                    <tr>\n"
+                    + "                                        <td width=\"60\"><img src=\"http://www.squarespace.com/storage/newsletter/images/dot.gif\" alt=\"\" width=\"60\" height=\"1\" /></td>\n"
+                    + "                                        <td width=\"380\"><img src=\"http://www.squarespace.com/storage/newsletter/images/dot.gif\" alt=\"\" width=\"380\" height=\"1\" /></td>\n"
+                    + "                                        <td width=\"60\"><img src=\"http://www.squarespace.com/storage/newsletter/images/dot.gif\" alt=\"\" width=\"60\" height=\"1\" /></td>\n"
+                    + "                                    </tr>\n"
+                    + "                                    <tr>\n"
+                    + "                                        <td height=\"150\">&nbsp;</td>\n"
+                    + "                                    </tr>\n"
+                    + "                                    <tr>\n"
+                    + "                                        <td height=\"150\">&nbsp;</td>\n"
+                    + "                                        <td><p style=\"font:18px Helvetica Neue, Helvetica, Arial, sans-serif;font-weight:bold;margin:10px 0 10px 0;padding:10px 0 0 0;color:#000000;\">We are here to help.</p><p style=\"font:14px Helvetica Neue, Helvetica, Arial, sans-serif;color:#777777;line-height:21px;margin:0;padding:0;\">Our award-winning Customer Care team is available 24/7 at <a style=\"font:14px Helvetica Neue, Helvetica, Arial, sans-serif; color:#777; text-decoration:underline;\" href=\"http://www.godesk.cl\">www.godesk.cl</a> or contact us at <a href=\"mailto:contacto@godesk.cl\">contacto@godesk.cl</a>.</p></td>\n"
+                    + "                                        <td>&nbsp;</td>\n"
+                    + "                                    </tr>\n"
+                    + "                                </table></td>\n"
+                    + "                        </tr>\n"
+                    + "                        <tr>\n"
+                    + "                            <td height=\"10\" align=\"center\" valign=\"middle\"></td>\n"
+                    + "                        </tr>\n"
+                    + "                        <tr>\n"
+                    + "                            <td height=\"30\" align=\"center\"><p style=\"font:12px Helvetica Neue, Helvetica, Arial, sans-serif;margin:0;padding:0;color:#777777;\">Godesk, Ltda. Sucre 2680, Ñuñoa, Santiago</p></td>\n"
+                    + "                        </tr>\n"
+                    + "                        <tr>\n"
+                    + "                            <td height=\"50\" align=\"center\">&nbsp;</td>\n"
+                    + "                        </tr>\n"
+                    + "                    </table></td>\n"
+                    + "            </tr>\n"
+                    + "        </table>\n"
+                    + "    </body>\n"
+                    + "</html>").toString().replace("{{ACTIVATION_LINK}}", "http://www.godesk.cl/go/faces/public/VerifyAccount.xhtml?token="+token);
+            
+           
             NoReplySystemMailSender.sendHTML(email, subject_, mensaje_, null);
             Logger.getLogger(MailNotifier.class.getName()).log(Level.INFO, "sendEmailVerifyNewAccount succeeded:{0}", email);
         } catch (EmailException ex) {
             Logger.getLogger(MailNotifier.class.getName()).log(Level.SEVERE, "sendEmailVerifyNewAccount", ex);
         }
     }
-    
+
+   
+
     public static void sendGreetingsToNewAccount(String tenant, String email, String userName, String code) {
         if (StringUtils.isEmpty(email) || StringUtils.isEmpty(userName)) {
             throw new IllegalStateException("email/userName no puede ser null");
         }
         try {
 //            String passMD5 = UtilSecurity.getMD5(usuario.getPass());//TODO fix, unencrypt the pass.
-            String subject_ = "Thanks for using GoDesk";
+            String subject_ = "Welcome, and thanks for signing up for Godesk!";
             StringBuilder sb = new StringBuilder();
             String mensaje_ = sb.append("Estimad@ ").append(userName).append(",").append("<br/><br/>")
                     .append("[Thanks email here]")
@@ -257,9 +326,9 @@ public class MailNotifier {
                     .append("<br/><br/>")
                     .append("Equipo Godesk<br/>www.godesk.cl").toString();
             NoReplySystemMailSender.sendHTML(email, subject_, mensaje_, null);
-            Logger.getLogger(MailNotifier.class.getName()).log(Level.INFO, "sendEmailVerifyNewAccount succeeded:{0}", email);
+            Logger.getLogger(MailNotifier.class.getName()).log(Level.INFO, "sendGreetingsToNewAccount succeeded:{0}", email);
         } catch (EmailException ex) {
-            Logger.getLogger(MailNotifier.class.getName()).log(Level.SEVERE, "sendEmailVerifyNewAccount", ex);
+            Logger.getLogger(MailNotifier.class.getName()).log(Level.SEVERE, "sendGreetingsToNewAccount", ex);
         }
     }
 
@@ -329,8 +398,8 @@ public class MailNotifier {
 
     /**
      *
-     * Use Same for all (config)
-     * TODO Add configurable subject and body for this message.
+     * Use Same for all (config) TODO Add configurable subject and body for this
+     * message.
      *
      * @param tenant
      * @param grupo

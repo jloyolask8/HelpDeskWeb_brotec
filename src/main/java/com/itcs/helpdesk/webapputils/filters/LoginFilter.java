@@ -80,12 +80,12 @@ public class LoginFilter implements Filter {
                 if (requestedPage.endsWith("login.xhtml") || requestedPage.endsWith("forgot.xhtml")) {
                     if (userSessionBean != null) {
                         if (userSessionBean.isValidatedSession()) {
-                            //System.out.println("LoginFilter.sendRedirect:/script/index.xhtml");
+                            //user logged in already
                             res.sendRedirect(req.getContextPath() + req.getServletPath() + "/script/index.xhtml");
                             return;
                         }
                     }
-                } else if (requestedPage.endsWith("signup.xhtml")) {
+                } else if (requestedPage.endsWith("signup.xhtml") || requestedPage.endsWith("VerifyAccount.xhtml")) {
                     //let pass
                 } else {
                     if (userSessionBean == null) {

@@ -27,66 +27,45 @@
                 <!-- Pixel Admin's stylesheets -->
 
                 <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-                <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/pixel-admin.min.css" rel="stylesheet" type="text/css"/>
-                <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/pages.min.css" rel="stylesheet" type="text/css"/>
-                <link href="#{facesContext.externalContext.requestContextPath}/resources/stylesheets/themes.min.css" rel="stylesheet" type="text/css"/>
-                <link href="#{facesContext.externalContext.requestContextPath}/resources/css/custom.css" rel="stylesheet" type="text/css"/>
+
 
                 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet"/>
 
-              
 
-                <h:outputScript name="jsf.js" library="javax.faces"/>
-
-                <ui:insert name="head"></ui:insert>
-                <ui:insert name="scripts"></ui:insert>
             </h:head>
 
 
 
-       <h:body id="mainbody" styleClass="theme-default page-signin-alt">  
-
-           <div class="signin-header">
-                    <a href="http://www.godesk.cl" class="logo">
-                          <p:graphicImage library="images" name="LogoGODesk.png" title="GoDesk"/>
-                    </a> <!-- / .logo -->
-                </div> <!-- / .header -->
-
-                <h1 class="form-header">Su cuenta ha sido creada y está lista para usar</h1>
+            <h:body id="mainbody" style="background-color: #f5f5f5;">  
 
                 <h:form>
-                    <div align="center" class="panel panel-success
-                 panel-dark panel-body-colorful widget-profile widget-profile-centered">
-                <div class="panel-heading">
-                  
-                        <div class="widget-profile-header">
-                            <span>#{UserSessionBean.current.capitalName}</span><br/>
-                            <span>@#{UserSessionBean.current.idUsuario}</span>
-                        </div>
-                </div> <!-- / .panel-heading -->
-                <div class="panel-body">
-                    <div class="widget-profile-text" style="padding: 0;">
-                       
-                        Hemos enviado un email de confirmación a su direccion <span>#{UserSessionBean.current.email}</span>
-                       Ingrese a su casilla de correo y confirmenos su cuenta para comenzar a usar godesk.
-                       
-                       boton a entrar a la app.
-                       
-                       <p:commandLink action="#{casoController.inbox()}" value="start"/>
-                    </div>
-                </div>
-            </div>
+
+                    <div class="">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Thank you for registering for Godesk!</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <p>
+                                        Please check your inbox for an account verification email.<br/> 
+                                        If you don't see a verification email from us in a few minutes, then check your 
+                                        spam folder just in case or contact us at <a href="mailto:contacto@godesk.cl">contacto@godesk.cl</a>
+                                    </p>
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="http://#{signUpController.tenant.subDomainName}.godesk.cl/go"  
+                                                     class="btn btn-primary" >Start now!</a>
+                                </div>
+                            </div><!-- /.modal-content -->
+                        </div><!-- /.modal-dialog -->
+                    </div><!-- /.modal -->
+
+
+
                 </h:form>
-            
 
-
-       </h:body>
-
-        <ui:define name="dialogs">
-
-
-
-        </ui:define>
+            </h:body>
         </f:view>
-</html>
+    </html>
 
