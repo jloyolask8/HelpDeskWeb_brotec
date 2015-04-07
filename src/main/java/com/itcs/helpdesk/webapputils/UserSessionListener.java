@@ -6,6 +6,7 @@
 package com.itcs.helpdesk.webapputils;
 
 import com.itcs.helpdesk.jsfcontrollers.util.ApplicationBean;
+import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
 import javax.servlet.annotation.WebListener;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
@@ -18,14 +19,28 @@ import javax.servlet.http.HttpSessionListener;
 public class UserSessionListener implements HttpSessionListener {
 
     private static int totalActiveSessions;
+    private static int totalActiveCustomerSessions;
 
     public static int getTotalActiveSession() {
         return totalActiveSessions;
     }
 
+    /**
+     * @return the totalActiveCustomerSessions
+     */
+    public static int getTotalActiveCustomerSessions() {
+        return totalActiveCustomerSessions;
+    }
+
     @Override
     public void sessionCreated(HttpSessionEvent arg0) {
-        totalActiveSessions++;
+        final UserSessionBean sessionObj = (UserSessionBean) arg0.getSession().getServletContext().getAttribute("UserSessionBean");
+        if (sessionObj.isValidatedCustomerSession()) {
+            totalActiveCustomerSessions++;
+
+        } else if (sessionObj.isValidatedSession()) {
+            totalActiveSessions++;
+        }
 //        //System.out.println("sessionCreated - add one session into counter");
     }
 
@@ -33,7 +48,7 @@ public class UserSessionListener implements HttpSessionListener {
     public void sessionDestroyed(HttpSessionEvent arg0) {
         totalActiveSessions--;
 //        //System.out.println("sessionDestroyed - from:" + arg0.getSource());
-       
+
         ApplicationBean applicationBean = (ApplicationBean) arg0.getSession().getServletContext().getAttribute("applicationBean");
         try {
             final String sessionId = arg0.getSession().getId();

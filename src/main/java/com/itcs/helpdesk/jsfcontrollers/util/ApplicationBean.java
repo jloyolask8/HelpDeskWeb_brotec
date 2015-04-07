@@ -83,6 +83,16 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
         users.addAll(getChannels().keySet());
         return users;
     }
+    
+    public List<String> getCustomersLoggedIn() {
+        List<String> users = new ArrayList<>(getCustomerChannels().size());
+        users.addAll(getCustomerChannels().keySet());
+        return users;
+    }
+    
+    public Integer getTotalActiveCustomerSession() {
+        return UserSessionListener.getTotalActiveSession();
+    }
 
     public Integer getTotalActiveSession() {
         return UserSessionListener.getTotalActiveSession();

@@ -123,6 +123,34 @@
                     </p:dataTable>  
 
                 </p:tab>
+                
+                
+                <p:tab title="Clientes Conectados (#{applicationBean.customersLoggedIn.size()})" titletip="TotalActiveSessions: #{applicationBean.totalActiveCustomerSession}" id="tabCus">
+
+                    <p:dataTable id="customersLoggedIn" value="#{applicationBean.customersLoggedIn}" var="cusLoggedIn" 
+                                 styleClass="hide-column-names"
+                                 paginator="true" rows="10" paginatorAlwaysVisible="false"
+                                 emptyMessage="No hay clientes conectados en este momento." >  
+
+
+                        <p:column width="5%">
+                            <h:graphicImage value="/images/user-available.png" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{cusLoggedIn}"/>
+                        </p:column>  
+
+                        <p:column width="5%">
+                            <a title="Chat with #{cusLoggedIn}" 
+                                onclick="startChat('#{UserSessionBean.current.idUsuario}', '#{cusLoggedIn}', '#{applicationBean.companyName}');">
+                                                            <i class="menu-icon fa fa-comments"></i>
+                                                        </a>
+                           
+                        </p:column>
+
+                    </p:dataTable>  
+
+                </p:tab>
 
             </p:accordionPanel>
         </ui:define>
