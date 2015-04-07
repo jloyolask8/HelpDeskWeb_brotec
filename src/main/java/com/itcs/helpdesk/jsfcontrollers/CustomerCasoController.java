@@ -70,11 +70,15 @@ public class CustomerCasoController extends CasoController {
         }
 
         try {
-            Nota nota = buildNewNota(current, textoNotaVisibilidadPublica, textoNota,
-                    EnumTipoNota.NOTA.getTipoNota(), true);
+             Nota nota = createNota(getSelected(), true, textoNota.trim(),
+                    EnumTipoNota.RESPUESTA_DE_CLIENTE.getTipoNota(), true, null);
+             
+//            Nota nota = buildNewNota(current, textoNotaVisibilidadPublica, textoNota,
+//                    EnumTipoNota.NOTA.getTipoNota(), true);
             addNotaToCaso(current, nota);
 
-            getJpaController().mergeCaso(current, ManagerCasos.createLogReg(current, "Cliente agrega comentarios", "Cliente agrega comentarios tipo " + nota.getTipoNota().getNombre(), ""));
+            getJpaController().mergeCaso(current, ManagerCasos.createLogReg(current, "Cliente agrega comentarios a través del portal del cliente.", 
+                    "Cliente agrega comentarios a través del portal del cliente.", ""));
 
         } catch (NonexistentEntityException ex) {
             Logger.getLogger(CasoController.class.getName()).log(Level.SEVERE, null, ex);
