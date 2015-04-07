@@ -2928,7 +2928,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
      * @return
      */
     //TODO add from to Nota type email
-    private Nota createNota(Caso caso, boolean publica, String texto,
+    protected Nota createNota(Caso caso, boolean publica, String texto,
             TipoNota tipo, boolean customer, List<Attachment> attachmentList) {
 //        boolean guardarNota = true;
         try {
