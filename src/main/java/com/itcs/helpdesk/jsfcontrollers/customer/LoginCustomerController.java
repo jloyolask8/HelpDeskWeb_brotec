@@ -62,7 +62,7 @@ public class LoginCustomerController extends AbstractManagedBean<Cliente> implem
 
                 String channel = "/" + UUID.randomUUID().toString();
                 userSessionBean.setChannel(channel);
-                applicationBean.addChannel(emailCliente, channel);
+                applicationBean.addCustomerChannel(emailCliente, channel);
                 return "customer/ticket";
             } catch (Exception ex) {
                 addErrorMessage("Lo sentimos, en este momento no podemos atenderle.");

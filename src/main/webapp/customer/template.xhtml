@@ -188,6 +188,8 @@
 
 
             <ui:insert name="page_content"></ui:insert>
+            
+            
 
             <p:dialog modal="false" widgetVar="statusDialog" header="Cargando..."   
                       draggable="false" closable="false" resizable="false">  
@@ -196,6 +198,13 @@
 
             <p:ajaxStatus onstart="PF('statusDialog').show();" onsuccess="statusDialog.hide();"/>
 
+             <script src="http://www.godesk.cl:8090/golivechat/VAADIN/golivechat.js"></script>
+
+            <script type="text/javascript">
+             //<![CDATA[
+                createChatHiddenFrame('#{UserSessionBean.current.idUsuario}', '#{applicationBean.companyName}');
+             //]]>
+            </script>
 
         </h:body>
 
