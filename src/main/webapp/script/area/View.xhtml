@@ -4,38 +4,65 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:go="http://java.sun.com/jsf/composite/go">
 
-    <ui:composition template="/script/template_inbox.xhtml">
+    <ui:composition template="/script/template_inbox_bootstrap_config.xhtml">
         <ui:define name="title">
             <p:outputLabel value="#{bundle.ViewAreaTitle}"/>
         </ui:define>
-
-        <ui:define name="west">
+        <ui:define name="help">
             <ui:include src="help.xhtml"/>
+        </ui:define>
+
+        <ui:define name="content_header">
+            <!-- page-header -->
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-sm-6 col-xs-12">
+                        <h1><i class="fa fa-building page-header-icon"></i>&nbsp;&nbsp;#{bundle.ViewAreaLabel_idArea}&nbsp;#{areaController.selected.idArea}</h1>
+                        <p:commandLink title="Ayuda" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                            <i class="fa fa-info-circle"/>
+                        </p:commandLink> 
+                    </div>
+
+                </div>
+            </div><!-- / .page-header --> 
         </ui:define>
 
         <ui:define name="body">
 
             <h:form id="form">
 
-                <h:panelGrid columns="2" cellpadding="5">
-                    <p:outputLabel value="#{bundle.ViewAreaLabel_idArea}" style="font-weight:bold"/>
-                    <h:outputText value="#{areaController.selected.idArea}" title="#{bundle.ViewAreaTitle_idArea}"/>
-                    <p:outputLabel value="#{bundle.ViewAreaLabel_nombre}" style="font-weight:bold"/>
-                    <h:outputText value="#{areaController.selected.nombre}" title="#{bundle.ViewAreaTitle_nombre}"/>
-                    <p:outputLabel value="#{bundle.ViewAreaLabel_descripcion}" style="font-weight:bold"  />
-                    <h:outputText value="#{areaController.selected.descripcion}" title="#{bundle.ViewAreaTitle_descripcion}"/>
-
-                    <p:outputLabel value="#{bundle.AreaCanalSalida}" style="font-weight:bold"/>
-                    <h:outputText value="#{areaController.selected.idCanal}"/>
-                    
-                    <p:outputLabel value="#{bundle.EditAreaLabel_emailAcusederecibo}" style="font-weight:bold"/>
-                    <h:outputText value="#{areaController.selected.emailAcusederecibo ? bundle.yes : bundle.no}"/>
-
-                    
-                </h:panelGrid>
-
+                <div class="row">
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="form-group">
+                            <label class="control-label">#{bundle.ViewAreaLabel_idArea}</label>
+                            <h:outputText styleClass="form-control" 
+                                          value="#{areaController.selected.idArea}" title="#{bundle.ViewAreaTitle_idArea}" 
+                                          />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">#{bundle.ViewAreaLabel_nombre}</label>
+                            <h:outputText styleClass="form-control" 
+                                          value="#{areaController.selected.nombre}" title="#{bundle.ViewAreaTitle_nombre}"  
+                                          />
+                            <h:message for="nombre" errorClass="text-danger"/>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">#{bundle.ViewAreaLabel_descripcion}</label>
+                            <h:outputText styleClass="form-control"  value="#{areaController.selected.descripcion}" title="#{bundle.ViewAreaTitle_descripcion}" />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">#{bundle.AreaCanalSalida}</label>
+                            <h:outputText styleClass="form-control"  value="#{areaController.selected.idCanal}"/>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">#{bundle.EditAreaLabel_emailAcusederecibo}</label>
+                            <h:outputText styleClass="form-control"  value="#{areaController.selected.emailAcusederecibo ? bundle.yes : bundle.no}"/>
+                        </div>
+                    </div>
+                </div>
                 <p:fieldset legend="Respuesta Automática" rendered="#{areaController.selected.emailAcusederecibo}"
                             toggleable="true">
                     <h:panelGrid columns="2" cellpadding="5">
@@ -70,31 +97,42 @@
                         </p:column>
 
                         <p:column headerText="Acción">
-                            <p:commandButton id="viewBtn" ajax="false" action="#{grupoController.prepareView(item, '/script/area/View')}" disabled="#{not grupoController.puedeEditar(item)}" title="Ver" icon="ui-icon ui-icon-search" />
-                            <p:commandButton id="editBtn" ajax="false" action="#{grupoController.prepareEdit(item, '/script/area/View')}" disabled="#{not grupoController.puedeEditar(item)}" title="Editar" icon="ui-icon ui-icon-pencil" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
+                            <p:commandLink id="viewBtn" action="#{grupoController.prepareView(item, '/script/area/View')}"
+                                           disabled="#{not grupoController.puedeEditar(item)}"
+                                           title="Ver" ajax="false" 
+                                           styleClass="btn btn-sm btn-outline btn-default"
+                                           >
+                                <i class="fa fa-eye"/>
+                            </p:commandLink>
+                            <p:commandLink id="editBtn" action="#{grupoController.prepareEdit(item, '/script/area/View')}"
+                                           disabled="#{not grupoController.puedeEditar(item)}"
+                                           title="Editar" ajax="false" 
+                                           styleClass="btn btn-sm btn-outline btn-primary"
+                                           rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
+                                <i class="fa fa-edit"/>
+                            </p:commandLink>
                         </p:column>
-
-
                         <f:facet name="footer">
-                            <h:commandLink action="#{grupoController.prepareList()}" value="Ver Grupos"/>
+                            <i class="fa fa-refresh">&nbsp;</i><h:commandLink style="color: #006dcc;" action="#{grupoController.prepareList()}" value="Ver Grupos"/>
                         </f:facet> 
                     </p:dataTable>
 
 
                 </h:panelGrid>
 
-                <p:toolbar>  
-                    <p:toolbarGroup align="left">   
-                        <p:commandButton ajax="false" action="#{areaController.prepareList}" value="#{bundle.goBack}" immediate="true" icon="fa fa-chevron-left"/>
+                <p:toolbar style="margin-top: 20px;">  
+                    <p:toolbarGroup align="left">
+
+                        <p:commandLink styleClass="btn btn-default btn-flat fa fa-reply" ajax="false" action="#{areaController.prepareList}" value="&nbsp;&nbsp;#{bundle.goBack}" immediate="true"/>
 
                         <p:separator/>
-                        <p:commandButton ajax="false" action="Edit" value="#{bundle.edit}" icon="ui-icon ui-icon-pencil"/>
+                        <p:commandLink styleClass="btn btn-primary btn-flat fa fa-pencil" ajax="false" action="Edit" value="&nbsp;&nbsp;#{bundle.edit}" />
                         <p:separator/>
-                        <p:commandButton id="showDialogButton" value="#{bundle.destroy}" onclick="PF('confirmation').show()" icon="ui-icon ui-icon-trash" />
+                        <p:commandLink styleClass="btn btn-primary btn-flat fa fa-trash" id="showDialogButton" value="&nbsp;&nbsp;#{bundle.destroy}" onclick="PF('confirmation').show()"/>
                     </p:toolbarGroup>
 
                     <p:toolbarGroup align="right">   
-                        <p:commandButton ajax="false" action="#{areaController.prepareCreate}" value="#{bundle.createNew}" icon="ui-icon ui-icon-plus"  />
+                        <p:commandLink styleClass="btn btn-primary btn-flat fa fa-plus" ajax="false" action="#{areaController.prepareCreate}" value="&nbsp;&nbsp;#{bundle.createNew}"/>
 
                     </p:toolbarGroup>
                 </p:toolbar>
@@ -106,9 +144,9 @@
                     <h:outputText value="Está seguro de eliminar el Area  #{areaController.selected.nombre}?"/>
 
                     <f:facet name="footer">
-                        <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{areaController.destroy()}" 
-                                         update="form" oncomplete="PF('confirmation').hide()" ajax="false"/>
-                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
+                        <p:commandLink styleClass="btn btn-primary btn-flat" id="confirm" value="#{bundle.yesDelete}" action="#{areaController.destroy()}" 
+                                       update="form" oncomplete="PF('confirmation').hide()" ajax="false"/>&nbsp;&nbsp;
+                        <p:commandLink styleClass="btn btn-default btn-flat" id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
                     </f:facet>
 
                 </p:dialog>

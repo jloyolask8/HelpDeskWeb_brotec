@@ -48,7 +48,7 @@
                                     <li>
                                         <h:commandLink action="#{areaController.prepareCreate}" 
                                                        value="#{bundle.ListAreaCreateLink}"
-                                     rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
+                                                       rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
                                         </h:commandLink>
                                     </li>
 
@@ -60,7 +60,7 @@
                 </div>
             </div><!-- / .page-header --> 
         </ui:define>
-        
+
         <ui:define name="body">
             <h:form id="form">
 
@@ -70,7 +70,7 @@
 
                         <h:outputText escape="false" value="#{bundle.ListAreaEmpty}" rendered="#{areaController.items.rowCount == 0}"/>
                         <h:panelGroup rendered="#{areaController.items.rowCount > 0}">
-                            
+
 
                             <p:dataTable widgetVar="AreaTable" var="item" value="#{areaController.items}" selectionMode="single"
                                          emptyMessage="#{bundle.ListAreaEmpty}" >
@@ -110,13 +110,27 @@
                                 </p:column>
 
                                 <p:column headerText="Acciones">
-                                                                        <p:commandButton ajax="false" action="#{areaController.prepareView(item.idArea)}" title="#{bundle.ListAreaViewLink}" iconPos="notext" icon="ui-icon ui-icon-search"/>
-
-                                    <p:commandButton ajax="false" action="#{areaController.prepareEdit(item.idArea)}" title="#{bundle.ListAreaEditLink}" iconPos="notext" icon="ui-icon ui-icon-pencil"/>
-
-                                    <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" iconPos="notext"
-                                                     action="#{areaController.setSelected(item)}" oncomplete="PF('confirmation').show()" 
-                                                     icon="ui-icon ui-icon-trash"/>
+                                    <p:commandLink id="viewBtn" action="#{areaController.prepareView(item.idArea)}"
+                                                   title="Ver" ajax="false"
+                                                   styleClass="btn btn-sm btn-outline btn-default"
+                                                   >
+                                        <i class="fa fa-eye"/>
+                                    </p:commandLink>
+                                    <p:commandLink id="editBtn" action="#{areaController.prepareEdit(item.idArea)}"
+                                                   title="#{bundle.ListAreaEditLink}" ajax="false" 
+                                                   styleClass="btn btn-sm btn-outline btn-primary"
+                                                   >
+                                        <i class="fa fa-edit"/>
+                                    </p:commandLink>
+                                    <p:commandLink id="showDialogButton"
+                                                   title="Eliminar"
+                                                   update=":form:confirmDialog"
+                                                   action="#{areaController.setSelected(item)}"
+                                                   oncomplete="PF('confirmation').show()"
+                                                   styleClass="btn btn-sm btn-outline btn-danger"
+                                                   >
+                                        <i class="fa fa-trash-o"/>
+                                    </p:commandLink>
 
                                 </p:column>
 
@@ -188,14 +202,14 @@
                         </p:tree> 
                         <br/>
 
-                        <p:commandButton id="expandTree" value="#{areaController.expanded ? 'Colapsar':'Expandir'}" actionListener="#{areaController.toggleAllTree()}" immediate="true"
-                                         update=":form:tabs:tree expandTree" />
+                        <p:commandLink styleClass="btn btn-primary btn-flat fa fa-code-fork" id="expandTree" value="&nbsp;&nbsp;#{areaController.expanded ? 'Colapsar':'Expandir'}" actionListener="#{areaController.toggleAllTree()}" immediate="true"
+                                       update=":form:tabs:tree expandTree" />&nbsp;&nbsp;
 
-                        <p:commandButton id="refreshTree" value="Actualizar" actionListener="#{areaController.refreshTree()}" immediate="true"
-                                         update=":form:tabs:tree" />
-                        
-                          <p:commandButton ajax="false" action="#{areaController.prepareCreate}" immediate="true"
-                                                     rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" value="#{bundle.ListAreaCreateLink}" icon="fa fa-plus-circle" />
+                        <p:commandLink styleClass="btn btn-primary btn-flat fa fa-refresh" id="refreshTree" value="&nbsp;&nbsp;Actualizar" actionListener="#{areaController.refreshTree()}" immediate="true"
+                                       update=":form:tabs:tree" />&nbsp;&nbsp;
+
+                        <p:commandLink styleClass="btn btn-primary btn-flat fa fa-plus" ajax="false" action="#{areaController.prepareCreate}" immediate="true"
+                                       rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" value="&nbsp;&nbsp;#{bundle.ListAreaCreateLink}"/>
 
 
                     </p:tab>
@@ -216,9 +230,10 @@
                     <h:outputText value="Está seguro de eliminar el Area  #{areaController.selected.nombre}?"/>    
 
                     <f:facet name="footer">
-                        <p:commandButton id="confirm" value="Si, Eliminar" actionListener="#{areaController.destroySelected}" 
-                                         update=":form" oncomplete="PF('confirmation').hide()"/>
-                        <p:commandButton id="decline" value="No, Cancelar" onclick="PF('confirmation').hide()" type="button" /> 
+                        <p:commandLink styleClass="btn btn-primary btn-flat" id="confirm" value="Si, Eliminar" actionListener="#{areaController.destroySelected}" 
+                                       update=":form" oncomplete="PF('confirmation').hide()"/>&nbsp;&nbsp;
+
+                        <p:commandLink styleClass="btn btn-default btn-flat" id="decline" value="No, Cancelar" onclick="PF('confirmation').hide()" type="button" /> 
                     </f:facet>
 
                 </p:dialog>

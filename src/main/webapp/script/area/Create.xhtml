@@ -12,10 +12,10 @@
         </ui:define>
 
         <ui:define name="help">
-           <ui:include src="help.xhtml"/>
+            <ui:include src="help.xhtml"/>
         </ui:define>
 
-        
+
         <ui:define name="content_header">
             <script>
                 var init = [];
@@ -23,7 +23,7 @@
                     $('body').addClass('mmc');
                 });
             </script>
-        <!-- page-header -->
+            <!-- page-header -->
             <div class="page-header">
                 <div class="row">
                     <div class="col-sm-6 col-xs-12">
@@ -32,50 +32,60 @@
                             <i class="fa fa-info-circle"/>
                         </p:commandLink> 
                     </div>
-                    
+
                 </div>
             </div><!-- / .page-header --> 
         </ui:define>
-        
+
         <ui:define name="body">
 
             <h:form>
 
-                    <h:panelGrid columns="3" cellpadding="5">
-                        <h:outputLabel value="Id #{bundle.CreateAreaLabel_idArea}" for="idArea" style="font-weight:bold"/>
-                        <p:inputText id="idArea" value="#{areaController.selected.idArea}" title="#{bundle.CreateAreaTitle_idArea}" 
-                                     required="true" requiredMessage="#{bundle.CreateAreaRequiredMessage_idArea}" size="40"/>
-                        <p:message for="idArea"/>
+                <div class="row">
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="form-group">
+                            <label for="idArea" class="control-label">ID #{bundle.CreateAreaLabel_idArea}</label>
+                            <h:inputText id="idArea" styleClass="form-control" 
+                                         value="#{areaController.selected.idArea}" title="#{bundle.CreateAreaTitle_idArea}"
+                                         required="true" requiredMessage="#{bundle.CreateAreaRequiredMessage_idArea}" size="40"
+                                         />
+                            <h:message for="idArea" errorClass="text-danger"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="nombre" class="control-label">#{bundle.CreateAreaLabel_nombre}</label>
+                            <h:inputText id="nombre" styleClass="form-control" 
+                                         value="#{areaController.selected.nombre}" title="#{bundle.CreateAreaTitle_nombre}"
+                                         required="true" requiredMessage="El nombre es requerido." size="40"
+                                         />
+                            <h:message for="nombre" errorClass="text-danger"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="descripcion" class="control-label">#{bundle.CreateAreaLabel_descripcion}</label>
+                            <h:inputTextarea id="descripcion" styleClass="form-control"  
+                                             value="#{areaController.selected.descripcion}" title="#{bundle.CreateAreaTitle_descripcion}" />
+                        </div>
+                        <div class="form-group">
+                            <label for="idCanalSalida" class="control-label">Canal de salida por defecto:</label>
+                            <h:selectOneMenu styleClass="form-control" id="idCanalSalida" style="width: 300px;"
+                                             value="#{areaController.selected.idCanal}">
+                                <f:selectItem itemLabel="" itemValue=""/>
+                                <f:selectItems value="#{canalController.emailsAvailableSelectOne}" var="tipo" 
+                                               itemLabel="#{tipo.nombre}" itemValue="#{tipo}" 
+                                               itemDescription="#{tipo.descripcion}"/>
+                            </h:selectOneMenu>
+                            <h:message for="idCanalSalida" errorClass="text-danger"/>
+                        </div>
+                    </div>
+                </div>
+                <p:toolbar>  
+                    <p:toolbarGroup align="right">
+                        <p:commandLink styleClass="btn btn-primary btn-flat fa fa-save" action="#{areaController.create}" value="&nbsp;&nbsp;#{bundle.CreateAreaSaveLink}" ajax="false"/>        
+                    </p:toolbarGroup>
 
-                        <h:outputLabel value="#{bundle.CreateAreaLabel_nombre}" for="nombre" style="font-weight:bold"/>
-                        <p:inputText id="nombre" value="#{areaController.selected.nombre}" title="#{bundle.CreateAreaTitle_nombre}" 
-                                     required="true" requiredMessage="The name is required." size="40"/>
-                        <p:message for="nombre"/>
-
-
-
-                        <h:outputLabel value="#{bundle.CreateAreaLabel_descripcion}" for="descripcion" style="font-weight:bold"/>
-                        <p:inputTextarea rows="4" cols="50" id="descripcion" value="#{areaController.selected.descripcion}" 
-                                         title="#{bundle.CreateAreaTitle_descripcion}" />
-                        <p:message for="descripcion"/>
-                        <p:outputLabel style="font-weight: bold;" value="Canal de salida por defecto" for="idCanalSalida"/>
-                        <p:selectOneMenu id="idCanalSalida" style="width: 220px;"
-                                         filter="true" filterMatchMode="contains"
-                                         value="#{areaController.selected.idCanal}" >
-                            <f:selectItems value="#{canalController.emailsAvailableSelectOne}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
-
-                        </p:selectOneMenu>
-                    </h:panelGrid>
-
-                        <p:toolbar>  
-                             <p:toolbarGroup align="right">
-                                 <p:commandButton action="#{areaController.create}" value="#{bundle.CreateAreaSaveLink}" ajax="false" icon="fa fa-save"/>        
-                             </p:toolbarGroup>
-                            
-                             <p:toolbarGroup align="left">
-                                <p:commandButton action="#{areaController.prepareList}" value="Volver" immediate="true" ajax="false" icon="fa fa-chevron-left"/>
-                             </p:toolbarGroup>
-                        </p:toolbar>
+                    <p:toolbarGroup align="left">
+                        <p:commandLink styleClass="btn btn-default btn-flat fa fa-reply" action="#{areaController.prepareList}" value="&nbsp;&nbsp;Volver" immediate="true" ajax="false"/>
+                    </p:toolbarGroup>
+                </p:toolbar>
 
 
             </h:form>
