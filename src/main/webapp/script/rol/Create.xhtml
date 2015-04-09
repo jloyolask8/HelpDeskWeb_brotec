@@ -38,29 +38,42 @@
         <ui:define name="body">
 
             <h:form>
+                <p:messages/>
+                <div class="row">
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="form-group">
+                            <label for="idRol" class="control-label">#{bundle.EditRolLabel_idRol}</label>
+                            <h:inputText id="idRol" styleClass="form-control" 
+                                         value="#{rolController.selected.idRol}" title="#{bundle.EditRolTitle_idRol}"
+                                         required="true" requiredMessage="#{bundle.EditRolRequiredMessage_idRol}"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="nombre" class="control-label">#{bundle.EditRolLabel_nombre}</label>
+                            <h:inputText styleClass="form-control" 
+                                         value="#{rolController.selected.nombre}" title="#{bundle.EditRolTitle_nombre}"  
+                                         required="true" requiredMessage="El nombre del Rol es Requerido."/>
+                        </div>
+                        <div class="form-group">
+                            <label for="descripcion" class="control-label">#{bundle.EditRolLabel_descripcion}</label>
+                            <h:inputTextarea style="height: 100px;" cols="30" rows="2"  id="descripcion" styleClass="form-control"  
+                                             value="#{rolController.selected.descripcion}" title="#{bundle.EditRolTitle_descripcion}" />
+                        </div>
+                        <div class="form-group">
+                            <label  class="control-label">Funciones:</label>
 
-                <h:panelGrid columns="2">
-                    <h:outputLabel value="#{bundle.EditRolLabel_idRol}"  for="idRol" style="font-weight:bold"/>
-                    <h:inputText id="idRol" styleClass="form-control" value="#{rolController.selected.idRol}" title="#{bundle.EditRolTitle_idRol}" required="true" requiredMessage="#{bundle.EditRolRequiredMessage_idRol}"/>
-                    <h:outputLabel value="#{bundle.EditRolLabel_nombre}" for="nombre" style="font-weight:bold"/>
-                    <h:inputText id="nombre" styleClass="form-control" value="#{rolController.selected.nombre}" required="true" requiredMessage="El nombre del Rol es Requerido." title="#{bundle.EditRolTitle_nombre}" />
-                    <h:outputLabel value="#{bundle.EditRolLabel_descripcion}" for="descripcion" style="font-weight:bold"/>
-                    <p:inputTextarea cols="30" rows="2" maxlength="40" styleClass="form-control"
-                                     id="descripcion" value="#{rolController.selected.descripcion}" title="#{bundle.EditRolTitle_descripcion}" />
-                    <h:outputLabel value="Funciones:" for="descripcion" style="font-weight:bold"/>
-                    <p:selectManyCheckbox converter="FuncionConverter"  
-                                          value="#{rolController.selected.funcionList}" layout="pageDirection">
-                        <f:selectItems  value="#{funcionController.itemsAvailableSelectMany}" itemLabel="nombre" itemValue="idFuncion"/>
-                    </p:selectManyCheckbox>
+                            <p:selectManyCheckbox converter="FuncionConverter" value="#{rolController.selected.funcionList}" layout="pageDirection">
 
-                </h:panelGrid>
+                                <f:selectItems  value="#{funcionController.itemsAvailableSelectMany}" itemLabel="nombre" itemValue="idFuncion"/>
 
-                <p:commandButton action="#{rolController.prepareList}" value="#{bundle.Cancel}" immediate="true" ajax="false" icon="ui-icon-folder-open"/>
+                            </p:selectManyCheckbox>
 
-                <p:commandButton action="#{rolController.create}" value="#{bundle.CreateRolSaveLink}" ajax="false" icon="ui-icon-disk" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>                     
+                        </div>
+                    </div>
+                </div>
 
-
-
+                <p:commandLink styleClass="btn btn-default btn-flat fa fa-times" action="#{rolController.prepareList}" value="&nbsp;&nbsp;#{bundle.Cancel}" immediate="true" ajax="false"/>
+                &nbsp;&nbsp;
+                <p:commandLink styleClass="btn btn-primary btn-flat fa fa-save" action="#{rolController.create}" value="&nbsp;&nbsp;#{bundle.CreateRolSaveLink}" ajax="false" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>                     
             </h:form>
         </ui:define>
     </ui:composition>

@@ -11,9 +11,9 @@
             <h:outputText value="#{bundle.EditRolTitle}"/>
         </ui:define>
         <ui:define name="west">
-                    <h:outputText escape="false" value="#{bundle.ayudaRoles}"/>
+            <h:outputText escape="false" value="#{bundle.ayudaRoles}"/>
         </ui:define>
-        
+
         <ui:define name="content_header">
             <script>
                 var init = [];
@@ -34,42 +34,58 @@
                 </div>
             </div><!-- / .page-header --> 
         </ui:define>
-        
+
         <ui:define name="body">
 
             <h:form id="form">
-                    <h:panelGrid columns="2">
-                        <h:outputLabel value="#{bundle.EditRolLabel_idRol}" for="idRol" style="font-weight:bold"/>
-                        <p:inputText id="idRol" disabled="true" value="#{rolController.selected.idRol}" title="#{bundle.EditRolTitle_idRol}" required="true" requiredMessage="#{bundle.EditRolRequiredMessage_idRol}"/>
-                        <h:outputLabel value="#{bundle.EditRolLabel_nombre}" for="nombre" style="font-weight:bold"/>
-                        <p:inputText id="nombre" value="#{rolController.selected.nombre}" title="#{bundle.EditRolTitle_nombre}" />
-                        <h:outputLabel value="#{bundle.EditRolLabel_descripcion}" for="descripcion" style="font-weight:bold"/>
-                        <p:inputTextarea id="descripcion" value="#{rolController.selected.descripcion}" title="#{bundle.EditRolTitle_descripcion}" />
+                <p:messages/>
+                <div class="row">
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="form-group">
+                            <label class="control-label">#{bundle.EditRolLabel_idRol}</label>
+                            <h:inputText id="idRol" disabled="true" styleClass="form-control" 
+                                         value="#{rolController.selected.idRol}" title="#{bundle.EditRolTitle_idRol}"
+                                         required="true" requiredMessage="#{bundle.EditRolRequiredMessage_idRol}"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="nombre" class="control-label">#{bundle.EditRolLabel_nombre}</label>
+                            <h:inputText styleClass="form-control" 
+                                         value="#{rolController.selected.nombre}" title="#{bundle.EditRolTitle_nombre}"  
+                                         required="true" requiredMessage="El nombre del rol es requerido"/>
+                            <h:message for="nombre" errorClass="text-danger"/>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">#{bundle.EditRolLabel_descripcion}</label>
+                            <h:inputTextarea style="height: 100px;" id="descripcion" styleClass="form-control"  
+                                             value="#{rolController.selected.descripcion}" title="#{bundle.EditRolTitle_descripcion}" />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Funciones:</label>
 
-                        <h:outputLabel value="Funciones:" for="descripcion" style="font-weight:bold"/>
-                        <p:selectManyCheckbox converter="FuncionConverter" value="#{rolController.selected.funcionList}" layout="pageDirection">
-                            <f:selectItems  value="#{funcionController.itemsAvailableSelectMany}" itemLabel="nombre" itemValue="idFuncion"/>
-                        </p:selectManyCheckbox>
+                            <p:selectManyCheckbox converter="FuncionConverter" value="#{rolController.selected.funcionList}" layout="pageDirection">
 
-                    </h:panelGrid>
+                                <f:selectItems  value="#{funcionController.itemsAvailableSelectMany}" itemLabel="nombre" itemValue="idFuncion"/>
 
-                 <p:commandButton ajax="false" action="#{rolController.update}" value="#{bundle.EditRolSaveLink}" icon="ui-icon-disk" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
-                                <p:commandButton ajax="false" action="View" value="#{bundle.EditRolViewLink}" immediate="true" icon="ui-icon-document"/>
-                                 <p:commandButton ajax="false" action="#{rolController.prepareList}" value="#{bundle.EditRolShowAllLink}" immediate="true" icon="ui-icon-folder-open"/>
-                      
-                
-                   <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
-                                  header="Iniciando proceso de eliminación" widgetVar="confirmation">
+                            </p:selectManyCheckbox>
 
-                            <h:outputText value="Está seguro de eliminar el rol #{rolController.selected.nombre}?"/>
+                        </div>
+                    </div>
+                </div>
+                <p:commandLink styleClass="btn btn-primary btn-flat fa fa-save" ajax="false" action="#{rolController.update}" value="&nbsp;&nbsp;#{bundle.EditRolSaveLink}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>&nbsp;&nbsp;
+                <p:commandLink styleClass="btn btn-primary btn-flat fa fa-eye" ajax="false" action="View" value="&nbsp;&nbsp;#{bundle.EditRolViewLink}" immediate="true"/>&nbsp;&nbsp;
+                <p:commandLink styleClass="btn btn-primary btn-flat fa fa-folder-open" ajax="false" action="#{rolController.prepareList}" value="&nbsp;&nbsp;#{bundle.EditRolShowAllLink}" immediate="true"/>
+                <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
+                          header="Iniciando proceso de eliminación" widgetVar="confirmation">
 
-                            <f:facet name="footer">
-                                <p:commandButton id="confirm" value="Yes Sure" action="#{rolController.destroy}" 
-                                                 update="form" oncomplete="PF('confirmation').hide()"/>
-                                <p:commandButton id="decline" value="Not Yet" onclick="PF('confirmation').hide()" type="button" /> 
-                            </f:facet>
+                    <h:outputText value="Está seguro de eliminar el rol #{rolController.selected.nombre}?"/>
 
-                        </p:dialog>
+                    <f:facet name="footer">
+                        <p:commandButton id="confirm" value="Yes Sure" action="#{rolController.destroy}" 
+                                         update="form" oncomplete="PF('confirmation').hide()"/>
+                        <p:commandButton id="decline" value="Not Yet" onclick="PF('confirmation').hide()" type="button" /> 
+                    </f:facet>
+
+                </p:dialog>
             </h:form>
         </ui:define>
     </ui:composition>

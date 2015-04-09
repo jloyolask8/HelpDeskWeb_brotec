@@ -11,9 +11,9 @@
             <h:outputText value="#{bundle.ViewRolTitle}"></h:outputText>
         </ui:define>
         <ui:define name="help">
-                    <h:outputText escape="false" value="#{bundle.ayudaRoles}"/>
+            <h:outputText escape="false" value="#{bundle.ayudaRoles}"/>
         </ui:define>
-        
+
         <ui:define name="content_header">
             <script>
                 var init = [];
@@ -34,46 +34,57 @@
                 </div>
             </div><!-- / .page-header --> 
         </ui:define>
-        
+
         <ui:define name="body">
 
             <h:form id="form">
-                    <h:panelGrid columns="2">
-                        <h:outputText value="#{bundle.ViewRolLabel_idRol}" style="font-weight:bold"/>
-                        <h:outputText value="#{rolController.selected.idRol}" title="#{bundle.ViewRolTitle_idRol}"/>
-                        <h:outputText value="#{bundle.ViewRolLabel_nombre}" style="font-weight:bold"/>
-                        <h:outputText value="#{rolController.selected.nombre}" title="#{bundle.ViewRolTitle_nombre}"/>
-                        <h:outputText value="#{bundle.ViewRolLabel_descripcion}" style="font-weight:bold"/>
-                        <h:outputText value="#{rolController.selected.descripcion}" title="#{bundle.ViewRolTitle_descripcion}"/>
+                <div class="row">
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="form-group">
+                            <label class="control-label">#{bundle.ViewRolLabel_idRol}</label>
+                            <h:outputText style="width: 500px;" styleClass="form-control" 
+                                          value="#{rolController.selected.idRol}" title="#{bundle.ViewRolTitle_idRol}" 
+                                          />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">#{bundle.ViewRolLabel_nombre}</label>
+                            <h:outputText style="width: 500px;" styleClass="form-control" 
+                                          value="#{rolController.selected.nombre}" title="#{bundle.ViewRolTitle_nombre}"  
+                                          />
+                            <h:message for="nombre" errorClass="text-danger"/>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">#{bundle.ViewRolLabel_descripcion}</label>
+                            <h:inputTextarea style="width: 500px; height: 100px;" disabled="true" styleClass="form-control"  value="#{rolController.selected.descripcion}" title="#{bundle.ViewRolTitle_descripcion}" />
+                        </div>
+                    </div>
+                </div>
 
+                <p:outputPanel style="margin-top: 20px;" id="funcList">
+                    <p:dataTable value="#{rolController.selected.funcionList}" var="func" emptyMessage="Sin Funciones asociadas" style="width:500px"> 
+                        <f:facet name="header">  
+                            <h:outputText value="Funciones Asociadas al Rol"></h:outputText>                           
+                        </f:facet> 
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Nombre" />
+                            </f:facet>
+                            <h:outputText value="#{func.nombre}" />
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Descripción" />
+                            </f:facet>
+                            <h:outputText value="#{func.descripcion}" />
+                        </p:column>
+                    </p:dataTable>
+                </p:outputPanel>
 
-                    </h:panelGrid>
-                    <p:separator style="margin-bottom:10px"/> 
-                    <p:outputPanel id="funcList">
-                        <p:dataTable value="#{rolController.selected.funcionList}" var="func" emptyMessage="Sin Funciones asociadas" style="width:500px"> 
-                            <f:facet name="header">  
-                                <h:outputText value="Funciones Asociadas al Rol"></h:outputText>                           
-                            </f:facet> 
-                            <p:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Nombre" />
-                                </f:facet>
-                                <h:outputText value="#{func.nombre}" />
-                            </p:column>
-                            <p:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Descripción" />
-                                </f:facet>
-                                <h:outputText value="#{func.descripcion}" />
-                            </p:column>
-                        </p:dataTable>
-                    </p:outputPanel>
-
-
-                      <p:commandButton ajax="false" action="Edit" disabled="#{not rolController.puedeEditar(rolController.selected)}" value="#{bundle.ViewRolEditLink}" icon="ui-icon ui-icon-pencil"/>
-                                <p:commandButton ajax="false" action="#{rolController.prepareList}" value="#{bundle.ViewRolShowAllLink}" icon="ui-icon-folder-open"/>
-                         
-
+                <div style="margin-top: 15px;">
+                    <p:commandLink styleClass="btn btn-default btn-flat fa fa-pencil" ajax="false" action="Edit" disabled="#{not rolController.puedeEditar(rolController.selected)}" value="&nbsp;&nbsp;#{bundle.ViewRolEditLink}"/>
+                    &nbsp;&nbsp;
+                    <p:commandLink styleClass="btn btn-primary btn-flat fa fa-folder-open" ajax="false" action="#{rolController.prepareList}" value="&nbsp;&nbsp;#{bundle.ViewRolShowAllLink}"/>
+                </div>
             </h:form>
         </ui:define>
     </ui:composition>
