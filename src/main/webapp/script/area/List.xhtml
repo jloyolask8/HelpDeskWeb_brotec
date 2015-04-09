@@ -110,28 +110,29 @@
                                 </p:column>
 
                                 <p:column headerText="Acciones">
-                                    <p:commandLink id="viewBtn" action="#{areaController.prepareView(item.idArea)}"
-                                                   title="Ver" ajax="false"
-                                                   styleClass="btn btn-sm btn-outline btn-default"
-                                                   >
-                                        <i class="fa fa-eye"/>
-                                    </p:commandLink>
-                                    <p:commandLink id="editBtn" action="#{areaController.prepareEdit(item.idArea)}"
-                                                   title="#{bundle.ListAreaEditLink}" ajax="false" 
-                                                   styleClass="btn btn-sm btn-outline btn-primary"
-                                                   >
-                                        <i class="fa fa-edit"/>
-                                    </p:commandLink>
-                                    <p:commandLink id="showDialogButton"
-                                                   title="Eliminar"
-                                                   update=":form:confirmDialog"
-                                                   action="#{areaController.setSelected(item)}"
-                                                   oncomplete="PF('confirmation').show()"
-                                                   styleClass="btn btn-sm btn-outline btn-danger"
-                                                   >
-                                        <i class="fa fa-trash-o"/>
-                                    </p:commandLink>
-
+                                    <div align="center">
+                                        <p:commandLink id="viewBtn" action="#{areaController.prepareView(item.idArea)}"
+                                                       title="Ver" ajax="false"
+                                                       styleClass="btn btn-sm btn-outline btn-default"
+                                                       >
+                                            <i class="fa fa-eye"/>
+                                        </p:commandLink>
+                                        <p:commandLink id="editBtn" action="#{areaController.prepareEdit(item.idArea)}"
+                                                       title="#{bundle.ListAreaEditLink}" ajax="false" 
+                                                       styleClass="btn btn-sm btn-outline btn-primary"
+                                                       >
+                                            <i class="fa fa-edit"/>
+                                        </p:commandLink>
+                                        <p:commandLink id="showDialogButton"
+                                                       title="Eliminar"
+                                                       update=":form:confirmDialog"
+                                                       action="#{areaController.setSelected(item)}"
+                                                       oncomplete="PF('confirmation').show()"
+                                                       styleClass="btn btn-sm btn-outline btn-danger"
+                                                       >
+                                            <i class="fa fa-trash-o"/>
+                                        </p:commandLink>
+                                    </div>
                                 </p:column>
 
 

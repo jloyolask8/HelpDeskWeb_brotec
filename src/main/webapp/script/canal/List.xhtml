@@ -54,8 +54,8 @@
                 </div>
             </div><!-- / .page-header --> 
         </ui:define>
-        
-        
+
+
         <ui:define name="body">
             <h:form id="form">
                 <h:panelGroup >                  
@@ -68,7 +68,10 @@
 
                         <p:column headerText="Estado" width="120">
                             <div align="center">
-                                <p:selectBooleanButton id="EstadoCanal" style="width: 115px !important;" value="#{item.enabled}" onLabel="Habilitado" offLabel="Deshabilitado" onIcon="ui-icon-check" offIcon="ui-icon-close">  
+                                <p:selectBooleanButton id="EstadoCanal" style="width: 70px !important;" 
+                                                       value="#{item.enabled}" onLabel="On" 
+                                                       offLabel="Off" onIcon="ui-icon-check" 
+                                                       offIcon="ui-icon-close">  
                                     <p:ajax update=":form" listener="#{canalController.update(item)}"/>  
                                 </p:selectBooleanButton>
                                 <p:tooltip for="EstadoCanal" value="Habilita la revisi&oacute; del canal"/>
@@ -78,7 +81,7 @@
                         <p:column headerText="Tipo">
                             <h:outputText value="#{item.idTipoCanal.nombre}" title="#{item.idTipoCanal.iconStyleClass}"/>
                         </p:column> 
-                        
+
                         <p:column headerText="#{bundle.ListCanalTitle_nombre}" width="240">
                             <i class="#{(item.idTipoCanal.idTipo eq 'EMAIL') ? 'fa fa-envelope-o fa-lg':((item.idTipoCanal.idTipo eq 'CHAT') ? 'fa fa-comment-o fa-lg':((item.idTipoCanal.idTipo eq 'MANUAL') ? 'fa fa-pencil-square-o fa-lg':((item.idTipoCanal.idTipo eq 'FORMULARIO') ? 'fa fa-list-alt fa-lg':'')))}"></i>
                             &nbsp;
@@ -91,41 +94,51 @@
 
                         <p:column headerText="Acción" width="100">
                             <div align="center">
-                                <p:commandButton id="editBtn" action="#{canalController.prepareEdit(item)}" 
-                                                 update=":formAddEdit"
-                                                 oncomplete="PF('addEditDialog').show()"
-                                                 title="Editar" icon="ui-icon ui-icon-pencil" 
-                                                 rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes() and not(item.idTipoCanal.idTipo eq 'EMAIL')}"/>
 
-                                <p:commandButton id="editBtnEmail" action="#{canalController.prepareEditEmail(item)}" 
-                                                 update=":formAddEditEmail"
-                                                 oncomplete="PF('addEditEmailDialogWidget').show()"
-                                                 title="Editar" icon="ui-icon ui-icon-pencil" 
-                                                 rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes() and (item.idTipoCanal.idTipo eq 'EMAIL') }"/>
-
-
-                                <p:commandButton id="showDialogButton" title="Eliminar" update=":formDelete" 
-                                                 action="#{canalController.prepareEdit(item)}" oncomplete="PF('confirmation').show()" icon="ui-icon ui-icon-trash" 
-                                                 rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
+                                <p:commandLink id="editBtn" action="#{canalController.prepareEdit(item)}"
+                                               update=":formAddEdit"
+                                               oncomplete="PF('addEditDialog').show()"
+                                               title="Editar" 
+                                               styleClass="btn btn-sm btn-outline btn-primary"
+                                               rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes() and not(item.idTipoCanal.idTipo eq 'EMAIL')}">
+                                    <i class="fa fa-edit"/>
+                                </p:commandLink>
+                                <p:commandLink id="editBtnEmail" action="#{canalController.prepareEdit(item)}"
+                                               update=":formAddEditEmail"
+                                               oncomplete="PF('addEditEmailDialogWidget').show()"
+                                               title="Editar" 
+                                               styleClass="btn btn-sm btn-outline btn-primary"
+                                               rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes() and (item.idTipoCanal.idTipo eq 'EMAIL') }">
+                                    <i class="fa fa-edit"/>
+                                </p:commandLink>
+                                <p:commandLink id="showDialogButton" action="#{canalController.prepareEdit(item)}"
+                                               update=":formDelete"
+                                               title="Eliminar" 
+                                               oncomplete="PF('confirmation').show()"
+                                               styleClass="btn btn-sm btn-outline btn-danger"
+                                               rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
+                                               >
+                                    <i class="fa fa-trash-o"/>
+                                </p:commandLink>
                             </div>
                         </p:column>
 
                         <f:facet name="footer">
-                                    <p:menuButton value="Agregar canal">
-                                        <p:menuitem value="Correo electr&oacute;nico" icon="fa fa-envelope-o"
-                                                    action="#{canalController.prepareCreateEmail()}" oncomplete="PF('addEditEmailDialogWidget').show();" 
-                                                    update=":formAddEditEmail"/>
-                                        <p:menuitem value="Chat" icon="fa fa-comment-o"
-                                                    action="#{canalController.prepareCreateChat()}" oncomplete="PF('addEditDialog').show();" 
-                                                    update=":formAddEdit"/>
-                                        <p:menuitem value="Manual" icon="fa fa-pencil-square-o"
-                                                    action="#{canalController.prepareCreateManual()}" oncomplete="PF('addEditDialog').show();" 
-                                                    update=":formAddEdit"/>
-                                        <p:menuitem value="Formulario" icon="fa fa-list-alt"
-                                                    action="#{canalController.prepareCreateFormulario()}" oncomplete="PF('addEditDialog').show();" 
-                                                    update=":formAddEdit"/>
+                            <p:menuButton value="Agregar canal">
+                                <p:menuitem value="Correo electr&oacute;nico" icon="fa fa-envelope-o"
+                                            action="#{canalController.prepareCreateEmail()}" oncomplete="PF('addEditEmailDialogWidget').show();" 
+                                            update=":formAddEditEmail"/>
+                                <p:menuitem value="Chat" icon="fa fa-comment-o"
+                                            action="#{canalController.prepareCreateChat()}" oncomplete="PF('addEditDialog').show();" 
+                                            update=":formAddEdit"/>
+                                <p:menuitem value="Manual" icon="fa fa-pencil-square-o"
+                                            action="#{canalController.prepareCreateManual()}" oncomplete="PF('addEditDialog').show();" 
+                                            update=":formAddEdit"/>
+                                <p:menuitem value="Formulario" icon="fa fa-list-alt"
+                                            action="#{canalController.prepareCreateFormulario()}" oncomplete="PF('addEditDialog').show();" 
+                                            update=":formAddEdit"/>
 
-                                    </p:menuButton>
+                            </p:menuButton>
 
                         </f:facet> 
                     </p:dataTable>
@@ -141,9 +154,9 @@
                     <h:outputText value="Está seguro de eliminar el canal #{canalController.selected.nombre}?"/>
 
                     <f:facet name="footer">
-                        <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{canalController.destroySelected()}" 
-                                         update=":form" oncomplete="PF('confirmation').hide()"/>
-                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
+                        <p:commandLink styleClass="btn btn-primary btn-flat" id="confirm" value="#{bundle.yesDelete}" action="#{canalController.destroySelected()}" 
+                                       update=":form" oncomplete="PF('confirmation').hide()"/>&nbsp;&nbsp;
+                        <p:commandLink styleClass="btn btn-default btn-flat" id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
                     </f:facet>
 
                 </p:dialog>
@@ -347,17 +360,17 @@
                     <h:panelGroup rendered="#{not canalController.tmpEmailFirstStepReady}" style="width: 97%; position: absolute; bottom: 15px;">
                         <p:separator/>
                         <div align="right" style="width: 100%;">
-                             <p:ajaxStatus style="position: absolute; top: 10px; right: 110px;">
-                                        <f:facet name="start">
-                                            <p:graphicImage library="images" name="ajax-loader_red.gif" />
-                                        </f:facet>
-                                    </p:ajaxStatus>
-                            <p:commandButton value="Cancelar" oncomplete="PF('addEditEmailDialogWidget').hide()" update=":formAddEditEmail" process="@this">
+                            <p:ajaxStatus style="position: absolute; top: 10px; right: 110px;">
+                                <f:facet name="start">
+                                    <p:graphicImage library="images" name="ajax-loader_red.gif" />
+                                </f:facet>
+                            </p:ajaxStatus>
+                            <p:commandLink styleClass="btn btn-default btn-flat" value="Cancelar" oncomplete="PF('addEditEmailDialogWidget').hide()" update=":formAddEditEmail" process="@this">
                                 <p:resetInput target="@form" />
-                            </p:commandButton>
+                            </p:commandLink>
                             &nbsp;
-                            <p:commandButton value="Continuar" process="@form" update=":formAddEditEmail"
-                                             actionListener="#{canalController.detectAutoConfig()}"/>
+                            <p:commandLink styleClass="btn btn-primary btn-flat" value="Continuar" process="@form" update=":formAddEditEmail"
+                                           actionListener="#{canalController.detectAutoConfig()}"/>
                         </div>
                     </h:panelGroup>
 
@@ -365,13 +378,13 @@
                     <h:panelGroup rendered="#{canalController.tmpEmailFirstStepReady}" style="width: 97%; position: absolute; bottom: 15px;">
                         <p:separator/>
                         <div align="right">
-                            
-                             <p:ajaxStatus style="position: absolute; top: 10px; right: 110px;">
-                                        <f:facet name="start">
-                                            <p:graphicImage library="images" name="ajax-loader_red.gif" />
-                                        </f:facet>
-                                    </p:ajaxStatus>
-                            
+
+                            <p:ajaxStatus style="position: absolute; top: 10px; right: 110px;">
+                                <f:facet name="start">
+                                    <p:graphicImage library="images" name="ajax-loader_red.gif" />
+                                </f:facet>
+                            </p:ajaxStatus>
+
                             <p:commandButton value="Cancelar" oncomplete="PF('addEditEmailDialogWidget').hide()" process="@this">
                                 <p:resetInput target="@form" />
                             </p:commandButton>
@@ -388,41 +401,55 @@
 
 
             <p:dialog id="addEditDialog" showEffect="fade" hideEffect="fade" appendTo="@(body)" modal="true"
-                      header="Detalles del canal" widgetVar="addEditDialog" width="420px" height="240px" resizable="false" closable="false" draggable="false">
-                <h:form id="formAddEdit"> 
-                    <h:panelGrid columns="3">
+                      header="Detalles del Canal" widgetVar="addEditDialog" width="420px" height="300px" resizable="false" closable="false" draggable="false">
+                <h:form id="formAddEdit">
 
-                        <h:outputLabel value="#{bundle.CreateCanalLabel_idCanal}" for="idCanal" style="font-weight: bold"/>
-                        <p:inputText id="idCanal" value="#{canalController.selected.idCanal}" title="#{bundle.CreateCanalTitle_idCanal}" 
-                                     required="true" requiredMessage="#{bundle.CreateCanalRequiredMessage_idCanal}" style="width: 220px;"/>
-                        <p:message for="idCanal"/>
-                        <h:outputLabel value="#{bundle.CreateCanalLabel_nombre}" for="nombre" style="font-weight: bold"/>
-                        <p:inputText id="nombre" value="#{canalController.selected.nombre}" title="#{bundle.CreateCanalTitle_nombre}" style="width: 220px;"/>
-                        <p:message for="nombre"/>
-                        <h:outputLabel value="#{bundle.CreateCanalLabel_descripcion}" for="descripcion" style="font-weight: bold"/>
-                        <p:inputTextarea id="descripcion" value="#{canalController.selected.descripcion}" title="#{bundle.CreateCanalTitle_descripcion}" style="width: 220px; height: 100px;"/>
-                        <p:message for="descripcion"/>
+                    <div class="row">
+                        <div class="col-sm-6 col-lg-4">
+                            <div class="form-group">
+                                <label for="idCanal" class="control-label">#{bundle.CreateCanalLabel_idCanal}</label>
+                                <h:inputText id="idCanal" styleClass="form-control" 
+                                             value="#{canalController.selected.idCanal}" title="#{bundle.CreateCanalTitle_idCanal}"
+                                             required="true" requiredMessage="#{bundle.CreateCanalRequiredMessage_idCanal}"
+                                             style="width: 350px;"/>
+                                <p:message for="idCanal"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="nombre" class="control-label">#{bundle.CreateCanalLabel_nombre}</label>
+                                <h:inputText id="nombre" styleClass="form-control" 
+                                             value="#{canalController.selected.nombre}" title="#{bundle.CreateCanalTitle_nombre}"  
+                                             style="width: 350px;"/>
+                                <h:message for="nombre" errorClass="text-danger"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="descripcion" class="control-label">#{bundle.CreateCanalLabel_descripcion}</label>
+                                <h:inputTextarea id="descripcion" styleClass="form-control"  
+                                                 value="#{canalController.selected.descripcion}" title="#{bundle.CreateCanalTitle_descripcion}"
+                                                 style="width: 350px;"/>
+                                <p:message for="descripcion"/>
+                            </div>
 
-                    </h:panelGrid>
+                        </div>
+                    </div>
 
                     <h:panelGroup style="width: 97%; position: absolute; bottom: 12px;">
-                        <p:separator/>
-                        <div align="right">
-                            
-                             <p:ajaxStatus style="position: absolute; top: 10px; right: 110px;">
-                                        <f:facet name="start">
-                                            <p:graphicImage library="images" name="ajax-loader_red.gif" />
-                                        </f:facet>
-                                    </p:ajaxStatus>
-                            <p:commandButton id="canncel" value="Cancelar" onclick="PF('addEditDialog').hide()" process="@this">
+
+                        <div align="">
+
+                            <p:ajaxStatus style="position: absolute; top: 10px; right: 110px;">
+                                <f:facet name="start">
+                                    <p:graphicImage library="images" name="ajax-loader_red.gif" />
+                                </f:facet>
+                            </p:ajaxStatus>
+                            <p:commandLink styleClass="btn btn-default btn-flat" id="cancel" value="Cancelar" onclick="PF('addEditDialog').hide()" process="@this">
                                 <p:resetInput target="@form" />
-                            </p:commandButton>
+                            </p:commandLink>&nbsp;&nbsp;
 
-                            <p:commandButton action="#{canalController.create()}" value="#{bundle.CreateCanalSaveLink}" update=":formAddEdit :form"
-                                             rendered="#{canalController.mode eq 'Create'}"/>
+                            <p:commandLink styleClass="btn btn-primary btn-flat" action="#{canalController.create()}" value="#{bundle.CreateCanalSaveLink}" update=":formAddEdit :form"
+                                           rendered="#{canalController.mode eq 'Create'}"/>
 
-                            <p:commandButton action="#{canalController.update()}" value="#{bundle.EditCanalSaveLink}" update=":formAddEdit :form"
-                                             rendered="#{canalController.mode eq 'Edit'}"/>
+                            <p:commandLink styleClass="btn btn-primary btn-flat" action="#{canalController.update()}" value="#{bundle.EditCanalSaveLink}" update=":formAddEdit :form"
+                                           rendered="#{canalController.mode eq 'Edit'}"/>
                         </div>
                     </h:panelGroup>
                 </h:form>

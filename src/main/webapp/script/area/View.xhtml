@@ -97,20 +97,22 @@
                         </p:column>
 
                         <p:column headerText="Acción">
-                            <p:commandLink id="viewBtn" action="#{grupoController.prepareView(item, '/script/area/View')}"
-                                           disabled="#{not grupoController.puedeEditar(item)}"
-                                           title="Ver" ajax="false" 
-                                           styleClass="btn btn-sm btn-outline btn-default"
-                                           >
-                                <i class="fa fa-eye"/>
-                            </p:commandLink>
-                            <p:commandLink id="editBtn" action="#{grupoController.prepareEdit(item, '/script/area/View')}"
-                                           disabled="#{not grupoController.puedeEditar(item)}"
-                                           title="Editar" ajax="false" 
-                                           styleClass="btn btn-sm btn-outline btn-primary"
-                                           rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
-                                <i class="fa fa-edit"/>
-                            </p:commandLink>
+                            <div align="center">
+                                <p:commandLink id="viewBtn" action="#{grupoController.prepareView(item, '/script/area/View')}"
+                                               disabled="#{not grupoController.puedeEditar(item)}"
+                                               title="Ver" ajax="false" 
+                                               styleClass="btn btn-sm btn-outline btn-default"
+                                               >
+                                    <i class="fa fa-eye"/>
+                                </p:commandLink>
+                                <p:commandLink id="editBtn" action="#{grupoController.prepareEdit(item, '/script/area/View')}"
+                                               disabled="#{not grupoController.puedeEditar(item)}"
+                                               title="Editar" ajax="false" 
+                                               styleClass="btn btn-sm btn-outline btn-primary"
+                                               rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
+                                    <i class="fa fa-edit"/>
+                                </p:commandLink>
+                            </div>
                         </p:column>
                         <f:facet name="footer">
                             <i class="fa fa-refresh">&nbsp;</i><h:commandLink style="color: #006dcc;" action="#{grupoController.prepareList()}" value="Ver Grupos"/>
