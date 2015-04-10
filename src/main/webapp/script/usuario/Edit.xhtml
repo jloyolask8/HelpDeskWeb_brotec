@@ -170,13 +170,12 @@
                         <p:separator/> 
                         <p:commandLink styleClass="btn btn-primary btn-flat fa fa-eye" ajax="false" action="View" value="&nbsp;#{bundle.EditUsuarioViewLink}" 
                                        immediate="true"/>
-                    </p:toolbarGroup>
-
-                    <p:toolbarGroup align="right">   
                         <p:separator/> 
                         <p:commandLink styleClass="btn btn-primary btn-flat fa fa-save" ajax="false" action="#{usuarioController.update}" value="&nbsp;#{bundle.EditUsuarioSaveLink}"
                                        rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
                     </p:toolbarGroup>
+
+
                 </p:toolbar>
 
 

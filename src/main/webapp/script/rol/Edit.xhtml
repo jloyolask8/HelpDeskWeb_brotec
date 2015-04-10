@@ -71,9 +71,11 @@
                         </div>
                     </div>
                 </div>
-                <p:commandLink styleClass="btn btn-primary btn-flat fa fa-save" ajax="false" action="#{rolController.update}" value="&nbsp;&nbsp;#{bundle.EditRolSaveLink}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>&nbsp;&nbsp;
+                <p:commandLink styleClass="btn btn-default btn-flat fa fa-reply" ajax="false" action="#{rolController.prepareList}" value="&nbsp;&nbsp;Volver" immediate="true"/>&nbsp;&nbsp;
                 <p:commandLink styleClass="btn btn-primary btn-flat fa fa-eye" ajax="false" action="View" value="&nbsp;&nbsp;#{bundle.EditRolViewLink}" immediate="true"/>&nbsp;&nbsp;
-                <p:commandLink styleClass="btn btn-primary btn-flat fa fa-folder-open" ajax="false" action="#{rolController.prepareList}" value="&nbsp;&nbsp;#{bundle.EditRolShowAllLink}" immediate="true"/>
+                <p:commandLink styleClass="btn btn-primary btn-flat fa fa-save" ajax="false" action="#{rolController.update}" value="&nbsp;&nbsp;#{bundle.EditRolSaveLink}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
+                
+                
                 <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
                           header="Iniciando proceso de eliminación" widgetVar="confirmation">
 

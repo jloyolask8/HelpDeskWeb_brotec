@@ -40,7 +40,7 @@
         <ui:define name="body">
 
             <h:form id="form">
-                <p:messages/>
+                <p:messages globalOnly="true"/>
 
                 <div class="row">
                     <div class="col-sm-6 col-lg-4">
@@ -110,9 +110,9 @@
                     <p:toolbarGroup align="left">   
                         <p:commandLink styleClass="btn btn-default btn-flat fa fa-reply" ajax="false" action="#{areaController.prepareList}" value="&nbsp;&nbsp;#{bundle.goBack}" immediate="true" />
 
-                    </p:toolbarGroup>
+                        <p:separator/> 
 
-                    <p:toolbarGroup align="right">   
+                     
                         <p:commandLink styleClass="btn btn-primary btn-flat fa fa-save" ajax="false" action="#{areaController.update}" value="&nbsp;&nbsp;#{bundle.SaveLink}"  />
 
                     </p:toolbarGroup>

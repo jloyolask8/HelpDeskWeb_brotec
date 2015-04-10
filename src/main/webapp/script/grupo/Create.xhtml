@@ -14,7 +14,7 @@
         <ui:define name="help">
             <h:outputText escape="false" value="#{bundle.ayudaGrupos}"/>
         </ui:define>
-        
+
         <ui:define name="content_header">
             <script>
                 var init = [];
@@ -28,42 +28,59 @@
                 <div class="row">
                     <div class="col-sm-6 col-xs-12">
                         <h1><i class="fa fa-key page-header-icon"></i>&nbsp;&nbsp;#{bundle.CreateGrupoTitle}</h1>
-                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                        <p:commandLink title="Ayuda Grupos" onclick="PF('helpDialog').show()" styleClass="text-info" >
                             <i class="fa fa-info-circle"/>
                         </p:commandLink> 
                     </div>
                     <div class="col-sm-6 col-xs-12">
-                        
+
                     </div>
                 </div>
             </div><!-- / .page-header --> 
         </ui:define>
-        
-        
+
+
         <ui:define name="body">
 
             <h:form>
-
+                <p:messages/>
                 <p:fieldset legend="Datos generales">
-                    <h:panelGrid columns="3" cellpadding="5">
-                        <h:outputLabel value="#{bundle.CreateGrupoLabel_idGrupo}" for="idGrupo" style="font-weight:bold"/>
-                        <p:inputText id="idGrupo" value="#{grupoController.selected.idGrupo}" title="#{bundle.CreateGrupoTitle_idGrupo}" size="40"
-                                     required="true" requiredMessage="#{bundle.CreateGrupoRequiredMessage_idGrupo}"/>
-                        <p:message for="idGrupo"/>
-                        <h:outputLabel value="#{bundle.CreateGrupoLabel_nombre}" for="nombre" style="font-weight:bold"/>
-                        <p:inputText id="nombre" value="#{grupoController.selected.nombre}" title="#{bundle.CreateGrupoTitle_nombre}" size="40"/>
-                        <p:message for="nombre"/>
 
-                        <p:outputLabel value="Área:" for="idArea" style="font-weight: bold;"/>
-                        <p:selectOneMenu id="idArea"  value="#{grupoController.selected.idArea}" required="true" requiredMessage="Seleccione el Area a la cual esta asociada este grupo.">
-                            <f:selectItems value="#{areaController.itemsAvailableSelectOne}" />
-                        </p:selectOneMenu>
-                        <p:message for="idArea"/>
+                    <div class="row">
+                        <div class="col-sm-6 col-lg-4">
+                            <div class="form-group">
+                                <label style="font-weight: bold;" class="control-label">#{bundle.CreateGrupoLabel_idGrupo}</label>
+                                <h:inputText id="idGrupo" styleClass="form-control" 
+                                             value="#{grupoController.selected.idGrupo}" title="#{bundle.CreateGrupoTitle_idGrupo}"
+                                             size="40" required="true" requiredMessage="ID o código del grupo es requerido"/>
+                                <p:message for="idGrupo" />
+                            </div>
+                            <div class="form-group">
+                                <label style="font-weight: bold;" class="control-label">#{bundle.CreateGrupoLabel_nombre}</label>
+                                <h:inputText styleClass="form-control"
+                                             id="nombre" value="#{grupoController.selected.nombre}" title="#{bundle.CreateGrupoTitle_nombre}" size="40"
+                                             />
+                                <p:message for="nombre"/>
+                            </div>
+                            <div class="form-group">
+                                <label style="font-weight: bold;" class="control-label">Área:</label>
+                                <h:selectOneMenu styleClass="form-control" id="idArea"  value="#{grupoController.selected.idArea}" required="true" 
+                                                 requiredMessage="Seleccione el Área a la cual esta asociada este grupo.">
+                                    <f:selectItems value="#{areaController.itemsAvailableSelectOne}" />
+                                </h:selectOneMenu>
+                                <p:message for="idArea"/>
+                            </div>
+                            <div class="form-group">
+                                <label style="font-weight: bold;" class="control-label">#{bundle.CreateGrupoLabel_descripcion}</label>
+                                <h:inputTextarea styleClass="form-control" 
+                                                 rows="4" cols="50" id="descripcion" value="#{grupoController.selected.descripcion}" title="#{bundle.CreateGrupoTitle_descripcion}">
+                                </h:inputTextarea>
+                                <p:message for="descripcion"/>
+                            </div>
+                        </div>
+                    </div>
 
-                        <h:outputLabel value="#{bundle.CreateGrupoLabel_descripcion}" for="descripcion" style="font-weight:bold"/>
-                        <p:inputTextarea rows="4" cols="50" id="descripcion" value="#{grupoController.selected.descripcion}" title="#{bundle.CreateGrupoTitle_descripcion}" />
-                        <p:message for="descripcion"/>
-                    </h:panelGrid>
+
                 </p:fieldset>
                 <br/>
 
@@ -82,25 +99,13 @@
 
                     </p:pickList>  
                 </p:fieldset>
-
-
-
-
-                <p:toolbar>  
-                    <p:toolbarGroup align="left">   
-                        <p:commandButton action="#{grupoController.create}" value="#{bundle.CreateGrupoSaveLink}" ajax="false" icon="ui-icon-disk" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>  
-                        <p:separator/>                         
-                        <p:commandButton action="#{grupoController.prepareList}" value="#{bundle.showAll}" immediate="true" ajax="false" icon="ui-icon-folder-open"/>
-                    </p:toolbarGroup>
-
-                </p:toolbar>
-
-
-
-
-
-
-
+                <div style="margin-top: 10px;">
+                <p:commandLink styleClass="btn btn-default btn-flat fa fa-reply" action="#{grupoController.prepareList}" value="&nbsp;&nbsp;Volver" immediate="true" ajax="false"/>
+                &nbsp;&nbsp;   
+                <p:commandLink styleClass="btn btn-primary btn-flat fa fa-save" 
+                               action="#{grupoController.create}" value="&nbsp;&nbsp;#{bundle.CreateGrupoSaveLink}" 
+                               ajax="false"  rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/> 
+                </div>
             </h:form>
         </ui:define>
     </ui:composition>

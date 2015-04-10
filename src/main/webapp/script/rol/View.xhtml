@@ -25,7 +25,7 @@
             <div class="page-header">
                 <div class="row">
                     <div class="col-sm-6 col-xs-12">
-                        <h1><i class="fa fa-key page-header-icon"></i>&nbsp;&nbsp;#{bundle.ViewRolTitle}</h1>
+                        <h1><i class="fa fa-key page-header-icon"></i>&nbsp;&nbsp;Detalles de Rol: #{rolController.selected.idRol}</h1>
                         <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
                             <i class="fa fa-info-circle"/>
                         </p:commandLink> 
@@ -81,9 +81,9 @@
                 </p:outputPanel>
 
                 <div style="margin-top: 15px;">
-                    <p:commandLink styleClass="btn btn-default btn-flat fa fa-pencil" ajax="false" action="Edit" disabled="#{not rolController.puedeEditar(rolController.selected)}" value="&nbsp;&nbsp;#{bundle.ViewRolEditLink}"/>
+                    <p:commandLink styleClass="btn btn-default btn-flat fa fa-reply" ajax="false" action="#{rolController.prepareList}" value="&nbsp;&nbsp;Volver"/>
                     &nbsp;&nbsp;
-                    <p:commandLink styleClass="btn btn-primary btn-flat fa fa-folder-open" ajax="false" action="#{rolController.prepareList}" value="&nbsp;&nbsp;#{bundle.ViewRolShowAllLink}"/>
+                    <p:commandLink styleClass="btn btn-primary btn-flat fa fa-pencil" ajax="false" action="Edit" disabled="#{not rolController.puedeEditar(rolController.selected)}" value="&nbsp;&nbsp;#{bundle.ViewRolEditLink}"/>
                 </div>
             </h:form>
         </ui:define>

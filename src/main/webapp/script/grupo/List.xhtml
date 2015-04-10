@@ -14,8 +14,8 @@
         <ui:define name="help">
             <h:outputText escape="false" value="#{bundle.ayudaGrupos}"/>
         </ui:define>
-        
-        
+
+
         <ui:define name="content_header">
             <script>
                 var init = [];
@@ -49,7 +49,7 @@
                                     <li>
                                         <h:commandLink action="#{grupoController.prepareCreate}" 
                                                        value="#{bundle.ListGrupoCreateLink}"
-                                     rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
+                                                       rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
                                         </h:commandLink>
                                     </li>
 
@@ -61,8 +61,8 @@
                 </div>
             </div><!-- / .page-header --> 
         </ui:define>
-        
-        
+
+
         <ui:define  name="body">
             <h:form id="form">
                 <h:panelGroup >
@@ -94,9 +94,32 @@
                         </p:column>
 
                         <p:column headerText="Acción">
-                            <p:commandButton id="viewBtn" ajax="false" action="#{grupoController.prepareView(item)}" disabled="#{not grupoController.puedeEditar(item)}" title="Ver" icon="ui-icon ui-icon-search" />
-                            <p:commandButton id="editBtn" ajax="false" action="#{grupoController.prepareEdit(item)}" disabled="#{not grupoController.puedeEditar(item)}" title="Editar" icon="ui-icon ui-icon-pencil" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
-                            <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" action="#{grupoController.setSelected(item)}" oncomplete="PF('confirmation').show()" disabled="#{not grupoController.puedeEditar(item)}" icon="ui-icon ui-icon-trash" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
+                            <p:commandLink id="viewBtn" action="#{grupoController.prepareView(item)}"
+                                           disabled="#{not grupoController.puedeEditar(item)}"
+                                           title="Ver" ajax="false"
+                                           styleClass="btn btn-sm btn-outline btn-default"
+                                           >
+                                <i class="fa fa-eye"/>
+                            </p:commandLink>
+                            <p:commandLink id="editBtn" action="#{grupoController.prepareEdit(item)}"
+                                           title="Editar" ajax="false"
+                                           disabled="#{not grupoController.puedeEditar(item)}"
+                                           styleClass="btn btn-sm btn-outline btn-primary"
+                                           >
+                                <i class="fa fa-edit"/>
+                            </p:commandLink>
+                            <p:commandLink id="showDialogButton"
+                                           title="Eliminar"
+                                           update=":form:confirmDialog"
+                                           action="#{grupoController.setSelected(item)}"
+                                           oncomplete="PF('confirmation').show()"
+                                           styleClass="btn btn-sm btn-outline btn-danger"
+                                           disabled="#{not grupoController.puedeEditar(item)}"
+                                           rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
+                                           >
+                                <i class="fa fa-trash-o"/>
+                            </p:commandLink>
+                            
                         </p:column>
 
                     </p:dataTable>
@@ -110,16 +133,16 @@
                     <h:outputText value="Está seguro de eliminar el grupo #{grupoController.selected.nombre}?"/>
 
                     <f:facet name="footer">
-                        <p:commandButton id="confirm" value="#{bundle.yesDelete}" action="#{grupoController.destroy()}" 
-                                         update=":form"/>
-                        <p:commandButton id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
+                        <p:commandLink styleClass="btn btn-primary btn-flat" id="confirm" value="#{bundle.yesDelete}" action="#{grupoController.destroy()}" 
+                                       update=":form"/>&nbsp;&nbsp;
+                        <p:commandLink styleClass="btn btn-default btn-flat" id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
                     </f:facet>
 
                 </p:dialog>
 
                 <br />
-                <p:commandButton ajax="false" action="#{grupoController.prepareCreate}" value="Crear grupo"
-                                 rendered="#{grupoController.items.rowCount == 0}" icon="ui-icon ui-icon-plus"/>
+                <p:commandLink styleClass="btn btn-primary btn-flat fa fa-plus" ajax="false" action="#{grupoController.prepareCreate}" value="Crear grupo"
+                                 rendered="#{grupoController.items.rowCount == 0}"/>
 
             </h:form>
         </ui:define>

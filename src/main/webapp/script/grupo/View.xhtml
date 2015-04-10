@@ -27,8 +27,8 @@
             <div class="page-header">
                 <div class="row">
                     <div class="col-sm-6 col-xs-12">
-                        <h1><i class="fa fa-key page-header-icon"></i>&nbsp;&nbsp;#{bundle.ViewGrupoTitle}</h1>
-                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                        <h1><i class="fa fa-key page-header-icon"></i>&nbsp;&nbsp;#{bundle.ViewGrupoTitle}&nbsp;#{grupoController.selected.nombre}</h1>
+                        <p:commandLink title="Ayuda para Grupos" onclick="PF('helpDialog').show()" styleClass="text-info" >
                             <i class="fa fa-info-circle"/>
                         </p:commandLink> 
                     </div>
@@ -47,15 +47,27 @@
                 <p:tabView id="tabs" dynamic="true">
 
                     <p:tab id="lista" title="Grupo: #{grupoController.selected.idGrupo}" >
-                        <h:panelGrid columns="2">
-                            <h:outputText value="#{bundle.ViewGrupoLabel_nombre}" style="font-weight: bold"/>
-                            <h:outputText value="#{grupoController.selected.nombre}" title="#{bundle.ViewGrupoTitle_nombre}"/>
-                            <h:outputText value="Área:" style="font-weight: bold"/>
-                            <h:outputText value="#{grupoController.selected.idArea.nombre}" />
-                            <h:outputText value="#{bundle.ViewGrupoLabel_descripcion}" style="font-weight: bold"/>
-                            <h:outputText value="#{grupoController.selected.descripcion}" title="#{bundle.ViewGrupoTitle_descripcion}"/>
-                        </h:panelGrid>
 
+                        <div class="row">
+                            <div class="col-sm-6 col-lg-4">
+                                <div class="form-group">
+                                    <label style="font-weight: bold;" class="control-label">#{bundle.ViewGrupoLabel_nombre}</label>
+                                    <h:outputText styleClass="form-control" 
+                                                 value="#{grupoController.selected.nombre}" title="#{bundle.ViewGrupoTitle_nombre}"/>
+                                </div>
+                                <div class="form-group">
+                                    <label style="font-weight: bold;" class="control-label">Área:</label>
+                                    <h:outputText styleClass="form-control" 
+                                                 value="#{grupoController.selected.idArea.nombre}" title="Área"/>
+                                </div>
+                                <div class="form-group">
+                                    <label style="font-weight: bold;" class="control-label">#{bundle.ViewGrupoLabel_descripcion}</label>
+                                    <h:inputTextarea disabled="true" styleClass="form-control" 
+                                                     value="#{grupoController.selected.descripcion}" title="#{bundle.ViewGrupoTitle_descripcion}">
+                                    </h:inputTextarea>
+                                </div>
+                            </div>
+                        </div>
                         <br/>
 
                         <p:tabView id="tabs" dynamic="true">
@@ -85,8 +97,23 @@
                                         <h:outputText value="#{user.activo eq true ? 'Activo':'Desactivo'}"/>
                                     </p:column>
                                     <p:column headerText="Acción">
-                                        <p:commandButton id="viewBtn" ajax="false" action="#{usuarioController.prepareView(user, '/script/grupo/View')}" disabled="#{not usuarioController.puedeEditar(user)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" title="Ver" icon="ui-icon ui-icon-document"/>
-                                        <p:commandButton id="editBtn" ajax="false" action="#{usuarioController.prepareEdit(user, '/script/grupo/View')}" disabled="#{not usuarioController.puedeEditar(user)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" title="Editar" icon="ui-icon ui-icon-pencil"/>
+
+                                        <p:commandLink id="viewBtn" action="#{usuarioController.prepareView(user, '/script/grupo/View')}"
+                                                       disabled="#{not usuarioController.puedeEditar(user)}"
+                                                       title="Ver" ajax="false"
+                                                       styleClass="btn btn-sm btn-outline btn-default"
+                                                       rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
+                                                       >
+                                            <i class="fa fa-eye"/>
+                                        </p:commandLink>
+                                        <p:commandLink id="editBtn" action="#{usuarioController.prepareEdit(user, '/script/grupo/View')}"
+                                                       title="Editar" ajax="false"
+                                                       disabled="#{not usuarioController.puedeEditar(user)}"
+                                                       styleClass="btn btn-sm btn-outline btn-primary"
+                                                       rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
+                                                       >
+                                            <i class="fa fa-edit"/>
+                                        </p:commandLink>
                                     </p:column>
 
 
@@ -95,7 +122,7 @@
 
 
                             </p:tab>
-                            
+
                             <p:tab id="lista2" title="Productos del Grupo" >
 
 
@@ -111,7 +138,7 @@
                                     <p:column>
                                         <h:outputText value="#{p}"/>
                                     </p:column>
-                                    
+
                                     <p:column headerText="Acción">
                                         <p:commandButton id="viewBtn" ajax="false" action="#{productoController.prepareView(user, '/script/grupo/View')}"  rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" title="Ver" icon="ui-icon ui-icon-document"/>
                                         <p:commandButton id="editBtn" ajax="false" action="#{productoController.prepareEdit(user, '/script/grupo/View')}"  rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" title="Editar" icon="ui-icon ui-icon-pencil"/>
@@ -127,31 +154,20 @@
 
                         <br/>
 
-                        <p:toolbar>  
-                            <p:toolbarGroup align="left">   
-                                <p:commandButton ajax="false" action="#{grupoController.goBack()}" value="#{bundle.goBack}" immediate="true" icon="fa fa-chevron-left"/>
 
-                                <p:separator/>
-
-                                <p:commandButton ajax="false" action="Edit" 
-                                                 value="#{bundle.ViewGrupoEditLink}" icon="ui-icon ui-icon-pencil" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
-
-
-                            </p:toolbarGroup> 
-
-                            
-
-                        </p:toolbar>
-
+                        <p:commandLink styleClass="btn btn-default btn-flat fa fa-reply" ajax="false" action="#{grupoController.goBack()}" value="&nbsp;&nbsp;#{bundle.goBack}" immediate="true"/>
+                        &nbsp;&nbsp;
+                        <p:commandLink styleClass="btn btn-primary btn-flat fa fa-pencil" ajax="false" action="Edit" 
+                                       value="&nbsp;&nbsp;#{bundle.ViewGrupoEditLink}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
                     </p:tab>
-                </p:tabView>
 
+                </p:tabView>
             </h:form>
 
         </ui:define>
-        
+
         <ui:define name="dialogs">
-            
+
         </ui:define>
     </ui:composition>
 
