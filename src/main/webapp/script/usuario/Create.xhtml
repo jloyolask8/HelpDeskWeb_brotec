@@ -13,15 +13,15 @@
         <ui:define name="help">
             <h:outputText escape="false" value="Areas"/>
         </ui:define>
-        
-         <ui:define name="content_header">
+
+        <ui:define name="content_header">
             <script>
                 var init = [];
                 init.push(function () {
                     $('body').addClass('mmc');
                 });
             </script>
-        <!-- page-header -->
+            <!-- page-header -->
             <div class="page-header">
                 <div class="row">
                     <div class="col-sm-6 col-xs-12">
@@ -30,103 +30,153 @@
                             <i class="fa fa-info-circle"/>
                         </p:commandLink> 
                     </div>
-                    
+
                 </div>
             </div><!-- / .page-header --> 
         </ui:define>
-        
-        
+
+
         <ui:define name="body">
 
             <h:form>
                 <p:messages globalOnly="true"/>
 
-                <p:fieldset legend="Identificación del usuario"> 
-                    <h:panelGrid columns="3">
-                        <h:outputLabel value="#{bundle.EditUsuarioLabel_idUsuario}" for="idUsuario" style="font-weight:bold"/>
-                        <p:inputText id="idUsuario" value="#{usuarioController.selected.idUsuario}" title="#{bundle.EditUsuarioTitle_idUsuario}" autocomplete="false"
-                                     required="true" requiredMessage="#{bundle.EditUsuarioRequiredMessage_idUsuario}"/>
-                        <p:message for="idUsuario"/>
-                        <h:outputLabel value="Contraseña" for="Pass" style="font-weight:bold"/>
-                        <p:password id="Pass" value="#{usuarioController.selected.pass}" inline="true" redisplay="true" autocomplete="false"
-                                    title="Contraseña" required="true" feedback="true" requiredMessage="Se requiere una contraseña"/>
-                        <p:message for="Pass"/>
-                        <h:outputLabel value="#{bundle.EditUsuarioLabel_activo}" for="activo" style="font-weight:bold"/>
-                        <p:selectOneMenu id="activo" value="#{usuarioController.selected.activo}">
-                            <f:selectItem itemLabel="Si" itemValue="true"/>
-                            <f:selectItem itemLabel="No" itemValue="false"/>
-                        </p:selectOneMenu>
-                        <p:message for="activo"/>
-                    </h:panelGrid>
+                <p:fieldset legend="Identificación del usuario">
+                    <div class="row">
+                        <div class="col-sm-6 col-lg-4">
+                            <div class="form-group">
+                                <label style="font-weight: bold;" for="idUsuario" class="control-label">#{bundle.EditUsuarioLabel_idUsuario}</label>
+                                <h:inputText styleClass="form-control" id="idUsuario" value="#{usuarioController.selected.idUsuario}" title="#{bundle.EditUsuarioTitle_idUsuario}"
+                                             autocomplete="false" required="true" requiredMessage="#{bundle.EditUsuarioRequiredMessage_idUsuario}"/>
+                                <p:message for="idUsuario"/>
+                            </div>
+
+                            <div class="form-group">
+                                <label style="font-weight: bold;" for="Pass" class="control-label">Contraseña:</label>
+                                <h:inputSecret styleClass="form-control" id="Pass" value="#{usuarioController.selected.pass}"
+                                               title="Contraseña"
+                                               autocomplete="false" required="true" requiredMessage="Se requiere una contraseña">
+                                    <p:message for="Pass"/>
+                                </h:inputSecret>
+                            </div>
+
+                            <div class="form-group">
+                                <label style="font-weight: bold;" for="activo" class="control-label">#{bundle.EditUsuarioLabel_activo}</label>
+                                <h:selectOneMenu styleClass="form-control" id="activo" style="width: 300px;"
+                                                 value="#{usuarioController.selected.activo}">
+                                    <f:selectItem itemLabel="Si" itemValue="true"/>
+                                    <f:selectItem itemLabel="No" itemValue="false"/>
+                                </h:selectOneMenu>
+                                <p:message for="activo"/>
+                            </div>
+                        </div>
+                    </div>
                 </p:fieldset>
                 <br/>
-                <p:fieldset legend="Datos Personales"> 
-                    <h:panelGrid columns="3">
-                        <h:outputLabel value="Rut" for="rut" style="font-weight:bold"/>
-                        <p:inputText id="rut" value="#{usuarioController.selected.rut}" title="Rut del usuario">
-                            <p:ajax event="blur" listener="#{usuarioController.formateaRut}" update="rut,msgrut :mainform:messages"/>
-                        </p:inputText>
-                        <p:message id="msgrut" for="rut"/>
-                        <h:outputLabel value="#{bundle.EditUsuarioLabel_nombres}" for="nombres" style="font-weight:bold"/>
-                        <p:inputText id="nombres" value="#{usuarioController.selected.nombres}" title="#{bundle.EditUsuarioTitle_nombres}" />
-                        <p:message for="nombres"/>
-                        <h:outputLabel value="#{bundle.EditUsuarioLabel_apellidos}" for="apellidos" style="font-weight:bold"/>
-                        <p:inputText id="apellidos" value="#{usuarioController.selected.apellidos}" title="#{bundle.EditUsuarioTitle_apellidos}" />
-                        <p:message for="apellidos"/>
-                        <h:outputLabel value="#{bundle.EditUsuarioLabel_email}" for="email" style="font-weight:bold"/>
-                        <p:inputText id="email" value="#{usuarioController.selected.email}" title="#{bundle.EditUsuarioTitle_email}" />
-                        <p:message for="email"/>
-                        <h:outputLabel value="#{bundle.EditUsuarioLabel_telFijo}" for="telFijo" style="font-weight:bold"/>
-                        <p:inputText id="telFijo" value="#{usuarioController.selected.telFijo}" title="#{bundle.EditUsuarioTitle_telFijo}" />
-                        <p:message for="telFijo"/>
-                        <h:outputLabel value="#{bundle.EditUsuarioLabel_telMovil}" for="telMovil" style="font-weight:bold" />
-                        <p:inputText id="telMovil" value="#{usuarioController.selected.telMovil}" title="#{bundle.EditUsuarioTitle_telMovil}" />
-                        <p:message for="telMovil"/>
-                    </h:panelGrid>
+                <p:fieldset legend="Datos Personales">
+
+                    <div class="row">
+                        <div class="col-sm-6 col-lg-4">
+                            <div class="form-group">
+                                <label style="font-weight: bold;" for="rut" class="control-label">Rut:</label>
+                                <h:inputText id="rut" styleClass="form-control" 
+                                             value="#{usuarioController.selected.rut}" title="Rut del usuario">
+                                    <p:ajax event="blur" listener="#{usuarioController.formateaRut}" update="rut,msgrut :mainform:messages"/>
+                                </h:inputText>
+                                <p:message id="msgrut" for="rut"/>
+                            </div>
+                            <div class="form-group">
+                                <label style="font-weight: bold;" for="nombres" class="control-label">#{bundle.EditUsuarioLabel_nombres}</label>
+                                <h:inputText id="nombres" styleClass="form-control" 
+                                             value="#{usuarioController.selected.nombres}" title="#{bundle.EditUsuarioTitle_nombres}"
+                                             />
+                                <p:message for="nombres"/>
+                            </div>
+                            <div class="form-group">
+                                <label style="font-weight: bold;" for="apellidos" class="control-label">#{bundle.EditUsuarioLabel_apellidos}</label>
+                                <h:inputText id="apellidos" styleClass="form-control" 
+                                             value="#{usuarioController.selected.apellidos}" title="#{bundle.EditUsuarioTitle_apellidos}"
+                                             />
+                                <p:message for="apellidos"/>
+                            </div>
+                            <div class="form-group">
+                                <label style="font-weight: bold;" for="email" class="control-label">#{bundle.EditUsuarioLabel_email}</label>
+                                <h:inputText id="email" styleClass="form-control" 
+                                             value="#{usuarioController.selected.email}" title="#{bundle.EditUsuarioTitle_email}"
+                                             />
+                                <p:message for="email"/>
+                                <p:watermark for="email" value="Ej: sunombre@sucorreo.com * "/>
+                            </div>
+                            <div class="form-group">
+                                <label style="font-weight: bold;" for="telFijo" class="control-label">#{bundle.EditUsuarioLabel_telFijo}</label>
+                                <h:inputText id="telFijo" styleClass="form-control" 
+                                             value="#{usuarioController.selected.telFijo}" title="#{bundle.EditUsuarioTitle_telFijo}"
+                                             />
+                                <p:message for="telFijo"/>
+                            </div>
+                            <div class="form-group">
+                                <label style="font-weight: bold;" for="telMovil" class="control-label">#{bundle.EditUsuarioLabel_telMovil}</label>
+                                <h:inputText id="telMovil" styleClass="form-control" 
+                                             value="#{usuarioController.selected.telMovil}" title="#{bundle.EditUsuarioTitle_telMovil}"
+                                             />
+                                <p:message for="telMovil"/>
+                            </div>
+                        </div>
+                    </div>
                 </p:fieldset>
                 <br/>
 
                 <p:fieldset legend="Datos de Organización"> 
-                    <h:panelGrid columns="3">
-                        <h:outputLabel value="#{bundle.EditUsuarioLabel_supervisor}" for="supervisor" style="font-weight:bold"/>
-                        <p:selectOneMenu id="supervisor" value="#{usuarioController.selected.supervisor}">
-                            <f:selectItems value="#{usuarioController.itemsAvailableSelectOneNoSystem}"/>
-                        </p:selectOneMenu>
-                        <p:message for="supervisor"/>
 
-                        <h3>Grupos</h3> 
-                        <p:pickList id="pojoPickList"  value="#{usuarioController.gruposDualListModel}" var="g" effect="slide" 
-                                    itemValue="#{g}" itemLabel="#{g.nombre}" converter="GrupoConverter"
-                                    showSourceControls="true" showTargetControls="true"  
-                                    showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains" > 
+                    <div class="row">
+                        <div class="col-sm-6 col-lg-4">
+                            <div class="form-group">
+                                <label style="font-weight: bold;" for="supervisor" class="control-label">#{bundle.EditUsuarioLabel_supervisor}</label>
+                                <h:selectOneMenu styleClass="form-control" id="supervisor" style="width: 300px;"
+                                                 value="#{usuarioController.selected.supervisor}">
+                                    <f:selectItems value="#{usuarioController.itemsAvailableSelectOneNoSystem}"/>
+                                </h:selectOneMenu>
+                                <p:message for="supervisor"/>
+                            </div>
 
-                            <f:facet name="sourceCaption">Grupos</f:facet> 
-                            <f:facet name="targetCaption">Seleccionados</f:facet> 
+                            <div class="form-group">
+                                <label style="font-weight: bold;" for="pojoPickList" class="control-label">Asignar Grupos al Usuario</label>
+                                <p:pickList id="pojoPickList"  value="#{usuarioController.gruposDualListModel}" var="g" effect="slide" 
+                                            itemValue="#{g}" itemLabel="#{g.nombre}" converter="GrupoConverter"
+                                            showSourceControls="true" showTargetControls="true"  
+                                            showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains"> 
 
-                            <p:column> 
-                                #{g.nombre} 
-                            </p:column> 
+                                    <f:facet name="sourceCaption">Grupos</f:facet> 
+                                    <f:facet name="targetCaption">Seleccionados</f:facet> 
+                                    <p:column> 
+                                        #{g.nombre} 
+                                    </p:column> 
 
-                        </p:pickList>     
-                        <p:message for="pojoPickList"/>
+                                </p:pickList>
+                                <p:message for="pojoPickList"/>
+                            </div>
 
-                        <h:outputLabel for="rolList" value="Roles" style="font-weight:bold"/>
-                        <p:selectManyCheckbox id="rolList" converter="RolConverter" value="#{usuarioController.selected.rolList}" layout="pageDirection">
-                            <f:selectItems  value="#{rolController.itemsAvailableSelectMany}" itemLabel="nombre" itemValue="idRol"/>
-                        </p:selectManyCheckbox>
-                        <p:message for="rolList"/>
-                    </h:panelGrid>
+                            <div class="form-group">
+                                <label style="font-weight: bold;" for="rolList" class="control-label">Roles:</label>
+                                <p:selectManyCheckbox id="rolList" converter="RolConverter" value="#{usuarioController.selected.rolList}" layout="pageDirection">
+                                    <f:selectItems  value="#{rolController.itemsAvailableSelectMany}" itemLabel="nombre" itemValue="idRol"/>
+                                </p:selectManyCheckbox>
+                                <p:message for="rolList"/>
+                            </div>
+
+                        </div>
+                    </div>
                 </p:fieldset>
 
                 <br/>
                 <p:toolbar>  
                     <p:toolbarGroup align="left">   
-                        <p:commandButton action="#{usuarioController.prepareList}" value="#{bundle.goBack}" 
-                                         rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" immediate="true" ajax="false" icon="fa fa-chevron-left"/>
+                        <p:commandLink styleClass="btn btn-default btn-flat fa fa-reply" action="#{usuarioController.prepareList}" value="&nbsp;&nbsp;#{bundle.goBack}" 
+                                         rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" immediate="true" ajax="false"/>
                         <p:separator/> 
-                        <p:commandButton action="#{usuarioController.create}" value="#{bundle.CreateUsuarioSaveLink}" 
+                        <p:commandLink styleClass="btn btn-primary btn-flat fa fa-save" action="#{usuarioController.create}" value="&nbsp;&nbsp;#{bundle.CreateUsuarioSaveLink}" 
                                          ajax="false" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
-                                         icon="fa fa-save"/>
+                                         />
 
 
 
