@@ -318,7 +318,9 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             setSelectedItems(null);
             showMessageInDialog(FacesMessage.SEVERITY_INFO, "Combinación finalizada",
                     "El caso " + casoBase.getIdCaso() + " " + comment);
-            redirect("/script/caso/Edit.xhtml");
+//            redirect("/script/caso/Edit.xhtml");
+            
+            executeInClient("PF('confirmaCombinacion').hide()");
         }
     }
 

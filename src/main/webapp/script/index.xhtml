@@ -199,6 +199,14 @@
 
                             <p:separator />  
 
+                             <p:commandButton id="combinarBtn" onclick="PF('confirmaCombinacion').show()"
+                                             update=":formCombinarCasos"
+                                             title="combinar"
+                                             icon="fa fa-random"
+                                             type="button"
+                                             disabled="#{casoController.selectedItems.size() le 1}"/> 
+                            <p:separator />
+
                             <p:commandButton id="deleteBtn" icon="ui-icon-trash"  disabled="#{empty casoController.selectedItems}" iconPos="notext"
                                              rendered="#{casoController.verificarEliminarCaso()}"
                                              oncomplete="PF('deleteSelectedCasos').show();" update=":formdeleteSelectedCasos" /> 
@@ -527,6 +535,37 @@
 
 
             </p:dialog> 
+            
+            
+            <p:dialog  widgetVar="confirmaCombinacion" header="Confirmar combinación de casos" 
+                       resizable="false" closeOnEscape="true" modal="true" appendTo="@(body)" dynamic="true">  
+                <h:form id="formCombinarCasos">
+                    <p:outputLabel value="Está seguro que desea combinar los siguientes casos ? Al convinar los casos quedará solo 1 caso como resultado."/>
+
+                    <br/>
+
+                    <p:scrollPanel id="scrollpaneActividades" mode="native" style="height: 300px;border-color: window;border: 0;">
+                        <h:panelGrid columns="1">
+                            <c:forEach items="#{casoController.selectedItems}" var="item" >
+                                <h:commandLink action="#{casoController.filterByIdCaso(item.idCaso)}" >
+                                    <h:outputText styleClass="ticket-status" 
+                                                  style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};" value="#{item.idSubEstado.nombre}"
+                                                  />
+                                    <h:outputText value=" #{item.tipoCaso.nombre} N°#{item.idCaso} - #{item.tema}"/>
+                                </h:commandLink>
+                            </c:forEach>
+                        </h:panelGrid>
+                    </p:scrollPanel> 
+
+                    <p:commandButton value="Aplicar" icon="ui-icon-circle-minus" 
+                                     actionListener="#{casoController.mergeSelectedCasos()}"
+                                     update=":mainform:messages :form0:ID_TABLA" /> 
+ 
+                    <p:commandButton value="#{bundle.decline}" onclick="PF('confirmaCombinacion').hide()" type="button" /> 
+                </h:form>
+
+
+            </p:dialog>
 
 
 
