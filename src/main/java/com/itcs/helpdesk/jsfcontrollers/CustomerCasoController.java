@@ -77,7 +77,7 @@ public class CustomerCasoController extends CasoController {
 //                    EnumTipoNota.NOTA.getTipoNota(), true);
             addNotaToCaso(current, nota);
 
-            getJpaController().mergeCaso(current, ManagerCasos.createLogReg(current, "Cliente agrega comentarios a través del portal del cliente.", 
+            getJpaController().mergeCaso(current, ManagerCasos.createLogReg(current, "", 
                     "Cliente agrega comentarios a través del portal del cliente.", ""));
 
         } catch (NonexistentEntityException ex) {
