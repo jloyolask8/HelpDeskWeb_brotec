@@ -6,8 +6,6 @@
 package com.itcs.helpdesk.webapputils;
 
 import com.itcs.helpdesk.jsfcontrollers.util.ApplicationBean;
-import com.itcs.helpdesk.jsfcontrollers.util.UserSessionBean;
-import javax.servlet.annotation.WebListener;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
@@ -18,35 +16,35 @@ import javax.servlet.http.HttpSessionListener;
 //@WebListener
 public class UserSessionListener implements HttpSessionListener {
 
-    private static int totalActiveSessions;
-    private static int totalActiveCustomerSessions;
+//    private static int totalActiveSessions;
+//    private static int totalActiveCustomerSessions;
 
-    public static int getTotalActiveSession() {
-        return totalActiveSessions;
-    }
-
-    /**
-     * @return the totalActiveCustomerSessions
-     */
-    public static int getTotalActiveCustomerSessions() {
-        return totalActiveCustomerSessions;
-    }
+//    public static int getTotalActiveSession() {
+//        return totalActiveSessions;
+//    }
+//
+//    /**
+//     * @return the totalActiveCustomerSessions
+//     */
+//    public static int getTotalActiveCustomerSessions() {
+//        return totalActiveCustomerSessions;
+//    }
 
     @Override
     public void sessionCreated(HttpSessionEvent arg0) {
-        final UserSessionBean sessionObj = (UserSessionBean) arg0.getSession().getServletContext().getAttribute("UserSessionBean");
-        if (sessionObj.isValidatedCustomerSession()) {
-            totalActiveCustomerSessions++;
-
-        } else if (sessionObj.isValidatedSession()) {
-            totalActiveSessions++;
-        }
-//        //System.out.println("sessionCreated - add one session into counter");
+//        final UserSessionBean sessionObj = (UserSessionBean) arg0.getSession().getServletContext().getAttribute("UserSessionBean");
+//        if (sessionObj.isValidatedCustomerSession()) {
+//            totalActiveCustomerSessions++;
+//
+//        } else if (sessionObj.isValidatedSession()) {
+//            totalActiveSessions++;
+//        }
+////        //System.out.println("sessionCreated - add one session into counter");
     }
 
     @Override
     public void sessionDestroyed(HttpSessionEvent arg0) {
-        totalActiveSessions--;
+//        totalActiveSessions--;
 //        //System.out.println("sessionDestroyed - from:" + arg0.getSource());
 
         ApplicationBean applicationBean = (ApplicationBean) arg0.getSession().getServletContext().getAttribute("applicationBean");

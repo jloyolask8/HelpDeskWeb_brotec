@@ -90,13 +90,13 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
         return users;
     }
     
-    public Integer getTotalActiveCustomerSession() {
-        return UserSessionListener.getTotalActiveSession();
-    }
+//    public Integer getTotalActiveCustomerSession() {
+//        return UserSessionListener.getTotalActiveSession();
+//    }
 
-    public Integer getTotalActiveSession() {
-        return UserSessionListener.getTotalActiveSession();
-    }
+//    public Integer getTotalActiveSession() {
+//        return UserSessionListener.getTotalActiveSession();
+//    }
 
 //    @PostConstruct
     public void init() {

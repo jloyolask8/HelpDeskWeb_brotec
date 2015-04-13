@@ -157,6 +157,7 @@
                                                          disabled="#{casoCustomerController.selected.idProducto eq null}">
                                             <f:selectItem itemLabel="---" itemValue=""/>
                                             <f:selectItems value="#{casoCustomerController.selected.idProducto.componenteList}" var="comp" itemLabel="#{comp.nombre}" itemValue="#{comp}"/>
+                                            <p:ajax event="change" update="idSubComponente"  listener="#{casoCustomerController.handleProductChange}" />
                                         </h:selectOneMenu>
                                         <span class="help-block">. <h:message for="idComponente" errorClass="text-danger" /></span>
                                     </div>
@@ -208,17 +209,17 @@
                                     </div>
                                 </div>
 
-                                
+
 
                                 <div class="form-group row">
                                     <label for="idArea" class="col-sm-2 control-label"> Área </label>
 
                                     <div class="col-sm-10">
-                                        <p:selectOneMenu id="idArea"  value="#{casoCustomerController.selected.idArea}" 
+                                        <h:selectOneMenu id="idArea"  value="#{casoCustomerController.selected.idArea}" 
                                                          styleClass="form-control"
                                                          required="true" requiredMessage="Seleccione el Area en la cual crear el caso.">
                                             <f:selectItems value="#{areaController.itemsAvailableSelectMany}" />
-                                        </p:selectOneMenu>
+                                        </h:selectOneMenu>
 
                                         <span class="help-block"><h:message for="idArea" errorClass="text-danger" /></span>
                                     </div>
@@ -228,11 +229,13 @@
                                     <label for="descripcion" class="col-sm-2 control-label"> #{bundle.CreateCasoLabel_descripcion} </label>
 
                                     <div class="col-sm-10">
-                                        <pe:ckEditor value="#{casoCustomerController.selected.descripcion}"
+                                        <pe:ckEditor value="#{casoCustomerController.selected.descripcion}" width="100%"
+                                                     required="true"
                                                      toolbar="#{applicationBean.ckEditorToolbar}"
                                                      id="descripcion"/>
 
                                         <span class="help-block">Descripción de su solicitud. <h:message for="descripcion" errorClass="text-danger" /></span>
+                                        <span class="help-block"><h:message for="descripcion" errorClass="text-danger" /></span>
                                     </div>
                                 </div>
 
@@ -241,9 +244,9 @@
 
                                     <div class="col-sm-10">
                                         <h:panelGrid >
-                                            
-                                            <h:panelGroup id="listaadjuntos" layout="block"
-                                                          rendered="#{not empty casoCustomerController.selected.attachmentList}">
+
+                                            <p:outputPanel  id="listaadjuntos" layout="block"
+                                                            rendered="#{not empty casoCustomerController.selected.attachmentList}">
 
                                                 <p:dataTable var="fileitem" value="#{casoCustomerController.selected.attachmentList}" 
                                                              emptyMessage="No hay archivos adjuntos.">
@@ -258,8 +261,8 @@
                                                         </p:commandButton>
                                                     </p:column>
                                                 </p:dataTable> 
-                                            </h:panelGroup>
-                                            
+                                            </p:outputPanel>
+
                                             <p:fileUpload id="fileupload"
                                                           fileUploadListener="#{casoCustomerController.uploadToSaveLater}"
                                                           label="Seleccionar Archivos o simplemente arrastrarlos aquí"
@@ -269,10 +272,11 @@
                                                           mode="advanced"
                                                           dragDropSupport="true"
                                                           auto="true"
-                                                          update=":mainform:messages listaadjuntos fileupload"
+                                                          process="@form"
+                                                          update=":mainform:messages @form"
                                                           multiple="true"  />
 
-                                            
+
 
                                         </h:panelGrid>
 
@@ -311,13 +315,7 @@
 
                 <div class="page-footer">
 
-                    <div class="progress">
-                        <div class="progress-bar progress-bar-success" role="progressbar" 
-                             aria-valuenow="#{casoCustomerController.stepNewCasoIndex * 25}" 
-                             aria-valuemin="0" aria-valuemax="100" style="width: #{casoCustomerController.stepNewCasoIndex * 25}\%">
-                            <span>#{casoCustomerController.stepNewCasoIndex * 25}% de avance</span>
-                        </div>
-                    </div>
+
 
                 </div>
 

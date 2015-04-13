@@ -84,7 +84,7 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
                     if (instance != null) {
                         final String[] split_emails = emails_to.split(",");
                         //SEND THE EMAIL!
-                        Logger.getLogger(SendMailJob.class.getName()).log(Level.INFO, "SendMailJob sending email to {0}", split_emails);
+                        Logger.getLogger(SendMailJob.class.getName()).log(Level.INFO, "[SendMailJob] sending email to {0}", split_emails);
                         instance.sendHTML(split_emails, subject, email_text, null);
                         //if sent ok, then forget about it
                         unschedule(formatJobId);
