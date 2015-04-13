@@ -13,10 +13,10 @@
             <h:outputText value="Recursos"/>
         </ui:define>
         <ui:define name="help">
-            <h:outputText escape="false" value="Recursos"/>
+            <h:outputText escape="false" value="#{bundle.ayudaReglas}"/>
         </ui:define>
-        
-        
+
+
         <ui:define name="content_header">
             <script>
                 var init = [];
@@ -29,7 +29,7 @@
             <div class="page-header">
                 <div class="row">
                     <div class="col-sm-6 col-xs-12">
-                        <h1><i class="fa fa-key page-header-icon"></i>&nbsp;&nbsp;Recursos</h1>
+                        <h1><i class="fa fa-barcode page-header-icon"></i>&nbsp;&nbsp;Recursos</h1>
                         <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
                             <i class="fa fa-info-circle"/>
                         </p:commandLink> 
@@ -49,9 +49,9 @@
                                 <ul class="dropdown-menu">
                                     <li>
                                         <p:commandLink actionListener="#{resourceController.prepareCreate}" 
-                                             oncomplete="PF('createDialog').show()" update=":createForm" 
-                                                       value="#{bundle.ListResourceCreateLink}"
-                                     rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
+                                                       oncomplete="PF('createDialog').show()" update=":createForm" 
+                                                       value="Crear Recursos"
+                                                       rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
                                         </p:commandLink>
                                     </li>
 
@@ -63,30 +63,30 @@
                 </div>
             </div><!-- / .page-header --> 
         </ui:define>
-        
-   
+
+
         <ui:define name="body">
-            
-            
+
+
             <go:vistasListBt id="vistasList" 
                              update="@(form)" 
                              controllerMBean="#{resourceController}"
                              user="#{UserSessionBean.current}"/>
             <div class="panel search-panel">
-               <h:form id="formfilter">
-                <go:filterView id="panelFilter0" titleIconClass="fa fa-users page-header-icon"
-                               controllerMBean="#{resourceController}" 
-                               vista="#{resourceController.vista}"
-                               filterHelper="#{resourceController.filterHelper}" 
-                               canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
-                               update=":mainform:messages :formfilter:panelFilter0:panelFilter :form"
-                               vistaControllerBackOutcome="/script/cliente/List"/>
+                <h:form id="formfilter">
+                    <go:filterView id="panelFilter0" titleIconClass="fa fa-users page-header-icon"
+                                   controllerMBean="#{resourceController}" 
+                                   vista="#{resourceController.vista}"
+                                   filterHelper="#{resourceController.filterHelper}" 
+                                   canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
+                                   update=":mainform:messages :formfilter:panelFilter0:panelFilter :form"
+                                   vistaControllerBackOutcome="/script/cliente/List"/>
 
-            </h:form>
+                </h:form>
             </div>
 
 
-            
+
 
             <h:form id="form">
                 <h:panelGroup>
@@ -96,7 +96,7 @@
 
                         <p:column>
                             <f:facet name="header">
-                                <h:outputText value="#{bundle.ListResourceTitle_idResource}"/>
+                                <h:outputText value="ID Recurso"/>
                             </f:facet>
                             <h:outputText value="#{item.idResource}"/>
                         </p:column>
@@ -108,7 +108,7 @@
                         </p:column>
                         <p:column>
                             <f:facet name="header">
-                                <h:outputText value="#{bundle.ListResourceTitle_descripcion}"/>
+                                <h:outputText value="Descripci&oacute;n"/>
                             </f:facet>
                             <h:outputText value="#{item.descripcion}"/>
                         </p:column>
@@ -119,16 +119,27 @@
                             <h:outputText value="#{item.tipo}"/>
                         </p:column>
 
-                        <p:column headerText="Acción">
-                            <p:commandButton id="editBtn" ajax="true" actionListener="#{resourceController.prepareEditPK(item.idResource)}" 
-                                             rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" 
-                                             oncomplete="PF('editDialog').show()" update=":editForm"
-                                             title="Editar" icon="ui-icon ui-icon-pencil"/>
-                            <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" 
-                                             rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" 
-                                             actionListener="#{resourceController.prepareEditPK(item.idResource)}" 
-                                             oncomplete="PF('confirmation').show()" 
-                                             icon="ui-icon ui-icon-trash"/>
+                        <p:column headerText="Acci&oacute;n">
+                            <p:commandLink id="editBtn" actionListener="#{resourceController.prepareEditPK(item.idResource)}"
+                                           title="Editar" ajax="true"
+                                           oncomplete="PF('editDialog').show()"
+                                           update=":editForm"
+                                           rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
+                                           styleClass="btn btn-sm btn-outline btn-primary"
+                                           >
+                                <i class="fa fa-edit"/>
+                            </p:commandLink>
+                            <p:commandLink id="showDialogButton"
+                                           title="Eliminar"
+                                           update=":form:confirmDialog"
+                                           actionListener="#{resourceController.prepareEditPK(item.idResource)}"
+                                           oncomplete="PF('confirmation').show()"
+                                           styleClass="btn btn-sm btn-outline btn-danger"
+                                           rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
+                                           >
+                                <i class="fa fa-trash-o"/>
+                            </p:commandLink>
+
                         </p:column>
 
 
@@ -161,67 +172,67 @@
                 </p:dialog>
 
             </h:form>
-            
-            
-            
+
+
+
         </ui:define>
-        
+
         <ui:define name="dialogs">
-             <p:dialog id="createDialog" showEffect="fade" hideEffect="fade" 
-                          header="Crear nuevo registro" widgetVar="createDialog">
+            <p:dialog id="createDialog" showEffect="fade" hideEffect="fade" 
+                      header="Crear nuevo registro" widgetVar="createDialog">
 
-                    <h:form id="createForm">
-                        <h:panelGrid columns="3">
-                            <h:outputLabel value="#{bundle.CreateResourceLabel_nombre}" for="nombre" />
-                            <h:inputText id="nombre" value="#{resourceController.selected.nombre}" title="#{bundle.CreateResourceTitle_nombre}" 
-                                         required="true" requiredMessage="favor ingrese un nombre"/>
-                            <h:message for="nombre"/>
-                             <h:outputLabel value="#{bundle.CreateResourceLabel_tipo}" for="tipo" />
-                            <h:inputText id="tipo" value="#{resourceController.selected.tipo}" 
-                                         required="true" requiredMessage="favor ingrese un tipo"
-                                         title="#{bundle.CreateResourceTitle_tipo}" />
-                            <h:message for="tipo"/>
-                            <h:outputLabel value="#{bundle.CreateResourceLabel_descripcion}" for="descripcion" />
-                            <h:inputTextarea id="descripcion" value="#{resourceController.selected.descripcion}" 
+                <h:form id="createForm">
+                    <h:panelGrid columns="3">
+                        <h:outputLabel value="#{bundle.CreateResourceLabel_nombre}" for="nombre" />
+                        <h:inputText id="nombre" value="#{resourceController.selected.nombre}" title="#{bundle.CreateResourceTitle_nombre}" 
+                                     required="true" requiredMessage="favor ingrese un nombre"/>
+                        <h:message for="nombre"/>
+                        <h:outputLabel value="#{bundle.CreateResourceLabel_tipo}" for="tipo" />
+                        <h:inputText id="tipo" value="#{resourceController.selected.tipo}" 
+                                     required="true" requiredMessage="favor ingrese un tipo"
+                                     title="#{bundle.CreateResourceTitle_tipo}" />
+                        <h:message for="tipo"/>
+                        <h:outputLabel value="#{bundle.CreateResourceLabel_descripcion}" for="descripcion" />
+                        <h:inputTextarea id="descripcion" value="#{resourceController.selected.descripcion}" 
                                          required="true" requiredMessage="favor ingrese una descripción"
                                          title="#{bundle.CreateResourceTitle_descripcion}" />
-                           <h:message for="descripcion"/>
-                        </h:panelGrid>
-                        <br />
-                        <p:commandButton action="#{resourceController.create}" update="@form :form" value="#{bundle.CreateResourceSaveLink}" style="float: right;"/>
-                        <p:commandButton action="#{resourceController.prepareList}" value="Cerrar" onclick="PF('createDialog').hide()" immediate="true"/>
-                        <br />
-                    </h:form>
+                        <h:message for="descripcion"/>
+                    </h:panelGrid>
+                    <br />
+                    <p:commandButton action="#{resourceController.create}" update="@form :form" value="#{bundle.CreateResourceSaveLink}" style="float: right;"/>
+                    <p:commandButton action="#{resourceController.prepareList}" value="Cerrar" onclick="PF('createDialog').hide()" immediate="true"/>
+                    <br />
+                </h:form>
 
-                </p:dialog>
-                
-                <p:dialog id="editDialog" showEffect="fade" hideEffect="fade" 
-                          header="Editar registro" widgetVar="editDialog">
+            </p:dialog>
 
-                    <h:form id="editForm">
-                       <h:panelGrid columns="3">
-                            <h:outputLabel value="#{bundle.CreateResourceLabel_nombre}" for="nombre" />
-                            <h:inputText id="nombre" value="#{resourceController.selected.nombre}" title="#{bundle.CreateResourceTitle_nombre}" 
-                                         required="true" requiredMessage="favor ingrese un nombre"/>
-                            <h:message for="nombre"/>
-                             <h:outputLabel value="#{bundle.CreateResourceLabel_tipo}" for="tipo" />
-                            <h:inputText id="tipo" value="#{resourceController.selected.tipo}" 
-                                         required="true" requiredMessage="favor ingrese un tipo"
-                                         title="#{bundle.CreateResourceTitle_tipo}" />
-                            <h:message for="tipo"/>
-                            <h:outputLabel value="#{bundle.CreateResourceLabel_descripcion}" for="descripcion" />
-                            <h:inputTextarea id="descripcion" value="#{resourceController.selected.descripcion}" 
+            <p:dialog id="editDialog" showEffect="fade" hideEffect="fade" 
+                      header="Editar registro" widgetVar="editDialog">
+
+                <h:form id="editForm">
+                    <h:panelGrid columns="3">
+                        <h:outputLabel value="#{bundle.CreateResourceLabel_nombre}" for="nombre" />
+                        <h:inputText id="nombre" value="#{resourceController.selected.nombre}" title="#{bundle.CreateResourceTitle_nombre}" 
+                                     required="true" requiredMessage="favor ingrese un nombre"/>
+                        <h:message for="nombre"/>
+                        <h:outputLabel value="#{bundle.CreateResourceLabel_tipo}" for="tipo" />
+                        <h:inputText id="tipo" value="#{resourceController.selected.tipo}" 
+                                     required="true" requiredMessage="favor ingrese un tipo"
+                                     title="#{bundle.CreateResourceTitle_tipo}" />
+                        <h:message for="tipo"/>
+                        <h:outputLabel value="#{bundle.CreateResourceLabel_descripcion}" for="descripcion" />
+                        <h:inputTextarea id="descripcion" value="#{resourceController.selected.descripcion}" 
                                          required="true" requiredMessage="favor ingrese una descripción"
                                          title="#{bundle.CreateResourceTitle_descripcion}" />
-                           <h:message for="descripcion"/>
-                        </h:panelGrid>
-                        <br />
-                        <p:commandButton action="#{resourceController.update}" update="@form :form" value="#{bundle.CreateResourceSaveLink}" style="float: right;"/>
-                        <p:commandButton action="#{resourceController.prepareList}" value="Cerrar" onclick="PF('editDialog').hide()" immediate="true"/>
-                        <br />
-                    </h:form>
+                        <h:message for="descripcion"/>
+                    </h:panelGrid>
+                    <br />
+                    <p:commandButton action="#{resourceController.update}" update="@form :form" value="#{bundle.CreateResourceSaveLink}" style="float: right;"/>
+                    <p:commandButton action="#{resourceController.prepareList}" value="Cerrar" onclick="PF('editDialog').hide()" immediate="true"/>
+                    <br />
+                </h:form>
 
-                </p:dialog>
+            </p:dialog>
         </ui:define>
     </ui:composition>
 

@@ -4,7 +4,8 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:go="http://java.sun.com/jsf/composite/go">
 
     <ui:composition template="/script/template_inbox_bootstrap_config.xhtml">
         <ui:define name="title">
@@ -15,9 +16,9 @@
             <ui:include src="help.xhtml"/>
 
         </ui:define>
-        
-        
-        
+
+
+
         <ui:define name="content_header">
             <script>
                 var init = [];
@@ -40,13 +41,29 @@
 
                             <div class="pull-right">
 
+                                <div class="btn-group">
+                                    <go:paginatorCounts controllerMBean="#{prioridadController}"/>
+                                </div>
+
+                                <go:paginatorBtnsBt controllerMBean="#{prioridadController}" update="@(form)"/>
+
+                                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i></button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <h:commandLink action="#{prioridadController.prepareCreate}" 
+                                                       value="&nbsp;&nbsp;#{bundle.ViewPrioridadCreateLink}"
+                                                       rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
+                                        </h:commandLink>
+                                    </li>
+                                </ul>
+
                             </div>
                         </h:form>
                     </div>
                 </div>
             </div><!-- / .page-header --> 
         </ui:define>
-        
+
         <ui:define name="body">
             <h:form id="form">
                 <h:panelGroup>
@@ -54,13 +71,9 @@
                                  rowKey="#{item.idPrioridad}"
                                  selection="#{prioridadController.selectedItems}"
                                  rowSelectMode="add"
-                                 selectionMode="multiple"                              
                                  emptyMessage="#{bundle.ListPrioridadEmpty}" 
                                  sortBy="slaHoras"
                                  resizableColumns="true" >
-
-                       
-
                         <p:ajax event="toggleSelect" update=":form:tabla" />                             
                         <p:ajax event="rowSelect" update=":form:tabla" />  
                         <p:ajax event="rowUnselect" update=":form:tabla" />  
@@ -80,20 +93,39 @@
                         </p:column>
 
                         <p:column  sortBy="#{item.slaHoras}" headerText="Horas para responder (SLA)">
-                            <h:outputText value="#{item.slaHoras}"/>
+                            <div align="center"><h:outputText value="#{item.slaHoras}"/></div>
                         </p:column>
 
                         <p:column headerText="Acción">
-                            <p:commandButton id="editBtn" ajax="false" action="#{prioridadController.prepareEdit(item)}" 
-                                             title="Editar" icon="ui-icon ui-icon-pencil" 
-                                             rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
 
-                            <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" 
-                                             action="#{prioridadController.setSelected(item)}" oncomplete="PF('confirmation').show()" icon="ui-icon ui-icon-trash" 
-                                             rendered="#{prioridadController.puedeEliminar(item) and filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
+                            <p:commandLink id="viewBtn" action="#{prioridadController.prepareView(item)}"
+                                           title="Ver" ajax="false"
+                                           styleClass="btn btn-sm btn-outline btn-default"
+                                           >
+                                <i class="fa fa-eye"/>
+                            </p:commandLink>
+
+                            <p:commandLink id="editBtn" action="#{prioridadController.prepareEdit(item)}"
+                                           title="Editar" ajax="false"
+                                           styleClass="btn btn-sm btn-outline btn-primary"
+                                           rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
+                                           >
+                                <i class="fa fa-edit"/>
+                            </p:commandLink>
+                            <p:commandLink id="showDialogButton"
+                                           title="Eliminar"
+                                           update=":form:confirmDialog"
+                                           action="#{prioridadController.setSelected(item)}"
+                                           oncomplete="PF('confirmation').show()"
+                                           styleClass="btn btn-sm btn-outline btn-danger"
+                                           rendered="#{prioridadController.puedeEliminar(item) and filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" 
+                                           >
+                                <i class="fa fa-trash-o"/>
+                            </p:commandLink>
+
                         </p:column>
 
-                        
+
 
 
                     </p:dataTable>

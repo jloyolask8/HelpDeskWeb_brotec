@@ -12,9 +12,9 @@
             <h:outputText value="#{bundle.ListTipoCasoTitle}"/>
         </ui:define>
         <ui:define name="help">
-                    <h:outputText escape="false" value="#{bundle.ayudaTiposDeCasos}"/>
+            <h:outputText escape="false" value="#{bundle.ayudaTiposDeCasos}"/>
         </ui:define>
-        
+
         <ui:define name="content_header">
             <script>
                 var init = [];
@@ -48,7 +48,7 @@
                                     <li>
                                         <h:commandLink action="#{tipoCasoController.prepareCreate}" 
                                                        value="#{bundle.ListTipoCasoCreateLink}"
-                                     rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
+                                                       rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}">
                                         </h:commandLink>
                                     </li>
 
@@ -60,17 +60,20 @@
                 </div>
             </div><!-- / .page-header --> 
         </ui:define>
-        
-        
+
+
         <ui:define name="body">
             <h:form id="form">
-               
+
                 <h:panelGroup>                  
 
-                    <p:dataTable id="tablatipoCasos" widgetVar="UsuarioTable" var="item" value="#{tipoCasoController.items}"
+                    <p:dataTable id="tablatipoCasos" 
+                                 widgetVar="UsuarioTable" 
+                                 var="item" 
+                                 value="#{tipoCasoController.items}"
                                  emptyMessage="#{bundle.ListTipoCasoEmpty}">
 
-                        
+
                         <p:column sortBy="#{item.nombre}">
                             <f:facet name="header">
                                 <h:outputText value="#{bundle.ListTipoCasoTitle_nombre}"/>
@@ -83,14 +86,29 @@
                             </f:facet>
                             <h:outputText value="#{item.descripcion}"/>
                         </p:column>
-                        
+
                         <p:column headerText="casos">                            
                             <h:outputText value="#{tipoCasoController.countCasosByTipo(item)}"/>
                         </p:column>
-                        
-                         <p:column headerText="Acción">
-                            <p:commandButton id="editBtn" ajax="false" action="#{tipoCasoController.prepareEdit(item)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" title="Editar" icon="ui-icon ui-icon-pencil"/>
-                            <p:commandButton id="showDialogButton" title="Eliminar" update=":form:confirmDialog" action="#{tipoCasoController.setSelected(item)}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" oncomplete="PF('confirmation').show()" icon="ui-icon ui-icon-trash"/>
+
+                        <p:column headerText="Acción">
+
+                            <p:commandLink id="editBtn" action="#{tipoCasoController.prepareEdit(item)}"
+                                           title="Editar" ajax="false"
+                                           styleClass="btn btn-sm btn-outline btn-primary"
+                                           >
+                                <i class="fa fa-edit"/>
+                            </p:commandLink>
+                            <p:commandLink id="showDialogButton"
+                                           title="Eliminar"
+                                           update=":form:confirmDialog"
+                                           action="#{tipoCasoController.setSelected(item)}"
+                                           oncomplete="PF('confirmation').show()"
+                                           styleClass="btn btn-sm btn-outline btn-danger"
+                                           rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" 
+                                           >
+                                <i class="fa fa-trash-o"/>
+                            </p:commandLink>
                         </p:column>
 
                     </p:dataTable>
@@ -100,12 +118,12 @@
 
                 <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
                           header="Iniciando proceso de eliminación" widgetVar="confirmation" width="300">
-                    
+
                     <ui:param name="countCasosByTipo" value="#{tipoCasoController.countCasosByTipo(tipoCasoController.selected)}" />
 
                     <h:outputText value="Está seguro de eliminar el tipo de Caso #{tipoCasoController.selected.nombre}?"
                                   rendered="#{countCasosByTipo eq 0}"/>
-                    
+
                     <h:outputText value="No se puede eliminar este tipo debido a que tiene casos que dependen de él."
                                   rendered="#{countCasosByTipo ne 0}"/>
 

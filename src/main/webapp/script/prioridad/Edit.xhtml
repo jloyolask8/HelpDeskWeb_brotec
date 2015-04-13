@@ -7,45 +7,106 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:pe="http://primefaces.org/ui/extensions">
 
-    <ui:composition template="/script/template_inbox.xhtml">
+    <ui:composition template="/script/template_inbox_bootstrap_config.xhtml">
         <ui:define name="title">
             <p:outputLabel value="#{bundle.EditPrioridadTitle}"></p:outputLabel>
         </ui:define>
-         <ui:define name="west">
+        <ui:define name="help">
 
             <ui:include src="help.xhtml"/>
 
         </ui:define>
+
+        <ui:define name="content_header">
+            <script>
+                var init = [];
+                init.push(function () {
+                    $('body').addClass('mmc');
+                });
+            </script>
+
+            <!-- page-header -->
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-sm-6 col-xs-12">
+                        <h1><i class="fa fa-bell page-header-icon"></i>&nbsp;&nbsp;Editar Prioridad del caso : #{prioridadController.selected.idPrioridad}</h1>
+                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                            <i class="fa fa-info-circle"/>
+                        </p:commandLink> 
+                    </div>
+
+                </div>
+            </div><!-- / .page-header --> 
+        </ui:define>
+
         <ui:define name="body">
-
+            <p:messages globalOnly="true"/>
             <h:form>
-                <p:panel header="#{bundle.EditPrioridadTitle}"> 
-                    <h:panelGrid columns="2">
-                        <h:outputLabel value="#{bundle.CreatePrioridadLabel_idPrioridad}" for="idPrioridad" style="font-weight: bold"/>
-                        <p:inputText id="idPrioridad" value="#{prioridadController.selected.idPrioridad}" title="#{bundle.CreatePrioridadTitle_idPrioridad}" 
-                                     required="true" requiredMessage="#{bundle.CreatePrioridadRequiredMessage_idPrioridad}" readonly="true" disabled="true"/>
-                        <h:outputLabel value="#{bundle.CreatePrioridadLabel_nombre}" for="nombre"  style="font-weight: bold"/>
-                        <p:inputText id="nombre" value="#{prioridadController.selected.nombre}" title="#{bundle.CreatePrioridadTitle_nombre}" />
 
-                     
 
-                        <h:outputLabel value="#{bundle.CreatePrioridadLabel_descripcion}" for="descripcion"  style="font-weight: bold"/>
-                        <p:inputTextarea rows="4" cols="50" id="descripcion" value="#{prioridadController.selected.descripcion}" title="#{bundle.CreatePrioridadTitle_descripcion}" />
 
-                        <h:outputLabel value="Horas Para Responder (SLA):" for="horas"  style="font-weight: bold"/>
-                        <p:inputText id="horas" value="#{prioridadController.selected.slaHoras}" required="true" requiredMessage="Ingrese la cantidad de Horas Limite Para Responder.">
-                            <pe:keyFilter mask="num"/>
-                        </p:inputText>
+                <div class="row">
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="form-group">
+                            <label for="idPrioridad" style="font-weight: bold;" class="control-label">#{bundle.CreatePrioridadLabel_idPrioridad}</label>
+                            <h:inputText styleClass="form-control" id="idPrioridad" value="#{prioridadController.selected.idPrioridad}" title="#{bundle.CreatePrioridadTitle_idPrioridad}" 
+                                         required="true" requiredMessage="#{bundle.CreatePrioridadRequiredMessage_idPrioridad}" readonly="true" disabled="true"/>
+                            <p:message for="idPrioridad"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="nombre" style="font-weight: bold;" class="control-label">#{bundle.CreatePrioridadLabel_nombre}</label>
+                            <h:inputText styleClass="form-control" id="nombre" value="#{prioridadController.selected.nombre}" title="#{bundle.CreatePrioridadTitle_nombre}"/>
 
-                    </h:panelGrid>
+                        </div>
+                        <div class="form-group">
+                            <label for="descripcion" style="font-weight: bold;" class="control-label">#{bundle.CreatePrioridadLabel_descripcion}</label>
+                            <h:inputTextarea styleClass="form-control" 
+                                             rows="4" cols="50" id="descripcion" value="#{prioridadController.selected.descripcion}" title="#{bundle.CreatePrioridadTitle_descripcion}">
+                            </h:inputTextarea>
+                            <p:message for="descripcion"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="horas" style="font-weight: bold;" class="control-label">Horas Para Responder (SLA):</label>
+                            <h:inputText styleClass="form-control" id="horas" value="#{prioridadController.selected.slaHoras}" required="true" requiredMessage="Ingrese la cantidad de Horas Limite Para Responder.">
+                                <pe:keyFilter mask="num"/>
+                            </h:inputText>
+                            <p:message for="horas"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4 col-lg-4">
+                        <div class="btn-group">
+                            <p:commandLink action="#{prioridadController.prepareList}" 
+                                           styleClass="btn btn-default btn-flat" 
+                                           ajax="false"
+                                           onclick="jQuery(this).addClass('ui-state-disabled');
+                                                   jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                <i class=""></i> Volver
+                            </p:commandLink>
+                        </div>
 
-                    <f:facet name="footer">
-                        <p:commandButton ajax="false" action="#{prioridadController.update}" value="#{bundle.EditPrioridadSaveLink}"/>
-                        <p:commandButton ajax="false" action="View" value="#{bundle.EditPrioridadViewLink}" immediate="true"/>
-                        <p:commandButton ajax="false" action="#{prioridadController.prepareList}" value="#{bundle.EditPrioridadShowAllLink}" immediate="true" icon="ui-icon-folder-open"/>
-                    </f:facet>
+                        <div class="btn-group">
+                            <p:commandLink action="View" 
+                                           ajax="false"
+                                           styleClass="btn btn-primary btn-flat" 
+                                           onclick="jQuery(this).addClass('ui-state-disabled');
+                                                   jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                <i class=""></i> Ver
+                            </p:commandLink>
+                        </div>
+                        <div class="btn-group">
+                            <p:commandLink action="#{prioridadController.update}" 
+                                           ajax="false"
+                                           styleClass="btn btn-primary btn-flat" 
+                                           onclick="jQuery(this).addClass('ui-state-disabled');
+                                                   jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                <i class=""></i> #{bundle.EditPrioridadSaveLink}
+                            </p:commandLink>
+                        </div>
+                    </div>
+                </div>
 
-                </p:panel>            
             </h:form>
         </ui:define>
     </ui:composition>
