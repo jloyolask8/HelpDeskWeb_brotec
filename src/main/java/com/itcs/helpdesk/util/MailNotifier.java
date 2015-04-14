@@ -6,6 +6,7 @@ import com.itcs.helpdesk.persistence.entities.Canal;
 import com.itcs.helpdesk.persistence.entities.Caso;
 import com.itcs.helpdesk.persistence.entities.Grupo;
 import com.itcs.helpdesk.persistence.entities.Usuario;
+import com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoCanal;
 import com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso;
 import com.itcs.helpdesk.quartz.HelpDeskScheluder;
@@ -42,9 +43,18 @@ public class MailNotifier {
                 if (ApplicationConfig.isAppDebugEnabled()) {
                     Logger.getLogger(MailNotifier.class.getName()).log(Level.INFO, "notifyCasoOwnerAlertChanged");
                 }
-                HelpDeskScheluder.scheduleSendMailNow(caso.getIdCaso(), canal.getIdCanal(), mensaje,
-                        caso.getOwner().getEmail(),
-                        subject);
+                if (caso.getEstadoAlerta().equals(EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta())) {
+
+                    HelpDeskScheluder.scheduleSendMailNow(caso.getIdCaso(), canal.getIdCanal(), mensaje,
+                            caso.getOwner().getEmail(),
+                            subject);
+                    
+                } else if (caso.getEstadoAlerta().equals(EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta())) {
+                    HelpDeskScheluder.scheduleSendMailNow(caso.getIdCaso(), canal.getIdCanal(), mensaje,
+                            caso.getOwner().getEmail() + (caso.getOwner().getSupervisor() != null ? (","+caso.getOwner().getSupervisor().getEmail()) :""),
+                            subject);
+                }
+
             } catch (SchedulerException ex) {
                 Logger.getLogger(MailNotifier.class.getName()).log(Level.SEVERE, "error at scheduleSendMailNow", ex);
                 MailClientFactory.getInstance(canal.getIdCanal())
@@ -180,7 +190,7 @@ public class MailNotifier {
         }
         return null;
     }
-    
+
     public static String emailClientCustomerSurvey(Caso current) throws MailNotConfiguredException, EmailException, NoOutChannelException {
         //TODO: use configure texts.
         if (current != null && current.getEmailCliente() != null && current.getEmailCliente().getEmailCliente() != null) {
@@ -366,16 +376,16 @@ public class MailNotifier {
      */
     public static Canal chooseDefaultCanalToSendMail(Caso caso) throws NoOutChannelException {
 
-        if (caso.getIdCanal() != null && caso.getIdCanal().getIdTipoCanal() != null 
+        if (caso.getIdCanal() != null && caso.getIdCanal().getIdTipoCanal() != null
                 && caso.getIdCanal().getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal())) {
             return caso.getIdCanal();
         } else {
 
             //choose canal, prioritize the area's default canal
             Canal chosenEmailChannel = (caso.getIdArea() != null && caso.getIdArea().getIdCanal() != null
-                    && caso.getIdArea().getIdCanal().getIdTipoCanal() != null 
+                    && caso.getIdArea().getIdCanal().getIdTipoCanal() != null
                     && caso.getIdArea().getIdCanal().getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal()))
-                    ? caso.getIdArea().getIdCanal() : null;
+                            ? caso.getIdArea().getIdCanal() : null;
 
 //            if (chosenEmailChannel == null) {
 //            //We do not use this since product may have a ventas email, and when a postventa user gets here there will be problems.
@@ -385,9 +395,8 @@ public class MailNotifier {
 //                        && caso.getIdProducto().getIdOutCanal().getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal()))
 //                        ? caso.getIdProducto().getIdOutCanal() : null;
 //            }
-
-            if (chosenEmailChannel != null 
-                    && chosenEmailChannel.getIdTipoCanal() != null 
+            if (chosenEmailChannel != null
+                    && chosenEmailChannel.getIdTipoCanal() != null
                     && chosenEmailChannel.getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal())
                     && !StringUtils.isEmpty(chosenEmailChannel.getIdCanal())) {
 

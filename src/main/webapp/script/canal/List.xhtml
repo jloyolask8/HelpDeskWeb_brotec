@@ -142,6 +142,8 @@
                       header="Detalles de correo electr&oacute;nico" widgetVar="addEditEmailDialogWidget" resizable="false" closable="false"
                       style="width: 706px; height: 420px;" width="706px" height="420px">
                 <h:form id="formAddEditEmail">
+                    
+                    <p:messages globalOnly="true"/>
                     <!-- panel de configuracion basico-->
                     <p:panelGrid columns="2" style="margin-bottom:10px;" styleClass="filtersGrid">
                         <i class="fa fa-envelope-o fa-5x"/>
@@ -336,7 +338,7 @@
                     <h:panelGroup rendered="#{not canalController.tmpEmailFirstStepReady}" style="width: 97%; position: absolute; bottom: 15px;">
                         <p:separator/>
                         <div align="right" style="width: 100%;">
-                            <p:commandButton value="Cancelar" oncomplete="PF('addEditEmailDialogWidget').hide()" update=":formAddEditEmail" process="@this">
+                            <p:commandButton value="Cancelar" onclick="PF('addEditEmailDialogWidget').hide()">
                                 <p:resetInput target="@form" />
                             </p:commandButton>
                             &nbsp;
@@ -349,14 +351,14 @@
                     <h:panelGroup rendered="#{canalController.tmpEmailFirstStepReady}" style="width: 97%; position: absolute; bottom: 15px;">
                         <p:separator/>
                         <div align="right">
-                            <p:commandButton value="Cancelar" oncomplete="PF('addEditEmailDialogWidget').hide()" process="@this">
+                            <p:commandButton value="Cancelar" onclick="PF('addEditEmailDialogWidget').hide()" >
                                 <p:resetInput target="@form" />
                             </p:commandButton>
                             &nbsp;
                             <p:commandButton value="Verificar" actionListener="#{canalController.verifyEmailAccount()}" process="@form" update=":formAddEditEmail"/>
                             &nbsp;
-                            <p:commandButton action="#{canalController.createCanalEmail()}" value="Finalizado" update=":form"
-                                             oncomplete="PF('addEditEmailDialogWidget').hide()" disabled="#{not canalController.tmpEmailFinalizeReady}"/>
+                            <p:commandButton action="#{canalController.createCanalEmail()}" value="Finalizar" update=":form"
+                                             />
                         </div>
                     </h:panelGroup>
 

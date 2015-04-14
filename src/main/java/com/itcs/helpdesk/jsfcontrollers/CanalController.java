@@ -348,6 +348,7 @@ public class CanalController extends AbstractManagedBean<Canal> implements Seria
             recreateModel();
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("CanalCreated"));
 
+            executeInClient("PF('addEditEmailDialogWidget').hide()");
             initializeMailRead();
             
         } catch (Exception e) {

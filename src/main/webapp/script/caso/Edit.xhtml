@@ -324,7 +324,7 @@
                                 <p:ajax event="dialogReturn" listener="#{casoController.onCasoChosenForEliminarRelacionado}"  update=":inputPanel:tabCasosRelacionados"/>
                             </p:commandButton>
                             &nbsp;
-                            <p:commandButton actionListener="#{casoController.enableMerge()}" rendered="#{not casoController.mergeHabilitado}"
+                            <p:commandButton actionListener="#{casoController.enableMerge()}" rendered="false"
                                              value="Habilitar combinar con caso actual"
                                              icon="mergeIcon"
                                              update="scrollpaneCasosRel"/>
