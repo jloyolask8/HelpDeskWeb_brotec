@@ -27,7 +27,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobKey;
 import org.quartz.SchedulerException;
-import org.quartz.ee.jta.UserTransactionHelper;
+//import org.quartz.ee.jta.UserTransactionHelper;
 
 /**
  *

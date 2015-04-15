@@ -23,6 +23,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.model.ListDataModel;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.SelectableDataModel;
@@ -107,10 +108,11 @@ public class ClienteController extends AbstractManagedBean<Cliente> implements S
     }
 
     public String create() {
-        if (!UtilesRut.validar(current.getRut())) {
-            JsfUtil.addErrorMessage("Rut invalido");
-            return null;
-        }
+        
+//        if (!StringUtils.isEmpty(current.getRut()) && !UtilesRut.validar(current.getRut())) {
+//            JsfUtil.addErrorMessage("Rut inválido");
+//            return null;
+//        }
         try {
             List<EmailCliente> listaEmails = current.getEmailClienteList();
             current.setEmailClienteList(null);
