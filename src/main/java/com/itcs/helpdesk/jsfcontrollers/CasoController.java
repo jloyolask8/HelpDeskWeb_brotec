@@ -769,6 +769,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             BlackListEmail persistentBlackListEmail = getJpaController().find(BlackListEmail.class, blackListEmail.getEmailAddress());
             if (persistentBlackListEmail == null) {
                 try {
+                    blackListEmail.setDescription("marcado como spam por: " + userSessionBean.getCurrent().getCapitalName());
                     getJpaController().persist(blackListEmail);
                     addInfoMessage(blackListEmail.getEmailAddress() + " guardado en lista negra OK.");
                 } catch (Exception ex) {
@@ -777,6 +778,8 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 }
             }
         }
+        
+        executeInClient("PF('blackListSelected').hide()");
 
         recreateModel();
     }

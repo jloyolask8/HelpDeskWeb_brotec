@@ -109,11 +109,12 @@ public class HelpDeskScheluder {
         String emails_to = tos.trim().replace(" ", "");
         final String[] split_emails = emails_to.split(",");
         for (String email : split_emails) {
-            if (!email.contains("no-reply") && !email.contains("noreply")) {
+            if (!email.contains("no-reply") && !email.contains("noreply") && !email.contains("mailer-daemon")
+                    && !email.contains("noresponder")
+                    && !email.contains("no-responder")) {
                 if (first) {
                     first = false;
                     tos2 = email;
-
                 } else {
                     tos2 = "," + email;
 
