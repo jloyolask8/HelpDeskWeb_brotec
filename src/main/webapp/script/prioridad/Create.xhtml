@@ -71,8 +71,9 @@
                                            immediate="true"
                                            ajax="false"
                                            onclick="jQuery(this).addClass('ui-state-disabled');
+                                               jQuery(this).children().removeClass('fa fa-chevron-left');
                                                    jQuery(this).children().addClass('fa fa-refresh fa-spin')">
-                                <i class=""></i> Volver
+                                <i class="fa fa-chevron-left"></i> #{bundle.goBack}
                             </p:commandLink>
                         </div>
 
@@ -82,8 +83,9 @@
                                            rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
                                            styleClass="btn btn-primary btn-flat" 
                                            onclick="jQuery(this).addClass('ui-state-disabled');
+                                               jQuery(this).children().removeClass('fa fa-save');
                                                    jQuery(this).children().addClass('fa fa-refresh fa-spin')">
-                                <i class=""></i> #{bundle.CreatePrioridadSaveLink}
+                                <i class="fa fa-save"></i> #{bundle.CreatePrioridadSaveLink}
                             </p:commandLink>
                         </div>
                     </div>

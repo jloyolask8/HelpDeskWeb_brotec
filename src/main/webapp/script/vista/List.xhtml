@@ -15,8 +15,8 @@
 
         <ui:define name="help">
             <h:outputText escape="false" value="Las vistas reúnen un grupo de entidades del sistema según un conjunto de criterios o filtros que 
-                           expresan una variedad de estados de dicha entidad. Por ejemplo para un caso, el estado del caso puede ser Nuevo, En proceso o Solucionado, una Vista podría mostrar todos los casos que estén en estado Nuevo. 
-                           Las vistas permiten crear grupos coherentes de datos para asi poder acceder más rapidamente a la información de interés."/>
+                          expresan una variedad de estados de dicha entidad. Por ejemplo para un caso, el estado del caso puede ser Nuevo, En proceso o Solucionado, una Vista podría mostrar todos los casos que estén en estado Nuevo. 
+                          Las vistas permiten crear grupos coherentes de datos para asi poder acceder más rapidamente a la información de interés."/>
 
         </ui:define>
 
@@ -73,10 +73,10 @@
                 </div>
             </div><!-- / .page-header -->
         </ui:define>
-        
+
         <ui:define name="body">
 
-            
+
 
 
             <go:vistasListBt id="vistasList" 
@@ -167,26 +167,23 @@
 
                         <p:column exportable="false">
                             <f:facet name="header">
-                                <h:outputText value="&nbsp;"/>
+                                <h:outputText value="Acci&oacute;n"/>
                             </f:facet>
-
-                            <p:commandButton ajax="false" action="#{vistaController.prepareEdit(item.idVista)}" title="Editar" icon="ui-icon-pencil" immediate="true"
-                                             rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarVistas() and (item.idUsuarioCreadaPor eq UserSessionBean.current or filtroAcceso.administradorDelSistema)}"/>
-                            <h:outputText value=" "/>                         
-
-                            <p:commandButton id="showDialogButton" title="Eliminar" update=":confirmDialogForm"  immediate="true"
-                                             oncomplete="PF('confirmation').show()" 
-                                             rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarVistas() and (item.idUsuarioCreadaPor eq UserSessionBean.current or filtroAcceso.administradorDelSistema)}" icon="ui-icon ui-icon-trash">
+                            <p:commandLink ajax="false" action="#{vistaController.prepareEdit(item.idVista)}" title="Editar" immediate="true"
+                                           rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarVistas() and (item.idUsuarioCreadaPor eq UserSessionBean.current or filtroAcceso.administradorDelSistema)}" 
+                                           styleClass="btn btn-sm btn-outline btn-primary"
+                                           >
+                                <i class="fa fa-edit"/>
+                            </p:commandLink>
+                            <p:commandLink id="showDialogButton" title="Eliminar" update=":confirmDialogForm"  immediate="true"
+                                           oncomplete="PF('confirmation').show()" 
+                                           rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarVistas() and (item.idUsuarioCreadaPor eq UserSessionBean.current or filtroAcceso.administradorDelSistema)}"
+                                           styleClass="btn btn-sm btn-outline btn-danger"
+                                           >
                                 <f:setPropertyActionListener value="#{item}" target="#{vistaController.selected}" />
-                            </p:commandButton>
+                                <i class="fa fa-trash-o"/>
+                            </p:commandLink>
                         </p:column>
-
-
-
-
-
-
-
                     </p:dataTable>
 
                 </h:panelGroup>
@@ -217,14 +214,14 @@
 
 
             </p:dialog>
-            
-            
-            
+
+
+
             <p:dialog  widgetVar="deleteSelectedVistas" header="Eliminar" resizable="false" 
                        closeOnEscape="true" modal="true" appendTo="@(body)" dynamic="true">  
                 <h:form id="formdeleteSelectedVistas">
-                    
-                    
+
+
 
                     <p:scrollPanel id="scrollpaneActividades" mode="native" style="height: 300px;border-color: window;border: 0;">
                         <h:panelGrid columns="1">
@@ -247,10 +244,6 @@
 
 
             </p:dialog> 
-            
-            
-
         </ui:define>
     </ui:composition>
-
 </html>

@@ -122,24 +122,52 @@
 
                 </h:panelGrid>
 
-                <p:toolbar style="margin-top: 20px;">  
-                    <p:toolbarGroup align="left">
+                <div style="margin-top: 20px;">
+                <div class="btn-group">
+                    <p:commandLink action="#{areaController.prepareList}" 
+                                   styleClass="btn btn-default btn-flat" 
+                                   ajax="false" immediate="true"
+                                   onclick="jQuery(this).addClass('ui-state-disabled');
+                                           jQuery(this).children().removeClass('fa fa-chevron-left');
+                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                        <i class="fa fa-chevron-left"></i> Volver
+                    </p:commandLink>
+                </div>
+                &nbsp;
+                <div class="btn-group">
+                    <p:commandLink action="Edit" 
+                                   styleClass="btn btn-primary btn-flat" 
+                                   ajax="false"
+                                   onclick="jQuery(this).addClass('ui-state-disabled');
+                                           jQuery(this).children().removeClass('fa fa-pencil');
+                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                        <i class="fa fa-pencil"></i> #{bundle.edit}
+                    </p:commandLink>
+                </div>
+                </div>
 
-                        <p:commandLink styleClass="btn btn-default btn-flat fa fa-reply" ajax="false" action="#{areaController.prepareList}" value="&nbsp;&nbsp;#{bundle.goBack}" immediate="true"/>
+                <!--<div class="btn-group">
+                    <p:commandLink 
+                        id="showDialogButton" 
+                        styleClass="btn btn-primary btn-flat" 
+                        onclick="PF('confirmation').show();
+                                jQuery(this).addClass('ui-state-disabled');
+                                jQuery(this).children().removeClass('fa fa-trash');
+                                jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                        <i class="fa fa-trash"></i> {bundle.destroy}
+                    </p:commandLink>
+                </div>
 
-                        <p:separator/>
-                        <p:commandLink styleClass="btn btn-primary btn-flat fa fa-pencil" ajax="false" action="Edit" value="&nbsp;&nbsp;#{bundle.edit}" />
-                        <p:separator/>
-                        <p:commandLink styleClass="btn btn-primary btn-flat fa fa-trash" id="showDialogButton" value="&nbsp;&nbsp;#{bundle.destroy}" onclick="PF('confirmation').show()"/>
-                    </p:toolbarGroup>
-
-                    <p:toolbarGroup align="right">   
-                        <p:commandLink styleClass="btn btn-primary btn-flat fa fa-plus" ajax="false" action="#{areaController.prepareCreate}" value="&nbsp;&nbsp;#{bundle.createNew}"/>
-
-                    </p:toolbarGroup>
-                </p:toolbar>
-
-
+                <div class="btn-group">
+                    <p:commandLink action="{areaController.prepareCreate}" 
+                                   styleClass="btn btn-primary btn-flat" 
+                                   ajax="false"
+                                   onclick="jQuery(this).addClass('ui-state-disabled');
+                                           jQuery(this).children().removeClass('fa fa-plus');
+                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                        <i class="fa fa-plus"></i> {bundle.createNew}
+                    </p:commandLink>
+                </div>-->
                 <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
                           header="Iniciando proceso de eliminación" widgetVar="confirmation">
 
@@ -148,7 +176,11 @@
                     <f:facet name="footer">
                         <p:commandLink styleClass="btn btn-primary btn-flat" id="confirm" value="#{bundle.yesDelete}" action="#{areaController.destroy()}" 
                                        update="form" oncomplete="PF('confirmation').hide()" ajax="false"/>&nbsp;&nbsp;
-                        <p:commandLink styleClass="btn btn-default btn-flat" id="decline" value="#{bundle.decline}" onclick="PF('confirmation').hide()" type="button" /> 
+                        <p:commandLink styleClass="btn btn-default btn-flat" 
+                                       id="decline" 
+                                       value="#{bundle.decline}" 
+                                       onclick="PF('confirmation').hide()"
+                                       type="button" /> 
                     </f:facet>
 
                 </p:dialog>

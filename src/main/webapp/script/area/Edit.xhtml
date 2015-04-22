@@ -106,17 +106,27 @@
                 </div>
                 <br/>
 
-                <p:toolbar>  
-                    <p:toolbarGroup align="left">   
-                        <p:commandLink styleClass="btn btn-default btn-flat fa fa-reply" ajax="false" action="#{areaController.prepareList}" value="&nbsp;&nbsp;#{bundle.goBack}" immediate="true" />
-
-                        <p:separator/> 
-
-                     
-                        <p:commandLink styleClass="btn btn-primary btn-flat fa fa-save" ajax="false" action="#{areaController.update}" value="&nbsp;&nbsp;#{bundle.SaveLink}"  />
-
-                    </p:toolbarGroup>
-                </p:toolbar>
+                <div class="btn-group">
+                    <p:commandLink action="#{areaController.prepareList}" 
+                                   styleClass="btn btn-default btn-flat" 
+                                   ajax="false" immediate="true"
+                                   onclick="jQuery(this).addClass('ui-state-disabled');
+                                           jQuery(this).children().removeClass('fa fa-chevron-left');
+                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                        <i class="fa fa-chevron-left"></i> Volver
+                    </p:commandLink>
+                </div>
+                &nbsp;
+                <div class="btn-group">
+                    <p:commandLink action="#{areaController.update}" 
+                                   styleClass="btn btn-primary btn-flat" 
+                                   ajax="false"
+                                   onclick="jQuery(this).addClass('ui-state-disabled');
+                                           jQuery(this).children().removeClass('fa fa-save');
+                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                        <i class="fa fa-save"></i> #{bundle.SaveLink}
+                    </p:commandLink>
+                </div>
 
                 <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
                           header="Iniciando proceso de eliminación" widgetVar="confirmation">

@@ -27,7 +27,7 @@
             <div class="page-header">
                 <div class="row">
                     <div class="col-sm-6 col-xs-12">
-                        <h1><i class="fa fa-key page-header-icon"></i>&nbsp;&nbsp;#{bundle.ViewGrupoTitle}&nbsp;#{grupoController.selected.nombre}</h1>
+                        <h1><i class="fa fa-users page-header-icon"></i>&nbsp;&nbsp;#{bundle.ViewGrupoTitle}:&nbsp;#{grupoController.selected.nombre}</h1>
                         <p:commandLink title="Ayuda para Grupos" onclick="PF('helpDialog').show()" styleClass="text-info" >
                             <i class="fa fa-info-circle"/>
                         </p:commandLink> 
@@ -53,12 +53,12 @@
                                 <div class="form-group">
                                     <label style="font-weight: bold;" class="control-label">#{bundle.ViewGrupoLabel_nombre}</label>
                                     <h:outputText styleClass="form-control" 
-                                                 value="#{grupoController.selected.nombre}" title="#{bundle.ViewGrupoTitle_nombre}"/>
+                                                  value="#{grupoController.selected.nombre}" title="#{bundle.ViewGrupoTitle_nombre}"/>
                                 </div>
                                 <div class="form-group">
                                     <label style="font-weight: bold;" class="control-label">Área:</label>
                                     <h:outputText styleClass="form-control" 
-                                                 value="#{grupoController.selected.idArea.nombre}" title="Área"/>
+                                                  value="#{grupoController.selected.idArea.nombre}" title="Área"/>
                                 </div>
                                 <div class="form-group">
                                     <label style="font-weight: bold;" class="control-label">#{bundle.ViewGrupoLabel_descripcion}</label>
@@ -155,10 +155,30 @@
                         <br/>
 
 
-                        <p:commandLink styleClass="btn btn-default btn-flat fa fa-reply" ajax="false" action="#{grupoController.goBack()}" value="&nbsp;&nbsp;#{bundle.goBack}" immediate="true"/>
-                        &nbsp;&nbsp;
-                        <p:commandLink styleClass="btn btn-primary btn-flat fa fa-pencil" ajax="false" action="Edit" 
-                                       value="&nbsp;&nbsp;#{bundle.ViewGrupoEditLink}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
+                        <div class="btn-group">
+                            <p:commandLink styleClass="btn btn-default btn-flat" 
+                                           action="#{grupoController.prepareList}"  
+                                           ajax="false"
+                                           immediate="true"
+                                           onclick="jQuery(this).addClass('ui-state-disabled');
+                                           jQuery(this).children().removeClass('fa fa-chevron-left');
+                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                <i class="fa fa-chevron-left"></i> Volver
+                            </p:commandLink>  
+                        </div>
+                        &nbsp;
+                        <div class="btn-group">
+                            <p:commandLink styleClass="btn btn-primary btn-flat" 
+                                           action="Edit"  
+                                           ajax="false" 
+                                           rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
+                                           onclick="jQuery(this).addClass('ui-state-disabled');
+                                           jQuery(this).children().removeClass('fa fa-pencil');
+                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                <i class="fa fa-pencil"></i> #{bundle.ViewGrupoEditLink}
+                            </p:commandLink>  
+                        </div>
+
                     </p:tab>
 
                 </p:tabView>

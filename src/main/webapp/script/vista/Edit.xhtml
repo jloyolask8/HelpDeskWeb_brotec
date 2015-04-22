@@ -5,7 +5,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
-       xmlns:go="http://java.sun.com/jsf/composite/go">
+      xmlns:go="http://java.sun.com/jsf/composite/go">
 
     <ui:composition template="/script/template_inbox_bootstrap_config.xhtml">
         <ui:define name="title">
@@ -13,13 +13,13 @@
         </ui:define>
 
         <ui:define name="west">
-                <p:panel>
-                    <h:outputLabel escape="false" value="Las vistas reúnen un grupo de casos según un conjunto de criterios que 
-                                   expresan una variedad de estados del caso como, por ejemplo, Nuevo, En proceso o Solucionado. 
-                                   Las vistas permiten crear grupos coherentes de casos para asi poder acceder más rapidamente a los casos de interés."/>
-                </p:panel>
+            <p:panel>
+                <h:outputLabel escape="false" value="Las vistas reúnen un grupo de casos según un conjunto de criterios que 
+                               expresan una variedad de estados del caso como, por ejemplo, Nuevo, En proceso o Solucionado. 
+                               Las vistas permiten crear grupos coherentes de casos para asi poder acceder más rapidamente a los casos de interés."/>
+            </p:panel>
         </ui:define>
-        
+
         <ui:define name="content_header">
             <script>
                 var init = [];
@@ -27,66 +27,111 @@
                     $('body').addClass('mmc');
                 });
             </script>
-        <!-- page-header -->
+            <!-- page-header -->
             <div class="page-header">
                 <div class="row">
                     <div class="col-sm-6 col-xs-12">
-                        <h1><i class="fa fa-building page-header-icon"></i>&nbsp;&nbsp;#{bundle.EditVistaTitle}</h1>
+                        <h1><i class="fa fa-filter page-header-icon"></i>&nbsp;&nbsp;#{bundle.EditVistaTitle}: #{vistaController.selected.nombre}</h1>
                         <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
                             <i class="fa fa-info-circle"/>
                         </p:commandLink> 
                     </div>
-                    
+
                 </div>
             </div><!-- / .page-header --> 
         </ui:define>
 
         <ui:define name="body">
-           
+
             <h:form id="form">
                 <p:messages id="messages"/>
-                <h:panelGrid columns="2">
-                    <h:outputLabel value="#{bundle.VistaLabel_nombre}" for="nombre" style="font-weight: bold"/>
-                    <p:inputText id="nombre" value="#{vistaController.selected.nombre}" style="width: 100%;"
-                                 title="#{bundle.VistaTitle_nombre}" required="true" requiredMessage="#{bundle.VistaRequiredMessage_nombre}"/>
+                <div class="row">
+                    <div class="col-sm-12 col-lg-10">
+                        <div class="form-group">
+                            <label for="nombre" class="control-label">#{bundle.VistaLabel_nombre}</label>
+                            <h:inputText style="width: 750px;" id="nombre" value="#{vistaController.selected.nombre}" 
+                                         styleClass="form-control noupdate"
+                                         title="#{bundle.VistaTitle_nombre}" 
+                                         required="true" requiredMessage="#{bundle.VistaRequiredMessage_nombre}"/>
+                            <h:message for="nombre" errorClass="text-danger"/>
+                        </div>
+                        <div styleClass="form-control" class="form-group">
+                            <label class="control-label">Criterios</label>
 
+                            <go:filterView 
+                                id="panelFilter0" controllerMBean="#{vistaController}" 
+                                vista="#{vistaController.selected}"
+                                filterHelper="#{vistaController.filterHelper2}"
+                                showApplyAction="false"
+                                showSearchBar="false"
+                                showEdit="false"
+                                showSaveAs="false"
+                                vistaControllerBackOutcome="/script/vista/List"
+                                update=":mainform:messages :form:panelFilter0:panelFilter :form"/>
 
-                    <h:outputLabel value="Criterios:" style="font-weight: bold"/>
+                        </div>
+                        <div style="width: 750px;" styleClass="form-control" class="form-group">
+                            <label for="VisibilidadPanel" class="control-label">Visibilidad</label>
 
-                     <go:filterView id="panelFilter0" controllerMBean="#{vistaController}"
-                                    vista="#{vistaController.selected}"
-                                    filterHelper="#{vistaController.filterHelper2}"
-                                    showApplyAction="false"
-                                    showSearchBar="false"
-                                    showEdit="false"
-                                    showSaveAs="false"
-                                    update=":mainform:messages :form:panelFilter0:panelFilter :form" vistaControllerBackOutcome="/script/vista/List"/>
+                            <go:visibility id="VisibilidadPanel" controllerMBean="#{vistaController}"/>
 
+                        </div>
+                        <div  class="form-group">
+                            <label for="descripcion" class="control-label">#{bundle.VistaLabel_descripcion}</label>
 
-                    <h:outputLabel value="Visibilidad" for="VisibilidadPanel" style="font-weight: bold"/>
+                            <h:inputTextarea style="width: 750px;" styleClass="form-control noupdate" 
+                                             id="descripcion" value="#{vistaController.selected.descripcion}" 
+                                             title="#{bundle.VistaTitle_descripcion}" />
+                        </div>
 
-                     <go:visibility id="VisibilidadPanel" controllerMBean="#{vistaController}"/>
-                     
-                      
+                        <div  class="form-group">
+                            <label rendered="#{filtroAcceso.administradorDelSistema}" for="idUsuarioCreadaPor" class="control-label">Cambiar Autor:</label>
 
-                    <h:outputLabel value="#{bundle.VistaLabel_descripcion}" for="descripcion" style="font-weight: bold"/>
-                    <p:inputTextarea id="descripcion" value="#{vistaController.selected.descripcion}" title="#{bundle.VistaTitle_descripcion}" style="width: 100%;"/>
+                            <h:selectOneMenu id="idUsuarioCreadaPor" value="#{vistaController.selected.idUsuarioCreadaPor}"
+                                             styleClass="form-control noupdate" style="width: 750px;"
+                                             rendered="#{filtroAcceso.administradorDelSistema}"
+                                             title="Esta opcion es visible solo por usuarios del Grupo Sistema." required="true" 
+                                             requiredMessage="#{bundle.EditVistaRequiredMessage_idUsuarioCreadaPor}">
+                                <f:selectItems value="#{usuarioController.itemsAvailableSelectOne}"/>
+                            </h:selectOneMenu>
 
-                    <h:outputLabel value="Cambiar Autor:" for="idUsuarioCreadaPor" rendered="#{filtroAcceso.administradorDelSistema}"/>
-                    <h:selectOneMenu id="idUsuarioCreadaPor" value="#{vistaController.selected.idUsuarioCreadaPor}" rendered="#{filtroAcceso.administradorDelSistema}"
-                                     title="Esta opcion es visible solo por usuarios del Grupo Sistema." required="true" requiredMessage="#{bundle.EditVistaRequiredMessage_idUsuarioCreadaPor}">
-                        <f:selectItems value="#{usuarioController.itemsAvailableSelectOne}"/>
-                    </h:selectOneMenu>
+                        </div>
 
+                        <div class="btn-group">
+                            <p:commandLink action="#{vistaController.goBack()}" 
+                                           styleClass="btn btn-default btn-flat" 
+                                           ajax="false" immediate="true"
+                                           onclick="jQuery(this).addClass('ui-state-disabled');
+                                               jQuery(this).children().removeClass('fa fa-chevron-left');
+                                                   jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                <i class="fa fa-chevron-left"></i> #{bundle.goBack}
+                            </p:commandLink>
+                        </div>
+                        
+                        <div class="btn-group">
+                            <p:commandLink action="View" 
+                                           ajax="false"
+                                           styleClass="btn btn-primary btn-flat" 
+                                           onclick="jQuery(this).addClass('ui-state-disabled');
+                                               jQuery(this).children().removeClass('fa fa-eye');
+                                                   jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                <i class="fa fa-eye"></i> Ver
+                            </p:commandLink>
+                        </div>
 
+                        <div class="btn-group">
+                            <p:commandLink action="#{vistaController.update}" 
+                                           ajax="false" update=":mainform:messages"
+                                           styleClass="btn btn-primary btn-flat" 
+                                           onclick="jQuery(this).addClass('ui-state-disabled');
+                                               jQuery(this).children().removeClass('fa fa-save');
+                                                   jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                <i class="fa fa-save"></i> Guardar
+                            </p:commandLink>
+                        </div>
 
-                </h:panelGrid>
-
-                <p:commandButton ajax="false" action="#{vistaController.update}" value="Guardar" update=":mainform:messages"/>
-
-                <p:commandButton ajax="false" action="#{vistaController.goBack()}" value="Cancelar" immediate="true"/>
-
-
+                    </div>
+                </div>
             </h:form>
         </ui:define>
     </ui:composition>

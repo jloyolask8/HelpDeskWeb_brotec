@@ -7,14 +7,16 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:go="http://java.sun.com/jsf/composite/go">
 
-    <ui:composition template="/script/template_inbox_bootstrap.xhtml">
+    <ui:composition template="/script/template_inbox_bootstrap_config.xhtml">
         <ui:define name="title">
             <h:outputText value="#{bundle.CreateVistaTitle}"></h:outputText>
         </ui:define>
-        <ui:define name="help">
-            <h:outputText  value="Las vistas reúnen un grupo de casos según un conjunto de criterios que 
-                           expresan una variedad de estados del caso como, por ejemplo, Nuevo, En proceso o Solucionado. 
-                           Las vistas permiten crear grupos coherentes de casos para asi poder acceder más rapidamente a los casos de interés." escape="false"/>
+        <ui:define name="west">
+            <p:panel>
+                <h:outputLabel escape="false" value="Las vistas reúnen un grupo de casos según un conjunto de criterios que 
+                               expresan una variedad de estados del caso como, por ejemplo, Nuevo, En proceso o Solucionado. 
+                               Las vistas permiten crear grupos coherentes de casos para asi poder acceder más rapidamente a los casos de interés."/>
+            </p:panel>
         </ui:define>
 
         <ui:define name="body">
@@ -22,7 +24,7 @@
             <div class="page-header">
                 <div class="row">
                     <div class="col-sm-10 col-xs-10">
-                        <h1><i class="fa fa-users page-header-icon"></i>&nbsp;&nbsp;Crear Nueva Vista</h1>
+                        <h1><i style="font-size: small;" class="fa fa-plus"/><i class="fa fa-filter page-header-icon"></i>&nbsp;&nbsp;Crear Nueva Vista</h1>
                         <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
                             <i class="fa fa-info-circle"/>
                         </p:commandLink> 
@@ -34,19 +36,20 @@
 
                 <p:messages />
                 <div class="row">
-                    <div class="col-sm-9 col-lg-6">
+                    <div class="col-sm-12 col-lg-10">
                         <div class="form-group">
                             <label class="control-label">#{bundle.VistaLabel_nombre}</label>
-                            <p:inputText id="nombre" value="#{vistaController.selected.nombre}" 
+                            <p:inputText style="width: 750px;" id="nombre" value="#{vistaController.selected.nombre}" 
                                          styleClass="form-control noupdate"
                                          title="#{bundle.VistaTitle_nombre}" 
                                          required="true" requiredMessage="#{bundle.VistaRequiredMessage_nombre}"/>
                             <h:message for="nombre" errorClass="text-danger"/>
                         </div>
-                        <div class="form-group">
+                        <div styleClass="form-control" class="form-group">
                             <label class="control-label">Criterios</label>
 
-                            <go:filterView id="panelFilter0" controllerMBean="#{vistaController}" 
+                            <go:filterView 
+                                           id="panelFilter0" controllerMBean="#{vistaController}" 
                                            vista="#{vistaController.selected}"
                                            filterHelper="#{vistaController.filterHelper2}"
                                            showApplyAction="false"
@@ -56,16 +59,16 @@
                                            update="@(form)"/>
 
                         </div>
-                        <div class="form-group">
+                        <div style="width: 750px;" styleClass="form-control" class="form-group">
                             <label class="control-label">Visibilidad</label>
 
                             <go:visibility id="VisibilidadPanel" controllerMBean="#{vistaController}"/>
 
                         </div>
-                        <div class="form-group">
+                        <div  class="form-group">
                             <label class="control-label">#{bundle.VistaLabel_descripcion}</label>
 
-                            <p:inputTextarea styleClass="form-control noupdate" 
+                            <p:inputTextarea style="width: 750px;" styleClass="form-control noupdate" 
                                              id="descripcion" value="#{vistaController.selected.descripcion}" 
                                              title="#{bundle.VistaTitle_descripcion}" />
 
@@ -75,8 +78,11 @@
                         <div class="btn-group">
                             <p:commandLink action="#{vistaController.goBack()}" 
                                            styleClass="btn btn-default btn-flat" 
-                                           ajax="false" immediate="true">
-                                <i class=""></i> #{bundle.Cancel}
+                                           ajax="false" immediate="true"
+                                           onclick="jQuery(this).addClass('ui-state-disabled');
+                                               jQuery(this).children().removeClass('fa fa-chevron-left');
+                                                   jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                <i class="fa fa-chevron-left"></i> #{bundle.goBack}
                             </p:commandLink>
                         </div>
 
@@ -85,8 +91,9 @@
                                            ajax="false" update="@form"
                                            styleClass="btn btn-primary btn-flat" 
                                            onclick="jQuery(this).addClass('ui-state-disabled');
+                                               jQuery(this).children().removeClass('fa fa-save');
                                                    jQuery(this).children().addClass('fa fa-refresh fa-spin')">
-                                <i class=""></i> #{bundle.SaveLink}
+                                <i class="fa fa-save"></i> #{bundle.SaveLink}
                             </p:commandLink>
                         </div>
 

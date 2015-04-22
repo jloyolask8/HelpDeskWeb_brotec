@@ -66,8 +66,9 @@
                                            styleClass="btn btn-default btn-flat" 
                                            ajax="false"
                                            onclick="jQuery(this).addClass('ui-state-disabled');
+                                               jQuery(this).children().removeClass('fa fa-chevron-left');
                                                    jQuery(this).children().addClass('fa fa-refresh fa-spin')">
-                                <i class=""></i> Volver
+                                <i class="fa fa-chevron-left"></i> #{bundle.goBack}
                             </p:commandLink>
                         </div>
 
@@ -77,8 +78,9 @@
                                            rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
                                            styleClass="btn btn-primary btn-flat" 
                                            onclick="jQuery(this).addClass('ui-state-disabled');
+                                               jQuery(this).children().removeClass('fa fa-pencil');
                                                    jQuery(this).children().addClass('fa fa-refresh fa-spin')">
-                                <i class=""></i> Editar
+                                <i class="fa fa-pencil"></i> Editar
                             </p:commandLink>
                         </div>
                     </div>

@@ -27,7 +27,7 @@
             <div class="page-header">
                 <div class="row">
                     <div class="col-sm-6 col-xs-12">
-                        <h1><i class="fa fa-key page-header-icon"></i>&nbsp;&nbsp;#{bundle.CreateGrupoTitle}</h1>
+                        <h1><i style="font-size: small;" class="fa fa-plus"/> <i class="fa fa-users page-header-icon"></i>&nbsp;&nbsp;#{bundle.CreateGrupoTitle}</h1>
                         <p:commandLink title="Ayuda Grupos" onclick="PF('helpDialog').show()" styleClass="text-info" >
                             <i class="fa fa-info-circle"/>
                         </p:commandLink> 
@@ -100,11 +100,29 @@
                     </p:pickList>  
                 </p:fieldset>
                 <div style="margin-top: 10px;">
-                <p:commandLink styleClass="btn btn-default btn-flat fa fa-reply" action="#{grupoController.prepareList}" value="&nbsp;&nbsp;Volver" immediate="true" ajax="false"/>
-                &nbsp;&nbsp;   
-                <p:commandLink styleClass="btn btn-primary btn-flat fa fa-save" 
-                               action="#{grupoController.create}" value="&nbsp;&nbsp;#{bundle.CreateGrupoSaveLink}" 
-                               ajax="false"  rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/> 
+                    <div class="btn-group">
+                        <p:commandLink styleClass="btn btn-default btn-flat" 
+                                       action="#{grupoController.prepareList}"  
+                                       ajax="false"
+                                       immediate="true"
+                                       onclick="jQuery(this).addClass('ui-state-disabled');
+                                           jQuery(this).children().removeClass('fa fa-chevron-left');
+                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                            <i class="fa fa-chevron-left"></i> Volver
+                        </p:commandLink>  
+                    </div> 
+                    &nbsp;
+                    <div class="btn-group">
+                        <p:commandLink styleClass="btn btn-primary btn-flat" 
+                                       action="#{grupoController.create}"  
+                                       ajax="false"  
+                                       rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
+                                       onclick="jQuery(this).addClass('ui-state-disabled');
+                                           jQuery(this).children().removeClass('fa fa-save');
+                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                            <i class="fa fa-save"></i> #{bundle.CreateGrupoSaveLink}
+                        </p:commandLink>  
+                    </div> 
                 </div>
             </h:form>
         </ui:define>

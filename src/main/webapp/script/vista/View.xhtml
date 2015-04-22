@@ -3,46 +3,138 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:go="http://java.sun.com/jsf/composite/go">
 
-    <ui:composition template="/script/template_inbox.xhtml">
+    <ui:composition template="/script/template_inbox_bootstrap_config.xhtml">
         <ui:define name="title">
-            <h:outputText value="#{bundle.ViewVistaTitle}"></h:outputText>
+            <h:outputText value="Ver Vista"></h:outputText>
+        </ui:define>
+        <ui:define name="help">
+            <p:panel>
+                <h:outputLabel escape="false" value="Las vistas reúnen un grupo de casos según un conjunto de criterios que 
+                               expresan una variedad de estados del caso como, por ejemplo, Nuevo, En proceso o Solucionado. 
+                               "/>
+                <br/>
+                <h:outputLabel escape="false" value="Las vistas permiten crear grupos coherentes de casos para asi poder acceder más rapidamente a los casos de interés."/>
+            </p:panel>
+        </ui:define>
+        <ui:define name="content_header">
+            <script>
+                var init = [];
+                init.push(function () {
+                    $('body').addClass('mmc');
+                });
+            </script>
+            <!-- page-header -->
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-sm-6 col-xs-12">
+                        <h1><i class="fa fa-filter page-header-icon"></i>&nbsp;&nbsp;Detalles de la vista: #{vistaController.selected.nombre}</h1>
+                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                            <i class="fa fa-info-circle"/>
+                        </p:commandLink> 
+                    </div>
+
+                </div>
+            </div><!-- / .page-header --> 
         </ui:define>
         <ui:define name="body">
             <h:panelGroup id="messagePanel" layout="block">
                 <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
             </h:panelGroup>
             <h:form>
-                <h:panelGrid columns="2">
-                    <h:outputText value="#{bundle.ViewVistaLabel_idVista}"/>
-                    <h:outputText value="#{vistaController.selected.idVista}" title="#{bundle.ViewVistaTitle_idVista}"/>
-                    <h:outputText value="#{bundle.ViewVistaLabel_nombre}"/>
-                    <h:outputText value="#{vistaController.selected.nombre}" title="#{bundle.ViewVistaTitle_nombre}"/>
-                    <h:outputText value="#{bundle.ViewVistaLabel_descripcion}"/>
-                    <h:outputText value="#{vistaController.selected.descripcion}" title="#{bundle.ViewVistaTitle_descripcion}"/>
-                    <h:outputText value="#{bundle.ViewVistaLabel_visibleToAll}"/>
-                    <h:outputText value="#{vistaController.selected.visibleToAll}" title="#{bundle.ViewVistaTitle_visibleToAll}"/>
-                    <h:outputText value="#{bundle.ViewVistaLabel_idUsuarioCreadaPor}"/>
-                    <h:outputText value="#{vistaController.selected.idUsuarioCreadaPor}" title="#{bundle.ViewVistaTitle_idUsuarioCreadaPor}"/>
-                    <h:outputText value="#{bundle.ViewVistaLabel_idGrupo}"/>
-                    <h:outputText value="#{vistaController.selected.idGrupo}" title="#{bundle.ViewVistaTitle_idGrupo}"/>
-                    <h:outputText value="#{bundle.ViewVistaLabel_idArea}"/>
-                    <h:outputText value="#{vistaController.selected.idArea}" title="#{bundle.ViewVistaTitle_idArea}"/>
-                </h:panelGrid>
-                <br />
-                <h:commandLink action="#{vistaController.destroyAndView}" value="#{bundle.ViewVistaDestroyLink}"/>
-                <br />
-                <br />
-                <h:link outcome="Edit" value="#{bundle.ViewVistaEditLink}"/>
-                <br />
-                <h:commandLink action="#{vistaController.prepareCreate}" value="#{bundle.ViewVistaCreateLink}" />
-                <br />
-                <h:commandLink action="#{vistaController.prepareList}" value="#{bundle.ViewVistaShowAllLink}"/>
-                <br />
-                <br />
-                <h:link outcome="/index" value="#{bundle.ViewVistaIndexLink}"/>
 
+                <div class="row">
+                    <div class="col-sm-12 col-lg-10">
+                        <div class="form-group">
+                            <label for="nombre" class="control-label">#{bundle.VistaLabel_nombre}</label>
+                            <h:outputText style="width: 750px;" id="nombre" value="#{vistaController.selected.nombre}" 
+                                          styleClass="form-control noupdate"
+                                          title="#{bundle.VistaTitle_nombre}"/>
+                        </div>
+                        <div styleClass="form-control" class="form-group">
+                            <label class="control-label">Criterios:</label>
+
+                            <go:filterView canChangeFilters="false"
+                                id="panelFilter0" controllerMBean="#{vistaController}" 
+                                vista="#{vistaController.selected}"
+                                filterHelper="#{vistaController.filterHelper2}"
+                                showApplyAction="false"
+                                showSearchBar="false"
+                                showEdit="false"
+                                showSaveAs="false"/>
+
+                        </div>
+                        <div style="width: 750px;" styleClass="form-control" class="form-group">
+                            <label for="VisibilidadPanel" class="control-label">Visibilidad para todos:</label>
+
+                            <h:outputText style="width: 750px;" id="VisibilidadPanel" 
+                                          styleClass="form-control noupdate" value="#{vistaController.selected.visibleToAll}" 
+                                          title="Visible para usuarios"/>
+                        </div>
+                        <div  class="form-group">
+                            <label for="descripcion" class="control-label">#{bundle.VistaLabel_descripcion}</label>
+
+                            <h:inputTextarea style="width: 750px;" styleClass="form-control noupdate" disabled="true" 
+                                             id="descripcion" value="#{vistaController.selected.descripcion}" 
+                                             title="#{bundle.VistaTitle_descripcion}" />
+                        </div>
+
+                        <div  class="form-group">
+                            <label for="idUsuarioCreadaPor" class="control-label">Vista creada por:</label>
+
+                            <h:outputText id="idUsuarioCreadaPor" styleClass="form-control noupdate"
+                                          value="#{vistaController.selected.idUsuarioCreadaPor}" 
+                                          style="width: 750px;" title="Creada por"/>
+
+                        </div>
+
+                        <div  class="form-group">
+                            <label for="visibleGroup" class="control-label">Visible para el Grupo:</label>
+
+                            <h:outputText id="visibleGroup" styleClass="form-control noupdate"
+                                          value="#{vistaController.selected.idGrupo}" 
+                                          style="width: 750px;" title="Visible por"/>
+
+                        </div>
+                        
+                        <div  class="form-group">
+                            <label for="visibleArea" class="control-label">Visible para el &aacute;rea:</label>
+
+                            <h:outputText id="visibleArea" styleClass="form-control noupdate"
+                                          value="#{vistaController.selected.idArea}" 
+                                          style="width: 750px;" title="Visible por"/>
+
+                        </div>
+                        &nbsp;
+                        <div class="btn-group">
+                            <p:commandLink action="#{vistaController.goBack()}" 
+                                           styleClass="btn btn-default btn-flat" 
+                                           ajax="false" immediate="true"
+                                           onclick="jQuery(this).addClass('ui-state-disabled');
+                                                   jQuery(this).children().removeClass('fa fa-chevron-left');
+                                                   jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                <i class="fa fa-chevron-left"></i> #{bundle.goBack}
+                            </p:commandLink>
+                        </div>
+                        &nbsp;
+                        <div class="btn-group">
+                            <p:commandLink action="Edit" 
+                                           ajax="false"
+                                           rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarVistas() 
+                                                       and (item.idUsuarioCreadaPor eq UserSessionBean.current 
+                                                       or filtroAcceso.administradorDelSistema)}"
+                                           styleClass="btn btn-primary btn-flat" 
+                                           onclick="jQuery(this).addClass('ui-state-disabled');
+                                                   jQuery(this).children().removeClass('fa fa-pencil');
+                                                   jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                                <i class="fa fa-pencil"></i> Editar
+                            </p:commandLink>
+                        </div>
+                    </div>
+                </div>
             </h:form>
         </ui:define>
     </ui:composition>

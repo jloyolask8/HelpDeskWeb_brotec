@@ -10,7 +10,7 @@
         <ui:define name="title">
             <h:outputText value="#{bundle.EditRolTitle}"/>
         </ui:define>
-        <ui:define name="west">
+        <ui:define name="help">
             <h:outputText escape="false" value="#{bundle.ayudaRoles}"/>
         </ui:define>
 
@@ -25,7 +25,7 @@
             <div class="page-header">
                 <div class="row">
                     <div class="col-sm-6 col-xs-12">
-                        <h1><i class="fa fa-key page-header-icon"></i>&nbsp;&nbsp;#{bundle.EditRolTitle}</h1>
+                        <h1><i class="fa fa-key page-header-icon"></i>&nbsp;&nbsp;#{bundle.EditRolTitle}: #{rolController.selected.idRol}</h1>
                         <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
                             <i class="fa fa-info-circle"/>
                         </p:commandLink> 
@@ -71,11 +71,41 @@
                         </div>
                     </div>
                 </div>
-                <p:commandLink styleClass="btn btn-default btn-flat fa fa-reply" ajax="false" action="#{rolController.prepareList}" value="&nbsp;&nbsp;Volver" immediate="true"/>&nbsp;&nbsp;
-                <p:commandLink styleClass="btn btn-primary btn-flat fa fa-eye" ajax="false" action="View" value="&nbsp;&nbsp;#{bundle.EditRolViewLink}" immediate="true"/>&nbsp;&nbsp;
-                <p:commandLink styleClass="btn btn-primary btn-flat fa fa-save" ajax="false" action="#{rolController.update}" value="&nbsp;&nbsp;#{bundle.EditRolSaveLink}" rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
-                
-                
+
+                <div class="btn-group">
+                    <p:commandLink action="#{rolController.prepareList}" 
+                                   styleClass="btn btn-default btn-flat" 
+                                   ajax="false" immediate="true"
+                                   onclick="jQuery(this).addClass('ui-state-disabled');
+                                           jQuery(this).children().removeClass('fa fa-chevron-left');
+                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                        <i class="fa fa-chevron-left"></i> Volver
+                    </p:commandLink>
+                </div>
+                &nbsp;
+                <div class="btn-group">
+                    <p:commandLink action="View" 
+                                   ajax="false"
+                                   immediate="true"
+                                   styleClass="btn btn-primary btn-flat" 
+                                   onclick="jQuery(this).addClass('ui-state-disabled');
+                                           jQuery(this).children().removeClass('fa fa-eye');
+                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                        <i class="fa fa-eye"></i> #{bundle.EditRolViewLink}
+                    </p:commandLink>
+                </div>
+                &nbsp;
+                <div class="btn-group">
+                    <p:commandLink action="#{rolController.update}" 
+                                   ajax="false"
+                                   styleClass="btn btn-primary btn-flat" 
+                                   rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
+                                   onclick="jQuery(this).addClass('ui-state-disabled');
+                                           jQuery(this).children().removeClass('fa fa-save');
+                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                        <i class="fa fa-save"></i> #{bundle.EditRolSaveLink}
+                    </p:commandLink>
+                </div>
                 <p:dialog id="confirmDialog" showEffect="fade" hideEffect="fade" 
                           header="Iniciando proceso de eliminación" widgetVar="confirmation">
 

@@ -39,7 +39,7 @@
                             <i class="fa fa-info-circle"/>
                         </p:commandLink> 
                     </div>
-                    
+
                 </div>
             </div><!-- / .page-header --> 
         </ui:define>
@@ -49,29 +49,29 @@
             <ui:include src="View_1.xhtml" />
 
             <h:form>
-                <p:toolbar>  
-                    <p:toolbarGroup align="left">   
-                        <p:commandLink styleClass="btn btn-default btn-flat fa fa-reply" ajax="false" action="#{usuarioController.goBack}" value="&nbsp;&nbsp;#{bundle.goBack}" 
-                                         />
-                        <p:separator/> 
-                        <p:commandLink styleClass="btn btn-primary btn-flat fa fa-pencil" ajax="false" action="#{usuarioController.prepareEditPK(usuarioController.selected.idUsuario)}" value="&nbsp;&nbsp;#{bundle.edit}" 
-                                         
-                                         rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" />
 
-
-
-                    </p:toolbarGroup>
-
-                    <p:toolbarGroup align="right">   
-
-                        <p:commandLink styleClass="btn btn-primary btn-flat fa fa-plus" ajax="false" action="#{usuarioController.prepareCreate}" value="&nbsp;&nbsp;#{bundle.ViewUsuarioCreateLink}" 
-                                         
-                                         rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}" />
-
-
-
-                    </p:toolbarGroup>
-                </p:toolbar>
+                <div class="btn-group">
+                    <p:commandLink action="#{usuarioController.goBack}" 
+                                   styleClass="btn btn-default btn-flat" 
+                                   ajax="false"
+                                   onclick="jQuery(this).addClass('ui-state-disabled');
+                                           jQuery(this).children().removeClass('fa fa-chevron-left');
+                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                        <i class="fa fa-chevron-left"></i> #{bundle.goBack}
+                    </p:commandLink>
+                </div>
+                &nbsp;
+                <div class="btn-group">
+                    <p:commandLink action="#{usuarioController.prepareEditPK(usuarioController.selected.idUsuario)}" 
+                                   ajax="false"
+                                   styleClass="btn btn-primary btn-flat" 
+                                   rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
+                                   onclick="jQuery(this).addClass('ui-state-disabled');
+                                           jQuery(this).children().removeClass('fa fa-pencil');
+                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                        <i class="fa fa-pencil"></i> #{bundle.edit}
+                    </p:commandLink>
+                </div>
             </h:form>
 
         </ui:define>

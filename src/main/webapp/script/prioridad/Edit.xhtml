@@ -81,8 +81,9 @@
                                            styleClass="btn btn-default btn-flat" 
                                            ajax="false"
                                            onclick="jQuery(this).addClass('ui-state-disabled');
+                                               jQuery(this).children().removeClass('fa fa-chevron-left');
                                                    jQuery(this).children().addClass('fa fa-refresh fa-spin')">
-                                <i class=""></i> Volver
+                                <i class="fa fa-chevron-left"></i> #{bundle.goBack}
                             </p:commandLink>
                         </div>
 
@@ -91,8 +92,9 @@
                                            ajax="false"
                                            styleClass="btn btn-primary btn-flat" 
                                            onclick="jQuery(this).addClass('ui-state-disabled');
+                                               jQuery(this).children().removeClass('fa fa-eye');
                                                    jQuery(this).children().addClass('fa fa-refresh fa-spin')">
-                                <i class=""></i> Ver
+                                <i class="fa fa-eye"></i> Ver
                             </p:commandLink>
                         </div>
                         <div class="btn-group">
@@ -100,8 +102,9 @@
                                            ajax="false"
                                            styleClass="btn btn-primary btn-flat" 
                                            onclick="jQuery(this).addClass('ui-state-disabled');
+                                               jQuery(this).children().removeClass('fa fa-save');
                                                    jQuery(this).children().addClass('fa fa-refresh fa-spin')">
-                                <i class=""></i> #{bundle.EditPrioridadSaveLink}
+                                <i class="fa fa-save"></i> #{bundle.EditPrioridadSaveLink}
                             </p:commandLink>
                         </div>
                     </div>

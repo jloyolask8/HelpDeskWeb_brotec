@@ -186,8 +186,9 @@
                                            styleClass="btn btn-default btn-flat" 
                                            ajax="false" immediate="true"
                                            onclick="jQuery(this).addClass('ui-state-disabled');
+                                               jQuery(this).children().removeClass('fa fa-chevron-left');
                                                    jQuery(this).children().addClass('fa fa-refresh fa-spin')">
-                                <i class=""></i> #{bundle.Cancel}
+                                <i class="fa fa-chevron-left"></i> #{bundle.goBack}
                             </p:commandLink>
                         </div>
 
@@ -196,8 +197,9 @@
                                            ajax="false"
                                            styleClass="btn btn-primary btn-flat" 
                                            onclick="jQuery(this).addClass('ui-state-disabled');
+                                               jQuery(this).children().removeClass('fa fa-save');
                                                    jQuery(this).children().addClass('fa fa-refresh fa-spin')">
-                                <i class=""></i> #{bundle.SaveLink}
+                                <i class="fa fa-save"></i> #{bundle.SaveLink}
                             </p:commandLink>
                         </div>
                     </div>

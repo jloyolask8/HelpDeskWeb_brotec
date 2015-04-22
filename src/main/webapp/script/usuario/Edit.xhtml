@@ -29,7 +29,7 @@
             <div class="page-header">
                 <div class="row">
                     <div class="col-sm-6 col-xs-12">
-                        <h1><i class="fa fa-user page-header-icon"></i>&nbsp;&nbsp;Editar Usuario</h1>
+                        <h1><i class="fa fa-user page-header-icon"></i>&nbsp;&nbsp;Editar Usuario: #{usuarioController.selected.idUsuario}</h1>
                         <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
                             <i class="fa fa-info-circle"/>
                         </p:commandLink> 
@@ -163,21 +163,40 @@
                 </p:fieldset>
                 <br/>
 
-                <p:toolbar>  
-                    <p:toolbarGroup align="left">   
-                        <p:commandLink styleClass="btn btn-default btn-flat fa fa-reply" action="#{usuarioController.goBack()}" value="&nbsp;&nbsp;#{bundle.goBack}" 
-                                       immediate="true" ajax="false"/>
-                        <p:separator/> 
-                        <p:commandLink styleClass="btn btn-primary btn-flat fa fa-eye" ajax="false" action="View" value="&nbsp;#{bundle.EditUsuarioViewLink}" 
-                                       immediate="true"/>
-                        <p:separator/> 
-                        <p:commandLink styleClass="btn btn-primary btn-flat fa fa-save" ajax="false" action="#{usuarioController.update}" value="&nbsp;#{bundle.EditUsuarioSaveLink}"
-                                       rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
-                    </p:toolbarGroup>
-
-
-                </p:toolbar>
-
+                <div class="btn-group">
+                    <p:commandLink action="#{usuarioController.goBack}" 
+                                   styleClass="btn btn-default btn-flat" 
+                                   ajax="false"
+                                   onclick="jQuery(this).addClass('ui-state-disabled');
+                                           jQuery(this).children().removeClass('fa fa-chevron-left');
+                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                        <i class="fa fa-chevron-left"></i> #{bundle.goBack}
+                    </p:commandLink>
+                </div>
+                &nbsp;
+                <div class="btn-group">
+                    <p:commandLink action="View" 
+                                   ajax="false"
+                                   immediate="true"
+                                   styleClass="btn btn-primary btn-flat" 
+                                   onclick="jQuery(this).addClass('ui-state-disabled');
+                                           jQuery(this).children().removeClass('fa fa-eye');
+                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                        <i class="fa fa-eye"></i> #{bundle.EditUsuarioViewLink}
+                    </p:commandLink>
+                </div>
+                &nbsp;
+                <div class="btn-group">
+                    <p:commandLink action="#{usuarioController.update}" 
+                                   ajax="false"
+                                   styleClass="btn btn-primary btn-flat" 
+                                   rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"
+                                   onclick="jQuery(this).addClass('ui-state-disabled');
+                                           jQuery(this).children().removeClass('fa fa-save');
+                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                        <i class="fa fa-save"></i> #{bundle.EditUsuarioSaveLink}
+                    </p:commandLink>
+                </div>
 
             </h:form>
         </ui:define>
