@@ -9,7 +9,7 @@ public abstract class PaginationHelper {
     public static final int PAGINATOR_DEFAULT_SIZE = 10;
     private int pageSize;
     private int page;
-    private DataModel datamodel = null;
+//    private DataModel datamodel = null;
 
     public PaginationHelper() {
         this.pageSize = PAGINATOR_DEFAULT_SIZE;
@@ -90,17 +90,17 @@ public abstract class PaginationHelper {
         this.pageSize = p;
     }
 
-    /**
-     * @return the datamodel
-     */
-    public DataModel getDatamodel() {
-        return datamodel;
-    }
-
-    /**
-     * @param datamodel the datamodel to set
-     */
-    public void setDatamodel(DataModel datamodel) {
-        this.datamodel = datamodel;
-    }
+//    /**
+//     * @return the datamodel
+//     */
+//    public DataModel getDatamodel() {
+//        return datamodel;
+//    }
+//
+//    /**
+//     * @param datamodel the datamodel to set
+//     */
+//    public void setDatamodel(DataModel datamodel) {
+//        this.datamodel = datamodel;
+//    }
 }
