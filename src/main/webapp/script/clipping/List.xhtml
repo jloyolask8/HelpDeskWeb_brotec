@@ -103,6 +103,13 @@
                                         <span class="panel-heading-text"><em>#{item.visibleToAll ? 'To anyone':(item.idGrupo ne null)?'Only members of group'.concat(item.idGrupo.nombre):((item.idArea ne null)?'Only members of area'.concat(item.idArea.nombre):'Only owner')}</em>
                                             &nbsp;&nbsp;<span style="color: #ccc">|</span>&nbsp;&nbsp;</span>
 
+                                        <p:commandLink id="viewBtn" action="View"
+                                                       title="Ver" ajax="false"
+                                                       styleClass="btn btn-sm btn-outline btn-default"
+                                                       >
+                                            <i class="fa fa-eye"/>
+                                        </p:commandLink>
+
                                         <p:commandLink id="editBtn" action="#{clippingController.prepareEdit()}" ajax="false"
                                                        styleClass="btn btn-xs btn-outline btn-primary"
                                                        rendered="#{item.idUsuarioCreadaPor eq UserSessionBean.current}">

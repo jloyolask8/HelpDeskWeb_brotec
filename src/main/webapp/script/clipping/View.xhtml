@@ -6,14 +6,14 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 
-  <ui:composition template="/script/template_inbox.xhtml">
+    <ui:composition template="/script/template_inbox_bootstrap.xhtml">
         <ui:define name="title">
             <h:outputText value="#{bundle.ViewClippingTitle}"></h:outputText>
         </ui:define>
-        <ui:define name="west">
+        <ui:define name="help">
             <p:accordionPanel multiple="true" cache="true" >
-             <p:tab title="#{bundle.clippingDesc}" >
-                   <p:outputLabel escape="false" value="#{bundle.clippingHelp}"/>
+                <p:tab title="#{bundle.clippingDesc}" >
+                    <p:outputLabel escape="false" value="#{bundle.clippingHelp}"/>
 
                 </p:tab>
             </p:accordionPanel>
@@ -22,36 +22,101 @@
             <h:panelGroup id="messagePanel" layout="block">
                 <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
             </h:panelGroup>
-            <h:form>
-                <h:panelGrid columns="2">
-                    <h:outputText value="#{bundle.ViewClippingLabel_idClipping}"/>
-                    <h:outputText value="#{clippingController.selected.idClipping}" title="#{bundle.ViewClippingTitle_idClipping}"/>
-                    <h:outputText value="#{bundle.ViewClippingLabel_nombre}"/>
-                    <h:outputText value="#{clippingController.selected.nombre}" title="#{bundle.ViewClippingTitle_nombre}"/>
-                    <h:outputText value="#{bundle.ViewClippingLabel_texto}"/>
-                    <h:outputText value="#{clippingController.selected.texto}" title="#{bundle.ViewClippingTitle_texto}"/>
-                    <h:outputText value="#{bundle.ViewClippingLabel_visibleToAll}"/>
-                    <h:outputText value="#{clippingController.selected.visibleToAll}" title="#{bundle.ViewClippingTitle_visibleToAll}"/>
-                    <h:outputText value="#{bundle.ViewClippingLabel_idGrupo}"/>
-                    <h:outputText value="#{clippingController.selected.idGrupo}" title="#{bundle.ViewClippingTitle_idGrupo}"/>
-                    <h:outputText value="#{bundle.ViewClippingLabel_idClippingPadre}"/>
-                    <h:outputText value="#{clippingController.selected.idClippingPadre}" title="#{bundle.ViewClippingTitle_idClippingPadre}"/>
-                    <h:outputText value="#{bundle.ViewClippingLabel_idArea}"/>
-                    <h:outputText value="#{clippingController.selected.idArea}" title="#{bundle.ViewClippingTitle_idArea}"/>
-                </h:panelGrid>
-                <br />
-                <h:commandLink action="#{clippingController.destroyAndView}" value="#{bundle.ViewClippingDestroyLink}"/>
-                <br />
-                <br />
-                <h:link outcome="Edit" value="#{bundle.ViewClippingEditLink}"/>
-                <br />
-                <h:commandLink action="#{clippingController.prepareCreate}" value="#{bundle.ViewClippingCreateLink}" />
-                <br />
-                <h:commandLink action="#{clippingController.prepareList}" value="#{bundle.ViewClippingShowAllLink}"/>
-                <br />
-                <br />
-                <h:link outcome="/index" value="#{bundle.ViewClippingIndexLink}"/>
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-sm-10 col-xs-10">
+                        <h1><i class="fa fa-heart-o page-header-icon"></i>&nbsp;&nbsp;#{bundle.ViewClippingTitle} respuesta predefinida: #{clippingController.selected.nombre}</h1>
+                        <p:commandLink title="Help" onclick="PF('helpDialog').show()" styleClass="text-info" >
+                            <i class="fa fa-info-circle"/>
+                        </p:commandLink> 
+                    </div>
 
+                </div>
+            </div><!-- / .page-header --> 
+            <h:form>
+                <div class="row">
+                    <div class="col-sm-12 col-lg-10">
+                        <div class="form-group">
+                            <label for="idClipping" class="control-label">ID respuesta predefinida:</label>
+                            <h:outputText style="width: 750px;" id="idClipping" value="#{clippingController.selected.idClipping}" 
+                                          styleClass="form-control noupdate"
+                                          title="#{bundle.ViewClippingTitle_idClipping}"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="nombre" class="control-label">#{bundle.ViewClippingLabel_nombre}</label>
+                            <h:outputText style="width: 750px;" id="nombre" value="#{clippingController.selected.nombre}" 
+                                          styleClass="form-control noupdate"
+                                          title="#{bundle.ViewClippingTitle_nombre}"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="clippingText" class="control-label">Texto de respuesta predefinida</label>
+                            <h:outputText style="width: 750px; height: 200px;" id="clippingText" value="#{clippingController.selected.texto}" 
+                                          styleClass="form-control noupdate"
+                                          title="#{bundle.ViewClippingTitle_texto}"/>
+                        </div>
+                        <!--<h:outputText value="{bundle.ViewClippingLabel_texto}"/>
+                    <h:outputText value="" title=""/>-->
+                        <div class="form-group">
+                            <label for="visible" class="control-label">#{bundle.ViewClippingLabel_visibleToAll}</label>
+                            <h:outputText style="width: 750px;" id="visible" value="#{clippingController.selected.visibleToAll}" 
+                                          styleClass="form-control noupdate"
+                                          title="#{bundle.ViewClippingTitle_visibleToAll}"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="visibleGrupo" class="control-label">Visible para el grupo:</label>
+                            <h:outputText style="width: 750px;" id="visibleGrupo" value="#{clippingController.selected.idGrupo.nombre}" 
+                                          styleClass="form-control noupdate"
+                                          title="#{bundle.ViewClippingTitle_idGrupo}"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="visibleArea" class="control-label">Visible para el Área:</label>
+                            <h:outputText style="width: 750px;" id="visibleArea" value="#{clippingController.selected.idArea.nombre}" 
+                                          styleClass="form-control noupdate"
+                                          title="#{bundle.ViewClippingTitle_idGrupo}"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="clippingPadre" class="control-label">#{bundle.ViewClippingLabel_idClippingPadre}</label>
+                            <h:outputText style="width: 750px;" id="clippingPadre" value="#{clippingController.selected.idClippingPadre}" 
+                                          styleClass="form-control noupdate"
+                                          title="#{bundle.ViewClippingTitle_idClippingPadre}"/>
+                        </div>
+                    </div>
+                </div>
+
+                <br />
+
+                <div class="btn-group">
+                    <p:commandLink process="@this" immediate="true" ajax="false"
+                                   styleClass="btn btn-default btn-flat" 
+                                   action="#{clippingController.prepareList()}" 
+                                   onclick="jQuery(this).addClass('ui-state-disabled');
+                                           jQuery(this).children().removeClass('fa fa-chevron-left');
+                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                        <p:resetInput target="@form" />
+                        <i class="fa fa-chevron-left"></i> Volver
+                    </p:commandLink>
+
+                </div>
+
+                <div class="btn-group">
+                    <p:commandLink action="Edit" 
+                                   ajax="false"
+                                   rendered="#{filtroAcceso.verificarAccesoAFuncionAdministrarVistas() 
+                                               and (item.idUsuarioCreadaPor eq UserSessionBean.current 
+                                               or filtroAcceso.administradorDelSistema)}"
+                                   styleClass="btn btn-primary btn-flat" 
+                                   onclick="jQuery(this).addClass('ui-state-disabled');
+                                           jQuery(this).children().removeClass('fa fa-pencil');
+                                           jQuery(this).children().addClass('fa fa-refresh fa-spin')">
+                        <i class="fa fa-pencil"></i> Editar
+                    </p:commandLink>
+                </div>
+
+
+
+                <!--<h:commandLink action="{clippingController.destroyAndView}" value="{bundle.ViewClippingDestroyLink}"/>
+                <h:link outcome="Edit" value="{bundle.ViewClippingEditLink}"/>
+                <h:commandLink action="{clippingController.prepareCreate}" value="{bundle.ViewClippingCreateLink}" />-->
             </h:form>
         </ui:define>
     </ui:composition>
