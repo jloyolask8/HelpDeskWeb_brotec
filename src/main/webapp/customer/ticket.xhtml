@@ -5,8 +5,9 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
       xmlns:pe="http://primefaces.org/ui/extensions">
+    
 
-    <f:event type="preRenderView" listener="#{loginCustomerController.checkAccessToCasosList}" />
+    <f:event type="preRenderView" listener="#{loginCustomerController.checkAccessToTicket}" />
 
     <ui:composition  template="/customer/template.xhtml">
         <ui:define name="page_content">     
@@ -79,13 +80,7 @@
 
                                             </li>
 
-                                            <li class="list-group-item">
-                                                <label>#{bundle.EditCasoLabel_idPrioridad}</label>
-
-                                                <span class="badge pull-right label-default">
-                                                    #{casoCustomerController.selected.idPrioridad}
-                                                </span>
-                                            </li>
+                                            
 
                                             <li class="list-group-item">
                                                 <div class="row">
@@ -96,17 +91,6 @@
                                                 </div>
                                             </li>
 
-                                            <li class="list-group-item #{casoCustomerController.selected.isOpen() ? 'show':'hidden'}">
-                                                <div class="row">
-                                                    <div class="col-sm-6 col-md-4 col-lg-6"><label>#{bundle.EditCasoLabel_nextResponseDue}</label></div>
-                                                    <div class="col-sm-6 col-md-8 col-lg-6">
-                                                        <h:outputText value="#{casoCustomerController.selected.nextResponseDue}" >
-                                                            <f:convertDateTime pattern="#{bundle.dateFormat2}" />
-                                                        </h:outputText>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            
                                               <li class="list-group-item #{casoCustomerController.selected.isOpen() ? 'hidden':'show'}">
                                                 <div class="row">
                                                     <div class="col-sm-6 col-md-4 col-lg-6"><label>Fecha cierre</label></div>
@@ -438,7 +422,9 @@
 
                                                         <div class="pull-left" style="padding-top: 5px;">
                                                             <p:commandButton value="Enviar" ajax="true" 
-                                                                             update=":mainform:messages :formact :infoCasoForm" actionListener="#{casoCustomerController.customerCreateNota}" styleClass="btn btn-primary btn-xs"/> 
+                                                                             update=":mainform:messages :formact :infoCasoForm" 
+                                                                             actionListener="#{casoCustomerController.customerCreateNota}" 
+                                                                             styleClass="btn btn-primary btn-xs"/> 
                                                         </div>
 
                                                     </div>

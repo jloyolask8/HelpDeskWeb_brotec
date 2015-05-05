@@ -92,7 +92,7 @@
                     </p:tagCloud> 
                 </p:tab>
 
-                <p:tab title="Usuarios Conectados (#{applicationBean.usersLoggedIn.size()})" titletip="TotalActiveSessions: #{applicationBean.totalActiveSession}" id="tabUsers">
+                <p:tab title="Usuarios Conectados (#{applicationBean.usersLoggedIn.size()})" id="tabUsers">
 
                     <p:dataTable id="usersLoggedIn" value="#{applicationBean.usersLoggedIn}" var="userLoggedIn" 
                                  styleClass="hide-column-names"
@@ -108,9 +108,44 @@
                         </p:column>  
 
                         <p:column width="5%">
-                            <p:commandLink disabled="true" title="Chat with #{userLoggedIn}">  
-                                <i class="fa fa-comments"></i>
-                            </p:commandLink>
+                            <h:panelGroup rendered="#{userLoggedIn ne UserSessionBean.current.idUsuario}">
+                            <a title="Chat with #{userLoggedIn}" 
+                                onclick="startChat('#{UserSessionBean.current.idUsuario}', '#{userLoggedIn}', '#{applicationBean.companyName}');">
+                                                            <i class="menu-icon fa fa-comments"></i>
+                                                           
+                                                        </a>
+                            </h:panelGroup>
+                             
+                            
+                           
+                        </p:column>
+
+                    </p:dataTable>  
+
+                </p:tab>
+                
+                
+                <p:tab title="Clientes Conectados (#{applicationBean.customersLoggedIn.size()})" id="tabCus">
+
+                    <p:dataTable id="customersLoggedIn" value="#{applicationBean.customersLoggedIn}" var="cusLoggedIn" 
+                                 styleClass="hide-column-names"
+                                 paginator="true" rows="10" paginatorAlwaysVisible="false"
+                                 emptyMessage="No hay clientes conectados en este momento." >  
+
+
+                        <p:column width="5%">
+                            <h:graphicImage value="/images/user-available.png" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{cusLoggedIn}"/>
+                        </p:column>  
+
+                        <p:column width="5%">
+                            <a title="Chat with #{cusLoggedIn}" 
+                                onclick="startChat('#{UserSessionBean.current.idUsuario}', '#{cusLoggedIn}', '#{applicationBean.companyName}');">
+                                                            <i class="menu-icon fa fa-comments"></i>
+                                                        </a>
+                           
                         </p:column>
 
                     </p:dataTable>  
@@ -170,7 +205,14 @@
                                              type="button"
                                              disabled="#{casoController.selectedItems.size() le 1}"/> <!-- actionListener="#casoController.mergeSelectedCasos()}" rendered="#casoController.mergeHabilitado}" -->
 
+                             <p:commandButton id="combinarBtn" onclick="PF('confirmaCombinacion').show()"
+                                             update=":formCombinarCasos"
+                                             title="combinar"
+                                             icon="fa fa-random"
+                                             type="button"
+                                             disabled="#{casoController.selectedItems.size() le 1}"/> 
                             <p:separator />
+
                             <p:commandButton id="deleteBtn" icon="ui-icon-trash"  disabled="#{empty casoController.selectedItems}" iconPos="notext"
                                              rendered="#{casoController.verificarEliminarCaso()}"
                                              oncomplete="PF('deleteSelectedCasos').show();" update=":formdeleteSelectedCasos" /> 
@@ -492,13 +534,44 @@
 
                     <p:commandButton value="Aplicar" icon="ui-icon-circle-minus" 
                                      actionListener="#{casoController.saveBlackList}"
-                                     update=":mainform:messages :form0:ID_TABLA" oncomplete="PF('blackListSelected').hide()"/> 
+                                     update=":mainform:messages :form0:ID_TABLA" /> 
 
                     <p:commandButton value="#{bundle.decline}" onclick="PF('blackListSelected').hide()" type="button" /> 
                 </h:form>
 
 
             </p:dialog> 
+            
+            
+            <p:dialog  widgetVar="confirmaCombinacion" header="Confirmar combinación de casos" 
+                       resizable="false" closeOnEscape="true" modal="true" appendTo="@(body)" dynamic="true">  
+                <h:form id="formCombinarCasos">
+                    <p:outputLabel value="Está seguro que desea combinar los siguientes casos ? Al convinar los casos quedará solo 1 caso como resultado."/>
+
+                    <br/>
+
+                    <p:scrollPanel id="scrollpaneActividades" mode="native" style="height: 300px;border-color: window;border: 0;">
+                        <h:panelGrid columns="1">
+                            <c:forEach items="#{casoController.selectedItems}" var="item" >
+                                <h:commandLink action="#{casoController.filterByIdCaso(item.idCaso)}" >
+                                    <h:outputText styleClass="ticket-status" 
+                                                  style="background: \##{item.idSubEstado.backgroundColor}; color: \##{item.idSubEstado.fontColor};" value="#{item.idSubEstado.nombre}"
+                                                  />
+                                    <h:outputText value=" #{item.tipoCaso.nombre} N°#{item.idCaso} - #{item.tema}"/>
+                                </h:commandLink>
+                            </c:forEach>
+                        </h:panelGrid>
+                    </p:scrollPanel> 
+
+                    <p:commandButton value="Aplicar" icon="ui-icon-circle-minus" 
+                                     actionListener="#{casoController.mergeSelectedCasos()}"
+                                     update=":mainform:messages :form0:ID_TABLA" /> 
+ 
+                    <p:commandButton value="#{bundle.decline}" onclick="PF('confirmaCombinacion').hide()" type="button" /> 
+                </h:form>
+
+
+            </p:dialog>
 
             <p:dialog  widgetVar="confirmaCombinacion" header="Confirmar combinación de casos" resizable="false" closeOnEscape="true" modal="true" appendTo="@(body)" dynamic="true">  
                 <h:form id="formCombinarCasos">

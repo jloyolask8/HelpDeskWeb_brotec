@@ -10,10 +10,17 @@ import com.itcs.helpdesk.persistence.entities.Producto;
 import com.itcs.helpdesk.persistence.entities.ProductoContratado;
 import com.itcs.helpdesk.persistence.entities.ProductoContratadoPK;
 import com.itcs.helpdesk.persistence.entities.SubComponente;
+import com.itcs.helpdesk.persistence.entities.Vista;
+import com.itcs.helpdesk.persistence.entities.EmailCliente_;
+import com.itcs.helpdesk.persistence.entities.FiltroVista;
+import com.itcs.helpdesk.persistence.entities.Usuario;
+import com.itcs.helpdesk.persistence.entityenums.EnumTipoComparacion;
+import com.itcs.helpdesk.persistence.utils.OrderBy;
 import com.itcs.helpdesk.util.Log;
 import com.itcs.helpdesk.util.UtilesRut;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +39,7 @@ import javax.faces.convert.FacesConverter;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.persistence.NoResultException;
+import javax.resource.NotSupportedException;
 import jxl.CellReferenceHelper;
 import jxl.Sheet;
 import jxl.Workbook;
@@ -102,27 +110,55 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
      * @return
      */
     public List<String> completeEmailClienteString(String query) {
-        //System.out.println(query);
-        List<String> results = new ArrayList<>();
-        List<EmailCliente> emailClientes = getJpaController().getEmailClienteFindByEmailLike(query, 10);
-//        //System.out.println(emailClientes);
-        if (emailClientes != null && !emailClientes.isEmpty()) {
-            for (EmailCliente emailCliente : emailClientes) {
-                results.add(emailCliente.getEmailCliente());
+        try {
+            System.out.println(query);
+            List<String> results = new ArrayList<>();
+            Vista vista1 = new Vista(EmailCliente.class);
+            FiltroVista f1 = new FiltroVista();
+            f1.setIdCampo("emailCliente");
+            f1.setIdComparador(EnumTipoComparacion.CO.getTipoComparacion());
+            f1.setValor(query);
+            f1.setIdVista(vista1);
+            vista1.getFiltrosVistaList().add(f1);
+
+            List<EmailCliente> emailClientes = (List<EmailCliente>) getJpaController().findEntities(vista1, 10, 0, getDefaultOrderBy(), null, query);
+            if (emailClientes != null && !emailClientes.isEmpty()) {
+                for (EmailCliente emailCliente : emailClientes) {
+                     if (!StringUtils.isEmpty(emailCliente.getEmailCliente())) {
+                        results.add(emailCliente.getEmailCliente());
+                    }
+                }
             }
-        }
-//        else {
-////            emailCliente_wizard_existeEmail = false;
-//            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_WARN, "No existe el email:" + query, "No existe el Cliente con email:" + query);
-//            FacesContext.getCurrentInstance().addMessage(null, message);
-//            //System.out.println("No existe el Cliente con email" + query);
-//        }
+
+            Vista vista2 = new Vista(Usuario.class);
+            FiltroVista filtroEmail = new FiltroVista();
+            filtroEmail.setIdCampo("email");
+            filtroEmail.setIdComparador(EnumTipoComparacion.CO.getTipoComparacion());
+            filtroEmail.setValor(query);
+            filtroEmail.setIdVista(vista2);
+            vista2.getFiltrosVistaList().add(filtroEmail);
+
+            List<Usuario> emailUsers = (List<Usuario>) getJpaController().findEntities(vista2, 10, 0, new OrderBy("email", OrderBy.OrderType.ASC), null, query);
+            if (emailUsers != null && !emailUsers.isEmpty()) {
+                for (Usuario u : emailUsers) {
+                    if (!StringUtils.isEmpty(u.getEmail())) {
+                        results.add(u.getEmail());
+                    }
+                }
+            }
 
         if (InputValidationBean.isValidEmail(query) && !results.contains(query)) {
             results.add(query);
         }
 
         return results;
+        
+        }catch(IllegalStateException | NotSupportedException | ClassNotFoundException e){
+            addErrorMessage(e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return Collections.EMPTY_LIST;
     }
 
     public String prepareCreateProductoContratado() {
@@ -198,7 +234,6 @@ public class EmailClienteController extends AbstractManagedBean<EmailCliente> im
     public void handleFileUploadClienteProd(FileUploadEvent event) {
 
         //System.out.println("bulkLoadedProductoContratadoTipoAsoc:" + bulkLoadedProductoContratadoTipoAsoc);
-
 //        String email_regexp = "[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?";
         if (event != null) {
             fileClients = event.getFile();

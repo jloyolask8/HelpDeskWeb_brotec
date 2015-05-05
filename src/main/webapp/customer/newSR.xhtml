@@ -157,6 +157,7 @@
                                                          disabled="#{casoCustomerController.selected.idProducto eq null}">
                                             <f:selectItem itemLabel="---" itemValue=""/>
                                             <f:selectItems value="#{casoCustomerController.selected.idProducto.componenteList}" var="comp" itemLabel="#{comp.nombre}" itemValue="#{comp}"/>
+                                            <p:ajax event="change" update="idSubComponente"  listener="#{casoCustomerController.handleProductChange}" />
                                         </h:selectOneMenu>
                                         <span class="help-block">. <h:message for="idComponente" errorClass="text-danger" /></span>
                                     </div>
@@ -192,42 +193,33 @@
                                 </div>
 
                                 <div class="form-group row">
-                                    <label for="idTipoCaso" class="col-sm-2 control-label"> #{bundle.CreateCasoLabel_tipoCaso} </label>
+                                    <label for="idTipoCaso" class="col-sm-2 control-label"> Tipo de solicitud </label>
 
                                     <div class="col-sm-10">
-                                        <p:selectOneMenu id="idTipoCaso" 
+                                        <h:selectOneMenu id="idTipoCaso" 
                                                          required="true" requiredMessage="El tipo de caso es requerido."
-                                                         filter="true" filterMatchMode="contains" converter="TipoCasoControllerConverter"
+                                                         styleClass="form-control" converter="TipoCasoControllerConverter"
                                                          value="#{casoCustomerController.selected.tipoCaso}" >                                  
-                                            <f:selectItems value="#{applicationBean.tipoCasoAvailableList}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
+                                            <f:selectItems value="#{applicationBean.tipoCasoAvailableList}" var="tipo" 
+                                                           itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
 
-                                        </p:selectOneMenu>
+                                        </h:selectOneMenu>
 
                                         <span class="help-block"><h:message for="idTipoCaso" errorClass="text-danger" /></span>
                                     </div>
                                 </div>
 
-                                <div class="form-group row">
-                                    <label for="idPrioridad" class="col-sm-2 control-label"> #{bundle.CreateCasoLabel_idPrioridad} </label>
 
-                                    <div class="col-sm-10">
-                                        <p:selectOneMenu id="idPrioridad" value="#{casoCustomerController.selected.idPrioridad}" 
-                                                         required="true" requiredMessage="La Prioridad del caso es un dato requerido.">
-                                            <f:selectItems value="#{applicationBean.prioridadItemsAvailableList}" var="prioridadItem" itemLabel="#{prioridadItem.nombre}" itemValue="#{prioridadItem}" itemDescription="#{prioridadItem.descripcion}"/>
-                                        </p:selectOneMenu>
-
-                                        <span class="help-block"><h:message for="idPrioridad" errorClass="text-danger" /></span>
-                                    </div>
-                                </div>
 
                                 <div class="form-group row">
                                     <label for="idArea" class="col-sm-2 control-label"> Área </label>
 
                                     <div class="col-sm-10">
-                                        <p:selectOneMenu id="idArea"  value="#{casoCustomerController.selected.idArea}" 
+                                        <h:selectOneMenu id="idArea"  value="#{casoCustomerController.selected.idArea}" 
+                                                         styleClass="form-control"
                                                          required="true" requiredMessage="Seleccione el Area en la cual crear el caso.">
                                             <f:selectItems value="#{areaController.itemsAvailableSelectMany}" />
-                                        </p:selectOneMenu>
+                                        </h:selectOneMenu>
 
                                         <span class="help-block"><h:message for="idArea" errorClass="text-danger" /></span>
                                     </div>
@@ -237,11 +229,13 @@
                                     <label for="descripcion" class="col-sm-2 control-label"> #{bundle.CreateCasoLabel_descripcion} </label>
 
                                     <div class="col-sm-10">
-                                        <pe:ckEditor value="#{casoCustomerController.selected.descripcion}"
+                                        <pe:ckEditor value="#{casoCustomerController.selected.descripcion}" width="100%"
+                                                     required="true"
                                                      toolbar="#{applicationBean.ckEditorToolbar}"
                                                      id="descripcion"/>
 
                                         <span class="help-block">Descripción de su solicitud. <h:message for="descripcion" errorClass="text-danger" /></span>
+                                        <span class="help-block"><h:message for="descripcion" errorClass="text-danger" /></span>
                                     </div>
                                 </div>
 
@@ -250,19 +244,9 @@
 
                                     <div class="col-sm-10">
                                         <h:panelGrid >
-                                            <p:fileUpload id="fileupload"
-                                                          fileUploadListener="#{casoCustomerController.uploadToSaveLater}"
-                                                          label="Seleccionar Archivos o simplemente arrastrarlos aquí"
-                                                          uploadLabel="Subir"
-                                                          cancelLabel="Cancelar subir archivo"
-                                                          invalidFileMessage="Archivo Invalido." 
-                                                          mode="advanced"
-                                                          dragDropSupport="true"
-                                                          auto="true"
-                                                          update=":mainform:messages listaadjuntos fileupload"
-                                                          multiple="true"  />
 
-                                            <h:panelGroup id="listaadjuntos" layout="block">
+                                            <p:outputPanel  id="listaadjuntos" layout="block"
+                                                            rendered="#{not empty casoCustomerController.selected.attachmentList}">
 
                                                 <p:dataTable var="fileitem" value="#{casoCustomerController.selected.attachmentList}" 
                                                              emptyMessage="No hay archivos adjuntos.">
@@ -277,7 +261,22 @@
                                                         </p:commandButton>
                                                     </p:column>
                                                 </p:dataTable> 
-                                            </h:panelGroup>
+                                            </p:outputPanel>
+
+                                            <p:fileUpload id="fileupload"
+                                                          fileUploadListener="#{casoCustomerController.uploadToSaveLater}"
+                                                          label="Seleccionar Archivos o simplemente arrastrarlos aquí"
+                                                          uploadLabel="Subir"
+                                                          cancelLabel="Cancelar subir archivo"
+                                                          invalidFileMessage="Archivo Invalido." 
+                                                          mode="advanced"
+                                                          dragDropSupport="true"
+                                                          auto="true"
+                                                          process="@form"
+                                                          update=":mainform:messages @form"
+                                                          multiple="true"  />
+
+
 
                                         </h:panelGrid>
 
@@ -316,13 +315,7 @@
 
                 <div class="page-footer">
 
-                    <div class="progress">
-                        <div class="progress-bar progress-bar-success" role="progressbar" 
-                             aria-valuenow="#{casoCustomerController.stepNewCasoIndex * 25}" 
-                             aria-valuemin="0" aria-valuemax="100" style="width: #{casoCustomerController.stepNewCasoIndex * 25}\%">
-                            <span>#{casoCustomerController.stepNewCasoIndex * 25}% de avance</span>
-                        </div>
-                    </div>
+
 
                 </div>
 

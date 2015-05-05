@@ -10,6 +10,7 @@ import com.itcs.helpdesk.util.Log;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
@@ -23,7 +24,7 @@ import org.quartz.impl.StdSchedulerFactory;
 public class HelpDeskScheluder {
 
     public static final int DEFAULT_CHECK_EMAIL_INTERVAL = 300;// 5 MINUTES
-    
+
     /**
      * Once you obtain a scheduler using
      * StdSchedulerFactory.getDefaultScheduler(), your application will not
@@ -98,7 +99,33 @@ public class HelpDeskScheluder {
 
     public static void scheduleSendMailNow(final Long idCaso, final String idCanal, final String mensajeFinal,
             final String tos, final String subject) throws SchedulerException {
-        scheduleSendMail(idCaso, idCanal, mensajeFinal, tos, subject, null);
+
+        if (StringUtils.isEmpty(tos)) {
+            return;
+        }
+
+        boolean first = true;
+        String tos2 = "";
+        String emails_to = tos.trim().replace(" ", "");
+        final String[] split_emails = emails_to.split(",");
+        for (String email : split_emails) {
+            if (!email.contains("no-reply") && !email.contains("noreply") && !email.contains("mailer-daemon")
+                    && !email.contains("noresponder")
+                    && !email.contains("no-responder")) {
+                if (first) {
+                    first = false;
+                    tos2 = email;
+                } else {
+                    tos2 = "," + email;
+
+                }
+            }
+        }
+
+        if (!StringUtils.isEmpty(tos2)) {
+            scheduleSendMail(idCaso, idCanal, mensajeFinal, tos2, subject, null);
+        }
+
     }
 
     private static String scheduleSendMail(final Long idCaso, final String idCanal, final String mensajeFinal,
@@ -132,7 +159,6 @@ public class HelpDeskScheluder {
             final List<Usuario> usuarios, final Long idCaso, final String eventId, String eventReminderId, final Date whenToRun) throws SchedulerException {
 
         //System.out.println("scheduling ScheduleEventReminderJob");
-
         String mailsTo = "";
         boolean first = true;
         for (Usuario usuario : usuarios) {
@@ -167,9 +193,9 @@ public class HelpDeskScheluder {
         final String downloadEmailJobId = DownloadEmailJob.formatJobId(idCanal);
         final JobKey jobKey = JobKey.jobKey(downloadEmailJobId, HelpDeskScheluder.GRUPO_CORREO);
         if (getInstance().checkExists(jobKey)) {
-            try{
+            try {
                 HelpDeskScheluder.unschedule(jobKey);
-            }catch(SchedulerException ex){
+            } catch (SchedulerException ex) {
                 //System.out.println("ERROR CONTROLADO");
                 ex.printStackTrace();
             }
@@ -268,7 +294,7 @@ public class HelpDeskScheluder {
 
         HelpDeskScheluder.scheduleToRunNowWithInterval(job, 600);
     }
-    
+
     public static void scheduleSendMailNota(final String idCanal, final String mensajeFinal,
             final String to, final String subject, final Long idCaso, final Integer idNota, final String attachIds) throws SchedulerException {
         scheduleSendMailNota(idCanal, mensajeFinal, to, null, null, subject, idCaso, idNota, attachIds);

@@ -843,7 +843,7 @@ public class ManagerCasos implements Serializable {
                 nota.setEnviado(false);
                 senderName = caso.getOwner().getIdUsuario();
                 nota.setVisible(false);
-                
+
             } else if (caso.getEmailCliente() != null && caso.getEmailCliente().getEmailCliente().equalsIgnoreCase(from)) {
                 //its a client
                 isAgent = false;
@@ -1196,7 +1196,6 @@ public class ManagerCasos implements Serializable {
     public Attachment crearAdjunto(byte[] bytearray, String contentId, Caso caso, final String nombre, String mimeType, Long size) throws Exception {
 
         //System.out.println("crearAdjunto()");
-
         String fileName = nombre.trim().replace(" ", "_");
         Archivo archivo = null;
         if (bytearray != null) {
@@ -1262,63 +1261,68 @@ public class ManagerCasos implements Serializable {
 
     private void handleCCEmail(EmailMessage item, Caso caso, Canal canal) throws Exception {
         try {
-            for (String to : item.getToList()) {
-                if (!canal.getSetting(EnumEmailSettingKeys.INBOUND_USER.getKey()).equalsIgnoreCase(to)) {
-                    EmailCliente emclient = getJpaController().find(EmailCliente.class, to);
-                    if (emclient == null) {
-                        //client dont exist, before persist it, check if it is an agent
-                        final List<Usuario> findUsuarioByEmail = getJpaController().findUsuarioByEmail(to);
-                        if (findUsuarioByEmail == null || findUsuarioByEmail.isEmpty()) {
-                            //no existe un usuario con este email. por ende asumiremos que el mono es un cliente
-                            DatosCaso datos = new DatosCaso();
-                            datos.setNombre(to);
-                            datos.setEmail(to);
-                            emclient = createOrUpdateEmailCliente(datos);
-                        } else {
-                            //si es un agente entonces agregarlo a la lista cc de agentes =)
-                            if (caso.getUsuarioCCList() == null) {
-                                caso.setUsuarioCCList(new LinkedList<Usuario>());
+            if (item.getToList() != null) {
+                for (String to : item.getToList()) {
+                    if (!canal.getSetting(EnumEmailSettingKeys.INBOUND_USER.getKey()).equalsIgnoreCase(to)) {
+                        EmailCliente emclient = getJpaController().find(EmailCliente.class, to);
+                        if (emclient == null) {
+                            //client dont exist, before persist it, check if it is an agent
+                            final List<Usuario> findUsuarioByEmail = getJpaController().findUsuarioByEmail(to);
+                            if (findUsuarioByEmail == null || findUsuarioByEmail.isEmpty()) {
+                                //no existe un usuario con este email. por ende asumiremos que el mono es un cliente
+                                DatosCaso datos = new DatosCaso();
+                                datos.setNombre(to);
+                                datos.setEmail(to);
+                                emclient = createOrUpdateEmailCliente(datos);
+                            } else {
+                                //si es un agente entonces agregarlo a la lista cc de agentes =)
+                                if (caso.getUsuarioCCList() == null) {
+                                    caso.setUsuarioCCList(new LinkedList<Usuario>());
+                                }
+                                caso.getUsuarioCCList().addAll(findUsuarioByEmail);
                             }
-                            caso.getUsuarioCCList().addAll(findUsuarioByEmail);
-                        }
-                    }
-
-                    if (emclient != null) {
-                        if (caso.getEmailClienteCCList() == null) {
-                            caso.setEmailClienteCCList(new LinkedList<EmailCliente>());
                         }
 
-                        caso.getEmailClienteCCList().add(emclient);
+                        if (emclient != null) {
+                            if (caso.getEmailClienteCCList() == null) {
+                                caso.setEmailClienteCCList(new LinkedList<EmailCliente>());
+                            }
+
+                            caso.getEmailClienteCCList().add(emclient);
+                        }
                     }
                 }
             }
-            for (String cc : item.getCcList()) {
-                if (!canal.getSetting(EnumEmailSettingKeys.INBOUND_USER.getKey()).equalsIgnoreCase(cc)) {
-                    EmailCliente emclient = getJpaController().find(EmailCliente.class, cc);
-                    if (emclient == null) {
-                        //client dont exist, before persist it, check if it is an agent
-                        final List<Usuario> findUsuarioByEmail = getJpaController().findUsuarioByEmail(cc);
-                        if (findUsuarioByEmail == null || findUsuarioByEmail.isEmpty()) {
-                            //no existe un usuario con este email. por ende asumiremos que el mono es un cliente
-                            DatosCaso datos = new DatosCaso();
-                            datos.setNombre(cc);
-                            datos.setEmail(cc);
-                            emclient = createOrUpdateEmailCliente(datos);
-                        } else {
-                            //si es un agente entonces agregarlo a la lista cc de agentes =)
-                            if (caso.getUsuarioCCList() == null) {
-                                caso.setUsuarioCCList(new LinkedList<Usuario>());
+
+            if (item.getCcList() != null) {
+                for (String cc : item.getCcList()) {
+                    if (!canal.getSetting(EnumEmailSettingKeys.INBOUND_USER.getKey()).equalsIgnoreCase(cc)) {
+                        EmailCliente emclient = getJpaController().find(EmailCliente.class, cc);
+                        if (emclient == null) {
+                            //client dont exist, before persist it, check if it is an agent
+                            final List<Usuario> findUsuarioByEmail = getJpaController().findUsuarioByEmail(cc);
+                            if (findUsuarioByEmail == null || findUsuarioByEmail.isEmpty()) {
+                                //no existe un usuario con este email. por ende asumiremos que el mono es un cliente
+                                DatosCaso datos = new DatosCaso();
+                                datos.setNombre(cc);
+                                datos.setEmail(cc);
+                                emclient = createOrUpdateEmailCliente(datos);
+                            } else {
+                                //si es un agente entonces agregarlo a la lista cc de agentes =)
+                                if (caso.getUsuarioCCList() == null) {
+                                    caso.setUsuarioCCList(new LinkedList<Usuario>());
+                                }
+                                caso.getUsuarioCCList().addAll(findUsuarioByEmail);
                             }
-                            caso.getUsuarioCCList().addAll(findUsuarioByEmail);
-                        }
-                    }
-
-                    if (emclient != null) {
-                        if (caso.getEmailClienteCCList() == null) {
-                            caso.setEmailClienteCCList(new LinkedList<EmailCliente>());
                         }
 
-                        caso.getEmailClienteCCList().add(emclient);
+                        if (emclient != null) {
+                            if (caso.getEmailClienteCCList() == null) {
+                                caso.setEmailClienteCCList(new LinkedList<EmailCliente>());
+                            }
+
+                            caso.getEmailClienteCCList().add(emclient);
+                        }
                     }
                 }
             }

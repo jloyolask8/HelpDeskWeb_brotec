@@ -18,7 +18,7 @@
                         <h:form id="vistasForm">
                             <ul class="nav nav-sidebar">
                                 <ui:repeat value="#{vistaController.vistasCustomersItems}" var="vista1">
-                                    <li title="#{vista1.descripcion}" class="#{casoCustomerController.selectedViewId eq vista1.idVista ? 'active':''}" >
+                                    <li title="#{vista1.descripcion}" class="#{casoCustomerController.vista eq vista1 ? 'active':''}" >
                                         <h:commandLink action="#{casoCustomerController.applyViewFilter(vista1)}"  immediate="true" value="#{vista1.nombre}">
                                             <span class="badge pull-right">#{vistaController.countItemsVista(vista1)}</span>
                                         </h:commandLink>                                   
@@ -41,7 +41,8 @@
 
 
                                 <div class="table-responsive">
-                                    <h:dataTable id="ID_TABLA" value="#{casoCustomerController.items}" var="item" rendered="#{casoCustomerController.items.rowCount gt 0}"                                            
+                                    <h:dataTable id="ID_TABLA" value="#{casoCustomerController.items}" var="item" 
+                                                 rendered="#{casoCustomerController.items.rowCount gt 0}"                                            
                                                  styleClass="table table-striped">
 
                                         <h:column> 

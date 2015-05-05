@@ -230,7 +230,7 @@
                                                  filter="true" filterMatchMode="contains"
                                                  value="#{casoController.selected.tipoCaso}" >                                  
                                     <f:selectItems value="#{applicationBean.tipoCasoAvailableList}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
-                                    <p:ajax update="@parent idSubEstado idPrioridad"/>
+                                    <p:ajax update="idSubEstado"/>
                                 </p:selectOneMenu>
 
                                 <p:outputLabel value="#{bundle.EditCasoLabel_idSubEstado}" for="idSubEstado" style="font-weight:bold"/>

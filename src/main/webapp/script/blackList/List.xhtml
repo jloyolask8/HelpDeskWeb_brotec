@@ -4,7 +4,8 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:go="http://java.sun.com/jsf/composite/go">
 
     <ui:composition template="/script/template_inbox.xhtml">
         <ui:define name="title">
@@ -12,14 +13,27 @@
         </ui:define>
 
         <ui:define name="west">
-            <p:accordionPanel multiple="true" cache="true" >
-                <p:tab title="Black List" >
-                    <h:outputLabel escape="false" value=""/>
-                </p:tab>
-            </p:accordionPanel>
+
+
+            <go:vistasList id="vistasList" update=":vistasList:vistasForm :mainform:messages :formfilter:panelFilter0:panelFilter :form" 
+                           controllerMBean="#{blackListController}"
+                           user="#{UserSessionBean.current}"/>
+
+
         </ui:define>
 
         <ui:define name="body">
+
+            <h:form id="formfilter">
+                <go:filterView id="panelFilter0" 
+                               controllerMBean="#{blackListController}" 
+                               vista="#{blackListController.vista}"
+                               filterHelper="#{blackListController.filterHelper}" 
+                               canChangeFilters="#{filtroAcceso.verificarAccesoAFiltrosIndex()}"
+                               update=":mainform:messages :form"
+                               vistaControllerBackOutcome="/script/blackList/List"/>
+            </h:form>
+
             <h:form id="form">
                 <h:panelGroup >                  
 
@@ -28,7 +42,7 @@
                                  resizableColumns="true" >
 
                         <f:facet name="header">  
-                            <h:outputText value="Lista negra de direcciones email (#{blackListController.pagination.pageFirstItem + 1} - #{blackListController.pagination.pageLastItem + 1} de #{blackListController.pagination.itemsCount})"/>                           
+                            <h:outputText value="Lista de direcciones email SPAM (#{blackListController.pagination.pageFirstItem + 1} - #{blackListController.pagination.pageLastItem + 1} de #{blackListController.pagination.itemsCount})"/>                           
                         </f:facet>   
 
                         <p:column headerText="Correo">
@@ -45,7 +59,7 @@
                                              oncomplete="PF('editDialog').show()"
                                              title="Editar" icon="ui-icon ui-icon-pencil" 
                                              rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
-                            
+
                             <p:commandButton id="showDialogButton" title="Eliminar" update=":formDelete" 
                                              action="#{blackListController.prepareEdit(item)}" oncomplete="PF('confirmation').show()" icon="ui-icon ui-icon-trash" 
                                              rendered="#{filtroAcceso.verificarAccesoAFuncionEditarAjustes()}"/>
@@ -75,7 +89,7 @@
                                     <p:separator/>
 
                                     <p:commandButton action="#{blackListController.prepareCreate()}" oncomplete="PF('addEditDialog').show();" 
-                                                      update=":formAddEdit"
+                                                     update=":formAddEdit"
                                                      value="Agregar Dirección a Lista Negra"  icon="ui-icon ui-icon-plus" /> 
                                 </p:toolbarGroup>
                             </p:toolbar>
@@ -114,7 +128,7 @@
                         <p:inputText id="emailAddress" value="#{blackListController.selected.emailAddress}" validator="#{inputValidationBean.validarEmail}" 
                                      required="true" requiredMessage="#{bundle.CreateCanalRequiredMessage_idCanal}"/>
                         <p:message for="emailAddress"/>
-                    
+
                         <h:outputLabel value="Descripción:" for="descripcion" style="font-weight: bold"/>
                         <p:inputTextarea id="descripcion" value="#{blackListController.selected.description}" />
                         <p:message for="descripcion"/>
@@ -130,8 +144,8 @@
 
                 </p:dialog>
             </h:form>
-            
-             <h:form id="formEdit">
+
+            <h:form id="formEdit">
                 <p:dialog id="editDialog" showEffect="fade" hideEffect="fade"  
                           header="Actualizar Dirección de correo" widgetVar="editDialog">
 
@@ -141,7 +155,7 @@
                         <p:inputText id="emailAddress" disabled="true" readonly="true" value="#{blackListController.selected.emailAddress}" validator="#{inputValidationBean.validarEmail}" 
                                      required="true" requiredMessage="#{bundle.CreateCanalRequiredMessage_idCanal}"/>
                         <p:message for="emailAddress"/>
-                    
+
                         <h:outputLabel value="Descripción:" for="descripcion" style="font-weight: bold"/>
                         <p:inputTextarea id="descripcion" value="#{blackListController.selected.description}" />
                         <p:message for="descripcion"/>
@@ -149,7 +163,7 @@
                     </h:panelGrid>
 
                     <f:facet name="footer">                       
-                    
+
                         <p:commandButton action="#{blackListController.update()}" value="Actualizar" update=":formAddEdit :form"
                                          oncomplete="PF('addEditDialog').hide()" />            
 

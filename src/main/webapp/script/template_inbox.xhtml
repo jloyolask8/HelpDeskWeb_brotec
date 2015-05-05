@@ -124,7 +124,7 @@
                 }
             </script>
             <h:outputScript name="jsf.js" library="javax.faces"/>
-            
+
         </h:head>
 
         <h:body id="mainbody">
@@ -242,11 +242,11 @@
                                     <p:menuitem value="Grupos de Agentes" action="#{grupoController.prepareList}" ajax="false" icon="fa fa-users">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
-                                    
+
                                     <p:menuitem value="Recursos de la empresa" action="#{resourceController.prepareList}" ajax="false" icon="fa fa-barcode">
                                         <p:resetInput target="@form" />
                                     </p:menuitem>
-                                    
+
                                     <p:separator/>
                                     <p:menuitem value="Tipos de Casos" action="#{tipoCasoController.prepareList}" ajax="false" icon="fa fa-exclamation">
                                         <p:resetInput target="@form" />
@@ -382,7 +382,7 @@
                                         </p:outputPanel>
                                     </div>
                                 </f:facet-->
-                                
+
                                 <f:facet name="options">
                                     <p:ajaxStatus style="position: absolute; top: 10px; right: 110px;">
                                         <f:facet name="start">
@@ -469,6 +469,17 @@
             <ui:insert name="dialogs"/>
 
             <ui:insert name="scripts"></ui:insert>
+
+            <script src="http://www.godesk.cl:8090/golivechat/VAADIN/golivechat.js"></script>
+
+            <script type="text/javascript">
+//<![CDATA[
+                createChatHiddenFrame('#{UserSessionBean.current.idUsuario}', '#{applicationBean.companyName}');
+//]]>
+            </script>
+
+
+
 
         </h:body>
     </f:view>

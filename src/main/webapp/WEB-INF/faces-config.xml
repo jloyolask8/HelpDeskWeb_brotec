@@ -136,6 +136,16 @@
 
     </navigation-rule>
     
+    <navigation-rule>
+		
+        <navigation-case>
+            <from-outcome>index_customer</from-outcome>
+            <to-view-id>/customer/index.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+    </navigation-rule>
+    
      <navigation-rule>
 		
         <navigation-case>

@@ -59,6 +59,8 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
 //    private String defaultContactEmail = null;
     //  Map<String, String> loggedInUsers = new HashMap<String, String>();
     private final Map<String, String> channels = new HashMap<>();
+    private final Map<String, String> customerChannels = new HashMap<>();
+    
     private Map<String, String> sessionIdMappings = new HashMap<>();
     //--pre created Vistas
     private final transient Map<Integer, Vista> predefinedVistas = new HashMap<>();
@@ -81,10 +83,20 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
         users.addAll(getChannels().keySet());
         return users;
     }
-
-    public Integer getTotalActiveSession() {
-        return UserSessionListener.getTotalActiveSession();
+    
+    public List<String> getCustomersLoggedIn() {
+        List<String> users = new ArrayList<>(getCustomerChannels().size());
+        users.addAll(getCustomerChannels().keySet());
+        return users;
     }
+    
+//    public Integer getTotalActiveCustomerSession() {
+//        return UserSessionListener.getTotalActiveSession();
+//    }
+
+//    public Integer getTotalActiveSession() {
+//        return UserSessionListener.getTotalActiveSession();
+//    }
 
 //    @PostConstruct
     public void init() {
@@ -186,7 +198,10 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
 
     public void addChannel(String user, String channel) {
         getChannels().put(user, channel);
-        //System.out.println("addChannel(). channels:" + getChannels());
+    }
+    
+     public void addCustomerChannel(String user, String channel) {
+        getCustomerChannels().put(user, channel);
     }
 
     public boolean containsChannel(String user) {
@@ -200,6 +215,10 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
             getChannels().remove(user);
 //            RequestContext.getCurrentInstance().update("accionesaccordion1:usersLoggedIn");
             //System.out.println(user + " removed OK from applicationBean");
+        }
+        
+        if (getCustomerChannels().containsKey(user)) {
+            getCustomerChannels().remove(user);
         }
     }
 
@@ -408,6 +427,13 @@ public class ApplicationBean extends AbstractManagedBean<Object> implements Seri
      */
     public Map<String, String> getChannels() {
         return channels;
+    }
+    
+    /**
+     * @return the channels
+     */
+    public Map<String, String> getCustomerChannels() {
+        return customerChannels;
     }
 
     /**

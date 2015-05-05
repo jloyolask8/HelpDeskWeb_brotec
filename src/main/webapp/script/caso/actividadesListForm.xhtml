@@ -29,8 +29,8 @@
                         <br/>
                         <h:outputText value="#{casoController.extractNotaHistoryPart(item)}" escape="false"
                                       rendered="#{casoController.debeMostrarContenidoReducido(item)}"/>
-                        
-                        
+
+
                         <h:panelGroup rendered="#{not empty item.attachmentList}">
                             <div class="formSeparator">
                                 <h2>Adjuntos</h2>
@@ -72,7 +72,7 @@
             <p:tab id="tabDesc" title="#{bundle.CreateCasoTitle_descripcion}" >  
 
                 <p:panel id="panelDesc" style="border-color: window;">
-                    
+
                     <p:panelGrid id="link" styleClass="filtersGrid" style="width: 100%;">
                         <p:row>
                             <p:column >
@@ -80,38 +80,27 @@
                             </p:column>
                             <p:column >
                                 <div align="left" style="font-size: x-small;">
-                                    <i>Oprima sobre la descripción si desea editar. La descripción del caso se muestra en texto plano por seguridad, para ver el original haz click en 
-                                    ver mensaje HTML</i>
+                                    <i>La descripción del caso se muestra en texto plano por seguridad, para ver el original haz click en 
+                                        ver mensaje HTML</i>
                                 </div>
                             </p:column>
                             <p:column>
-                                  <p:commandButton rendered="true"
-                                         actionListener="#{casoController.prepareViewHtml(casoController.selected.descripcion)}" value="ver mensaje HTML" style="float: right"/>
-                                  
-                            
+                                <p:commandButton rendered="true"
+                                                 actionListener="#{casoController.prepareViewHtml(casoController.selected.descripcion)}" value="ver mensaje HTML" style="float: right"/>
+
+
                             </p:column>
 
                         </p:row>
                     </p:panelGrid>
-                    
+
                     <p:separator/>
 
-                    <p:inplace editor="true" disabled="#{casoController.selected.closed}">
-                        <f:facet name="output">
-                            <h:outputText value="#{(casoController.selected.descripcionTxt eq null) ? casoController.parseHtmlToText(casoController.selected.descripcion):casoController.selected.descripcionTxt}" escape="false"/>
-                        </f:facet>
-                        <f:facet name="input">
-                            <pe:ckEditor id="ticketDesc" value="#{casoController.selected.descripcionTxt}" 
-                                         language="es"
-                                         toolbar="#{applicationBean.ckEditorToolbar}"
-                                         customConfig="#{request.contextPath}/resources/js/ckeditor.js"
-                                         required="true"  width="100%" /> 
-                            <p:watermark for="ticketDesc" value="Descripción del caso"/>
-                        </f:facet>
-                    </p:inplace>
+                    <h:outputText value="#{(casoController.selected.descripcionTxt eq null) ? casoController.parseHtmlToText(casoController.selected.descripcion):casoController.selected.descripcionTxt}" escape="false"/>
 
 
-                    
+
+
 
                     <pe:importEnum type="com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso" var="EnumTipoCaso" allSuffix="ALL_ENUM_VALUES" />
 

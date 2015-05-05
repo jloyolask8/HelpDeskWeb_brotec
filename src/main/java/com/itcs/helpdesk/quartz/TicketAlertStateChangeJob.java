@@ -20,19 +20,20 @@ import javax.persistence.EntityManagerFactory;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import org.apache.commons.lang3.StringUtils;
+import org.quartz.ExecuteInJTATransaction;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobKey;
 import org.quartz.SchedulerException;
-import org.quartz.ee.jta.UserTransactionHelper;
+//import org.quartz.ee.jta.UserTransactionHelper;
 
 /**
  *
  * @author jonathan
  */
-//@ExecuteInJTATransaction
+@ExecuteInJTATransaction
 public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job {
 
 //    EventNotifier eventNotifier = lookupEventNotifierBean();
@@ -58,7 +59,7 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
                 String idAlerta = (String) map.get(ID_ESTADO_ALERTA);
                 if (!StringUtils.isEmpty(idCaso) && !StringUtils.isEmpty(idAlerta)) {
                     EntityManagerFactory emf = createEntityManagerFactory();
-                    UserTransaction utx = UserTransactionHelper.lookupUserTransaction();
+//                    UserTransaction utx = UserTransactionHelper.lookupUserTransaction();
 //                    JPAServiceFacade jpaController = new JPAServiceFacade(utx, emf);
                     EntityManager em = null;
 
@@ -68,7 +69,7 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
                     try {
 
                         if (valueOfIdCaso != null && valueOfIdAlerta != null) {
-                            utx.begin();
+//                            utx.begin();
                             em = emf.createEntityManager();
                             Caso caso = em.find(Caso.class, valueOfIdCaso);
                             if (caso != null) {
@@ -96,7 +97,7 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
                                     }
 
                                     em.persist(audit);
-                                    //End Audit Log                                    
+                                    //End Audit Log
 
                                     if (valueOfIdAlerta.equals(EnumTipoAlerta.TIPO_ALERTA_POR_VENCER.getTipoAlerta().getIdalerta())) {
                                         HelpDeskScheluder.scheduleAlertaVencido(valueOfIdCaso, caso.getNextResponseDue());
@@ -114,7 +115,7 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
 //                                            "Estado de alerta del caso " + caso.getIdCaso() + 
 //                                                    " pasa a " + caso.getEstadoAlerta().getNombre(), audit.getOwner()));
                                     unschedule(formatJobId(valueOfIdCaso, valueOfIdAlerta));
-                                    utx.commit();
+//                                    utx.commit();
 
                                 } else {
                                     throw new NonexistentEntityException("El tipo de Alerta " + idAlerta + " no existe!!!");
@@ -130,20 +131,20 @@ public class TicketAlertStateChangeJob extends AbstractGoDeskJob implements Job 
                         unschedule(formatJobId(valueOfIdCaso, valueOfIdAlerta));
 
                     } catch (Exception ex) {
-                        if (utx != null) {
-                            try {
-                                utx.rollback();
-                            } catch (IllegalStateException ex1) {
-                                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "rollback error: IllegalStateException", ex1);
-                            } catch (SecurityException ex1) {
-                                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "rollback error: SecurityException", ex1);
-                            } catch (SystemException ex1) {
-                                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "rollback error: SystemException", ex1);
-                            }
-                        }
+//                        if (utx != null) {
+//                            try {
+//                                utx.rollback();
+//                            } catch (IllegalStateException ex1) {
+//                                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "rollback error: IllegalStateException", ex1);
+//                            } catch (SecurityException ex1) {
+//                                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "rollback error: SecurityException", ex1);
+//                            } catch (SystemException ex1) {
+//                                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "rollback error: SystemException", ex1);
+//                            }
+//                        }
                         Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "TicketAlertStateChangeJob.execute exception", ex);
                     } finally {
-                        UserTransactionHelper.returnUserTransaction(utx);
+//                        UserTransactionHelper.returnUserTransaction(utx);
                         if (em != null) {
                             em.close();
                         }

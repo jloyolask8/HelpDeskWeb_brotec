@@ -106,6 +106,7 @@
                             </f:facet>
                             <p:commandLink value="#{item.idUsuarioCreadaPor.capitalName}"
                                            rendered="#{not empty item.idUsuarioCreadaPor}" 
+                                           title="#{item.baseEntityType}"
                                            action="#{usuarioController.prepareView(item.idUsuarioCreadaPor, '/script/clipping/List')}" ajax="false" immediate="true"/>
                         </p:column>
 

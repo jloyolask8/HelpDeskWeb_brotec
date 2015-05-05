@@ -84,7 +84,7 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
                     if (instance != null) {
                         final String[] split_emails = emails_to.split(",");
                         //SEND THE EMAIL!
-                        Logger.getLogger(SendMailJob.class.getName()).log(Level.INFO, "SendMailJob sending email to {0}", split_emails);
+                        Logger.getLogger(SendMailJob.class.getName()).log(Level.INFO, "[SendMailJob] sending email to {0}", split_emails);
                         instance.sendHTML(split_emails, subject, email_text, null);
                         //if sent ok, then forget about it
                         unschedule(formatJobId);
@@ -110,15 +110,18 @@ public class SendMailJob extends AbstractGoDeskJob implements Job {
                             nota.setFechaEnvio(Calendar.getInstance().getTime());
                             nota.setFechaModificacion(Calendar.getInstance().getTime());
                             nota.setIdCaso(caso);
-                            nota.setTexto(HtmlUtils.stripInvalidMarkup(email_text));
+                            nota.setTexto("Se notifica sobre el estado de alerta del caso.");
+                            nota.setTextoOriginal(email_text);
                             nota.setVisible(Boolean.FALSE);//registro interno
                             nota.setTipoNota(EnumTipoNota.REG_ENVIO_CORREO.getTipoNota());
                             nota.setEnviadoPorQuartzJobId(formatJobId);
                             
                             em.persist(nota);
+                            
+//                            em.flush();
 
                             CopyOnWriteArrayList<AuditLog> changeLog = new CopyOnWriteArrayList<>();
-                            changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "Se agrega comentario #"+nota.getIdNota(), ""));
+//                            changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "Se agrega comentario #"+nota.getIdNota(), ""));
                             changeLog.add(ManagerCasos.createLogReg(caso, "respuestas", "Se envía correo, subject:'" + subject + "' a: " + nota.getEnviadoA(), ""));
 
                             for (AuditLog auditLog : changeLog) {

@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"    
-      xmlns:h="http://java.sun.com/jsf/html"> 
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"> 
 
     <ui:composition  template="/customer/template_index.xhtml">
         <ui:define name="page_content">
@@ -12,15 +13,11 @@
                 <div class="jumbotron">
                     <div class="container">
                         <h1>Portal de servicio al cliente de #{applicationBean.companyName}</h1>
-                         <h2>¿Necesita ayuda con alguno de nuestros Productos y/o Servicios?</h2>
-                        
-                        <p>Usted se encuentra en el lugar indicado. Aquí podrá realizar sus solicitudes de servicio, soporte, etc. y monitorear el estado de cada una de ellas.</p>
+                        <h2>¿Necesita ayuda con alguno de nuestros Productos y/o Servicios?</h2>
 
-                        <div class="form-actions">
-                            <h:commandButton 
-                                action="/" value="Ver presentación >>"
-                                             styleClass="btn btn-lg btn-success" />
-                        </div>
+                        <p>Usted se encuentra en el lugar indicado. Aquí podrá realizar sus solicitudes de servicio, post-venta, etc. Además podrá monitorear el estado de cada una de sus solicitudes en tiempo real.</p>
+
+
                     </div>
                 </div>
 
@@ -29,42 +26,54 @@
                     <div class="row">
                         <div class="col-md-4">
                             <h2>Nueva Solicitud</h2>
-                            <p>En #{applicationBean.companyName}, nos tomamos muy en serio la atención a nuestros clientes, por esta razón ofrecemos un modelo de comunicación personalizado, ideal para crear de manera rápida y sencilla solicitudes de servicio con una respuesta certera frente a cada uno de sus requerimientos.
-                                </p>
-                             <div class="form-actions">
-                            <h:commandLink class="btn btn-primary"
-                                           action="#{casoCustomerController.prepareCreateCasoFromCustomer()}">
-                                            <span class="glyphicon glyphicon-plus"></span> Nueva Solicitud
-                                        </h:commandLink>
-                        </div>
+                            <p>En #{applicationBean.companyName}, nos tomamos muy en serio la atención a nuestros clientes, por esta razón ofrecemos un modelo de comunicación personalizado, ideal para crear de manera rápida y sencilla sus solicitudes de servicio.
+                            </p>
+                            <div class="form-actions">
+                                <h:commandLink class="btn btn-primary"
+                                               action="#{casoCustomerController.prepareCreateCasoFromCustomer()}">
+                                    <span class="glyphicon glyphicon-plus"></span> Nueva Solicitud
+                                </h:commandLink>
+                            </div>
                         </div>
                         <div class="col-md-4">
                             <h2>Mis Solicitudes</h2>
-                            <p>En esta opción, usted podrá monitorear el estado de todas sus solicitudes de servicio. Para acceder, tan sólo requiere ingresar con su usuario de correo electrónico e incluir el número de su solicitud pre-existente.</p>
-                             <div class="form-actions">
-                                   
-                            
+                            <p>En esta opción, usted podrá monitorear el estado de todas sus solicitudes de servicio. Para acceder, tan sólo requiere ingresar con su usuario de correo electrónico con el que se creó la solicitud, e incluir el número de su solicitud.</p>
+                            <div class="form-actions">
+
+
                                 <h:commandLink class="btn btn-primary"
-                                    action="inbox_customer">
+                                               action="inbox_customer">
                                     <span class="glyphicon glyphicon-list"></span> Mis Solicitudes
                                 </h:commandLink>
-                                    
-                        
-                        </div>
+
+
+                            </div>
                         </div>
                         <div class="col-md-4">
                             <h2>Email</h2>
                             <p>¿No tiene el tiempo para completar formularios? no hay problema,  hemos implementado un sistema de comunicación a través de correo electrónico en las siguientes áreas.
                                 Simplemente envíenos su solicitud de servicio al area que necesite ayuda y su requerimiento será creado  automáticamente, 
                                 y enviado al area correspondiente para ser canalizado de manera inmediata por alguno de ejecutivos quién le contactará a la brevedad.</p>
-                            
+
                             <div class="form-actions">
-                                <a href="mailto:sac@godesk.cl" class="btn btn-primary">
-                                <span class="glyphicon glyphicon-envelope"></span>
-                                Enviar email
-                            </a>
-                        </div>
-                            
+
+                                <h:dataTable id="areas" value="#{applicationBean.areasAvailableList}" var="area" 
+                                             styleClass="hide-column-names"
+                                             >  
+                                    <h:column>
+                                        <p:outputPanel rendered="#{area.idCanal.idTipoCanal.idTipo eq 'EMAIL'}">
+                                             <a href="mailto:#{area.idCanal.idCanal}" class="btn btn-primary">
+                                            <span class="glyphicon glyphicon-envelope"></span>
+                                            Enviar email a #{area.nombre}
+                                        </a>
+                                        </p:outputPanel><br/>
+                                       
+                                    </h:column>
+                                </h:dataTable>  
+
+
+                            </div>
+
                         </div>
                     </div>
 
