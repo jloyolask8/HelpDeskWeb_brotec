@@ -48,10 +48,10 @@ public class MailNotifier {
                     HelpDeskScheluder.scheduleSendMailNow(caso.getIdCaso(), canal.getIdCanal(), mensaje,
                             caso.getOwner().getEmail(),
                             subject);
-                    
+
                 } else if (caso.getEstadoAlerta().equals(EnumTipoAlerta.TIPO_ALERTA_VENCIDO.getTipoAlerta())) {
                     HelpDeskScheluder.scheduleSendMailNow(caso.getIdCaso(), canal.getIdCanal(), mensaje,
-                            caso.getOwner().getEmail() + (caso.getOwner().getSupervisor() != null ? (","+caso.getOwner().getSupervisor().getEmail()) :""),
+                            caso.getOwner().getEmail() + (caso.getOwner().getSupervisor() != null ? ("," + caso.getOwner().getSupervisor().getEmail()) : ""),
                             subject);
                 }
 
@@ -376,16 +376,15 @@ public class MailNotifier {
      */
     public static Canal chooseDefaultCanalToSendMail(Caso caso) throws NoOutChannelException {
 
-        if (caso.getIdCanal() != null && caso.getIdCanal().getIdTipoCanal() != null
-                && caso.getIdCanal().getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal())) {
-            return caso.getIdCanal();
-        } else {
-
-            //choose canal, prioritize the area's default canal
-            Canal chosenEmailChannel = (caso.getIdArea() != null && caso.getIdArea().getIdCanal() != null
-                    && caso.getIdArea().getIdCanal().getIdTipoCanal() != null
-                    && caso.getIdArea().getIdCanal().getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal()))
-                            ? caso.getIdArea().getIdCanal() : null;
+//        if (caso.getIdCanal() != null && caso.getIdCanal().getIdTipoCanal() != null
+//                && caso.getIdCanal().getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal())) {
+//            return caso.getIdCanal();
+//        } else {
+        //choose canal, prioritize the area's default canal
+        Canal chosenEmailChannel = (caso.getIdArea() != null && caso.getIdArea().getIdCanal() != null
+                && caso.getIdArea().getIdCanal().getIdTipoCanal() != null
+                && caso.getIdArea().getIdCanal().getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal()))
+                        ? caso.getIdArea().getIdCanal() : null;
 
 //            if (chosenEmailChannel == null) {
 //            //We do not use this since product may have a ventas email, and when a postventa user gets here there will be problems.
@@ -395,17 +394,20 @@ public class MailNotifier {
 //                        && caso.getIdProducto().getIdOutCanal().getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal()))
 //                        ? caso.getIdProducto().getIdOutCanal() : null;
 //            }
-            if (chosenEmailChannel != null
-                    && chosenEmailChannel.getIdTipoCanal() != null
-                    && chosenEmailChannel.getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal())
-                    && !StringUtils.isEmpty(chosenEmailChannel.getIdCanal())) {
+        if (chosenEmailChannel != null
+                && chosenEmailChannel.getIdTipoCanal() != null
+                && chosenEmailChannel.getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal())
+                && !StringUtils.isEmpty(chosenEmailChannel.getIdCanal())) {
 
-                return chosenEmailChannel;
+            return chosenEmailChannel;
 
-            } else {
-                throw new NoOutChannelException();
-            }
+        } else if (caso.getIdCanal() != null && caso.getIdCanal().getIdTipoCanal() != null
+                && caso.getIdCanal().getIdTipoCanal().equals(EnumTipoCanal.EMAIL.getTipoCanal())) {
+            return caso.getIdCanal();
+        } else {
+            throw new NoOutChannelException();
         }
+//        }
 
     }
 
