@@ -197,6 +197,7 @@ public class InscripcionEventosSessionBean extends AbstractManagedBean<Caso> imp
                 addWarnMessage("Lo sentimos este evento es sólo para clientes, Ud. no está registrado como cliente en nuestras bbdd. Si ésta información es incorrecta favor notifíquenos a travéz de nuestro formulario de contacto.");
             } else {
 
+                //se considera cliente si este tiene un producto contratado.
                 //check si tiene producto contratado?
                 List<ProductoContratado> pcs = getProductosContratados(clienteEntity, getSelected().getIdProducto(), getSelected().getIdComponente(), getSelected().getIdSubComponente());
                 if (pcs != null && !pcs.isEmpty()) {
