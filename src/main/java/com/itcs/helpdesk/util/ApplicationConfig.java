@@ -510,10 +510,28 @@ public class ApplicationConfig {
         return value;
     }
     
+    /**
+     * enable supervisors to create tickets by sending email to channel.
+     * @return 
+     */
     public static boolean createSupervisorCases() {
         boolean value = true;
         try {
             value = Boolean.valueOf(getProperty(EnumSettingsBase.CREATE_CASO_SUPERVISOR_ENABLED.getAppSetting().getSettingKey(), "false"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return value;
+    }
+    
+     /**
+     * enable agents to create tickets by sending email to channel.
+     * @return 
+     */
+    public static boolean isAllUsersCanCreateEmailTickets() {
+        boolean value = true;
+        try {
+            value = Boolean.valueOf(getProperty(EnumSettingsBase.CREATE_CASO_AGENTS_ENABLED.getAppSetting().getSettingKey(), "false"));
         } catch (Exception e) {
             e.printStackTrace();
         }
