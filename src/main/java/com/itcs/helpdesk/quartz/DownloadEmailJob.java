@@ -272,12 +272,12 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
             Usuario user = users.get(0);//TODO to avoid this, we could use the email as the user id.
             download = false;
 
-            if (ApplicationConfig.isAllUsersCanCreateEmailTickets()) {
+            if (ApplicationConfigs.getInstance(jpaController.getSchema()).isAllUsersCanCreateEmailTickets()) {
                 if (user != null) {
                     //this guy is a supervisor, he can create tickets
                     download = true;
                 }
-            } else if (ApplicationConfig.createSupervisorCases()) {
+            } else if (ApplicationConfigs.getInstance(jpaController.getSchema()).createSupervisorCases()) {
                 if ((user.getUsuarioList() != null) && (!user.getUsuarioList().isEmpty())) {
                     //this guy is a supervisor, he can create tickets
                     download = true;
@@ -285,11 +285,11 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                     //ignore emails from users of the system !!
                     //let them know that this is now allowed!!
                     download = false;
-                    if (ApplicationConfig.isAppDebugEnabled()) {
+                    if (ApplicationConfigs.getInstance(jpaController.getSchema()).isAppDebugEnabled()) {
                         Log.createLogger(this.getClass().getName()).logDebug("IGNORING MESSAGE " + emailMessage.getIdMessage() + " from user:" + users);
                     }
+                }
             }
-
         } else {
             //no users with that email, it means its a customer or client email 
             download = true;
