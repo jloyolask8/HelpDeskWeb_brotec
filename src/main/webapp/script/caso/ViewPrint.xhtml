@@ -1,0 +1,204 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <f:view contentType="text/html" encoding="UTF-8"/>
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Vista de impresión del caso</title>
+        <h:outputScript name="jquery.PrintArea.js" library="js"/>
+
+    </h:head>
+
+    <h:body id="mainbody">
+        <h:form id="formact">
+            <style type="text/css">
+                @media print {
+                    /*Todas las reglas Css para impresion de pagina */
+                    /*                    
+                                        @page :first {
+                        margin-top: 10cm;
+                        
+
+                    }
+                    
+                                        @page :left {
+                                            margin-left: 1cm;
+                                            margin-right: 1cm;
+                    
+                                        }
+                                        @page :right {
+                                            margin-left: 1cm;
+                                            margin-right: 1cm;
+                    
+                    
+                                        }*/
+                    .page-break	{ page-break-inside: auto; }
+
+                    .titlePanel{
+                        background-color: red;
+                    }
+
+
+
+
+                }
+
+            </style>
+
+            <!-- TITULO DEL CASO-->
+
+            <h:panelGroup id="tituloCaso">
+
+                <p:panelGrid styleClass="filtersGrid" id="panelGridDatos">
+                    <p:row>
+                        <p:column style="border-color: #ffffff;" >
+                            <p:outputLabel style="font-size: 15px !important; font-weight: bold;"
+                                           value="Caso: "/>
+                            <p:outputLabel style="font-size: 15px" value="#{casoController.selected.tipoCaso ne null ? casoController.selected.tipoCaso.nombre:'Caso' } N°#{casoController.selected.idCaso}"/>
+                            <br/>
+                            <p:outputLabel style="font-size: 15px !important; font-weight: bold;"
+                                           value="Estado: "/>
+                            <h:outputText styleClass="ticket-status" value="#{casoController.selected.idEstado.nombre}"
+                                          style="#{casoController.selected.isOpen() eq true ? 'background: #4abf5a; color: #FFFFFF;':'background: #444444; color: #FFFFFF;'}"/>&nbsp;
+                            <h:outputText id="idSubEstado" styleClass="ticket-status" 
+                                          style="background: \##{casoController.selected.idSubEstado.backgroundColor}; color: \##{casoController.selected.idSubEstado.fontColor};" 
+                                          value="#{casoController.selected.idSubEstado.nombre}"/>&nbsp;
+                            <br/>
+                            <p:outputLabel style="font-size: 15px !important; font-weight: bold;"
+                                           value="Asunto: "/>
+                            <p:outputLabel style="font-size: 15px !important;"
+                                           value="#{casoController.selected.tema}"/>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </h:panelGroup>
+
+
+            <c:forEach items="#{casoController.selected.notaList}" var="item" varStatus="loop">
+                <p:tab  title="#{casoController.creaTituloDeNota(item)} - #{item.visible?'Publico':'Interno'}" 
+                        titletip="#{item.fechaCreacion} - #{item.enviadoA}"
+                        titleStyleClass="#{casoController.getNotaStyle(item.tipoNota)}">
+                    <p:panel id="panelNota#{loop.index}">
+
+                        <f:facet name="header" >
+                            <h:outputText style="font-size: 15px;" value="#{casoController.creaTituloDeNota(item)} - #{item.visible?'Publico':'Interno'}" escape="false"/>
+                        </f:facet>
+                        <h:outputText value="#{casoController.extractNotaNewPart(item)}" escape="false"/>
+
+                        <br/>
+                        <h:outputText value="#{casoController.extractNotaHistoryPart(item)}" escape="false"
+                                      rendered="#{casoController.debeMostrarContenidoReducido(item)}"/>
+
+
+                        <c:forEach items="#{item.attachmentList}" var="nota_f_attachment" >
+                            <h:panelGrid columns="6">
+                                <p:graphicImage name="file_extension_#{nota_f_attachment.fileExtension}.png" library="file_extension_icons" />
+
+                                <p:commandLink ajax="false" value="#{nota_f_attachment.nombreArchivoOriginal}" 
+
+                                               title="Descargar #{nota_f_attachment.nombreArchivo} (#{nota_f_attachment.mimeType})">
+                                    <p:fileDownload value="#{casoController.bajarArchivo(nota_f_attachment.idAttachment)}" />
+                                </p:commandLink>
+
+                                <h:outputText value="#{nota_f_attachment.fileSizeHuman}" style="color: #7A7A7A"/>
+
+
+                                <p:lightBox iframe="true" iframeTitle="#{nota_f_attachment.nombreArchivoOriginal}"
+                                            rendered="#{nota_f_attachment.isPdf() or nota_f_attachment.isImage()}"> 
+                                    <h:outputLink  value="#{facesContext.externalContext.requestContextPath}/DownloadFileServlet?id=#{nota_f_attachment.idAttachment}" 
+                                                   styleClass="ui-icon ui-icon-search"
+                                                   title="Preview">  
+                                    </h:outputLink>
+                                </p:lightBox>
+
+
+                            </h:panelGrid>
+                        </c:forEach>
+                        <p:effect type="highlight" event="load" 
+                                  rendered="#{casoController.justCreadedNotaId eq item.idNota}"/> 
+
+                    </p:panel>
+                </p:tab><br/>
+            </c:forEach>
+
+            <p:tab id="tabDesc" title="#{bundle.CreateCasoTitle_descripcion}" >  
+
+                <p:panel header="Descripción" id="panelDesc" style="border-color: #CCCCCC;">
+
+                    <p:panelGrid id="link" styleClass="filtersGrid" style="width: 100%;">
+                        <p:row>
+                            <p:column style="border-color: #ffffff;" >
+                                <div align="left" style="font-size: x-small;">
+                                    <i>La descripción del caso se muestra en texto plano por seguridad, para ver el original haz click en 
+                                        ver mensaje HTML</i>
+                                </div>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+
+                    <p:separator/>
+
+
+                    <h:outputText value="#{(casoController.selected.descripcionTxt eq null) 
+                                           ? casoController.parseHtmlToText(casoController.selected.descripcion):casoController.selected.descripcionTxt}" escape="false"/>
+
+
+
+
+                    <c:forEach items="#{casoController.selected.casosHijosList}" var="item" >
+                        <p:panelGrid style="margin-bottom:10px; width: 100%">
+                            <p:row rendered="#{item.tipoCaso eq EnumTipoCaso.REPARACION_ITEM.getTipoCaso()}">
+                                <p:column>
+                                    <p:commandLink action="#{casoController.prepareEditCaso(item.idCaso.toString())}" 
+                                                   ajax="false" style="color: #000" immediate="true">
+                                        <b>ID Caso: </b> #{item.idCaso}
+                                    </p:commandLink>
+                                </p:column>
+
+                            </p:row>
+                            <p:row rendered="#{item.tipoCaso eq EnumTipoCaso.REPARACION_ITEM.getTipoCaso()}">
+                                <p:column>
+                                    <p:outputLabel value="&lt;b&gt;Recinto: &lt;/b&gt;#{item.idRecinto}" escape="false"/>
+                                </p:column>
+                            </p:row>
+                            <p:row rendered="#{item.tipoCaso eq EnumTipoCaso.REPARACION_ITEM.getTipoCaso()}">
+                                <p:column colspan="2">
+                                    <p:outputLabel value="&lt;b&gt;Item: &lt;/b&gt;#{item.idItem}" escape="false"/>                                                          
+                                </p:column>
+                            </p:row>
+                            <p:row rendered="#{item.tipoCaso eq EnumTipoCaso.REPARACION_ITEM.getTipoCaso()}">
+                                <p:column colspan="2">
+                                    <p:outputLabel value="&lt;b&gt;Descripción: &lt;/b&gt;#{item.descripcion}" escape="false"/>                               
+                                </p:column>
+                            </p:row>
+                        </p:panelGrid>
+                    </c:forEach>
+
+                </p:panel>  
+
+            </p:tab> 
+
+
+        </h:form>
+        <script>
+            //<![CDATA[
+            $(document).ready(function () {
+                $("#formact").printArea();
+
+            });
+
+
+
+
+
+            //]]>
+        </script>
+    </h:body>
+</html>
+
+

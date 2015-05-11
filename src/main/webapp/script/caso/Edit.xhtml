@@ -17,8 +17,14 @@
             <p:outputLabel value="Datos del Caso"/>
         </ui:define>
 
+
+
         <ui:define name="head">
+
             <style type="text/css">
+
+
+
                 .ui-autocomplete-multiple-container{
                     width: 100% !important;
                 }
@@ -71,11 +77,7 @@
             <pe:importEnum type="com.itcs.helpdesk.persistence.entityenums.EnumTipoAlerta" var="EnumTipoAlerta" allSuffix="ALL_ENUM_VALUES" />
             <pe:importEnum type="com.itcs.helpdesk.persistence.entityenums.EnumTipoCaso" var="EnumTipoCaso" allSuffix="ALL_ENUM_VALUES" />
 
-
-
-
             <h:form id="botoneraCaso" style="margin-top: 5px;">
-
                 <h:panelGroup id="tituloCaso">
 
                     <p:panelGrid styleClass="filtersGrid" id="panelGridDatos">
@@ -166,12 +168,12 @@
                         <p:menuitem rendered="#{casoController.verificarRelacionarCaso()}" icon="fa fa-chain"
                                     ajax="true" value="Relacionar a Otro Caso" onclick="PF('casosRela').show();"/>
 
-
-
                         <p:menuitem rendered="#{casoController.verificarEliminarCaso()}" icon="fa fa-trash-o"
                                     ajax="true" value="Eliminar" onclick="PF('destroyCase').show();"/>
                     </p:menuButton>
 
+                    <p:commandButton rendered="true"
+                                     actionListener="#{casoController.preparePrint()}" value="Imprimir caso" style="float: right"/>
 
                     <p:commandButton icon="ui-icon ui-icon-seek-prev" ajax="false"
                                      action="#{casoController.prepareEditPreviusItem()}" 

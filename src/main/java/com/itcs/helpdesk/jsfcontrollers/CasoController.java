@@ -309,11 +309,11 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                                             : EnumSubEstadoCaso.CONTACTO_DUPLICADO.getSubEstado()))));
                     getManagerCasos().mergeCaso(casoToMerge,
                             ManagerCasos.createLogComment(casoToMerge, "Se combina con el caso " + casoBase.getIdCaso()));
-                    
+
                     if (first) {
                         sb.append(casoToMerge.getIdCaso());
                         first = false;
-                    }else{
+                    } else {
                         sb.append(',').append(casoToMerge.getIdCaso());;
                     }
                 }
@@ -778,7 +778,7 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
                 }
             }
         }
-        
+
         executeInClient("PF('blackListSelected').hide()");
 
         recreateModel();
@@ -1082,8 +1082,11 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
             c.getProductoContratadoList().add(pc);
         } else {
             if (pcWizard != null) {
-                if (c.getProductoContratadoList().contains(pcWizard)) {
-                    c.getProductoContratadoList().get(c.getProductoContratadoList().indexOf(pcWizard)).setTipoAsociacion(tipoAsoc_wizard);
+                if (c.getProductoContratadoList() !=null ) {
+
+                    if (c.getProductoContratadoList().contains(pcWizard)) {
+                        c.getProductoContratadoList().get(c.getProductoContratadoList().indexOf(pcWizard)).setTipoAsociacion(tipoAsoc_wizard);
+                    }
                 }
             }
         }
@@ -1337,6 +1340,16 @@ public class CasoController extends AbstractManagedBean<Caso> implements Seriali
         options.put("contentHeight", 500);
         options.put("contentWidth", 700);
         RequestContext.getCurrentInstance().openDialog("/script/caso/ViewHtml", options, null);
+    }
+
+    public void preparePrint() {
+        Map<String, Object> options = new HashMap<>();
+        options.put("modal", true);
+        options.put("draggable", true);
+        options.put("resizable", true);
+        options.put("contentHeight", 500);
+        options.put("contentWidth", 700);
+        RequestContext.getCurrentInstance().openDialog("/script/caso/ViewPrint", options, null);
     }
 
     public void changeCCO(boolean cc) {
