@@ -204,11 +204,11 @@ public class ChatRequestReceiverServlet extends HttpServlet {
 
             Caso newCaso = getManagerCasos().crearCaso(datos, EnumCanal.CHAT.getCanal(), fechaCreacion);
 
-            Log.createLogger(this.getClass().getName()).logInfo("CASO CREADO OK DESDE CHAT:" + newCaso.toString());
+            Log.createLogger(this.getClass().getName()).logInfo("CASO CREADO OK DESDE CHAT:" + newCaso.getIdCaso());
 
         } catch (Exception e) {
             Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "ERROR AL TRATAR DE CREAR CASO DESDE CHAT!", e);
-            Log.createLogger(this.getClass().getName()).log(Level.SEVERE, xml.toString(), e);
+            Log.createLogger(this.getClass().getName()).logSevere("RECEIVED_XML:" + xml.toString());
             if (e instanceof ConstraintViolationException) {
                 printWhatDaFuckIsGoingOn(e);
             }

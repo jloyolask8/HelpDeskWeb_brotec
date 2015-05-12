@@ -184,7 +184,6 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
 
                                                 //System.out.println("new Subject:" + tema);
                                                 //System.out.println("emailFrom:" + emailFrom);
-
                                                 final Caso casoByClient = jpaController.findCasoBySubjectAndEmailInClient(tema, emailFrom);
                                                 if (casoByClient != null) {
                                                     insertEmailIntoCaso(casoByClient, canal, emailMessage, mailClient, managerCasos);
@@ -264,9 +263,13 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
         if ((users != null) && (!users.isEmpty())) {
             Usuario user = users.get(0);//TODO to avoid this, we could use the email as the user id.
             download = false;
-            //Esto debe hacerse configurable
 
-            if (ApplicationConfig.createSupervisorCases()) {
+            if (ApplicationConfig.isAllUsersCanCreateEmailTickets()) {
+                if (user != null) {
+                    //this guy is a supervisor, he can create tickets
+                    download = true;
+                }
+            } else if (ApplicationConfig.createSupervisorCases()) {
                 if ((user.getUsuarioList() != null) && (!user.getUsuarioList().isEmpty())) {
                     //this guy is a supervisor, he can create tickets
                     download = true;
@@ -275,12 +278,13 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
                     //let them know that this is now allowed!!
                     download = false;
                     if (ApplicationConfig.isAppDebugEnabled()) {
-                        Log.createLogger(this.getClass().getName()).logDebug("IGNORING MESSAGE " + emailMessage.getIdMessage() + " from user  of the system :" + users);
+                        Log.createLogger(this.getClass().getName()).logDebug("IGNORING MESSAGE " + emailMessage.getIdMessage() + " from user:" + users);
                     }
                 }
             }
 
         } else {
+            //no users with that email, it means its a customer or client email 
             download = true;
         }
         if (download) {

@@ -286,37 +286,43 @@ public class ManagerCasos implements Serializable {
         return cliente;
     }
 
-    private boolean complyWithMinimalDataRequirements(DatosCaso datos) {
-        boolean valid = false;
-        if (datos.getEmail() != null && !StringUtils.isEmpty(datos.getEmail())) {
-            if (InputValidationBean.isValidEmail(datos.getEmail().toLowerCase().trim())) {
-                valid = true;
-            }
-        }
-        return valid;
-    }
-
+//    private boolean complyWithMinimalDataRequirements(DatosCaso datos) {
+//        boolean valid = false;
+//        if (datos.getEmail() != null && !StringUtils.isEmpty(datos.getEmail())) {
+//            if (InputValidationBean.isValidEmail(datos.getEmail().toLowerCase().trim())) {
+//                valid = true;
+//            }
+//        }
+//        return valid;
+//    }
     public Caso crearCaso(DatosCaso datos, Canal canal) throws Exception {
         return crearCaso(datos, canal, null);
     }
 
     public Caso crearCaso(DatosCaso datos, Canal canal, Date fechaCreacion) throws Exception {
         Caso createdCaso = null;
-        //when this shit could happen?, shitty code.
-//        try {
-//            //TODO remove this!!!
-//            createdCaso = getJpaController().getCasoFindByEmailCreationTimeAndType(datos.getEmail().trim(), fechaCreacion, EnumTipoCaso.PREVENTA.getTipoCaso());
-//        } catch (Exception ex) {
-//            //Do nothing if NoResultException (normal behaviour)
-//            if (!(ex instanceof NoResultException)) {
-//                Log.createLogger(this.getClass().getName()).log(Level.SEVERE, "Error al buscar caso el Producto", ex);
-//            }
+        boolean validEmail = false;
+        if (datos.getEmail() != null && !StringUtils.isEmpty(datos.getEmail())) {
+            if (InputValidationBean.isValidEmail(datos.getEmail().toLowerCase().trim())) {
+                validEmail = true;
+            }
+        } else {
+            Log.createLogger(this.getClass().getName()).logInfo("GOT_EMAIL_WITH_INVALID_FROM: " + datos.getEmail() + "\n"
+                    + "asunto:" + datos.getAsunto());
+
+            String wrongEmail = datos.getEmail();
+            //workaround this problem by put a valid email (temp) the user can change this later if needed.
+            datos.setEmail("jonathan.loyola@gmail.com");
+            datos.setDescripcion("/**GOT_EMAIL_WITH_INVALID_FROM <br/>*Changed he client's email because the email from where this ticket was received was invalid: " + wrongEmail + "<br/>" + datos.getDescripcion());
+        }
+
+//        if (complyWithMinimalDataRequirements(datos)) {
+//            createTicket = true;
+//        } else {
+//            
+//            throw new Exception("No se puede crear el caso. El caso no cumple con los requisitos minimos!");
 //        }
-//        if (createdCaso != null) {
-//            Log.createLogger(this.getClass().getName()).logInfo("Se ha encontrado un caso " + createdCaso.getIdCaso() + " del mismo cliente generado a la misma hora");
-//            return createdCaso;
-//        }
-        if (complyWithMinimalDataRequirements(datos)) {
+        if (validEmail) {
             Caso caso = new Caso();
 
             if (!StringUtils.isEmpty(datos.getEmail())) {
@@ -458,8 +464,6 @@ public class ManagerCasos implements Serializable {
 //            setCustomFieldValuesIfAny(datos, createdCaso);
 //            createCasoPreventaIfNeeded(createdCaso);
 
-        } else {
-            throw new Exception("No se puede crear el caso. El caso no cumple con los requisitos minimos!");
         }
 
         return createdCaso;

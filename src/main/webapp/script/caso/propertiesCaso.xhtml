@@ -160,24 +160,13 @@
                     </p:column>
 
                     <p:column>
-                        <p:inplace  editor="true" emptyLabel="sin tipo" saveLabel="Guardar" disabled="#{casoController.selected.closed}">
-                            <p:ajax event="save" update=":formint1 :formCerrarCaso" />
-                            <f:facet name="output">
-                                <h:outputText value="#{casoController.selected.tipoCaso ne null ? casoController.selected.tipoCaso:'sin tipo'}" />
-                                <i class="fa fa-search"></i>                                           
-                            </f:facet>
-                            <f:facet name="input">
-
-                                <p:selectOneMenu id="idTipoCaso" style="width: 220px;" disabled="#{casoController.selected.closed}" converter="TipoCasoControllerConverter"
+                        <p:selectOneMenu id="idTipoCaso" style="width: 220px;" disabled="#{casoController.selected.closed}" converter="TipoCasoControllerConverter"
                                                  required="true" requiredMessage="El tipo de caso es requerido."
                                                  filter="true" filterMatchMode="contains"
                                                  value="#{casoController.selected.tipoCaso}" >
                                     <f:selectItems value="#{applicationBean.tipoCasoAvailableList}" var="tipo" 
                                                    itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
                                 </p:selectOneMenu>
-
-                            </f:facet>
-                        </p:inplace>
                     </p:column>
                 </p:row>
 
@@ -190,20 +179,11 @@
 
                     <p:column>
 
-                        <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar" disabled="#{casoController.selected.closed}">
-                            <p:ajax event="save" update=":formint1 :formCerrarCaso" />
-                            <f:facet name="output">
-                                <h:outputText value="#{casoController.selected.idPrioridad.nombre}"/>
-                                <i class="fa fa-search"></i>                                           
-                            </f:facet>
-                            <f:facet name="input">
-                                <p:selectOneMenu disabled="#{casoController.selected.closed}" style="width: 220px;"
+                      <p:selectOneMenu disabled="#{casoController.selected.closed}" style="width: 220px;"
                                                  required="true"
                                                  id="idPrioridad" value="#{casoController.selected.idPrioridad}" >
                                     <f:selectItems value="#{prioridadController.itemsAvailableSelectMany}"/>
                                 </p:selectOneMenu>
-                            </f:facet>
-                        </p:inplace>
 
 
                     </p:column>
@@ -230,7 +210,13 @@
                         <p:outputLabel value="#{bundle.EditCasoLabel_idCanal}" for="idCanal" style="font-weight:bold"/>
                     </p:column>
                     <p:column>
-                        <h:outputText id="idCanal" value="#{casoController.selected.idCanal.nombre}" title="#{bundle.EditCasoTitle_idCanal}"/>
+                        
+                        <p:selectOneMenu disabled="#{casoController.selected.closed}" id="idCanal" style="width: 220px;"
+                                                 filter="true" filterMatchMode="contains"
+                                                 value="#{casoController.selected.idCanal}" >
+                                    <f:selectItems value="#{canalController.itemsAvailableSelectOne}" />
+                                </p:selectOneMenu>
+                        
                     </p:column>
                 </p:row>
 
@@ -241,22 +227,13 @@
                         <p:outputLabel value="Area:" style="font-weight:bold"/>
                     </p:column>
                     <p:column>
-                        <p:inplace  editor="true" emptyLabel="sin area" saveLabel="Guardar" disabled="#{casoController.selected.closed}">
-                            <p:ajax event="save" update=":formint1 :formCerrarCaso" />
-                            <p:ajax event="save" listener="#{casoController.handleProductChange()}" update="idGrupoCaso" />
-                            <f:facet name="output">
-                                <h:outputText value="#{casoController.selected.idArea}" />
-                                <i class="fa fa-search"></i>                                           
-                            </f:facet>
-                            <f:facet name="input">
-                                <p:selectOneMenu disabled="#{casoController.selected.closed}" id="idAreaCaso" style="width: 220px;"
+                       <p:selectOneMenu disabled="#{casoController.selected.closed}" id="idAreaCaso" style="width: 220px;"
                                                  filter="true" filterMatchMode="contains"
                                                  value="#{casoController.selected.idArea}" >
+                                    <p:ajax listener="#{casoController.handleProductChange()}" update="idGrupoCaso" />
                                     <f:selectItem itemLabel="" itemValue=""/>
                                     <f:selectItems value="#{applicationBean.areasAvailableList}" var="tipo" itemLabel="#{tipo.nombre}" itemValue="#{tipo}" itemDescription="#{tipo.descripcion}"/>
                                 </p:selectOneMenu>
-                            </f:facet>
-                        </p:inplace>
                     </p:column>
 
                 </p:row>
@@ -266,15 +243,7 @@
                         <p:outputLabel value="Grupo:" style="font-weight:bold"/>
                     </p:column>
                     <p:column>
-                        <p:inplace  editor="true" emptyLabel="sin grupo" saveLabel="Guardar" disabled="#{casoController.selected.closed}">
-                            <p:ajax event="save" update=":formint1 :formCerrarCaso" />
-                            <f:facet name="output">
-                                <h:outputText value="#{casoController.selected.idGrupo}" />
-                                <i class="fa fa-search"></i>                                           
-                            </f:facet>
-                            <f:facet name="input">
-
-                                <p:selectOneMenu id="idGrupoCaso" style="width: 220px;"
+                       <p:selectOneMenu id="idGrupoCaso" style="width: 220px;"
                                                  filter="true" filterMatchMode="contains"
                                                  value="#{casoController.selected.idGrupo}"
                                                  disabled="#{casoController.selected.closed or empty casoController.selected.idArea}">
@@ -282,8 +251,6 @@
                                     <f:selectItems value="#{casoController.selected.idArea.grupoList}" 
                                                    var="grupo" itemLabel="#{grupo.nombre}" itemValue="#{grupo}" itemDescription="#{grupo.descripcion}"/>
                                 </p:selectOneMenu>
-                            </f:facet>
-                        </p:inplace>
                     </p:column>
 
                 </p:row>
@@ -322,21 +289,11 @@
 
                     <p:column>
 
-                        <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar" disabled="#{casoController.selected.closed}">
-                            <p:ajax event="save" listener="#{casoController.handleProductChange}" update="idComponente modeloProductoId" />
-                            <f:facet name="output">
-                                <h:outputText value="#{casoController.selected.idProducto.nombre}"/>
-                                <i class="fa fa-search"></i>                                           
-                            </f:facet>
-                            <f:facet name="input">
-                                <p:selectOneMenu disabled="#{casoController.selected.closed or casoController.casoTipoReparacion}" id="idProducto" filter="true" filterMatchMode="contains" style="width: 220px;"
+                        <p:selectOneMenu disabled="#{casoController.selected.closed or casoController.casoTipoReparacion}" id="idProducto" filter="true" filterMatchMode="contains" style="width: 220px;"
                                                  value="#{casoController.selected.idProducto}" >
+                                    <p:ajax listener="#{casoController.handleProductChange}" update="idComponente modeloProductoId" />
                                     <f:selectItems value="#{productoController.itemsAvailableSelectOne}"/>
                                 </p:selectOneMenu>
-                            </f:facet>
-                        </p:inplace>
-
-
 
                     </p:column>
                 </p:row>
@@ -349,20 +306,12 @@
 
                     <p:column>
 
-                        <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar" disabled="#{casoController.selected.closed}">
-                            <p:ajax event="save" update="idComponente" listener="#{casoController.onProductoModeloChosen()}" />
-                            <f:facet name="output">
-                                <h:outputText value="#{casoController.selected.idModelo.nombre}"/>
-                                <i class="fa fa-search"></i>                                           
-                            </f:facet>
-                            <f:facet name="input">
-                                <p:selectOneMenu id="modeloProductoId" disabled="#{casoController.selected.closed or casoController.casoTipoReparacion}" filter="true" filterMatchMode="contains" style="width: 220px;"
+                        <p:selectOneMenu id="modeloProductoId" disabled="#{casoController.selected.closed or casoController.casoTipoReparacion}" filter="true" filterMatchMode="contains" style="width: 220px;"
                                                  value="#{casoController.selected.idModelo}" >
+                                    <p:ajax update="idComponente" listener="#{casoController.onProductoModeloChosen()}" />
                                     <f:selectItem itemLabel="" itemValue=""/>
                                     <f:selectItems value="#{casoController.selected.idProducto.modeloProductoList}" var="m" itemValue="#{m}" itemLabel="#{m.nombre}"/>
                                 </p:selectOneMenu>
-                            </f:facet>
-                        </p:inplace>
 
                     </p:column>
                 </p:row>
@@ -376,21 +325,13 @@
 
                     <p:column>
 
-                        <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar" disabled="#{casoController.selected.closed}">
-                            <p:ajax event="save" update="idSubComponente"  listener="#{casoController.handleProductChange}" />
-                            <f:facet name="output">
-                                <h:outputText value="#{casoController.selected.idComponente.nombre}"/>
-                                <i class="fa fa-search"></i>                                           
-                            </f:facet>
-                            <f:facet name="input">
-                                <p:selectOneMenu id="idComponente"  value="#{casoController.selected.idComponente}"  style="width: 220px;"
+                        <p:selectOneMenu id="idComponente"  value="#{casoController.selected.idComponente}"  style="width: 220px;"
                                                  filter="true" filterMatchMode="contains"
                                                  disabled="#{casoController.selected.closed or casoController.selected.idProducto eq null or casoController.casoTipoReparacion}">
+                                    <p:ajax update="idSubComponente"  listener="#{casoController.handleProductChange}" />
                                     <f:selectItem itemLabel="" itemValue=""/>
                                     <f:selectItems value="#{casoController.selected.idProducto.componenteList}" var="comp" itemLabel="#{comp.nombre}" itemValue="#{comp}"/>
                                 </p:selectOneMenu>
-                            </f:facet>
-                        </p:inplace>
 
 
                     </p:column>
@@ -487,31 +428,13 @@
 
                     <p:column colspan="2">
 
-                        <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar">
-                            <f:facet name="output">
-                                <ul style="padding-left: 0px;">
-                                    <ui:repeat value="#{casoController.selected.etiquetaStringList}" var="idTag">
-                                        <li data-token-value="#{idTag}" class="ui-autocomplete-token ui-state-active ui-corner-all">
-                                            <p:commandLink actionListener="#{casoController.onTagIdSelectCaso(idTag)}">
-                                                <span class="ui-autocomplete-token-label">#{idTag}</span>
-                                            </p:commandLink>
-                                        </li>
-                                    </ui:repeat>
-                                </ul>
-
-                                <i class="fa fa-edit" title="Editar etiquetas"></i> 
-
-                            </f:facet>
-                            <f:facet name="input">
-                                <p:autoComplete id="tags" disabled="#{casoController.selected.closed}" 
+                        <p:autoComplete id="tags" disabled="#{casoController.selected.closed}" 
                                                 value="#{casoController.selected.etiquetaStringList}" forceSelection="true" 
                                                 completeMethod="#{applicationBean.findEtiquetasByPattern}" multiple="true">
                                     <p:ajax  event="itemSelect"  listener="#{casoController.tagItemSelectEvent}"  update=":mainform:messages"  />
                                     <p:ajax  event="itemUnselect"  listener="#{casoController.tagItemUnselectEvent}"  update=":mainform:messages"  />
                                 </p:autoComplete>
                                 <p:watermark for="tags" value="Etiquetas"/>
-                            </f:facet>
-                        </p:inplace>
                     </p:column>
                 </p:row>
 
@@ -534,18 +457,10 @@
 
                     <p:column>
 
-                        <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar">
-                            <f:facet name="output">
-                                <h:outputText value="#{casoController.selected.idResponsable.nombreResponsable}"/>
-                                <i class="fa fa-search"></i>                                           
-                            </f:facet>
-                            <f:facet name="input">
-                                <p:selectOneMenu disabled="#{casoController.selected.closed}" style="width: 220px;"
+                       <p:selectOneMenu disabled="#{casoController.selected.closed}" style="width: 220px;"
                                                  id="idResponsable" value="#{casoController.selected.idResponsable}" >
                                     <f:selectItems value="#{responsableController.itemsAvailableSelectOne}"/>
                                 </p:selectOneMenu>
-                            </f:facet>
-                        </p:inplace>
 
 
                     </p:column>
@@ -557,16 +472,8 @@
                         <h:outputLabel value="Servicio Técnico:" for="idTechnicalService" style="font-weight:bold;"/>
                     </p:column>
                     <p:column>
-                        <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar">
-                            <f:facet name="output">
-                                <h:outputText value="#{casoController.selected.servicioTecnico eq true ? 'Si':'No'}"/>
-                                <i class="fa fa-edit"></i>                                           
-                            </f:facet>
-                            <f:facet name="input">
-                                <p:selectBooleanCheckbox id="idTechnicalService" disabled="#{casoController.selected.closed}" 
+                        <p:selectBooleanCheckbox id="idTechnicalService" disabled="#{casoController.selected.closed}" 
                                                          value="#{casoController.selected.servicioTecnico}" />
-                            </f:facet>
-                        </p:inplace>
                     </p:column>
                 </p:row>
 
@@ -575,15 +482,8 @@
                         <h:outputLabel value="Crédito Preaprobado:" for="credito" style="font-weight: bold"/>
                     </p:column>
                     <p:column>
-                        <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar">
-                            <f:facet name="output">
-                                <h:outputText value="#{casoController.selected.creditoPreAprobado eq true ? 'Si':'No'}"/>
-                                <i class="fa fa-search"></i>                                           
-                            </f:facet>
-                            <f:facet name="input">
-                                <p:selectBooleanCheckbox id="credito" value="#{casoController.selected.creditoPreAprobado}"  disabled="#{casoController.selected.closed}"/> 
-                            </f:facet>
-                        </p:inplace>
+                <p:selectBooleanCheckbox id="credito" value="#{casoController.selected.creditoPreAprobado}"  disabled="#{casoController.selected.closed}"/> 
+
                     </p:column>
                 </p:row>
 
@@ -594,21 +494,11 @@
 
                     <p:column>
 
-                        <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar">
-                            <f:facet name="output">
-                                <h:outputText value="#{casoController.prettyDate(casoController.selected.fechaEstimadaCompra)}"/>
-                                <i class="fa fa-edit"></i>                                           
-                            </f:facet>
-                            <f:facet name="input">
-
-                                <p:calendar locale="es" navigator="true" id="fechaCompra" showButtonPanel="true" 
+                        <p:calendar locale="es" navigator="true" id="fechaCompra" showButtonPanel="true" 
                                             mindate="#{applicationBean.now}" style="width: 220px;"
                                             disabled="#{casoController.selected.closed}"
                                             value="#{casoController.selected.fechaEstimadaCompra}"  
                                             title="Fecha estimada de compra" pattern="dd/MM/yyyy" label="Fecha est. Compra:"/>
-
-                            </f:facet>
-                        </p:inplace>
 
 
                     </p:column>
@@ -621,18 +511,10 @@
 
                     <p:column>
 
-                        <p:inplace  editor="true" emptyLabel="vacío" saveLabel="Guardar">
-                            <f:facet name="output">
-                                <h:outputText value="#{casoController.selected.idRecinto}"/>
-                                <i class="fa fa-search"></i>                                           
-                            </f:facet>
-                            <f:facet name="input">
-                                <p:selectOneMenu id="Recinto" value="#{casoController.selected.idRecinto}"  style="width: 220px;" editable="true"
+                        <p:selectOneMenu id="Recinto" value="#{casoController.selected.idRecinto}"  style="width: 220px;" editable="true"
                                                  filter="true" filterMatchMode="contains">
                                     <f:selectItems value="#{recintoController.itemsAvailableSelectMany}" var="r" itemLabel="#{r.idRecinto}" itemValue="#{r.idRecinto}"/>
                                 </p:selectOneMenu> 
-                            </f:facet>
-                        </p:inplace>
 
 
                     </p:column>
@@ -648,16 +530,8 @@
                                                 casoCustomFieldValue="#{customField}" 
                                                 casoOpen="#{casoController.selected.isOpen()}"/>
 
-                                <p:inplace  editor="true" rendered="#{customField.customField.required eq false or not empty customField.valor}"
-                                            emptyLabel="vacío" saveLabel="Guardar">
-                                    <f:facet name="output">
-                                        <h:outputText value="#{customField.valor}"/>
-                                        <i class="fa fa-search"></i>                                           
-                                    </f:facet>
-                                    <f:facet name="input">
-                                        <go:customField id="customFieldI" casoCustomFieldValue="#{customField}" casoOpen="#{casoController.selected.isOpen()}"/>
-                                    </f:facet>
-                                </p:inplace>
+                                <go:customField id="customFieldI" rendered="#{customField.customField.required eq false or not empty customField.valor}"
+                                                        casoCustomFieldValue="#{customField}" casoOpen="#{casoController.selected.isOpen()}"/>
 
                             </h:panelGrid>
                             <br/>

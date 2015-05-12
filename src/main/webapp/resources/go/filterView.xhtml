@@ -32,7 +32,7 @@
 
                     <h:inputText id="query" styleClass="query" value="#{cc.attrs.controllerMBean.query}" size="64" />
 
-                    <p:commandButton id="simpleSearchBtn" ajax="true" update="#{cc.attrs.update}" icon="fa fa-search" 
+                    <p:commandButton id="simpleSearchBtn" ajax="true" update="@form #{cc.attrs.update}" icon="fa fa-search" 
                                      title="" 
                                      iconPos="notext"
                                      actionListener="#{cc.attrs.controllerMBean.filter()}"/>

@@ -21,29 +21,6 @@ public class BlackListController extends AbstractManagedBean<BlackListEmail> imp
         super(BlackListEmail.class);
     }
 
-//    @Override
-//    public PaginationHelper getPagination() {
-//        if (pagination == null) {
-//            pagination = new PaginationHelper(getPaginationPageSize()) {
-//                @Override
-//                public int getItemsCount() {
-//                    return getJpaController().count(BlackListEmail.class).intValue();
-//                }
-//
-//                @Override
-//                public DataModel createPageDataModel() {
-//                    return new ListDataModel(getJpaController().queryByRange(BlackListEmail.class, getPageSize(), getPageFirstItem()));
-//                }
-//            };
-//        }
-//        return pagination;
-//    }
-
-//    public String prepareList() {
-//        recreateModel();
-//        return getListOutcomeNotAbstract();
-//    }
-
     public void prepareCreate() {
         current = new BlackListEmail();
     }
