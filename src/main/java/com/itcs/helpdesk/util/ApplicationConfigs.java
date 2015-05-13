@@ -553,6 +553,20 @@ public class ApplicationConfigs {
         }
         return value;
     }
+    
+      /**
+     * enable agents to create tickets by sending email to channel.
+     * @return 
+     */
+    public boolean isAllUsersCanCreateEmailTickets() {
+        boolean value = true;
+        try {
+            value = Boolean.valueOf(getProperty(EnumSettingsBase.CREATE_CASO_AGENTS_ENABLED.getAppSetting().getSettingKey(), "false"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return value;
+    }
 
     public String getNotificationClientSubjectNewTicketText() {
         return getProperty(EnumSettingsBase.NOTIFICATION_NEW_TICKET_CLIENT_SUBJECT_TEXT.getAppSetting().getSettingKey());

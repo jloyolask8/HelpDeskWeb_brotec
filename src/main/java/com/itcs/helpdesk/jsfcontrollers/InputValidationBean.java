@@ -23,6 +23,13 @@ import org.apache.commons.lang3.StringUtils;
 @RequestScoped
 public class InputValidationBean {
 
+    private static Pattern pDomainNameOnly;
+    private static final String DOMAIN_NAME_PATTERN = "^((?!-)[A-Za-z0-9-]{1,63}(?<!-)\\.)+[A-Za-z]{2,6}$";
+
+    static {
+        pDomainNameOnly = Pattern.compile(DOMAIN_NAME_PATTERN);
+    }
+
     /**
      * Creates a new instance of InputValidationBean
      */
@@ -37,7 +44,6 @@ public class InputValidationBean {
         String strValue = (String) value;
 
         //Set the email pattern string
-
 //        Pattern p = Pattern.compile("^([0-9]{1,2}+(.)[0-9]{3}+(.)[0-9]{3}+-[0-9Kk])$");
 //
 //        //Match the given string with the pattern
@@ -66,11 +72,24 @@ public class InputValidationBean {
 
     }
 
+    public static boolean isValidDomainName(String domainName) {
+        return pDomainNameOnly.matcher(domainName).find();
+    }
+
+    public void validateDomain(FacesContext context, UIComponent component,
+            Object value) throws ValidatorException {
+
+        if (!isValidDomainName(((String) value) + ".godesk.cl")) {
+            throw new ValidatorException(new FacesMessage(
+                    FacesMessage.SEVERITY_ERROR, "domain is not valid.",
+                    "domain is not valid."));
+        }
+    }
+
     public static boolean esRutValidoRegex(String value) {
         boolean validFormat = false;
 
         //Set the email pattern string
-
         Pattern p = Pattern.compile("^([0-9]{1,2}+(.)[0-9]{3}+(.)[0-9]{3}+-[0-9Kk])$");
 
         //Match the given string with the pattern
@@ -138,7 +157,7 @@ public class InputValidationBean {
         }
 
     }
-    
+
     public void validatePhoneNumber(FacesContext context, UIComponent component,
             Object value) throws ValidatorException {
         String strValue = (String) value;

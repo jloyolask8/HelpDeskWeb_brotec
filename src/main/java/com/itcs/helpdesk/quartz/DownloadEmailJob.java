@@ -271,22 +271,27 @@ public class DownloadEmailJob extends AbstractGoDeskJob implements Job {
         if ((users != null) && (!users.isEmpty())) {
             Usuario user = users.get(0);//TODO to avoid this, we could use the email as the user id.
             download = false;
-            //Esto debe hacerse configurable
 
-            if (ApplicationConfigs.getInstance(jpaController.getSchema()).createSupervisorCases()) {
+            if (ApplicationConfigs.getInstance(jpaController.getSchema()).isAllUsersCanCreateEmailTickets()) {
+                if (user != null) {
+                    //this guy is a supervisor, he can create tickets
+                    download = true;
+                }
+            } else if (ApplicationConfigs.getInstance(jpaController.getSchema()).createSupervisorCases()) {
                 if ((user.getUsuarioList() != null) && (!user.getUsuarioList().isEmpty())) {
                     //this guy is a supervisor, he can create tickets
                     download = true;
-                } 
-            }
-            
-            if(!download){
-                if (ApplicationConfigs.getInstance(jpaController.getSchema()).isAppDebugEnabled()) {
-                        Log.createLogger(this.getClass().getName()).logDebug("IGNORING MESSAGE " + emailMessage.getIdMessage() + " because is coming from a user of the system :" + users);
+                } else {
+                    //ignore emails from users of the system !!
+                    //let them know that this is now allowed!!
+                    download = false;
+                    if (ApplicationConfigs.getInstance(jpaController.getSchema()).isAppDebugEnabled()) {
+                        Log.createLogger(this.getClass().getName()).logDebug("IGNORING MESSAGE " + emailMessage.getIdMessage() + " from user:" + users);
                     }
+                }
             }
-
         } else {
+            //no users with that email, it means its a customer or client email 
             download = true;
         }
         if (download) {
